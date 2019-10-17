@@ -256,7 +256,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
 
     @Override
     public void putAll(Map map) {
-        map.forEach((k, o) -> this.put(k, o));
+        map.forEach(this::put);
     }
 
     @Override

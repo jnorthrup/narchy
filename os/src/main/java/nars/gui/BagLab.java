@@ -178,7 +178,7 @@ public class BagLab {
 //        if (!bag.isEmpty())
 //            return; //assume done already
 
-        float totalInputs = (float) inputSliders.stream().mapToDouble(x -> x.get()).sum();
+        float totalInputs = (float) inputSliders.stream().mapToDouble(FloatSlider::get).sum();
         if (totalInputs < 0.01f)
             return;
 

@@ -36,7 +36,7 @@ class DecisionTreeFindBestSplitTest {
         );
         
         
-        Predicate<Function<String,Object>> bestSplit = tree.bestSplit(labelColumnName, ()->dataSet.stream(), features.stream());
+        Predicate<Function<String,Object>> bestSplit = tree.bestSplit(labelColumnName, dataSet::stream, features.stream());
         assertEquals("x1 = true", bestSplit.toString());
         
         List<List<Function<String,Object>>> split = DecisionTree.split(bestSplit, dataSet).collect(toList());

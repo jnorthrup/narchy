@@ -401,7 +401,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
     @Override
     public void putAll(ShortIntMap map) {
-        map.forEachKeyValue((ShortIntProcedure) (key, value) -> MyShortIntHashMap.this.put(key, value));
+        map.forEachKeyValue((ShortIntProcedure) MyShortIntHashMap.this::put);
     }
 
     @Override
@@ -787,7 +787,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
     @Override
     public MyShortIntHashMap withoutAllKeys(ShortIterable keys) {
-        keys.forEach((ShortProcedure) key -> MyShortIntHashMap.this.removeKey(key));
+        keys.forEach((ShortProcedure) MyShortIntHashMap.this::removeKey);
         return this;
     }
 

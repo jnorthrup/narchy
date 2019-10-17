@@ -10,8 +10,7 @@ import static java.util.Collections.EMPTY_LIST;
 
 public class SimpleTreeTest {
     /** from: guava */
-    static final SuccessorsFunction<File> FILE_TREE = path ->
-            fileTreeChildren(path);
+    static final SuccessorsFunction<File> FILE_TREE = SimpleTreeTest::fileTreeChildren;
 
     /** from: guava */
     private static Iterable<File> fileTreeChildren(File dir) {

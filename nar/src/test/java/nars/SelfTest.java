@@ -318,7 +318,7 @@ public class SelfTest {
 
     private void report(DataTable all) {
 
-        String[] testID = all.columns(0, 1, 2 ).stream().map(x -> x.name()).toArray(String[]::new);
+        String[] testID = all.columns(0, 1, 2 ).stream().map(Column::name).toArray(String[]::new);
 
         //https://jtablesaw.github.io/tablesaw/userguide/reducing
         try {

@@ -238,11 +238,7 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
             if (type == Type.LEAF) {
                 if (values!=null) {
                     float rsquare = radius * radius;
-                    values.forEach(value -> {
-                        if (value.distanceToSquared(p) < rsquare) {
-                            results.accept(value);
-                        }
-                    });
+                    values.stream().filter(value -> value.distanceToSquared(p) < rsquare).forEach(results::accept);
                 }
             } else if (type == Type.BRANCH) {
                 if (nw !=null) nw.itemsWithinRadius(p, radius, results);

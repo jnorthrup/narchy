@@ -47,10 +47,7 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
                     if (mode == Mode.Multi) {
 
                     } else if (mode == Mode.One) {
-                        this.buttons.forEach(cc -> {
-                            if (cc != bb)
-                                cc.on(false);
-                        });
+                        this.buttons.stream().filter(cc -> cc != bb).forEach(cc -> cc.on(false));
                     }
 
 

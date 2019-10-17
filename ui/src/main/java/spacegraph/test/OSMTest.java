@@ -33,10 +33,7 @@ public class OSMTest {
 
             System.out.println(o);
 
-            o.nodes.values().forEach(n -> {
-                if (n.tags!=null)
-                    System.out.println(n);
-            });
+            o.nodes.values().stream().filter(n -> n.tags != null).forEach(System.out::println);
 
             SpaceGraph.window(new OsmSurface(i).go(o).widget(), 800, 800);
 

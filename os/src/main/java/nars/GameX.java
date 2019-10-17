@@ -185,7 +185,7 @@ abstract public class GameX extends Game {
         n.runLater(()-> {
             n.synch();
             window(NARui.top(n), 1024, 800);
-            window(new Gridding(n.parts(Game.class).map(g->NARui.game(g)).collect(toList())), 1024, 768);
+            window(new Gridding(n.parts(Game.class).map(NARui::game).collect(toList())), 1024, 768);
         });
 
 
@@ -646,75 +646,65 @@ abstract public class GameX extends Game {
         });
     }
     private static void addFuelInjection(NAR n) {
-        n.parts(What.class).forEach(w -> {
-            if (w.inBuffer instanceof PriBuffer.BagTaskBuffer)  {
-                PriBuffer.BagTaskBuffer b = (PriBuffer.BagTaskBuffer) w.inBuffer;
-
-
-
-                float ideal = 0.5f;
-
-//                //TODO use AgentBuilder
-//                float inc = 0.1f;
-//
-//                AgentBuilder ab = new AgentBuilder(() -> {
-//                    float load = b.load();
-//                    float error = load - ideal; //in -1..+1
-//                    return (1 - Util.sqrt(Math.abs(error))*4);
-//                })
-//                    .in(b.valve)
-//                    .in(b::load)
-//                    .in(()->Math.max(0,b.load() - ideal))
-//                    .in(()->Math.max(0,ideal - b.load()))
-//                    .out(5, (o) -> {
-//                        float rate = 0.005f;
-//
-//                        float d = b.load() - ideal;
-//                        float delta = d;
-//                        float change = 0;
-//                        switch (o) {
-//                            case 0:
-//                                change = -rate*1f * delta; //away
-//                                break;
-//                            case 1:
-//                                change = 0;
-//                                break;
-//                            case 2:
-//                                change = +rate*1f * delta; //closer
-//                                break;
-//                            case 3:
-//                                change = +rate*2f * delta; //closer
-//                                break;
-//                            case 4:
-//                                change = +rate*4f * delta; //closer
-//                                break;
-//                        }
-//                        b.valve.add(change);
-//                    })
-////                    .out(8, (v) -> b.valve.set( lerp(0.9f, b.valve.get(), v/7f)) )
-//                ;
-//
-//                System.out.println(ab);
-//                Agenterator a = ab.get((i,o)->
-//                        new DQN3(i,o));
-//
-//                ((DQN3)a.agent).gamma = 0.75f;
-
-//                n.onDur(()->{
-////                    float reward = a.asFloat();
-////                    System.out.println(reward);
-
-//                n.onDur(()->{
-//                    b.valve.add(0.005f * (b.load() - ideal)); //simple proportional control
-//                });
-
-                MiniPID pid = new MiniPID(0.007f, 0.005, 0.0025, 0);
-                pid.outLimit(0, 1);
-                pid.setOutMomentum(0.1);
-                n.onDur(()->{
-                    b.valve.set(pid.out(ideal-b.load(), 0));
-                });
-            }
+        //                //TODO use AgentBuilder
+        //                float inc = 0.1f;
+        //
+        //                AgentBuilder ab = new AgentBuilder(() -> {
+        //                    float load = b.load();
+        //                    float error = load - ideal; //in -1..+1
+        //                    return (1 - Util.sqrt(Math.abs(error))*4);
+        //                })
+        //                    .in(b.valve)
+        //                    .in(b::load)
+        //                    .in(()->Math.max(0,b.load() - ideal))
+        //                    .in(()->Math.max(0,ideal - b.load()))
+        //                    .out(5, (o) -> {
+        //                        float rate = 0.005f;
+        //
+        //                        float d = b.load() - ideal;
+        //                        float delta = d;
+        //                        float change = 0;
+        //                        switch (o) {
+        //                            case 0:
+        //                                change = -rate*1f * delta; //away
+        //                                break;
+        //                            case 1:
+        //                                change = 0;
+        //                                break;
+        //                            case 2:
+        //                                change = +rate*1f * delta; //closer
+        //                                break;
+        //                            case 3:
+        //                                change = +rate*2f * delta; //closer
+        //                                break;
+        //                            case 4:
+        //                                change = +rate*4f * delta; //closer
+        //                                break;
+        //                        }
+        //                        b.valve.add(change);
+        //                    })
+        ////                    .out(8, (v) -> b.valve.set( lerp(0.9f, b.valve.get(), v/7f)) )
+        //                ;
+        //
+        //                System.out.println(ab);
+        //                Agenterator a = ab.get((i,o)->
+        //                        new DQN3(i,o));
+        //
+        //                ((DQN3)a.agent).gamma = 0.75f;
+        //                n.onDur(()->{
+        ////                    float reward = a.asFloat();
+        ////                    System.out.println(reward);
+        //                n.onDur(()->{
+        //                    b.valve.add(0.005f * (b.load() - ideal)); //simple proportional control
+        //                });
+        n.parts(What.class).filter(w -> w.inBuffer instanceof PriBuffer.BagTaskBuffer).map(w -> (PriBuffer.BagTaskBuffer) w.inBuffer).forEach(b -> {
+            float ideal = 0.5f;
+            MiniPID pid = new MiniPID(0.007f, 0.005, 0.0025, 0);
+            pid.outLimit(0, 1);
+            pid.setOutMomentum(0.1);
+            n.onDur(() -> {
+                b.valve.set(pid.out(ideal - b.load(), 0));
+            });
         });
 
     }

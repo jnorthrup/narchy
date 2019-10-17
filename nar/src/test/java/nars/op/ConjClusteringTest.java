@@ -69,7 +69,7 @@ class ConjClusteringTest {
         n.time.dur(4);
 
         int ccap = 8;
-        ConjClustering c = new ConjClustering(n, BELIEF, 2, ccap, (t) -> t.isInput());
+        ConjClustering c = new ConjClustering(n, BELIEF, 2, ccap, Task::isInput);
         new Deriver(new PremiseRuleSet(n).add(c));
 
         n.inputAt(1, "$1.0 x. |");

@@ -185,7 +185,7 @@ public class ConcurrentOpenHashMapTest {
             try {
                 future.get();
             } catch (Throwable e) {
-                fail(() -> e.toString());
+                fail(e::toString);
             }
         }
         assertEquals(N * nThreads, map.size());

@@ -205,10 +205,7 @@ public class ThermostatTest {
         }
 
 
-        n.tasks().forEach(t -> {
-            if (!t.isInput())
-                System.out.println(t);
-        });
+        n.tasks().filter(t -> !t.isInput()).forEach(System.out::println);
 
     }
 

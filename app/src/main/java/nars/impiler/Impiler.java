@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.PrintStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static nars.Op.IMPL;
 
@@ -312,7 +313,7 @@ public class Impiler {
 					}
 				}
 				return null;
-			}), x -> x != null);
+			}), Objects::nonNull);
 		}
 
 		private static final class ImplPLink extends PLink<Task> {

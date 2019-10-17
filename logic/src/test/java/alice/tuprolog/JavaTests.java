@@ -23,8 +23,8 @@ public class JavaTests {
 
 
         p.addOutputListener(System.err::println);
-        p.solve("test(4).", (x)->{ System.out.println(x); });
-        p.solve("test2(4).", (x)->{ System.out.println(x); });
+        p.solve("test(4).", System.out::println);
+        p.solve("test2(4).", System.out::println);
     }
 
     @Test
@@ -33,8 +33,8 @@ public class JavaTests {
             Theory.resource(JavaTests.class, "points_test2.pl")
         );
 
-        p.solve("test(2).", (x)-> System.out.println(x));
-        p.solve("test(3).", (x)-> System.out.println(x));
+        p.solve("test(2).", System.out::println);
+        p.solve("test(3).", System.out::println);
     }
 
 }

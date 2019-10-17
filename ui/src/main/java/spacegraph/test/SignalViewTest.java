@@ -112,8 +112,7 @@ public class SignalViewTest {
                     Windo ll = g.add(local).sizeRel(0.25f, 0.25f);
 
 
-                    n.sensors.values().forEach(s -> {
-                        PushButton ss = new PushButton(s.id);
+                    n.sensors.values().stream().map(s -> new PushButton(s.id)).forEach(ss -> {
                         Windo w = g.add(ss).sizeRel(0.1f, 0.1f);
                         g.addWire(new Wire(local, ss));
                     });

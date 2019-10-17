@@ -52,14 +52,12 @@ class ConceptGraph2DTest {
 //                    .threadSafe(7);
             NAR n = new NARS.DefaultNAR(0, true).get();
             new Deriver(Derivers.nal(n, 1, 8));
-            n.what().onTask(t -> {
-               n.proofPrint(t);
-//                try {
-//                    System.in.read();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-            });
+            //                try {
+            //                    System.in.read();
+            //                } catch (IOException e) {
+            //                    e.printStackTrace();
+            //                }
+            n.what().onTask(n::proofPrint);
 
             n.time.dur(10);
             n.termVolMax.set(9);
@@ -91,7 +89,7 @@ class ConceptGraph2DTest {
                     NARui.beliefIcons(n, List.of($$("good"), $$("bad"), $$("reward")))
                 ),
                 new Gridding(
-                    new PushButton("reset").clicked(()->n.reset()),
+                    new PushButton("reset").clicked(n::reset),
                     new PushButton("print").clicked(()->n.tasks().forEach(System.out::println))
                 )
             )), 1200, 800 );

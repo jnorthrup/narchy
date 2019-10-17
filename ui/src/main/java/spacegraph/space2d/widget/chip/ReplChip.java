@@ -40,15 +40,14 @@ public class ReplChip extends Gridding {
                 if (clearOnEnter())
                     in.edit.text("");
 
-                model.input(cmd, (e) -> {
-                    System.err.println(e); //HACK
-//                    if (appendOrReplace()) {
-////                        out.edit.text(e); //append?
-////                        out.out(out.edit.text());
-//                    } else {
-////                        out.edit.text(e);
-//                    }
-                });
+                //HACK
+                //                    if (appendOrReplace()) {
+                ////                        out.edit.text(e); //append?
+                ////                        out.out(out.edit.text());
+                //                    } else {
+                ////                        out.edit.text(e);
+                //                    }
+                model.input(cmd, System.err::println);
             }
         });
     }

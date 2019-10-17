@@ -83,16 +83,8 @@ public class SurfaceConstraints {
     }
 
     public void update() {
-        constraints.vars.keySet().forEach(v -> {
-            if (v instanceof BoundVar) {
-                ((BoundVar)v).load();
-            }
-        });
+        constraints.vars.keySet().stream().filter(v -> v instanceof BoundVar).forEach(v -> ((BoundVar) v).load());
         constraints.update();
-        constraints.vars.keySet().forEach(v -> {
-            if (v instanceof BoundVar) {
-                ((BoundVar)v).save();
-            }
-        });
+        constraints.vars.keySet().stream().filter(v -> v instanceof BoundVar).forEach(v -> ((BoundVar) v).save());
     }
 }

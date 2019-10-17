@@ -49,7 +49,7 @@ public class InterningTermBuilderBenchmark {
     @Measurement(iterations = 4)
     public void testInterning() {
 
-        runTests(true, () -> NARS.tmp(),
+        runTests(true, NARS::tmp,
                 NAL1Test.class,
                 NAL2Test.class,
                 NAL3Test.class,

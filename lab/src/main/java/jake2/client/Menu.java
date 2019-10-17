@@ -4057,7 +4057,7 @@ public final class Menu extends Key {
         }
 
         
-        Arrays.sort(s_pmi, 0, s_numplayermodels, (o1, o2) -> pmicmpfnc(o1, o2));
+        Arrays.sort(s_pmi, 0, s_numplayermodels, Menu::pmicmpfnc);
 
         
         s_pmnames = new String[MAX_PLAYERMODELS];

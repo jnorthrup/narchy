@@ -117,9 +117,7 @@ public class AttentionUI {
 
 
 
-		return DurSurface.get(g, n, () -> {
-			g.update();
-		}).every(4);
+		return DurSurface.get(g, n, g::update).every(4);
 	}
 
 	public static Graph2D objectGraph(Graph2D.Graph2DRenderer<Object> renderer) {

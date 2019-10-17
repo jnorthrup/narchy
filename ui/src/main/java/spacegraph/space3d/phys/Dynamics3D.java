@@ -46,6 +46,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static jcog.math.v3.v;
 import static spacegraph.space3d.phys.Body3D.ifDynamic;
@@ -577,13 +578,10 @@ public class Dynamics3D<X> extends Collisions<X> {
 
     private void predictUnconstraintMotion(float timeStep) {
 
-        collidables().forEach((colObj) -> {
-            Body3D body = ifDynamic(colObj);
-            if (body != null && !body.isStaticOrKinematicObject() && body.isActive()) {
-                body.integrateVelocities(timeStep);
-                body.applyDamping(timeStep);
-                body.predictIntegratedTransform(timeStep, body.interpolationWorldTransform);
-            }
+        collidables().stream().map((Function<Collidable, Body3D>) Body3D::ifDynamic).filter(body -> body != null && !body.isStaticOrKinematicObject() && body.isActive()).forEach(body -> {
+            body.integrateVelocities(timeStep);
+            body.applyDamping(timeStep);
+            body.predictIntegratedTransform(timeStep, body.interpolationWorldTransform);
         });
     }
 

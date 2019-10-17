@@ -2,6 +2,7 @@ package nars.task;
 
 import jcog.data.list.FasterList;
 import jcog.math.MultiStatistics;
+import jcog.pri.ScalarValue;
 import jcog.signal.meter.event.CSVOutput;
 import jcog.sort.FloatRank;
 import jcog.tree.rtree.HyperIterator;
@@ -79,10 +80,10 @@ class RTreeBeliefTableTest {
 
 
         MultiStatistics<Task> m = new MultiStatistics<Task>()
-                .classify("input", (t) -> t.isInput())
+                .classify("input", Task::isInput)
                 .classify("derived", (t) -> t instanceof DerivedTask)
 
-                .value("pri", (t) -> t.pri())
+                .value("pri", ScalarValue::pri)
                 .value2D("truth", (t) -> new float[]{t.freq(), t.conf()})
                 .value("freqErr", (t) -> Math.abs(((t.freq() - 0.5f) * 2f) - func.valueOf(t.mid())))
                 .add(c.beliefs().taskStream().collect(toList()));
@@ -323,9 +324,7 @@ class RTreeBeliefTableTest {
         table.print();
 
         table.read(t -> {
-            t.root().streamNodesRecursively().forEach(r -> {
-                System.out.println(r);
-            });
+            t.root().streamNodesRecursively().forEach(System.out::println);
         });
     }
 

@@ -52,11 +52,7 @@ public class Launcher {
         @Override
         public void run() {
 
-            new Thread(()-> {
-
-                    env.run();
-
-            }).start();
+            new Thread(env::run).start();
         }
 
         @Override

@@ -9,6 +9,7 @@ import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.broad.Broadphase;
 
 import java.util.List;
+import java.util.Objects;
 
 import static jcog.math.v3.v;
 
@@ -105,11 +106,7 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
 
         for (int iter = 0; iter < iterations; iter++) {
 
-            objects.forEach(c -> {
-                Spatial x = ((Spatial) c.data());
-                if (x != null)
-                    x.stabilize(boundsMin, boundsMax);
-            });
+            objects.stream().map(c -> ((Spatial) c.data())).filter(Objects::nonNull).forEach(x -> x.stabilize(boundsMin, boundsMax));
 
 
             int clusters = (int) Math.ceil(/*Math.log*/(((float) n) / 32));

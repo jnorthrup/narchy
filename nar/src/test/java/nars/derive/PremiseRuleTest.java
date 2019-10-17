@@ -285,7 +285,7 @@ class PremiseRuleTest {
     void testOpIsPreFilterSubPath() {
         DeriverProgram d = new PremiseRuleSet(NARS.shell(),
             "(Z,X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)").compile();
-        assertTrue(d.what.toString().contains("Is("), () -> d.what.toString());
+        assertTrue(d.what.toString().contains("Is("), d.what::toString);
     }
 
     @Test

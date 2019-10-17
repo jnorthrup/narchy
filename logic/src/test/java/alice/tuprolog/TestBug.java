@@ -33,7 +33,7 @@ public class TestBug {
 		
 		
 		Prolog engine = new Prolog();
-		engine.addSpyListener(e -> System.out.println(e));
+		engine.addSpyListener(System.out::println);
 		
 		engine.setTheory(new Theory(st));
 		Solution info = engine.solve("test(L1,L2).");

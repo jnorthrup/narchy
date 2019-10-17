@@ -59,9 +59,7 @@ public class NARSpeakTest {
 
         Util.sleepMS(5000);
 
-        n.stop().tasks(true, false, true, false).forEach(x -> {
-            System.out.println(x);
-        });
+        n.stop().tasks(true, false, true, false).forEach(System.out::println);
 
         System.out.println();
 

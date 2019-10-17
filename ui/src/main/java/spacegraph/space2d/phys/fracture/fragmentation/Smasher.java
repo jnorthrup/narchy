@@ -225,19 +225,15 @@ public class Smasher {
         MyList<EdgeDiagram> allEdgesPolygon = new MyList<>();
 
 
-        table.forEach(ep -> {
-            if (ep.d2 == null) {
-
-
-                v2 vv = ep.kolmicovyBod(contactPoint);
-                double newDistance = contactPoint.distanceSq(vv);
-                if (newDistance <= distance[0]) {
-                    distance[0] = newDistance;
-                    kolmicovyBod[0] = vv;
-                    startPolygon[0] = ep.d1;
-                }
-                allEdgesPolygon.add(ep);
+        table.stream().filter(ep -> ep.d2 == null).forEach(ep -> {
+            v2 vv = ep.kolmicovyBod(contactPoint);
+            double newDistance = contactPoint.distanceSq(vv);
+            if (newDistance <= distance[0]) {
+                distance[0] = newDistance;
+                kolmicovyBod[0] = vv;
+                startPolygon[0] = ep.d1;
             }
+            allEdgesPolygon.add(ep);
         });
 
         MyList<Fragment> ppx = new MyList<>();

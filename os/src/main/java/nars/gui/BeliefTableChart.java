@@ -29,6 +29,8 @@ import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
+import java.util.Objects;
+
 
 public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, MenuSupplier {
 
@@ -235,17 +237,12 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
             float fEps = nar.freqResolution.floatValue()/2;
 
-            t.streamNodes().forEach(n -> {
-                if (n!=null) {
-                    TaskRegion b = (TaskRegion) n.bounds();
-                    if (b != null && !(b instanceof Task) && b.intersects(start, end)) {
-                        float x1 = xTime(b.start());
-                        float x2 = xTime(b.end());
-                        float y1 = b.freqMin() - fEps;
-                        float y2 = b.freqMax() + fEps;
-                        Draw.rectStroke(x1, y1, x2-x1, y2-y1, gl);
-                    }
-                }
+            t.streamNodes().filter(Objects::nonNull).map(n -> (TaskRegion) n.bounds()).filter(b -> b != null && !(b instanceof Task) && b.intersects(start, end)).forEach(b -> {
+                float x1 = xTime(b.start());
+                float x2 = xTime(b.end());
+                float y1 = b.freqMin() - fEps;
+                float y2 = b.freqMax() + fEps;
+                Draw.rectStroke(x1, y1, x2 - x1, y2 - y1, gl);
             });
         }
 

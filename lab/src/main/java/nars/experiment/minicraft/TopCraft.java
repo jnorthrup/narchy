@@ -39,7 +39,7 @@ public class TopCraft extends GameX {
         camAE.alpha.set(0.04f);
         camAE.noise.set(0.02f);
         SpaceGraph.window(camAE.newChart(), 500, 500);
-        onFrame(()->{ p.updateBitmap(); });
+        onFrame(p::updateBitmap);
 
 
         senseSwitch($.func("dir", id), () -> craft.player.dir, 0, 4);

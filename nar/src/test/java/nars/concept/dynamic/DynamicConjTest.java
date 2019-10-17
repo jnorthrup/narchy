@@ -167,7 +167,7 @@ class DynamicConjTest {
 
 
         Truth tt = n.belief($("(a:x && a:y)"), now).truth();
-        assertTrue($.t(0.32f, 0.93f).equalTruth(tt, n), () -> tt.toString());
+        assertTrue($.t(0.32f, 0.93f).equalTruth(tt, n), tt::toString);
     }
 
     @Test
@@ -263,7 +263,7 @@ class DynamicConjTest {
 
                 Op.CONJ.the(XTERNAL, new Term[]{$.$("(--,($1 ==>+- (((joy-->fz)&&fwd) &&+- $1)))"), $.$("(joy-->fz)"), $.$("fwd")}).normalize();
 
-        assertTrue(c instanceof Compound, () -> c.toString());
+        assertTrue(c instanceof Compound, c::toString);
         assertTrue(Task.validTaskTerm(c), () -> c + " should be a valid task target");
     }
 
@@ -273,7 +273,7 @@ class DynamicConjTest {
 
                 Op.CONJ.the(XTERNAL, new Term[]{$.$("(--,((--,#1)&&#2))"), $.$("(--,#2)"), $.varDep(1)}).normalize();
 
-        assertTrue(c instanceof Compound, () -> c.toString());
+        assertTrue(c instanceof Compound, c::toString);
         assertTrue(Task.validTaskTerm(c), () -> c + " should be a valid task target");
     }
 

@@ -57,10 +57,7 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
             this.active = next;
 
 
-            prev.forEach(x -> {
-                if (!x.preactive)
-                    x.order = -1;
-            });
+        prev.stream().filter(x -> !x.preactive).forEach(x -> x.order = -1);
 
             active.forEach(x -> x.update(s.dyn));
 

@@ -347,7 +347,7 @@ class KIFTest {
     public void testCapabilityExtension() throws IOException {
 
         KIF k = KIF.file("/home/me/sumo/Merge.kif");
-        k.assertions.forEach(bb -> System.out.println(bb));
+        k.assertions.forEach(System.out::println);
 
     }
 

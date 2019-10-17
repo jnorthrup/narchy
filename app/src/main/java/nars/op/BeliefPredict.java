@@ -6,6 +6,7 @@ import jcog.data.list.FasterList;
 import jcog.learn.LivePredictor;
 import jcog.learn.Predictor;
 import jcog.math.FloatRange;
+import jcog.pri.AtomicPri;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -112,9 +113,8 @@ public class BeliefPredict extends NARPart {
 
 
         List<PredictionTask> oldPred = this.predictions;
-        oldPred.forEach(x -> {
-            x.delete(); //TODO also directly remove from table?
-        });
+        //TODO also directly remove from table?
+        oldPred.forEach(AtomicPri::delete);
         oldPred.clear();
 
 

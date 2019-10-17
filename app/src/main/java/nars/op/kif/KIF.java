@@ -640,16 +640,11 @@ public class KIF implements Iterable<Task> {
             });
         }
         for (MutableSet<Term> ab : new MutableSet[]{_aVars, _bVars}) {
-            ab.forEach(aa -> {
-                if (aa.op() == VAR_INDEP && !common.contains(aa)) {
-                    String str = aa.toString().substring(1);
-
-
-
-                    Variable bb = $.v(Op.VAR_DEP, str);
-                    if (!remap.containsKey(bb))
-                        remap.put(aa, bb);
-                }
+            ab.stream().filter(aa -> aa.op() == VAR_INDEP && !common.contains(aa)).forEach(aa -> {
+                String str = aa.toString().substring(1);
+                Variable bb = $.v(VAR_DEP, str);
+                if (!remap.containsKey(bb))
+                    remap.put(aa, bb);
             });
         }
 

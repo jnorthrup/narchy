@@ -18,6 +18,7 @@ import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static java.lang.System.out;
 import static org.junit.jupiter.api.Assertions.*;
@@ -185,17 +186,13 @@ class NARTest {
                 .inputBinary(new ByteArrayInputStream(x));
 
 
-        Set<Task> aHas = new HashSet();
-
-        a.tasks().forEach((Task t) -> aHas.add(t));
+        Set<Task> aHas = a.tasks().collect(Collectors.toSet());
 
         assertEquals(count.get(), aHas.size());
 
         assertEquals(written, aHas);
 
-        Set<Task> bRead = new HashSet();
-
-        b.tasks().forEach(t -> bRead.add(t));
+        Set<Task> bRead = b.tasks().collect(Collectors.toSet());
 
         assertEquals(aHas, bRead);
 
