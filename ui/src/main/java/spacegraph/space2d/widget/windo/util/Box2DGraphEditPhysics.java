@@ -272,8 +272,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             super(wire);
         }
 
-        @Nullable
-        protected Dynamics2D world() {
+        protected @Nullable Dynamics2D world() {
             Body2D b = sourceBody();
             if (b != null)
                 return b.W;

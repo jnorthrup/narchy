@@ -4,8 +4,8 @@ import static nars.time.Tense.*;
 
 public final class TimeSpan {
 
-    public final static TimeSpan TS_ZERO = new TimeSpan(0);
-    public final static TimeSpan TS_ETERNAL = new TimeSpan(ETERNAL);
+    public static final TimeSpan TS_ZERO = new TimeSpan(0);
+    public static final TimeSpan TS_ETERNAL = new TimeSpan(ETERNAL);
 
     public final long dt;
 

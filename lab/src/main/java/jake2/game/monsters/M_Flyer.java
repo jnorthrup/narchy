@@ -32,319 +32,319 @@ import java.util.stream.IntStream;
 public class M_Flyer {
     
 
-    public final static int ACTION_nothing = 0;
+    public static final int ACTION_nothing = 0;
 
-    public final static int ACTION_attack1 = 1;
+    public static final int ACTION_attack1 = 1;
 
-    public final static int ACTION_attack2 = 2;
+    public static final int ACTION_attack2 = 2;
 
-    public final static int ACTION_run = 3;
+    public static final int ACTION_run = 3;
 
-    public final static int ACTION_walk = 4;
+    public static final int ACTION_walk = 4;
 
-    public final static int FRAME_start01 = 0;
+    public static final int FRAME_start01 = 0;
 
-    public final static int FRAME_start02 = 1;
+    public static final int FRAME_start02 = 1;
 
-    public final static int FRAME_start03 = 2;
+    public static final int FRAME_start03 = 2;
 
-    public final static int FRAME_start04 = 3;
+    public static final int FRAME_start04 = 3;
 
-    public final static int FRAME_start05 = 4;
+    public static final int FRAME_start05 = 4;
 
-    public final static int FRAME_start06 = 5;
+    public static final int FRAME_start06 = 5;
 
-    public final static int FRAME_stop01 = 6;
+    public static final int FRAME_stop01 = 6;
 
-    public final static int FRAME_stop02 = 7;
+    public static final int FRAME_stop02 = 7;
 
-    public final static int FRAME_stop03 = 8;
+    public static final int FRAME_stop03 = 8;
 
-    public final static int FRAME_stop04 = 9;
+    public static final int FRAME_stop04 = 9;
 
-    public final static int FRAME_stop05 = 10;
+    public static final int FRAME_stop05 = 10;
 
-    public final static int FRAME_stop06 = 11;
+    public static final int FRAME_stop06 = 11;
 
-    public final static int FRAME_stop07 = 12;
+    public static final int FRAME_stop07 = 12;
 
-    public final static int FRAME_stand01 = 13;
+    public static final int FRAME_stand01 = 13;
 
-    public final static int FRAME_stand02 = 14;
+    public static final int FRAME_stand02 = 14;
 
-    public final static int FRAME_stand03 = 15;
+    public static final int FRAME_stand03 = 15;
 
-    public final static int FRAME_stand04 = 16;
+    public static final int FRAME_stand04 = 16;
 
-    public final static int FRAME_stand05 = 17;
+    public static final int FRAME_stand05 = 17;
 
-    public final static int FRAME_stand06 = 18;
+    public static final int FRAME_stand06 = 18;
 
-    public final static int FRAME_stand07 = 19;
+    public static final int FRAME_stand07 = 19;
 
-    public final static int FRAME_stand08 = 20;
+    public static final int FRAME_stand08 = 20;
 
-    public final static int FRAME_stand09 = 21;
+    public static final int FRAME_stand09 = 21;
 
-    public final static int FRAME_stand10 = 22;
+    public static final int FRAME_stand10 = 22;
 
-    public final static int FRAME_stand11 = 23;
+    public static final int FRAME_stand11 = 23;
 
-    public final static int FRAME_stand12 = 24;
+    public static final int FRAME_stand12 = 24;
 
-    public final static int FRAME_stand13 = 25;
+    public static final int FRAME_stand13 = 25;
 
-    public final static int FRAME_stand14 = 26;
+    public static final int FRAME_stand14 = 26;
 
-    public final static int FRAME_stand15 = 27;
+    public static final int FRAME_stand15 = 27;
 
-    public final static int FRAME_stand16 = 28;
+    public static final int FRAME_stand16 = 28;
 
-    public final static int FRAME_stand17 = 29;
+    public static final int FRAME_stand17 = 29;
 
-    public final static int FRAME_stand18 = 30;
+    public static final int FRAME_stand18 = 30;
 
-    public final static int FRAME_stand19 = 31;
+    public static final int FRAME_stand19 = 31;
 
-    public final static int FRAME_stand20 = 32;
+    public static final int FRAME_stand20 = 32;
 
-    public final static int FRAME_stand21 = 33;
+    public static final int FRAME_stand21 = 33;
 
-    public final static int FRAME_stand22 = 34;
+    public static final int FRAME_stand22 = 34;
 
-    public final static int FRAME_stand23 = 35;
+    public static final int FRAME_stand23 = 35;
 
-    public final static int FRAME_stand24 = 36;
+    public static final int FRAME_stand24 = 36;
 
-    public final static int FRAME_stand25 = 37;
+    public static final int FRAME_stand25 = 37;
 
-    public final static int FRAME_stand26 = 38;
+    public static final int FRAME_stand26 = 38;
 
-    public final static int FRAME_stand27 = 39;
+    public static final int FRAME_stand27 = 39;
 
-    public final static int FRAME_stand28 = 40;
+    public static final int FRAME_stand28 = 40;
 
-    public final static int FRAME_stand29 = 41;
+    public static final int FRAME_stand29 = 41;
 
-    public final static int FRAME_stand30 = 42;
+    public static final int FRAME_stand30 = 42;
 
-    public final static int FRAME_stand31 = 43;
+    public static final int FRAME_stand31 = 43;
 
-    public final static int FRAME_stand32 = 44;
+    public static final int FRAME_stand32 = 44;
 
-    public final static int FRAME_stand33 = 45;
+    public static final int FRAME_stand33 = 45;
 
-    public final static int FRAME_stand34 = 46;
+    public static final int FRAME_stand34 = 46;
 
-    public final static int FRAME_stand35 = 47;
+    public static final int FRAME_stand35 = 47;
 
-    public final static int FRAME_stand36 = 48;
+    public static final int FRAME_stand36 = 48;
 
-    public final static int FRAME_stand37 = 49;
+    public static final int FRAME_stand37 = 49;
 
-    public final static int FRAME_stand38 = 50;
+    public static final int FRAME_stand38 = 50;
 
-    public final static int FRAME_stand39 = 51;
+    public static final int FRAME_stand39 = 51;
 
-    public final static int FRAME_stand40 = 52;
+    public static final int FRAME_stand40 = 52;
 
-    public final static int FRAME_stand41 = 53;
+    public static final int FRAME_stand41 = 53;
 
-    public final static int FRAME_stand42 = 54;
+    public static final int FRAME_stand42 = 54;
 
-    public final static int FRAME_stand43 = 55;
+    public static final int FRAME_stand43 = 55;
 
-    public final static int FRAME_stand44 = 56;
+    public static final int FRAME_stand44 = 56;
 
-    public final static int FRAME_stand45 = 57;
+    public static final int FRAME_stand45 = 57;
 
-    public final static int FRAME_attak101 = 58;
+    public static final int FRAME_attak101 = 58;
 
-    public final static int FRAME_attak102 = 59;
+    public static final int FRAME_attak102 = 59;
 
-    public final static int FRAME_attak103 = 60;
+    public static final int FRAME_attak103 = 60;
 
-    public final static int FRAME_attak104 = 61;
+    public static final int FRAME_attak104 = 61;
 
-    public final static int FRAME_attak105 = 62;
+    public static final int FRAME_attak105 = 62;
 
-    public final static int FRAME_attak106 = 63;
+    public static final int FRAME_attak106 = 63;
 
-    public final static int FRAME_attak107 = 64;
+    public static final int FRAME_attak107 = 64;
 
-    public final static int FRAME_attak108 = 65;
+    public static final int FRAME_attak108 = 65;
 
-    public final static int FRAME_attak109 = 66;
+    public static final int FRAME_attak109 = 66;
 
-    public final static int FRAME_attak110 = 67;
+    public static final int FRAME_attak110 = 67;
 
-    public final static int FRAME_attak111 = 68;
+    public static final int FRAME_attak111 = 68;
 
-    public final static int FRAME_attak112 = 69;
+    public static final int FRAME_attak112 = 69;
 
-    public final static int FRAME_attak113 = 70;
+    public static final int FRAME_attak113 = 70;
 
-    public final static int FRAME_attak114 = 71;
+    public static final int FRAME_attak114 = 71;
 
-    public final static int FRAME_attak115 = 72;
+    public static final int FRAME_attak115 = 72;
 
-    public final static int FRAME_attak116 = 73;
+    public static final int FRAME_attak116 = 73;
 
-    public final static int FRAME_attak117 = 74;
+    public static final int FRAME_attak117 = 74;
 
-    public final static int FRAME_attak118 = 75;
+    public static final int FRAME_attak118 = 75;
 
-    public final static int FRAME_attak119 = 76;
+    public static final int FRAME_attak119 = 76;
 
-    public final static int FRAME_attak120 = 77;
+    public static final int FRAME_attak120 = 77;
 
-    public final static int FRAME_attak121 = 78;
+    public static final int FRAME_attak121 = 78;
 
-    public final static int FRAME_attak201 = 79;
+    public static final int FRAME_attak201 = 79;
 
-    public final static int FRAME_attak202 = 80;
+    public static final int FRAME_attak202 = 80;
 
-    public final static int FRAME_attak203 = 81;
+    public static final int FRAME_attak203 = 81;
 
-    public final static int FRAME_attak204 = 82;
+    public static final int FRAME_attak204 = 82;
 
-    public final static int FRAME_attak205 = 83;
+    public static final int FRAME_attak205 = 83;
 
-    public final static int FRAME_attak206 = 84;
+    public static final int FRAME_attak206 = 84;
 
-    public final static int FRAME_attak207 = 85;
+    public static final int FRAME_attak207 = 85;
 
-    public final static int FRAME_attak208 = 86;
+    public static final int FRAME_attak208 = 86;
 
-    public final static int FRAME_attak209 = 87;
+    public static final int FRAME_attak209 = 87;
 
-    public final static int FRAME_attak210 = 88;
+    public static final int FRAME_attak210 = 88;
 
-    public final static int FRAME_attak211 = 89;
+    public static final int FRAME_attak211 = 89;
 
-    public final static int FRAME_attak212 = 90;
+    public static final int FRAME_attak212 = 90;
 
-    public final static int FRAME_attak213 = 91;
+    public static final int FRAME_attak213 = 91;
 
-    public final static int FRAME_attak214 = 92;
+    public static final int FRAME_attak214 = 92;
 
-    public final static int FRAME_attak215 = 93;
+    public static final int FRAME_attak215 = 93;
 
-    public final static int FRAME_attak216 = 94;
+    public static final int FRAME_attak216 = 94;
 
-    public final static int FRAME_attak217 = 95;
+    public static final int FRAME_attak217 = 95;
 
-    public final static int FRAME_bankl01 = 96;
+    public static final int FRAME_bankl01 = 96;
 
-    public final static int FRAME_bankl02 = 97;
+    public static final int FRAME_bankl02 = 97;
 
-    public final static int FRAME_bankl03 = 98;
+    public static final int FRAME_bankl03 = 98;
 
-    public final static int FRAME_bankl04 = 99;
+    public static final int FRAME_bankl04 = 99;
 
-    public final static int FRAME_bankl05 = 100;
+    public static final int FRAME_bankl05 = 100;
 
-    public final static int FRAME_bankl06 = 101;
+    public static final int FRAME_bankl06 = 101;
 
-    public final static int FRAME_bankl07 = 102;
+    public static final int FRAME_bankl07 = 102;
 
-    public final static int FRAME_bankr01 = 103;
+    public static final int FRAME_bankr01 = 103;
 
-    public final static int FRAME_bankr02 = 104;
+    public static final int FRAME_bankr02 = 104;
 
-    public final static int FRAME_bankr03 = 105;
+    public static final int FRAME_bankr03 = 105;
 
-    public final static int FRAME_bankr04 = 106;
+    public static final int FRAME_bankr04 = 106;
 
-    public final static int FRAME_bankr05 = 107;
+    public static final int FRAME_bankr05 = 107;
 
-    public final static int FRAME_bankr06 = 108;
+    public static final int FRAME_bankr06 = 108;
 
-    public final static int FRAME_bankr07 = 109;
+    public static final int FRAME_bankr07 = 109;
 
-    public final static int FRAME_rollf01 = 110;
+    public static final int FRAME_rollf01 = 110;
 
-    public final static int FRAME_rollf02 = 111;
+    public static final int FRAME_rollf02 = 111;
 
-    public final static int FRAME_rollf03 = 112;
+    public static final int FRAME_rollf03 = 112;
 
-    public final static int FRAME_rollf04 = 113;
+    public static final int FRAME_rollf04 = 113;
 
-    public final static int FRAME_rollf05 = 114;
+    public static final int FRAME_rollf05 = 114;
 
-    public final static int FRAME_rollf06 = 115;
+    public static final int FRAME_rollf06 = 115;
 
-    public final static int FRAME_rollf07 = 116;
+    public static final int FRAME_rollf07 = 116;
 
-    public final static int FRAME_rollf08 = 117;
+    public static final int FRAME_rollf08 = 117;
 
-    public final static int FRAME_rollf09 = 118;
+    public static final int FRAME_rollf09 = 118;
 
-    public final static int FRAME_rollr01 = 119;
+    public static final int FRAME_rollr01 = 119;
 
-    public final static int FRAME_rollr02 = 120;
+    public static final int FRAME_rollr02 = 120;
 
-    public final static int FRAME_rollr03 = 121;
+    public static final int FRAME_rollr03 = 121;
 
-    public final static int FRAME_rollr04 = 122;
+    public static final int FRAME_rollr04 = 122;
 
-    public final static int FRAME_rollr05 = 123;
+    public static final int FRAME_rollr05 = 123;
 
-    public final static int FRAME_rollr06 = 124;
+    public static final int FRAME_rollr06 = 124;
 
-    public final static int FRAME_rollr07 = 125;
+    public static final int FRAME_rollr07 = 125;
 
-    public final static int FRAME_rollr08 = 126;
+    public static final int FRAME_rollr08 = 126;
 
-    public final static int FRAME_rollr09 = 127;
+    public static final int FRAME_rollr09 = 127;
 
-    public final static int FRAME_defens01 = 128;
+    public static final int FRAME_defens01 = 128;
 
-    public final static int FRAME_defens02 = 129;
+    public static final int FRAME_defens02 = 129;
 
-    public final static int FRAME_defens03 = 130;
+    public static final int FRAME_defens03 = 130;
 
-    public final static int FRAME_defens04 = 131;
+    public static final int FRAME_defens04 = 131;
 
-    public final static int FRAME_defens05 = 132;
+    public static final int FRAME_defens05 = 132;
 
-    public final static int FRAME_defens06 = 133;
+    public static final int FRAME_defens06 = 133;
 
-    public final static int FRAME_pain101 = 134;
+    public static final int FRAME_pain101 = 134;
 
-    public final static int FRAME_pain102 = 135;
+    public static final int FRAME_pain102 = 135;
 
-    public final static int FRAME_pain103 = 136;
+    public static final int FRAME_pain103 = 136;
 
-    public final static int FRAME_pain104 = 137;
+    public static final int FRAME_pain104 = 137;
 
-    public final static int FRAME_pain105 = 138;
+    public static final int FRAME_pain105 = 138;
 
-    public final static int FRAME_pain106 = 139;
+    public static final int FRAME_pain106 = 139;
 
-    public final static int FRAME_pain107 = 140;
+    public static final int FRAME_pain107 = 140;
 
-    public final static int FRAME_pain108 = 141;
+    public static final int FRAME_pain108 = 141;
 
-    public final static int FRAME_pain109 = 142;
+    public static final int FRAME_pain109 = 142;
 
-    public final static int FRAME_pain201 = 143;
+    public static final int FRAME_pain201 = 143;
 
-    public final static int FRAME_pain202 = 144;
+    public static final int FRAME_pain202 = 144;
 
-    public final static int FRAME_pain203 = 145;
+    public static final int FRAME_pain203 = 145;
 
-    public final static int FRAME_pain204 = 146;
+    public static final int FRAME_pain204 = 146;
 
-    public final static int FRAME_pain301 = 147;
+    public static final int FRAME_pain301 = 147;
 
-    public final static int FRAME_pain302 = 148;
+    public static final int FRAME_pain302 = 148;
 
-    public final static int FRAME_pain303 = 149;
+    public static final int FRAME_pain303 = 149;
 
-    public final static int FRAME_pain304 = 150;
+    public static final int FRAME_pain304 = 150;
 
-    public final static float MODEL_SCALE = 1.000000f;
+    public static final float MODEL_SCALE = 1.000000f;
 
     static int nextmove; 
 

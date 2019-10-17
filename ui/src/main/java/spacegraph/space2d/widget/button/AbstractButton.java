@@ -21,7 +21,7 @@ import static java.awt.event.KeyEvent.VK_SPACE;
 public abstract class AbstractButton extends Widget {
 
 
-    final static int CLICK_BUTTON = 0;
+    static final int CLICK_BUTTON = 0;
 
     final Clicking click = new Clicking(CLICK_BUTTON,this, (f) -> {
         dz = 0;

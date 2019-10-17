@@ -10,15 +10,15 @@ import spacegraph.space2d.container.collection.MutableArrayContainer;
 
  */
 public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
-    public final static int C = 0;
-    public final static int N = 1;
-    public final static int S = 2;
-    public final static int E = 3;
-    public final static int W = 4;
-    public final static int NE = 5;
-    public final static int NW = 6;
-    public final static int SW = 7;
-    public final static int SE = 8;
+    public static final int C = 0;
+    public static final int N = 1;
+    public static final int S = 2;
+    public static final int E = 3;
+    public static final int W = 4;
+    public static final int NE = 5;
+    public static final int NW = 6;
+    public static final int SW = 7;
+    public static final int SE = 8;
 
     /**
      * in percent of the half total size of the corresponding dimension

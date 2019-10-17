@@ -9,12 +9,12 @@ import static nars.time.Tense.ETERNAL;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /** wavelet-like freq/evidence function */
-@Paper
 @Skill("Wavelet")
-abstract public class Truthlet implements Truth {
+@Paper
+public abstract class Truthlet implements Truth {
 
-    abstract public long start();
-    abstract public long end();
+    public abstract long start();
+    public abstract long end();
 
     long mid() { return (start() + end())/2L; }
     public long range() {

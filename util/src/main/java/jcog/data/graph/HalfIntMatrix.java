@@ -117,7 +117,7 @@ class HalfIntMatrix {
 		return matrix[idx(row, col)];
 	}
 
-	static private int idx(final int row, final int col) {
+	private static int idx(final int row, final int col) {
         return row < col ?
                 col * (col + 1) / 2 + row
                 :

@@ -41,11 +41,11 @@ public class QuickMemoize<X, Y> {
         this.shift = nextShift; this.mask = nextMask; this.data = nextData;
     }
 
-    @Nullable  public final Y apply(@Nullable X X, Function<X, Y> calc) {
+    public final @Nullable Y apply(@Nullable X X, Function<X, Y> calc) {
         return apply(X, calc, (x, c)->c.apply(x));
     }
 
-    @Nullable  public <P> Y apply(@Nullable X x, P p, BiFunction<X, P, Y> calc) {
+    public @Nullable <P> Y apply(@Nullable X x, P p, BiFunction<X, P, Y> calc) {
         Pair<X, Y> s1, s2;
 
         Pair<X,Y>[] data = this.data;

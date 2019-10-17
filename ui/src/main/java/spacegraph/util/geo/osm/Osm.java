@@ -46,7 +46,7 @@ public class Osm {
      * bzless ~/test.osm.bz2  | fgrep 'k=' | sort > /tmp/x
 
      * */
-    private final static Set<String> filteredKeys = Set.of(
+    private static final Set<String> filteredKeys = Set.of(
             "source", "tiger:cfcc", "odbl"
     );
 

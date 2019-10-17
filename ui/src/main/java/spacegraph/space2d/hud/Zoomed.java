@@ -33,15 +33,15 @@ import static java.lang.Math.sin;
  */
 public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implements /*Deprecated*/ KeyPressed {
 
-    public final static short PAN_BUTTON = 0;
+    public static final short PAN_BUTTON = 0;
 
     /**
      * middle mouse button (wheel when pressed, apart from its roll which are detected in the wheel/wheelabsorber)
      */
-    public final static short ZOOM_BUTTON = 2;
+    public static final short ZOOM_BUTTON = 2;
 
     private static final int ZOOM_STACK_MAX = 8;
-    private final static float focusAngle = (float) Math.toRadians(45);
+    private static final float focusAngle = (float) Math.toRadians(45);
     /**
      * current view area, in absolute world coords
      */

@@ -17,8 +17,7 @@ public class HoverTest {
         SpaceGraph.window(hoverTest(), 500, 500);
     }
 
-    @NotNull
-    public static Gridding hoverTest() {
+    public static @NotNull Gridding hoverTest() {
         return new Gridding(
             new HoverButton("x", new HoverModel.Exact()),
             new HoverButton("y", new HoverModel.Maximum()),

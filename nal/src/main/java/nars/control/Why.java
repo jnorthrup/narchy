@@ -52,7 +52,7 @@ public enum Why { ;
 
 
 
-	@Nullable public static Term why(RoaringBitmap why, int capacity) {
+	public static @Nullable Term why(RoaringBitmap why, int capacity) {
 		int ss = why.getCardinality();
 		if (ss == 0)
 			return null;
@@ -84,11 +84,11 @@ public enum Why { ;
 ////		}
 //	}
 
-	@Nullable public static Termed whyLazy(@Nullable Caused... c) {
+	public static @Nullable Termed whyLazy(@Nullable Caused... c) {
 		return whyLazy(c, NAL.causeCapacity.intValue());
 	}
 
-	@Nullable public static <C extends Caused> Termed whyLazy(@Nullable C[] c, int capacity) {
+	public static @Nullable <C extends Caused> Termed whyLazy(@Nullable C[] c, int capacity) {
 		switch (c.length) {
 			case 0: return null;
 			case 1: return c[0] == null ? c[0].why() : null;
@@ -251,8 +251,8 @@ public enum Why { ;
 			this.capacity = capacity;
 		}
 
-		@Nullable @Override
-		protected Term build() {
+		@Override
+		protected @Nullable Term build() {
 			return Why.why(c, capacity);
 		}
 	}

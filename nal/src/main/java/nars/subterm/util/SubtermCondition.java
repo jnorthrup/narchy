@@ -163,7 +163,7 @@ public enum SubtermCondition implements BiPredicate<Compound, Term> {
 //    }
     ;
 
-    abstract public float cost();
+    public abstract float cost();
 
 
 }

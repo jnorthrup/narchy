@@ -556,7 +556,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
      */
     public static class ARFFObject<X> extends ARFF {
 
-        final static Logger logger = LoggerFactory.getLogger(ARFFObject.class);
+        static final Logger logger = LoggerFactory.getLogger(ARFFObject.class);
         private final Function[] extractor;
 
         /**

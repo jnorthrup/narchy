@@ -43,9 +43,9 @@ public class Quat4f extends Tuple4f {
     
     static final long serialVersionUID = 2675933778405442383L;
 
-    private final static float EPS = 0.000001f;
-    private final static float EPS2 = Float.MIN_NORMAL;
-    final static float PIO2 = 1.57079632679f;
+    private static final float EPS = 0.000001f;
+    private static final float EPS2 = Float.MIN_NORMAL;
+    static final float PIO2 = 1.57079632679f;
 
     /**
      * Constructs and initializes a Quat4f from the specified xyzw coordinates.

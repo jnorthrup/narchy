@@ -3,7 +3,7 @@ package jcog.exe.realtime;
 import java.util.concurrent.TimeUnit;
 
 /** lighweight one time procedure */
-abstract public class Soon extends AbstractTimedFuture<Object> {
+public abstract class Soon extends AbstractTimedFuture<Object> {
 
     /** immediately */
     protected Soon() {
@@ -48,7 +48,7 @@ abstract public class Soon extends AbstractTimedFuture<Object> {
     }
 
     /** wraps a Runnable */
-    final static class Run extends Soon {
+    static final class Run extends Soon {
 
         private final Runnable runnable;
 

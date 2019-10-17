@@ -105,8 +105,7 @@ public class VerletPhysics2D {
      * @param p
      * @return itself
      */
-    @Nullable
-    public VerletPhysics2D addParticle(VerletParticle2D p) {
+    public @Nullable VerletPhysics2D addParticle(VerletParticle2D p) {
 
         p.constrainAll(bounds);
 

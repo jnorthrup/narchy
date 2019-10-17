@@ -52,7 +52,7 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
     };
 
 
-    @Nullable private static Surface collectionSurface(List<Surface> x) {
+    private static @Nullable Surface collectionSurface(List<Surface> x) {
         Surface y = null;
         int xs = x.size();
         switch (xs) {

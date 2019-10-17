@@ -1059,7 +1059,7 @@ public class Huffman {
         }
     }
 
-    static abstract class HuffmanTree implements Comparable<Weight>, Weight {
+    abstract static class HuffmanTree implements Comparable<Weight>, Weight {
         final long frequency;
         final int id;
 

@@ -58,7 +58,7 @@ class TaskRegionTest {
         assertEquals(a.mbr(d), a.mbr(b).mbr(a.mbr(c)));
     }
 
-    static private void validateStretch(String expect, Task a, Task b) {
+    private static void validateStretch(String expect, Task a, Task b) {
         TaskRegion ba = b.mbr(a);
         TaskRegion ab = a.mbr(b);
         assertEquals(ba, ab);

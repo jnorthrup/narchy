@@ -80,7 +80,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
      * iterate columns (x) first, then rows (y)
      */
     @Override
-    final public Iterator<ComponentSignal> iterator() {
+    public final Iterator<ComponentSignal> iterator() {
         return iter.iterator();
     }
 
@@ -114,8 +114,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
         return matrix[y][x];
     }
 
-    @Nullable
-    public Signal get(int x, int y) {
+    public @Nullable Signal get(int x, int y) {
         if ((x < 0) || (y < 0) || (x >= width || y >= height))
             return null;
         return getSafe(x, y);

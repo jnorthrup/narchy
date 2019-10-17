@@ -26,7 +26,7 @@ import java.util.Objects;
  *
  * @author MaleLabTs
  */
-abstract public class Leaf<V> extends AbstractNode {
+public abstract class Leaf<V> extends AbstractNode {
 
 
    private ParentNode parent;
@@ -34,7 +34,7 @@ abstract public class Leaf<V> extends AbstractNode {
    protected final V value;
 
 
-   abstract public Leaf cloneTree();
+   public abstract Leaf cloneTree();
 
    public Leaf(V value) {
       super();

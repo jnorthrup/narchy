@@ -49,7 +49,7 @@ public final class Fragment extends LightCompound {
     }
 
 
-    public final static Compound empty = CachedCompound.newCompound(Op.FRAG, DTERNAL, Op.EmptyProduct);
+    public static final Compound empty = CachedCompound.newCompound(Op.FRAG, DTERNAL, Op.EmptyProduct);
 
 
     public static Term fragment(Term[] x) {
@@ -100,7 +100,7 @@ public final class Fragment extends LightCompound {
         }
     }
 
-    @Nullable public static Term matchedExcept(Term[] matched, int... except) {
+    public static @Nullable Term matchedExcept(Term[] matched, int... except) {
         int ll = matched.length;
         int ee = except.length;
         int ml = ll - ee;

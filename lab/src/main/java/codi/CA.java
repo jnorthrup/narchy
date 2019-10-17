@@ -5,7 +5,7 @@ import jcog.random.XoRoShiRo128PlusRandom;
 
 import java.util.Random;
 
-abstract public class CA {
+public abstract class CA {
 
 
     protected final int sizeX;
@@ -22,7 +22,7 @@ abstract public class CA {
 //    protected Graphics offGraphics;
 //    protected Dimension offDimension;
 
-    final protected Random random = new XoRoShiRo128PlusRandom(1);
+    protected final Random random = new XoRoShiRo128PlusRandom(1);
     protected boolean uninitialized;
 
 
@@ -124,7 +124,7 @@ abstract public class CA {
 //        g.drawImage(offImage, 0, 0, this);
 //    }
 
-    abstract protected void InitCA();
+    protected abstract void InitCA();
 //    protected void InitCA() {
 //        CountCAStps = 0;
 //        for (int i = 0; i < sizeX; i++)
@@ -138,7 +138,7 @@ abstract public class CA {
 //
 //    }
 
-    abstract protected void next();
+    protected abstract void next();
 //    protected void StepCA() {
 //        CountCAStps++;
 //

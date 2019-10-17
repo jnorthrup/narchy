@@ -45,8 +45,8 @@ public class SimpleConfig {
     public boolean isStriped = true;
     public boolean isFlagging = false;
     
-    transient public String datasetName;
-    transient public String outputFolder;
+    public transient String datasetName;
+    public transient String outputFolder;
 
     /**
      * Percentange [0,100] of the number of the generations used for the Spared termination

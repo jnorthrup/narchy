@@ -50,8 +50,7 @@ public class ThermostatTest {
 
 
             @Override
-            @Nullable
-            protected synchronized Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
+            protected synchronized @Nullable Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
 
                 if (training[0]) {
                     n.synch();

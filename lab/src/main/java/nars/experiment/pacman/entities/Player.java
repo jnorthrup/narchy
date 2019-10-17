@@ -5,10 +5,10 @@ import nars.experiment.pacman.maze.Maze.Direction;
 
 public class Player extends Entity {
 
-    public final static int MAX_POWER = 500;
+    public static final int MAX_POWER = 500;
     public int mouthAngle = 10;
     int mouthSpeed = 2;
-    final static int MOUTH_WIDTH = 40;
+    static final int MOUTH_WIDTH = 40;
     public int power;
 
 

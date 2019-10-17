@@ -66,7 +66,7 @@ public class ArrayPool<T> extends FasterList<T> {
                 }
             });
 
-    final static int capacity = 16;
+    static final int capacity = 16;
 
     private static final ThreadLocal<Map<Class, ArrayPool>> typed = ThreadLocal.withInitial(HashMap::new);
 

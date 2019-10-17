@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.port;
 
 import spacegraph.space2d.widget.textedit.TextEdit;
 
-abstract public class EditablePort<X> extends TypedPort<X> {
+public abstract class EditablePort<X> extends TypedPort<X> {
 
     public final TextEdit edit;
 
@@ -52,6 +52,6 @@ abstract public class EditablePort<X> extends TypedPort<X> {
         return x;
     }
 
-    abstract protected X parse(String x);
+    protected abstract X parse(String x);
 
 }

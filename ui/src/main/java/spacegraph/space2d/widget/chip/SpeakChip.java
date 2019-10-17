@@ -30,7 +30,7 @@ public class SpeakChip extends Bordering {
         ;
         //..
 
-        abstract protected void accept(String s);
+        protected abstract void accept(String s);
     }
 
     final MutableEnum<Modulation> mode = new MutableEnum<>(Modulation.AirModem);

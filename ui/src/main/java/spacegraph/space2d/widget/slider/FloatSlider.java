@@ -139,7 +139,7 @@ public class FloatSlider extends Widget implements FloatSupplier {
         return get();
     }
 
-    abstract public static class FloatSliderModel extends SliderModel {
+    public abstract static class FloatSliderModel extends SliderModel {
 
         @Override
         protected void starting() {

@@ -929,8 +929,7 @@ public class NARui {
 
     }
 
-    @NotNull
-    public static PaintUpdateMatrixView matrix(double[] dw) {
+    public static @NotNull PaintUpdateMatrixView matrix(double[] dw) {
         return dw.length > 2048 ?
             PaintUpdateMatrixView.scroll(dw, false, 64, 8) :
             new PaintUpdateMatrixView(()->dw, dw.length, dw.length/Math.max(1, (int) Math.ceil(sqrt(dw.length))));

@@ -18,7 +18,8 @@ import static nars.truth.Truth.hashDiscretenessFine;
 public final class TasksRegion extends Longerval implements TaskRegion {
 
 
-    @Nullable @Override public final Task task() {
+    @Override
+    public final @Nullable Task task() {
         return null;
     }
 

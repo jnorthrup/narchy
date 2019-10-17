@@ -34,7 +34,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     public static final DepIndepVarIntroduction the = new DepIndepVarIntroduction();
 
-    private final static int ConjOrStatementBits = Op.IMPL.bit | Op.CONJ.bit;
+    private static final int ConjOrStatementBits = Op.IMPL.bit | Op.CONJ.bit;
 
     /**
      * sum by complexity if passes include filter
@@ -56,8 +56,8 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     private static boolean validIndepVarSuperterm(Op o) { return o.statement; }
 
-    @Nullable @Override
-    public Term apply(Compound x, Random rng, @Nullable Map<Term, Term> retransform) {
+    @Override
+    public @Nullable Term apply(Compound x, Random rng, @Nullable Map<Term, Term> retransform) {
         return x.hasAny(ConjOrStatementBits) ? super.apply(x, rng, retransform) : null;
     }
 
@@ -68,7 +68,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     private static final int MEMOIZE_CAPACITY = 32 * 1024;
 
-    private final static Function<Subterms,Term[]> select = Memoizers.the.memoizeByte(
+    private static final Function<Subterms,Term[]> select = Memoizers.the.memoizeByte(
             DepIndepVarIntroduction.class.getSimpleName() + "_select",
             Intermed.SubtermsKey::new,
             DepIndepVarIntroduction::_select, MEMOIZE_CAPACITY);
@@ -91,9 +91,8 @@ public class DepIndepVarIntroduction extends VarIntroduction {
         return x[Roulette.selectRouletteCached(x.length, curve, rng)];
     }
 
-    @Nullable
     @Override
-    protected Term introduce(Term input, Term selected) {
+    protected @Nullable Term introduce(Term input, Term selected) {
 
 
 //        int vars = input.vars();

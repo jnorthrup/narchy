@@ -29,7 +29,7 @@ import java.util.function.Function;
  * In vector analysis, a scalar quantity is considered to be a quantity that has magnitude or size, but no motion. An example is pressure; the pressure of a gas has a certain value of so many pounds per square inch, and we can measure it, but the notion of pressure does not involve the notion of movement of the gas through space. Therefore pressure is a scalar quantity, and it's a gross, external quantity since it's a scalar. Note, however, the dramatic difference here between the physics of the situation and mathematics of the situation. In mathematics, when you say something is a scalar, you're just speaking of a number, without having a direction attached to it. And mathematically, that's all there is to it; the number doesn't have an internal structure, it doesn't have internal motion, etc. It just has magnitude - and, of course, location, which may be attachment to an object.
  * http://www.cheniere.org/misc/interview1991.htm#Scalar%20Detector
  */
-abstract public class Signal extends TaskConcept implements GameLoop, PermanentConcept {
+public abstract class Signal extends TaskConcept implements GameLoop, PermanentConcept {
 
 
     /**

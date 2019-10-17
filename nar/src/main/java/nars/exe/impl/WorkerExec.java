@@ -80,7 +80,8 @@ public class WorkerExec extends ThreadedExec {
 		private final MpmcArrayQueue in;
 		private transient DeriverExecutor deriver;
 		private transient long nextUpdate;
-		@Deprecated transient private int concurrency;
+		@Deprecated
+		private transient int concurrency;
 
 		WorkPlayLoop(NAR nar) {
 			this.nar = nar;

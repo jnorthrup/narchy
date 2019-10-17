@@ -20,9 +20,9 @@ import static jcog.math.LongInterval.ETERNAL;
 
 public class SignalView extends Gridding {
 
-    final static int SELECT_BUTTON = 0;
-    final static int PAN_BUTTON = 2;
-    final static float PAN_SPEED = 1 / 100f;
+    static final int SELECT_BUTTON = 0;
+    static final int PAN_BUTTON = 2;
+    static final float PAN_SPEED = 1 / 100f;
 
     //    public final FloatRange gain = new FloatRange(1, 0, 100);
     static final float selectorAlpha = 0.5f;
@@ -55,7 +55,7 @@ public class SignalView extends Gridding {
                 }
             };
 
-            volatile private long selectStart = ETERNAL, selectEnd = ETERNAL;
+            private volatile long selectStart = ETERNAL, selectEnd = ETERNAL;
 
 
 

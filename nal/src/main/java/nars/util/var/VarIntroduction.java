@@ -37,12 +37,12 @@ abstract class VarIntroduction {
     }
 
     /** determine the choice of subterms which can be replaced with a variable */
-    @Nullable protected abstract Term[] select(Subterms input);
+    protected abstract @Nullable Term[] select(Subterms input);
 
     protected abstract Term choose(Term[] x, Random rng);
 
     /**
      * provides the next terms that will be substituted in separate permutations; return null to prevent introduction
      */
-    @Nullable abstract protected Term introduce(Term input, Term selection);
+    protected abstract @Nullable Term introduce(Term input, Term selection);
 }

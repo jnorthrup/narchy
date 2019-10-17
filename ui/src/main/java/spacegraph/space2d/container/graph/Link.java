@@ -4,7 +4,7 @@ import jcog.event.Off;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.port.Wire;
 
-abstract public class Link {
+public abstract class Link {
 
     public final Wire id;
 

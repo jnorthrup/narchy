@@ -35,7 +35,7 @@ import java.util.function.Supplier;
  * remote control interface thru JMX RPC or something
  */
 public class Optilive<S,E>  {
-    static final private Logger logger = LoggerFactory.getLogger(Optilive.class);
+    private static final Logger logger = LoggerFactory.getLogger(Optilive.class);
 
     private File outDir;
 
@@ -146,7 +146,7 @@ public class Optilive<S,E>  {
             }
         };
 
-        abstract public <S,E> void run(Optilive<S,E> o);
+        public abstract <S,E> void run(Optilive<S,E> o);
     }
 
     private void decide() {

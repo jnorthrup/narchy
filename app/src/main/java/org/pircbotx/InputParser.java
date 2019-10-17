@@ -855,7 +855,7 @@ public class InputParser implements Closeable {
 		channelListBuilder = null;
 	}
 
-	protected static abstract class OpChannelModeHandler extends ChannelModeHandler {
+	protected abstract static class OpChannelModeHandler extends ChannelModeHandler {
 		protected final UserLevel level;
 
 		public OpChannelModeHandler(char mode, UserLevel level) {

@@ -11,22 +11,22 @@ public abstract class GraphEditPhysics {
 
     protected GraphEdit2D graph = null;
 
-    transient public Surface below = new EmptySurface();
-    transient public Surface above = new EmptySurface();
+    public transient Surface below = new EmptySurface();
+    public transient Surface above = new EmptySurface();
 
 
-    abstract public Object add(Surface w);
+    public abstract Object add(Surface w);
 
-    abstract public void remove(Surface w);
+    public abstract void remove(Surface w);
 
     public final void start(GraphEdit2D parent) {
         starting(this.graph = parent);
     }
 
     /** may construct surfaceBelow and surfaceAbove in implementations */
-    abstract protected void starting(GraphEdit2D graph);
+    protected abstract void starting(GraphEdit2D graph);
 
-    abstract public void stop();
+    public abstract void stop();
 
     public abstract Link link(Wire w);
 

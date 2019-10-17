@@ -41,40 +41,33 @@ import java.util.function.Supplier;
 public enum Mocker {
     ;
 
-    @NotNull
-    public static <T> T logging(@NotNull Class<T> tClass, String description, @NotNull PrintStream out) {
+    public static @NotNull <T> T logging(@NotNull Class<T> tClass, String description, @NotNull PrintStream out) {
         return intercepting(tClass, description, out::println);
     }
 
-    @NotNull
-    public static <T> T logging(@NotNull Class<T> tClass, String description, @NotNull PrintWriter out) {
+    public static @NotNull <T> T logging(@NotNull Class<T> tClass, String description, @NotNull PrintWriter out) {
         return intercepting(tClass, description, out::println);
     }
 
-    @NotNull
-    public static <T> T logging(@NotNull Class<T> tClass, String description, @NotNull StringWriter out) {
+    public static @NotNull <T> T logging(@NotNull Class<T> tClass, String description, @NotNull StringWriter out) {
         return logging(tClass, description, new PrintWriter(out));
     }
 
-    @NotNull
-    public static <T> T queuing(@NotNull Class<T> tClass, String description, @NotNull BlockingQueue<String> queue) {
+    public static @NotNull <T> T queuing(@NotNull Class<T> tClass, String description, @NotNull BlockingQueue<String> queue) {
         return intercepting(tClass, description, queue::add);
     }
 
-    @NotNull
-    public static <T> T intercepting(@NotNull Class<T> tClass, String description, @NotNull Consumer<String> consumer) {
+    public static @NotNull <T> T intercepting(@NotNull Class<T> tClass, String description, @NotNull Consumer<String> consumer) {
         return intercepting(tClass, description, consumer, null);
     }
 
-    @NotNull
-    public static <T> T intercepting(@NotNull Class<T> tClass, @NotNull final String description, @NotNull Consumer<String> consumer, T t) {
+    public static @NotNull <T> T intercepting(@NotNull Class<T> tClass, final @NotNull String description, @NotNull Consumer<String> consumer, T t) {
         return intercepting(tClass,
                 (name, args) -> consumer.accept(description + name + (args == null ? "()" : Arrays.toString(args))),
                 t);
     }
 
-    @NotNull
-    public static <T> T intercepting(@NotNull Class<T> tClass, @NotNull BiConsumer<String, Object[]> consumer, T t) {
+    public static @NotNull <T> T intercepting(@NotNull Class<T> tClass, @NotNull BiConsumer<String, Object[]> consumer, T t) {
         
         return (T) Proxy.newProxyInstance(tClass.getClassLoader(), new Class[]{tClass}, new AbstractInvocationHandler(ConcurrentHashMap::new) {
             @Override
@@ -87,8 +80,7 @@ public enum Mocker {
         });
     }
 
-    @NotNull
-    public static <T> T ignored(@NotNull Class<T> tClass) {
+    public static @NotNull <T> T ignored(@NotNull Class<T> tClass) {
         
         return (T) Proxy.newProxyInstance(tClass.getClassLoader(), new Class[]{tClass}, new AbstractInvocationHandler(ConcurrentHashMap::new) {
             @Override
@@ -98,7 +90,7 @@ public enum Mocker {
         });
     }
 
-    static public abstract class AbstractInvocationHandler implements InvocationHandler {
+    public abstract static class AbstractInvocationHandler implements InvocationHandler {
         
         private static final ClassLocal<MethodHandles.Lookup> PRIVATE_LOOKUP = ClassLocal.withInitial(AbstractInvocationHandler::acquireLookup);
         private static final Object[] NO_ARGS = {};

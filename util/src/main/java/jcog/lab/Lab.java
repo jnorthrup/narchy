@@ -43,7 +43,7 @@ import static java.util.stream.Collectors.toList;
  */
 public class Lab<X> {
 
-    private final static Logger logger = LoggerFactory.getLogger(Lab.class);
+    private static final Logger logger = LoggerFactory.getLogger(Lab.class);
     private static final int DEFAULT_DEPTH = 7;
     final Supplier<X> subject;
     final Map<String, Sensor<X, ?>> sensors = new ConcurrentHashMap<>();

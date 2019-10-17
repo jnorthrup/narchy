@@ -261,7 +261,7 @@ public enum Op {
     public static final char STAMP_SEPARATOR = ';';
     public static final char STAMP_STARTER = ':';
 
-    public final static char VarAutoSym = '_';
+    public static final char VarAutoSym = '_';
     /**
      * anonymous depvar
      */
@@ -504,8 +504,7 @@ public enum Op {
         return bits;
     }
 
-    @Nullable
-    public static Op the(String s) {
+    public static @Nullable Op the(String s) {
         return stringToOperator.get(s);
     }
 

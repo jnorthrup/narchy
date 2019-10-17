@@ -39,7 +39,7 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
 
     float[] coords = null;
 
-    abstract protected void reallocate(X[] x);
+    protected abstract void reallocate(X[] x);
 
     /** prepares the next row for rewrite TODO make unsynchronized */
     public synchronized void next(Consumer<X> setter) {

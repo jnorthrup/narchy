@@ -31,7 +31,7 @@ public abstract class AbstractMutableContainer<S extends Surface> extends Contai
         add(s);
     }
 
-    abstract public void add(Surface... s);
+    public abstract void add(Surface... s);
 
 
     protected abstract AbstractMutableContainer<S> clear();

@@ -10,7 +10,7 @@ import static java.lang.Math.sqrt;
 public class SPTree {
 
 	  
-    private final static int QT_NODE_CAPACITY = 1;
+    private static final int QT_NODE_CAPACITY = 1;
         
 	private SPTree parent;
 	int dimension;

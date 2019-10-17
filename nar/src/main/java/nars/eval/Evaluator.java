@@ -47,12 +47,11 @@ public class Evaluator extends HeapTermTransform {
         return !x.hasAny(Op.FuncBits) ? null : clauseFind(x);
     }
 
-    @Nullable final ArrayHashSet<Term> clauseFind(Compound x) {
+    final @Nullable ArrayHashSet<Term> clauseFind(Compound x) {
         return clauseFind(x, new ArrayHashSet<>(0));
     }
 
-    @Nullable
-    public ArrayHashSet<Term> clauseFind(Compound x, ArrayHashSet<Term> clauses) {
+    public @Nullable ArrayHashSet<Term> clauseFind(Compound x, ArrayHashSet<Term> clauses) {
         x.recurseTerms(s -> s instanceof Compound && s.hasAll(Op.FuncBits), X -> {
             if (Functor.isFunc(X)) {
 //                if (clauses.contains(X))

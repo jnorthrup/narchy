@@ -15,7 +15,7 @@ import static nars.term.atom.Bool.*;
  */
 public class Cmp extends SimpleBinaryFunctor {
 
-    public final static Functor cmp = new Cmp();
+    public static final Functor cmp = new Cmp();
 
     static final Int Zero = Int.the(0);
 

@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import static jcog.Util.sleepMS;
 
-abstract public class AbstractTimedCallable<X> extends AbstractTimedFuture<X> {
+public abstract class AbstractTimedCallable<X> extends AbstractTimedFuture<X> {
     static final int DEFAULT_TIMEOUT_POLL_PERIOD_MS = 2;
 
     private final Callable<X> callable;

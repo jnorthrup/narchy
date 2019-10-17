@@ -196,7 +196,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     }
 
 
-    public final static class Builder<X extends RectLongND> implements Function<X, HyperRegion> {
+    public static final class Builder<X extends RectLongND> implements Function<X, HyperRegion> {
 
         @Override
         public X apply(final X rect2D) {

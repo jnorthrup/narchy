@@ -73,7 +73,7 @@ public class OsmSurface extends PaintSurface {
     };
     private final List<OsmElement> hilight = new FasterList(128);
     @Deprecated
-    transient protected Osm o = null;
+    protected transient Osm o = null;
     float[] touch = new float[3];
 
     public OsmSurface(IRL i) {

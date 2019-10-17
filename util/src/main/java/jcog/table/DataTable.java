@@ -246,8 +246,7 @@ public class DataTable extends Table implements Externalizable {
 //        System.out.println(s.substring(/*'['*/ 1, s.length()-1 /*']'*/));
     }
 
-    @Nullable
-    public Row maxBy(int column) {
+    public @Nullable Row maxBy(int column) {
         final double[] bestScore = {Double.NEGATIVE_INFINITY};
         final Row[] best = {null};
         doWithRows(e -> {

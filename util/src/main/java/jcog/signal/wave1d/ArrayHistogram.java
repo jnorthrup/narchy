@@ -18,7 +18,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
     private volatile float lo, hi;
     private volatile int mass = AtomicFloatFieldUpdater.iZero;
 
-    private final static AtomicFloatFieldUpdater<ArrayHistogram> MASS =
+    private static final AtomicFloatFieldUpdater<ArrayHistogram> MASS =
             new AtomicFloatFieldUpdater(ArrayHistogram.class, "mass");
 
 

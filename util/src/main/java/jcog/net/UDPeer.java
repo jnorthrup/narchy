@@ -60,11 +60,11 @@ public class UDPeer extends UDP {
      * active routing table capacity
      * TODO make this IntParam mutable
      */
-    private final static int PEERS_CAPACITY = 64;
+    private static final int PEERS_CAPACITY = 64;
     /**
      * message memory
      */
-    private final static int SEEN_CAPACITY = 32 * 1024;
+    private static final int SEEN_CAPACITY = 32 * 1024;
     private static final int UNKNOWN_ID = Integer.MIN_VALUE;
 
 
@@ -493,8 +493,7 @@ public class UDPeer extends UDP {
     }
 
 
-    @Nullable
-    private UDProfile onPong(InetSocketAddress p, Msg m, @Nullable UDProfile connected, long now) {
+    private @Nullable UDProfile onPong(InetSocketAddress p, Msg m, @Nullable UDProfile connected, long now) {
 
         long sent = m.dataLong(0);
         long latencyMS = now - sent;
@@ -579,8 +578,7 @@ public class UDPeer extends UDP {
             this.id = (byte) id;
         }
 
-        @Nullable
-        public static Command get(byte cmdByte) {
+        public static @Nullable Command get(byte cmdByte) {
             switch (cmdByte) {
                 case 'P':
                     return PING;
@@ -615,8 +613,7 @@ public class UDPeer extends UDP {
      */
     public static class MsgReceived extends Msg {
 
-        @Nullable
-        public final UDProfile from;
+        public final @Nullable UDProfile from;
 
         MsgReceived(Msg m, @Nullable UDProfile from) {
             super(m.arrayCompactDirect());
@@ -626,15 +623,15 @@ public class UDPeer extends UDP {
 
     public static class Msg extends DynBytes implements UnitPrioritizable {
 
-        final static int TTL_BYTE = 0;
-        final static int CMD_BYTE = 1;
-        final static int ID_BYTE = 2;
-        final static int PORT_BYTE = 6;
-        final static int ORIGIN_BYTE = 8;
-        final static int DATA_START_BYTE = 24;
+        static final int TTL_BYTE = 0;
+        static final int CMD_BYTE = 1;
+        static final int ID_BYTE = 2;
+        static final int PORT_BYTE = 6;
+        static final int ORIGIN_BYTE = 8;
+        static final int DATA_START_BYTE = 24;
 
-        final static int HEADER_SIZE = DATA_START_BYTE;
-        final static int ADDRESS_BYTES = 16 /* ipv6 */ + 2 /* port */;
+        static final int HEADER_SIZE = DATA_START_BYTE;
+        static final int ADDRESS_BYTES = 16 /* ipv6 */ + 2 /* port */;
 
         final int hash;
         private float pri;
@@ -824,8 +821,7 @@ public class UDPeer extends UDP {
         }
 
 
-        @Nullable
-        public InetSocketAddress origin() {
+        public @Nullable InetSocketAddress origin() {
             int port = this.port();
             InetAddress aa = null;
             try {

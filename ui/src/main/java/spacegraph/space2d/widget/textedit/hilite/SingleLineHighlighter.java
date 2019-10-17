@@ -102,7 +102,7 @@ public class SingleLineHighlighter {
 //    }
 
 
-    public static abstract class SyntaxRule {
+    public abstract static class SyntaxRule {
         abstract LineView apply(LineView line);
     }
 

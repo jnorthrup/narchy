@@ -30,7 +30,7 @@ import static nars.$.$$;
  */
 public class RDP extends Game {
 
-    private final static org.slf4j.Logger logger = LoggerFactory.getLogger(RDP.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(RDP.class);
 
     public RDP(NAR n, String host, int port) throws RdesktopException {
         super($$("rdp(\"" + host + "\", " + port + ')'), GameTime.durs(1));

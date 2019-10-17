@@ -33,8 +33,7 @@ public interface Termutator {
     /** @return null to terminate the entire chain (CUT);
      * this instance for no change
      * or a reduced version (or NullTermutator for NOP) */
-    @Nullable
-    default Termutator preprocess(Unify u) {
+    default @Nullable Termutator preprocess(Unify u) {
         return this;
     }
 

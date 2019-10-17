@@ -60,8 +60,7 @@ public class AutoBuilder<X, Y> {
         return build(root, null, null, root, 0);
     }
 
-    @Nullable
-    protected <C> Y build(C root, @Nullable Y parentRepr, Object relation, @Nullable X obj, int depth) {
+    protected @Nullable <C> Y build(C root, @Nullable Y parentRepr, Object relation, @Nullable X obj, int depth) {
         if (!add(obj))
             return null; //cycle
 
@@ -251,7 +250,7 @@ public class AutoBuilder<X, Y> {
         Y build(Object context, List<Pair<X, Iterable<Y>>> features, X obj);
     }
 
-    abstract public static class Way<X> implements Supplier<X> {
+    public abstract static class Way<X> implements Supplier<X> {
         public String name;
     }
 

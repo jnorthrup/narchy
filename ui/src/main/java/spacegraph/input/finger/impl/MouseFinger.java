@@ -6,7 +6,7 @@ import spacegraph.space2d.Surface;
 
 import java.util.function.Function;
 
-abstract public class MouseFinger extends Finger {
+public abstract class MouseFinger extends Finger {
 
     protected MouseFinger(int buttons) {
         super(buttons);
@@ -54,6 +54,6 @@ abstract public class MouseFinger extends Finger {
 
 
 //    final static Logger logger = LoggerFactory.getLogger(MouseFinger.class);
-    final static int MAX_BUTTONS = 5;
+static final int MAX_BUTTONS = 5;
 
 }

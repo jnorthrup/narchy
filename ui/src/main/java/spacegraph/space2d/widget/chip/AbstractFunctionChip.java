@@ -6,7 +6,7 @@ import spacegraph.space2d.widget.text.LabeledPane;
 
 import java.util.function.Function;
 
-abstract public class AbstractFunctionChip<X,Y> extends Gridding {
+public abstract class AbstractFunctionChip<X,Y> extends Gridding {
     protected final TypedPort<X> in;
     protected final TypedPort<Y> out;
 
@@ -25,6 +25,6 @@ abstract public class AbstractFunctionChip<X,Y> extends Gridding {
         set(LabeledPane.awesome(out, "angle-right"), LabeledPane.awesome(in, "question-circle"));
     }
 
-    abstract protected Function<X, Y> f();
+    protected abstract Function<X, Y> f();
 
 }

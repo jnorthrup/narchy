@@ -109,7 +109,7 @@ public class TermList extends FasterList<Term> implements Subterms {
 //    }
 
     /** finalization step on constructing a Subterm */
-    @Nullable public Subterms commit(Subterms src) {
+    public @Nullable Subterms commit(Subterms src) {
         int ys = size;
 
 

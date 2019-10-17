@@ -38,13 +38,13 @@ public abstract class HowBuilder {
 	}
 
 
-	protected final static PremiseTermAccessor TaskTerm = new PremiseTermAccessor(0, DerivationFunctors.TaskTerm) {
+	protected static final PremiseTermAccessor TaskTerm = new PremiseTermAccessor(0, DerivationFunctors.TaskTerm) {
 		@Override
 		public Term apply(PreDerivation d) {
 			return d.taskTerm;
 		}
 	};
-	protected final static PremiseTermAccessor BeliefTerm = new PremiseTermAccessor(1, DerivationFunctors.BeliefTerm) {
+	protected static final PremiseTermAccessor BeliefTerm = new PremiseTermAccessor(1, DerivationFunctors.BeliefTerm) {
 
 		@Override
 		public Term apply(PreDerivation d) {

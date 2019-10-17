@@ -10,7 +10,7 @@ import jcog.pri.op.PriReturn;
 /**
  * Created by me on 2/17/17.
  */
-abstract public class PriHijackBag<K,V extends UnitPrioritizable> extends HijackBag<K, V> {
+public abstract class PriHijackBag<K,V extends UnitPrioritizable> extends HijackBag<K, V> {
 
 
     protected PriHijackBag(PriMerge merge, int cap, int reprobes) {

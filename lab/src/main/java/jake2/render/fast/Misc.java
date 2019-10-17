@@ -115,7 +115,7 @@ public final class Misc extends Mesh {
 
 
 
-	private final static int TGA_HEADER_SIZE = 18;
+	private static final int TGA_HEADER_SIZE = 18;
 	
 	/**
 	 * GL_ScreenShot_f

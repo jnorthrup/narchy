@@ -55,7 +55,7 @@ public class AWTCamera {
         return get(component, image, null);
     }
 
-    private final static Map<Component,Pair<AtomicBoolean,Graphics2D>> graphicsDrawers = new WeakHashMap<>();
+    private static final Map<Component,Pair<AtomicBoolean,Graphics2D>> graphicsDrawers = new WeakHashMap<>();
 
     /*
      *  Create a BufferedImage for Swing components.

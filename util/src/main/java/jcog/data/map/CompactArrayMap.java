@@ -20,7 +20,7 @@ import java.util.function.Function;
  * */
 public class CompactArrayMap<K, V> {
 
-    private final static AtomicReferenceFieldUpdater<CompactArrayMap, Object[]> ITEMS = AtomicReferenceFieldUpdater.newUpdater(CompactArrayMap.class, Object[].class, "items");
+    private static final AtomicReferenceFieldUpdater<CompactArrayMap, Object[]> ITEMS = AtomicReferenceFieldUpdater.newUpdater(CompactArrayMap.class, Object[].class, "items");
     private static final VarHandle AA = MethodHandles.arrayElementVarHandle(Object[].class);
 
     volatile Object[] items = null;

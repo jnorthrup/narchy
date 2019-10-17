@@ -22,9 +22,8 @@ public abstract class BinaryBidiFunctor extends Functor implements The {
         super(atom);
     }
 
-    @Nullable
     @Override
-    public final Term apply(Evaluation e, Subterms terms) {
+    public final @Nullable Term apply(Evaluation e, Subterms terms) {
         int s = terms.subs();
         switch (s) {
             case 2:

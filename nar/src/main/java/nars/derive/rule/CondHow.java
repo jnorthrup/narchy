@@ -60,7 +60,8 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 	public final MutableSet<UnifyConstraint<Derivation.PremiseUnify>> constraints = new UnifiedSet<>();
 
 
-	@Deprecated transient protected boolean forceDouble = false;
+	@Deprecated
+	protected transient boolean forceDouble = false;
 
 	public void taskPattern(String x)  {
 		try {

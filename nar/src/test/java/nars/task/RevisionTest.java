@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class RevisionTest {
 
-    public final static Term x = $.the("x");
+    public static final Term x = $.the("x");
     private final NAR n = NARS.shell();
 
     private static TaskBuilder t(float freq, float conf, long occ) throws Narsese.NarseseException {

@@ -17,7 +17,7 @@ import static java.lang.System.arraycopy;
 public class EmbeddedNAgent extends Agent {
 
     /** increase for more power */
-    final static int DUR_CYCLES = 1;
+    static final int DUR_CYCLES = 1;
 
     private final Game env;
     final float[] senseValue;

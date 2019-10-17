@@ -109,10 +109,10 @@ public final class MathUtils {
     private static final float SHIFT23 = 1 << 23;
 
     private static final float INV_SHIFT23 = 1.0f / SHIFT23;
-    private final static double SIN_A = -4d / (PI * PI);
+    private static final double SIN_A = -4d / (PI * PI);
 
-    private final static double SIN_B = 4d / PI;
-    private final static double SIN_P = 9d / 40;
+    private static final double SIN_B = 4d / PI;
+    private static final double SIN_P = 9d / 40;
     /**
      * Default random number generator used by random methods of this class
      * which don't use a passed in {@link Random} instance.

@@ -195,7 +195,7 @@ public enum NALTruth implements TruthFunction {
 
     Conversion() {
         @Override
-        public Truth apply(@Nullable final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(final @Nullable Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions.conversion(B, minConf);
         }
     },
@@ -408,7 +408,7 @@ public enum NALTruth implements TruthFunction {
 
     BeliefStructuralAbduction() {
         @Override
-        public Truth apply(@Nullable final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(final @Nullable Truth T, final Truth B, float minConf, NAL n) {
             return Abduction.apply($.tt(1f, confDefault(n)), B, minConf, n);
         }
     },
@@ -458,7 +458,7 @@ public enum NALTruth implements TruthFunction {
 
     ;
 
-    public final static TruthModel the = new TruthModel(NALTruth.values());
+    public static final TruthModel the = new TruthModel(NALTruth.values());
 
 
 

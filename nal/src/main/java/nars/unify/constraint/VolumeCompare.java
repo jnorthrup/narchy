@@ -11,7 +11,7 @@ import nars.unify.Unify;
 public final class VolumeCompare extends RelationConstraint {
 
     static final Term[] ONLY_IF_CONSTANT = new Term[] { Atomic.atom("onlyIfConstants") };
-    final static Atom VOLUME_COMPARE = Atomic.atom(VolumeCompare.class.getSimpleName());
+    static final Atom VOLUME_COMPARE = Atomic.atom(VolumeCompare.class.getSimpleName());
 
     private final boolean onlyIfConstant;
     private final int validComparison;

@@ -116,9 +116,8 @@ public enum MapSubst { ;
          *
          * @param t
          */
-        @Nullable
         @Override
-        public Term xy(Term t) {
+        public @Nullable Term xy(Term t) {
             if (t.equals(ax))
                 return ay;
             if (t.equals(bx))
@@ -141,9 +140,8 @@ public enum MapSubst { ;
          *
          * @param t
          */
-        @Nullable
         @Override
-        public Term xy(Term t) {
+        public @Nullable Term xy(Term t) {
             return xy.get(t);
         }
 
@@ -181,7 +179,7 @@ public enum MapSubst { ;
 //        return this;
     }
 
-    final static class SubstCompound implements RecursiveTermTransform {
+    static final class SubstCompound implements RecursiveTermTransform {
 
         private final Compound from;
         private final Term to;
@@ -212,7 +210,7 @@ public enum MapSubst { ;
 
     }
 
-    final static class SubstAtomic implements RecursiveTermTransform {
+    static final class SubstAtomic implements RecursiveTermTransform {
 
         private final Atomic from;
         private final Term to;

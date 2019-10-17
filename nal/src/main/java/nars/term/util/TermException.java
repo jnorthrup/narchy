@@ -43,8 +43,7 @@ public final class TermException extends SoftException {
         this.args = args;
     }
 
-    @Nullable
-    public Op op() { return (op!=-1 ? Op.the(op) : null); }
+    public @Nullable Op op() { return (op!=-1 ? Op.the(op) : null); }
 
     @Override
     public String getMessage() {

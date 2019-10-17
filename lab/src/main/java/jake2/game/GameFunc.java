@@ -544,29 +544,29 @@ public class GameFunc {
      * 
      */
 
-    public final static int PLAT_LOW_TRIGGER = 1;
+    public static final int PLAT_LOW_TRIGGER = 1;
 
-    public final static int STATE_TOP = 0;
+    public static final int STATE_TOP = 0;
 
-    public final static int STATE_BOTTOM = 1;
+    public static final int STATE_BOTTOM = 1;
 
-    public final static int STATE_UP = 2;
+    public static final int STATE_UP = 2;
 
-    public final static int STATE_DOWN = 3;
+    public static final int STATE_DOWN = 3;
 
-    public final static int DOOR_START_OPEN = 1;
+    public static final int DOOR_START_OPEN = 1;
 
-    public final static int DOOR_REVERSE = 2;
+    public static final int DOOR_REVERSE = 2;
 
-    public final static int DOOR_CRUSHER = 4;
+    public static final int DOOR_CRUSHER = 4;
 
-    public final static int DOOR_NOMONSTER = 8;
+    public static final int DOOR_NOMONSTER = 8;
 
-    public final static int DOOR_TOGGLE = 32;
+    public static final int DOOR_TOGGLE = 32;
 
-    public final static int DOOR_X_AXIS = 64;
+    public static final int DOOR_X_AXIS = 64;
 
-    public final static int DOOR_Y_AXIS = 128;
+    public static final int DOOR_Y_AXIS = 128;
 
     
     
@@ -1676,11 +1676,11 @@ public class GameFunc {
         }
     };
 
-    public final static int TRAIN_START_ON = 1;
+    public static final int TRAIN_START_ON = 1;
 
-    public final static int TRAIN_TOGGLE = 2;
+    public static final int TRAIN_TOGGLE = 2;
 
-    public final static int TRAIN_BLOCK_STOPS = 4;
+    public static final int TRAIN_BLOCK_STOPS = 4;
 
     /*
      * QUAKED func_train (0 .5 .8) ? START_ON TOGGLE BLOCK_STOPS Trains are
@@ -2066,11 +2066,11 @@ public class GameFunc {
      * means hold)
      */
 
-    public final static int SECRET_ALWAYS_SHOOT = 1;
+    public static final int SECRET_ALWAYS_SHOOT = 1;
 
-    public final static int SECRET_1ST_LEFT = 2;
+    public static final int SECRET_1ST_LEFT = 2;
 
-    public final static int SECRET_1ST_DOWN = 4;
+    public static final int SECRET_1ST_DOWN = 4;
 
     static final EntUseAdapter door_secret_use = new EntUseAdapter() {
         @Override

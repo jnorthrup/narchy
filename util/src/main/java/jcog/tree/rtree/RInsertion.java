@@ -59,8 +59,7 @@ public class RInsertion<X> {
     }
 
 
-    @Nullable
-    public X merge(X existing) {
+    public @Nullable X merge(X existing) {
         X z = model.merge(existing, x, this);
         if (z!=null)
             merged = true;

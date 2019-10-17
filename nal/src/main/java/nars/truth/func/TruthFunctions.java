@@ -71,7 +71,7 @@ public final class TruthFunctions {
      * @param reliance Confidence of the second (analytical) premise
      * @return AnalyticTruth value of the conclusion, because it is structural
      */
-    @Nullable private static Truth deductionR(Truth a, double reliance, float minConf) {
+    private static @Nullable Truth deductionR(Truth a, double reliance, float minConf) {
         float f = a.freq();
         float c = and(f, confCompose(a, reliance));
         return (c >= minConf) ? tt(f, c) : null;
@@ -83,7 +83,7 @@ public final class TruthFunctions {
      * {<M --> P>, <S --> M>} |- <S --> P>
      * {<S --> M>, <M --> P>} |- <P --> S>
      */
-    @Nullable public static Truth deduction(Truth x, Truth y, boolean strong, float minConf) {
+    public static @Nullable Truth deduction(Truth x, Truth y, boolean strong, float minConf) {
         float cxy = confCompose(x, y);
         if (cxy < minConf)
             return null;
@@ -102,8 +102,7 @@ public final class TruthFunctions {
      *
      * stronger than deduction such that A's frequency does not reduce the output confidence
      */
-    @Nullable
-    public static Truth analogy(Truth a, float bf, double bc, float minConf) {
+    public static @Nullable Truth analogy(Truth a, float bf, double bc, float minConf) {
         float c = and(confCompose(a, bc), bf);
         return c >= minConf ? tt(and(a.freq(), bf), c) : null;
     }
@@ -149,8 +148,7 @@ public final class TruthFunctions {
     }
 
 
-    @Nullable
-    public static Truth comparison(Truth a, Truth b, float minConf) {
+    public static @Nullable Truth comparison(Truth a, Truth b, float minConf) {
         float f1 = a.freq();
         float f2 = b.freq();
 //        if (f1 < 0.5f) {
@@ -247,8 +245,7 @@ public final class TruthFunctions {
      * https://en.wikipedia.org/wiki/Fuzzy_set#Fuzzy_set_operations
      * https://en.wikipedia.org/wiki/T-norm
      */
-    @Nullable
-    public static Truth intersection(Truth x, Truth y, float minConf) {
+    public static @Nullable Truth intersection(Truth x, Truth y, float minConf) {
 
 
         //not commutive:
@@ -258,8 +255,7 @@ public final class TruthFunctions {
 
         return intersection(x, false, y, false, minConf);
     }
-    @Nullable
-    public static Truth intersection(Truth x, boolean negX, Truth y, boolean negY, float minConf) {
+    public static @Nullable Truth intersection(Truth x, boolean negX, Truth y, boolean negY, float minConf) {
         float c = confCompose(x, y);
         return (c < minConf) ? null : $.tt(and(negIf(x.freq(),negX), negIf(y.freq(),negY)), c);
     }
@@ -274,8 +270,8 @@ public final class TruthFunctions {
      * alternate names: "interdeduction" "deductersection"
      * return neg(deduct(intersect(neg(v1), v2), 1f));
      */
-    @Nullable
-    @Deprecated static Truth reduceConjunction(Truth a, Truth b, float minConf) {
+    @Deprecated
+    static @Nullable Truth reduceConjunction(Truth a, Truth b, float minConf) {
         Truth i12 = intersection(a, true, b, false, minConf);
         if (i12 == null) return null;
 

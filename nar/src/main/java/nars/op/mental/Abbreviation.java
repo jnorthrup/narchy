@@ -32,7 +32,7 @@ public enum Abbreviation { ;
 
 
 
-    @Nullable public static Atomic abbreviateTerm(Compound x) {
+    public static @Nullable Atomic abbreviateTerm(Compound x) {
 
         if (x.hasVars())
             return null; //refuse, can cause problems
@@ -57,7 +57,7 @@ public enum Abbreviation { ;
         //return Atomic.atom(String.valueOf((char)ABBREVIATION_PREFIX) + x); //TODO use compressed byte[] serialization
     }
 
-    @Nullable public static Term unabbreviateTerm(Term x) {
+    public static @Nullable Term unabbreviateTerm(Term x) {
         if (x instanceof AtomBytes) {
             return IO.bytesToTerm( ((AtomBytes)x).bytes(), 3 /* op and 2 length bytes */ );
         }
@@ -117,7 +117,7 @@ public enum Abbreviation { ;
         }
 
         @Override
-        @Nullable protected Term abbreviate(Compound x) {
+        protected @Nullable Term abbreviate(Compound x) {
             return abbreviateTerm(x);
         }
     }
@@ -175,7 +175,7 @@ public enum Abbreviation { ;
     /** unabbreviates abbreviated root terms (not recursively contained) */
     public static class UnabbreviateRecursive extends TaskTransformAction {
 
-        final static RecursiveTermTransform.NegObliviousTermTransform transform =new RecursiveTermTransform.NegObliviousTermTransform() {
+        static final RecursiveTermTransform.NegObliviousTermTransform transform =new RecursiveTermTransform.NegObliviousTermTransform() {
             @Override
             public Term applyAtomic(Atomic a) {
                 Term b = unabbreviateTerm(a);

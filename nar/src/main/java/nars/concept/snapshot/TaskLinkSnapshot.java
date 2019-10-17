@@ -48,8 +48,7 @@ public final class TaskLinkSnapshot {
 	}
 
 
-	@Nullable
-	public Term sample(Predicate<Term> filter, byte punc, Random rng) {
+	public @Nullable Term sample(Predicate<Term> filter, byte punc, Random rng) {
 		@Nullable Object[] ll = links.items();
 		int lls = Math.min(links.size(), ll.length);
 		if (lls == 0)
