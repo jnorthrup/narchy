@@ -513,7 +513,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
             return +1;
         } else if (b && !a) {
             return -1;
-        } else if (!b && !b) {
+        } else if (!b) {
             int vc = Integer.compare(t.volume(), this.volume());
             if (vc != 0)
                 return vc;

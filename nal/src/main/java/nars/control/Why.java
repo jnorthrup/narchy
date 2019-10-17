@@ -84,7 +84,7 @@ public enum Why { ;
 ////		}
 //	}
 
-	@Nullable public static <C extends Caused> Termed whyLazy(@Nullable C... c) {
+	@Nullable public static Termed whyLazy(@Nullable Caused... c) {
 		return whyLazy(c, NAL.causeCapacity.intValue());
 	}
 
@@ -97,7 +97,7 @@ public enum Why { ;
 		return new MyLazyTerm(c, capacity);
 	}
 
-	@Deprecated public static <C extends Caused> Term why(@Nullable C... c) {
+	@Deprecated public static Term why(@Nullable Caused... c) {
 		return why(c, NAL.causeCapacity.intValue());
 	}
 

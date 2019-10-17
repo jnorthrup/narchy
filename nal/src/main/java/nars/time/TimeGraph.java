@@ -971,10 +971,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 					each.test(nu instanceof Absolute ? nu : event(nu.id, start, start + range, false)));
 			} else {
 
-				if (validPotentialSolution(nextKnown)) {
-					if (!each.test(event(nextKnown, start, start + range, false)))
-						return false;
-				}
+				if (validPotentialSolution(nextKnown) && !each.test(event(nextKnown, start, start + range, false)))
+					return false;
 
 			}
 		}
@@ -1007,8 +1005,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		Collection<Event> AB = shuffleAndSort(ab);
 
-		return true
-			&& (AB.isEmpty() || bfsAdd(AB, new DTPairSolver(a, b, x, each, true, false, false)))
+		return (AB.isEmpty() || bfsAdd(AB, new DTPairSolver(a, b, x, each, true, false, false)))
 //            && bfsNew(AB, new DTPairSolver(a, b, x, each, false, true, false))
 //            && bfsNew(AB, new DTPairSolver(a, b, x, each, false, false, true))
 			;
@@ -1369,15 +1366,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	}
 
 	private static boolean tryRootMatch(Term x, Event z, boolean isRoot, Predicate<Event> each) {
-		if (z instanceof Absolute) {
-			if (!each.test(!isRoot ?
-				z //solution as-is
-				:
-				//put 'x' (with no xternals) where 'z' (has xternals) is
-				event(x, z.start(), z.end())))
-				return false;
-		}
-		return true;
+		return !(z instanceof Absolute) || each.test(!isRoot ?
+			z //solution as-is
+			:
+			//put 'x' (with no xternals) where 'z' (has xternals) is
+			event(x, z.start(), z.end()));
 	}
 
 

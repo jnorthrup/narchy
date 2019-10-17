@@ -135,13 +135,11 @@ abstract public class FastCompound implements SameSubtermsCompound /* The */ {
         FastCompound y;
 
 
-        {
-            Term[] a = new Term[atoms.size()];
-            for (ObjectBytePair<Term> p : atoms.keyValuesView()) {
-                a[p.getTwo()] = p.getOne();
-            }
-            y = new FastCompoundInstancedAtoms(a, shadow.toByteArray(), structure, hashCode, volume, normalized);
+        Term[] a = new Term[atoms.size()];
+        for (ObjectBytePair<Term> p : atoms.keyValuesView()) {
+            a[p.getTwo()] = p.getOne();
         }
+        y = new FastCompoundInstancedAtoms(a, shadow.toByteArray(), structure, hashCode, volume, normalized);
 
         return y;
     }
