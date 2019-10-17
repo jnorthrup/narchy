@@ -14,6 +14,7 @@ import nars.derive.cond.CommutativeConstantPreFilter;
 import nars.derive.cond.ConstraintAsPremisePredicate;
 import nars.derive.cond.SingleOrDoublePremise;
 import nars.derive.cond.TaskBeliefTermsEqual;
+import nars.derive.util.DerivationFunctors;
 import nars.derive.util.PremiseTermAccessor;
 import nars.derive.util.PuncMap;
 import nars.subterm.Subterms;
@@ -56,12 +57,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 	/**
 	 * conditions which can be tested before unification
 	 */
-
-	public final MutableSet<UnifyConstraint<Derivation.PremiseUnify>> constraints = new UnifiedSet<>();
-
-
-	@Deprecated
-	protected transient boolean forceDouble = false;
+	private final MutableSet<UnifyConstraint<Derivation.PremiseUnify>> constraints = new UnifiedSet<>();
 
 	public void taskPattern(String x)  {
 		try {
@@ -80,11 +76,11 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 	}
 
 	/** single premise, matching anything */
-	public final void single() {
-		single(TheTask);
+	public final void taskAndBeliefEqual() {
+		taskAndBeliefEqual(TheTask);
 	}
 
-	public final void single(Term taskPattern) {
+	public final void taskAndBeliefEqual(Term taskPattern) {
 		single(taskPattern, taskPattern);
 	}
 
@@ -95,11 +91,10 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 		taskPunc(true,true,true,true,false);
 		hasBelief(false);
-
 	}
 
 	/** match a command, ex: tasklink */
-	public void commands() {
+	public void taskCommand() {
 		taskPunc(false,false,false,false,true);
 	}
 
@@ -132,6 +127,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 	public void taskPunc(boolean belief, boolean goal, boolean question, boolean quest) {
 		taskPunc(belief, goal, question, quest, false);
 	}
+
 	public void taskPunc(byte... puncs) {
 		if (puncs==null || puncs.length == 0)
 			return; //no filtering
@@ -542,7 +538,11 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 	public void biggerIffConstant(Variable x, Variable y) {
 		//TODO dangerous, check before using
-		constraints.add(new VolumeCompare(x, y, true, +1));
+		constrain(new VolumeCompare(x, y, true, +1));
+	}
+
+	public void constrain(UnifyConstraint c) {
+		constraints.add(c);
 	}
 
 	public void match(boolean taskOrBelief, byte[] path, TermMatcher m) {
@@ -624,7 +624,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 	}
 
 	private static PremiseTermAccessor TaskOrBelief(boolean taskOrBelief) {
-		return taskOrBelief ? HowBuilder.TaskTerm : HowBuilder.BeliefTerm;
+		return taskOrBelief ? TaskTerm : BeliefTerm;
 	}
 
 	/** cost-sorted array of constraint enable procedures, bundled by common term via CompoundConstraint */
@@ -802,4 +802,18 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 
 	}
+	protected static final PremiseTermAccessor TaskTerm = new PremiseTermAccessor(0, DerivationFunctors.TaskTerm) {
+		@Override
+		public Term apply(PreDerivation d) {
+			return d.taskTerm;
+		}
+	};
+	protected static final PremiseTermAccessor BeliefTerm = new PremiseTermAccessor(1, DerivationFunctors.BeliefTerm) {
+
+		@Override
+		public Term apply(PreDerivation d) {
+			return d.beliefTerm;
+		}
+	};
+
 }

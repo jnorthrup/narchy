@@ -20,7 +20,7 @@ public class CompoundDecompose extends NativeHow {
 		super();
 
 		if (taskOrBelief)
-			single();  //only structural
+			taskAndBeliefEqual();  //only structural
 		else
 			hasBelief(true);
 

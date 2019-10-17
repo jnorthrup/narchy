@@ -2,17 +2,19 @@ package nars.derive.rule;
 
 import nars.derive.PreDerivation;
 import nars.derive.action.How;
-import nars.derive.util.DerivationFunctors;
-import nars.derive.util.PremiseTermAccessor;
 import nars.term.Term;
 import nars.term.control.PREDICATE;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class HowBuilder {
 
-	public final MutableSet<PREDICATE<PreDerivation>> pre = new UnifiedSet<>(8);
+	protected final MutableSet<PREDICATE<PreDerivation>> pre = new UnifiedSet<>(8);
 	public Term id;
+
+	/** cause tag for grouping rules under the same cause. if null, receives a unique cause */
+	@Nullable public String tag = null;
 
 	/** optional for debugging and other purposes */
 	public String source = super.toString();
@@ -23,6 +25,16 @@ public abstract class HowBuilder {
 	/** called for each instance of a rule.  avoid recomputing invariants here that could otherwise be computed in conditions() */
 	protected abstract How action(RuleCause cause);
 
+
+	public final String tag() {
+		return tag;
+	}
+
+	public final HowBuilder tag(@Nullable String tag) {
+		this.tag = tag;
+		return this;
+	}
+
 	@Override
 	public String toString() {
 		return id!=null ? id.toString() : source;
@@ -32,24 +44,8 @@ public abstract class HowBuilder {
 
 		final PREDICATE[] PRE = conditions();
 
-		return new PremiseRule(this.id, PRE, n ->
-			action(n.newCause(s -> new RuleCause(this, s)))
-		);
+		return new PremiseRule(this.id, this.tag, PRE, this::action);
 	}
 
-
-	protected static final PremiseTermAccessor TaskTerm = new PremiseTermAccessor(0, DerivationFunctors.TaskTerm) {
-		@Override
-		public Term apply(PreDerivation d) {
-			return d.taskTerm;
-		}
-	};
-	protected static final PremiseTermAccessor BeliefTerm = new PremiseTermAccessor(1, DerivationFunctors.BeliefTerm) {
-
-		@Override
-		public Term apply(PreDerivation d) {
-			return d.beliefTerm;
-		}
-	};
 
 }

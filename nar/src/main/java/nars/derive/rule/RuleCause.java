@@ -14,25 +14,25 @@ import nars.term.Termed;
  */
 public final class RuleCause extends Cause {
 
-	public final HowBuilder rule;
-	public final String ruleString;
+	public final Term rule;
+	public String ruleString;
 
-	public RuleCause(HowBuilder rule, short id) {
-		super(id, rule.id);
-		this.rule = rule;
-		this.ruleString = rule.source;
+	public RuleCause(Term name, short id) {
+		super(id, name);
+		this.rule = name;
+		//this.ruleString = rule.source;
 	}
 
-	@Override
-	public String toString() {
-		return ruleString;
-		//return term().toString();
-	}
-
+//	@Override
+//	public String toString() {
+//		return ruleString;
+//		//return term().toString();
+//	}
 
 	public final Term why(Caused d) {
 		return Why.why(why, d.why());
 	}
+
 	public final Termed why(Caused... c) {
 		return Why.why(ArrayUtil.add(c, this));
 	}

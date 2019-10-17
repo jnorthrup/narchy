@@ -50,7 +50,7 @@ public class Inperience extends TaskTransformAction {
 
     public Inperience() {
         super();
-        single(); //all but command
+        taskAndBeliefEqual(); //all but command
     }
 
     public static Term reifyQuestion(Term x, byte punc, Term self) {

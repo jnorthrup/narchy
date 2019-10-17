@@ -142,7 +142,7 @@ class PremiseRuleTest {
 
     @Test void MissingPatternVar() {
         assertThrows(Throwable.class,
-                ()-> PatternHow.parse("X,Y |- (X,Z), (Belief:Analogy)").get());
+                ()-> new PremiseRuleSet(NARS.shell(), "X,Y |- (X,Z), (Belief:Analogy)"));
     }
 
     @Test

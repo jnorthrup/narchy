@@ -89,7 +89,7 @@ public enum Abbreviation { ;
         public AbstractAbbreviate(int volMin, int volMax) {
             this.volMin = volMin;
 
-            single();
+            taskAndBeliefEqual();
 
             matchNot(TheTask, new TermMatcher.Has(Op.Variable, true));
 
@@ -156,7 +156,7 @@ public enum Abbreviation { ;
     public static class UnabbreviateRoot extends TaskTransformAction {
 
         public UnabbreviateRoot(/*String prefix,*/) {
-            single();
+            taskAndBeliefEqual();
             match(TheTask, new TermMatcher.Is(Op.ATOM));
             //TODO match prefix and/or other features inside the ATOM
         }
@@ -184,7 +184,7 @@ public enum Abbreviation { ;
         };
 
         public UnabbreviateRecursive(/*String prefix,*/) {
-            single();
+            taskAndBeliefEqual();
             match(TheTask, new TermMatcher.Has(Op.ATOM));
             //TODO match prefix and/or other features inside the ATOM
             //TODO more specific conditions

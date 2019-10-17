@@ -16,7 +16,7 @@ public abstract class TaskTransformAction extends TaskAction {
 	}
 
 	public TaskTransformAction(byte... puncs) {
-		single();
+		taskAndBeliefEqual();
 		taskPunc(puncs);
 	}
 

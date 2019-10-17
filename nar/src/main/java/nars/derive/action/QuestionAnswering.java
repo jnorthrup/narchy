@@ -14,7 +14,7 @@ public class QuestionAnswering extends NativeHow {
 	public static final QuestionAnswering the = new QuestionAnswering();
 
 	private QuestionAnswering() {
-		single();
+		taskAndBeliefEqual();
 		taskPunc(false, false, true, true);
 	}
 
