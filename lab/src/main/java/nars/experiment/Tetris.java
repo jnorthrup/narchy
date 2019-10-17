@@ -155,8 +155,13 @@ public class Tetris extends GameX {
                     return +1; //lower due to line
             }
         });
+
+
         Exe.runLater(() -> //HACK
-                lower.setDefault($.t(0.5f, n.confDefault(BELIEF) / 3))
+            {
+                lower.setDefault($.t(0.5f, n.confDefault(BELIEF) / 3));
+                //lower.addGuard(true,false);
+            }
         );
 
         actionPushButtonLR();

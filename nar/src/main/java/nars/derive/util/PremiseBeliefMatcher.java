@@ -32,6 +32,8 @@ public class PremiseBeliefMatcher extends UnifySubst {
 
 		this.output = null;
 
+		clear();
+
 		return unify(beliefTerm, beliefTerm, taskTerm) ? output : null;
 	}
 

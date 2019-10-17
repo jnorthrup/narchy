@@ -1,23 +1,25 @@
 
 
     //impl unify total transform (without decompose)
+implUnifyTotalTransform_PredMatch {
     B, (X ==> A), --is(B,"==>"), is(A,"&&") |-   unisubst((X==>A),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel), (Belief:DeductionDP, Time:TaskEvent)
      B, (X ==> A), --is(B,"==>"), is(A,"&&") |-   --unisubst((X==>A),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel), (Belief:DeductionDN, Time:TaskEvent)
+}
+implUnifyTotalTransform_SubjPosMatch {
     B, (A ==> X), --is(B,"==>"), is(A,"&&") |-   unisubst((A==>X),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel), (Belief:DeductionDP, Time:TaskEvent)
      B, (A ==> X), --is(B,"==>"), is(A,"&&") |-   --unisubst((A==>X),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel), (Belief:DeductionDN, Time:TaskEvent)
+}
+implUnifyTotalTransform_SubjNegMatch {
       B, (--A ==> X), --is(B,"==>"), is(A,"&&") |-   unisubst((--A==>X),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel), (Belief:DeductionDP, Time:TaskEvent)
        B, (--A ==> X), --is(B,"==>"), is(A,"&&") |-  --unisubst((--A==>X),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel), (Belief:DeductionDN, Time:TaskEvent)
+}
 
-
-
-
-
-       //second layer
-       //B, (A ==> X), is(A,"&&")       |-   conjWithoutUnify((polarizeBelief(X) && A),polarizeTask(B)), (Belief:DeductionDD, Time:TaskEvent)
-       B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,polarizeBelief(X),A..+), C, polarizeTask(B)), (Belief:DeductionDD, Time:TaskEvent)
-       B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,X,A..+),C,  polarizeTask(B)), (Belief:DeductionDP, Time:TaskEvent)
-        B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,--X,A..+),C,  polarizeTask(B)), (Belief:DeductionDN, Time:TaskEvent)
-
+impl_Second_Layer_Deduction {
+   //B, (A ==> X), is(A,"&&")       |-   conjWithoutUnify((polarizeBelief(X) && A),polarizeTask(B)), (Belief:DeductionDD, Time:TaskEvent)
+   B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,polarizeBelief(X),A..+), C, polarizeTask(B)), (Belief:DeductionDD, Time:TaskEvent)
+   B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,X,A..+),C,  polarizeTask(B)), (Belief:DeductionDP, Time:TaskEvent)
+   B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,--X,A..+),C,  polarizeTask(B)), (Belief:DeductionDN, Time:TaskEvent)
+}
 
 //            //--is(A,"#"),
 //       B, (  (&&,  C,A..+) ==> X)       |-   unisubst((&&,X,A..+),C,B), (Belief:Abduction)
@@ -74,6 +76,7 @@
     //If after S M happens, and after M then P happens, so S then P happens
 
 //DEDUCTION ----
+implDeduction {
     (S ==> M),   (M ==> P)    |-     (S ==> P),   (Belief:DeductionPP, Time:Compose)
       (M ==> P), (S ==> M)      |-   (S ==> P),   (Belief:DeductionPP, Time:Compose)
             (S ==> P), (M ==> P), task("?")   |- (S ==> M), (Punctuation:Question, Time:Compose)
@@ -89,8 +92,10 @@
 
     (S ==> M), (--M ==> P)    |-   --(S ==> P), (Belief:DeductionNN, Time:Compose)
       (--M ==> P), (S ==> M)    |-   (S ==> --P),   (Belief:DeductionNN, Time:Compose)
+}
 
 //EXEMPLIFICATION
+implExemplification {
     (  M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPP, Time:Compose)
       (P ==> M), (  M ==> S)     |- (  S ==> P), (Belief:ExemplificationPP, Time:Compose)
             (S ==> P), (M ==> S), task("?")   |- (P ==> M), (Punctuation:Question, Time:Compose)
@@ -106,21 +111,24 @@
 
     (--M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNN, Time:Compose)
       (P ==> M), (--M ==> S)     |- (--S ==> P), (Belief:ExemplificationNN, Time:Compose)
+}
 
 //INDUCTION/ABDUCTION
-
+implAbduction {
     (M ==> S), (M ==> P) |- (S ==> P), (Belief:Abduction, Time:Compose)
         (M ==> S), (M ==> P) |- (--S ==> --P), (Belief:AbductionNN, Time:Compose)
             (S ==> P), (M ==> P), task("?")   |- (M ==> S), (Punctuation:Question, Time:Compose)
             (S ==> P), (M ==> S), task("?")   |- (M ==> P), (Punctuation:Question, Time:Compose)
             (--S ==> P), (M ==> P), task("?")   |- (M ==> S), (Punctuation:Question, Time:Compose)
             (--S ==> P), (M ==> S), task("?")   |- (M ==> P), (Punctuation:Question, Time:Compose)
+}
 
+implInduction {
     (S ==> M), (P ==> M) |- (S ==> P), (Belief:Induction, Time:Compose)
         (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionNN, Time:Compose)
             (S ==> P), (P ==> M), task("?")   |- (S ==> M), (Punctuation:Question, Time:Compose)
             (S ==> P), (S ==> M), task("?")   |- (P ==> M), (Punctuation:Question, Time:Compose)
-
+}
 
 
 

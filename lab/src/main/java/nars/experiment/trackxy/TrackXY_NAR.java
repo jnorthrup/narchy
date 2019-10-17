@@ -54,7 +54,7 @@ public class TrackXY_NAR extends GameX {
 //    static float fps = 16;
 //    static int durMS = Math.round(1000/(fps));
 
-	static int dur = 16;
+	static int dur = 32;
 
 	static float camResolution = 0.1f;
 	static int experimentTime = 3000000;
@@ -101,8 +101,8 @@ public class TrackXY_NAR extends GameX {
 			this.cam = null;
 		}
 
-		actionPushButton();
-		//actionPushButtonMutex();
+		//actionPushButton();
+		actionPushButtonMutex();
 		//actionSwitch();
 		//actionTriState();
 
@@ -181,6 +181,8 @@ public class TrackXY_NAR extends GameX {
 	public static void main(String[] args) {
 		//n.runLater(() -> {
 
+		NAL.DEBUG = true;
+		//NAL.TRACE = true;
 
 		GraphEdit2D g = new GraphEdit2D();
 		g.resize(800, 800);
@@ -267,7 +269,7 @@ public class TrackXY_NAR extends GameX {
 //
 //            ), 400, 300);
 
-		final int W = 4, H = 4;
+		final int W = 4, H = 1;
 		//final int W = 3, H = 1;
 		//final int W = 3, H = 3;
 
@@ -331,7 +333,6 @@ public class TrackXY_NAR extends GameX {
 
 //        new Impiler(n);
 
-			NAL.DEBUG = true;
 			Term L = a.actions.get(0).term();
 			Term R = a.actions.get(1).term();
 //			a.what().eventTask.on(tt -> {
@@ -352,7 +353,7 @@ public class TrackXY_NAR extends GameX {
 
 
 							//if (n.concept(tt) instanceof ActionConcept)
-							long window = 2;
+							long window = 5;
 							float dur = n.dur();
 							long now = n.time();
 							if (tt.intersects(Math.round(now - window / 2 * dur), Math.round(now + window / 2 * dur))) {
@@ -366,6 +367,9 @@ public class TrackXY_NAR extends GameX {
 									String summary = ok ? "OK" : "WRONG";
 									System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
 									System.out.println(tt.proof());
+
+//									((TaskLinkWhat)a.what()).links.links.print();
+//									System.out.println();
 									//n.proofPrint(tt);
 								}
 

@@ -2,7 +2,6 @@ package nars.derive.cond;
 
 import nars.$;
 import nars.derive.PreDerivation;
-import nars.derive.action.PatternHow;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
@@ -11,6 +10,7 @@ import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.var.ellipsis.Ellipsislike;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -28,7 +28,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
      * from = non-ellipsis target to check if present as a subterm of what appears at to
      */
     public CommutativeConstantPreFilter(byte[] ellipsisPath, byte[] contentPath, boolean ellipsisInTaskOrBelief /* direction */) {
-        super($.func(id, PatternHow.pathTerm(ellipsisPath), PatternHow.pathTerm(contentPath), ellipsisInTaskOrBelief ? Task : Belief));
+        super($.func(id, pathTerm(ellipsisPath), pathTerm(contentPath), ellipsisInTaskOrBelief ? Task : Belief));
         this.ellipsisInTaskOrBelief = ellipsisInTaskOrBelief;
         this.ellipsisPath = ellipsisPath;
         this.contentPath = contentPath;
@@ -65,8 +65,12 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
         }
     }
 
+	public static Term pathTerm(@Nullable byte[] path) {
+		return path == null ? $.the(-1) /* null */ : $.p(path);
+	}
 
-    @Override
+
+	@Override
     public boolean test(PreDerivation d) {
 
         Term contentHolder = ellipsisInTaskOrBelief ? d.beliefTerm : d.taskTerm;

@@ -194,7 +194,7 @@ public abstract class MetaAgent extends Game {
 						x >= 0.5f ?
 							(float) Util.lerp(Math.pow((x - 0.5f) * 2, 1 /* 2 */), 0, +1) //positive (0.5..1)
 							:
-							Util.lerp((x) * 2, -0.01f, 0) //negative (0..0.5): weaker
+							Util.lerp((x) * 2, -0.02f, 0) //negative (0..0.5): weaker
 					);
                 });
 //                a.resolution(0.1f);

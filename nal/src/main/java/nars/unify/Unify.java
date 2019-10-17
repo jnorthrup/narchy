@@ -66,12 +66,8 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
 
     public Random random;
 
-    /**
-     * whether the variable unification allows to happen in reverse (a variable in Y can unify a constant in X)
-     */
-
-
-    public int dtTolerance = 0;
+    /** dtTolerance >= 1 */
+    public int dtTolerance = 1;
 
     public boolean commonVariables = true;
 

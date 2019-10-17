@@ -34,10 +34,12 @@
      (X<->Y), ((X)<->(Y)), task("?") |- polarizeBelief((X<->Y)), (Belief:BeliefStructuralReductionDD, Punctuation:Belief, Time:Belief)
 
 ////composition on both sides of a statement
+compositionOnBothSidesOfStatement {
     (A --> B), (X --> Y), subOf(A,X), subOf(B,Y), subsMin(A,1), subsMin(B,1), is(A,"*"), is(B,"*"), task("?") |- (A --> B), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
       (A --> B), (X --> Y), subOf(A,--X), subOf(B,--Y), subsMin(A,1), subsMin(B,1), is(A,"*"), is(B,"*"), task("?") |- (A --> B), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
       (A --> B), (X --> Y), subOf(A,--X), subOf(B,Y), subsMin(A,1), subsMin(B,1), is(A,"*"), is(B,"*"), task("?") |- --(A --> B), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
       (A --> B), (X --> Y), subOf(A,X), subOf(B,--Y), subsMin(A,1), subsMin(B,1), is(A,"*"), is(B,"*"), task("?") |- --(A --> B), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
+}
 
     (A <-> B), (X <-> Y), subOf(A,X), subOf(B,Y), subsMin(A,1), subsMin(B,1), is(A,"*"), is(B,"*"), task("?") |- (A <-> B), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
       //(A <-> B), (X <-> Y), TODO

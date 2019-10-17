@@ -26,13 +26,10 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         range(0,1);
     }
 
-    public ArrayHistogram(float min, float max) {
-        range(min, max);
-    }
 
     @Override
     public String toString() {
-        return lo + ".." + hi + " @ " + mass() + " " + n2(data.floatArray());
+        return lo + ".." + hi + " @ " + mass() + " = " + n2(data.floatArray());
     }
 
     private void resize(int bins) {
@@ -131,12 +128,14 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
         float mass = 0;
         boolean flat;
-        if (rangeDelta <= 1f) {
+        int bins = data.volume();
+        if (bins < 2 || rangeDelta <= 1f) {
             flat = true;
         } else {
             mass = mass();
             flat = (mass <= ScalarValue.EPSILON * (1+rangeDelta));
         }
+
 
         float u = rng.nextFloat();
         if (flat)
@@ -157,7 +156,6 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         float m = u * mass;
 
         WritableTensor data = this.data;
-        int bins = data.volume();
         for (int b = 0; b < bins;) {
             float db = data.getAt(direction ? b : (bins - 1 - b));
             if (db > m) {
@@ -169,7 +167,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
             }
         }
 
-        float p = Math.min(bins, B) / bins;
+        float p = Math.min(bins-1, B) / (bins-1);
 
         return (direction ? p : 1-p) * rangeDelta + rangeMin;
     }

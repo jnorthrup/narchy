@@ -134,9 +134,6 @@ public class NARS {
 
             if (threadSafe)
                 index = () -> new CaffeineMemory(64 * 1024);
-            else
-                index = () -> new SimpleMemory(16 * 1024, true);
-
 
             if (nalMax > 0)
                 withNAL(nalMin, nalMax);
@@ -179,7 +176,7 @@ public class NARS {
 
         time = new CycleTime();
 
-        exec = () -> new UniExec(7);
+        exec = () -> new UniExec(8);
 
         what = w -> new TaskLinkWhat(w, 32,
                        new PriBuffer.DirectTaskBuffer<>()

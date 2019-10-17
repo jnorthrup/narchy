@@ -37,7 +37,7 @@ public enum PremiseRuleCompiler {
         );
     }
 
-    public static DeriverProgram compile(Collection<PremiseRule> rr, PreDeriver preDeriver, NAR n, Function<How, How> functionTransform) {
+    public static DeriverProgram compile(Collection<PremiseRule> rr, PreDeriver preDeriver, NAR n, Function<How, How> actionTransform) {
 
         /** indexed by local (deriver-specific) id */
         int s = rr.size();
@@ -53,7 +53,7 @@ public enum PremiseRuleCompiler {
 
             How added = paths.put(
                 r.conditions(i),
-                roots[i++] = functionTransform.apply(r.action(n, tags))
+                roots[i++] = actionTransform.apply(r.action(n, tags))
             );
 
             assert (added == null);

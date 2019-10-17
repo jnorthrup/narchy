@@ -1,6 +1,5 @@
 package nars.derive.action;
 
-import jcog.Util;
 import nars.Task;
 import nars.attention.What;
 import nars.derive.Derivation;
@@ -59,8 +58,8 @@ public class QuestionAnswering extends NativeHow {
 ////            else
 		float qPri = q.priElseZero(), aPri = a.priElseZero();
 		float pri =
-			//qPri * aPri;
-			Util.or(qPri, aPri);
+			qPri * aPri;
+			//Util.or(qPri, aPri);
 //
 		What w = d.x;
 ////		((AbstractTask)a).why(q.why()); //merge question reason into answer

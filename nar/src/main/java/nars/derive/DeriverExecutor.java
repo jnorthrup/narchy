@@ -190,6 +190,8 @@ public abstract class DeriverExecutor extends Derivation {
 					Premise s = sample();
 					if (s!=null)
 						q.offer(s);
+					else
+						return; // empty bag
 				}
 
 				Premise r;
@@ -257,9 +259,9 @@ public abstract class DeriverExecutor extends Derivation {
 
 			//int tries = 1 + (cap - bag.size()); //TODO penalize duplicates more
 			do {
-				Premise x = sample();
-				if (x != null) {
-					add(x);
+				Premise s = sample();
+				if (s != null) {
+					add(s);
 					if (bag.size() >= cap)
 						break;
 				}
