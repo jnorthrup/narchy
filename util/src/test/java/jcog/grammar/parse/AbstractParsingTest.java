@@ -29,7 +29,7 @@ abstract class AbstractParsingTest {
 		return bestMatch;
 	}
 
-	abstract protected Parser getParser();
+	protected abstract Parser getParser();
 
 	Object popValueFromAssembly(Assembly result) {
 		return ((Token) result.getStack().pop()).value();

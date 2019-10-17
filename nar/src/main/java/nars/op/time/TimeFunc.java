@@ -12,10 +12,10 @@ import static nars.time.Tense.XTERNAL;
 public class TimeFunc {
 	abstract static class TemporalAccessor {
 		/** discovers the 'other' events besides 'relativeTo', and returns as a term (a sequence if necessary) */
-		abstract public Term otherEvents(Term t, Term relativeTo, boolean inclBefore, boolean includeIt, boolean includeAfter);
+		public abstract Term otherEvents(Term t, Term relativeTo, boolean inclBefore, boolean includeIt, boolean includeAfter);
 
 		/** measures delta time between events in 't' , or XTERNAL if uncomputable */
-		abstract public int dt(Term t, Term x, Term y);
+		public abstract int dt(Term t, Term x, Term y);
 	}
 
 	static final TemporalAccessor ConjAccessor = new TemporalAccessor() {

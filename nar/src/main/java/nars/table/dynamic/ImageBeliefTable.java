@@ -102,7 +102,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
 //        return a;
 //    }
 
-    @Nullable private Task transformFromTemplate(@Nullable Task x) {
+    private @Nullable Task transformFromTemplate(@Nullable Task x) {
         if (x == null) return null;
         try {
             Term xx = x.term();

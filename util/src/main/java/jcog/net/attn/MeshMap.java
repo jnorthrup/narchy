@@ -21,7 +21,7 @@ public class MeshMap<K,V> extends UDPeer /* implements Map<K,V>*/ {
     static final float seedFPS = 4, mapFPS = 4;
 
     static final ConcurrentHashMap<String,MeshMap> the = new ConcurrentHashMap<>();
-    final static UDPeer seed;
+    static final UDPeer seed;
     static {
         try {
             seed = new UDPeer();

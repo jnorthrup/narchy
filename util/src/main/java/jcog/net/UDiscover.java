@@ -15,12 +15,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * https:
  */
-abstract public class UDiscover<P> {
+public abstract class UDiscover<P> {
 
-    static protected final Logger logger = LoggerFactory.getLogger(UDiscover.class);
+    protected static final Logger logger = LoggerFactory.getLogger(UDiscover.class);
 
-    final static String address = "228.5.6.7";
-    final static int port = 6576;
+    static final String address = "228.5.6.7";
+    static final int port = 6576;
     static final int MAX_PAYLOAD_ID = 256;
 
     /**
@@ -39,7 +39,7 @@ abstract public class UDiscover<P> {
     }
 
 
-    abstract protected void found(P theirs, InetAddress who, int port);
+    protected abstract void found(P theirs, InetAddress who, int port);
 
 
     public void start() {

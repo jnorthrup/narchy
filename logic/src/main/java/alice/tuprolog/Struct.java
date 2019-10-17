@@ -134,7 +134,7 @@ public class Struct extends Term {
     }
 
 
-    final static Struct EmptyList = new Struct() {
+    static final Struct EmptyList = new Struct() {
 
 
         @Override

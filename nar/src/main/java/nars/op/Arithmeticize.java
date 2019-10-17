@@ -58,7 +58,7 @@ public class Arithmeticize {
             16 * 1024, Arithmeticize::_mods);
     }
 
-    private final static Variable A = $.varDep("A_"), B = $.varDep("B_");
+    private static final Variable A = $.varDep("A_"), B = $.varDep("B_");
     private static final Op Aop = A.op();
 
     private static final Function<Atom, Functor> ArithFunctors = Map.of(
@@ -174,7 +174,7 @@ public class Arithmeticize {
         return x.isNormalized() ? y.normalize() : y;
     }
 
-    final static class IntArrayListCached  {
+    static final class IntArrayListCached  {
         private final int hash;
         private final int[] val;
 

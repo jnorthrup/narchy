@@ -15,7 +15,7 @@ import static nars.Op.GOAL;
 /**
  * tests goals involving &,|,~,-, etc..
  */
-abstract public class NAL8DecomposeTest extends NALTest {
+public abstract class NAL8DecomposeTest extends NALTest {
 
     public static final int cycles = 800;
 

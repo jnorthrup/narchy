@@ -16,7 +16,7 @@ public abstract class ComponentSignal extends Signal {
 		throw new UnsupportedOperationException();
 	}
 
-	abstract protected float value(Game g);
+	protected abstract float value(Game g);
 
 //        @Override
 //        public short[] cause() {

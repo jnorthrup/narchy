@@ -843,8 +843,8 @@ public abstract class Image extends Main {
 
     
 
-    final static int[] p1 = new int[1024];
-    final static int[] p2 = new int[1024];
+    static final int[] p1 = new int[1024];
+    static final int[] p2 = new int[1024];
 
     /*
      * GL_ResampleTexture

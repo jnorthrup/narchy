@@ -257,7 +257,7 @@ public class HttpConnection {
         buf.limit(limit);
     }
 
-    final static ThreadLocal<StringBuilder> lineParser = ThreadLocal.withInitial(() -> new StringBuilder(4 * 1024));
+    static final ThreadLocal<StringBuilder> lineParser = ThreadLocal.withInitial(() -> new StringBuilder(4 * 1024));
 
     /**
      * Read the request line and move the buffer position beyond the request line

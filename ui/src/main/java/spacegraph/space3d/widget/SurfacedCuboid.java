@@ -22,8 +22,7 @@ import java.util.function.Consumer;
  */
 public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph {
 
-    @Nullable
-    public volatile Surface front;
+    public volatile @Nullable Surface front;
     private static final float zOffset = 0.1f;
 
     private final ReSurface rendering = new ReSurface();

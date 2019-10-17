@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  */
 public final class MapTaskIndex implements TaskIndex {
 
-    private final static Logger logger = LoggerFactory.getLogger(MapTaskIndex.class);
+    private static final Logger logger = LoggerFactory.getLogger(MapTaskIndex.class);
 
     
     private final Map<Task, Task> tasks;

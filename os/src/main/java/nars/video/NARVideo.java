@@ -26,7 +26,7 @@ public class NARVideo extends NARPart {
         private VideoSource c;
         public final Webcam cam;
         volatile Surface surface;
-        volatile private JoglDisplay surfaceWindow = null;
+        private volatile JoglDisplay surfaceWindow = null;
 
         Video(NAR nar, Webcam cam) {
             super($.p($.the("video"), $.the(cam.getName())));

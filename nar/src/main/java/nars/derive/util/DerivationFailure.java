@@ -29,8 +29,7 @@ public enum DerivationFailure {
     Xternal;
 
 
-    @Nullable
-    public static DerivationFailure failure(Term x, byte punc, int volMax) {
+    public static @Nullable DerivationFailure failure(Term x, byte punc, int volMax) {
 
         if (x instanceof Bool) return Taskable;
 

@@ -76,8 +76,7 @@ import static nars.Op.BELIEF;
     }
 
 
-    @Nullable
-    default Truth toggle(@Nullable Truth d, Runnable on, Runnable off, boolean next) {
+    default @Nullable Truth toggle(@Nullable Truth d, Runnable on, Runnable off, boolean next) {
         float freq;
         if (next) {
             freq = +1;
@@ -95,8 +94,7 @@ import static nars.Op.BELIEF;
 
     <A extends ActionSignal> A addAction(A c);
 
-    @Nullable
-    default GoalActionConcept actionTriStateContinuous(Term s, IntPredicate i) {
+    default @Nullable GoalActionConcept actionTriStateContinuous(Term s, IntPredicate i) {
 
         GoalActionConcept m = new GoalActionConcept(s, (b, d) -> {
 
@@ -144,8 +142,7 @@ import static nars.Op.BELIEF;
         return addAction(m);
     }
 
-    @Nullable
-    default ActionSignal actionTriStatePWM(Term s, IntConsumer i) {
+    default @Nullable ActionSignal actionTriStatePWM(Term s, IntConsumer i) {
         ActionSignal m = new GoalActionConcept(s, (b, d) -> {
 
 

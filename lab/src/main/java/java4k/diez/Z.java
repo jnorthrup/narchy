@@ -49,75 +49,75 @@ public class Z extends GamePanel {
 	
 	
 
-	private final static int SCREENHEIGHT = 400; 
-	private final static int SCREENWIDTH = 600; 
-	private final static float SCREENDEPTH = 693f; 
-	private final static int DEPTH = 750; 
-	private final static float DEPTHRATIO = 1.5f; 
+	private static final int SCREENHEIGHT = 400;
+	private static final int SCREENWIDTH = 600;
+	private static final float SCREENDEPTH = 693f;
+	private static final int DEPTH = 750;
+	private static final float DEPTHRATIO = 1.5f;
 
-	private final static int MAPSIZE = 0x100; 
-	private final static int TILETYPES = 5; 
-	private final static int TILESIZE = 0x100; 
-	private final static int ROADGRIDSIZE = 16; 
-	private final static float PLAYERHEIGHT = 1.2f; 
+	private static final int MAPSIZE = 0x100;
+	private static final int TILETYPES = 5;
+	private static final int TILESIZE = 0x100;
+	private static final int ROADGRIDSIZE = 16;
+	private static final float PLAYERHEIGHT = 1.2f;
 
-	private final static int GRASS = 0; 
-	private final static int FOREST = 1; 
-	private final static int ROAD = 2; 
-	private final static int BUILDING = 3; 
-	private final static int BUILDINGINSIDE = 4; 
+	private static final int GRASS = 0;
+	private static final int FOREST = 1;
+	private static final int ROAD = 2;
+	private static final int BUILDING = 3;
+	private static final int BUILDINGINSIDE = 4;
 
-	private final static float DEGREES = 18000f / (float) Math.PI;
-	private final static float ROTATERATE = 1e-9f; 
-	private final static float TRANSLATERATE = 2e-7f; 
+	private static final float DEGREES = 18000f / (float) Math.PI;
+	private static final float ROTATERATE = 1e-9f;
+	private static final float TRANSLATERATE = 2e-7f;
 
-	private final static int ENEMIES = 64; 
-	private final static int SUPPLIES = 32; 
-	private final static int ENTITIES = ENEMIES + SUPPLIES;
+	private static final int ENEMIES = 64;
+	private static final int SUPPLIES = 32;
+	private static final int ENTITIES = ENEMIES + SUPPLIES;
 
-	private final static int ENTITYTYPES = 2; 
-	private final static int ENTITYZOMBIE = 0; 
-	private final static int ENTITYBOX = 1; 
+	private static final int ENTITYTYPES = 2;
+	private static final int ENTITYZOMBIE = 0;
+	private static final int ENTITYBOX = 1;
 
-	private final static int ENTITYSIZE = 7; 
-	private final static int ENTITYCOLOURS = 6; 
-	private final static float ENTITYDEPTH = 9e6f; 
-	private final static float ENTITYCOLLISION = 400f; 
-	private final static float ENTITYRADIUS = 32f / TILESIZE * 32f / TILESIZE / 2f * 1e6f; 
-	private final static float ENTITYCENTRE = ENTITYSIZE / 2 + 0.5f;
-	private final static int ENTITYSCALE = 2; 
+	private static final int ENTITYSIZE = 7;
+	private static final int ENTITYCOLOURS = 6;
+	private static final float ENTITYDEPTH = 9e6f;
+	private static final float ENTITYCOLLISION = 400f;
+	private static final float ENTITYRADIUS = 32f / TILESIZE * 32f / TILESIZE / 2f * 1e6f;
+	private static final float ENTITYCENTRE = ENTITYSIZE / 2 + 0.5f;
+	private static final int ENTITYSCALE = 2;
 
-	private final static int ZOMBIEDEPTH = 3; 
-	private final static int ZOMBIEWIDTH = 7; 
-	private final static int ZOMBIEHEIGHT = 15; 
+	private static final int ZOMBIEDEPTH = 3;
+	private static final int ZOMBIEWIDTH = 7;
+	private static final int ZOMBIEHEIGHT = 15;
 
-	private final static int DEAD = 0; 
-	private final static int IDLE = 1; 
-	private final static int ATTACK = 2; 
+	private static final int DEAD = 0;
+	private static final int IDLE = 1;
+	private static final int ATTACK = 2;
 
-	private final static float SUPPLIESBOOST = 10f; 
-	private final static float BLOODLOSS = 50f; 
-	private final static float WATERLOSS = 25f; 
-	private final static float STARVATION = 10f; 
-	private final static float SUPPLYUSAGE = 5e-10f;
-	private final static float ZOMBIEDAMAGE = 2e-8f; 
-	private final static float ATTACKRANGE = 5e3f; 
-	private final static float SPAWNOUTSIDE = 0.01f; 
-	private final static long DEADTIME = 0x100000000L; 
+	private static final float SUPPLIESBOOST = 10f;
+	private static final float BLOODLOSS = 50f;
+	private static final float WATERLOSS = 25f;
+	private static final float STARVATION = 10f;
+	private static final float SUPPLYUSAGE = 5e-10f;
+	private static final float ZOMBIEDAMAGE = 2e-8f;
+	private static final float ATTACKRANGE = 5e3f;
+	private static final float SPAWNOUTSIDE = 0.01f;
+	private static final long DEADTIME = 0x100000000L;
 
-	private final static float DETECTRANGE = 5e4f; 
-	private final static float FORGETRANGE = 5e6f; 
+	private static final float DETECTRANGE = 5e4f;
+	private static final float FORGETRANGE = 5e6f;
 
-	private final static int SOUNDS = 6; 
-	private final static float RATE = 16000f;
-	private final static float AMPLITUDE = 16000f; 
+	private static final int SOUNDS = 6;
+	private static final float RATE = 16000f;
+	private static final float AMPLITUDE = 16000f;
 
-	private final static int PLAYERATTACKSOUND = 0; 
-	private final static int BOXFOUNDSOUND = 1;
-	private final static int ZOMBIEALERTSOUND = 2;
-	private final static int ZOMBIEATTACKSOUND = 3;
-	private final static int AMBIENTSOUND1 = 4;
-	private final static int AMBIENTSOUND2 = 5;
+	private static final int PLAYERATTACKSOUND = 0;
+	private static final int BOXFOUNDSOUND = 1;
+	private static final int ZOMBIEALERTSOUND = 2;
+	private static final int ZOMBIEATTACKSOUND = 3;
+	private static final int AMBIENTSOUND1 = 4;
+	private static final int AMBIENTSOUND2 = 5;
 
 	
 	

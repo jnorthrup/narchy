@@ -27,7 +27,7 @@ import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 import static jcog.math.v3.v;
 
 /** JOGL display implementation */
-abstract public class JoglDisplay extends SpaceGraph {
+public abstract class JoglDisplay extends SpaceGraph {
 
     /** field of view, in degrees */
     public float fov = 45;
@@ -39,8 +39,6 @@ abstract public class JoglDisplay extends SpaceGraph {
 
     public final v3Anim camPos, camFwd, camUp;
 
-    private final float cameraSpeed = 100f;
-
 
     public float zNear = 0.5f, zFar = 1000;
 
@@ -50,6 +48,7 @@ abstract public class JoglDisplay extends SpaceGraph {
     public JoglDisplay() {
         video = new MyJoglWindow();
 
+        float cameraSpeed = 100f;
         video.onUpdate(camPos = new v3Anim(0, 0, 5, cameraSpeed));
         float cameraRotateSpeed = cameraSpeed;
         video.onUpdate(camFwd = new v3Anim(0, 0, -1, cameraRotateSpeed));

@@ -68,7 +68,7 @@ import java.util.stream.Stream;
  * be conceptualized and self-executed.
  */
 @Paper
-abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<Task>, Timed {
+public abstract class What extends PriNARPart implements Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<Task>, Timed {
 
 	/**
 	 * input bag
@@ -165,13 +165,13 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 	 * called periodically, ex: per duration, for maintenance such as gradual forgetting and merging new input.
 	 * only one thread will be in this method at a time guarded by an atomic guard
 	 */
-	abstract protected void commit(NAR nar);
+	protected abstract void commit(NAR nar);
 
 	/**
 	 * explicitly return the attention to a completely or otherwise reasonably quiescent state.
 	 * how exactly can be decided by the implementation.
 	 */
-	abstract public void clear();
+	public abstract void clear();
 
 
 

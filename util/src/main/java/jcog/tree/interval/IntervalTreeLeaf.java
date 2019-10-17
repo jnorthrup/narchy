@@ -23,9 +23,8 @@ class IntervalTreeLeaf<K extends Comparable<? super K>,V> implements IntervalTre
 		this.value = value;
 	}
 
-	@NotNull
 	@Override
-	public String toString() {
+    public @NotNull String toString() {
 		return key + "=" + value;
 	}
 
@@ -34,15 +33,13 @@ class IntervalTreeLeaf<K extends Comparable<? super K>,V> implements IntervalTre
 		return true;
 	}
 
-	@NotNull
 	@Override
-	public IntervalTreeNode<K, V> getLeft() {
+    public @NotNull IntervalTreeNode<K, V> getLeft() {
 		throw new UnsupportedOperationException();
 	}
 
-	@NotNull
 	@Override
-	public IntervalTreeNode<K, V> getRight() {
+    public @NotNull IntervalTreeNode<K, V> getRight() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -66,15 +63,13 @@ class IntervalTreeLeaf<K extends Comparable<? super K>,V> implements IntervalTre
 		return key.overlaps(interval);
 	}
 
-	@NotNull
 	@Override
-	public final K getLow() {
+    public final @NotNull K getLow() {
 		return key.getLow();
 	}
 
-	@NotNull
 	@Override
-	public final K getHigh() {
+    public final @NotNull K getHigh() {
 		return key.getHigh();
 	}
 
@@ -83,9 +78,8 @@ class IntervalTreeLeaf<K extends Comparable<? super K>,V> implements IntervalTre
 		return value;
 	}
 
-	@NotNull
 	@Override
-	public IntervalTreeNode<K, V> put(@NotNull Between<K> key, V value) {
+    public @NotNull IntervalTreeNode<K, V> put(@NotNull Between<K> key, V value) {
 		IntervalTreeNode<K, V> putNode = new IntervalTreeLeaf<>(key, value);
 		return this.key.getLow().compareTo(key.getLow()) < 0 ? new IntervalTreeBranch<>(this, putNode) : new IntervalTreeBranch<>(putNode, this);
 	}
@@ -99,9 +93,8 @@ class IntervalTreeLeaf<K extends Comparable<? super K>,V> implements IntervalTre
 	}
 
 
-	@Nullable
 	@Override
-	public V getContain(@NotNull Between<K> range) {
+    public @Nullable V getContain(@NotNull Between<K> range) {
 		return range.contains(key) ? getValue() : null;
 	}
 
@@ -139,9 +132,8 @@ class IntervalTreeLeaf<K extends Comparable<? super K>,V> implements IntervalTre
 		accumulator.add(getValue());
 	}
 
-	@Nullable
 	@Override
-	public IntervalTreeNode<K, V> remove(@NotNull V value) {
+    public @Nullable IntervalTreeNode<K, V> remove(@NotNull V value) {
 		return value.equals(getValue()) ? null : this;
 	}
 
@@ -199,9 +191,8 @@ class IntervalTreeLeaf<K extends Comparable<? super K>,V> implements IntervalTre
 		return 1;
 	}
 
-	@Nullable
 	@Override
-	public IntervalTreeNode<K, V> removeAll(@NotNull Collection<V> values) {
+    public @Nullable IntervalTreeNode<K, V> removeAll(@NotNull Collection<V> values) {
 		return values.contains(getValue()) ? null : this;
 	}
 
@@ -212,27 +203,24 @@ class IntervalTreeLeaf<K extends Comparable<? super K>,V> implements IntervalTre
 
 
 
-	@Nullable
 	@Override
-	public IntervalTreeNode<K, V> removeOverlapping(@NotNull Between<K> range) {
+    public @Nullable IntervalTreeNode<K, V> removeOverlapping(@NotNull Between<K> range) {
 		if(key.overlaps(range)){
 			return null;
 		}
 		return this;
 	}
 
-	@Nullable
 	@Override
-	public IntervalTreeNode<K, V> removeContaining(@NotNull Between<K> range) {
+    public @Nullable IntervalTreeNode<K, V> removeContaining(@NotNull Between<K> range) {
 		if(key.contains(range)){
 			return null;
 		}
 		return this;
 	}
 
-	@Nullable
 	@Override
-	public IntervalTreeNode<K, V> removeContainedBy(@NotNull Between<K> range) {
+    public @Nullable IntervalTreeNode<K, V> removeContainedBy(@NotNull Between<K> range) {
 		if(range.contains(key)){
 			return null;
 		}

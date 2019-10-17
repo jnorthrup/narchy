@@ -58,7 +58,7 @@ public class TestNAR {
     private boolean finished;
     private boolean exitOnAllSuccess = true;
 
-    private final static int maxSimilars = 3;
+    private static final int maxSimilars = 3;
     private boolean reportStats = false;
 
     public TestNAR(NAR nar) {
@@ -216,7 +216,7 @@ public class TestNAR {
             try {
                 nar.input(x);
             } catch (Narsese.NarseseException e) {
-                fail(e.toString());
+                fail(e::toString);
             }
         return this;
     }
@@ -298,7 +298,7 @@ public class TestNAR {
         requireConditions = false;
         nar.onTask(c -> {
             if (!c.isInput())
-                fail(c + " output, but must not output anything");
+                fail(() -> c + " output, but must not output anything");
         });
         return this;
     }

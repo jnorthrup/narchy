@@ -35,8 +35,8 @@ import static nars.time.Tense.DTERNAL;
  * when executed construct the target
  */
 public class TermBuffer {
-    private final static int INITIAL_CODE_SIZE = 16;
-    public final static int INITIAL_ANON_SIZE = 64 + 32;
+    private static final int INITIAL_CODE_SIZE = 16;
+    public static final int INITIAL_ANON_SIZE = 64 + 32;
 
     public final ByteAnonMap sub;
     final DynBytes code = new DynBytes(INITIAL_CODE_SIZE);
@@ -139,7 +139,7 @@ public class TermBuffer {
         return this;
     }
 
-    private final static byte MAX_CONTROL_CODES = (byte) ops.length;
+    private static final byte MAX_CONTROL_CODES = (byte) ops.length;
 
 
     private TermBuffer negStart() {

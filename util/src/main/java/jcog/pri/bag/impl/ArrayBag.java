@@ -32,7 +32,7 @@ import java.util.stream.Stream;
  * A bag implemented as a combination of a Map and a SortedArrayList
  * TODO extract a version of this which will work for any Prioritized, not only BLink
  */
-abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
+public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
     private static final int HISTOGRAM_SUPERSAMPLING = 3;
     private static final int HISTOGRAM_RESOLUTION_FACTOR = 5;
@@ -861,7 +861,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         return removed;
     }
 
-    @Nullable private Y removeFromMapIfExists(Y y) {
+    private @Nullable Y removeFromMapIfExists(Y y) {
         Y removed = table.map.remove(key(y));
         if (removed == null)
             return null;
@@ -1080,9 +1080,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         }
 
 
-        @Nullable
         @Override
-        public Y remove(X x) {
+        public @Nullable Y remove(X x) {
             throw new UnsupportedOperationException();
         }
 

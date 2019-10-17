@@ -45,7 +45,7 @@ public class BasicPostprocessor implements Postprocessor {
 
     private static final Logger LOG = Logger.getLogger(BasicPostprocessor.class.getName());
     private boolean populateOptionalFields = true;
-    static public final String PARAMETER_NAME_POPULATE_OPTIONAL_FIELDS = "populateOptionalFields";
+    public static final String PARAMETER_NAME_POPULATE_OPTIONAL_FIELDS = "populateOptionalFields";
    
     @Override
     public void setup(Map<String, String> parameters) {

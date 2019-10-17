@@ -73,7 +73,7 @@ public class Factorize {
     }
 
     /** returns null if detects no reason to re-process */
-    @Nullable private static Term[] distribute(Subterms xx) {
+    private static @Nullable Term[] distribute(Subterms xx) {
         final TermList x = xx.toList();
 
         //TODO track what subterms (if any) are totally un-involved and exclude them from processing in subsequent stages
@@ -130,8 +130,8 @@ public class Factorize {
         return x.arrayKeep();
     }
 
-    private final static Variable f = $.varDep("_f");
-    private final static Variable fIfNoDep = $.varDep(1);
+    private static final Variable f = $.varDep("_f");
+    private static final Variable fIfNoDep = $.varDep(1);
     static final Comparator<Pair<Term, RichIterable<ObjectBytePair<Term>>>> c = Comparator
             .comparingInt((Pair<Term, RichIterable<ObjectBytePair<Term>>> p) -> -p.getTwo().size()) //more unique subterms involved
             .thenComparingInt((Pair<Term, RichIterable<ObjectBytePair<Term>>> p) -> -p.getOne().volume()) //longest common path
@@ -146,8 +146,7 @@ public class Factorize {
     /**
      * returns the subterms, as a sorted target array setAt, for the new conjunction.  or null if there was nothing factorable
      */
-    @Nullable
-    private static Term[] applyConj(Term[] x, Variable f) {
+    private static @Nullable Term[] applyConj(Term[] x, Variable f) {
 
         /** shadow target -> replacements */
         final UnifiedSetMultimap<Term, ObjectBytePair<Term>>[] pp = new UnifiedSetMultimap[]{null};

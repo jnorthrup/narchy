@@ -241,11 +241,11 @@ public class Quantize {
 %
 */
 
-    final static boolean QUICK = true;
+    static final boolean QUICK = true;
 
-    final static int MAX_RGB = 255;
-    final static int MAX_NODES = 266817;
-    final static int MAX_TREE_DEPTH = 8;
+    static final int MAX_RGB = 255;
+    static final int MAX_NODES = 266817;
+    static final int MAX_TREE_DEPTH = 8;
 
     
     static final int[] SQUARES;

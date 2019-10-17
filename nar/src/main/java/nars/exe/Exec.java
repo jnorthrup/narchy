@@ -23,11 +23,11 @@ import java.util.stream.Stream;
 /**
  * manages low level task scheduling and execution
  */
-abstract public class Exec extends NARPart implements Executor {
+public abstract class Exec extends NARPart implements Executor {
 
     public static final Logger logger = Log.logger(Exec.class);
 
-    private final static int TIME_QUEUE_CAPACITY = 2 * 1024;
+    private static final int TIME_QUEUE_CAPACITY = 2 * 1024;
     final MpscArrayQueue<ScheduledTask> toSchedule = new MpscArrayQueue<>(TIME_QUEUE_CAPACITY);
     final PriorityQueue<ScheduledTask> scheduled = new PriorityQueue<>(TIME_QUEUE_CAPACITY /* estimate capacity */);
 
@@ -97,7 +97,7 @@ abstract public class Exec extends NARPart implements Executor {
      * current concurrency level; may change
      */
     //@Override
-    abstract public int concurrency();
+    public abstract int concurrency();
 
     protected final void executeNow(Consumer<NAR> t) {
         try {
@@ -126,7 +126,7 @@ abstract public class Exec extends NARPart implements Executor {
             executeNow((Runnable) t);
     }
 
-    abstract protected void next();
+    protected abstract void next();
 
     public void print(Appendable out) {
         try {

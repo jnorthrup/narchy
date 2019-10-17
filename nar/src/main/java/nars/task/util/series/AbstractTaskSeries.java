@@ -4,7 +4,7 @@ import nars.NAL;
 import nars.Task;
 import org.jetbrains.annotations.Nullable;
 
-abstract public class AbstractTaskSeries<T extends Task> implements TaskSeries<T> {
+public abstract class AbstractTaskSeries<T extends Task> implements TaskSeries<T> {
 
     private final int cap;
 
@@ -12,7 +12,7 @@ abstract public class AbstractTaskSeries<T extends Task> implements TaskSeries<T
     public abstract void push(T t);
 
     /** remove the oldest task, and delete it */
-    @Nullable protected abstract T pop();
+    protected abstract @Nullable T pop();
 
     AbstractTaskSeries(int cap) {
         this.cap = cap;

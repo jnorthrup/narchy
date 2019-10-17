@@ -52,7 +52,7 @@ public class Results {
     private String methodDescription;
     private String comment;
     private Date experimentDate = new Date();
-    transient private String machineHardwareSpecifications;
+    private transient String machineHardwareSpecifications;
     private FinalSolution bestSolution;
     
     private List<DataSet.Bounds[]> bestExtractions;
@@ -76,10 +76,10 @@ public class Results {
     private int numberTrainingUnmatches;  
     
     private long characterEvaluations = 0;
-    transient private Configuration configuration;
+    private transient Configuration configuration;
     
     
-    transient private List<JobEvolutionTrace> jobEvolutionTrace; 
+    private transient List<JobEvolutionTrace> jobEvolutionTrace;
     
     
     public JobEvolutionTrace getJobTrace(int jobID){

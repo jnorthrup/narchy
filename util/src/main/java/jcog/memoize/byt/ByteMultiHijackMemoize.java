@@ -5,7 +5,7 @@ import jcog.memoize.Memoize;
 
 import java.util.function.Function;
 
-abstract public class ByteMultiHijackMemoize<X extends ByteKeyExternal,Y> implements Memoize<X,Y> {
+public abstract class ByteMultiHijackMemoize<X extends ByteKeyExternal,Y> implements Memoize<X,Y> {
 
     final ByteHijackMemoize<X,Y>[] level;
     protected int capacity;

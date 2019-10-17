@@ -20,7 +20,7 @@ public class WebSocketConnection extends WebSocketImpl {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(WebSocketConnection.class);
 
-    final static AtomicInteger serial = new AtomicInteger();
+    static final AtomicInteger serial = new AtomicInteger();
 
     private final int hash;
     public final HttpConnection http;

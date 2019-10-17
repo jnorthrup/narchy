@@ -6,10 +6,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-abstract public class Forgetting {
+public abstract class Forgetting {
 
 
-    @Nullable public static <Y> Consumer<Y> forget(Bag<?,Y> b, float temperature) {
+    public static @Nullable <Y> Consumer<Y> forget(Bag<?,Y> b, float temperature) {
         float depressurizationRate = 1f;
 
         if (temperature > Float.MIN_NORMAL) {

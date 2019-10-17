@@ -8,11 +8,11 @@ import java.util.Random;
 
 public class A extends Applet implements Runnable {
     static boolean[] keys = new boolean[65536];
-	final static double PI = 3.1415;
-	final static int enemynum = 80;
-	final static int bulletnum = 8000;
-	final static int itemnum = 8000;
-	final static int grazenum = 2000;
+	static final double PI = 3.1415;
+	static final int enemynum = 80;
+	static final int bulletnum = 8000;
+	static final int itemnum = 8000;
+	static final int grazenum = 2000;
 
 	@Override
     public void start() {

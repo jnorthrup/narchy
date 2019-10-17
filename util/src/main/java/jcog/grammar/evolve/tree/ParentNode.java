@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 /**
  * Created by me on 11/29/15.
  */
-abstract public class ParentNode extends AbstractNode {
+public abstract class ParentNode extends AbstractNode {
 
     protected final List<Node> children;
     private ParentNode parent;

@@ -309,7 +309,7 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
     }
 
     @Override
-    final public void forEach(Consumer<? super Spatial<X>> each) {
+    public final void forEach(Consumer<? super Spatial<X>> each) {
         inputs.forEachWith(AbstractSpace::forEach, each);
     }
 

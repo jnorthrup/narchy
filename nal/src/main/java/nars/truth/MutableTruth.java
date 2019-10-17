@@ -94,7 +94,7 @@ public class MutableTruth implements Truth {
 //		);
 	}
 
-	@Nullable public PreciseTruth clone() {
+	public @Nullable PreciseTruth clone() {
 		return is() ? PreciseTruth.byEvi(freq, evi) : null;
 	}
 

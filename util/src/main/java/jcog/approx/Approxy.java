@@ -80,7 +80,7 @@ import java.util.function.Function;
     }
 
     /** inputs and output schema and data mapping */
-    abstract public static class Approximation {
+    public abstract static class Approximation {
 
         static final int trainIterations = 10;
 

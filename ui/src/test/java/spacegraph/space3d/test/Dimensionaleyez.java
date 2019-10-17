@@ -31,8 +31,8 @@ import static spacegraph.SpaceGraph.window;
  */
 public class Dimensionaleyez extends SimpleSpatial {
 
-    final static int THREE_D = 3;
-    final static int IN = 5;
+    static final int THREE_D = 3;
+    static final int IN = 5;
     final NeuralGasMap n = new NeuralGasMap(IN, 64, THREE_D);
     final FloatRange scale = new FloatRange(10, 0.5f, 300f);
 

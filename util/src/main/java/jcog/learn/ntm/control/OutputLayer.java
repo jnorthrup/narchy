@@ -179,7 +179,7 @@ public class OutputLayer {
 
     }
 
-    final public double getOutput(final int i) {
+    public final double getOutput(final int i) {
         return outputs.value[i];
     }
 

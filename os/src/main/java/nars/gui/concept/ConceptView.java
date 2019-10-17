@@ -7,7 +7,7 @@ import nars.time.part.DurLoop;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 
-abstract public class ConceptView extends MutableUnitContainer {
+public abstract class ConceptView extends MutableUnitContainer {
 
     public final Termed term;
     public final NAR nar;
@@ -20,9 +20,9 @@ abstract public class ConceptView extends MutableUnitContainer {
         this.nar = n;
     }
 
-    abstract protected void update();
+    protected abstract void update();
 
-    @Nullable protected Concept concept() {
+    protected @Nullable Concept concept() {
         return nar.concept(term);
     }
 

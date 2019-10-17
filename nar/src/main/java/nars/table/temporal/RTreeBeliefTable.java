@@ -123,8 +123,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 			evict(weakest, r, treeRW);
 	}
 
-	@Nullable
-	private static Pair<Task, TruthProjection> mergeLeaf(Top<RLeaf<TaskRegion>> mergeableLeaf, Remember r) {
+	private static @Nullable Pair<Task, TruthProjection> mergeLeaf(Top<RLeaf<TaskRegion>> mergeableLeaf, Remember r) {
 		RLeaf<TaskRegion> leaf = mergeableLeaf.get();
 		return Revision.merge(r.nar, false, 2, leaf.size, leaf.data);
 	}
@@ -450,8 +449,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	/**
 	 * bounds of the entire table
 	 */
-	@Nullable
-	public TaskRegion bounds() {
+	public @Nullable TaskRegion bounds() {
 		return (TaskRegion) root().bounds();
 	}
 
@@ -524,9 +522,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 			return new RLeaf<>(new TaskRegion[capacity]);
 		}
 
-		@Nullable
 		@Override
-		public TaskRegion merge(TaskRegion existing, TaskRegion incoming, RInsertion<TaskRegion> i) {
+		public @Nullable TaskRegion merge(TaskRegion existing, TaskRegion incoming, RInsertion<TaskRegion> i) {
 
 			Task ex = (Task) existing, in = (Task) incoming;
 			Truth t = ex.truth();
@@ -575,9 +572,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 		}
 
 
-		@Nullable
 		@Override
-		public TaskRegion merge(TaskRegion existing) {
+		public @Nullable TaskRegion merge(TaskRegion existing) {
 			TaskRegion y = super.merge(existing);
 			if (y != null)
 				mergeReplaced = y;

@@ -13,7 +13,7 @@ public class CachedUnitCompound extends SemiCachedUnitCompound {
     private final byte op;
 
     /** structure including this compound's op (cached) */
-    transient private final int cstruct;
+    private final transient int cstruct;
     private final short volume;
 
     public CachedUnitCompound(/*@NotNull*/ Op op, /*@NotNull*/ Term sub) {

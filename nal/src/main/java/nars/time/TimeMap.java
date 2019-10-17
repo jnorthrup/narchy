@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 public class TimeMap extends RTree<Task> implements Consumer<Task> {
 
-    private final static Split<Task> AxialSplit = new AxialSplit<>();
+    private static final Split<Task> AxialSplit = new AxialSplit<>();
 
     public TimeMap() {
         super((task) -> new RectDouble(task.start(), task.end(), task.hashCode(), task.hashCode()),

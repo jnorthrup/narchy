@@ -45,8 +45,8 @@ public class AudioTransceiver {
      * Declare the Galois Field. (5-bit, using root polynomial a^5 + a^2 + 1.)
      * Allocate the ReedSolomonEncoder and ReedSolomonDecoder.
      */
-    final private ReedSolomonEncoder mReedSolomonEncoder = new ReedSolomonEncoder(lGenericGF);
-    final private ReedSolomonDecoder mReedSolomonDecoder = new ReedSolomonDecoder(lGenericGF);
+    private final ReedSolomonEncoder mReedSolomonEncoder = new ReedSolomonEncoder(lGenericGF);
+    private final ReedSolomonDecoder mReedSolomonDecoder = new ReedSolomonDecoder(lGenericGF);
 
     private final boolean mSampleSelf;
     private FloatArrayList pitchBuffer;

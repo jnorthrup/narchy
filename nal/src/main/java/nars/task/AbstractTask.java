@@ -6,7 +6,7 @@ import nars.Task;
 import nars.control.Why;
 import nars.term.Term;
 
-abstract public class AbstractTask extends UnitPri implements Task {
+public abstract class AbstractTask extends UnitPri implements Task {
 
 	public Term why;
 

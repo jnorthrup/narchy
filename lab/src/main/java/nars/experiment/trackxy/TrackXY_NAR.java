@@ -58,8 +58,8 @@ public class TrackXY_NAR extends GameX {
 
 	static float camResolution = 0.1f;
 	static int experimentTime = 3000000;
-	final public AtomicBoolean trainer = new AtomicBoolean(false);
-	final public AtomicBoolean log = new AtomicBoolean(true);
+	public final AtomicBoolean trainer = new AtomicBoolean(false);
+	public final AtomicBoolean log = new AtomicBoolean(true);
 	final Bitmap2DSensor cam;
 	private final TrackXY track;
 
@@ -548,8 +548,7 @@ public class TrackXY_NAR extends GameX {
 		}
 	}
 
-	@NotNull
-	private BooleanPredicate movement(float dx, float dy) {
+	private @NotNull BooleanPredicate movement(float dx, float dy) {
 		return (b) -> {
 			if (b) {
 				float speed = track.controlSpeed.floatValue();

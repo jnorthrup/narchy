@@ -26,7 +26,7 @@ class BeliefTableTest {
 
     private static void assertDuration(NAR n, String c, long start, long end) throws Narsese.NarseseException {
         TaskConcept cc = (TaskConcept) n.conceptualize(c);
-        assertNotNull(cc, c + " unconceptualized");
+        assertNotNull(cc, () -> c + " unconceptualized");
 
 
         assertTrue(((BeliefTables)cc.beliefs()).tableFirst(DynamicTruthTable.class)!=null);
@@ -121,10 +121,10 @@ class BeliefTableTest {
             long w = timing[i];
             Truth truth = table.truth(w, n);
             float fExpected = freqPattern[i];
-            assertEquals(fExpected, truth.freq(), 0.01f, "exact truth @" + w + " == " + fExpected);
+            assertEquals(fExpected, truth.freq(), 0.01f, () -> "exact truth @" + w + " == " + fExpected);
 
             Task match = table.match(w, w, null, 0, n);
-            assertEquals(fExpected, match.freq(), 0.01f, "exact belief @" + w + " == " + fExpected);
+            assertEquals(fExpected, match.freq(), 0.01f, () -> "exact belief @" + w + " == " + fExpected);
         }
 
 

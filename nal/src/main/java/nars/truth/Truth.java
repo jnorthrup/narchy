@@ -151,7 +151,7 @@ public interface Truth extends Truthed {
 
 
 
-    @Nullable static <T extends Truthed> T stronger(@Nullable T a, @Nullable T b) {
+    static @Nullable <T extends Truthed> T stronger(@Nullable T a, @Nullable T b) {
         if (b == null)
             return a;
         else if (a == null)
@@ -216,8 +216,7 @@ public interface Truth extends Truthed {
         }
     }
 
-    @Nullable
-    static PreciseTruth theDithered(float f, double e, NAL nar) {
+    static @Nullable PreciseTruth theDithered(float f, double e, NAL nar) {
         if (e < nar.confMin.evi())
             return null;
 
@@ -283,8 +282,7 @@ public interface Truth extends Truthed {
         return n && t!=null ? t.neg() : t;
     }
 
-    @Nullable
-    default PreciseTruth dither(NAL nar) {
+    default @Nullable PreciseTruth dither(NAL nar) {
         return theDithered(freq(), evi(), nar);
     }
 

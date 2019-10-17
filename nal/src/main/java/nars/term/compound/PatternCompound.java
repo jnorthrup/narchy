@@ -27,7 +27,8 @@ import static nars.time.Tense.XTERNAL;
 /**
  * seems used only if op==CONJ
  */
-@Deprecated abstract public class PatternCompound extends CachedCompound.TemporalCachedCompound {
+@Deprecated
+public abstract class PatternCompound extends CachedCompound.TemporalCachedCompound {
 
     PatternCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
         super(op, dt, subterms);
@@ -66,7 +67,7 @@ import static nars.time.Tense.XTERNAL;
             this.ellipsis = ellipsis;
         }
 
-        abstract public boolean unifySubterms(Compound y, Unify subst);
+        public abstract boolean unifySubterms(Compound y, Unify subst);
     }
 
 

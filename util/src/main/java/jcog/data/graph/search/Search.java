@@ -29,7 +29,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * <p>
  * NOT multi-thread safe in any way.
  */
-abstract public class Search<N, E> {
+public abstract class Search<N, E> {
 
     public final TraveLog log;
 
@@ -67,7 +67,7 @@ abstract public class Search<N, E> {
         return step.getTwo().to(step.getOne());
     }
 
-    abstract protected boolean go(List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path, Node<N, E> next);
+    protected abstract boolean go(List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path, Node<N, E> next);
 
     protected boolean visit(Node n) {
         return log.visit(id(n));
@@ -115,8 +115,7 @@ abstract public class Search<N, E> {
     /**
      * can be overridden to hijack the determined next destination
      */
-    @Nullable
-    protected Node<N, E> next(FromTo<Node<N, E>, E> e, Node<N, E> at, List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path) {
+    protected @Nullable Node<N, E> next(FromTo<Node<N, E>, E> e, Node<N, E> at, List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path) {
         return e.other(at);
     }
 

@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.web.TaskJsonCodec.Native.taskify;
 
-abstract public class NARWeb extends EvalSocket<NAR> {
+public abstract class NARWeb extends EvalSocket<NAR> {
 
     static final int DEFAULT_PORT = 60606;
 
@@ -74,8 +74,7 @@ abstract public class NARWeb extends EvalSocket<NAR> {
         }
     }
 
-    @Nullable
-    protected abstract NAR nar(WebSocketConnection conn, String url);
+    protected abstract @Nullable NAR nar(WebSocketConnection conn, String url);
 
 
 //    @Override

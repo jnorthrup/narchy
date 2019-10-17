@@ -23,13 +23,12 @@ public class SliderModel extends PaintSurface {
     /**
      * dead-zone at the edges to latch min/max values
      */
-    static private final float margin =
+    private static final float margin =
             0.01f;
     public static final int BUTTON = 0;
 
 
-    @Nullable
-    private ObjectFloatProcedure<SliderModel> change;
+    private @Nullable ObjectFloatProcedure<SliderModel> change;
 
 
 
@@ -257,7 +256,7 @@ public class SliderModel extends PaintSurface {
         }
     }
 
-    abstract public static class Knob implements SliderUI {
+    public abstract static class Knob implements SliderUI {
 
         /**
          * proportion of the total range of which the knob is visible

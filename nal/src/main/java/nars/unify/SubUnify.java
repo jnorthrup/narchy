@@ -14,12 +14,10 @@ import static nars.term.atom.Bool.Null;
  */
 public class SubUnify extends Unify {
 
-    @Nullable
-    protected Term transformed;
+    protected @Nullable Term transformed;
 
 
-    @Nullable
-    protected Term result;
+    protected @Nullable Term result;
 
 
     public SubUnify(Random rng) {

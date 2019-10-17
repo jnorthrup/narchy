@@ -61,7 +61,7 @@ public final class Range implements Comparable<Range>{
      * @param ranges
      * @return
      */
-    static public List<Range> compactRanges(List<Range> ranges){
+    public static List<Range> compactRanges(List<Range> ranges){
         List<Range> newRanges = new LinkedList<>();
         if(ranges.isEmpty()){
             return newRanges;

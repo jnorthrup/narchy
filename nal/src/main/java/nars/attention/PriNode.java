@@ -15,7 +15,8 @@ public class PriNode implements Prioritized {
 
     public final Term id;
 
-    @Deprecated transient private Node<PriNode, Object> _node;
+    @Deprecated
+    private transient Node<PriNode, Object> _node;
 
     protected Merge input = Merge.Plus;
 
@@ -66,7 +67,7 @@ public class PriNode implements Prioritized {
             return accum;
         }
 
-        abstract public double merge(Iterable<? extends Node<PriNode, Object>> in);
+        public abstract double merge(Iterable<? extends Node<PriNode, Object>> in);
     }
 
     /** how the incoming priority is combined from sources */

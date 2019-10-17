@@ -57,8 +57,7 @@ public class Impiler {
 //		};
 //	}
 
-	@Nullable
-	public static ImplNode node(Termed x, boolean createIfMissing, NAR nar) {
+	public static @Nullable ImplNode node(Termed x, boolean createIfMissing, NAR nar) {
 		Concept xc = createIfMissing ? nar.conceptualize(x) : nar.concept(x);
 		if (xc != null)
 			return node(xc, createIfMissing);
@@ -66,8 +65,7 @@ public class Impiler {
 			return null;
 	}
 
-	@Nullable
-    private static ImplNode node(Concept sc, boolean createIfMissing) {
+	private static @Nullable ImplNode node(Concept sc, boolean createIfMissing) {
 		Term sct = sc.term();
 		return createIfMissing ? sc.meta(IMPILER_NODE, s -> new ImplNode(sct)) : sc.meta(IMPILER_NODE);
 	}
@@ -273,7 +271,7 @@ public class Impiler {
 
 	static class ImplNode extends NodeGraph.AbstractNode<Term, Task> {
 
-		final static int CAP = 8; //TODO parameterize
+		static final int CAP = 8; //TODO parameterize
 		final Bag<Task, ImplPLink> tasks = new PriReferenceArrayBag<>(PriMerge.max, CAP);
 
 		ImplNode(Term id) {

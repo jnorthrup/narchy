@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /** a spatial holding a Surface, implementing an interface between 3d and 2d UI dynamics */
-abstract public class SpaceWidget<T> extends SurfacedCuboid<T> {
+public abstract class SpaceWidget<T> extends SurfacedCuboid<T> {
 
     private boolean touched = false;
 
@@ -35,7 +35,7 @@ abstract public class SpaceWidget<T> extends SurfacedCuboid<T> {
 
 
 
-    abstract public Iterable<? extends EDraw<?>> edges();
+    public abstract Iterable<? extends EDraw<?>> edges();
 
 
 //    @Override

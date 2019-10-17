@@ -86,8 +86,8 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 @Skill({"Metaprogramming", "Reinforcement_learning"})
 public class Opjects extends DefaultTermizer {
 
-    final static org.slf4j.Logger logger = LoggerFactory.getLogger(Opjects.class);
-    final static ClassLoadingStrategy classLoadingStrategy =
+    static final org.slf4j.Logger logger = LoggerFactory.getLogger(Opjects.class);
+    static final ClassLoadingStrategy classLoadingStrategy =
 
             ClassLoadingStrategy.Default.WRAPPER;
 
@@ -153,7 +153,7 @@ public class Opjects extends DefaultTermizer {
     /**
      * TODO maybe use a stack to track invocations inside of evocations inside of invokations etc
      */
-    final static ThreadLocal<AtomicBoolean> evoking = ThreadLocal.withInitial(AtomicBoolean::new);
+    static final ThreadLocal<AtomicBoolean> evoking = ThreadLocal.withInitial(AtomicBoolean::new);
 
 
     public final NAR nar;
@@ -756,7 +756,7 @@ public class Opjects extends DefaultTermizer {
         return null;
     }
 
-    final static int VALID_PARAM_TERM = Op.or(ATOM, INT, VAR_DEP, PROD, BOOL);
+    static final int VALID_PARAM_TERM = Op.or(ATOM, INT, VAR_DEP, PROD, BOOL);
     private boolean validParamTerm(Op o1) {
         return o1.isAny(VALID_PARAM_TERM);
     }
@@ -853,8 +853,7 @@ public class Opjects extends DefaultTermizer {
     }
 
 
-    @Nullable
-    protected final Object tryInvoked(Object obj, Method m, Object[] args, Object result) {
+    protected final @Nullable Object tryInvoked(Object obj, Method m, Object[] args, Object result) {
         if (methodExclusions.contains(m.getName()))
             return result;
 

@@ -139,9 +139,9 @@ public class ConceptGraph2D extends Graph2D<Term> {
     }
 
 
-    final static float WEIGHT_UPDATE_RATE = 0.5f;
-    final static float COLOR_UPDATE_RATE = 0.5f;
-    final static float COLOR_FADE_RATE = 0.05f;
+    static final float WEIGHT_UPDATE_RATE = 0.5f;
+    static final float COLOR_UPDATE_RATE = 0.5f;
+    static final float COLOR_FADE_RATE = 0.05f;
 
 //    private static class TermlinkVis implements Graph2DRenderer<Term> {
 //        public final AtomicBoolean termlinks = new AtomicBoolean(true);
@@ -191,7 +191,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
         final Iterable<TaskLink> links;
 
         /** non-volatile cached is this helpful? */
-        transient private boolean _belief, _goal, _question, _quest;
+        private transient boolean _belief, _goal, _question, _quest;
 
 
         private TasklinkVis(Iterable<TaskLink> links) {

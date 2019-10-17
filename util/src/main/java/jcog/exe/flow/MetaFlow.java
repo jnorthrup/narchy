@@ -154,7 +154,7 @@ public class MetaFlow {
 //    public static final StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
     public static final StackWalker walkerSummary = StackWalker.getInstance();
 
-    final static String thisClassName = MetaFlow.class.getName();
+    static final String thisClassName = MetaFlow.class.getName();
 
     public final class StackCursor extends DynBytes {
 

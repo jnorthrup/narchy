@@ -8,10 +8,9 @@ import spacegraph.space2d.container.ContainerSurface;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-abstract public class AbstractUnitContainer<S extends Surface> extends ContainerSurface {
+public abstract class AbstractUnitContainer<S extends Surface> extends ContainerSurface {
 
-    @Nullable
-    protected abstract S the();
+    protected abstract @Nullable S the();
 
 
     /** default behavior: inherit bounds directly

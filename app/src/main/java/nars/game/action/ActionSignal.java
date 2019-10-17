@@ -23,8 +23,8 @@ public abstract class ActionSignal extends UniSignal implements GameLoop, Perman
 //    /** estimates the organic (derived, excluding curiosity) goal confidence for the given time interval
 //     * TODO exclude input tasks from the calculation */
 //    abstract public float dexterity(long start, long end, NAR n);
-    abstract public double dexterity();
-    abstract public double coherency();
+public abstract double dexterity();
+    public abstract double coherency();
 
     /**
      * determines the feedback belief when desire or belief has changed in a MotorConcept

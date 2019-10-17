@@ -12,7 +12,7 @@ import java.util.Objects;
 public class ImmutableDirectedEdge<N, E> implements FromTo<Node<N,E>, E> {
 
     public final Node<N,E> from, to;
-    @Nullable private final E id;
+    private final @Nullable E id;
     private final int hash;
 
     public ImmutableDirectedEdge(Node<N, E> from, @Nullable E id, Node<N, E> to) {

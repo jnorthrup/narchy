@@ -83,7 +83,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
         }
     }
 
-    static private MutableList<DeterministicUnification> shuffle(ArrayHashSet<DeterministicUnification> fork, Random rng) {
+    private static MutableList<DeterministicUnification> shuffle(ArrayHashSet<DeterministicUnification> fork, Random rng) {
         return fork.list.clone().shuffleThis(rng);
     }
 

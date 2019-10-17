@@ -105,7 +105,7 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
 //        return truth(beliefsOrGoals, componentsMax, prev, now, n.dur(), n);
 //    }
 
-    @Nullable public TruthProjection truth(boolean beliefsOrGoals, int componentsMax, When<What> g, int shift) {
+    public @Nullable TruthProjection truth(boolean beliefsOrGoals, int componentsMax, When<What> g, int shift) {
         BeliefTable t = (beliefsOrGoals ? beliefs() : goals());
 
         if (t.isEmpty())
@@ -146,7 +146,7 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
     }
 
     /** returns feedback truth value */
-    @Nullable abstract protected Truth updateAction(@Nullable Truth beliefTruth, @Nullable Truth actionTruth, Game g);
+    protected abstract @Nullable Truth updateAction(@Nullable Truth beliefTruth, @Nullable Truth actionTruth, Game g);
 
     private  @Nullable Truth truth(@Nullable TruthProjection t, When when, int shift) {
         return t!=null ?

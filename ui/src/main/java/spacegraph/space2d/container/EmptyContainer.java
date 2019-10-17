@@ -7,7 +7,7 @@ import spacegraph.space2d.Surface;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-abstract public class EmptyContainer extends ContainerSurface {
+public abstract class EmptyContainer extends ContainerSurface {
 
     @Override
     public int childrenCount() {

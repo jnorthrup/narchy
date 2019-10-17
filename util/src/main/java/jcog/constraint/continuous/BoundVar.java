@@ -1,6 +1,6 @@
 package jcog.constraint.continuous;
 
-abstract public class BoundVar<X> extends DoubleVar {
+public abstract class BoundVar<X> extends DoubleVar {
 
     public BoundVar(String name) {
         super(name);
@@ -14,6 +14,6 @@ abstract public class BoundVar<X> extends DoubleVar {
         set(floatValue());
     }
 
-    abstract protected double get();
-    abstract protected void set(double next);
+    protected abstract double get();
+    protected abstract void set(double next);
 }

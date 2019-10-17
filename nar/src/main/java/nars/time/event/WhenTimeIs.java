@@ -7,7 +7,7 @@ import nars.time.ScheduledTask;
 
 import java.util.function.Consumer;
 
-abstract public class WhenTimeIs extends ScheduledTask {
+public abstract class WhenTimeIs extends ScheduledTask {
 
     public final long whenOrAfter;
 

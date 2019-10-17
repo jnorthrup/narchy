@@ -18,8 +18,7 @@ public class ToggleButton extends AbstractButton {
 
     final AtomicBoolean on = new AtomicBoolean(false);
 
-    @Nullable
-    public ObjectBooleanProcedure<ToggleButton> action;
+    public @Nullable ObjectBooleanProcedure<ToggleButton> action;
 
     ToggleButton() {
         this(false);

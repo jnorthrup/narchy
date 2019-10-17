@@ -8,7 +8,7 @@ import java.util.SortedSet;
 import java.util.stream.Stream;
 
 /** use with caution */
-abstract public class ArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSet<X> implements SortedSet<X> {
+public abstract class ArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSet<X> implements SortedSet<X> {
 
     public static final SortedSet empty = new ArrayUnenforcedSortedSet<>() {
 
@@ -65,9 +65,8 @@ abstract public class ArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSet<X> 
         }
     }
 
-    @Nullable
     @Override
-    public Comparator<? super X> comparator() {
+    public @Nullable Comparator<? super X> comparator() {
         return null;
     }
 

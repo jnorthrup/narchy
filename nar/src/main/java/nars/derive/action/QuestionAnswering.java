@@ -34,8 +34,7 @@ public class QuestionAnswering extends NativeHow {
 
 	}
 
-	@Nullable
-	private static Task answer(Task question, BeliefTable answerTable, Derivation d) {
+	private static @Nullable Task answer(Task question, BeliefTable answerTable, Derivation d) {
 
 		//assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 

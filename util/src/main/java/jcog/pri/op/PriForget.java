@@ -39,7 +39,7 @@ public enum PriForget { ;
      * @param leak in percentage rate per item. any non-negative value
      *         TODO until time is considered, use only very small values for this like 0.001
      */
-    @Nullable public static Consumer<? extends Prioritizable> forgetPressure(float temperature, float leak, int size, int cap, float pressure, float mass) {
+    public static @Nullable Consumer<? extends Prioritizable> forgetPressure(float temperature, float leak, int size, int cap, float pressure, float mass) {
 
         if (pressure > Float.MIN_NORMAL) {
 
@@ -60,8 +60,7 @@ public enum PriForget { ;
         return null;
     }
 
-    @Nullable
-    public static Consumer forgetIdeal(double rate, double idealPri, int size, int cap, double pressure, double mass) {
+    public static @Nullable Consumer forgetIdeal(double rate, double idealPri, int size, int cap, double pressure, double mass) {
         double excess = pressure +
                 Math.max(0,
                     mass - (cap /*size*/ * idealPri)

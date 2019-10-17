@@ -84,7 +84,7 @@ public enum Util {
 	public static final int PRIME1 = 31;
 	//public static final int MAX_CONCURRENCY = Runtime.getRuntime().availableProcessors();
 	public static final ImmutableByteList EmptyByteList = ByteLists.immutable.empty();
-	public final static ObjectMapper jsonMapper =
+	public static final ObjectMapper jsonMapper =
 		new ObjectMapper()
 			.enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES)
 			.enable(SerializationFeature.WRAP_EXCEPTIONS)
@@ -97,7 +97,7 @@ public enum Util {
 			.enable(MapperFeature.AUTO_DETECT_GETTERS)
 			.enable(MapperFeature.AUTO_DETECT_IS_GETTERS)
 			.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-	public final static ObjectMapper cborMapper =
+	public static final ObjectMapper cborMapper =
 		new ObjectMapper(new CBORFactory())
 			.enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES);
 	public static final double log2 = Math.log(2);
@@ -2483,8 +2483,7 @@ public enum Util {
 	 * @return an {@code Optional} containing the URL of the class' location; never
 	 * {@code null} but potentially empty
 	 */
-	@Nullable
-	public static URL locate(ClassLoader loader, String className) {
+	public static @Nullable URL locate(ClassLoader loader, String className) {
 
 
 		if (loader == null) {
@@ -2742,8 +2741,7 @@ public enum Util {
 	 * if the collection is known to be of size==1, get that item in a possibly better-than-default way
 	 * according to the Collection's implementation
 	 */
-	@Nullable
-	public static <X> X only(Collection<X> next) {
+	public static @Nullable <X> X only(Collection<X> next) {
 		if (next instanceof List)
 			return ((List<X>) next).get(0);
 		else if (next instanceof MutableSet)

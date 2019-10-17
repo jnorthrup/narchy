@@ -41,7 +41,7 @@ public class PolygonShape extends Shape {
     /**
      * Dump lots of debug information.
      */
-    private final static boolean m_debug = false;
+    private static final boolean m_debug = false;
 
     /**
      * Local position of the shape centroid in parent body frame.

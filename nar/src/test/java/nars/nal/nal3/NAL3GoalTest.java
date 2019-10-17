@@ -11,12 +11,12 @@ import static nars.nal.nal3.NAL3Test.cycles;
 class NAL3GoalTest {
 
 
-    private final static String X = ("X");
-    private final static String Xe = ("(X-->A)");
-    private final static String Xi = ("(A-->X)");
-    private final static String Y = ("Y");
-    private final static String Ye = ("(Y-->A)");
-    private final static String Yi = ("(A-->Y)");
+    private static final String X = ("X");
+    private static final String Xe = ("(X-->A)");
+    private static final String Xi = ("(A-->X)");
+    private static final String Y = ("Y");
+    private static final String Ye = ("(Y-->A)");
+    private static final String Yi = ("(A-->Y)");
 
     @Test
     void testNoDifference() {

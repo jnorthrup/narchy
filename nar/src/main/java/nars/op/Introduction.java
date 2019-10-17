@@ -24,8 +24,7 @@ public abstract class Introduction extends TaskTransformAction {
     }
 
     /** returns the new, transformed target or null if the task should not be cloned */
-    @Nullable
-    protected abstract Term apply(Term x, What what);
+    protected abstract @Nullable Term apply(Term x, What what);
 
     @Override
     protected final Task transform(Task t, Derivation d) {

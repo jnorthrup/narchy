@@ -38,9 +38,9 @@ import java.nio.FloatBuffer;
  */
 public final class Polygon extends glpoly_t {
 
-    private final static int MAX_POLYS = 20000;
+    private static final int MAX_POLYS = 20000;
 
-    private final static int MAX_BUFFER_VERTICES = 120000;
+    private static final int MAX_BUFFER_VERTICES = 120000;
 
     
     private static final float[] s1_old = new float[MAX_VERTICES];

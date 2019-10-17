@@ -5,7 +5,7 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 import jake2.client.Key;
 
-final public class NEWTKBD extends KBD
+public final class NEWTKBD extends KBD
 {
 	public static final InputListener listener = new InputListener();
 	

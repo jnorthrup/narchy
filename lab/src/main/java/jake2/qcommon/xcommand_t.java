@@ -30,5 +30,5 @@ package jake2.qcommon;
  */
 public abstract class xcommand_t {
 
-	abstract public void execute();
+	public abstract void execute();
 }

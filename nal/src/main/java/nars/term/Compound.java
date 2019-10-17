@@ -308,18 +308,16 @@ public interface Compound extends Term, IPair, Subterms {
         TermAppender.append(this, p);
     }
 
-    @Nullable
     @Override
-    default Object _car() {
+    default @Nullable Object _car() {
         return sub(0);
     }
 
     /**
      * cdr or 'rest' function for s-expression interface when arity > 1
      */
-    @Nullable
     @Override
-    default Object _cdr() {
+    default @Nullable Object _cdr() {
         int len = subs();
         switch (len) {
             case 1:
@@ -588,8 +586,7 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     @Override
-    @Nullable
-    default Term normalize(byte varOffset) {
+    default @Nullable Term normalize(byte varOffset) {
         if (varOffset == 0 && this.isNormalized())
             return this;
 

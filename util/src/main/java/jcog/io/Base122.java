@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 public enum Base122 { ;
     private static final byte kShortened = 0b111; // Uses the illegal index to signify the last two-byte char encodes <= 7 bits.
 
-    private final static MetalBitSet illegal = MetalBitSet.bits(128);
+    private static final MetalBitSet illegal = MetalBitSet.bits(128);
     private static ImmutableByteByteMap illegalFwd, illegalRev;
 
     static {
@@ -121,7 +121,7 @@ public enum Base122 { ;
         return illegal.get(sevenBits) ? illegalFwd.get(sevenBits) : -1;
     }
 
-    final static class Decoder {
+    static final class Decoder {
         private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         private byte curByte = 0;
         private byte bitOfByte = 0;

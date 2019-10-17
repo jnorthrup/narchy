@@ -14,7 +14,7 @@ public abstract class AudioSource implements DigitizedSignal {
     protected final int bytesPerSample;
     protected final AtomicBoolean busy = new AtomicBoolean(false);
     public final TargetDataLine line;
-    volatile public int audioBytesRead;
+    public volatile int audioBytesRead;
     /** system ms time at start */
     private long _start;
     protected final byte[] preByteBuffer;

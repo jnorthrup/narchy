@@ -63,8 +63,7 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
      * if returns 'x' it means its already present
      * if it returns another instance it is an equal but different
      * */
-    @Nullable
-    private Task preMerge(Task x) {
+    private @Nullable Task preMerge(Task x) {
         if (isEmpty())
             return null;
 

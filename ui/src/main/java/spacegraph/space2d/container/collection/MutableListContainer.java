@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
-abstract public class MutableListContainer extends AbstractMutableContainer<Surface> {
+public abstract class MutableListContainer extends AbstractMutableContainer<Surface> {
 
 
     private static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i) -> i == 0 ? Surface.EmptySurfaceArray : new Surface[i];
@@ -231,5 +231,5 @@ abstract public class MutableListContainer extends AbstractMutableContainer<Surf
 
 
     @Override
-    abstract protected void doLayout(float dtS);
+    protected abstract void doLayout(float dtS);
 }

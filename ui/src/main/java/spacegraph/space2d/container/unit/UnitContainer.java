@@ -2,7 +2,7 @@ package spacegraph.space2d.container.unit;
 
 import spacegraph.space2d.Surface;
 
-abstract public class UnitContainer<S extends Surface> extends AbstractUnitContainer<S> {
+public abstract class UnitContainer<S extends Surface> extends AbstractUnitContainer<S> {
 
     public final S the;
 

@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UnifyConstraintTest {
 
-    private final static int CYCLES = 64;
+    private static final int CYCLES = 64;
 
     @Test
     void testNeqComRecursiveConstraint() throws Narsese.NarseseException {

@@ -38,8 +38,8 @@ class Rect2DTest {
         HyperPoint centroid = rect.center();
         double x = centroid.coord(0);
         double y = centroid.coord(1);
-        assertTrue(x == 2.0d, "Bad X-coord of centroid - expected " + 2.0 + " but was " + x);
-        assertTrue(y == 1.5d, "Bad Y-coord of centroid - expected " + 1.5 + " but was " + y);
+        assertTrue(x == 2.0d, () -> "Bad X-coord of centroid - expected " + 2.0 + " but was " + x);
+        assertTrue(y == 1.5d, () -> "Bad Y-coord of centroid - expected " + 1.5 + " but was " + y);
     }
 
     @Test
@@ -87,8 +87,8 @@ class Rect2DTest {
 
         double xRange = rect.range(0);
         double yRange = rect.range(1);
-        assertTrue(xRange == 4.0d, "Bad range in dimension X - expected " + 4.0 + " but was " + xRange);
-        assertTrue(yRange == 3.0d, "Bad range in dimension Y - expected " + 3.0 + " but was " + yRange);
+        assertTrue(xRange == 4.0d, () -> "Bad range in dimension X - expected " + 4.0 + " but was " + xRange);
+        assertTrue(yRange == 3.0d, () -> "Bad range in dimension Y - expected " + 3.0 + " but was " + yRange);
     }
 
 
@@ -157,6 +157,6 @@ class Rect2DTest {
 
         RectDouble rect = new RectDouble(0, 0, 4, 3);
         double cost = rect.cost();
-        assertTrue(cost == 12.0d, "Bad cost - expected " + 12.0 + " but was " + cost);
+        assertTrue(cost == 12.0d, () -> "Bad cost - expected " + 12.0 + " but was " + cost);
     }
 }

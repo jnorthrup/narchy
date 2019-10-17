@@ -121,7 +121,7 @@ public class Body2D extends Transform {
 
     private final MassData pmd = new MassData();
 
-    public final static AtomicInteger serial = new AtomicInteger();
+    public static final AtomicInteger serial = new AtomicInteger();
     private final int id = serial.incrementAndGet();
 
     final v2 posNext = new v2();

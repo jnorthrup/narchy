@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 
 public class TypedPort<X> extends Port<X> {
 
-    public final static ExtendedCastGraph CAST = new ExtendedCastGraph();
+    public static final ExtendedCastGraph CAST = new ExtendedCastGraph();
 
     public final Class<? super X> type;
 //    private final transient X lastValue;

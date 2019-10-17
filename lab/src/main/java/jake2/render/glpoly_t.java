@@ -26,9 +26,9 @@ package jake2.render;
 import jake2.util.Lib;
 
 public abstract class glpoly_t {
-	public final static int STRIDE = 7;
-	public final static int BYTE_STRIDE = 7 * Lib.SIZEOF_FLOAT;
-	public final static int MAX_VERTICES = 64;
+	public static final int STRIDE = 7;
+	public static final int BYTE_STRIDE = 7 * Lib.SIZEOF_FLOAT;
+	public static final int MAX_VERTICES = 64;
 	
 	public glpoly_t next;
 	public glpoly_t chain;

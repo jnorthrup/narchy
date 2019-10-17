@@ -30,8 +30,8 @@ public class SetFunc {
             return o.commutative;
         }
 
-        @Nullable
-        @Override public Term apply(Term a, Term b) {
+        @Override
+        public @Nullable Term apply(Term a, Term b) {
 
             return Terms.union(a.op(), a.subterms(), b.subterms() );
         }
@@ -39,12 +39,14 @@ public class SetFunc {
     };
 
     public static final Functor unionSect = new AbstractBinarySetFunctor("unionSect") {
-        @Nullable @Override public Term apply(Term a, Term b, Subterms s) {
+        @Override
+        public @Nullable Term apply(Term a, Term b, Subterms s) {
             return SetSectDiff.sect(a, b, true, s);
         }
     };
     public static final Functor interSect = new AbstractBinarySetFunctor("interSect") {
-        @Nullable @Override public Term apply(Term a, Term b, Subterms s) {
+        @Override
+        public @Nullable Term apply(Term a, Term b, Subterms s) {
             return SetSectDiff.sect(a, b, false, s);
         }
     };
@@ -154,16 +156,14 @@ public class SetFunc {
             return true;
         }
 
-        @Nullable
-        @Override
         @Deprecated
-        public final Term apply(Evaluation e, Subterms x) {
+        @Override
+        public final @Nullable Term apply(Evaluation e, Subterms x) {
             return applyInline(x);
         }
 
-        @Nullable
         @Override
-        public Term applyInline(Subterms x) {
+        public @Nullable Term applyInline(Subterms x) {
 
             Term a = x.sub(0);
 //            if (a instanceof Variable)
@@ -180,7 +180,7 @@ public class SetFunc {
             return apply(a, b, x);
         }
 
-        abstract protected Term apply(Term a, Term b, Subterms x);
+        protected abstract Term apply(Term a, Term b, Subterms x);
 
     }
 
@@ -192,9 +192,8 @@ public class SetFunc {
         }
 
 
-        @Nullable
         @Override
-        public final Term applyInline(Subterms x) {
+        public final @Nullable Term applyInline(Subterms x) {
             if (x.subs() != 2)
                 throw new UnsupportedOperationException("# args must equal 2");
             return super.applyInline(x);
@@ -204,8 +203,7 @@ public class SetFunc {
             return apply(a, b);
         }
 
-        @Nullable
-        public abstract Term apply(Term a, Term b);
+        public abstract @Nullable Term apply(Term a, Term b);
     }
 
 

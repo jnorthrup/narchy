@@ -36,7 +36,7 @@ abstract class State {
     }
 
     /** returning null means remain in the same state */
-    @Nullable abstract State run(PrologSolve e);
+    abstract @Nullable State run(PrologSolve e);
     
     public String toString() {
         return stateName;

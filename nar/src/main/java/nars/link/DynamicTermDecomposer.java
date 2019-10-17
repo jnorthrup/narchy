@@ -59,11 +59,12 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
 //        }
 //    };
 
-    @Nullable @Override public Term decompose(Compound t, Random rng) {
+    @Override
+    public @Nullable Term decompose(Compound t, Random rng) {
         return sampleDynamic(t, depth(t, rng), rng);
     }
 
-    @Nullable private Term sampleDynamic(Compound t, int depthRemain, Random rng) {
+    private @Nullable Term sampleDynamic(Compound t, int depthRemain, Random rng) {
 
         Term u = subterm(t, rng);
 
@@ -99,10 +100,10 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
         return true;
     }
 
-    abstract protected int depth(Compound root, Random rng);
+    protected abstract int depth(Compound root, Random rng);
 
     /** simple subterm choice abstraction TODO a good interface providing additional context */
-    abstract protected Term subtermDecide(Subterms tt, Term parent, Random rng);
+    protected abstract Term subtermDecide(Subterms tt, Term parent, Random rng);
 
 
 

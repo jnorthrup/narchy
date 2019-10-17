@@ -301,7 +301,7 @@ public abstract class Parser {
 		return Collections.emptyList();
 	}
 
-	abstract public Iterable<Parser> children();
+	public abstract Iterable<Parser> children();
 
 	/*
 	 * Returns a textual description of this string.

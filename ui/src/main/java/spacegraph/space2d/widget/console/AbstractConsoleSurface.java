@@ -22,7 +22,7 @@ public abstract class AbstractConsoleSurface extends EmptyContainer {
         return 1; //HACK prevent hiding of empty containers
     }
 
-    abstract public void invalidate();
+    public abstract void invalidate();
 
 
 //    abstract public TextCharacter charAt(int col, int row);

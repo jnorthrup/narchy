@@ -35,7 +35,7 @@ class TermListTest {
             immutable = Narsese.term(s, false).subterms();
         } catch (Narsese.NarseseException e) {
             e.printStackTrace();
-            fail(s + " -> " + e);
+            fail(() -> s + " -> " + e);
         }
         TermList mutable = new TermList(immutable);
 

@@ -258,7 +258,7 @@ abstract class HashedWheelTimerTest {
         }
 
         assertTrue(latch.await(count, TimeUnit.SECONDS), ()->latch.getCount() + " should be zero");
-        assertTrue(1 >= timer.size(), timer.size() + " tasks in wheel");
+        assertTrue(1 >= timer.size(), () -> timer.size() + " tasks in wheel");
 
         {
             Histogram w = when.copy();

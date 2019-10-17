@@ -114,7 +114,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         //Exe.invokeLater(w::destroy);
     }
 
-    abstract protected void init(GL2 gl);
+    protected abstract void init(GL2 gl);
 
     public void printHardware() {
 
@@ -203,7 +203,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      *
      * @param dtMS
      */
-    abstract protected void render(float dtS);
+    protected abstract void render(float dtS);
 
 
     @Override

@@ -22,8 +22,7 @@ public interface Subst extends RecursiveTermTransform {
     }
 
     @Override
-    @Nullable
-    default Term applyCompound(Compound x) {
+    default @Nullable Term applyCompound(Compound x) {
         Term y = RecursiveTermTransform.super.applyCompound(x);
         if (y == Null)
             return Null;

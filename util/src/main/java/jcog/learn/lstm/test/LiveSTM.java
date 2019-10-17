@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 /**
  * Created by me on 7/9/16.
  */
-abstract public class LiveSTM extends AbstractTraining {
+public abstract class LiveSTM extends AbstractTraining {
 
     public final SimpleLSTM agent;
 

@@ -28,7 +28,7 @@ public class Remember {
      * root input
      */
     public Task input;
-    @Nullable public Task result = null;
+    public @Nullable Task result = null;
 
     public boolean store;
     public boolean link;
@@ -38,12 +38,11 @@ public class Remember {
     @Deprecated public final NAR nar;
     public transient What what = null;
 
-    @Nullable public static Remember the(Task x, NAR n) {
+    public static @Nullable Remember the(Task x, NAR n) {
         return the(x, true, true, true, n);
     }
 
-    @Nullable
-    public static Remember the(Task x, boolean store, boolean link, boolean emit, NAR n) {
+    public static @Nullable Remember the(Task x, boolean store, boolean link, boolean emit, NAR n) {
         if (x instanceof SeriesBeliefTable.SeriesTask)
             return null; //already will have been added directly by the table to itself
 

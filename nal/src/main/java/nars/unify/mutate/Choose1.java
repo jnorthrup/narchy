@@ -23,7 +23,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
     private final Term /*Ellipsis*/ xEllipsis;
     private final Term[] yy;
 
-    private final static Atom CHOOSE_1 = $.the(Choose1.class);
+    private static final Atom CHOOSE_1 = $.the(Choose1.class);
 
     public Choose1(Term /*Ellipsis*/ xEllipsis, Term x, SortedSet<Term> yFree) {
         this(xEllipsis, x, yFree.toArray(Op.EmptyTermArray));
@@ -43,7 +43,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
         //assert(ml >= xEllipsis.minArity);
     }
 
-    @Nullable public static Termutator choose1(Ellipsis ellipsis, Term x, SortedSet<Term> yFree, Unify u) {
+    public static @Nullable Termutator choose1(Ellipsis ellipsis, Term x, SortedSet<Term> yFree, Unify u) {
         int ys = yFree.size();
 
         if (ellipsis.minArity > ys - 1)

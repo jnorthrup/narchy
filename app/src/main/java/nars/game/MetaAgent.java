@@ -32,7 +32,7 @@ import static nars.$.$$;
 /**
  * supraself agent metavisor
  */
-abstract public class MetaAgent extends Game {
+public abstract class MetaAgent extends Game {
 
 	private static final float PRI_ACTION_RESOLUTION =
 		0.01f;
@@ -413,7 +413,7 @@ abstract public class MetaAgent extends Game {
 
 					private volatile int autoResumeID = 0;
 					private volatile ScheduledTask autoResume;
-					volatile private Runnable resume = null;
+					private volatile Runnable resume = null;
 
 					@Override
 					public void value(boolean e) {

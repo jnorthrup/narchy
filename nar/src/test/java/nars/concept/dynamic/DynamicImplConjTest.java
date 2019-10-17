@@ -151,7 +151,7 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
         }
     }
 
-    static private String dtdt(String xy) {
+    private static String dtdt(String xy) {
         xy = xy.replace(" ==>+0 ", "==>");
         xy = xy.replace(" &&+0 ", "&&");
         xy = xy.replace("x && y", "x&&y");
@@ -162,7 +162,7 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
         return xy;
     }
 
-    static private String dtStr(int dt) {
+    private static String dtStr(int dt) {
         switch (dt) {
             case DTERNAL:
                 return "";
@@ -172,11 +172,11 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
         return (dt >= 0 ? "+" : "") + (dt);
     }
 
-    static private Task assertBelief(long when, String answerTermExpected, float freqExpected, float confExpected, NAR n) {
+    private static Task assertBelief(long when, String answerTermExpected, float freqExpected, float confExpected, NAR n) {
         return assertBelief(answerTermExpected, when, answerTermExpected, freqExpected, confExpected, n);
     }
 
-    static private Task assertBelief(String inputTerm, long when, String answerTermExpected, float freqExpected, float confExpected, NAR n) {
+    private static Task assertBelief(String inputTerm, long when, String answerTermExpected, float freqExpected, float confExpected, NAR n) {
         Term x = $$(inputTerm);
         assertDynamicTable(n, x);
         Task t = n.answer(x, BELIEF, when);

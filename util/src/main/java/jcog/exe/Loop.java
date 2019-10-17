@@ -13,7 +13,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static jcog.Texts.n2;
 
 
-abstract public class Loop extends FixedRateTimedFuture {
+public abstract class Loop extends FixedRateTimedFuture {
 
     private static final Logger logger = Log.logger(Loop.class);
 
@@ -210,7 +210,7 @@ abstract public class Loop extends FixedRateTimedFuture {
 
     }
 
-    abstract public boolean next();
+    public abstract boolean next();
 
 
     public float getFPS() {

@@ -432,8 +432,7 @@ public final class Narsese {
      */
     public static final class NarseseException extends Exception {
 
-        @Nullable
-        public final ParsingResult result;
+        public final @Nullable ParsingResult result;
 
         /**
          * An invalid addInput line.

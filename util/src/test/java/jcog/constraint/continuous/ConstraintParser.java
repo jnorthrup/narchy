@@ -15,7 +15,7 @@ public class ConstraintParser {
 
     private static final Pattern pattern = Pattern.compile("\\s*(.*?)\\s*(<=|==|>=|[GL]?EQ)\\s*(.*?)\\s*(!(required|strong|medium|weak))?");
 
-    private final static String OPS = "-+/*^";
+    private static final String OPS = "-+/*^";
 
     public interface CassowaryVariableResolver {
 

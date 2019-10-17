@@ -32,7 +32,7 @@ import static nars.Op.BELIEF;
  * */
 public class NARHear extends Loop {
 
-    final static Atomic START = Atomic.the("start");
+    static final Atomic START = Atomic.the("start");
 
     private final NAR nar;
     
@@ -117,8 +117,7 @@ public class NARHear extends Loop {
     }
 
 
-    @NotNull
-    public static List<Term> tokenize(String msg) {
+    public static @NotNull List<Term> tokenize(String msg) {
         return Lists.transform(Twokenize.tokenize(msg), Twenglish::spanToTerm);
     }
 
@@ -159,7 +158,7 @@ public class NARHear extends Loop {
         );
     }
 
-    static public void readURL(NAR nar) {
+    public static void readURL(NAR nar) {
         nar.setOp(Atomic.atom("readURL"), (t, n) -> {
 
             Term[] args = Functor.args(t.term()).arrayClone();
@@ -175,8 +174,7 @@ public class NARHear extends Loop {
         });
     }
 
-    @NotNull
-    public static Task readURL(NAR n, String url) throws IOException {
+    public static @NotNull Task readURL(NAR n, String url) throws IOException {
 
 
 

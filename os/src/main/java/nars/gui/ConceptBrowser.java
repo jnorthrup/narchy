@@ -29,7 +29,7 @@ public class ConceptBrowser extends Bordering {
 
     }
 
-    synchronized private void update(String termString) {
+    private synchronized void update(String termString) {
         Term t;
         try {
             t = $(termString);

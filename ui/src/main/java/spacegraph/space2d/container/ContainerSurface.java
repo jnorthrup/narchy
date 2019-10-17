@@ -19,9 +19,9 @@ import java.util.function.Predicate;
  * branch node.  layout is an asynchronous lazy update.
  * TODO illustrate the various update loops and their interactions
  */
-abstract public class ContainerSurface extends Surface {
+public abstract class ContainerSurface extends Surface {
 
-    final static MetalAtomicIntegerFieldUpdater<ContainerSurface> MUSTLAYOUT =
+    static final MetalAtomicIntegerFieldUpdater<ContainerSurface> MUSTLAYOUT =
             new MetalAtomicIntegerFieldUpdater<>(ContainerSurface.class, "mustLayout");
 
     private volatile int mustLayout = 0;
@@ -37,7 +37,8 @@ abstract public class ContainerSurface extends Surface {
 
 
     /** TODO just accept the ReRender instance, not this dtS which it can get as needed */
-    @Deprecated abstract protected void doLayout(float dtS);
+    @Deprecated
+    protected abstract void doLayout(float dtS);
 
     @Override
     public void print(PrintStream out, int indent) {
@@ -152,7 +153,7 @@ abstract public class ContainerSurface extends Surface {
     }
 
     /** TODO forEachWith */
-    abstract public void forEach(Consumer<Surface> o);
+    public abstract void forEach(Consumer<Surface> o);
 
     public <X> void forEachWith(BiConsumer<Surface,X> o, X x) {
         forEach(c -> o.accept(c, x));

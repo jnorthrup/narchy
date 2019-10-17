@@ -34,7 +34,7 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
     };
 
     /** seconds */
-    final static long connTimeout = 10L;
+    static final long connTimeout = 10L;
 
     private final String javaCmd;
     private final ZLogger logger;

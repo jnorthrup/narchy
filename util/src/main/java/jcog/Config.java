@@ -28,15 +28,13 @@ public enum Config { ;
    }
 
    /*@JvmStatic*/
-   @Nullable
-   private static String qget2(@NotNull String nodeVarName, @Nullable String defaultVal) {
+   private static @Nullable String qget2(@NotNull String nodeVarName, @Nullable String defaultVal) {
       //Intrinsics.checkParameterIsNotNull(nodeVarName, "nodeVarName");
       return get2(nodeVarName, defaultVal, true);
    }
 
    /*@JvmStatic*/
-   @Nullable
-   public static String get2(@NotNull String configKey, @Nullable String defaultVal, boolean quiet) {
+   public static @Nullable String get2(@NotNull String configKey, @Nullable String defaultVal, boolean quiet) {
       //Intrinsics.checkParameterIsNotNull(configKey, "configKey");
       boolean var5 = false;
        //Intrinsics.checkExpressionValueIsNotNull(var10000, "(this as java.lang.String).toLowerCase()");
@@ -77,8 +75,7 @@ public enum Config { ;
 
    // $FF: synthetic method
    /*@JvmStatic*/
-   @Nullable
-   public static String get2$default(String var0, String var1, boolean var2, int var3, Object var4) {
+   public static @Nullable String get2$default(String var0, String var1, boolean var2, int var3, Object var4) {
       if ((var3 & 4) != 0) {
          var2 = false;
       }
@@ -87,8 +84,7 @@ public enum Config { ;
    }
 
    /*@JvmStatic*/
-   @NotNull
-   private static String reportConfig(@NotNull String javapropname, @NotNull String val) {
+   private static @NotNull String reportConfig(@NotNull String javapropname, @NotNull String val) {
       //Intrinsics.checkParameterIsNotNull(javapropname, "javapropname");
       //Intrinsics.checkParameterIsNotNull(val, "val");
 //      boolean var3 = false;
@@ -143,15 +139,13 @@ public enum Config { ;
 //   }
 
    /*@JvmStatic*/
-   @Nullable
-   public static String get(@NotNull String s) {
+   public static @Nullable String get(@NotNull String s) {
       //Intrinsics.checkParameterIsNotNull(s, "s");
       return get2(s, null, false);
    }
 
    /*@JvmStatic*/
-   @Nullable
-   public static String qget(@NotNull String s) {
+   public static @Nullable String qget(@NotNull String s) {
       //Intrinsics.checkParameterIsNotNull(s, "s");
       return qget2(s, null);
    }

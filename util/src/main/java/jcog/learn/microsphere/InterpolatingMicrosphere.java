@@ -35,13 +35,11 @@ public class InterpolatingMicrosphere {
     /**
      * Microsphere.
      */
-    @NotNull
-    public final List<float[]> microsphere; /* n-element (size) */
+    public final @NotNull List<float[]> microsphere; /* n-element (size) */
     /**
      * Microsphere data.
      */
-    @NotNull
-    public final List<float[]> microsphereData; /* 2-element illumination, value pairs */
+    public final @NotNull List<float[]> microsphereData; /* 2-element illumination, value pairs */
     /**
      * Space dimension.
      */
@@ -206,8 +204,7 @@ public class InterpolatingMicrosphere {
      * @return the estimated value at the given {@code point}.
      * @throws NotPositiveException if {@code exponent < 0}.
      */
-    @NotNull
-    public float[] value(@NotNull float[] targetPoint,
+    public @NotNull float[] value(@NotNull float[] targetPoint,
                          float[][] data,
                          Focus curve,
                          int numSamples) {
@@ -377,8 +374,7 @@ public class InterpolatingMicrosphere {
      * @return the value estimated from the current illumination of the
      * microsphere.
      */
-    @NotNull
-    private float[] interpolate() {
+    private @NotNull float[] interpolate() {
 
         int size = this.size;
 

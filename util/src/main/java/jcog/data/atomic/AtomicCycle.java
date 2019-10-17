@@ -2,9 +2,9 @@ package jcog.data.atomic;
 
 import java.util.function.IntUnaryOperator;
 
-abstract public class AtomicCycle implements IntUnaryOperator {
+public abstract class AtomicCycle implements IntUnaryOperator {
 
-    private final static MetalAtomicIntegerFieldUpdater<AtomicCycle> I =
+    private static final MetalAtomicIntegerFieldUpdater<AtomicCycle> I =
             new MetalAtomicIntegerFieldUpdater(AtomicCycle.class, "i");
 
     /** TODO use VarHandle */
@@ -16,10 +16,10 @@ abstract public class AtomicCycle implements IntUnaryOperator {
     }
 
     /** inclusive */
-    abstract public int low();
+    public abstract int low();
 
     /** exclusive */
-    abstract public int high();
+    public abstract int high();
 
     public static class AtomicCycleNonNegative extends AtomicCycle {
         @Override public int low() {

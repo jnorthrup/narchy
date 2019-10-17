@@ -79,8 +79,7 @@ public enum PremiseRuleCompiler {
     }
 
 
-    @Nullable
-    static List<PREDICATE<PreDerivation>> compile(TrieNode<List<PREDICATE<PreDerivation>>, How> node) {
+    static @Nullable List<PREDICATE<PreDerivation>> compile(TrieNode<List<PREDICATE<PreDerivation>>, How> node) {
 
 
         UnifiedSet<PREDICATE<PreDerivation>> bb = new UnifiedSet();

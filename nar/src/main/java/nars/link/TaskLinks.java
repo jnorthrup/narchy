@@ -89,14 +89,14 @@ public class TaskLinks implements Sampler<TaskLink> {
         links.setCapacity(c);
     }
 
-    @Nullable public Multimap<Term,TaskLink> get(Predicate<Term> f, boolean sourceOrTargetMatch) {
+    public @Nullable Multimap<Term,TaskLink> get(Predicate<Term> f, boolean sourceOrTargetMatch) {
         return get((t)->{
             Term tgt = sourceOrTargetMatch ? t.from() : t.to();
             return f.test(tgt) ? tgt : null;
         });
     }
 
-    @Nullable public Multimap<Term,TaskLink> get(Function<TaskLink,Term> f) {
+    public @Nullable Multimap<Term,TaskLink> get(Function<TaskLink,Term> f) {
         Multimap<Term,TaskLink> m = null;
         for (TaskLink x : links) {
             @Nullable Term y = f.apply(x);
@@ -132,9 +132,8 @@ public class TaskLinks implements Sampler<TaskLink> {
         links.commit(f /*g*/);
     }
 
-    @Nullable
     @Override
-    public final TaskLink sample(Random rng) {
+    public final @Nullable TaskLink sample(Random rng) {
         return links.sample(rng);
     }
 

@@ -46,7 +46,7 @@ public class BasicExecutionStatus {
      * the best solution is the smaller (string length wise) one.
      * @param candidate
      */
-    synchronized public void updateBest(FinalSolution candidate){
+    public synchronized void updateBest(FinalSolution candidate){
         if(this.best == null){
             this.best = candidate;
             return;

@@ -148,8 +148,7 @@ public class VerletSurface extends PaintSurface implements Animated {
 
         abstract Vec2D targetVerlet(VerletParticle2D particle, Surface s);
 
-        @Nullable
-        abstract public Vec2D targetSurface(VerletParticle2D p, Surface ss);
+        public abstract @Nullable Vec2D targetSurface(VerletParticle2D p, Surface ss);
     }
 
 

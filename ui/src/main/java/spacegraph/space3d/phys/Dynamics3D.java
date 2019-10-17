@@ -63,8 +63,7 @@ public class Dynamics3D<X> extends Collisions<X> {
     private final Constrainer constrainer;
     private final Islands islands;
     private final List<TypedConstraint> constraints = new FasterList();
-    @Nullable
-    private v3 gravity;
+    private @Nullable v3 gravity;
 
 
     private final Flip<List<Collidable>> coll = new Flip(FasterList::new);
@@ -908,7 +907,7 @@ public class Dynamics3D<X> extends Collisions<X> {
 
     private static class ClosestNotMeConvexResultCallback extends ClosestConvexResultCallback {
         private final Collidable me;
-        private final static float allowedPenetration = 0;
+        private static final float allowedPenetration = 0;
         private final OverlappingPairCache pairCache;
         private final Intersecter intersecter;
 

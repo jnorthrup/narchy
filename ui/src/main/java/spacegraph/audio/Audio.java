@@ -20,14 +20,14 @@ public class Audio implements Runnable {
         pulseaudio -v
 
      */
-    private final static Logger logger = LoggerFactory.getLogger(Audio.class);
+    private static final Logger logger = LoggerFactory.getLogger(Audio.class);
 
     private static Audio defaultAudio;
 
     /**
      * the default audio system
      */
-    public synchronized static Audio the() {
+    public static synchronized Audio the() {
 
             if (defaultAudio == null) {
                 defaultAudio = new Audio(32);

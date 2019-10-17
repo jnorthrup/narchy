@@ -25,7 +25,7 @@ import static nars.time.Tense.DTERNAL;
  * Annotates a GenericCompound with cached data to accelerate pattern matching
  * TODO not finished yet
  */
-abstract public class FastCompound implements SameSubtermsCompound /* The */ {
+public abstract class FastCompound implements SameSubtermsCompound /* The */ {
 
     private static final Op[] ov = Op.values();
 

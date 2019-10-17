@@ -33,7 +33,7 @@ import static nars.time.Tense.*;
 
 public class Taskify extends ProxyTerm {
 
-    private final static Logger logger = LoggerFactory.getLogger(Taskify.class);
+    private static final Logger logger = LoggerFactory.getLogger(Taskify.class);
     /**
      * destination of any derived tasks; also may be used to communicate backpressure
      * from the recipient.
@@ -104,8 +104,7 @@ public class Taskify extends ProxyTerm {
         return task(o.getOne(), occ[0], occ[1], d);
     }
 
-    @Nullable
-    private Pair<Term, long[]> occurrify(Term x, Derivation d) {
+    private @Nullable Pair<Term, long[]> occurrify(Term x, Derivation d) {
         Pair<Term, long[]> timing = time.occurrence(x, d);
         if (timing == null) {
             if (NAL.test.DEBUG_OCCURRIFY)
@@ -173,7 +172,7 @@ public class Taskify extends ProxyTerm {
     /**
      * note: the return value here shouldnt matter so just return true anyway
      */
-    @Nullable private Task task(Term x0, long start, long end, Derivation d) {
+    private @Nullable Task task(Term x0, long start, long end, Derivation d) {
 
         final byte punc = d.punc;
         if (punc == 0)

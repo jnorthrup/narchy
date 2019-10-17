@@ -12,8 +12,8 @@ public class FingerResizeWindow extends FingerResize {
 
     float margin = 0.15f;
 
-    private final static int MIN_WIDTH = 32;
-    private final static int MIN_HEIGHT = MIN_WIDTH;
+    private static final int MIN_WIDTH = 32;
+    private static final int MIN_HEIGHT = MIN_WIDTH;
 
     private final JoglDisplay space;
     private RectFloat size = RectFloat.Zero;

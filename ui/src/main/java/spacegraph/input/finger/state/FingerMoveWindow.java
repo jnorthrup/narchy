@@ -5,7 +5,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.video.JoglDisplay;
 
 /** finger move trigger, using screen pixel scale */
-abstract public class FingerMoveWindow extends FingerMove {
+public abstract class FingerMoveWindow extends FingerMove {
 
     public FingerMoveWindow(int button) {
         super(button);

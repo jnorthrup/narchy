@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * N independent asynchronously looping worker threads
  */
-abstract public class ThreadedExec extends MultiExec {
+public abstract class ThreadedExec extends MultiExec {
 
     static final int inputQueueCapacityPerThread = 512;
 
@@ -141,7 +141,7 @@ abstract public class ThreadedExec extends MultiExec {
 
     }
 
-    abstract protected Supplier<Worker> loop();
+    protected abstract Supplier<Worker> loop();
 
     @Override
     public boolean delete() {

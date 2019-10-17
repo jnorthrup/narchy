@@ -302,8 +302,7 @@ public abstract class NQuadsRDF {
     static final Atomic invFuncProp = Atomic.the("InverseFunctionalProperty");
 
 
-    @Nullable
-    static Term subjObjInh(Term subject, char subjType, char objType, boolean reverse) {
+    static @Nullable Term subjObjInh(Term subject, char subjType, char objType, boolean reverse) {
         String a = reverse ? "subj" : "obj";
         String b = reverse ? "obj" : "subj";
         return inh(
@@ -490,8 +489,7 @@ public abstract class NQuadsRDF {
      * @param qname the QName for the tag.
      * @return the formatted QName for the tag.
      */
-    @NotNull
-    private static String formatTag(@NotNull QName qname) {
+    private static @NotNull String formatTag(@NotNull QName qname) {
         String prefix = qname.getPrefix();
         String suffix = qname.getLocalPart();
 
@@ -522,7 +520,7 @@ public abstract class NQuadsRDF {
     }
 
 
-    final static Logger logger = LoggerFactory.getLogger(NQuadsRDF.class);
+    static final Logger logger = LoggerFactory.getLogger(NQuadsRDF.class);
 
     @Deprecated
     public static void input(NAR n, File f) throws FileNotFoundException {

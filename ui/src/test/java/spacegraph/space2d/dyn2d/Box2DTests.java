@@ -417,7 +417,7 @@ public class Box2DTests extends JComponent implements Runnable {
         }
     }
 
-    final static Color clearColor = new Color(0, 0, 0);
+    static final Color clearColor = new Color(0, 0, 0);
 
     @Override
     public void paintComponent(Graphics graphics) {

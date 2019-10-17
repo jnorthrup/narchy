@@ -43,8 +43,7 @@ public class UnifyTransform extends SubUnify {
 		return result;
 	}
 
-	@Nullable
-	public Term unifySubst(Term x, Term y, Term transformed, int var, boolean strict) {
+	public @Nullable Term unifySubst(Term x, Term y, Term transformed, int var, boolean strict) {
 		clear(var, strict);
 		return unifySubst(x, y, transformed);
 	}

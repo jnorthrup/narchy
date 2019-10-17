@@ -90,7 +90,7 @@ public class SpaceProblem implements Problem<SpaceProblem.SpaceFind> {
             return false;
         }
 
-        public final static Problem<SpaceFind> PROBLEM = new Problem<>() {
+        public static final Problem<SpaceFind> PROBLEM = new Problem<>() {
 
             @Override
             public double cost(SpaceFind currentNode, SpaceFind successorNode) {

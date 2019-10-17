@@ -18,8 +18,7 @@ public class Hover<X extends Surface, Y extends Surface> extends Fingering {
     public final HoverModel model;
     final X source;
     private final Function<X, Y> targetBuilder;
-    @Nullable
-    volatile Surface target = null;
+    volatile @Nullable Surface target = null;
     private RectFloat tgtBoundsPx;
     private long startTime;
 

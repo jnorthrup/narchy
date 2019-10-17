@@ -230,7 +230,7 @@ public class TermTestMisc {
 
         try {
             Task x = n.inputTask(t + '.');
-            fail(t + " is invalid compound target");
+            fail(() -> t + " is invalid compound target");
         } catch (Throwable tt) {
             assertTrue(true);
         }
@@ -347,7 +347,7 @@ public class TermTestMisc {
 
         if (conceptualize) {
             Concept n2a = n2.conceptualize(a);
-            assertNotNull(n2a, a + " should conceptualize");
+            assertNotNull(n2a, () -> a + " should conceptualize");
             assertNotNull(b);
             assertEquals(n2a.toString(), b.toString());
             assertEquals(n2a.hashCode(), b.hashCode());
@@ -451,7 +451,7 @@ public class TermTestMisc {
 
         assertNotEquals(ta, tb);
         assertNotEquals(ta.hashCode(),
-                tb.hashCode(), ta + " vs. " + tb);
+                tb.hashCode(), () -> ta + " vs. " + tb);
 
 
     }
@@ -471,7 +471,7 @@ public class TermTestMisc {
     void testHashDistribution() {
         int ah = new UniSubterm($.the("x")).hashCode();
         int bh = new UniSubterm($.the("y")).hashCode();
-        assertTrue(Math.abs(ah - bh) > 1, ah + " vs " + bh);
+        assertTrue(Math.abs(ah - bh) > 1, () -> ah + " vs " + bh);
     }
 
     @Test
@@ -542,7 +542,7 @@ public class TermTestMisc {
             NAR t = NARS.shell();
             t.believe(x);
 
-            fail(x + " should not have been allowed as a task content");
+            fail(() -> x + " should not have been allowed as a task content");
 
 
         } catch (Exception e) {
@@ -633,7 +633,7 @@ public class TermTestMisc {
             Term a = x.subPath((byte) 0, (byte) 0);
             Term b = x.subPath((byte) 1, (byte) 0);
             assertNotEquals(a, x.subPath((byte) 0, (byte) 1));
-            assertEquals(a, b, x + " subterms (0,0)==(1,0)");
+            assertEquals(a, b, () -> x + " subterms (0,0)==(1,0)");
             assertSame(a, b);
         }
     }

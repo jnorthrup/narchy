@@ -44,9 +44,9 @@ public class ClipBMP extends Component {
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ClipBMP.class);
     private static final long serialVersionUID = -756738379924520867L;
     
-    private final static int BITMAPFILEHEADER_SIZE = 14;
+    private static final int BITMAPFILEHEADER_SIZE = 14;
 
-    private final static int BITMAPINFOHEADER_SIZE = 40;
+    private static final int BITMAPINFOHEADER_SIZE = 40;
     private static final int bfOffBits = BITMAPFILEHEADER_SIZE + BITMAPINFOHEADER_SIZE;
     private static final int biSize = BITMAPINFOHEADER_SIZE;
     private static final int biPlanes = 1;

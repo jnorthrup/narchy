@@ -125,7 +125,7 @@ class TruthTest {
     private static void hashUnhash(float f, float c) {
         Truth t = new DiscreteTruth(f, c);
         Truth u = Truth.intToTruth(t.hashCode());
-        assertNotNull(u, t + " unhased to null via hashCode " + t.hashCode());
+        assertNotNull(u, () -> t + " unhased to null via hashCode " + t.hashCode());
         assertEquals(t, u);
     }
 

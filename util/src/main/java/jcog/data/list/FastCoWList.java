@@ -430,7 +430,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         });
     }
 
-	@Nullable public X get(Random random) {
+	public @Nullable X get(Random random) {
         X[] c = array();
         if (c.length == 0)
             return null;

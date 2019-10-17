@@ -21,9 +21,8 @@ public abstract class UnaryParametricBidiFunctor extends Functor {
 
     public UnaryParametricBidiFunctor(String atom) { super(atom); }
 
-    @Nullable
     @Override
-    public final Term apply(Evaluation e, Subterms terms) {
+    public final @Nullable Term apply(Evaluation e, Subterms terms) {
         int s = terms.subs();
         switch (s) {
             case 2:

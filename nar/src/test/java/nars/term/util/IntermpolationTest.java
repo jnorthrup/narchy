@@ -41,7 +41,7 @@ class IntermpolationTest {
         NAR s = NARS.shell();
 
         Term concept = a.concept();
-        assertEquals(concept, b.concept(), "concepts differ: " + a + ' ' + b);
+        assertEquals(concept, b.concept(), () -> "concepts differ: " + a + ' ' + b);
 
 
         Set<Term> ss = new TreeSet();

@@ -338,7 +338,7 @@ public class Islands {
 
     
 
-    public static abstract class IslandCallback {
+    public abstract static class IslandCallback {
         public abstract void processIsland(Collection<Collidable> bodies, FasterList<PersistentManifold> manifolds, int manifolds_offset, int numManifolds, int islandId);
     }
 

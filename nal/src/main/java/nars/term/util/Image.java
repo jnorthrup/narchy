@@ -120,8 +120,7 @@ public enum Image {
     /**
      * assumes that input is INH op has been tested for all image bits
      */
-    @Nullable
-    private static Term normalize(Term x, boolean transform, boolean testOnly, TermBuilder B) {
+    private static @Nullable Term normalize(Term x, boolean transform, boolean testOnly, TermBuilder B) {
 
         //assert(x.op()==INH);
 
@@ -180,8 +179,7 @@ public enum Image {
      *
      * @return Bool term if collapsed, otherwise null
      */
-    @Nullable
-    public static Term recursionFilter(Term subj, Term pred, TermBuilder B) {
+    public static @Nullable Term recursionFilter(Term subj, Term pred, TermBuilder B) {
         return Image.normalize(
                 new LighterCompound(INH, subj, pred),
         true, true, B);

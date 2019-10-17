@@ -63,7 +63,7 @@ public class AxisAngle4f implements java.io.Serializable, Cloneable {
      */
     public float angle;
 
-    private final static float EPS = 0.000001f;
+    private static final float EPS = 0.000001f;
 
     /**
      * Constructs and initializes a AxisAngle4f from the specified xyzw coordinates.

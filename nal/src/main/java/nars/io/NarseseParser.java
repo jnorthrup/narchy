@@ -338,8 +338,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         );
     }
 
-    @Nullable
-    static Term TemporalRelationBuilder(Term pred, Object timeDelta, Op o, Term subj) {
+    static @Nullable Term TemporalRelationBuilder(Term pred, Object timeDelta, Op o, Term subj) {
         if (subj == null || subj == Bool.Null || pred == null || pred == Bool.Null)
             return null;
         else {
@@ -353,7 +352,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         }
     }
 
-    public final static String invalidCycleDeltaString = Integer.toString(Integer.MIN_VALUE);
+    public static final String invalidCycleDeltaString = Integer.toString(Integer.MIN_VALUE);
 
     public Rule TimeDelta() {
         return
@@ -739,8 +738,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     }
 
 
-    @Nullable
-    static Term the(@Nullable Object o) {
+    static @Nullable Term the(@Nullable Object o) {
         if (o instanceof Term) return (Term) o;
         if (o == null) return null;
         if (o instanceof String) {
@@ -756,9 +754,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     /**
      * produce a target from the terms (& <=1 NALOperator's) on the value stack
      */
-    @Nullable
     @Deprecated
-    final Term popTerm(Op op /*default */) {
+    final @Nullable Term popTerm(Op op /*default */) {
 
 
         Op[] opp = new Op[1];

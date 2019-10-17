@@ -84,7 +84,7 @@ public class FasterList<X> extends FastList<X> {
         super(x);
     }
 
-    static private int sizePlusFiftyPercent(int oldSize) {
+    private static int sizePlusFiftyPercent(int oldSize) {
         int result = oldSize + (oldSize / 2) + 1;
         return result;
         //return result < oldSize ? (Integer.MAX_VALUE - 8) : result;
@@ -227,8 +227,7 @@ public class FasterList<X> extends FastList<X> {
         return items[0];
     }
 
-    @Nullable
-    public X get(Random random) {
+    public @Nullable X get(Random random) {
         int s = this.size;
         X[] ii = this.items;
         switch (s) {
@@ -241,8 +240,7 @@ public class FasterList<X> extends FastList<X> {
         }
     }
 
-    @Nullable
-    public final X getSafe(int index) {
+    public final @Nullable X getSafe(int index) {
         if (index < 0)
             return null;
         X[] items = this.items;

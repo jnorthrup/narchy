@@ -96,7 +96,7 @@ public class KIF implements Iterable<Task> {
 
     private final KIFParser kif;
 
-    private transient final Map<Term, FnDef> fn = new HashMap();
+    private final transient Map<Term, FnDef> fn = new HashMap();
     private final Set<Term> symmetricRelations = new HashSet();
     {
         symmetricRelations.add(SYMMETRIC_RELATION);

@@ -6,7 +6,7 @@ import jcog.data.list.MetalConcurrentQueue;
  * for smoother input control */
 public class NEWTEventFiFo
 {
-    final static int CAPACITY = 128;
+    static final int CAPACITY = 128;
     private final MetalConcurrentQueue<NEWTEvent> events = new MetalConcurrentQueue<>(CAPACITY)/*<NEWTEvent>*/;
 
     /** Add NEWTEvent to tail */

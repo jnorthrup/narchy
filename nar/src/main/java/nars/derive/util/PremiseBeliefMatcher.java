@@ -21,15 +21,14 @@ public class PremiseBeliefMatcher extends UnifySubst {
 		//Op.Variable //all
 		;
 
-	transient private Term output;
+	private transient Term output;
 
 	public PremiseBeliefMatcher() {
 		super(PremiseUnifyVars, null);
 		commonVariables = NAL.premise.PREMISE_UNIFY_COMMON_VARIABLES;
 	}
 
-	@Nullable
-	public Term uniSubst(Term taskTerm, Term beliefTerm) {
+	public @Nullable Term uniSubst(Term taskTerm, Term beliefTerm) {
 
 		this.output = null;
 

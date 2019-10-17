@@ -19,7 +19,7 @@ public class TextInputTest {
      * https:
      * https:
      */
-    final static JShell js = JShell
+    static final JShell js = JShell
         .create();
 
     @Test

@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-abstract public class ListModel<X> implements GridModel<X> {
+public abstract class ListModel<X> implements GridModel<X> {
 
     /** orientation, dynamically changeable. true=vertical, false=horizontal. default=vertical */
     private final boolean vertical = true;
@@ -74,9 +74,8 @@ abstract public class ListModel<X> implements GridModel<X> {
         return vertical ? size() : depth();
     }
 
-    @Nullable
     @Override
-    public final X get(int x, int y) {
+    public final @Nullable X get(int x, int y) {
         if ((vertical ? x : y) != 0)
             return null;
         return get(vertical ? y : x);

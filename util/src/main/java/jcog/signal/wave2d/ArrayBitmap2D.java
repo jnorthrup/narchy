@@ -7,7 +7,7 @@ import java.lang.reflect.Array;
 public class ArrayBitmap2D implements Bitmap2D {
 
     private final float[][] b;
-    transient private final int[] shapeCached;
+    private final transient int[] shapeCached;
 
     public ArrayBitmap2D(int w, int h) {
         this((float[][]) Array.newInstance(float.class, h, w));

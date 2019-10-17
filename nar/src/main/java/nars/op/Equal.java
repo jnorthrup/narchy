@@ -32,8 +32,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
         return p != null ? p : CommutiveBinaryBidiFunctor.the(equal, x, y);
     }
 
-    @Nullable
-    private static Term pretest(Term x, Term y) {
+    private static @Nullable Term pretest(Term x, Term y) {
         if (x == Null || y == Null) return Null;
         if (x.equals(y)) return True;
         if (x.equalsNeg(y)) return False;
@@ -69,7 +68,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
     }
 
     @Override
-    final protected Term apply2(Evaluation e, Term x, Term y) {
+    protected final Term apply2(Evaluation e, Term x, Term y) {
         return compute(e, x, y);
     }
 

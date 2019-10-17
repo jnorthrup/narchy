@@ -29,8 +29,8 @@ import java.util.Random;
 public class TinySpeech {
 
     public static final int SAMPLE_FREQUENCY = 44100;
-    private final static float PI = (float) Math.PI;
-    private final static float PI_2 = 2 * (float) Math.PI;
+    private static final float PI = (float) Math.PI;
+    private static final float PI_2 = 2 * (float) Math.PI;
     private final Random rng = new XoRoShiRo128PlusRandom(1);
 
     float f0 = 120;

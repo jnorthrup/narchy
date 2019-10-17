@@ -139,7 +139,7 @@ public class Ghost extends Entity {
 
         ArrayList<Direction> openDirs = getAvailableDirections();
 
-        dir = Arrays.stream(dirs).filter(openDirs::contains).findFirst().orElse(this.dir);
+        dir = Arrays.stream(dirs).filter(openDirs::contains).findFirst().orElseGet(() -> this.dir);
 
     }
 

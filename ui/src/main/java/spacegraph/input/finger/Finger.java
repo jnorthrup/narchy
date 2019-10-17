@@ -34,7 +34,7 @@ import static spacegraph.input.finger.Fingering.Idle;
  * <p>
  * TODO differentiate this between subclasses which touch only one surface at a time, and those which can touch several (multi-select)
  */
-abstract public class Finger extends Part<SpaceGraph> implements Predicate<Fingering> {
+public abstract class Finger extends Part<SpaceGraph> implements Predicate<Fingering> {
 
 
     public final v2 posPixel = new v2();
@@ -108,7 +108,7 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
         return y;
     }
 
-    @Nullable public final Surface touching() {
+    public final @Nullable Surface touching() {
         return focused() ? touching.getOpaque() : null;
     }
 

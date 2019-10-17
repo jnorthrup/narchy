@@ -36,9 +36,9 @@ import java.io.PrintStream;
 import java.util.List;
 
 public class NEWTWin {
-    final static boolean DEBUG = false;
+    static final boolean DEBUG = false;
     /** Required due to AWT lock of surface, if Applet! */
-    final static boolean FORCE_RELEASE_CTX_VAL = true; 
+    static final boolean FORCE_RELEASE_CTX_VAL = true;
     
     MonitorMode oldDisplayMode;
     volatile Screen screen;

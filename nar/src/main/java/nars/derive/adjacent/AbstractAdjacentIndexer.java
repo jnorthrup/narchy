@@ -21,7 +21,7 @@ import static nars.Op.ATOM;
  */
 public abstract class AbstractAdjacentIndexer extends AdjacentIndexer {
 
-	final static AtomicInteger serial = new AtomicInteger();
+	static final AtomicInteger serial = new AtomicInteger();
 	final String id = getClass().getSimpleName() + serial.getAndIncrement();
 
 	private static final FasterList<Term> EmptyFasterList = new FasterList(0);
@@ -70,7 +70,7 @@ public abstract class AbstractAdjacentIndexer extends AdjacentIndexer {
 		return null;
 	}
 
-	abstract public boolean test(Term concept, Term target);
+	public abstract boolean test(Term concept, Term target);
 
 
 }

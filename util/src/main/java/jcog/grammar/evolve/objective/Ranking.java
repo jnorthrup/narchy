@@ -26,7 +26,7 @@ import java.util.Arrays;
  *
  * @author MaleLabTs
  */
-final public class Ranking {
+public final class Ranking {
 
     private final Node tree;
     private final double[] fitness;

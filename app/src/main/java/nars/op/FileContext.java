@@ -31,11 +31,10 @@ public class FileContext extends NARPart {
         logger.error("{} {}", FileFunc.class, e);
     }
 
-    transient private FileFunc.FILE root;
+    private transient FileFunc.FILE root;
 
     final String rootPath;
-    @Nullable
-    private FileSystemException error = null;
+    private @Nullable FileSystemException error = null;
 
 
 
@@ -86,8 +85,7 @@ public class FileContext extends NARPart {
     /**
      * returns the last error occurred during start, or null if none
      */
-    @Nullable
-    public Exception error() {
+    public @Nullable Exception error() {
         return error;
     }
 

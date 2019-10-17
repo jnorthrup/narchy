@@ -130,7 +130,7 @@ public class Inperience extends TaskTransformAction {
         return null;
     }
 
-    @Nullable private Task reflect(int volMax, Term self, Task t, Derivation d) {
+    private @Nullable Task reflect(int volMax, Term self, Task t, Derivation d) {
         When<What> when = d.when;
         long s, e;
         if (PROPAGATE_ETERNAL || !t.isEternal()) {
@@ -193,7 +193,7 @@ public class Inperience extends TaskTransformAction {
 //        return true;
 //    }
 
-    @Nullable static private Term validReification(Term r, int volMax) {
+    private static @Nullable Term validReification(Term r, int volMax) {
         if (r.op().taskable && r.volume() <= volMax) {
              r = r.normalize();
              if (Task.validTaskTerm(r, BELIEF, true))

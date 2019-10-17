@@ -16,7 +16,7 @@ import java.io.IOException;
  * This starts a Thread which decodes data in an AudioBuffer and writes it to an OutputStream.
  * StreamDecoder holds the buffer where the MicrophoneListener puts bytes.
  */
-abstract public class StreamDecoder implements Runnable {
+public abstract class StreamDecoder implements Runnable {
 
     public static String kThreadName = "StreamDecoder";
 

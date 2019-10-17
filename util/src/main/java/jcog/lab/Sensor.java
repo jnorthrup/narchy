@@ -7,7 +7,7 @@ import java.util.function.Function;
 /** data source.
  *  produces an instantaneous observation instance detected in the experiment
  */
-abstract public class Sensor<E, S> implements Function<E,S>, Comparable<Sensor> {
+public abstract class Sensor<E, S> implements Function<E,S>, Comparable<Sensor> {
     /** sensor ID */
     final String id;
 
@@ -42,7 +42,7 @@ abstract public class Sensor<E, S> implements Function<E,S>, Comparable<Sensor> 
 //        @Nullable
 //        abstract S apply(E x);
 
-    abstract public void addToSchema(DataTable data);
+    public abstract void addToSchema(DataTable data);
 
     @Override
     public final int compareTo(Sensor s) {

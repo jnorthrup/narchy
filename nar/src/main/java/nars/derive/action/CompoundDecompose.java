@@ -92,8 +92,7 @@ public class CompoundDecompose extends NativeHow {
 	 * determines forward growth target. null to disable
 	 * override to provide a custom termlink supplier
 	 */
-	@Nullable
-	protected Term decompose(Compound src, Derivation d) {
+    protected @Nullable Term decompose(Compound src, Derivation d) {
 		return decomposer(src).decompose(src, d.random);
 	}
 

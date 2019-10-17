@@ -1,6 +1,6 @@
 package nars.task.util.signal;
 
-abstract public class RangeTruthlet extends Truthlet {
+public abstract class RangeTruthlet extends Truthlet {
 
     public final long start, end;
 
@@ -11,7 +11,7 @@ abstract public class RangeTruthlet extends Truthlet {
     }
 
     @Override
-    abstract public RangeTruthlet stretch(long newStart, long newEnd);
+    public abstract RangeTruthlet stretch(long newStart, long newEnd);
 
     @Override
     public final long start() {

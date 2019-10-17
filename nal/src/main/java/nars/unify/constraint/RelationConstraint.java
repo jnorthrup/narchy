@@ -11,7 +11,7 @@ import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
 /** tests a relation between two terms which may be involved (and prevened) from unifying */
-abstract public class RelationConstraint<U extends Unify> extends UnifyConstraint<U> {
+public abstract class RelationConstraint<U extends Unify> extends UnifyConstraint<U> {
 
 
     public final Variable y;
@@ -32,7 +32,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         return (yy == null || yy != y) && invalid(x, yy, f);
     }
 
-    abstract public boolean invalid(Term x, Term y, U context);
+    public abstract boolean invalid(Term x, Term y, U context);
 
     public final boolean valid(Term x, Term y, U context) {
         return !invalid(x, y, context);
@@ -44,7 +44,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
     }
 
     /** provide the reversed (mirror) constraint */
-    abstract protected RelationConstraint<U> newMirror(Variable newX, Variable newY);
+    protected abstract RelationConstraint<U> newMirror(Variable newX, Variable newY);
 
     public RelationConstraint<U> neg() {
         return new NegRelationConstraint(this);

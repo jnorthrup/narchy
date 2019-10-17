@@ -102,7 +102,7 @@ class DynamicConjTest {
 
             Task ttNow = n.answerBelief($("(a:x && a:y)"), now);
             assertTrue(ttNow.isNegative());
-            assertTrue(ttNow.toString().contains("((x-->a)&&(y-->a)). 0"), ttNow.toString());
+            assertTrue(ttNow.toString().contains("((x-->a)&&(y-->a)). 0"), ttNow::toString);
         }
 
 
@@ -181,7 +181,7 @@ class DynamicConjTest {
         TaskConcept cc = (TaskConcept) n.conceptualize($("(&&, a:x, a:y, a:z)"));
         Truth now = n.beliefTruth(cc, n.time());
         assertNotNull(now);
-        assertTrue($.t(1f, 0.73f).equalTruth(now, 0.1f), now + " truth at " + n.time());
+        assertTrue($.t(1f, 0.73f).equalTruth(now, 0.1f), () -> now + " truth at " + n.time());
 
 
         {

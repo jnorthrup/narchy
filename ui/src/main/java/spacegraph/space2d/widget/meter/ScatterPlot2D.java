@@ -61,7 +61,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
         default void start()  { }
     }
 
-    public static abstract class SimpleXYScatterPlotModel<X> implements ScatterPlotModel<X> {
+    public abstract static class SimpleXYScatterPlotModel<X> implements ScatterPlotModel<X> {
         @Override
         public int dimensionInternal() {
             return 2;

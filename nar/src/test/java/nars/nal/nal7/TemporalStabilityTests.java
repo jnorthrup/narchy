@@ -19,8 +19,7 @@ public class TemporalStabilityTests {
 
     static class T1 extends TemporalStabilityTest {
 
-        @NotNull
-        private final IntSet whens;
+        private final @NotNull IntSet whens;
         private final IntToObjectFunction<String> eventer;
         private final int minT, maxT;
         final int tolerance = 0;

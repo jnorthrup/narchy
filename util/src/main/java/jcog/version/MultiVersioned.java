@@ -34,8 +34,7 @@ public class MultiVersioned<X> extends FasterList<X> implements Versioned<X> {
      * gets the latest value
      */
     @Override
-    @Nullable
-    public X get() {
+    public @Nullable X get() {
         int s = this.size;
         return s > 0 ? this.items[s - 1] : null;
     }

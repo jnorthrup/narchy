@@ -68,9 +68,8 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
         q.offer(t);
     }
 
-    @Nullable
     @Override
-    protected T pop() {
+    protected @Nullable T pop() {
         T t = q.poll();
         if (t!=null)
             t.delete();

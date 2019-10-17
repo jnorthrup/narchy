@@ -18,13 +18,13 @@ import java.util.stream.Stream;
 
 public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements ValueGraph<N,E> */ {
 
-    abstract public Node<N, E> node(Object key);
+    public abstract Node<N, E> node(Object key);
 
-    abstract public Iterable<Node<N,E>> nodes();
+    public abstract Iterable<Node<N,E>> nodes();
 
     abstract int nodeCount();
 
-    abstract public void forEachNode(Consumer<Node<N, E>> n);
+    public abstract void forEachNode(Consumer<Node<N, E>> n);
 
     protected abstract Node<N, E> newNode(N data);
 
@@ -107,7 +107,7 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
 
 
     public abstract static class AbstractNode<N, E> implements Node<N, E> {
-        private final static AtomicInteger serials = new AtomicInteger(1);
+        private static final AtomicInteger serials = new AtomicInteger(1);
         public final N id;
         public final int serial;
         final int hash;

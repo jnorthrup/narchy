@@ -179,8 +179,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         return true;
     }
 
-    @Nullable
-    private MetalAtomicReferenceArray<V> reset(int space) {
+    private @Nullable MetalAtomicReferenceArray<V> reset(int space) {
 
         if (SIZE.getAndSet(this, 0) != 0) {
             MetalAtomicReferenceArray<V> newMap = new MetalAtomicReferenceArray<>(space);
@@ -516,9 +515,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
 //    abstract public void priAdd(V entry, float amount);
 
-    @Nullable
     @Override
-    public V remove(K k) {
+    public @Nullable V remove(K k) {
         return update(k, null, REMOVE, null);
     }
 

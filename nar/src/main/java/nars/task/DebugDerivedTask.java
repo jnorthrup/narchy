@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 public class DebugDerivedTask extends DerivedTask {
 
     private final Task parentTask;
-    @Nullable private final Task parentBelief;
+    private final @Nullable Task parentBelief;
 
     public DebugDerivedTask(Term tc, byte punct, @Nullable Truth truth, long start, long end, Derivation d) {
         super(tc, punct, truth, d.time, start, end, d.evidence());
@@ -23,8 +23,7 @@ public class DebugDerivedTask extends DerivedTask {
     }
 
     @Override
-    @Nullable
-    public final Task parentBelief() {
+    public final @Nullable Task parentBelief() {
         return parentBelief;
     }
 

@@ -24,7 +24,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public enum Revision {;
 
     /** classic eternal revision */
-    @Nullable public static Truth revise(/*@NotNull*/ Truthed a, /*@NotNull*/ Truthed b, float factor, float minEvi) {
+    public static @Nullable Truth revise(/*@NotNull*/ Truthed a, /*@NotNull*/ Truthed b, float factor, float minEvi) {
 
         double ae = a.evi();
         double be = b.evi();
@@ -125,12 +125,12 @@ public enum Revision {;
 //        return pair(y, tp /* TODO */);
 //    }
 
-    @Nullable public static <T extends TaskRegion> Pair<Task, TruthProjection> _merge(NAL nal, boolean dither, int minComponents, T[] tasks) {
+    public static @Nullable <T extends TaskRegion> Pair<Task, TruthProjection> _merge(NAL nal, boolean dither, int minComponents, T[] tasks) {
         return _merge(tasks, tasks.length, minComponents, dither, nal);
     }
 
     /** truth revision task merge strategy */
-    @Nullable public static <T extends TaskRegion> Pair<Task, TruthProjection> _merge(T[] tasks, int n, int minComponents, boolean ditherTruth, NAL nal) {
+    public static @Nullable <T extends TaskRegion> Pair<Task, TruthProjection> _merge(T[] tasks, int n, int minComponents, boolean ditherTruth, NAL nal) {
 
         TruthProjection p = nal.newProjection(TIMELESS, TIMELESS).ditherDT(nal).add(n, tasks);
 

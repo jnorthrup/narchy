@@ -505,9 +505,11 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /**
      * cycles per duration
      */
-    @Override abstract public float dur();
+    @Override
+    public abstract float dur();
 
-    @Override abstract public long time();
+    @Override
+    public abstract long time();
 
     public final float confDefault(final byte punctuation) {
 

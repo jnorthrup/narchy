@@ -131,8 +131,7 @@ public class Vocalization extends NARPart {
     /**
      * default greedy decider by truth expectation
      */
-    @Nullable
-    private Term decide(FasterList<Pair<Term, Truth>> pending) {
+    private @Nullable Term decide(FasterList<Pair<Term, Truth>> pending) {
         return pending.max((a, b) -> {
             float ta = a.getTwo().expectation();
             float tb = b.getTwo().expectation();

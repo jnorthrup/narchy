@@ -56,8 +56,7 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 	/**
 	 * returns true if the task is acceptable
 	 */
-	@Nullable
-	private static Task perceiveable(Task x, Term y, What w) {
+    private static @Nullable Task perceiveable(Task x, Term y, What w) {
 
 		if (x.term().equals(y))
 			return null;
@@ -103,8 +102,7 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 //                        return Bool.Null; //TODO
 	}
 
-	@Nullable
-	private static Task perceiveBooleanAnswer(Task x, Term y, What w) {
+	private static @Nullable Task perceiveBooleanAnswer(Task x, Term y, What w) {
 
 		byte punc = x.punc();
 		if (punc == QUESTION || punc == QUEST) {
@@ -132,7 +130,7 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 			return null;
 		}
 	}
-	@Nullable private static Task rememberTransformed(Task input, Term y) {
+	private static @Nullable Task rememberTransformed(Task input, Term y) {
 		Task u = Task.clone(input, y);
 		assert(u!=null);
 		return u; //recurse

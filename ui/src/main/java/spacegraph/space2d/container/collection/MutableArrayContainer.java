@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 /** TODO support resizing */
-abstract public class MutableArrayContainer<S extends Surface> extends AbstractMutableContainer<S> {
+public abstract class MutableArrayContainer<S extends Surface> extends AbstractMutableContainer<S> {
 
     /** TODO varhandle */
     protected final MetalAtomicReferenceArray<S> children;

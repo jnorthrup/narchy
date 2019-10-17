@@ -9,25 +9,25 @@ import nars.time.clock.RealTime;
 import nars.time.part.DurLoop;
 
 /** model for timing a game */
-abstract public class GameTime {
+public abstract class GameTime {
 
     private final Off on = null;
 
-    abstract protected NARPart clock(Game a);
+    protected abstract NARPart clock(Game a);
 
 
     /** estimated cycles per frame. not necessarily equal to the NAR's dur() */
     public abstract float dur();
 
     /** estimate the time of the next cycle */
-    abstract public long next(long now);
+    public abstract long next(long now);
 
     public final long prev(long now) {
         return (now - Math.max(1, next(now))); //HACK
     }
 
     /** like clone, but creates a new Time instance that 'follows' another */
-    abstract public GameTime chain(float periodMultiplier);
+    public abstract GameTime chain(float periodMultiplier);
 
     public final GameTime chain() { return chain(1); }
 
@@ -37,7 +37,7 @@ abstract public class GameTime {
      * */
     public static class FPS extends GameTime {
 
-        private transient final float initialFPS;
+        private final transient float initialFPS;
 
         public final Loop loop;
         private Game g = null;
@@ -105,7 +105,7 @@ abstract public class GameTime {
     /** measured in # of perceptual durations */
     public static class Durs extends GameTime {
 
-        private transient final float durPeriod;
+        private final transient float durPeriod;
 
         public DurLoop loop = null;
         private float dur = 1;

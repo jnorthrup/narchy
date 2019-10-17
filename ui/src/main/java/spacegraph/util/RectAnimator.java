@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
-abstract public class RectAnimator implements Animator<MutableRectFloat> {
+public abstract class RectAnimator implements Animator<MutableRectFloat> {
 
     /** an estimate; for determining the speed */
     protected float duration;
@@ -83,7 +83,7 @@ abstract public class RectAnimator implements Animator<MutableRectFloat> {
         return true;
     }
 
-    abstract protected void animate(MutableRectFloat from, MutableRectFloat to, float dt);
+    protected abstract void animate(MutableRectFloat from, MutableRectFloat to, float dt);
 
 
     private final AtomicReference<ObjectFloatPair<MutableRectFloat>> next = new AtomicReference();

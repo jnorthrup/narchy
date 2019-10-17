@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  *
  */
-abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPart<NAR> {
+public abstract class NARPart extends Parts<NAR> implements Termed, OffOn, SubPart<NAR> {
 
     public final Term id;
 
@@ -81,8 +81,7 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
     /**
      * optional event occurrence information.  null if not applicable.
      */
-    @Nullable
-    public WhenInternal event() {
+    public @Nullable WhenInternal event() {
         return null;
     }
 

@@ -30,15 +30,15 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
 
     private enum IOState {READING, WRITING, CLOSED}
 
-    private final static int BUFFER_SIZE = 4096;
-    private final static int FMT_CHUNK_ID = 0x20746D66;
-    private final static int DATA_CHUNK_ID = 0x61746164;
-    private final static int RIFF_CHUNK_ID = 0x46464952;
-    private final static int RIFF_TYPE_ID = 0x45564157;
+    private static final int BUFFER_SIZE = 4096;
+    private static final int FMT_CHUNK_ID = 0x20746D66;
+    private static final int DATA_CHUNK_ID = 0x61746164;
+    private static final int RIFF_CHUNK_ID = 0x46464952;
+    private static final int RIFF_TYPE_ID = 0x45564157;
 
     
-    private final static int WAVE_FORMAT_PCM = 0x0001;
-    private final static int WAVE_FORMAT_IEEE_FLOAT = 0x0003;
+    private static final int WAVE_FORMAT_PCM = 0x0001;
+    private static final int WAVE_FORMAT_IEEE_FLOAT = 0x0003;
 
     private File file;                        
     private int bytesPerSample;                

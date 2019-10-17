@@ -118,7 +118,7 @@ public class RegexSynthesis {
         return new Maybe<>(new AlternationNode(cur, first, second));
     }
 
-    final static NodeType[] emptyNodeTypes = {};
+    static final NodeType[] emptyNodeTypes = {};
 
     private static Maybe<Node> getRepetitionNode(NodeData cur, Predicate<String> oracle, boolean isWholeStringRepeatable) {
         Maybe<RepetitionPartialNode> maybe = getRepetitionPartialNode(cur, oracle, isWholeStringRepeatable);

@@ -18,7 +18,7 @@ public class ByteTopic<X> {
     }*/
 
     /** last channel is reserved for general catch 'all' sent once in all cases */
-    private final static byte ANY = Byte.MAX_VALUE-1;
+    private static final byte ANY = Byte.MAX_VALUE-1;
 
     private final boolean allowDynamic = false;
 

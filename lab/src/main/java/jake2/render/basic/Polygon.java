@@ -34,9 +34,9 @@ import jake2.render.glpoly_t;
  */
 public final class Polygon extends glpoly_t {
 
-    private final static int MAXPOLYS = 20000;
+    private static final int MAXPOLYS = 20000;
 
-    private final static int MAX_BUFFER_VERTICES = 120000;
+    private static final int MAX_BUFFER_VERTICES = 120000;
 
     private static final float[] buffer = new float[MAX_BUFFER_VERTICES * STRIDE];
 

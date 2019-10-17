@@ -39,7 +39,7 @@ public enum OsmSpace  { ;
     public static final Logger logger = LoggerFactory.getLogger(OsmSpace.class);
 
 
-    public static abstract class LonLatProjection {
+    public abstract static class LonLatProjection {
 
         private boolean changed = false;
 
@@ -47,9 +47,9 @@ public enum OsmSpace  { ;
              project(lon, lat, alt, target, 0);
          }
 
-        abstract public void project(float lon, float lat, float alt, float[] target, int offset);
+        public abstract void project(float lon, float lat, float alt, float[] target, int offset);
 
-        abstract public void unproject(float x, float y, float z, float[] target);
+        public abstract void unproject(float x, float y, float z, float[] target);
 
         public final float[] project(GeoVec3 global, float[] target) {
             return project(global, target, 0);
@@ -75,7 +75,7 @@ public enum OsmSpace  { ;
 
         public abstract void zoom(float wheel);
 
-        abstract public void center(float lon, float lat);
+        public abstract void center(float lon, float lat);
 
         public void untransform(GL2 gl, RectFloat bounds) {
 

@@ -20,16 +20,14 @@ public class FileFunc {
         return new FILE(fs.resolveFile(url));
     }
 
-    @Nullable
-    static FILE getOrNull(String path)  {
+    static @Nullable FILE getOrNull(String path)  {
         try {
             return get(path);
         } catch (FileSystemException e) {
             return null;
         }
     }
-    @Nullable
-    static FILE getOrNull(URL path)  {
+    static @Nullable FILE getOrNull(URL path)  {
         try {
             return get(path);
         } catch (FileSystemException e) {

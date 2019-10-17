@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  * automatically attaches update handler on start (ex: added to graph) and
  * removes on stop (ex: removal from graph)
  */
-abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
+public abstract class DurSurface<S extends Surface> extends UnitContainer<S> {
 
     public static final double minUpdateTimeSeconds = 1 / 30.0; /* 30fps */
 
@@ -97,7 +97,7 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
             update();
     }
 
-    abstract protected void update();
+    protected abstract void update();
 
     public static DurSurface get(Surface x, NAR n, Consumer<NAR> eachDur) {
         return new DurSurface(x, n) {

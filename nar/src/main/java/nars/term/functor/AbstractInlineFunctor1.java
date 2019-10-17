@@ -8,7 +8,7 @@ import nars.term.util.transform.InstantFunctor;
 
 import java.util.function.Function;
 
-abstract public class AbstractInlineFunctor1 extends AbstractInlineFunctor {
+public abstract class AbstractInlineFunctor1 extends AbstractInlineFunctor {
 
     protected AbstractInlineFunctor1(String atom) {
         super(atom);
@@ -42,7 +42,7 @@ abstract public class AbstractInlineFunctor1 extends AbstractInlineFunctor {
 
     }
 
-    abstract public static class AbstractInstantFunctor1 extends AbstractInlineFunctor1 implements InstantFunctor<Evaluation> {
+    public abstract static class AbstractInstantFunctor1 extends AbstractInlineFunctor1 implements InstantFunctor<Evaluation> {
 
         public AbstractInstantFunctor1(String termAtom) {
             super(termAtom);

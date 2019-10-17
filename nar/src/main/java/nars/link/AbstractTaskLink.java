@@ -84,8 +84,8 @@ public abstract class AbstractTaskLink implements TaskLink {
 		return w!=null ? w.term() : null;
 	}
 
-	@Override  @Nullable
-	public final Term other(Term x, int xHashShort, boolean reverse) {
+	@Override
+	public final @Nullable Term other(Term x, int xHashShort, boolean reverse) {
 		if (isSelf() || xHashShort != (reverse ? toHash() : fromHash()) || !x.equals(reverse ? to : from))
 			return null;
 
@@ -184,7 +184,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 
 
 	@Override
-	abstract public String toString();
+	public abstract String toString();
 
 
 	public final AbstractTaskLink priSet(byte punc, float puncPri) {
@@ -288,8 +288,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 //	}
 
 
-	@Nullable
-	public final Term matchReverse(Term from, int fromHash, Term to, int toHash) {
+	public final @Nullable Term matchReverse(Term from, int fromHash, Term to, int toHash) {
 		int f = fromHash();
 		if (f != fromHash &&
 			f != toHash &&

@@ -56,8 +56,7 @@ public class VerletParticle2D extends Vec2D {
     /**
      * Bounding box, by default set to null to disable
      */
-    @Nullable
-    public Rect bounds;
+    public @Nullable Rect bounds;
 
     /**
      * An optional particle constraints, called immediately after a particle is

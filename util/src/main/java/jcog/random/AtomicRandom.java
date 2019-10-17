@@ -7,7 +7,7 @@ import java.util.Random;
 /** base class for Random implementations that apply a busy spin wait to ensure updates to state are atomic.
  * this doesnt seem to perform good at all.  not recommended
  * */
-abstract public class AtomicRandom extends Random {
+public abstract class AtomicRandom extends Random {
 
     private static final VarHandle BUSY;
     static {
@@ -57,7 +57,7 @@ abstract public class AtomicRandom extends Random {
             Thread.onSpinWait();
     }
 
-    abstract protected long _nextLong();
+    protected abstract long _nextLong();
 
-    abstract protected void _setSeed(final long seed);
+    protected abstract void _setSeed(final long seed);
 }

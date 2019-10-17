@@ -6,12 +6,12 @@ import jcog.tree.rtree.rect.HyperRectFloat;
 import java.util.List;
 import java.util.Map;
 
-abstract public class OsmGroup extends OsmElement {
+public abstract class OsmGroup extends OsmElement {
     //    public boolean isMultipolygon;
 
     protected List<OsmElement> children;
 
-    transient private HyperRegion bounds = null;
+    private transient HyperRegion bounds = null;
 
     public OsmGroup(long id, Map<String, String> tags) {
         super(id, tags);

@@ -9,8 +9,7 @@ import java.util.function.BiConsumer;
 
 public class IntervalTree<K extends Comparable<? super K>, V> {
 	
-	@Nullable
-	public IntervalTreeNode<K, V> root;
+	public @Nullable IntervalTreeNode<K, V> root;
 
 	
 	public List<V> searchOverlapping(Between<K> range){
@@ -21,13 +20,11 @@ public class IntervalTree<K extends Comparable<? super K>, V> {
 		return c;
 	}
 
-	@Nullable
-	public final V getEqual(K low, K high){
+	public final @Nullable V getEqual(K low, K high){
 		return getEqual(new Between<>(low, high));
 	}
 
-	@Nullable
-	public V getEqual(Between<K> range){
+	public @Nullable V getEqual(Between<K> range){
 		if(root != null){
 			return root.getEqual(range);
 		}

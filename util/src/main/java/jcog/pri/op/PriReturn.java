@@ -61,5 +61,5 @@ public enum PriReturn {
     ;
 
     /** pBefore will not be NaN but pAfter might. */
-    abstract public float apply(float incoming, float pBefore, float pAfter);
+    public abstract float apply(float incoming, float pBefore, float pAfter);
 }

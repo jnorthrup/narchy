@@ -6,7 +6,7 @@ import jcog.util.ArrayUtil;
 /** constant shape */
 public abstract class AbstractShapedTensor extends AbstractTensor {
     public final int[] shape;
-    protected transient final int[] stride;
+    protected final transient int[] stride;
 
     protected AbstractShapedTensor(int[] shape) {
 

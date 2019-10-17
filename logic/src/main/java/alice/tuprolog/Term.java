@@ -103,7 +103,7 @@ public abstract class Term implements Serializable, SubTree {
     }
 
 
-    private final static AtomicLong tick = new AtomicLong(0);
+    private static final AtomicLong tick = new AtomicLong(0);
 
     public static long now() {
 

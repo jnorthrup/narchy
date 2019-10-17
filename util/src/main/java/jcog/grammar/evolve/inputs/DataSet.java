@@ -551,8 +551,8 @@ public class DataSet implements Serializable {
         public String string;
         public List<Bounds> match = new FasterList<>();
         public List<Bounds> unmatch = new FasterList<>();
-        transient protected List<String> matchedStrings = new FasterList<>();
-        transient protected List<String> unmatchedStrings = new FasterList<>();
+        protected transient List<String> matchedStrings = new FasterList<>();
+        protected transient List<String> unmatchedStrings = new FasterList<>();
 
         public void addMatchBounds(int bs, int bf) {
             Bounds boundaries = new Bounds(bs, bf);
@@ -678,7 +678,7 @@ public class DataSet implements Serializable {
         
     }
     
-    static public final class Bounds implements Comparable<Bounds>{
+    public static final class Bounds implements Comparable<Bounds>{
         public int start;
         public int end;
 
@@ -712,7 +712,7 @@ public class DataSet implements Serializable {
          * @param boundsList
          * @return
          */
-        static public List<Bounds> mergeBounds(List<Bounds> boundsList){
+        public static List<Bounds> mergeBounds(List<Bounds> boundsList){
             List<Bounds> newBoundsList = new ArrayList<>();
             if(boundsList.isEmpty()){
                 return newBoundsList;
@@ -780,7 +780,7 @@ public class DataSet implements Serializable {
          * @param zoneRanges
          * @return
          */
-        static public int countRangesThatCollideZone(Bounds[] ranges, List<Bounds> zoneRanges) {
+        public static int countRangesThatCollideZone(Bounds[] ranges, List<Bounds> zoneRanges) {
             Collections.sort(zoneRanges);
              
             

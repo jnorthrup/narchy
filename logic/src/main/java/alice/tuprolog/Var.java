@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public class Var extends Term {
 
-    final static String ANY = "_";
+    static final String ANY = "_";
     
     private String name;
     private String completeName;     /* Reviewed by Paolo Contessi: String -> StringBuilder */
@@ -99,8 +99,8 @@ public class Var extends Term {
     }
 
     /* Identify kind of renaming */
-    final static int ORIGINAL = -1;
-    final static int PROGRESSIVE = -2;
+    static final int ORIGINAL = -1;
+    static final int PROGRESSIVE = -2;
 
     /**
      * Rename variable (assign completeName)

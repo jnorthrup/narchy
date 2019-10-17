@@ -26,7 +26,7 @@ public abstract class NarseseTest {
 
 
     static void testProductABC(@NotNull Compound p) {
-        assertEquals(3, p.subs(), p + " should have 3 sub-terms");
+        assertEquals(3, p.subs(), () -> p + " should have 3 sub-terms");
         assertEquals("a", p.sub(0).toString());
         assertEquals("b", p.sub(1).toString());
         assertEquals("c", p.sub(2).toString());
@@ -65,7 +65,7 @@ public abstract class NarseseTest {
         assertEquals(conf, truth.conf(), 0.001);
     }
 
-    static public void assertInvalidTasks(@NotNull String... inputs) {
+    public static void assertInvalidTasks(@NotNull String... inputs) {
         for (String s : inputs) {
             assertThrows(Exception.class, () -> {
                 Task e = task(s);
@@ -74,7 +74,7 @@ public abstract class NarseseTest {
     }
 
 
-    static public void assertInvalidTasks(Supplier<Task> s) {
+    public static void assertInvalidTasks(Supplier<Task> s) {
 
         try {
             s.get();
@@ -82,7 +82,7 @@ public abstract class NarseseTest {
         } catch (TaskException good) {
             assertTrue(true);
         } catch (Exception e) {
-            fail(e.toString());
+            fail(e::toString);
         }
 
     }

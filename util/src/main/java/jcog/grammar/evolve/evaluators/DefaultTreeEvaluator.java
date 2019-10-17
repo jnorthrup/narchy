@@ -35,7 +35,7 @@ import java.util.regex.PatternSyntaxException;
  */
 public class DefaultTreeEvaluator implements TreeEvaluator {
 
-    private final static Bounds[] empty = new Bounds[0];
+    private static final Bounds[] empty = new Bounds[0];
 
     @Override
     public List<Bounds[]> evaluate(Node root, Context context) throws TreeEvaluationException {

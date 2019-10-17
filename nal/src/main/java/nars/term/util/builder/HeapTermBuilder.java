@@ -9,7 +9,7 @@ import nars.term.atom.Atomic;
 /** stateless implementation */
 public class HeapTermBuilder extends TermBuilder {
 
-    public final static HeapTermBuilder the = new HeapTermBuilder();
+    public static final HeapTermBuilder the = new HeapTermBuilder();
 
 
 

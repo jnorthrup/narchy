@@ -17,7 +17,7 @@ import static jcog.exe.realtime.TimedFuture.*;
 public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
 
     /** capacity of incoming admission queue (not the entire wheel) */
-    final static int ADMISSION_CAPACITY = 4096;
+    static final int ADMISSION_CAPACITY = 4096;
 
     final MetalConcurrentQueue<TimedFuture<?>> incoming = new MetalConcurrentQueue<>(ADMISSION_CAPACITY);
 

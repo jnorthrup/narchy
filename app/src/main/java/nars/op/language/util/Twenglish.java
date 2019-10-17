@@ -178,8 +178,7 @@ public class Twenglish {
     }
 
 
-    @NotNull
-    protected Collection<TaskBuilder> parseSentence(String source, @NotNull NAR n, @NotNull List<Span> s) {
+    protected @NotNull Collection<TaskBuilder> parseSentence(String source, @NotNull NAR n, @NotNull List<Span> s) {
 
         LinkedList<Term> t = new LinkedList();
         Span last = null;
@@ -245,8 +244,7 @@ public class Twenglish {
     }
 
 
-    @Nullable
-    public static Term spanToTerm(@NotNull Span c) {
+    public static @Nullable Term spanToTerm(@NotNull Span c) {
         return spanToTerm(c, false);
     }
 
@@ -256,8 +254,7 @@ public class Twenglish {
     public static final Atomic QUESTION_MARK = $.quote("?");
     public static final Atomic COMMA = $.quote(",");
 
-    @Nullable
-    public static Term spanToTerm(@NotNull Span c, boolean includeWordPOS) {
+    public static @Nullable Term spanToTerm(@NotNull Span c, boolean includeWordPOS) {
         switch (c.pattern) {
             case "word":
                 
@@ -311,8 +308,7 @@ public class Twenglish {
         
     }
 
-    @NotNull
-    public static Term tagToTerm(String c) {
+    public static @NotNull Term tagToTerm(String c) {
         c = c.toLowerCase();
         if ("word".equals(c)) return $.quote(" ");
         return Atomic.the(c);
@@ -322,8 +318,7 @@ public class Twenglish {
     /**
      * returns a list of all tasks that it was able to parse for the input
      */
-    @NotNull
-    public List<TaskBuilder> parse(String source, @NotNull NAR n, String s) {
+    public @NotNull List<TaskBuilder> parse(String source, @NotNull NAR n, String s) {
 
 
         List<TaskBuilder> results = $.newArrayList();

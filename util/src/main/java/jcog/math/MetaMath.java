@@ -125,8 +125,8 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
     static final int CHAR_SPACE = -1; // Space between chars of token
     static final int WHITE_SPACE = 2; // Space between tokens
     /* [sound] */ // Sound effects
-    /* [sound] */ static public String audioName = null;
-    /* [sound] */ static public boolean enableAudioFlag = false;
+    /* [sound] */ public static String audioName = null;
+    /* [sound] */ public static boolean enableAudioFlag = false;
     static boolean proofInfoModeFlag = false;
     static boolean axiomInfoModeFlag = false;
     static boolean selectLogicModeFlag = false;
@@ -146,8 +146,8 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
     static int maxAxiomHypotheses; // set by axiom with the most hypotheses
     static int currentX;
     static int currentY;
-    /* [sound] */ static private ArrayList<String> audioSaveNameVec = new ArrayList<>();
-    /* [sound] */ static private ArrayList<AudioClip> audioSaveClipVec = new ArrayList<>();
+    /* [sound] */ private static ArrayList<String> audioSaveNameVec = new ArrayList<>();
+    /* [sound] */ private static ArrayList<AudioClip> audioSaveClipVec = new ArrayList<>();
     //private Button clear_button;
     private Choice option_choices;
     private Button proof_exit_button;

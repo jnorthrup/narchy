@@ -66,7 +66,7 @@ public abstract class AbstractMutableDirectedEdge<N, E> implements FromTo<Node<N
     }
 
     /** whether hash is computed dynamically (true) or is cached (false) */
-    abstract protected boolean hashDynamic();
+    protected abstract boolean hashDynamic();
 
     @Override
     public abstract int hashCode();

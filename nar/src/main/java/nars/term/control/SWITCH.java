@@ -66,8 +66,7 @@ public final class SWITCH<D extends PreDerivation> extends AbstractPred<D> {
     }
 
 
-    @Nullable
-    public PREDICATE<D> branch(PreDerivation m) {
+    public @Nullable PREDICATE<D> branch(PreDerivation m) {
         return swtch[(taskOrBelief ? m.taskTerm : m.beliefTerm).opID()];
     }
 

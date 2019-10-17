@@ -9,7 +9,7 @@ import nars.term.util.builder.TermBuilder;
 /** bypasses interning */
 public abstract class HeapTermTransform extends RecursiveTermTransform.NegObliviousTermTransform {
 
-    final static TermBuilder termBuilder = HeapTermBuilder.the;
+    static final TermBuilder termBuilder = HeapTermBuilder.the;
 
     @Override
     public final Term compound(Op op, int dt, Term[] t) {

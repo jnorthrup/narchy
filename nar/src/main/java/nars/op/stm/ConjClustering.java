@@ -333,7 +333,7 @@ public class ConjClustering extends TaskAction {
         final FasterList<Task> tried = new FasterList();
 
         /** centroid buffer */
-        transient public TaskList[] centroids = new TaskList[0];
+        public transient TaskList[] centroids = new TaskList[0];
 
 
         private CentroidConjoiner() {

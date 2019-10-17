@@ -239,13 +239,11 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     int subs();
 
 
-    @Nullable
-    default Term replaceAt(ByteList path, Term replacement) {
+    default @Nullable Term replaceAt(ByteList path, Term replacement) {
         return replaceAt(path, 0, replacement);
     }
 
-    @Nullable
-    default Term replaceAt(ByteList path, int depth, Term replacement) {
+    default @Nullable Term replaceAt(ByteList path, int depth, Term replacement) {
         int ps = path.size();
         if (ps == depth)
             return replacement;
@@ -311,8 +309,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
     }
 
-    @Nullable
-    default Term subPath(ByteList path) {
+    default @Nullable Term subPath(ByteList path) {
         int p = path.size();
         return p > 0 ? subPath(path, 0, p) : this;
     }
@@ -321,14 +318,12 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
      * extracts a subterm provided by the address tuple
      * returns null if specified subterm does not exist
      */
-    @Nullable
-    default Term subPath(byte... path) {
+    default @Nullable Term subPath(byte... path) {
         int p = path.length;
         return p > 0 ? subPath(0, p, path) : this;
     }
 
-    @Nullable
-    default Term subPath(int start, int end, byte... path) {
+    default @Nullable Term subPath(int start, int end, byte... path) {
         Term ptr = this;
         for (int i = start; i < end; i++) {
             if ((ptr = ptr.subSafe(path[i])) == Bool.Null)
@@ -337,8 +332,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         return ptr;
     }
 
-    @Nullable
-    default Term subPath(ByteList path, int start, int end) {
+    default @Nullable Term subPath(ByteList path, int start, int end) {
         Term ptr = this;
         for (int i = start; i < end; i++) {
             if ((ptr = ptr.subSafe(path.get(i))) == Bool.Null)

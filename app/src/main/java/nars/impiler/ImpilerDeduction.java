@@ -34,8 +34,8 @@ import static nars.time.Tense.*;
 
 public class ImpilerDeduction extends Search<Term, Task> {
 
-	final static int recursionMin = 2;
-	final static int recursionMax = 3;
+	static final int recursionMin = 2;
+	static final int recursionMax = 3;
 	static final int volPadding = 2;
 	private static final int STAMP_LIMIT = Integer.MAX_VALUE;
 	float confMin;
@@ -49,8 +49,7 @@ public class ImpilerDeduction extends Search<Term, Task> {
 	/**
 	 * collects results
 	 */
-	@Nullable
-	private List<Task> in = null;
+	private @Nullable List<Task> in = null;
 
 	private int volMax;
 

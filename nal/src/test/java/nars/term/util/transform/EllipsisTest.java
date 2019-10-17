@@ -119,7 +119,7 @@ public class EllipsisTest {
                             if (s.varPattern() == 0)
                                 selectedFixed.add(s);
 
-                            assertEquals(0, s.varPattern(), s + " should be all subbed by " + this.xy);
+                            assertEquals(0, s.varPattern(), () -> s + " should be all subbed by " + this.xy);
                         }
 
                         return true;
@@ -155,8 +155,7 @@ public class EllipsisTest {
     abstract static class CommutiveEllipsisTest implements EllipsisTestCase {
         final String prefix;
         final String suffix;
-        @NotNull
-        final Compound p;
+        final @NotNull Compound p;
         final String ellipsisTerm;
 
         CommutiveEllipsisTest(String ellipsisTerm, String prefix, String suffix) throws Narsese.NarseseException {
@@ -177,13 +176,11 @@ public class EllipsisTest {
             return sb.toString();
         }
 
-        @Nullable
-        protected abstract Compound getPattern(String prefix, String suffix) throws Narsese.NarseseException;
+        protected abstract @Nullable Compound getPattern(String prefix, String suffix) throws Narsese.NarseseException;
 
 
-        @NotNull
         @Override
-        public Compound getPattern() {
+        public @NotNull Compound getPattern() {
             return p;
         }
 
@@ -224,15 +221,14 @@ public class EllipsisTest {
         public void testFurther(Set<Term> selectedFixed, @NotNull Unify f, @NotNull Set<Term> varArgTerms) {
             assertEquals(2, f.xy.keySet().size());
             Term fixedTermValue = f.resolveVar(fixedTerm);
-            assertNotNull(fixedTermValue, f.toString());
+            assertNotNull(fixedTermValue, f::toString);
             assertTrue(fixedTermValue instanceof Atomic);
             assertFalse(varArgTerms.contains(fixedTermValue));
         }
 
 
-        @NotNull
         @Override
-        public Compound getPattern(String prefix, String suffix) throws Narsese.NarseseException {
+        public @NotNull Compound getPattern(String prefix, String suffix) throws Narsese.NarseseException {
             Compound pattern = (Compound) Narsese.term(prefix + "%1, " + ellipsisTerm + suffix, true).term();
             return pattern;
         }
@@ -264,9 +260,8 @@ public class EllipsisTest {
             return s;
         }
 
-        @Nullable
         @Override
-        public Compound getPattern(String prefix, String suffix) throws Narsese.NarseseException {
+        public @Nullable Compound getPattern(String prefix, String suffix) throws Narsese.NarseseException {
             return $(prefix + ellipsisTerm + suffix);
         }
 
@@ -275,7 +270,7 @@ public class EllipsisTest {
         public Term getResult() throws Narsese.NarseseException {
             String s = prefix + "Z, " + ellipsisTerm + suffix;
             Compound c = $(s);
-            assertNotNull(c, s + " produced null compound");
+            assertNotNull(c, () -> s + " produced null compound");
             return c;
         }
 

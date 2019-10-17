@@ -40,9 +40,9 @@ public class W extends GamePanel {
 	private static final int WIDTH = 440;
 	private static final int HEIGHT = 600;
 
-	private final static Color[] COLOR_ORDER = { Color.CYAN, Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW, Color.MAGENTA };
+	private static final Color[] COLOR_ORDER = { Color.CYAN, Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW, Color.MAGENTA };
 
-	private final static int[] WALLS = { 10, 10, 6, 286, 10, 304, 6, 286, 440 - 16, 10, 6, 286, 440 - 16, 304, 6, 286, 17, 7, 103, 6, 440 - 120, 7, 103, 6, 17, 587, 103, 6, 440 - 120, 587,
+	private static final int[] WALLS = { 10, 10, 6, 286, 10, 304, 6, 286, 440 - 16, 10, 6, 286, 440 - 16, 304, 6, 286, 17, 7, 103, 6, 440 - 120, 7, 103, 6, 17, 587, 103, 6, 440 - 120, 587,
 			103, 6, };
 
 	/**

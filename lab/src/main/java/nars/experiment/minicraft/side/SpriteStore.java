@@ -93,7 +93,7 @@ public abstract class SpriteStore {
         /**
          * The image to be drawn for this sprite
          */
-        transient public Image image;
+        public transient Image image;
         public String ref;
 
 

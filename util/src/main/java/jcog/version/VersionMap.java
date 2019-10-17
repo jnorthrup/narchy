@@ -75,9 +75,8 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
 //        return ok[0];
 //    }
 
-    @Nullable
     @Override
-    public Y remove(Object key) {
+    public @Nullable Y remove(Object key) {
         Versioned<Y> x = map.remove(key);
         return x != null ? x.get() : null;
     }

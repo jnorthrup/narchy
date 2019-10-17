@@ -64,7 +64,7 @@ public class TaskTest {
                 /*"((a) &&+1 (a))",*/
         }) {
             Term t = $(x);
-            assertTrue(t instanceof Compound, x + " :: " + t);
+            assertTrue(t instanceof Compound, () -> x + " :: " + t);
             assertTrue(t.dt() != DTERNAL);
 
             Task y = TaskTest.task(t, Op.BELIEF, t(1f, 0.9f)).apply(n);
@@ -184,7 +184,7 @@ public class TaskTest {
         d.eventTask().on(t -> {
 
             if (t instanceof DerivedTask && ((DerivedTask)t).parentBelief()!=null && !t.isCyclic())
-                assertArrayEquals(ev, t.stamp(), "all double-premise derived terms have this evidence: "
+                assertArrayEquals(ev, t.stamp(), () -> "all double-premise derived terms have this evidence: "
                         + t + ": " + Arrays.toString(ev) + "!=" + Arrays.toString(t.stamp()));
 
             System.out.println(t.proof());

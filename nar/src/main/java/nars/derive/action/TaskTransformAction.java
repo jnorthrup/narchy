@@ -31,7 +31,6 @@ public abstract class TaskTransformAction extends TaskAction {
 			d.remember(((AbstractTask) y).why(why.why(d)));
 	}
 
-	@Nullable
-	abstract protected Task transform(Task x, Derivation d);
+	protected abstract @Nullable Task transform(Task x, Derivation d);
 
 }

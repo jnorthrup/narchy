@@ -54,7 +54,7 @@ import java.util.logging.Logger;
  */
 public class BasicExecutionListener implements ExecutionListener, ExecutionListenerFactory {
 
-    private final static Logger LOG = Logger.getLogger(DefaultExecutionListener.class.getName());
+    private static final Logger LOG = Logger.getLogger(DefaultExecutionListener.class.getName());
     private final Map<Integer, Long> jobStartTimes = new ConcurrentHashMap<>();
     private final NavigableSet<Integer> remove = new TreeSet<>();
     private long startTime = System.currentTimeMillis();

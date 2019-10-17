@@ -74,7 +74,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 	 * cost of testing this, for sorting. higher value will be tested later than lower
 	 */
 	@Override
-	abstract public float cost();
+	public abstract float cost();
 
 	/**
 	 * @param targetVariable current value of the target variable (null if none is setAt)
@@ -82,7 +82,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 	 * @param f              match context
 	 * @return true if match is INVALID, false if VALID (reversed)
 	 */
-	abstract public boolean invalid(Term x, U f);
+	public abstract boolean invalid(Term x, U f);
 
 	public boolean remainAmong(UnifyConstraint[] constraintsCopy) {
 		UnifyConstraint x = this;

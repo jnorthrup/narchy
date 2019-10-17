@@ -72,10 +72,10 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
 
 
     /** must involve a variable substitution, deriving a new term */
-    public final static Term NOVEL = Atomic.the("novel");
+    public static final Term NOVEL = Atomic.the("novel");
 
-    public final static Term INDEP_VAR = $.quote("$");
-    public final static Term DEP_VAR = $.quote("#");
+    public static final Term INDEP_VAR = $.quote("$");
+    public static final Term DEP_VAR = $.quote("#");
     public static final Atom unisubst = (Atom) Atomic.the("unisubst");
 
     public final MyUnifyTransform u; //TODO find what state is being held that contaminated repeated use of this

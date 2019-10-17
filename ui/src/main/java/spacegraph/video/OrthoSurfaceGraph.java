@@ -29,7 +29,7 @@ import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
 
-    private final static short MOVE_AND_RESIZE_BUTTON = 1;
+    private static final short MOVE_AND_RESIZE_BUTTON = 1;
 
 
     /* render context */

@@ -18,9 +18,8 @@ public abstract class AbstractSpatial<X> extends Spatial<X> {
         super(x);
     }
 
-    @Nullable
     @Override
-    public List<TypedConstraint> constraints() {
+    public @Nullable List<TypedConstraint> constraints() {
         return Collections.emptyList();
     }
 

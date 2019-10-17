@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentMap;
 /** from: https://dzone.com/articles/letting-garbage-collector-do-c */
 public class GarbageMap<K, V> {
 
-    private final static ReferenceQueue referenceQueue = new ReferenceQueue();
+    private static final ReferenceQueue referenceQueue = new ReferenceQueue();
 
     static {
         new CleanupThread().start();

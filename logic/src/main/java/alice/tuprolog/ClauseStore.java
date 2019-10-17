@@ -15,8 +15,7 @@ import java.util.ListIterator;
 public final class ClauseStore {
 
 
-    @Nullable
-    private Deque<ClauseInfo> clauses = null;
+    private @Nullable Deque<ClauseInfo> clauses = null;
     private final Term goal;
     private final List<Var> vars;
 
@@ -25,8 +24,7 @@ public final class ClauseStore {
         this.vars = vars;
     }
 
-    @Nullable
-    public static ClauseStore match(Term goal, Deque<ClauseInfo> familyClauses, @Nullable List<Var> vars) {
+    public static @Nullable ClauseStore match(Term goal, Deque<ClauseInfo> familyClauses, @Nullable List<Var> vars) {
         if (!familyClauses.isEmpty()) {
             ClauseStore clauseStore = new ClauseStore(goal, vars);
             if (clauseStore.matchFirst(familyClauses))

@@ -38,8 +38,7 @@ import spacegraph.space3d.phys.Collidable;
 public class Broadphasing {
 
 	
-	@Nullable
-	public Collidable data;
+	public @Nullable Collidable data;
 	
 	
 	public short collisionFilterGroup;

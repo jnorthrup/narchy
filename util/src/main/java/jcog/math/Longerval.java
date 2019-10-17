@@ -13,7 +13,7 @@ import static java.lang.Math.min;
  */
 public class Longerval implements LongInterval, Comparable<Longerval> {
 
-    final static Comparator<Longerval> comparator = Comparators
+    static final Comparator<Longerval> comparator = Comparators
             .byLongFunction((Longerval l) -> l.start)
             .thenComparingLong((l) -> l.end);
 
@@ -31,8 +31,7 @@ public class Longerval implements LongInterval, Comparable<Longerval> {
         this.end = end;
     }
 
-    @Nullable
-    public static Longerval intersection(long myA, long myB, long otherA, long otherB) {
+    public static @Nullable Longerval intersection(long myA, long myB, long otherA, long otherB) {
         return new Longerval(myA, myB).intersection(otherA, otherB);
     }
 
@@ -87,8 +86,7 @@ public class Longerval implements LongInterval, Comparable<Longerval> {
         return new Longerval(min(as, bs), max(ae, be));
     }
 
-    @Nullable
-    public final Longerval intersection(long bs, long be) {
+    public final @Nullable Longerval intersection(long bs, long be) {
         long as = this.start;
         if (as == ETERNAL || bs == ETERNAL)
             return Longerval.Eternal;
@@ -115,8 +113,7 @@ public class Longerval implements LongInterval, Comparable<Longerval> {
         return target;
     }
 
-    @Nullable
-    public static long[] intersectionArray(long myA, long myB, long otherA, long otherB, @Nullable long[] target) {
+    public static @Nullable long[] intersectionArray(long myA, long myB, long otherA, long otherB, @Nullable long[] target) {
         @Nullable Longerval x = Longerval.intersection(myA, myB, otherA, otherB);
         return x == null ? null : x.intervalArray(target);
     }

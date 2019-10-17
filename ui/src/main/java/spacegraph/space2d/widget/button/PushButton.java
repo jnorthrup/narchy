@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 public class PushButton extends AbstractButton  {
 
 
-    @Nullable private Consumer<PushButton> onClick;
+    private @Nullable Consumer<PushButton> onClick;
 
     public PushButton() {
         super();

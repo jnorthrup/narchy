@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
  */
 public class AtomicMeanFloat extends AtomicFloat implements FloatProcedure {
 
-    final static AtomicIntegerFieldUpdater<AtomicMeanFloat> countUpdater =
+    static final AtomicIntegerFieldUpdater<AtomicMeanFloat> countUpdater =
             new MetalAtomicIntegerFieldUpdater<>(AtomicMeanFloat.class, "count");
 
     public final String id;

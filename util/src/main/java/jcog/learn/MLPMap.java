@@ -56,7 +56,7 @@ public class MLPMap {
         public final float[] W;
         final float[] dW;
 
-        @Nullable final IDifferentiableFunction activation;
+        final @Nullable IDifferentiableFunction activation;
         private final boolean bias;
 
         public MLPLayer(int inputSize, int outputSize, @Nullable IDifferentiableFunction activation) {

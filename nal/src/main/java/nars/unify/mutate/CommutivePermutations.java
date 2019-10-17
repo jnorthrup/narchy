@@ -16,7 +16,7 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
 
     private final Subterms x, y;
 
-    final static Atom COMMUTIVE_PERMUTATIONS = $.the(CommutivePermutations.class);
+    static final Atom COMMUTIVE_PERMUTATIONS = $.the(CommutivePermutations.class);
 
     /**
      * NOTE X and Y should be pre-sorted using Terms.sort otherwise diferent permutations of the same

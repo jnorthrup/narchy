@@ -281,7 +281,7 @@ public class ClassReloader extends ClassLoader {
 //    }
 
 
-    static public ClassReloader inClassPathOf(Class clazz) throws URISyntaxException {
+    public static ClassReloader inClassPathOf(Class clazz) throws URISyntaxException {
 
         URI pkgLocal = clazz.getResource(".").toURI();
 

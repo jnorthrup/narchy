@@ -5,7 +5,7 @@ import jcog.Util;
 import java.util.function.LongToDoubleFunction;
 
 /** trapezoidally integrates a function where the x domain is long integers, and the y range is floats */
-abstract public class LongFloatTrapezoidalIntegrator implements LongToDoubleFunction { ;
+public abstract class LongFloatTrapezoidalIntegrator implements LongToDoubleFunction { ;
 
 
 //    /** /** points must be ordered */

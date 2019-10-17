@@ -265,7 +265,7 @@ class NarseseBaseTest extends NarseseTest {
     void testOperationNoArgs() throws Narsese.NarseseException {
         Term t = term("op()");
         assertNotNull(t);
-        assertEquals(Op.INH, t.op(), t.toString());
+        assertEquals(Op.INH, t.op(), t::toString);
         
 
         taskParses("op()!");
@@ -335,11 +335,10 @@ class NarseseBaseTest extends NarseseTest {
         Term abcd = term("((a,b) --> (c,d))");
         Term ABCD = term("<(*,a,b) --> (*,c,d)>");
         assertEquals(Op.INH, x.op());
-        assertEquals(abcd, ABCD, abcd + " != " + ABCD);
+        assertEquals(abcd, ABCD, () -> abcd + " != " + ABCD);
     }
 
-    @NotNull
-    private Variable testVar(char prefix) throws Narsese.NarseseException {
+    private @NotNull Variable testVar(char prefix) throws Narsese.NarseseException {
         Term x = term(prefix + "x");
         assertNotNull(x);
         assertTrue(x instanceof Variable);

@@ -71,8 +71,7 @@ public class Tex {
     /**
      * try to commit
      */
-    @Nullable
-    public Texture commit(GL2 gl) {
+    public @Nullable Texture commit(GL2 gl) {
 
         ready(gl);
 

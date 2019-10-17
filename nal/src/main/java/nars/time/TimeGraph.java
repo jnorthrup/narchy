@@ -118,7 +118,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	private transient Term solving;
 	private Predicate<Event> target;
 
-	static private Term unknownComponent(Subterms xx, List<Absolute>[] subEvents, int abs) {
+	private static Term unknownComponent(Subterms xx, List<Absolute>[] subEvents, int abs) {
 		int s = subEvents.length;
 		if (abs < s) {
 			if (s - abs > 1) {
@@ -191,8 +191,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	 * computes dt, the length of time spanned from start to the end of the given path [0],
 	 * and the range [1]
 	 */
-	@Nullable
-	private static long[] pathTime(List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path) {
+	private static @Nullable long[] pathTime(List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path) {
 
 		long durEventMin = Long.MAX_VALUE, durImplMin = Long.MAX_VALUE;
 
@@ -491,8 +490,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	}
 
 
-	@Nullable
-	private Collection<Event> events(Term t) {
+	private @Nullable Collection<Event> events(Term t) {
 		return byTerm.get(t);
 	}
 
@@ -1844,7 +1842,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	public abstract static class Event implements LongObjectPair<Term> {
 
 		public static final Event[] EmptyArray = new Event[0];
-		private final static Comparator<Event> cmp = Comparator
+		private static final Comparator<Event> cmp = Comparator
 			.comparing((Event e) -> e.id)
 			.thenComparingLong(Event::start)
 			.thenComparingLong(Event::end);
@@ -1856,11 +1854,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 			this.hash = hash;
 		}
 
-		abstract public Event neg();
+		public abstract Event neg();
 
-		abstract public long start();
+		public abstract long start();
 
-		abstract public long end();
+		public abstract long end();
 
 		@Override
 		public final int hashCode() {
@@ -1906,7 +1904,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 			return this == e ? 0 : cmp.compare(this, (Event) e);
 		}
 
-		abstract public long dur(); //        return end() - start();
+		public abstract long dur(); //        return end() - start();
 
 		public long mid() {
 			return (start() + end()) / 2L;
