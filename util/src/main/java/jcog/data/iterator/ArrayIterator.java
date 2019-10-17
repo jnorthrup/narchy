@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /** TODO optionally skip nulls */
@@ -35,8 +34,11 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
 
     @Override
     public void forEachRemaining(Consumer<? super E> action) {
-        throw new TODO();
+        E[] a = this.array;
+        for (int i = index; i < a.length; i++)
+            action.accept(a[i]);
     }
+    
     @Override
     public void forEach(Consumer<? super E> action) {
         throw new TODO();
