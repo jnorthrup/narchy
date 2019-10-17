@@ -32,9 +32,11 @@ import jake2.qcommon.*;
 import jake2.server.SV_GAME;
 import jake2.util.Lib;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

@@ -2,7 +2,6 @@ package jcog.grammar.parse;
 
 import jcog.Util;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;

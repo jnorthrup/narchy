@@ -59,7 +59,7 @@ public class AbstractPremise implements Premise {
 
 	@Override
 	public final Term why() {
-		return why.term();
+		Termed w = this.why; return w!=null ? w.term() : null;
 	}
 
 

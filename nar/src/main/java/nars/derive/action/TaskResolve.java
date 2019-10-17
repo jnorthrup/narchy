@@ -43,7 +43,7 @@ public class TaskResolve extends NativeHow {
 		return get(t, d.when, tasklinkTaskFilter);
 	}
 
-	@Nullable Task get(TaskLink t, When<What> when, @Nullable Predicate<Task> filter) {
+	@Nullable static Task get(TaskLink t, When<What> when, @Nullable Predicate<Task> filter) {
 		return get(t.from(), t.punc(when.x.random()), when, filter);
 	}
 

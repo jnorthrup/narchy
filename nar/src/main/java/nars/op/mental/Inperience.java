@@ -173,8 +173,7 @@ public class Inperience extends TaskTransformAction {
         Term x = t.term();
          if (x.hasAll(INH.bit | PROD.bit) && x.op()==INH && x.sub(0).op()==PROD && x.sub(1).equals(verb(t.punc()))) {
              Term inperiencer = x.sub(0).sub(0);
-             if (inperiencer instanceof nars.term.Variable || inperiencer.equals(self))
-                 return true;
+             return inperiencer instanceof nars.term.Variable || inperiencer.equals(self);
          }
          return false;
     }

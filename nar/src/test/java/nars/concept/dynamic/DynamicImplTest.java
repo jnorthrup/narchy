@@ -4,7 +4,6 @@ import nars.$;
 import nars.Narsese;
 import nars.Task;
 import nars.truth.Truth;
-import org.eclipse.collections.api.bag.Bag;
 import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.junit.jupiter.api.Test;
 

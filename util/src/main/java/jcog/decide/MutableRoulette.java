@@ -158,7 +158,7 @@ public class MutableRoulette {
     }
 
     public static void runN(float[] weights, Random rng, FloatToFloatFunction weightUpdate, IntPredicate choose) {
-        MutableRoulette r = new MutableRoulette(weights, weightUpdate, rng, choose);
+        new MutableRoulette(weights, weightUpdate, rng, choose);
     }
 
     public static void run1(float weight, FloatToFloatFunction weightUpdate, IntPredicate choose) {

@@ -51,7 +51,7 @@ public class Taskify extends ProxyTerm {
     }
 
 
-    boolean spam(Derivation d, int cost) {
+    static boolean spam(Derivation d, int cost) {
         d.use(cost);
 
         //MetaGoal.Futile.learn(cost, d.nar.control.why, channel.id);

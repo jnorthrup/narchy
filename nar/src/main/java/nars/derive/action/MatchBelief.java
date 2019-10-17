@@ -144,7 +144,7 @@ public class MatchBelief extends NativeHow {
 
 		return belief != null ?
 			new AbstractPremise(task, belief, Why.whyLazy(why, p, belief)) :
-			(!beliefTerm.equals(nextBeliefTerm) ? new AbstractPremise(task, nextBeliefTerm, Why.why(why, p)) :
+			(!beliefTerm.equals(nextBeliefTerm) ? new AbstractPremise(task, nextBeliefTerm, why.why(p)) :
 				null);
 
 	}

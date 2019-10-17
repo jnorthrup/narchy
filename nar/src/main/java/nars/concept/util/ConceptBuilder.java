@@ -96,20 +96,9 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
         return null;
     }
 
+    /**  TODO maybe some Indep cases can work if they are isolated to a sub-condition */
     private static boolean dynamicPreFilter(Compound t) {
-        int vars = t.vars();
-        if (vars > 0) {
-            if (t.hasAny(Op.VAR_QUERY.bit | Op.VAR_INDEP.bit))
-                return false; //TODO maybe some Indep cases can work
-            /*if (vars == 1)
-                return true; //only one variable appearance, ok
-            else {
-                //verify that there is only one unique variable, or some other constraint that can allow it
-                if (t.containsRecursively(Task.VAR_DEP_2))
-                    return false;
-            }*/
-        }
-        return true;
+        return !t.hasAny(Op.VAR_QUERY.bit | Op.VAR_INDEP.bit);
     }
 
     private static @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> dynamicImpl(final Compound t) {

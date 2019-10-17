@@ -3,7 +3,6 @@ package nars.term.util.conj;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;

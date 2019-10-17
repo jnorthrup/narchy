@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.namespace.QName;
 import java.io.*;
+import java.util.Set;
 import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;

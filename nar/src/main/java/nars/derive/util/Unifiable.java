@@ -68,7 +68,6 @@ public enum Unifiable { ;
                 if (x instanceof Neg && (xu.equals(p.taskPattern) || xu.equals(p.beliefPattern)))
                     p.hasAny(conj, NEG);
 
-
                 if (unifiable) {
                     p.biggerIffConstant((Variable)conj, (Variable)xu /* x */); //TODO
                     p.constraints.add(new EventUnifiability((Variable) conj, (Variable) xu, x instanceof Neg));

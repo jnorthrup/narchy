@@ -173,16 +173,16 @@ public class NARS {
     public NARS() {
 
         index = () ->
-                new SimpleMemory(16 * 1024)
+                new SimpleMemory(8 * 1024)
                 //new TemporaryConceptIndex()
         ;
 
         time = new CycleTime();
 
-        exec = () -> new UniExec(8);
+        exec = () -> new UniExec(5);
 
-        what = w -> new TaskLinkWhat(w, 64,
-                       new PriBuffer.DirectTaskBuffer()
+        what = w -> new TaskLinkWhat(w, 32,
+                       new PriBuffer.DirectTaskBuffer<>()
                        //new PriBuffer.BagTaskBuffer(128, 0.1f)
                        //new PriBuffer.MapTaskBuffer()
         );
@@ -200,7 +200,7 @@ public class NARS {
 
         /** shared temporal belief and goal capacity curve */
         ToIntFunction<Concept> bgTemporal = curve(termVolume,
-                1, 192,
+                1, 128,
                 8, 64,
                 16, 32,
                 32, 16

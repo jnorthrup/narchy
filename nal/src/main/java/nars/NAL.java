@@ -161,7 +161,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /**
      * TODO make this NAR-specific
      */
-    public static final IntRange causeCapacity = new IntRange(4, 1, 64);
+    public static final IntRange causeCapacity = new IntRange(0, 1, 64);
 
 
 
@@ -329,12 +329,14 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     @Deprecated public final FloatRange questionForgetRate = new FloatRange(1f, 0, 1);
 
-    @Deprecated public final IntRange deriveBranchTTL = new IntRange(16, 1, 64 * NAL.derive.TTL_MIN);
+    @Deprecated public final IntRange deriveBranchTTL = new IntRange(16, 1, 256);
+
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
      */
     public final IntRange dtDither = new IntRange(1, 1, 1024);
+
     /**
      * hard upper-bound limit on Compound target complexity;
      * if this is exceeded it may indicate a recursively
@@ -736,7 +738,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY= configIs("TIMEGRAPH_DITHER_EVENTS_INTERNALLY");
 
 
-        public static final int TTL_UNISUBST = 4;
+        public static final int TTL_UNISUBST = 8;
 
         public static final int TTL_CONJ_BEFORE_AFTER = NAL.derive.TTL_UNISUBST;
 
@@ -766,18 +768,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final int TTL_COST_TASK_REMEMBER = 1;
 
         /**
-         * estimate
-         */
-        @Deprecated
-        public static final int TTL_MIN =
-                (2) +
-                    (NAL.derive.TTL_COST_BRANCH * 1) + NAL.derive.TTL_COST_TASK_TASKIFY;
-
-        /**
          * cost of a task derived, but too similar to one of its parents
          */
         @Range(min = 0, max = 64)
-        public static final int TTL_COST_DERIVE_TASK_SAME = 2;
+        public static final int TTL_COST_DERIVE_TASK_SAME = 1;
         /**
          * cost of a failed/aborted task derivation
          */

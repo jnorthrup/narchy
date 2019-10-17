@@ -16,7 +16,6 @@ package nars.op.kif;
 
 import java.io.*;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
