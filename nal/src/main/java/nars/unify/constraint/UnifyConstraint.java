@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 
 	public static final UnifyConstraint[] None = new UnifyConstraint[0];
-	private static final Map<Term, UnifyConstraint> constra = new ConcurrentHashMap<>();
+	private static final Map<Term, UnifyConstraint> constra = new ConcurrentHashMap<>(256);
 	public final Variable x;
 
 //    public static boolean valid(Term x, @Nullable Versioned<MatchConstraint> c, Unify u) {

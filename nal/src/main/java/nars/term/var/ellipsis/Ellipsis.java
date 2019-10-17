@@ -3,7 +3,6 @@ package nars.term.var.ellipsis;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.term.Term;
 import nars.term.Variable;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;

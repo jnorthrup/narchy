@@ -391,7 +391,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             ShortByteHashMap counts = new ShortByteHashMap(v);
             final boolean[] skipNext = {false};
             t.recurseTermsOrdered(Termlike::hasVars, x -> {
-                if (skipNext[0] == true) {
+                if (skipNext[0]) {
                     skipNext[0] = false;
                     return true; //this is the variable contained inside a Neg that was counted
                 } if (x instanceof Neg) {

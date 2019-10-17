@@ -140,12 +140,7 @@ public final class CommonVariable extends UnnormalizedVariable {
         }
 
         Variable common = CommonVariable.common(X,Y);
-        if (!(common.equals(X) || u.putXY(X, common)))
-            return false;
-        if (!(common.equals(Y) || u.putXY(Y, common)))
-            return false;
-
-        return true;
+        return (common.equals(X) || u.putXY(X, common)) && (common.equals(Y) || u.putXY(Y, common));
     }
 
     @Override

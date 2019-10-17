@@ -1027,12 +1027,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (noTemporal)
                 return xx.equals(yy);
             else {
-
-                boolean noConjs = ((XS & CONJ.bit) == 0 && ((YS & CONJ.bit) == 0));
-                if (noConjs) {
-                    if (XS != YS || xx.volume() != yy.volume())
-                        return false;
-                }
+                if (((XS & CONJ.bit) == 0 && ((YS & CONJ.bit) == 0)) && (XS != YS || xx.volume() != yy.volume()))
+                    return false;
             }
 
         }

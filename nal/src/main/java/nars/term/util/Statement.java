@@ -310,7 +310,7 @@ public class Statement {
 //            }
 
 
-        if (recursive(op, dt, subject, predicate))
+        if (recursive(op, subject, predicate))
             return Null;
 
         if (op == SIM) {
@@ -342,13 +342,13 @@ public class Statement {
         return t.negIf(negate);
     }
 
-    private static boolean recursive(Op op, int dt, Term subject, Term predicate) {
+    private static boolean recursive(Op op, Term subject, Term predicate) {
 
-        if (op != IMPL
-                //|| (dt == 0) /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */
-                //|| (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate)
-        ) {
-            //more fine grained inh/sim recursion test
+        return op != IMPL && (Terms.eqRCom(subject, predicate));
+
+        //|| (dt == 0) /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */
+        //|| (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate)
+        //more fine grained inh/sim recursion test
 //            final int InhOrSim = INH.bit | SIM.bit;
 //            if (op.isAny(InhOrSim)) {
 //                if (subject instanceof Compound && subject.isAny(InhOrSim)) {
@@ -370,10 +370,7 @@ public class Statement {
 //                }
 //            }
 
-            if ((Terms.eqRCom(subject, predicate)))
-                return true;
-        }
-        return false;
+
     }
 
 }
