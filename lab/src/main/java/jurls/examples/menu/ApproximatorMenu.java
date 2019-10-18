@@ -156,7 +156,7 @@ public class ApproximatorMenu extends RLMenu {
     public ParameterizedFunctionGenerator getFunctionGenerator(
             ApproxParameters approxParameters
     ) {
-        return (int numInputVectorElements) -> {
+        return numInputVectorElements -> {
             int numFeatures = (int) featuresMenu.getObject();
 
             ParameterizedFunction f = null;

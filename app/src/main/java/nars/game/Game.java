@@ -279,9 +279,15 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         nar.control.add(rewardPri = new PriSource($.inh(id,REWARD),
             Util.or(nar.beliefPriDefault.pri(),nar.goalPriDefault.pri())));
 
-        sensors.forEach(s -> init(sensorPri, s));
-        actions.forEach(a -> init(actionPri, a));
-        rewards.forEach(r -> init(rewardPri, r));
+        for (GameLoop s : sensors) {
+            init(sensorPri, s);
+        }
+        for (ActionSignal a : actions) {
+            init(actionPri, a);
+        }
+        for (Reward r : rewards) {
+            init(rewardPri, r);
+        }
     }
 
     /** subclasses can safely add sensors, actions, rewards by implementing this.  NAR and What will be initialized prior */
@@ -551,8 +557,12 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         _confRes = nar.confResolution.floatValue();
 
         //TODO fork here
-        sensors.forEach(this::update);
-        rewards.forEach(this::update);
+        for (GameLoop sensor : sensors) {
+            update(sensor);
+        }
+        for (Reward reward : rewards) {
+            update(reward);
+        }
     }
 
     private void update(GameLoop s) {

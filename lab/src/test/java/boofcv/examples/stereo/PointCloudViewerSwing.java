@@ -117,9 +117,7 @@ public class PointCloudViewerSwing implements PointCloudViewer {
 		if( SwingUtilities.isEventDispatchThread() ) {
 			panel.addPoints(cloudXYZ.data, colorRGB.data, cloudXYZ.size / 3);
 		} else {
-			SwingUtilities.invokeLater(() -> {
-				panel.addPoints(cloudXYZ.data, colorRGB.data, cloudXYZ.size / 3);
-			});
+			SwingUtilities.invokeLater(() -> panel.addPoints(cloudXYZ.data, colorRGB.data, cloudXYZ.size / 3));
 		}
 	}
 
@@ -128,9 +126,7 @@ public class PointCloudViewerSwing implements PointCloudViewer {
 		if( SwingUtilities.isEventDispatchThread() ) {
 			panel.addPoint((float)x,(float)y,(float)z,rgb);
 		} else {
-			SwingUtilities.invokeLater(() -> {
-				panel.addPoint((float) x, (float) y, (float) z, rgb);
-			});
+			SwingUtilities.invokeLater(() -> panel.addPoint((float) x, (float) y, (float) z, rgb));
 		}
 	}
 
@@ -139,9 +135,7 @@ public class PointCloudViewerSwing implements PointCloudViewer {
 		if( SwingUtilities.isEventDispatchThread() ) {
 			panel.clearCloud();
 		} else {
-			SwingUtilities.invokeLater(() -> {
-				panel.clearCloud();
-			});
+			SwingUtilities.invokeLater(() -> panel.clearCloud());
 		}
 	}
 

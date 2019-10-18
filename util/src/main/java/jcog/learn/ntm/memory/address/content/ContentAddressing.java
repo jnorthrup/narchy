@@ -2,6 +2,8 @@ package jcog.learn.ntm.memory.address.content;
 
 import jcog.learn.ntm.control.UVector;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -45,7 +47,12 @@ public class ContentAddressing
     }
 
     public static ContentAddressing[] getVector(Integer x, Function<Integer, BetaSimilarity[]> paramGetter) {
-        ContentAddressing[] vector = IntStream.range(0, x).mapToObj(i -> new ContentAddressing(paramGetter.apply(i))).toArray(ContentAddressing[]::new);
+        List<ContentAddressing> list = new ArrayList<>();
+        for (int i = 0; i < x; i++) {
+            ContentAddressing contentAddressing = new ContentAddressing(paramGetter.apply(i));
+            list.add(contentAddressing);
+        }
+        ContentAddressing[] vector = list.toArray(new ContentAddressing[0]);
         return vector;
     }
 

@@ -3,6 +3,7 @@ package jcog.test.predict;
 import jcog.learn.lstm.AbstractTraining;
 import jcog.learn.lstm.ExpectedVsActual;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -26,8 +27,16 @@ public class DistractedSequenceRecall extends AbstractTraining {
 
             int target1 = random.nextInt(outputs);
 			int target2 = random.nextInt(outputs);
-            int[] seq = IntStream.range(0, length).map(t -> random.nextInt(outputs) + outputs).toArray();
-			int loc1 = random.nextInt(length);
+            int[] seq = new int[10];
+            int count = 0;
+            int bound = length;
+            for (int t1 = 0; t1 < bound; t1++) {
+                int i1 = random.nextInt(outputs) + outputs;
+                if (seq.length == count) seq = Arrays.copyOf(seq, count * 2);
+                seq[count++] = i1;
+            }
+            seq = Arrays.copyOfRange(seq, 0, count);
+            int loc1 = random.nextInt(length);
 			int loc2 = random.nextInt(length);
 			while (loc1 == loc2)
 				loc2 = random.nextInt(length);

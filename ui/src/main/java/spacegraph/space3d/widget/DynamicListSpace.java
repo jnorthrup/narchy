@@ -39,7 +39,9 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
 
     @Override
     public void forEach(Consumer<? super Spatial<X>> each) {
-        active.forEach(each);
+        for (Spatial<X> xSpatial : active) {
+            each.accept(xSpatial);
+        }
     }
 
 
@@ -49,19 +51,27 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
         //synchronized (this) {
             List<? extends Spatial<X>> prev = this.active;
 
-            prev.forEach(Active::deactivate);
+        for (Spatial<X> spatial : prev) {
+            spatial.deactivate();
+        }
 
-            List next = get();
+        List next = get();
 
 
             this.active = next;
 
 
-        prev.stream().filter(x -> !x.preactive).forEach(x -> x.order = -1);
+        for (Spatial<X> xSpatial : prev) {
+            if (!xSpatial.preactive) {
+                xSpatial.order = -1;
+            }
+        }
 
-            active.forEach(x -> x.update(s.dyn));
+        for (Spatial<X> x : active) {
+            x.update(s.dyn);
+        }
 
-            super.update(s, dtMS);
+        super.update(s, dtMS);
         //}
 
 
@@ -95,7 +105,10 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
 
     public void clear() {
         synchronized (this) {
-            active.forEach(space::remove);
+            SpaceGraph3D<X> spatials = space;
+            for (Spatial<X> xSpatial : active) {
+                spatials.remove(xSpatial);
+            }
             active.clear();
         }
     }

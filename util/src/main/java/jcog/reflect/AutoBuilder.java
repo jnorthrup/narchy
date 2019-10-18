@@ -14,6 +14,7 @@ import jcog.util.Reflect;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -152,15 +153,16 @@ public class AutoBuilder<X, Y> {
 
     private <C> void collectFields(C c, X x, Y parentRepr, Collection<Pair<X, Iterable<Y>>> target, int depth) {
 
-        Reflect.on(x.getClass()).fields(true, false, false).forEach((s, ff) -> {
-
+        for (Map.Entry<String, Reflect> entry : Reflect.on(x.getClass()).fields(true, false, false).entrySet()) {
+            String s = entry.getKey();
+            Reflect ff = entry.getValue();
             try {
                 Field f = ff.get();
                 Object fVal = f.get(x);
-                if(Modifier.isPublic(f.getModifiers())) {
+                if (Modifier.isPublic(f.getModifiers())) {
                     for (Map.Entry<Class, TriFunction> e : annotation.entrySet()) {
-                        java.lang.annotation.Annotation fe = f.getAnnotation(e.getKey());
-                        if (fe!=null) {
+                        Annotation fe = f.getAnnotation(e.getKey());
+                        if (fe != null) {
                             Object v = e.getValue().apply(f, fVal, fe);
                             if (v != null) {
                                 Object vv;
@@ -171,7 +173,7 @@ public class AutoBuilder<X, Y> {
                                     //continue
                                     vv = v;
                                 }
-                                if (vv!=null) {
+                                if (vv != null) {
                                     fVal = vv;
                                     break;
                                 }
@@ -191,7 +193,7 @@ public class AutoBuilder<X, Y> {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        });
+        }
 //        for (Field f : cc.getFields()) {
 //
 //            int mods = f.getModifiers();

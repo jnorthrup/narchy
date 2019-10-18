@@ -22,9 +22,9 @@ import java.util.function.Function;
 import static java.lang.Float.NaN;
 
 public class Plot2D extends Widget {
-    public static final PlotVis Line = (List<Series> series, float minValue, float maxValue, GL2 gl) -> plotLine(series, gl, minValue, maxValue, false, false);
-    public static final PlotVis LineLanes = (List<Series> series, float minValue, float maxValue, GL2 gl) -> plotLine(series, gl, minValue, maxValue, true, false);
-    public static final PlotVis BarLanes = (List<Series> series, float minValue, float maxValue, GL2 gl) -> plotLine(series, gl, minValue, maxValue, true, true);
+    public static final PlotVis Line = (series, minValue, maxValue, gl) -> plotLine(series, gl, minValue, maxValue, false, false);
+    public static final PlotVis LineLanes = (series, minValue, maxValue, gl) -> plotLine(series, gl, minValue, maxValue, true, false);
+    public static final PlotVis BarLanes = (series, minValue, maxValue, gl) -> plotLine(series, gl, minValue, maxValue, true, true);
     public final List<Series> series;
     private final int maxHistory;
     private final PlotVis vis;
@@ -341,7 +341,7 @@ public class Plot2D extends Widget {
 
             final float[] minValue = {Float.POSITIVE_INFINITY};
             final float[] maxValue = {Float.NEGATIVE_INFINITY};
-            series.forEach((Series s) -> {
+            for (Series s : series) {
                 s.update();
 
                 float min = s.minValue();
@@ -352,7 +352,7 @@ public class Plot2D extends Widget {
                         maxValue[0] = Math.max(maxValue[0], max);
                     }
                 }
-            });
+            }
 
             if (Float.isFinite(minValue[0]) && Float.isFinite(maxValue[0])) {
                 this.minMinValue = minValue[0];

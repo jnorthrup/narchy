@@ -884,10 +884,14 @@ public class GameFunc {
         @Override
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
-            if (IntStream.of(0, 1, 2).anyMatch(i -> self.avelocity[i] != 0))
-                GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
-                        other.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
-                        Defines.MOD_CRUSH);
+            for (int i : new int[]{0, 1, 2}) {
+                if (self.avelocity[i] != 0) {
+                    GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
+                            other.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
+                            Defines.MOD_CRUSH);
+                    break;
+                }
+            }
         }
     };
 

@@ -112,10 +112,10 @@ class HijackBagTest {
 
 
         TreeSet<String> keys2 = new TreeSet();
-        a.forEach((b)->{
+        for (PriReference<String> b : a) {
             if (!keys2.add(b.get()))
                 throw new RuntimeException("duplicate detected");
-        });
+        }
         System.out.println( keys2.size() + " " + Joiner.on(' ').join(keys2) );
 
         assertEquals(size, keys2.size());

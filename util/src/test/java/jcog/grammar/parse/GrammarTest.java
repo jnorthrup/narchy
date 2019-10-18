@@ -81,10 +81,8 @@ class GrammarTest {
 
     @Test
     void assemblersCanOnlyBeAddedToExistingRules() {
-        assertThrows(GrammarException.class, () -> {
-            grammar.addAssembler("mystart", (IAssembler) a -> {
-            });
-        });
+        assertThrows(GrammarException.class, () -> grammar.addAssembler("mystart", (IAssembler) a -> {
+        }));
     }
 
     @Test

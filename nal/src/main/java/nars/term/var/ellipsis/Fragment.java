@@ -133,7 +133,12 @@ public final class Fragment extends LightCompound {
         if (s + from > y.subs())
             return false;
 
-        return IntStream.range(0, s).allMatch(i -> y.sub(i + from).unify(sub(i), subst));
+        for (int i = 0; i < s; i++) {
+            if (!y.sub(i + from).unify(sub(i), subst)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 

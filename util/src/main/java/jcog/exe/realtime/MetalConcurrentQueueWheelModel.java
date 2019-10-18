@@ -89,7 +89,12 @@ public class MetalConcurrentQueueWheelModel extends HashedWheelTimer.WheelModel 
 
     @Override
     public boolean isEmpty() {
-        return Arrays.stream(q).allMatch(MetalConcurrentQueue::isEmpty);
+        for (MetalConcurrentQueue<TimedFuture> timedFutureMetalConcurrentQueue : q) {
+            if (!timedFutureMetalConcurrentQueue.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
 

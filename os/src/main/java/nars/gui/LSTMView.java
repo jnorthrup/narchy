@@ -11,9 +11,9 @@ import spacegraph.video.Draw;
 public class LSTMView extends Gridding {
 
     public static final MatrixView.ViewFunction1D colorize = (x, gl) -> {
-        x = x/2f + 0.5f;
+        float x1 = x / 2f + 0.5f;
         
-        gl.glColor3f(0,x, x/2);
+        gl.glColor3f(0, x1, x1 /2);
         return 0;
     };
     public static final MatrixView.ViewFunction1D colorize1 = (x, gl) -> {
@@ -23,8 +23,8 @@ public class LSTMView extends Gridding {
         return 0;
     };
     public static final MatrixView.ViewFunction1D colorize2 = (x, gl) -> {
-        x = x/2f + 0.5f;
-        gl.glColor3f(x,0,x/2);
+        float x1 = x / 2f + 0.5f;
+        gl.glColor3f(x1,0, x1 /2);
         return 0;
     };
     public LSTMView(SimpleLSTM lstm) {

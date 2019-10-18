@@ -57,7 +57,10 @@ public class SyntaxTree {
 
     private void shunt() {
         ShuntingStack shuntingStack = new ShuntingStack();
-        nodeList.forEach((Consumer<Node>) n -> n.accept(shuntingStack));
+        Consumer<Node> c = n -> n.accept(shuntingStack);
+        for (Node node : nodeList) {
+            c.accept(node);
+        }
         shuntingStack.finish(nodeStack);
     }
 
@@ -256,7 +259,9 @@ public class SyntaxTree {
 
     public static List<Node> copyNodes(List<Node> sample) {
         List<Node> result = new FasterList(sample.size());
-        sample.forEach(node -> result.add(node.copy()));
+        for (Node node : sample) {
+            result.add(node.copy());
+        }
         return result;
     }
 

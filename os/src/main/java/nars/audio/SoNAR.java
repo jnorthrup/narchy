@@ -150,7 +150,11 @@ public class SoNAR extends TimerTask {
     @Override
     public void run() {
         now = nar.time();
-        termSounds.forEach(this::update);
+        for (Map.Entry<Concept, Sound> entry : termSounds.entrySet()) {
+            Concept key = entry.getKey();
+            Sound value = entry.getValue();
+            update(key, value);
+        }
     }
 
     private boolean update(@NotNull Concept c, Sound s) {

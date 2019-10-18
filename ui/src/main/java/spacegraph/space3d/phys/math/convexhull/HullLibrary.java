@@ -860,7 +860,12 @@ public class HullLibrary {
 	
 
 	private static boolean hasvert(Int3 t, int v) {
-		return (IntStream.of(0, 1, 2).anyMatch(i -> t.getCoord(i) == v));
+        for (int i : new int[]{0, 1, 2}) {
+            if (t.getCoord(i) == v) {
+                return (true);
+            }
+        }
+        return (false);
 	}
 
 	private static v3 orth(v3 v, v3 out) {

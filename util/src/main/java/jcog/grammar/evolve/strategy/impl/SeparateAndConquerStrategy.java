@@ -132,7 +132,13 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                     
                     listener.logGeneration(this, generation + 1, joinedBest, fitnessOfJoined, this.rankings);
                 }
-                boolean allPerfect = Arrays.stream(this.rankings.first().getFitness()).noneMatch(fitness -> Math.round(fitness * 10000) != 0);
+                boolean allPerfect = true;
+                for (double fitness : this.rankings.first().getFitness()) {
+                    if (Math.round(fitness * 10000) != 0) {
+                        allPerfect = false;
+                        break;
+                    }
+                }
                 if (allPerfect) {
                     break;
                 }

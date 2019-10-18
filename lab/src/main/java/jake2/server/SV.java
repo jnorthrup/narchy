@@ -674,12 +674,14 @@ public final class SV {
 
         boolean wasonground = groundentity != null;
 
-        if (IntStream.of(0, 1, 2).anyMatch(v -> ent.avelocity[v] != 0))
-            SV_AddRotationalFriction(ent);
+        for (int v : new int[]{0, 1, 2}) {
+            if (ent.avelocity[v] != 0) {
+                SV_AddRotationalFriction(ent);
+                break;
+            }
+        }
 
-        
-        
-        
+
         if (!wasonground)
             if (0 == (ent.flags & Defines.FL_FLY))
                 if (!((ent.flags & Defines.FL_SWIM) != 0 && (ent.waterlevel > 2))) {
@@ -715,7 +717,14 @@ public final class SV {
             ent.velocity[2] *= newspeed;
         }
 
-        if (IntStream.of(2, 1, 0).anyMatch(i -> ent.velocity[i] != 0)) {
+        boolean b = false;
+        for (int i : new int[]{2, 1, 0}) {
+            if (ent.velocity[i] != 0) {
+                b = true;
+                break;
+            }
+        }
+        if (b) {
             
             
             if ((wasonground)

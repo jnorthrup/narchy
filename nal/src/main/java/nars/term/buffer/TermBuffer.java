@@ -192,7 +192,9 @@ public class TermBuffer {
     }
 
     private TermBuffer subs(Iterable<Term> subs) {
-        subs.forEach(this::append);
+        for (Term term : subs) {
+            append(term);
+        }
         return this;
     }
 

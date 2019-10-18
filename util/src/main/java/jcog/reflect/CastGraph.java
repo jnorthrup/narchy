@@ -425,7 +425,9 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
         for( Class cf : roots ){
             List<Path<Class, Function>> paths = paths(cf, cto);
             if( paths != null ) {
-                paths.forEach(c -> convertors.add(Converter.the(c)));
+                for (Path<Class, Function> c : paths) {
+                    convertors.add(Converter.the(c));
+                }
             }
         }
 

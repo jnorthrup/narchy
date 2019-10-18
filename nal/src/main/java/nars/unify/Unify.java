@@ -433,7 +433,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
 //    }
 
     private static Consumer<Versioned<Term>> versionedToBiConsumer(BiConsumer<Term, Term> each) {
-        return (Versioned<Term> v)->{
+        return v ->{
             if (v instanceof KeyMultiVersioned) {
                 each.accept(((KeyMultiVersioned<Term,Term>)v).key, v.get());
             } else if (v instanceof KeyUniVersioned) {

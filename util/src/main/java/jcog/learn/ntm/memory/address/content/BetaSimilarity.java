@@ -2,6 +2,8 @@ package jcog.learn.ntm.memory.address.content;
 
 import jcog.learn.ntm.control.Unit;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 
@@ -41,13 +43,23 @@ public class BetaSimilarity extends Unit {
     }
 
     public static BetaSimilarity[][] getTensor2(int x, int y) {
-        BetaSimilarity[][] tensor = IntStream.range(0, x).mapToObj(i -> getVector(y)).toArray(BetaSimilarity[][]::new);
+        List<BetaSimilarity[]> list = new ArrayList<>();
+        for (int i = 0; i < x; i++) {
+            BetaSimilarity[] vector = getVector(y);
+            list.add(vector);
+        }
+        BetaSimilarity[][] tensor = list.toArray(new BetaSimilarity[0][]);
 
         return tensor;
     }
 
     public static BetaSimilarity[] getVector(int x) {
-        BetaSimilarity[] vector = IntStream.range(0, x).mapToObj(i -> new BetaSimilarity()).toArray(BetaSimilarity[]::new);
+        List<BetaSimilarity> list = new ArrayList<>();
+        for (int i = 0; i < x; i++) {
+            BetaSimilarity betaSimilarity = new BetaSimilarity();
+            list.add(betaSimilarity);
+        }
+        BetaSimilarity[] vector = list.toArray(new BetaSimilarity[0]);
         return vector;
     }
 

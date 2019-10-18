@@ -82,7 +82,13 @@ public class QuickMemoize<X, Y> {
     }
 
     public int valueCount() {
-        return (int) Stream.of(data).filter(Objects::nonNull).count();
+        long count = 0L;
+        for (Pair<X, Y> datum : data) {
+            if (datum != null) {
+                count++;
+            }
+        }
+        return (int) count;
     }
 
 

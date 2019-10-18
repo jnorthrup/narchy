@@ -251,7 +251,9 @@ public enum Terms {
 		out.println();
 
 
-		x.subterms().forEach(z -> printRecursive(out, z, level + 1));
+		for (Term z : x.subterms()) {
+			printRecursive(out, z, level + 1);
+		}
 
 
 	}
@@ -311,7 +313,7 @@ public enum Terms {
 
 
 	public static boolean allNegated(Subterms subterms) {
-		return subterms.hasAny(NEG) && subterms.AND((Term t) -> t instanceof Neg);
+		return subterms.hasAny(NEG) && subterms.AND(t -> t instanceof Neg);
 	}
 
 //	public static int countNegated(Subterms subterms) {
@@ -475,7 +477,12 @@ public enum Terms {
 
 	public static boolean isSorted(Term[] s) {
 		if (s.length < 2) return true;
-        return IntStream.range(1, s.length).noneMatch(i -> s[(i - 1)].compareTo(s[i]) >= 0);
+		for (int i = 1; i < s.length; i++) {
+			if (s[(i - 1)].compareTo(s[i]) >= 0) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public static boolean possiblyUnifiable(Term x, Term y, boolean strict, int var) {

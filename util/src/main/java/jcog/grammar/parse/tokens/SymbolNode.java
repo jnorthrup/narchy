@@ -120,7 +120,12 @@ public class SymbolNode {
 	 * Find a child with the given character.
 	 */
 	SymbolNode findChildWithChar(char c) {
-        return children.stream().filter(n -> n.myChar == c).findFirst().orElse(null);
+        for (SymbolNode n : children) {
+            if (n.myChar == c) {
+                return n;
+            }
+        }
+        return null;
     }
 
 	/**

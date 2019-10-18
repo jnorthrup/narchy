@@ -323,9 +323,7 @@ class RTreeBeliefTableTest {
         }
         table.print();
 
-        table.read(t -> {
-            t.root().streamNodesRecursively().forEach(System.out::println);
-        });
+        table.read(t -> t.root().streamNodesRecursively().forEach(System.out::println));
     }
 
     @Test

@@ -1,6 +1,8 @@
 package jcog.grammar.parse.examples.combinatorics;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /*
@@ -153,7 +155,13 @@ class Combinations implements Iterator<Object> {
 			return null;
 		}
 
-		Object[] out = IntStream.range(0, m).mapToObj(i -> inArray[index[i]]).toArray();
+        List<Object> list = new ArrayList<>();
+        int bound = m;
+        for (int i = 0; i < bound; i++) {
+            Object o = inArray[index[i]];
+            list.add(o);
+        }
+        Object[] out = list.toArray();
 
         moveIndex();
 		return out;

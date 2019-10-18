@@ -28,6 +28,7 @@ import tech.tablesaw.columns.numbers.NumberColumnFormatter;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
@@ -317,7 +318,12 @@ public class SelfTest {
 
     private void report(DataTable all) {
 
-        String[] testID = all.columns(0, 1, 2 ).stream().map(Column::name).toArray(String[]::new);
+        List<String> list = new ArrayList<>();
+        for (Column<?> objects : all.columns(0, 1, 2)) {
+            String name = objects.name();
+            list.add(name);
+        }
+        String[] testID = list.toArray(new String[0]);
 
         //https://jtablesaw.github.io/tablesaw/userguide/reducing
         try {

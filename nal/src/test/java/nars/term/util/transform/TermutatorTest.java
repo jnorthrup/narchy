@@ -1,6 +1,7 @@
 package nars.term.util.transform;
 
 import jcog.random.XorShift128PlusRandom;
+import jcog.version.Versioned;
 import nars.$;
 import nars.NAL;
 import nars.Narsese;
@@ -17,10 +18,7 @@ import nars.unify.mutate.Termutator;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -107,9 +105,13 @@ class TermutatorTest {
     @Test
     void testChoose2_4() {
 
-        Set<String> series = IntStream.range(0, 5).mapToObj(i -> assertTermutatorProducesUniqueResults(
-                new Choose2(e1, p2p3, ((Compound) p("a", "b", "c", "d")).toSetSorted()
-                ), 12)).collect(Collectors.toSet());
+        Set<String> series = new HashSet<>();
+        for (int i = 0; i < 5; i++) {
+            String s = assertTermutatorProducesUniqueResults(
+                    new Choose2(e1, p2p3, ((Compound) p("a", "b", "c", "d")).toSetSorted()
+                    ), 12);
+            series.add(s);
+        }
 
         assertTrue(series.size() > 1); 
     }
@@ -155,7 +157,11 @@ class TermutatorTest {
 
         t.mutate(new Termutator[] { t, (chain, current, u) -> {
             TreeMap t1 = new TreeMap();
-            u.xy.map.forEach(t1::put);
+            for (Map.Entry<Variable, Versioned<Term>> entry : u.xy.map.entrySet()) {
+                Variable key = entry.getKey();
+                Versioned<Term> value = entry.getValue();
+                t1.put(key, value);
+            }
 
             if (s.add( t1.toString() )) {
                 actual[0]++;

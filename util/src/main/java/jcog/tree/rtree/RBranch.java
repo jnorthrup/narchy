@@ -72,7 +72,15 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         //null-terminator
         //        }
 
-        return Arrays.stream(data).takeWhile(Objects::nonNull).anyMatch(c -> c.contains(x, b, model));
+        for (RNode<X> c : data) {
+            if (c == null) {
+                break;
+            }
+            if (c.contains(x, b, model)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -426,23 +434,49 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     @Override
     public boolean OR(Predicate<X> p) {
         //null terminator
-        return Arrays.stream(data).takeWhile(Objects::nonNull).anyMatch(x -> x.OR(p));
+        for (RNode<X> x : data) {
+            if (x == null) {
+                break;
+            }
+            if (x.OR(p)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public boolean AND(Predicate<X> p) {
         //null terminator
-        return Arrays.stream(data).takeWhile(Objects::nonNull).allMatch(x -> x.AND(p));
+        for (RNode<X> x : data) {
+            if (x == null) {
+                break;
+            }
+            if (!x.AND(p)) {
+                return false;
+            }
+        }
+        return true;
     }
     public boolean ANDlocal(Predicate<RNode<X>> p) {
         RNode<X>[] n = this.data;
         short s = this.size;
-        return IntStream.range(0, s).allMatch(i -> p.test(n[i]));
+        for (int i = 0; i < s; i++) {
+            if (!p.test(n[i])) {
+                return false;
+            }
+        }
+        return true;
     }
     public boolean ORlocal(Predicate<RNode<X>> p) {
         RNode<X>[] n = this.data;
         short s = this.size;
-        return IntStream.range(0, s).anyMatch(i -> p.test(n[i]));
+        for (int i = 0; i < s; i++) {
+            if (p.test(n[i])) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -455,7 +489,13 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
             //                if (d == null)
             //                    continue;
             /*else */
-            return Arrays.stream(data, 0, s).allMatch(d -> d.containing(rect, t, model));
+            for (int i = 0; i < s; i++) {
+                RNode<X> d = data[i];
+                if (!d.containing(rect, t, model)) {
+                    return false;
+                }
+            }
+            return true;
         }
         return true;
     }
@@ -465,7 +505,12 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         HyperRegion b = this.bounds;
         if (b != null && rect.intersects(b) && t.test(this)) {
             int s = size;
-            return IntStream.range(0, s).allMatch(i -> data[i].intersectingNodes(rect, t, model));
+            for (int i = 0; i < s; i++) {
+                if (!data[i].intersectingNodes(rect, t, model)) {
+                    return false;
+                }
+            }
+            return true;
         }
         return true;
     }
@@ -475,7 +520,12 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         HyperRegion b = this.bounds;
         if (b != null && rect.intersects(b)) {
             int s = size;
-            return IntStream.range(0, s).allMatch(i -> data[i].intersecting(rect, t, model));
+            for (int i = 0; i < s; i++) {
+                if (!data[i].intersecting(rect, t, model)) {
+                    return false;
+                }
+            }
+            return true;
         }
         return true;
     }

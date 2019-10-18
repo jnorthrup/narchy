@@ -168,8 +168,15 @@ public abstract class AxisSweep3Internal extends Broadphase {
 		}
 		*/
 
-		return IntStream.range(0, 3).filter(axis -> axis != ignoreAxis).noneMatch(axis -> pHandleA.getMaxEdges(axis) < pHandleB.getMinEdges(axis) ||
-                pHandleB.getMaxEdges(axis) < pHandleA.getMinEdges(axis));
+        for (int axis = 0; axis < 3; axis++) {
+            if (axis != ignoreAxis) {
+                if (pHandleA.getMaxEdges(axis) < pHandleB.getMinEdges(axis) ||
+                        pHandleB.getMaxEdges(axis) < pHandleA.getMinEdges(axis)) {
+                    return false;
+                }
+            }
+        }
+        return true;
 	}
 	
 	
@@ -579,8 +586,13 @@ public abstract class AxisSweep3Internal extends Broadphase {
 		Handle pHandleB = (Handle)proxy1;
 
 
-        return IntStream.range(0, 3).noneMatch(axis -> pHandleA.getMaxEdges(axis) < pHandleB.getMinEdges(axis) ||
-                pHandleB.getMaxEdges(axis) < pHandleA.getMinEdges(axis));
+        for (int axis = 0; axis < 3; axis++) {
+            if (pHandleA.getMaxEdges(axis) < pHandleB.getMinEdges(axis) ||
+                    pHandleB.getMaxEdges(axis) < pHandleA.getMinEdges(axis)) {
+                return false;
+            }
+        }
+        return true;
 	}
 
 	@Override

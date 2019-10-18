@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
+import nars.game.action.ActionSignal;
 import nars.game.sensor.ScalarSignal;
 import nars.game.sensor.Signal;
 import nars.term.Term;
@@ -104,7 +105,7 @@ public abstract class ScalarReward extends Reward {
 
 //        long[] stamp = newStamp(); //shared
 
-        g.actions().forEach(a -> {
+        for (ActionSignal a : g.actions()) {
             Term A = a.term();
             long[] stampP = newStamp();
 //            long[] stampN = newStamp();
@@ -136,7 +137,6 @@ public abstract class ScalarReward extends Reward {
 //            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplANeg, stamp);
 
 
-
 //                reinforce(CONJ.the(rTarget, A), BELIEF, RimplRandomP);
 //                reinforce(CONJ.the(rTarget, A.neg()), BELIEF, RimplRandomN);
 
@@ -147,12 +147,10 @@ public abstract class ScalarReward extends Reward {
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, stamp);
 
 
-
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, stamp);
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, stamp);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, stamp);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg, stamp);
-
 
 
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, stamp);
@@ -172,7 +170,7 @@ public abstract class ScalarReward extends Reward {
 //            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplAMaybe);
 
             //reinforce(IMPL.the(Op.DISJ(Rpos,Rneg), A), BELIEF, RimplA, stamped);
-        });
+        }
     }
 
     protected long[] newStamp() {

@@ -145,7 +145,7 @@ public class GraphEditTest {
 
                 WaveBitmap wave = new WaveBitmap(buffer, 600, 400);
                 AtomicBoolean busy = new AtomicBoolean(false);
-                TypedPort p = new TypedPort<>(String.class, (String text) -> {
+                TypedPort p = new TypedPort<>(String.class, text -> {
                     if (busy.compareAndSet(false, true)) {
                         try {
                             buffer.clear();
@@ -163,9 +163,7 @@ public class GraphEditTest {
                         new Bordering(wave)
                                 .set(Bordering.W, p, 0.1f)
                                 .set(Bordering.S, new Gridding(
-                                        PushButton.awesome("play").clicked(() -> {
-                                            Audio.the().play(new SamplePlayer(new SoundSample(buffer.data, TinySpeech.SAMPLE_FREQUENCY)));
-                                        })
+                                        PushButton.awesome("play").clicked(() -> Audio.the().play(new SamplePlayer(new SoundSample(buffer.data, TinySpeech.SAMPLE_FREQUENCY))))
                                 ), 0.1f)
                 )).pos(r);
             }

@@ -507,7 +507,14 @@ public class SV_SEND {
 				SV_MAIN.SV_DropClient(c);
 			}
 
-			if (IntStream.of(Defines.ss_cinematic, Defines.ss_demo, Defines.ss_pic).anyMatch(v -> SV_INIT.sv.state == v))
+			boolean b = false;
+			for (int v : new int[]{Defines.ss_cinematic, Defines.ss_demo, Defines.ss_pic}) {
+				if (SV_INIT.sv.state == v) {
+					b = true;
+					break;
+				}
+			}
+			if (b)
 				Netchan.Transmit(c.netchan, msglen, msgbuf);
 			else if (c.state == Defines.cs_spawned) {
 				

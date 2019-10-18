@@ -136,7 +136,9 @@ public class Smasher {
                     diagramEdges.add(ex);
 
 
-                    polygonEdges.forEach(px -> process(px, ex));
+                    for (EdgePolygon px : polygonEdges) {
+                        process(px, ex);
+                    }
 
                 } else {
                     diagramEdges.remove(e.e);
@@ -146,7 +148,9 @@ public class Smasher {
                     EdgePolygon px = (EdgePolygon) e.e;
                     polygonEdges.add(px);
 
-                    diagramEdges.forEach(ex -> process(px, ex));
+                    for (EdgeDiagram ex : diagramEdges) {
+                        process(px, ex);
+                    }
 
 
                 } else {
@@ -227,16 +231,18 @@ public class Smasher {
         MyList<EdgeDiagram> allEdgesPolygon = new MyList<>();
 
 
-        table.stream().filter(ep -> ep.d2 == null).forEach(ep -> {
-            v2 vv = ep.kolmicovyBod(contactPoint);
-            double newDistance = contactPoint.distanceSq(vv);
-            if (newDistance <= distance[0]) {
-                distance[0] = newDistance;
-                kolmicovyBod[0] = vv;
-                startPolygon[0] = ep.d1;
+        for (EdgeDiagram edgeDiagram : table) {
+            if (edgeDiagram.d2 == null) {
+                v2 vv = edgeDiagram.kolmicovyBod(contactPoint);
+                double newDistance = contactPoint.distanceSq(vv);
+                if (newDistance <= distance[0]) {
+                    distance[0] = newDistance;
+                    kolmicovyBod[0] = vv;
+                    startPolygon[0] = edgeDiagram.d1;
+                }
+                allEdgesPolygon.add(edgeDiagram);
             }
-            allEdgesPolygon.add(ep);
-        });
+        }
 
         MyList<Fragment> ppx = new MyList<>();
         ppx.add(startPolygon[0]);
@@ -260,7 +266,13 @@ public class Smasher {
                     jcog.math.v2 centroid = opposite.centroid();
                     opposite.visited = true;
                     if (ic.contains(centroid)) {
-                        boolean intersection = allEdgesPolygon.stream().anyMatch(edge -> edge.d1 != startPolygon[0] && edge.d2 != startPolygon[0] && edge.intersectAre(centroid, kolmicovyBod[0]));
+                        boolean intersection = false;
+                        for (EdgeDiagram edge : allEdgesPolygon) {
+                            if (edge.d1 != startPolygon[0] && edge.d2 != startPolygon[0] && edge.intersectAre(centroid, kolmicovyBod[0])) {
+                                intersection = true;
+                                break;
+                            }
+                        }
 
 
                         if (!intersection) {
@@ -275,7 +287,12 @@ public class Smasher {
         }
 
         Fragment[] fragmentsArray = vysledneFragmenty.toArray(new Fragment[0]);
-        MyList<Fragment> fragmentsBody = allIntersections.stream().filter(fx -> !vysledneFragmenty.contains(fx)).collect(Collectors.toCollection(MyList::new));
+        MyList<Fragment> fragmentsBody = new MyList<>();
+        for (Fragment fx : allIntersections) {
+            if (!vysledneFragmenty.contains(fx)) {
+                fragmentsBody.add(fx);
+            }
+        }
 
         MyList<Polygon> result = zjednotenie(fragmentsBody);
 
@@ -474,7 +491,13 @@ public class Smasher {
 
         List<Fragment> fragmentList = new FasterList<>(focee.length);
 
-        v2[] pp = IntStream.range(0, factory.pCount).mapToObj(i -> new v2(factory.points[i])).toArray(v2[]::new);
+        List<v2> list = new ArrayList<>();
+        int bound = factory.pCount;
+        for (int i1 = 0; i1 < bound; i1++) {
+            v2 v2 = new v2(factory.points[i1]);
+            list.add(v2);
+        }
+        v2[] pp = list.toArray(new v2[0]);
 
         for (int i = 0; i < focee.length; i++) {
 
@@ -603,7 +626,9 @@ public class Smasher {
     }
 
     public void update(Dynamics2D dyn, float dt) {
-        fractures.forEach(f -> f.smash(this, dt, dyn));
+        for (Fracture f : fractures) {
+            f.smash(this, dt, dyn);
+        }
         fractures.clear();
     }
 }

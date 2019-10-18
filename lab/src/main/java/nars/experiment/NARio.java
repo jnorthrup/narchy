@@ -13,6 +13,7 @@ import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
 import nars.game.Reward;
 import nars.game.action.AbstractGoalActionConcept;
+import nars.game.action.ActionSignal;
 import nars.game.action.BiPolarAction;
 import nars.game.action.GoalActionConcept;
 import nars.game.sensor.DigitizedScalar;
@@ -78,7 +79,9 @@ public class NARio extends GameX {
 		cc.addActions(id, this, false, false, true);
 		//addCamera(new Bitmap2DSensor(id, cc, nar));
 
-		cc.actions.forEach(a -> a.resolution(0.5f));
+		for (ActionSignal a : cc.actions) {
+			a.resolution(0.5f);
+		}
 
 
 //        Bitmap2DSensor ccb;
@@ -96,9 +99,7 @@ public class NARio extends GameX {
 
 
 		int nx = 4;
-		AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p(id,"cam"), cc, nx, nx, (subX, subY) -> {
-			return new float[]{/*cc.X, cc.Y, */cc.Z};
-		}, 12, this);
+		AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p(id,"cam"), cc, nx, nx, (subX, subY) -> new float[]{/*cc.X, cc.Y, */cc.Z}, 12, this);
 		camAE.confResolution.set(0.1f);
 		camAE.resolution(0.1f);
 		camAE.alpha(0.03f);
@@ -229,7 +230,7 @@ public class NARio extends GameX {
 	public static void main(String[] args) {
 
 
-		runRT((NAR n) -> {
+		runRT(n -> {
 
 
             NARio x = new NARio(n);
@@ -274,7 +275,13 @@ public class NARio extends GameX {
 				//System.out.println(s.mario.x + " " + s.mario.y);
 				byte block = ll.getBlock(Math.round((s.mario.x - 8) / 16f) + dx, Math.round((s.mario.y - 8) / 16f) + dy);
 				byte t = Level.TILE_BEHAVIORS[block & 0xff];
-				boolean breakable = IntStream.of(BIT_BREAKABLE, BIT_PICKUPABLE, BIT_BUMPABLE).anyMatch(i -> ((t & i) != 0));
+				boolean breakable = false;
+				for (int i : new int[]{BIT_BREAKABLE, BIT_PICKUPABLE, BIT_BUMPABLE}) {
+					if (((t & i) != 0)) {
+						breakable = true;
+						break;
+					}
+				}
 				if (breakable)
 					return 2;
 				boolean blocking = ((t & BIT_BLOCK_ALL) != 0);
@@ -291,12 +298,12 @@ public class NARio extends GameX {
 		actionPushButtonMutex(
 			$.inh(id, $$("L")),
 			$.inh(id, $$("R")),
-			(boolean n) -> {
+				n -> {
 				Scene s = game.scene;
 				boolean was = s != null && Scene.key(Mario.KEY_LEFT, n);
 				return n;
 			},
-			(boolean n) -> {
+				n -> {
 				Scene s = game.scene;
 				boolean was = s != null && Scene.key(Mario.KEY_RIGHT, n);
 				return n;

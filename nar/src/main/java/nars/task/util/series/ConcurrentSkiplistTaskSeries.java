@@ -73,7 +73,9 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
 
     @Override
     public void forEach(Consumer<? super T> action) {
-        q.values().forEach(action);
+        for (T t : q.values()) {
+            action.accept(t);
+        }
     }
 
 

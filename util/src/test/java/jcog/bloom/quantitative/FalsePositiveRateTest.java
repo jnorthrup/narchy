@@ -4,6 +4,7 @@ import jcog.bloom.BloomFilterBuilder;
 import jcog.bloom.LeakySet;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -26,14 +27,22 @@ class FalsePositiveRateTest {
             List<String> containedStrings = randomStrings("a", batchSize);
             List<String> nonContainedStrings = randomStrings("b", batchSize);
 
-            containedStrings.forEach(filter::add);
+            for (String s : containedStrings) {
+                filter.add(s);
+            }
 
-            long truePositives = containedStrings.stream()
-                    .filter(filter::contains)
-                    .count();
-            long trueNegatives = nonContainedStrings.stream()
-                    .filter(string -> !filter.contains(string))
-                    .count();
+            long truePositives = 0L;
+            for (String containedString : containedStrings) {
+                if (filter.contains(containedString)) {
+                    truePositives++;
+                }
+            }
+            long trueNegatives = 0L;
+            for (String string : nonContainedStrings) {
+                if (!filter.contains(string)) {
+                    trueNegatives++;
+                }
+            }
             double falsePositiveRate = 100.0 * (batchSize - trueNegatives) / batchSize;
             double falseNegativeRate = 100.0 * (batchSize - truePositives) / batchSize;
             double accuracy = 100.0 * (truePositives + trueNegatives) / (2 * batchSize);
@@ -48,7 +57,11 @@ class FalsePositiveRateTest {
     }
 
     private static List<String> randomStrings(String prefix, int count) {
-        List<String> strings = IntStream.range(0, count).mapToObj(i -> prefix + UUID.randomUUID()).collect(Collectors.toList());
+        List<String> strings = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            String s = prefix + UUID.randomUUID();
+            strings.add(s);
+        }
         return strings;
     }
 

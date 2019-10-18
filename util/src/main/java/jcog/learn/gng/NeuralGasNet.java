@@ -256,9 +256,7 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
         this.centroids[closest].updateLocalError(x, winnerUpdateRate);
 
 
-        edges.edgesOf(closest, (connection, age) -> {
-            this.centroids[connection].lerp(x, winnerNeighborUpdateRate);
-        });
+        edges.edgesOf(closest, (connection, age) -> this.centroids[connection].lerp(x, winnerNeighborUpdateRate));
         edges.addToEdges(closest, -1);
 
 

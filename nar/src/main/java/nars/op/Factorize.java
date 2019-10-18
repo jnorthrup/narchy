@@ -134,8 +134,8 @@ public class Factorize {
     private static final Variable fIfNoDep = $.varDep(1);
     static final Comparator<Pair<Term, RichIterable<ObjectBytePair<Term>>>> c = Comparator
             .comparingInt((Pair<Term, RichIterable<ObjectBytePair<Term>>> p) -> -p.getTwo().size()) //more unique subterms involved
-            .thenComparingInt((Pair<Term, RichIterable<ObjectBytePair<Term>>> p) -> -p.getOne().volume()) //longest common path
-            .thenComparingInt((Pair<Term, RichIterable<ObjectBytePair<Term>>> p) -> -(int)(p.getTwo().sumOfInt(z -> z.getOne().volume())));  //larger subterms involved
+            .thenComparingInt(p -> -p.getOne().volume()) //longest common path
+            .thenComparingInt(p -> -(int)(p.getTwo().sumOfInt(z -> z.getOne().volume())));  //larger subterms involved
 
     //TODO static class ShadowCompound extends Compound(Compound base, ByteList masked)
 

@@ -51,7 +51,12 @@ class PrettyParser {
 		Set<Assembly> inState = new HashSet<>();
 		inState.add(inAssembly);
 		Set<Assembly> outState = parser.matchAndAssemble(inState);
-		Set<Assembly> outComplete = outState.stream().filter(a -> !a.hasNext()).collect(Collectors.toSet());
+        Set<Assembly> outComplete = new HashSet<>();
+        for (Assembly a : outState) {
+            if (!a.hasNext()) {
+                outComplete.add(a);
+            }
+        }
         return outComplete;
 	}
 

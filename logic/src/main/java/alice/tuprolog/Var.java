@@ -213,7 +213,9 @@ public class Var extends Term {
      * De-unify the variables of list
      */
     static void free(Iterable<Var> varsUnified) {
-        varsUnified.forEach(t -> t.link = null);
+        for (Var t : varsUnified) {
+            t.link = null;
+        }
     }
 
 

@@ -107,7 +107,7 @@ public class ArkaNAR extends GameX {
     public static class MultiArkaNAR {
         public static void main(String[] args) {
 
-            NAR n = runRT((NAR nn) -> {
+            NAR n = runRT(nn -> {
 
                 ArkaNAR a = new ArkaNAR($$("(noid,a)"), nn, cam, numeric);
                 a.ballSpeed.set( 0.7f * a.ballSpeed.floatValue() );
@@ -126,7 +126,7 @@ public class ArkaNAR extends GameX {
 
     public static void main(String[] args) {
 
-        runRT((NAR n) -> {
+        runRT(n -> {
 
             ArkaNAR a = new ArkaNAR(n, cam, numeric);
             n.add(a);
@@ -192,15 +192,11 @@ public class ArkaNAR extends GameX {
 
         onFrame(noid::next);
 
-        SimpleReward dontDie = (SimpleReward) reward("die", 0, () -> {
-            return Math.min(1, noid.die - noid.prevDie);
-        });
+        SimpleReward dontDie = (SimpleReward) reward("die", 0, () -> Math.min(1, noid.die - noid.prevDie));
         //dontDie.addGuard(true,false);
 
 
-        reward("score",  () -> {
-            return Math.min(1, noid.score - noid.prevScore);
-        });
+        reward("score",  () -> Math.min(1, noid.score - noid.prevScore));
         //s.setDefault($.t(0.5f, 0.9f));
 
         /*actionTriState*/

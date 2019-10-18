@@ -1065,17 +1065,14 @@ public class O extends Applet implements Runnable {
 		
 		
 		boolean down = false;
-		if (IntStream.of(KEY_PRESS, KEY_ACTION, MOUSE_DOWN).anyMatch(i -> e.id == i)) {
-			down = true;
+		for (int i : new int[]{KEY_PRESS, KEY_ACTION, MOUSE_DOWN}) {
+			if (e.id == i) {
+				down = true;
+				break;
+			}
 		}
-		
-		
-		
-		
-		
-		
-		
-		
+
+
 		if (e.id >= KEY_PRESS && e.id <= KEY_ACTION_RELEASE) {
 			
 			

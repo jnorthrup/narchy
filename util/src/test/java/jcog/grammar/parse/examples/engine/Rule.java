@@ -80,8 +80,17 @@ public class Rule implements Axiom {
 		boolean result = false;
 		if (o instanceof Rule) {
 			Rule r = (Rule) o;
-			if (structures.length == r.structures.length)
-				result = IntStream.range(0, structures.length).allMatch(i -> structures[i].equals(r.structures[i]));
+			if (structures.length == r.structures.length) {
+                boolean b = true;
+                int bound = structures.length;
+                for (int i = 0; i < bound; i++) {
+                    if (!structures[i].equals(r.structures[i])) {
+                        b = false;
+                        break;
+                    }
+                }
+                result = b;
+            }
 		}
 		return result;
 	}

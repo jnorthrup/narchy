@@ -184,7 +184,12 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     }
 
     public boolean containsPolygon(Polygon2D poly) {
-        return poly.vertices.stream().allMatch(this::containsPoint);
+        for (Vec2D vertex : poly.vertices) {
+            if (!containsPoint(vertex)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public Polygon2D copy() {
@@ -329,7 +334,11 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      */
     public List<Line2D> getEdges() {
         int num = vertices.size();
-        List<Line2D> edges = IntStream.range(0, num).mapToObj(i -> new Line2D(vertices.get(i), vertices.get((i + 1) % num))).collect(Collectors.toCollection(() -> new ArrayList<>(num)));
+        List<Line2D> edges = new ArrayList<>(num);
+        for (int i = 0; i < num; i++) {
+            Line2D line2D = new Line2D(vertices.get(i), vertices.get((i + 1) % num));
+            edges.add(line2D);
+        }
         return edges;
     }
 
@@ -423,12 +432,22 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      */
     public boolean intersectsPolygon(Shape2D poly) {
         List<Line2D> edgesB = poly.getEdges();
-        return getEdges().stream().anyMatch(ea -> intersectsLine(ea, edgesB));
+        for (Line2D ea : getEdges()) {
+            if (intersectsLine(ea, edgesB)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean intersectsRect(Shape2D r) {
         List<Line2D> edges = r.getEdges();
-        return getEdges().stream().anyMatch(ea -> intersectsLine(ea, edges));
+        for (Line2D ea : getEdges()) {
+            if (intersectsLine(ea, edges)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

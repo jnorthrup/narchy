@@ -86,9 +86,7 @@ public class AttentionUI {
 				NAR.class, (NAR nn, Object relation) -> new VectorLabel(nn.self().toString()),
 				VectorSensor.class, (VectorSensor v, Object relation) -> new VectorSensorChart(v, n),
 				//GameLoop.class, (GameLoop g, Object relation) -> g.components()
-				DurSurface.class, (x,y)->{
-					return null;
-				},
+				DurSurface.class, (x,y)-> null,
 				Concept.class, (Concept c, Object relation) -> new ConceptSurface(c, n)
 				//PriNode.class, (PriNode v, Object relation)-> ...
 
@@ -105,12 +103,12 @@ public class AttentionUI {
 					//to identity object
 
 
-					nn.nodes(false, true).forEach(c -> {
+					for (Node<PriNode, Object> c : nn.nodes(false, true)) {
 						EdgeVis<Object> e = graph.edge(xx, c.id());
 						if (e != null) {
 							e.weight(1f).color(0.5f, 0.5f, 0.5f);
 						}
-					});
+					}
 
 				}
 		});

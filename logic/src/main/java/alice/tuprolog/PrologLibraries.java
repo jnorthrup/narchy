@@ -298,7 +298,12 @@ public class PrologLibraries {
      * found
      */
     public PrologLib getLibrary(String name) {
-        return currentLibraries.stream().filter(alib -> alib.getName().equals(name)).findFirst().orElse(null);
+        for (PrologLib alib : currentLibraries) {
+            if (alib.getName().equals(name)) {
+                return alib;
+            }
+        }
+        return null;
     }
 
     public void onSolveBegin(Term g) {
@@ -308,11 +313,15 @@ public class PrologLibraries {
     }
 
     public void onSolveHalt() {
-        currentLibraries.forEach(PrologLib::onSolveHalt);
+        for (PrologLib currentLibrary : currentLibraries) {
+            currentLibrary.onSolveHalt();
+        }
     }
 
     public void onSolveEnd() {
-        currentLibraries.forEach(PrologLib::onSolveEnd);
+        for (PrologLib currentLibrary : currentLibraries) {
+            currentLibrary.onSolveEnd();
+        }
     }
 
     public URL getExternalLibraryURL(String name) {

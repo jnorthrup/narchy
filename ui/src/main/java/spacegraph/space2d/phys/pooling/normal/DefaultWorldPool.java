@@ -40,6 +40,8 @@ import spacegraph.space2d.phys.dynamics.contacts.*;
 import spacegraph.space2d.phys.pooling.IDynamicStack;
 import spacegraph.space2d.phys.pooling.IWorldPool;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -309,7 +311,12 @@ public class DefaultWorldPool implements IWorldPool {
 
     public final v2[] getVec2Array(int argLength) {
         if (!avecs.containsKey(argLength)) {
-            v2[] ray = IntStream.range(0, argLength).mapToObj(i -> new v2()).toArray(v2[]::new);
+            List<v2> list = new ArrayList<>();
+            for (int i = 0; i < argLength; i++) {
+                v2 v2 = new v2();
+                list.add(v2);
+            }
+            v2[] ray = list.toArray(new v2[0]);
             avecs.put(argLength, ray);
         }
 

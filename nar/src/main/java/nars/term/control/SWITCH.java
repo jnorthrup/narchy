@@ -7,6 +7,7 @@ import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
+import java.util.Map;
 import java.util.function.Function;
 
 import static nars.derive.util.DerivationFunctors.Belief;
@@ -44,7 +45,11 @@ public final class SWITCH<D extends PreDerivation> extends AbstractPred<D> {
                 $.p(cases.entrySet().stream().map(e -> $.p($.quote(e.getKey().toString()), e.getValue())).toArray(Term[]::new))));
 
         swtch = new PREDICATE[24];
-        cases.forEach((k, v) -> swtch[k.id] = v);
+        for (Map.Entry<Op, PREDICATE<D>> entry : cases.entrySet()) {
+            Op k = entry.getKey();
+            PREDICATE<D> v = entry.getValue();
+            swtch[k.id] = v;
+        }
         this.taskOrBelief = taskOrBelief;
         this.cases = cases;
     }

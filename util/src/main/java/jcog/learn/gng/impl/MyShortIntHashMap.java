@@ -244,7 +244,15 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
             }
         }
 
-        result += IntStream.range(0, this.keys.length).filter(i -> isNonSentinel(this.keys[i])).map(i -> this.keys[i] ^ this.values[i]).sum();
+        int sum = 0;
+        int bound = this.keys.length;
+        for (int i = 0; i < bound; i++) {
+            if (isNonSentinel(this.keys[i])) {
+                int i1 = this.keys[i] ^ this.values[i];
+                sum += i1;
+            }
+        }
+        result += sum;
 
         return result;
     }

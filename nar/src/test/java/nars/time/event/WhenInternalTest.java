@@ -25,10 +25,14 @@ class WhenInternalTest {
 
         assertTrue(a.size() > 1);
 
-        a.forEach((c, ee) -> {
+        for (Map.Entry<Term, List<WhenInternal>> entry : a.entrySet()) {
+            Term c = entry.getKey();
+            List<WhenInternal> ee = entry.getValue();
             System.out.println(c);
-            ee.forEach(e->System.out.println("\t" + e.term()));
-        });
+            for (WhenInternal e : ee) {
+                System.out.println("\t" + e.term());
+            }
+        }
 
     }
 }

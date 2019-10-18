@@ -331,7 +331,7 @@ public interface NSense {
         float deadZoneFreqRadius =
                 1 / 6f;
 
-        return actionBipolar(cc, false, (float f) -> {
+        return actionBipolar(cc, false, f -> {
 
             int s;
             if (f > deadZoneFreqRadius)

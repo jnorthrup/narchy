@@ -10,6 +10,7 @@ package jcog.grammar.parse.examples.engine;
  */
 
 import java.util.Arrays;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
@@ -97,7 +98,12 @@ public class Query extends DynamicRule {
 	 * @return a string representation of this query.
 	 */
 	public String toString() {
-		String buf = Arrays.stream(structures).map(String::valueOf).collect(Collectors.joining(", "));
+		StringJoiner joiner = new StringJoiner(", ");
+		for (Structure structure : structures) {
+			String s = String.valueOf(structure);
+			joiner.add(s);
+		}
+		String buf = joiner.toString();
         return buf;
 	}
 }

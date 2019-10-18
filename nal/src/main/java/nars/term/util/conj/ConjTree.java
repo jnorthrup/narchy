@@ -857,7 +857,12 @@ public class ConjTree implements ConjBuilder {
                 }
             }
             if (!x.neg.isEmpty()) {
-                return x.neg.stream().allMatch(this::addParallelNeg);
+                for (Term term : x.neg) {
+                    if (!addParallelNeg(term)) {
+                        return false;
+                    }
+                }
+                return true;
             }
         }
 //        if (x.seq!=null) {

@@ -125,11 +125,12 @@ public class MatchBelief extends NativeHow {
 			Term _nextBeliefTerm = nextBeliefTerm;
 			//TODO shuffle recursion order
 			taskTerm.recurseTerms(x -> x.hasAll(bStruct), s -> {
-				if (s instanceof Compound) {
-					s = s.unneg();
-					if (s.opID() == bOp) {
-						if (_nextBeliefTerm.equalsRoot(s)) {
-							found[0] = s;
+                Term s1 = s;
+                if (s1 instanceof Compound) {
+					s1 = s1.unneg();
+					if (s1.opID() == bOp) {
+						if (_nextBeliefTerm.equalsRoot(s1)) {
+							found[0] = s1;
 							return false;
 						}
 					}

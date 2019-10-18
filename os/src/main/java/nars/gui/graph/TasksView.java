@@ -20,9 +20,7 @@ import static nars.Op.*;
 
 public class TasksView implements Timeline2D.EventBuffer<Task> {
 
-    private static final Consumer<NodeVis<Task>> TaskRenderer = (n) -> {
-        n.set(new Scale(new TaskIcon(n.id), 0.9f));
-    };
+    private static final Consumer<NodeVis<Task>> TaskRenderer = (n) -> n.set(new Scale(new TaskIcon(n.id), 0.9f));
 
     private final Iterable<Task> tasks;
 

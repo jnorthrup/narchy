@@ -128,7 +128,12 @@ public class MiscUtil {
 	 * @return first index of match, or -1 when not found
 	 */
 	public static <T> int indexOf(T[] array, T obj) {
-        return IntStream.range(0, array.length).filter(i -> array[i] == obj).findFirst().orElse(-1);
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == obj) {
+                return i;
+            }
+        }
+        return -1;
     }
 
 	private static <T> void downHeap(FasterList<T> pArr, int k, int n, Comparator<T> comparator) {

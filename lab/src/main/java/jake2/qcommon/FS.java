@@ -33,10 +33,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -684,7 +681,14 @@ public final class FS extends Globals {
     public static void SetGamedir(String dir) {
         searchpath_t next;
 
-        if (Stream.of("..", "/", "\\", ":").anyMatch(dir::contains)) {
+        boolean b = false;
+        for (String s : Arrays.asList("..", "/", "\\", ":")) {
+            if (dir.contains(s)) {
+                b = true;
+                break;
+            }
+        }
+        if (b) {
             Com.Printf("Gamedir should be a single filename, not a path\n");
             return;
         }

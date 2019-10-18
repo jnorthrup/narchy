@@ -48,7 +48,7 @@ import java.util.NoSuchElementException;
  */
 public final class VList<T> extends AbstractList<T> {
 
-    final VisitVList<T, T> getValueFunction = (VListCell<T> cell, int offset) -> {
+    final VisitVList<T, T> getValueFunction = (cell, offset) -> {
         if (cell == null) return null;
             /* Return the element in the current position of this array. */
         return cell.mElems[offset];

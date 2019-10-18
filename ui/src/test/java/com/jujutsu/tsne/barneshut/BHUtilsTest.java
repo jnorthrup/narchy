@@ -46,14 +46,26 @@ public class BHUtilsTest {
         
         Collections.reverse(results);
         DataPoint [] expectedRes = { _items[1], _items[2], _items[0] };
-        DataPoint [] actualRes = IntStream.range(0, expectedRes.length).mapToObj(results::get).toArray(DataPoint[]::new);
+		List<DataPoint> list = new ArrayList<>();
+		for (int i1 = 0; i1 < expectedRes.length; i1++) {
+			DataPoint dataPoint = results.get(i1);
+			list.add(dataPoint);
+		}
+		DataPoint [] actualRes = list.toArray(new DataPoint[0]);
 
         assertArrayEquals(expectedRes, actualRes);
         
         Collections.reverse(distances);
         double [] expected = {4.1,5.1,7.2};
-        double [] actual = IntStream.range(0, expected.length).mapToDouble(distances::get).toArray();
-        assertArrayEquals(expected, actual, 0.000000001);
+		double[] actual = new double[10];
+		int count = 0;
+		for (int i = 0; i < expected.length; i++) {
+			double v = distances.get(i);
+			if (actual.length == count) actual = Arrays.copyOf(actual, count * 2);
+			actual[count++] = v;
+		}
+		actual = Arrays.copyOfRange(actual, 0, count);
+		assertArrayEquals(expected, actual, 0.000000001);
 	}
 	
 	@Test

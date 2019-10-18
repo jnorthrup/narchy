@@ -268,7 +268,12 @@ public abstract class AbstractTaskLink implements TaskLink {
 		if (!Util.equals(X, 1)) {
 
 
-			boolean changed = IntStream.range(0, 4).mapToObj(i -> apply(i, X, mult, Changed) != 0).reduce(false, (a, b) -> a || b);
+			Boolean acc = false;
+			for (int i = 0; i < 4; i++) {
+				Boolean aBoolean = apply(i, X, mult, Changed) != 0;
+				acc = acc || aBoolean;
+			}
+			boolean changed = acc;
 			//HACK not fully atomic but at least consistent
 
             if (changed)

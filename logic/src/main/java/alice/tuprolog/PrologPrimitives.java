@@ -60,7 +60,9 @@ public class PrologPrimitives {
         Map<Integer, List<PrologPrim>> sp = src.primitives();
         for (int type : new int[] { DIRECTIVE, PREDICATE, FUNCTOR }) {
             Map<String, PrologPrim> table = table(type);
-            sp.get(type).forEach(p-> table.put(p.key, p));
+            for (PrologPrim p : sp.get(type)) {
+                table.put(p.key, p);
+            }
         }
     }
 
@@ -72,7 +74,9 @@ public class PrologPrimitives {
         Map<Integer, List<PrologPrim>> sp = src.primitives();
         for (int type : new int[] { DIRECTIVE, PREDICATE, FUNCTOR }) {
             Map<String, PrologPrim> table = table(type);
-            sp.get(type).forEach(p-> table.remove(p.key));
+            for (PrologPrim p : sp.get(type)) {
+                table.remove(p.key);
+            }
         }
     }
 

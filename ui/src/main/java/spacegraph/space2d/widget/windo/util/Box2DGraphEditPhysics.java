@@ -613,8 +613,12 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             }
 
             w.invoke(() -> {
-                bodies.forEach(b -> w.addBody(b));
-                joints.forEach(w::addJoint);
+                for (Body2D b : bodies) {
+                    w.addBody(b);
+                }
+                for (Joint joint : joints) {
+                    w.addJoint(joint);
+                }
             });
         }
 
@@ -641,10 +645,14 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             world.invoke(() -> {
 
 
-                attachments.forEach(Body2D::remove);
+                for (Body2D attachment : attachments) {
+                    attachment.remove();
+                }
                 attachments.clear();
 
-                bodies.forEach(Body2D::remove);
+                for (Body2D body : bodies) {
+                    body.remove();
+                }
                 bodies.clear();
             });
         }

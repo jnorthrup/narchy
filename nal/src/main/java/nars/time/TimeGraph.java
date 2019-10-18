@@ -945,8 +945,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		} else {
 
-			int w = IntStream.range(0, s).filter(i -> subEvents[i] != null && !subEvents[i].isEmpty()).findFirst().orElse(-1);
-            //found
+			int w = -1;
+			for (int i = 0; i < s; i++) {
+				if (subEvents[i] != null && !subEvents[i].isEmpty()) {
+					w = i;
+					break;
+				}
+			}
+			//found
             List<Absolute> ss = subEvents[w];
 			for (Absolute e : ss) {
 				if (e == null) continue;
@@ -1088,7 +1094,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 				solveOcc(b, false, bx -> {
 					if ((bx instanceof Absolute) && ae.add(bx)) {
-                        return Arrays.stream(aa).allMatch(ax -> solveDTAbsolutePair(x, ax, bx, each));
+						for (Event ax : aa) {
+							if (!solveDTAbsolutePair(x, ax, bx, each)) {
+								return false;
+							}
+						}
+						return true;
 					}
 					return true;
 				});
@@ -1271,7 +1282,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		Collection<Event> ee = events(f.id);
 		if (ee != null) {
-            return ee.stream().noneMatch(e -> e instanceof Absolute && !each.test((Absolute) e));
+			for (Event e : ee) {
+				if (e instanceof Absolute && !each.test((Absolute) e)) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		return true;
@@ -1431,12 +1447,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 			default:
 				List<Pair<Compound, Term[]>> substs = new FasterList();
 				final int[] permutations = {1};
-				subSolved.forEach((h, w) -> {
+				for (Map.Entry<Compound, java.util.Set<Term>> entry : subSolved.entrySet()) {
+					Compound h = entry.getKey();
+					java.util.Set<Term> w = entry.getValue();
 					Term[] ww = w.toArray(EmptyTermArray);
 					assert (ww.length > 0);
 					permutations[0] *= ww.length;
 					substs.add(pair(h, ww));
-				});
+				}
 				int ns = substs.size();
 				assert (ns > 0);
 				Random rng = random();
@@ -1575,8 +1593,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		if (!solutions.isEmpty()) {
 			Term t = x.id;
 			/** clone the list because modifying solutions while iterating will cause infinite loop */
-			return new FasterList<>(solutions.list.stream().filter(s ->
-					(s instanceof Absolute && (s.start() != ETERNAL) && s.id.equals(t) && !s.equals(x))).collect(Collectors.toList())
+			List<Event> list = new ArrayList<>();
+			for (Event event : solutions.list) {
+				if ((event instanceof Absolute && (event.start() != ETERNAL) && event.id.equals(t) && !event.equals(x))) {
+					list.add(event);
+				}
+			}
+			return new FasterList<>(list
 			).allSatisfy(s -> {
 
 				Collection<Event> eee = events(t);

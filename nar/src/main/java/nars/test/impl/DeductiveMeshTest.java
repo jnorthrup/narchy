@@ -59,7 +59,10 @@ public class DeductiveMeshTest {
             }
         }
 
-        edges.forEach(n.nar::believe);
+        NAR nar = n.nar;
+        for (Term edge : edges) {
+            nar.believe(edge);
+        }
 
         Term term = q = edge(0, 0, dims[0] - 1, dims[1] - 1);
         ask(n, term);

@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import jcog.TODO;
 
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.IntStream;
 
@@ -14,8 +15,15 @@ public enum Interpolator {
     @Override
     protected double[] newCurve(int divOfNum) {
         double gain = 1.0 / divOfNum;
-        double[] result = IntStream.range(0, divOfNum).mapToDouble(i -> gain).toArray();
-      return result;
+        double[] result = new double[10];
+        int count = 0;
+        for (int i = 0; i < divOfNum; i++) {
+            double v = gain;
+            if (result.length == count) result = Arrays.copyOf(result, count * 2);
+            result[count++] = v;
+        }
+        result = Arrays.copyOfRange(result, 0, count);
+        return result;
     }
   },
   SMOOTH {

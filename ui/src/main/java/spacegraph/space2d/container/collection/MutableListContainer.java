@@ -221,7 +221,9 @@ public abstract class MutableListContainer extends AbstractMutableContainer<Surf
                 children.clear();
             } else {
                 if (!children.isEmpty()) {
-                    children.forEach(Surface::stop);
+                    for (Surface child : children) {
+                        child.stop();
+                    }
                     children.clear();
                 }
             }

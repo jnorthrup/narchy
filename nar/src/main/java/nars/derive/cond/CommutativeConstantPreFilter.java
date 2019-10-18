@@ -40,7 +40,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
 
         if (commutiveContainer instanceof Compound /* && concPattern.hasAny(Op.commutative)*/) {
             //target.pathsTo((Term t)->true, (Term t)->true, (ByteList ss, Term x)-> {
-            commutiveContainer.recurseTerms(t -> true, (Term x) -> {
+            commutiveContainer.recurseTerms(t -> true, x -> {
 
                 if (x!=commutiveContainer && x.op().commutative) {
                 //if (x instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsisCommutive) {

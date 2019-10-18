@@ -3,6 +3,7 @@ package jcog.grammar.parse.examples.engine;
 import jcog.data.set.ArrayHashSet;
 
 import java.util.Iterator;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -101,7 +102,13 @@ public class Unification {
 	 * @return a string representation of this unification
 	 */
 	public String toString() {
-		String buf = IntStream.range(0, size()).mapToObj(i -> variableAt(i).definitionString()).collect(Collectors.joining(", "));
+		StringJoiner joiner = new StringJoiner(", ");
+		int bound = size();
+		for (int i = 0; i < bound; i++) {
+			String s = variableAt(i).definitionString();
+			joiner.add(s);
+		}
+		String buf = joiner.toString();
         return buf;
 	}
 
@@ -113,7 +120,13 @@ public class Unification {
 	 *         variable names
 	 */
 	public String toStringQuiet() {
-		String buf = IntStream.range(0, size()).mapToObj(i -> String.valueOf(variableAt(i))).collect(Collectors.joining(", "));
+		StringJoiner joiner = new StringJoiner(", ");
+		int bound = size();
+		for (int i = 0; i < bound; i++) {
+			String s = String.valueOf(variableAt(i));
+			joiner.add(s);
+		}
+		String buf = joiner.toString();
         return buf;
 	}
 
@@ -124,7 +137,9 @@ public class Unification {
 //		for (int i = 0; i < size(); i++) {
 //			variableAt(i).unbind();
 //		}
-		variables.forEach(Variable::unbind);
+		for (Variable variable : variables) {
+			variable.unbind();
+		}
 	}
 
 	/*

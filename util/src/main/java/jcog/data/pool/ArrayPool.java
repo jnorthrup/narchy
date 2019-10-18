@@ -239,7 +239,13 @@ public class ArrayPool<T> extends FasterList<T> {
 
                 //TODO use binary insertion
                 int l = len(array);
-                int index = IntStream.range(0, s).filter(i -> l > len(i)).findFirst().orElse(s);
+                int index = s;
+                for (int i = 0; i < s; i++) {
+                    if (l > len(i)) {
+                        index = i;
+                        break;
+                    }
+                }
                 add(index, array);
                 //assertSorted();
                 break;

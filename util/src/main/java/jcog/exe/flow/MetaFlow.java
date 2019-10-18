@@ -19,6 +19,8 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.function.BooleanSupplier;
 
@@ -140,9 +142,7 @@ public class MetaFlow {
 
             StringBuilder sb = new StringBuilder(512);
             sb.append('{');
-            forEachKeyValue((k,v)->{
-                sb.append(qualia.getIndex(k).name).append('=').append(v).append(", ");
-            });
+            forEachKeyValue((k,v)-> sb.append(qualia.getIndex(k).name).append('=').append(v).append(", "));
             sb.setLength(sb.length()-2);
             sb.append('}');
             return sb.toString();
@@ -271,10 +271,11 @@ public class MetaFlow {
     static byte[] compactDescriptor(String _descriptor) {
         return compactMethodDescriptors.apply(_descriptor, (descriptor)->{
             //TODO use byteseek automaton
-            descriptor = descriptor.replace("java/lang/","");
-            if (descriptor.endsWith("V")) //void return value
-                descriptor = descriptor.substring(0, descriptor.length()-1);
-            return descriptor.getBytes();
+            String descriptor1 = descriptor;
+            descriptor1 = descriptor1.replace("java/lang/","");
+            if (descriptor1.endsWith("V")) //void return value
+                descriptor1 = descriptor1.substring(0, descriptor1.length()-1);
+            return descriptor1.getBytes();
         });
     }
 
@@ -360,7 +361,12 @@ public class MetaFlow {
 //            urls.addAt(f.toURL());
 //        }
 //
-        URL[] urls = ClassPath.from(ClassLoader.getSystemClassLoader().getParent()).getAllClasses().stream().map(ClassPath.ResourceInfo::url).toArray(URL[]::new);
+        List<URL> list = new ArrayList<>();
+        for (ClassPath.ClassInfo classInfo : ClassPath.from(ClassLoader.getSystemClassLoader().getParent()).getAllClasses()) {
+            URL url = classInfo.url();
+            list.add(url);
+        }
+        URL[] urls = list.toArray(new URL[0]);
         // feed your URLs to a URLClassLoader!
         ClassLoader classloader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader().getParent());
 

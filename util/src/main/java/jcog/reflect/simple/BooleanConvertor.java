@@ -51,7 +51,7 @@ public class BooleanConvertor implements Function<String,Object> {
         return null;
     }
 
-    public static final Function<Object,String> toString = (Object srcData) -> {
+    public static final Function<Object,String> toString = srcData -> {
         if (srcData == null) {
             throw new IllegalArgumentException("srcData == null");
         }

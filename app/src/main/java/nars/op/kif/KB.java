@@ -305,8 +305,11 @@ public class KB implements Serializable {
      */
     public static String REswitch(String term) {
 
-        if (Stream.of("(", "[", "{", "\\", "^", "$", "|", "}", "]", ")", "?", "*", "+").anyMatch(term::contains))
-            return "2";
+        for (String s : Arrays.asList("(", "[", "{", "\\", "^", "$", "|", "}", "]", ")", "?", "*", "+")) {
+            if (term.contains(s)) {
+                return "2";
+            }
+        }
         return "1";
     }
 
@@ -526,7 +529,11 @@ public class KB implements Serializable {
     public Set<String> instances(String term) {
 
         ArrayList<Formula> forms = askWithRestriction(2, term, 0, "instance");
-        Set<String> result = forms.stream().map(f -> f.getArgument(1)).collect(Collectors.toSet());
+        Set<String> result = new HashSet<>();
+        for (Formula f : forms) {
+            String argument = f.getArgument(1);
+            result.add(argument);
+        }
         return result;
     }
 
@@ -647,7 +654,12 @@ public class KB implements Serializable {
             return true;
         if (kbCache.transInstOf(child, parent))
             return true;
-        return Stream.of("instance", "subclass", "subrelation", "subAttribute").anyMatch(s -> kbCache.childOfP(s, parent, child));
+        for (String s : Arrays.asList("instance", "subclass", "subrelation", "subAttribute")) {
+            if (kbCache.childOfP(s, parent, child)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /***************************************************************
@@ -748,7 +760,11 @@ public class KB implements Serializable {
 
         String b = "";
         if (literal instanceof List) {
-            b = literal.stream().collect(Collectors.joining(" ", "(", ")"));
+            StringJoiner joiner = new StringJoiner(" ", "(", ")");
+            for (String s : literal) {
+                joiner.add(s);
+            }
+            b = joiner.toString();
         }
         return b;
     }
@@ -897,7 +913,14 @@ public class KB implements Serializable {
         args[1] = "term3 = " + term3;
 
         ArrayList<Formula> result = new ArrayList<>();
-        if (Stream.of(term1, term2, term3).allMatch(StringUtil::isNonEmptyString)) {
+        boolean b = true;
+        for (String s : Arrays.asList(term1, term2, term3)) {
+            if (!StringUtil.isNonEmptyString(s)) {
+                b = false;
+                break;
+            }
+        }
+        if (b) {
             
             ArrayList<Formula> partiala = new ArrayList<>();
             ArrayList<Formula> partial1 = ask("arg", argnum1, term1);
@@ -1940,7 +1963,14 @@ public class KB implements Serializable {
         forms.addAll(askWithRestriction(0,"instance",1,term));
         forms.addAll(askWithRestriction(0,"subrelation",1,term));
         forms.addAll(askWithRestriction(0,"subAttribute",1,term));
-        result = forms.stream().filter(f -> !f.isCached()).map(f -> f.getArgument(2)).collect(Collectors.toCollection(HashSet::new));
+        HashSet<String> strings = new HashSet<>();
+        for (Formula f : forms) {
+            if (!f.isCached()) {
+                String argument = f.getArgument(2);
+                strings.add(argument);
+            }
+        }
+        result = strings;
         
         return result;
     }
@@ -2059,7 +2089,13 @@ public class KB implements Serializable {
      */
     public int getCountRules() {
 
-        int count = (int) formulaMap.values().stream().filter(Formula::isRule).count();
+        long result = 0L;
+        for (Formula formula : formulaMap.values()) {
+            if (formula.isRule()) {
+                result++;
+            }
+        }
+        int count = (int) result;
         return count;
     }
 
@@ -2068,7 +2104,11 @@ public class KB implements Serializable {
      */
     private static ArrayList<String> arrayListWithBlanks(int size) {
 
-        ArrayList<String> al = IntStream.range(0, size).mapToObj(i -> "").collect(Collectors.toCollection(() -> new ArrayList<>(size)));
+        ArrayList<String> al = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            String s = "";
+            al.add(s);
+        }
         return al;
     }
 
@@ -2307,7 +2347,13 @@ public class KB implements Serializable {
      */
     public void deleteUserAssertions() {
 
-        String toRemove = constituents.stream().filter(name -> name.endsWith(_userAssertionsString)).findFirst().orElse(null);
+        String toRemove = null;
+        for (String constituent : constituents) {
+            if (constituent.endsWith(_userAssertionsString)) {
+                toRemove = constituent;
+                break;
+            }
+        }
 
         if (toRemove != null) {
             constituents.remove(toRemove);
@@ -2436,7 +2482,13 @@ public class KB implements Serializable {
 
         List<String> newConstituents;
         synchronized (this.getTerms()) {
-            newConstituents = constituents.stream().filter(cName -> !cName.endsWith(_cacheFileSuffix)).collect(Collectors.toList());
+            List<String> list = new ArrayList<>();
+            for (String constituent : constituents) {
+                if (!constituent.endsWith(_cacheFileSuffix)) {
+                    list.add(constituent);
+                }
+            }
+            newConstituents = list;
             constituents.clear();
             formulas.clear();
             formulaMap.clear();

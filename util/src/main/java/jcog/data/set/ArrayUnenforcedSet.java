@@ -84,7 +84,12 @@ public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
         //Obeying (Abstract)Set<> semantics:
         int hashCode, s = this.size;
         X[] ii = this.items;
-        hashCode = IntStream.range(0, s).map(i -> ii[i].hashCode()).sum();
+        int sum = 0;
+        for (int i = 0; i < s; i++) {
+            int code = ii[i].hashCode();
+            sum += code;
+        }
+        hashCode = sum;
 
         return hashCode;
     }
@@ -92,7 +97,12 @@ public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
 
     @Override
     public boolean addAll(Collection<? extends X> source) {
-        boolean changed = source.stream().map(this::add).reduce(false, (a, b) -> a || b);
+        Boolean acc = false;
+        for (X x : source) {
+            Boolean add = add(x);
+            acc = acc || add;
+        }
+        boolean changed = acc;
         return changed;
     }
 

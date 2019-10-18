@@ -90,11 +90,9 @@ class DeriverTest {
 
     @Test
     void testAmbiguousPunctuation() {
-        assertThrows(Throwable.class, () -> {
-			new PremiseRuleSet(NARS.shell(),
-					"Y, Y |- (?1 &| Y), ()"
-			).compile();
-		});
+        assertThrows(Throwable.class, () -> new PremiseRuleSet(NARS.shell(),
+                "Y, Y |- (?1 &| Y), ()"
+        ).compile());
     }
 
     @Test
@@ -152,7 +150,9 @@ class DeriverTest {
 
     @AfterEach
     void runTests() {
-        tests.forEach(TestNAR::test);
+        for (TestNAR test : tests) {
+            test.test();
+        }
     }
 
     @Deprecated @Test void Temporal() {

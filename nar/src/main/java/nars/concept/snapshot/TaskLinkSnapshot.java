@@ -55,7 +55,7 @@ public final class TaskLinkSnapshot {
 			return null;
 		else {
 
-            int li = Roulette.selectRouletteCached(lls, (int i) -> {
+            int li = Roulette.selectRouletteCached(lls, i -> {
 
 				PLink<Term> x = (PLink) ll[i];
 				return x != null && filter.test(x.id) ?

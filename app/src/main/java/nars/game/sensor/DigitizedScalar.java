@@ -10,6 +10,7 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.apache.commons.math3.exception.OutOfRangeException;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -145,7 +146,12 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      */
     public Truth[] belief(long when, NAR n) {
         int s = size();
-        Truth[] f = IntStream.range(0, s).mapToObj(i -> n.beliefTruth(sensors.get(i), when)).toArray(Truth[]::new);
+        List<Truth> list = new ArrayList<>();
+        for (int i = 0; i < s; i++) {
+            Truth truth = n.beliefTruth(sensors.get(i), when);
+            list.add(truth);
+        }
+        Truth[] f = list.toArray(new Truth[0]);
         return f;
     }
 

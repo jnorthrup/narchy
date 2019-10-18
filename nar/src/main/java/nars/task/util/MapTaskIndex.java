@@ -79,6 +79,10 @@ public final class MapTaskIndex implements TaskIndex {
 
     @Override
     public void forEach( Consumer<Task> each) {
-        tasks.forEach((k,v)->each.accept(v));
+        for (Map.Entry<Task, Task> entry : tasks.entrySet()) {
+            Task k = entry.getKey();
+            Task v = entry.getValue();
+            each.accept(v);
+        }
     }
 }

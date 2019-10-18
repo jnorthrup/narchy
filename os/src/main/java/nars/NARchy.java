@@ -64,12 +64,6 @@ public class NARchy extends NARS {
                 
             }
 
-//            new NARVideo(nar);
-//            new NARAudio(nar, new AudioSource().start(),  10f);
-
-
-
-
             InterNAR i = new InterNAR(nar);
             i.fps(2);
 

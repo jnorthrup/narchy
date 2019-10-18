@@ -8,6 +8,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.ImageObserver;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -45,9 +46,16 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 			int[] arrayOfInt1 = ((DataBufferInt)localBufferedImage.getRaster().getDataBuffer()).getData();
             localRandom.setSeed((long)rand.nextInt(50) + 1L);
 
-            int[] arrayOfInt2 = IntStream.range(0, 262144).map(i -> i / 64 % 64 > 32 + localRandom.nextInt(8) ? localRandom.nextInt(8) + 1 : 0).toArray();
+            int[] arrayOfInt2 = new int[10];
+            int count = 0;
+            for (int i = 0; i < 262144; i++) {
+                int i12 = i / 64 % 64 > 32 + localRandom.nextInt(8) ? localRandom.nextInt(8) + 1 : 0;
+                if (arrayOfInt2.length == count) arrayOfInt2 = Arrays.copyOf(arrayOfInt2, count * 2);
+                arrayOfInt2[count++] = i12;
+            }
+            arrayOfInt2 = Arrays.copyOfRange(arrayOfInt2, 0, count);
 
-			int[] arrayOfInt3 = new int[12288];
+            int[] arrayOfInt3 = new int[12288];
 
 			for(int j = 1; j < 16; ++j) {
 				int k = 255 - localRandom.nextInt(96);

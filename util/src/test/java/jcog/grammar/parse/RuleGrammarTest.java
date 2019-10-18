@@ -63,9 +63,7 @@ class RuleGrammarTest {
 
 	@Test
     void unknownTerminalType() {
-		assertThrows(GrammarException.class, ()->{
-		grammar.parse("r = UnknownXYZ");
-		});
+		assertThrows(GrammarException.class, ()-> grammar.parse("r = UnknownXYZ"));
 	}
 
 	@Test

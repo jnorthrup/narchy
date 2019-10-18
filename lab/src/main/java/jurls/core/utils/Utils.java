@@ -23,7 +23,12 @@ public class Utils {
     }
 
     public static String makeIndent(int n) {
-        String sb = IntStream.range(0, n).mapToObj(i -> " ").collect(Collectors.joining());
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            String s = " ";
+            result.append(s);
+        }
+        String sb = result.toString();
         return sb;
     }
 
@@ -48,7 +53,11 @@ public class Utils {
     }
 
     public static double lengthSquare(double[] v) {
-        double s = Arrays.stream(v).map(x -> x * x).sum();
+        double s = 0.0;
+        for (double x : v) {
+            double v1 = x * x;
+            s += v1;
+        }
         return s;
     }
 

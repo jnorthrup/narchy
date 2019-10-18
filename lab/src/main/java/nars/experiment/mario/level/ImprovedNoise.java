@@ -1,5 +1,6 @@
 package nars.experiment.mario.level;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -60,7 +61,13 @@ public final class ImprovedNoise {
 
     public void shuffle(long seed) {
         Random random = new Random(seed);
-        int[] permutation = IntStream.range(0, 256).toArray();
+        int[] permutation = new int[10];
+        int count = 0;
+        for (int i1 = 0; i1 < 256; i1++) {
+            if (permutation.length == count) permutation = Arrays.copyOf(permutation, count * 2);
+            permutation[count++] = i1;
+        }
+        permutation = Arrays.copyOfRange(permutation, 0, count);
 
         for (int i = 0; i < 256; i++) {
             int j = random.nextInt(256 - i) + i;

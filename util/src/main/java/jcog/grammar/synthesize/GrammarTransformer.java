@@ -53,7 +53,11 @@ public class GrammarTransformer {
             Node newSecond = getTransform(altNode.second, transformer);
             return transformer.transformAlternation(altNode, newFirst, newSecond);
         } else if (node instanceof MultiAlternationNode) {
-            List<Node> newChildren = node.getChildren().stream().map(child -> getTransform(child, transformer)).collect(Collectors.toList());
+            List<Node> newChildren = new ArrayList<>();
+            for (Node child : node.getChildren()) {
+                Node transform = getTransform(child, transformer);
+                newChildren.add(transform);
+            }
             return transformer.transformMultiAlternation((MultiAlternationNode) node, newChildren);
         } else if (node instanceof RepetitionNode) {
             RepetitionNode repNode = (RepetitionNode) node;
@@ -114,7 +118,12 @@ public class GrammarTransformer {
         if (elen != mconstNode.characterOptions.size()) {
             return false;
         }
-        return IntStream.range(0, elen).allMatch(i -> mconstNode.characterOptions.get(i).contains(example.charAt(i)));
+        for (int i = 0; i < elen; i++) {
+            if (!mconstNode.characterOptions.get(i).contains(example.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static boolean isContained(String example, Iterable<MultiConstantNode> mconstNodes) {

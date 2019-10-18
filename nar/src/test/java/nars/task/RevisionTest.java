@@ -415,7 +415,9 @@ public class RevisionTest {
                 misses++;
         }
 
-        outcomes.forEach(System.out::println);
+        for (Term outcome : outcomes) {
+            System.out.println(outcome);
+        }
         assertTrue(!outcomes.isEmpty());
     }
 
@@ -430,9 +432,7 @@ public class RevisionTest {
 
 
         StringBuilder out = new StringBuilder();
-        n.onTask(t -> {
-            out.append(t).append('\n');
-        });
+        n.onTask(t -> out.append(t).append('\n'));
 
         Task at = n.believe(a, Tense.Present, 1f);
         n.believe(b, Tense.Present);

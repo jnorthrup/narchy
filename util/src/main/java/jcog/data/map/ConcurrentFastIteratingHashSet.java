@@ -99,13 +99,17 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        c.forEach(this::add);
+        for (T t : c) {
+            add(t);
+        }
         return true; 
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        c.forEach(this::remove);
+        for (Object o : c) {
+            remove(o);
+        }
         return true; 
     }
 

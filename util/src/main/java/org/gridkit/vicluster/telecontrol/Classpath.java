@@ -74,9 +74,7 @@ public class Classpath {
     public static Collection<URL> listCurrentClasspath(URL[] uu) {
         Set<URL> result = new ConcurrentFastIteratingHashSet<>(ArrayUtil.EMPTY_URL_ARRAY);
 
-        Stream.of(uu).parallel().forEach(u -> {
-            addEntriesFromManifest(result, u);
-        });
+        Stream.of(uu).parallel().forEach(u -> addEntriesFromManifest(result, u));
 
 //        for (int i = 0; i < uu.length; ++i)
 //
@@ -332,7 +330,13 @@ public class Classpath {
             File[] arr$ = files;
             int len$ = files.length;
 
-            return Arrays.stream(arr$, 0, len$).noneMatch(c -> c.isFile() || !isEmpty(c));
+            for (int i = 0; i < len$; i++) {
+                File c = arr$[i];
+                if (c.isFile() || !isEmpty(c)) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 

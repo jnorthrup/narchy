@@ -8,7 +8,9 @@ import jcog.data.graph.AdjGraph;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -64,7 +66,12 @@ public class HopfieldMap<X> {
 
     @Override
     public String toString() {
-        String sb = Arrays.stream(x).map(xx -> Texts.n4(in.floatValueOf(xx)) + ',').collect(Collectors.joining());
+        StringBuilder result = new StringBuilder();
+        for (X xx : x) {
+            String s = Texts.n4(in.floatValueOf(xx)) + ',';
+            result.append(s);
+        }
+        String sb = result.toString();
         return sb;
     }
 
@@ -138,10 +145,15 @@ public class HopfieldMap<X> {
 
     public static void main(String[] args) {
         int n = 8;
-        NumberX[] m = IntStream.range(0, n).mapToObj(i -> new MutableFloat()).toArray(NumberX[]::new);
+        List<MutableFloat> list = new ArrayList<>();
+        for (int i1 = 0; i1 < n; i1++) {
+            MutableFloat mutableFloat = new MutableFloat();
+            list.add(mutableFloat);
+        }
+        NumberX[] m = list.toArray(new NumberX[0]);
 
         HopfieldMap<NumberX> h = new HopfieldMap<>(NumberX::floatValue,
-                (float v, NumberX x) -> x.set(v), m);
+                (v, x) -> x.set(v), m);
         h.randomWeights(0.9f);
         for (int i = 0; i < 16; i++) {
             h.set(+1, +1, +1, +1, -1, -1, -1, -1).learn(1);

@@ -359,13 +359,28 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     public boolean isEmpty() { return size() == 0; }
 
     public boolean AND(Predicate<X> o) {
-        return Arrays.stream(array()).allMatch(o);
+        for (X x : array()) {
+            if (!o.test(x)) {
+                return false;
+            }
+        }
+        return true;
     }
     public boolean OR(Predicate<X> o) {
-        return Arrays.stream(array()).anyMatch(o);
+        for (X x : array()) {
+            if (o.test(x)) {
+                return true;
+            }
+        }
+        return false;
     }
     public boolean whileEach(Predicate<X> o) {
-        return Arrays.stream(array()).noneMatch(x -> x != null && !o.test(x));
+        for (X x : array()) {
+            if (x != null && !o.test(x)) {
+                return false;
+            }
+        }
+        return true;
     }
     public boolean whileEachReverse(Predicate<X> o) {
         @Nullable X[] xx = this.array();
@@ -373,11 +388,19 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
 
     public double sumBy(FloatFunction<X> each) {
-        double s = Arrays.stream(array()).mapToDouble(each::floatValueOf).sum();
+        double s = 0.0;
+        for (X x : array()) {
+            double floatValueOf = each.floatValueOf(x);
+            s += floatValueOf;
+        }
         return s;
     }
     public double sumBy(ToDoubleFunction<X> each) {
-        double s = Arrays.stream(array()).mapToDouble(each).sum();
+        double s = 0.0;
+        for (X x : array()) {
+            double v = each.applyAsDouble(x);
+            s += v;
+        }
         return s;
     }
 

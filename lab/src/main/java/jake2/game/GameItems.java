@@ -833,7 +833,16 @@ public class GameItems {
      */
     static gitem_t FindItemByClassname(String classname) {
 
-        return Arrays.stream(GameItemList.itemlist, 1, GameBase.game.num_items).filter(it -> it.classname != null).filter(it -> it.classname.equalsIgnoreCase(classname)).findFirst().orElse(null);
+        int bound = GameBase.game.num_items;
+        for (int i = 1; i < bound; i++) {
+            gitem_t it = GameItemList.itemlist[i];
+            if (it.classname != null) {
+                if (it.classname.equalsIgnoreCase(classname)) {
+                    return it;
+                }
+            }
+        }
+        return null;
 
     }
 
@@ -1195,7 +1204,14 @@ public class GameItems {
                 }
             }
             if (((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
-                if (Stream.of(Pickup_Health, Pickup_Adrenaline, Pickup_AncientHead).anyMatch(entInteractAdapter -> item.pickup == entInteractAdapter)) {
+                boolean b = false;
+                for (EntInteractAdapter entInteractAdapter : Arrays.asList(Pickup_Health, Pickup_Adrenaline, Pickup_AncientHead)) {
+                    if (item.pickup == entInteractAdapter) {
+                        b = true;
+                        break;
+                    }
+                }
+                if (b) {
                     GameUtil.G_FreeEdict(ent);
                     return;
                 }

@@ -28,6 +28,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -167,7 +168,12 @@ public class Thing<T, P /* service key */  /* context */> {
      */
     public @Nullable P term(Part<T> p) {
         //HACK TODO improve
-        return entrySet().stream().filter(z -> z.getValue() == p).findFirst().get().getKey();
+        for (Map.Entry<P, Part<T>> z : entrySet()) {
+            if (z.getValue() == p) {
+                return Optional.of(z).get().getKey();
+            }
+        }
+        return Optional.<Map.Entry<P, Part<T>>>empty().get().getKey();
     }
 
     public final Part<T> add(P key, Class<? extends Part<T>> instanceOf) {
@@ -191,7 +197,9 @@ public class Thing<T, P /* service key */  /* context */> {
      * stops all parts (but does not remove them)
      */
     public Thing<T, P> stopAll() {
-        parts.keySet().forEach(this::stop);
+        for (P p : parts.keySet()) {
+            stop(p);
+        }
         return this;
     }
 
@@ -199,7 +207,9 @@ public class Thing<T, P /* service key */  /* context */> {
     public void delete() {
         eventOnOff.clear();
 
-        parts.keySet().forEach(this::remove);
+        for (P p : parts.keySet()) {
+            remove(p);
+        }
         assert(parts.isEmpty());
     }
 
@@ -223,7 +233,11 @@ public class Thing<T, P /* service key */  /* context */> {
      * Class valueClass
      */
     public void print(PrintStream out) {
-        parts.forEach((p, s) -> out.println(s.state() + "\t" + p + "\t" + s + "\t" + s.getClass()));
+        for (Map.Entry<P, Part<T>> entry : parts.entrySet()) {
+            P p = entry.getKey();
+            Part<T> s = entry.getValue();
+            out.println(s.state() + "\t" + p + "\t" + s + "\t" + s.getClass());
+        }
     }
 
     private void error(@Nullable Part part, Throwable e, String what) {

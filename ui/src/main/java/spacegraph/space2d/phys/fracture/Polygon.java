@@ -9,6 +9,7 @@ import spacegraph.space2d.phys.fracture.poly2Tri.Triangulation;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -236,8 +237,14 @@ public class Polygon implements Iterable<v2>, Cloneable {
             return new Polygon[]{this};
         }
 
-        
-        v2[] reverseArray = IntStream.range(0, vertexCount).mapToObj(i -> get(vertexCount - i - 1)).toArray(v2[]::new);
+
+        List<v2> result = new ArrayList<>();
+        int bound = vertexCount;
+        for (int i1 = 0; i1 < bound; i1++) {
+            v2 v2 = get(vertexCount - i1 - 1);
+            result.add(v2);
+        }
+        v2[] reverseArray = result.toArray(new v2[0]);
 
         ArrayList<int[]> triangles = Triangulation.triangulate(reverseArray, vertexCount);
 

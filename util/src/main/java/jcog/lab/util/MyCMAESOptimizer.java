@@ -18,6 +18,7 @@ import org.apache.commons.math3.optim.nonlinear.scalar.MultivariateOptimizer;
 import org.apache.commons.math3.util.MathArrays;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -300,10 +301,24 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return a sorted array of indices pointing into doubles.
 	 */
 	private static int[] sortedIndices(final double[] x) {
-		final DoubleIndex[] y = IntStream.range(0, x.length).mapToObj(i -> new DoubleIndex(x[i], i)).toArray(DoubleIndex[]::new);
+		List<DoubleIndex> list = new ArrayList<>();
+		int bound1 = x.length;
+		for (int i1 = 0; i1 < bound1; i1++) {
+			DoubleIndex doubleIndex = new DoubleIndex(x[i1], i1);
+			list.add(doubleIndex);
+		}
+		final DoubleIndex[] y = list.toArray(new DoubleIndex[0]);
         Arrays.sort(y);
-		final int[] j = IntStream.range(0, x.length).map(i -> y[i].index).toArray();
-        return j;
+		int[] j = new int[10];
+		int count = 0;
+		int bound = x.length;
+		for (int i = 0; i < bound; i++) {
+			int index = y[i].index;
+			if (j.length == count) j = Arrays.copyOf(j, count * 2);
+			j[count++] = index;
+		}
+		j = Arrays.copyOfRange(j, 0, count);
+		return j;
 	}
 
 	/**
@@ -579,8 +594,16 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return the indices in inverse order (last is first).
 	 */
 	private static int[] reverse(final int[] indices) {
-		final int[] reverse = IntStream.range(0, indices.length).map(i -> indices[indices.length - i - 1]).toArray();
-        return reverse;
+		int[] reverse = new int[10];
+		int count = 0;
+		int bound = indices.length;
+		for (int i = 0; i < bound; i++) {
+			int index = indices[indices.length - i - 1];
+			if (reverse.length == count) reverse = Arrays.copyOf(reverse, count * 2);
+			reverse[count++] = index;
+		}
+		reverse = Arrays.copyOfRange(reverse, 0, count);
+		return reverse;
 	}
 
 	/**
@@ -892,8 +915,15 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return an array of Gaussian random numbers.
 	 */
 	private double[] randn(int size) {
-		final double[] randn = IntStream.range(0, size).mapToDouble(i -> random.nextGaussian()).toArray();
-        return randn;
+		double[] randn = new double[10];
+		int count = 0;
+		for (int i = 0; i < size; i++) {
+			double v = random.nextGaussian();
+			if (randn.length == count) randn = Arrays.copyOf(randn, count * 2);
+			randn[count++] = v;
+		}
+		randn = Arrays.copyOfRange(randn, 0, count);
+		return randn;
 	}
 
 	/**
@@ -1078,8 +1108,13 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 		 * @return Penalty value according to the violation of the bounds.
 		 */
 		private double penalty(final double[] x, final double[] repaired) {
-			double penalty = IntStream.range(0, x.length).mapToDouble(i -> Math.abs(x[i] - repaired[i])).sum();
-            return isMinimize ? penalty : -penalty;
+			double penalty = 0.0;
+			int bound = x.length;
+			for (int i = 0; i < bound; i++) {
+				double abs = Math.abs(x[i] - repaired[i]);
+				penalty += abs;
+			}
+			return isMinimize ? penalty : -penalty;
 		}
 
         public boolean iterate() {
@@ -1157,10 +1192,16 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 
             final double[] sqrtDiagC = sqrt(diagC).getColumn(0);
             final double[] pcCol = pc.getColumn(0);
-            if (IntStream.range(0, dimension).takeWhile(i -> !(sigma * Math.max(Math.abs(pcCol[i]), sqrtDiagC[i]) > stopTolX)).anyMatch(i -> i >= dimension - 1)) {
-                return false;
-            }
-            for (int i = 0; i < dimension; i++)
+			int bound = dimension;
+			for (int i1 = 0; i1 < bound; i1++) {
+				if (sigma * Math.max(Math.abs(pcCol[i1]), sqrtDiagC[i1]) > stopTolX) {
+					break;
+				}
+				if (i1 >= dimension - 1) {
+					return false;
+				}
+			}
+			for (int i = 0; i < dimension; i++)
                 if (sigma * sqrtDiagC[i] > stopTolUpX)
                     return false;
 

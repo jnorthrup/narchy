@@ -1032,9 +1032,9 @@ public class NAL8Test extends NALTest {
                         (a == 0 && b == 10)
                 )
                 .mustNotOutput(cycles, "y", GOAL, 0f, 1, 0f, 1f,
-                        (long s, long e) -> (s == e))
+                        (s, e) -> (s == e))
                 .mustNotOutput(cycles, "x", GOAL, (t) -> true /* shouldnt drop first event */)
-                .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0f, 1f, (long s, long e) -> (e - s != 10))
+                .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0f, 1f, (s, e) -> (e - s != 10))
         ;
 
 

@@ -430,8 +430,12 @@ class MyCMAESOptimizerTest {
 
 		@Override
 		public double value(double[] x) {
-			double f = Arrays.stream(x).map(v -> v * v).sum();
-            return f;
+			double f = 0.0;
+			for (double v : x) {
+				double v1 = v * v;
+				f += v1;
+			}
+			return f;
 		}
 	}
 
@@ -449,7 +453,12 @@ class MyCMAESOptimizerTest {
 		@Override
 		public double value(double[] x) {
 			double f = x[0] * x[0];
-            f += IntStream.range(1, x.length).mapToDouble(i -> factor * x[i] * x[i]).sum();
+			double sum = 0.0;
+			for (int i = 1; i < x.length; i++) {
+				double v = factor * x[i] * x[i];
+				sum += v;
+			}
+			f += sum;
 			return f;
 		}
 	}
@@ -468,7 +477,12 @@ class MyCMAESOptimizerTest {
 		@Override
 		public double value(double[] x) {
 			double f = factor * x[0] * x[0];
-            f += IntStream.range(1, x.length).mapToDouble(i -> x[i] * x[i]).sum();
+			double sum = 0.0;
+			for (int i = 1; i < x.length; i++) {
+				double v = x[i] * x[i];
+				sum += v;
+			}
+			f += sum;
 			return f;
 		}
 	}
@@ -488,7 +502,12 @@ class MyCMAESOptimizerTest {
 		public double value(double[] x) {
 			int end = x.length - 1;
 			double f = x[0] * x[0] / factor + factor * x[end] * x[end];
-            f += IntStream.range(1, end).mapToDouble(i -> x[i] * x[i]).sum();
+			double sum = 0.0;
+			for (int i = 1; i < end; i++) {
+				double v = x[i] * x[i];
+				sum += v;
+			}
+			f += sum;
 			return f;
 		}
 	}
@@ -507,8 +526,12 @@ class MyCMAESOptimizerTest {
 
 		@Override
 		public double value(double[] x) {
-			double f = IntStream.range(0, x.length).mapToDouble(i -> (i < x.length / 2 ? factor : 1) * x[i] * x[i]).sum();
-            return f;
+			double f = 0.0;
+			for (int i = 0; i < x.length; i++) {
+				double v = (i < x.length / 2 ? factor : 1) * x[i] * x[i];
+				f += v;
+			}
+			return f;
 		}
 	}
 
@@ -549,8 +572,12 @@ class MyCMAESOptimizerTest {
 
 		@Override
 		public double value(double[] x) {
-			double f = IntStream.range(0, x.length).mapToDouble(i -> FastMath.pow(factor, i / (x.length - 1.)) * x[i] * x[i]).sum();
-            return f;
+			double f = 0.0;
+			for (int i = 0; i < x.length; i++) {
+				double v = FastMath.pow(factor, i / (x.length - 1.)) * x[i] * x[i];
+				f += v;
+			}
+			return f;
 		}
 	}
 
@@ -566,9 +593,13 @@ class MyCMAESOptimizerTest {
 
 		@Override
 		public double value(double[] x) {
-			double f = IntStream.range(0, x.length).mapToDouble(i -> FastMath.pow(FastMath.abs(x[i]), 2. + 10 * (double) i
-                    / (x.length - 1.))).sum();
-            return f;
+			double f = 0.0;
+			for (int i = 0; i < x.length; i++) {
+				double pow = FastMath.pow(FastMath.abs(x[i]), 2. + 10 * (double) i
+						/ (x.length - 1.));
+				f += pow;
+			}
+			return f;
 		}
 	}
 
@@ -585,9 +616,14 @@ class MyCMAESOptimizerTest {
 
 		@Override
 		public double value(double[] x) {
-			double f = IntStream.range(0, x.length - 1).mapToDouble(i -> 1e2 * (x[i] * x[i] - x[i + 1]) * (x[i] * x[i] - x[i + 1])
-                    + (x[i] - 1.) * (x[i] - 1.)).sum();
-            return f;
+			double f = 0.0;
+			int bound = x.length - 1;
+			for (int i = 0; i < bound; i++) {
+				double v = 1e2 * (x[i] * x[i] - x[i + 1]) * (x[i] * x[i] - x[i + 1])
+						+ (x[i] - 1.) * (x[i] - 1.);
+				f += v;
+			}
+			return f;
 		}
 	}
 

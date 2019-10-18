@@ -178,7 +178,14 @@ public class A extends GamePanel {
 						if (gameData.charAt(g + 140) == 'e')
 							g2d.fillRect(((g - z - j * h) % spriteSize[m]) * n, ((g - z - j * h) / spriteSize[m]) * n, n, n);
 
-					if (IntStream.of(6, 8, 21).anyMatch(i1 -> i == i1)) {
+					boolean b = false;
+					for (int i1 : new int[]{6, 8, 21}) {
+						if (i == i1) {
+							b = true;
+							break;
+						}
+					}
+					if (b) {
 						g2d.setColor(colorChart[12]); 
 						g2d.fillRect(2, 4, 2, 2);
 						g2d.fillRect(2, 16, 2, 2);

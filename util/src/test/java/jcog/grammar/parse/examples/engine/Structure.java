@@ -8,7 +8,10 @@ package jcog.grammar.parse.examples.engine;
  * including the implied warranty of merchantability.
  */
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -129,7 +132,12 @@ public class Structure implements Term {
 	 *         with other structures.
 	 */
 	public Term copyForProof(AxiomSource as, Scope scope) {
-		Term[] newTerms = Arrays.stream(terms).map(term -> term.copyForProof(as, scope)).toArray(Term[]::new);
+		List<Term> list = new ArrayList<>();
+		for (Term term : terms) {
+			Term copyForProof = term.copyForProof(as, scope);
+			list.add(copyForProof);
+		}
+		Term[] newTerms = list.toArray(new Term[0]);
         return new ConsultingStructure(as, functor, newTerms);
 	}
 
@@ -149,7 +157,13 @@ public class Structure implements Term {
 		if (!functorAndArityEquals(s)) {
 			return false;
 		}
-        return IntStream.range(0, terms.length).allMatch(i -> terms[i].equals(s.terms[i]));
+		int bound = terms.length;
+		for (int i = 0; i < bound; i++) {
+			if (!terms[i].equals(s.terms[i])) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -317,7 +331,12 @@ public class Structure implements Term {
 		}
 		String buf = "";
 		if (terms.length > 0) {
-            buf = Arrays.stream(terms).map(String::valueOf).collect(Collectors.joining(", ", functor.toString() + '(', ")"));
+			StringJoiner joiner = new StringJoiner(", ", functor.toString() + '(', ")");
+			for (Term term : terms) {
+				String s = String.valueOf(term);
+				joiner.add(s);
+			}
+			buf = joiner.toString();
         }
 		return buf;
 	}

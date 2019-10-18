@@ -1413,7 +1413,11 @@ public class Formula implements Comparable, Serializable {
         if (args == null || args.isEmpty()) {
             return formula;
         }
-        List<String> orderedArgs = args.stream().map(arg -> normalizeParameterOrder(arg, kb, varPlaceholders)).collect(Collectors.toList());
+        List<String> orderedArgs = new ArrayList<>();
+        for (String s : args) {
+            String normalizeParameterOrder = normalizeParameterOrder(s, kb, varPlaceholders);
+            orderedArgs.add(normalizeParameterOrder);
+        }
 
 
         String head = f.car();
@@ -1924,11 +1928,15 @@ public class Formula implements Comparable, Serializable {
         var argtypemap = new HashMap<String,    List>();
         Set<String> relations = gatherRelationConstants();
 
-        relations.forEach(r -> {
+        for (String r : relations) {
             int atlen = (MAX_PREDICATE_ARITY + 1);
-            var argtypes = IntStream.range(0, atlen).mapToObj(i -> kb.getArgType(r, i)).collect(Collectors.toList());
+            var argtypes = new ArrayList<>();
+            for (int i = 0; i < atlen; i++) {
+                String argType = kb.getArgType(r, i);
+                argtypes.add(argType);
+            }
             argtypemap.put(r, argtypes);
-        });
+        }
         return argtypemap;
     }
 
@@ -2250,7 +2258,13 @@ public class Formula implements Comparable, Serializable {
 
         if (!StringUtil.emptyString(term) && !Formula.listP(term) &&
                 Character.isJavaIdentifierStart(term.charAt(0))) {
-            return IntStream.range(0, term.length()).allMatch(i -> Character.isJavaIdentifierPart(term.charAt(i)));
+            int bound = term.length();
+            for (int i = 0; i < bound; i++) {
+                if (!Character.isJavaIdentifierPart(term.charAt(i))) {
+                    return false;
+                }
+            }
+            return true;
         }
         else
             return false;

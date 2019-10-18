@@ -34,12 +34,13 @@ public class RUCache<K, V> {
     public V get(K k) {
         synchronized (mru) {
             return mru.compute(k, (key, value) -> {
-                if (value != null)
-                    return value;
+                V value1 = value;
+                if (value1 != null)
+                    return value1;
                 else {
-                    if ((value = lru.remove(key)) != null)
-                        mru.put(key, value);
-                    return value;
+                    if ((value1 = lru.remove(key)) != null)
+                        mru.put(key, value1);
+                    return value1;
                 }
             });
         }

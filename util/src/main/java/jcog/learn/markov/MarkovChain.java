@@ -76,7 +76,7 @@ public class MarkovChain<T> {
 
         final List<T>[] tuple = new List[]{new FasterList<T>()};
         
-        phrase.forEach((T t) -> {
+        phrase.forEach(t -> {
             List<T> tu = tuple[0];
 
             int sz = tu.size();

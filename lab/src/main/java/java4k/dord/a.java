@@ -1059,7 +1059,14 @@ public class a extends GamePanel {
         
         int px = playerX;
         int py = (int)playerY;
-        if (IntStream.of(KEY_X, KEY_R, KEY_N, KEY_P).noneMatch(v -> a[v])) {
+        boolean b = true;
+        for (int v : new int[]{KEY_X, KEY_R, KEY_N, KEY_P}) {
+          if (a[v]) {
+            b = false;
+            break;
+          }
+        }
+        if (b) {
           keysReleased = true;
         }
         if (keysReleased && a[KEY_R]) {
@@ -1396,8 +1403,14 @@ public class a extends GamePanel {
     final int KEY_P = 112;
     final int KEY_R = 114; 
     final int KEY_X = 120;
-        
-    return a[IntStream.of(KEY_LEFT, KEY_RIGHT, KEY_N, KEY_P, KEY_R).allMatch(i -> e.key != i) ? KEY_X : e.key]
+
+    for (int i : new int[]{KEY_LEFT, KEY_RIGHT, KEY_N, KEY_P, KEY_R}) {
+      if (e.key == i) {
+        return a[e.key]
+                = e.id == 401 || e.id == 403;
+      }
+    }
+    return a[KEY_X]
             = e.id == 401 || e.id == 403;
   }  
 

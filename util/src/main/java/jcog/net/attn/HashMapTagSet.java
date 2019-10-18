@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static jcog.pri.ScalarValue.EPSILON;
@@ -109,9 +110,11 @@ public class HashMapTagSet implements TagSet, Serializable {
         float p = Util.unitize(pri);
 
         final boolean[] modified = {false};
-        tag.data.forEach((k, v) -> {
+        for (Map.Entry<String, Float> entry : tag.data.entrySet()) {
+            String k = entry.getKey();
+            Float v = entry.getValue();
             modified[0] |= add(k, v * p);
-        });
+        }
 
         return modified[0];
     }

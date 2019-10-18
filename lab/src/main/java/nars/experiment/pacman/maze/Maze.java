@@ -364,7 +364,12 @@ public class Maze {
 
         int[] check = {x, y};
 
-        return Arrays.stream(this.bigDots).anyMatch(place -> check[0] == place[0] && check[1] == place[1]);
+        for (int[] place : this.bigDots) {
+            if (check[0] == place[0] && check[1] == place[1]) {
+                return true;
+            }
+        }
+        return false;
 
     }
 

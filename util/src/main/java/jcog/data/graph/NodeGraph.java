@@ -262,11 +262,15 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
         }
 
         public void removeIn(Node<N, E> src) {
-            edges(true, false, e->e.to()==src, null).forEach(e -> removeSet(e, true));
+            for (FromTo<Node<N, E>, E> nodeEFromTo : edges(true, false, e -> e.to() == src, null)) {
+                removeSet(nodeEFromTo, true);
+            }
         }
 
         public void removeOut(Node<N, E> target) {
-            edges(false, true, e->e.to()==target, null).forEach(e -> removeSet(e, false));
+            for (FromTo<Node<N, E>, E> nodeEFromTo : edges(false, true, e -> e.to() == target, null)) {
+                removeSet(nodeEFromTo, false);
+            }
         }
 
         private boolean removeSet(FromTo<Node<N,E>,E> e, boolean inOrOut) {

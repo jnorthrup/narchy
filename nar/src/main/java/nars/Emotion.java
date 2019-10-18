@@ -13,8 +13,10 @@ import org.junit.platform.commons.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -36,9 +38,18 @@ public class Emotion implements Meter, Consumer<NAR> {
 
 
     private static final int history = 2;
-    private static final Field[] EmotionFields = ReflectionUtils.findFields(Emotion.class, (f) -> true, ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)
-            .stream().filter(f-> !Modifier.isPrivate(f.getModifiers())).sorted(Comparator.comparing(Field::getName))
-            .toArray(Field[]::new);
+    private static final Field[] EmotionFields;
+
+    static {
+        List<Field> list = new ArrayList<>();
+        for (Field field : ReflectionUtils.findFields(Emotion.class, (f) -> true, ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)) {
+            if (!Modifier.isPrivate(field.getModifiers())) {
+                list.add(field);
+            }
+        }
+        list.sort(Comparator.comparing(Field::getName));
+        EmotionFields = list.toArray(new Field[0]);
+    }
 
     /**
      * TODO

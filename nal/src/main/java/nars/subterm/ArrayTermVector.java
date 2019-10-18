@@ -77,7 +77,12 @@ public class ArrayTermVector extends TermVector {
             if (s != that.subs())
                 return false;
 
-            return IntStream.range(0, s).allMatch(i -> x[i].equals(that.sub(i)));
+            for (int i = 0; i < s; i++) {
+                if (!x[i].equals(that.sub(i))) {
+                    return false;
+                }
+            }
+            return true;
 
         }
 

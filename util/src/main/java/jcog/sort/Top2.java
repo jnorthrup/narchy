@@ -23,12 +23,16 @@ public class Top2<T> extends AbstractCollection<T> implements Consumer<T> {
 
     public Top2(FloatFunction<T> rank, Iterable<T> from) {
         this(rank);
-        from.forEach(this::add);
+        for (T t : from) {
+            add(t);
+        }
     }
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        c.forEach(this::add);
+        for (T t : c) {
+            add(t);
+        }
         return true; //HACK
     }
 

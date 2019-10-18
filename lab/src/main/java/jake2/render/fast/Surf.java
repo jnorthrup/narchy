@@ -602,7 +602,14 @@ public abstract class Surf extends Draw {
 
         boolean rotated;
         float[] ea = e.angles;
-        if (IntStream.of(0, 1, 2).anyMatch(v -> ea[v] != 0)) {
+        boolean b = false;
+        for (int v : new int[]{0, 1, 2}) {
+            if (ea[v] != 0) {
+                b = true;
+                break;
+            }
+        }
+        if (b) {
             rotated = true;
 
             float[] eo = e.origin;
@@ -935,7 +942,19 @@ public abstract class Surf extends Draw {
 
         gl_lms.lightmap_buffer.rewind();
         if (dynamic) {
-            int height = Arrays.stream(gl_lms.allocated, 0, BLOCK_WIDTH).filter(i -> i >= 0).max().orElse(0);
+            boolean seen = false;
+            int best = 0;
+            int[] array = gl_lms.allocated;
+            for (int j = 0; j < BLOCK_WIDTH; j++) {
+                int i = array[j];
+                if (i >= 0) {
+                    if (!seen || i > best) {
+                        seen = true;
+                        best = i;
+                    }
+                }
+            }
+            int height = seen ? best : 0;
 
             gl.glTexSubImage2D(GL_TEXTURE_2D,
                     0,

@@ -115,10 +115,7 @@ public class DefaultStrategy implements RunStrategy {
             
             
             
-            eachRankings(population, objective, (n, f) -> {
-                rankings.add(new Ranking(n, f));
-                
-            });
+            eachRankings(population, objective, (n, f) -> rankings.add(new Ranking(n, f)));
 
 
 
@@ -149,7 +146,13 @@ public class DefaultStrategy implements RunStrategy {
                 if (listener != null) {
                     listener.logGeneration(this, doneGenerations, best.getNode(), best.getFitness(), rankings);
                 }
-                boolean allPerfect = Arrays.stream(best.getFitness()).noneMatch(fitness -> Math.round(fitness * 10000) != 0);
+                boolean allPerfect = true;
+                for (double fitness : best.getFitness()) {
+                    if (Math.round(fitness * 10000) != 0) {
+                        allPerfect = false;
+                        break;
+                    }
+                }
                 if (allPerfect) {
                     break;
                 }

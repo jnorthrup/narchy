@@ -11,7 +11,9 @@ public enum MapSwitch { ;
         ToggleButton[] b = new ToggleButton[x.size()];
 
         final int[] i = {0};
-        x.forEach((xx,r)->{
+        for (Map.Entry<X, Runnable> entry : x.entrySet()) {
+            X xx = entry.getKey();
+            Runnable r = entry.getValue();
             CheckBox tb = new CheckBox(xx.toString());
             tb.on((c, enabled) -> {
                 if (enabled)
@@ -20,7 +22,7 @@ public enum MapSwitch { ;
 //                if (xx == initialValue)
 //                    initialButton = i;
             b[i[0]++] = tb;
-        });
+        }
 
 
         return EnumSwitch.newSwitch(b, initialButton[0]);

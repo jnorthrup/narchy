@@ -16,15 +16,15 @@ public interface PriReference<X> extends Prioritizable, Supplier<X>, FloatSuppli
         int bins = x.length;
         final double[] total = {0};
 
-        pp.forEach(y -> {
+        for (Prioritized y : pp) {
             if (y == null)
-                return; 
+                continue;
             float p = y.priElseZero();
-            if (p > 1f) p = 1f; 
+            if (p > 1f) p = 1f;
             int b = Util.bin(p, bins);
             x[b]++;
             total[0]++;
-        });
+        }
 
         double t = total[0];
         if (t > 0) {
@@ -39,10 +39,15 @@ public interface PriReference<X> extends Prioritizable, Supplier<X>, FloatSuppli
      */
     static <X, Y> double[][] histogram( Iterable<PriReference<Y>> pp,  BiConsumer<PriReference<Y>, double[][]> each,  double[][] d) {
 
-        pp.forEach(y -> each.accept(y, d));
+        for (PriReference<Y> y : pp) {
+            each.accept(y, d);
+        }
 
         for (double[] e : d) {
-            double total = Arrays.stream(e).sum();
+            double total = 0.0;
+            for (double v : e) {
+                total += v;
+            }
             if (total > 0) {
                 for (int i = 0, eLength = e.length; i < eLength; i++) {
                     double f = e[i];

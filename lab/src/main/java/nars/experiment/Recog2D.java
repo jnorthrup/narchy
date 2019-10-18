@@ -29,6 +29,7 @@ import spacegraph.video.Draw;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.IntFunction;
@@ -131,6 +132,57 @@ public class Recog2D extends GameX {
 
 //        int history = 256;
 
+        List<VectorLabel> list = new ArrayList<>();
+        int bound = tv.concepts.length;
+        for (int j = 0; j < bound; j++) {
+            int i = j;
+            VectorLabel vectorLabel = new VectorLabel(String.valueOf(i)) {
+                @Override
+                protected void paintIt(GL2 gl, ReSurface r) {
+                    Concept c = tv.concepts[i];
+                    BeliefVector.Neuron nn = tv.neurons[i];
+
+                    float freq, conf;
+
+                    Truth t = nar.beliefTruth(c, nar.time());
+                    if (t != null) {
+                        conf = t.conf();
+                        freq = t.freq();
+                    } else {
+//                            conf = nar.confMin.floatValue();
+                        float defaultFreq =
+                                0.5f;
+
+                        freq = defaultFreq;
+                    }
+
+
+                    Draw.colorBipolar(gl,
+                            2f * (freq - 0.5f)
+
+
+                    );
+
+                    //float m = 0.5f * conf;
+
+                    Draw.rect(bounds, gl);
+
+                    if (tv.verify) {
+                        float error = nn.error;
+                        if (error != error) {
+
+
+                        } else {
+
+
+                        }
+                    }
+
+
+                }
+            };
+            list.add(vectorLabel);
+        }
         Gridding g = new Gridding(
 
 //                p = new Plot2D(history, Plot2D.Line).addAt("Reward", () ->
@@ -143,51 +195,7 @@ public class Recog2D extends GameX {
 
                 new Gridding(beliefTableCharts(nar, List.of(tv.concepts), 16)),
 
-                new Gridding(IntStream.range(0, tv.concepts.length).mapToObj(i -> new VectorLabel(String.valueOf(i)) {
-                    @Override
-                    protected void paintIt(GL2 gl, ReSurface r) {
-                        Concept c = tv.concepts[i];
-                        BeliefVector.Neuron nn = tv.neurons[i];
-
-                        float freq, conf;
-
-                        Truth t = nar.beliefTruth(c, nar.time());
-                        if (t != null) {
-                            conf = t.conf();
-                            freq = t.freq();
-                        } else {
-//                            conf = nar.confMin.floatValue();
-                            float defaultFreq =
-                                    0.5f;
-
-                            freq = defaultFreq;
-                        }
-
-
-                        Draw.colorBipolar(gl,
-                                2f * (freq - 0.5f)
-
-
-                        );
-
-                        //float m = 0.5f * conf;
-
-                        Draw.rect(bounds, gl);
-
-                        if (tv.verify) {
-                            float error = nn.error;
-                            if (error != error) {
-
-
-                            } else {
-
-
-                            }
-                        }
-
-
-                    }
-                }).toArray(Surface[]::new)));
+                new Gridding(list.toArray(new Surface[0])));
 
         final int[] frames = {0};
         onFrame(() -> {
@@ -221,7 +229,12 @@ public class Recog2D extends GameX {
             btRange[0] = now - window;
             btRange[1] = now + window;
         });
-        return terms.stream().map(c -> new BeliefTableChart(c, nar)).collect(toList());
+        List<Surface> list = new ArrayList<>();
+        for (Termed c : terms) {
+            BeliefTableChart beliefTableChart = new BeliefTableChart(c, nar);
+            list.add(beliefTableChart);
+        }
+        return list;
     }
 
     protected int nextImage() {
@@ -413,7 +426,7 @@ public class Recog2D extends GameX {
 
             this.states = maxStates;
             this.neurons = new Neuron[maxStates];
-            this.concepts = IntStream.range(0, maxStates).mapToObj((int i) -> {
+            this.concepts = IntStream.range(0, maxStates).mapToObj(i -> {
                         Term tt = namer.apply(i);
 
                         Neuron n = neurons[i] = new Neuron();

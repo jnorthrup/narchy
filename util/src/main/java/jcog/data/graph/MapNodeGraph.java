@@ -37,7 +37,9 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
         this();
         Collection<N> traversed = new HashSet();
         ArrayDeque<N> queue = new ArrayDeque();
-        start.forEach(queue::add);
+        for (N n : start) {
+            queue.add(n);
+        }
 
         N x;
         while ((x = queue.poll()) != null) {
@@ -45,12 +47,12 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
             MutableNode<N, E> xx = addNode(x);
             Iterable<? extends N> xs = s.successors(x);
             //System.out.println(x + " " + xs);
-            xs.forEach(y -> {
+            for (N y : xs) {
                 if (traversed.add(y))
                     queue.add(y);
 
                 addEdgeByNode(xx, (E) "->" /* HACK */, addNode(y));
-            });
+            }
 
         }
     }
@@ -186,7 +188,9 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     @Override
     public void forEachNode(Consumer<Node<N, E>> n) {
-        nodes.values().forEach(n);
+        for (Node<N, E> neNode : nodes.values()) {
+            n.accept(neNode);
+        }
     }
 
     public boolean edgeRemove(FromTo<Node<N, E>, E> e) {
@@ -222,9 +226,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
         s.append("Edges: ");
 
-        edges().forEach(e -> {
-            s.append(e).append('\n');
-        });
+        edges().forEach(e -> s.append(e).append('\n'));
 
         return s.toString();
     }
@@ -258,7 +260,9 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
                         if (x != fromNode)
                             addEdgeByNode(toNode, outEdge.id(), x);
                     });
-                    removed.forEach(this::edgeRemove);
+                    for (FromTo fromTo : removed) {
+                        edgeRemove(fromTo);
+                    }
                     //assert (fromNode.ins() == 0 && fromNode.outs() == 0);
                 }
             }

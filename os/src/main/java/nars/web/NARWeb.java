@@ -308,9 +308,7 @@ public abstract class NARWeb extends EvalSocket<NAR> {
 //                w.send(s);
 
                 ArrayNode a = Util.cborMapper.createArrayNode();
-                out.clear(t -> {
-                    taskify(t, a.addArray());
-                });
+                out.clear(t -> taskify(t, a.addArray()));
                 try {
                     w.send(Util.jsonMapper.writeValueAsString(a));
                 } catch (JsonProcessingException e) {

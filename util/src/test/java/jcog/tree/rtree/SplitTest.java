@@ -111,9 +111,7 @@ class SplitTest {
                     assertEquals(TOTAL, orCount[0]);
 
                     final int[] eachCount= {0};
-                    t.forEach(x -> {
-                        eachCount[0]++;
-                    });
+                    t.forEach(x -> eachCount[0]++);
                     assertEquals(TOTAL, eachCount[0]);
                 }
             }

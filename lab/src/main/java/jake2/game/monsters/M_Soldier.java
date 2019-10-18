@@ -28,6 +28,7 @@ import jake2.qcommon.Com;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 public class M_Soldier {
@@ -1359,7 +1360,14 @@ public class M_Soldier {
                 return true;
             }
 
-            if (Stream.of(soldier_move_walk1, soldier_move_walk2, soldier_move_start_run).anyMatch(mmove_t -> self.monsterinfo.currentmove == mmove_t)) {
+            boolean b = false;
+            for (jake2.game.mmove_t mmove_t : Arrays.asList(soldier_move_walk1, soldier_move_walk2, soldier_move_start_run)) {
+                if (self.monsterinfo.currentmove == mmove_t) {
+                    b = true;
+                    break;
+                }
+            }
+            if (b) {
                 self.monsterinfo.currentmove = soldier_move_run;
             } else {
                 self.monsterinfo.currentmove = soldier_move_start_run;
@@ -1378,9 +1386,14 @@ public class M_Soldier {
                 self.s.skinnum |= 1;
 
             if (GameBase.level.time < self.pain_debounce_time) {
-                if ((self.velocity[2] > 100)
-                        && (Stream.of(soldier_move_pain1, soldier_move_pain2, soldier_move_pain3).anyMatch(mmove_t -> (self.monsterinfo.currentmove == mmove_t))))
-                    self.monsterinfo.currentmove = soldier_move_pain4;
+                if ((self.velocity[2] > 100)) {
+                    for (jake2.game.mmove_t mmove_t : Arrays.asList(soldier_move_pain1, soldier_move_pain2, soldier_move_pain3)) {
+                        if ((self.monsterinfo.currentmove == mmove_t)) {
+                            self.monsterinfo.currentmove = soldier_move_pain4;
+                            break;
+                        }
+                    }
+                }
                 return;
             }
 

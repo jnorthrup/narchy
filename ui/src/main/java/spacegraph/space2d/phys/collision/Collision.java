@@ -112,8 +112,12 @@ public class Collision {
 
             state1[i] = PointState.REMOVE_STATE;
 
-            if (IntStream.range(0, manifold2.pointCount).anyMatch(j -> manifold2.points[j].id.isEqual(id))) {
-                state1[i] = PointState.PERSIST_STATE;
+            int bound = manifold2.pointCount;
+            for (int j = 0; j < bound; j++) {
+                if (manifold2.points[j].id.isEqual(id)) {
+                    state1[i] = PointState.PERSIST_STATE;
+                    break;
+                }
             }
         }
 
@@ -123,8 +127,12 @@ public class Collision {
 
             state2[i] = PointState.ADD_STATE;
 
-            if (IntStream.range(0, manifold1.pointCount).anyMatch(j -> manifold1.points[j].id.isEqual(id))) {
-                state2[i] = PointState.PERSIST_STATE;
+            int bound = manifold1.pointCount;
+            for (int j = 0; j < bound; j++) {
+                if (manifold1.points[j].id.isEqual(id)) {
+                    state2[i] = PointState.PERSIST_STATE;
+                    break;
+                }
             }
         }
     }

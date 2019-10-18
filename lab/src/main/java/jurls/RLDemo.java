@@ -204,9 +204,7 @@ public class RLDemo extends javax.swing.JFrame {
         domainMenu.addActionListener(menuAction);
         jMenuBar1.add(iterationsMenu);
 
-        iterationsMenu.addActionListener((ActionEvent e) -> {
-            numIterationsPerLoop = (int) iterationsMenu.getObject();
-        });
+        iterationsMenu.addActionListener(e -> numIterationsPerLoop = (int) iterationsMenu.getObject());
         iterationsMenu.notifyListeners();
 
         updateParameters();

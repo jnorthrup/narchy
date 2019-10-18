@@ -624,26 +624,24 @@ public abstract class GameX extends Game {
     static final Atom FRAME = Atomic.atom("frame");
 
     private static void addClock(NAR n) {
-        n.parts(Game.class).forEach(g -> {
-            g.onFrame(()->{
-                long now = n.time();
-                int X = g.frame();
-                int radix = 16;
-                Term x =
-                    //Int.the(X);
-                    //$.pRadix(X, 8, Integer.MAX_VALUE);
-                    //$.p( $.radixArray(X, radix, Integer.MAX_VALUE));
-                    $.pRecurse(false, $.radixArray(X, radix, Integer.MAX_VALUE));
+        n.parts(Game.class).forEach(g -> g.onFrame(()->{
+            long now = n.time();
+            int X = g.frame();
+            int radix = 16;
+            Term x =
+                //Int.the(X);
+                //$.pRadix(X, 8, Integer.MAX_VALUE);
+                //$.p( $.radixArray(X, radix, Integer.MAX_VALUE));
+                $.pRecurse(false, $.radixArray(X, radix, Integer.MAX_VALUE));
 
-                Term f = $.funcImg(FRAME, g.id, x);
-                Task t = new SignalTask(f, BELIEF, $.t(1f, n.confDefault(BELIEF)),
-                    now, now, Math.round(now + g.durLoop()),
-                    new long[]{n.time.nextStamp()});
-                t.pri(n.priDefault(BELIEF)*g.what().pri());
-                //System.out.println(t);
-                g.what().accept(t);
-            });
-        });
+            Term f = $.funcImg(FRAME, g.id, x);
+            Task t = new SignalTask(f, BELIEF, $.t(1f, n.confDefault(BELIEF)),
+                now, now, Math.round(now + g.durLoop()),
+                new long[]{n.time.nextStamp()});
+            t.pri(n.priDefault(BELIEF)*g.what().pri());
+            //System.out.println(t);
+            g.what().accept(t);
+        }));
     }
     private static void addFuelInjection(NAR n) {
         //                //TODO use AgentBuilder
@@ -702,9 +700,7 @@ public abstract class GameX extends Game {
             MiniPID pid = new MiniPID(0.007f, 0.005, 0.0025, 0);
             pid.outLimit(0, 1);
             pid.setOutMomentum(0.1);
-            n.onDur(() -> {
-                b.valve.set(pid.out(ideal - b.load(), 0));
-            });
+            n.onDur(() -> b.valve.set(pid.out(ideal - b.load(), 0)));
         });
 
     }

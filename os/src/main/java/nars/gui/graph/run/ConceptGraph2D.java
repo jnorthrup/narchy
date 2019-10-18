@@ -209,7 +209,9 @@ public class ConceptGraph2D extends Graph2D<Term> {
                 return;
 
 
-            links.forEach(l -> add(edit, l));
+            for (TaskLink l : links) {
+                add(edit, l);
+            }
 
 
         }

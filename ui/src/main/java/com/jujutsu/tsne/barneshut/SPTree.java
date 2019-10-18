@@ -2,6 +2,7 @@ package com.jujutsu.tsne.barneshut;
 
 import com.jujutsu.tsne.matrix.MatrixOps;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import static java.lang.Math.max;
@@ -50,8 +51,15 @@ public class SPTree {
 		}
 		for(int d = 0; d < D; d++) mean_Y[d] /= N;
 
-		
-		double [] width = IntStream.range(0, D).mapToDouble(d -> max(max_Y[d] - mean_Y[d], mean_Y[d] - min_Y[d]) + 1e-5).toArray();
+
+        double[] width = new double[10];
+        int count = 0;
+        for (int d = 0; d < D; d++) {
+            double v = max(max_Y[d] - mean_Y[d], mean_Y[d] - min_Y[d]) + 1e-5;
+            if (width.length == count) width = Arrays.copyOf(width, count * 2);
+            width[count++] = v;
+        }
+        width = Arrays.copyOfRange(width, 0, count);
         init(null, D, inp_data, mean_Y, width);
 		fill(N);
 	}
@@ -219,10 +227,14 @@ public class SPTree {
 	
 	private boolean isCorrect()
 	{
-        if (IntStream.range(0, size).mapToObj(n -> MatrixOps.extractRowFromFlatMatrix(data, index[n], dimension)).anyMatch(point -> !boundary.containsPoint(point))) {
-            return false;
+        int bound = size;
+        for (int n = 0; n < bound; n++) {
+            double[] point = MatrixOps.extractRowFromFlatMatrix(data, index[n], dimension);
+            if (!boundary.containsPoint(point)) {
+                return false;
+            }
         }
-		if(!is_leaf) {
+        if(!is_leaf) {
 			boolean correct = true;
 			for(int i = 0; i < no_children; i++) correct = correct && children[i].isCorrect();
 			return correct;

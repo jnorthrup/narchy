@@ -7,6 +7,7 @@ import jdk.jshell.SourceCodeAnalysis;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -34,7 +35,11 @@ public class TextInputTest {
 
 
         List<SourceCodeAnalysis.Suggestion> sugg = js.sourceCodeAnalysis().completionSuggestions("Thre", 3, new int[1]);
-        Set<String> ss = sugg.stream().map(SourceCodeAnalysis.Suggestion::continuation).collect(toSet());
+        Set<String> ss = new HashSet<>();
+        for (SourceCodeAnalysis.Suggestion suggestion : sugg) {
+            String continuation = suggestion.continuation();
+            ss.add(continuation);
+        }
         assertTrue(ss.contains("Thread"));
         assertTrue(ss.contains("ThreadDeath"));
         

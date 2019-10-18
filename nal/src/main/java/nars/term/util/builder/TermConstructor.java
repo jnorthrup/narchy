@@ -50,7 +50,13 @@ import static nars.time.Tense.DTERNAL;
 
                 default: {
                     //TODO Param.SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME
-                    boolean different = IntStream.range(1, t.length).anyMatch(i -> !t[i].equals(t[i - 1]));
+                    boolean different = false;
+                    for (int i = 1; i < t.length; i++) {
+                        if (!t[i].equals(t[i - 1])) {
+                            different = true;
+                            break;
+                        }
+                    }
                     //if (t[i] != t[i - 1]) {
 
                     return different ?

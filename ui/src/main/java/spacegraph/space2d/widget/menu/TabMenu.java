@@ -13,7 +13,9 @@ import spacegraph.space2d.widget.menu.view.GridMenuView;
 import spacegraph.space2d.widget.meta.LazySurface;
 import spacegraph.space2d.widget.meta.MetaHover;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -40,9 +42,12 @@ public class TabMenu extends Menu {
         super(options, view);
         items.clear();
         Gridding tabs = new Gridding();
-        tabs.set(options.entrySet().stream()
-                .map(x -> toggle(buttonBuilder, x.getKey(), x.getValue()))
-                .collect(toList()));
+        List<Surface> list = new ArrayList<>();
+        for (Map.Entry<String, Supplier<Surface>> x : options.entrySet()) {
+            Surface toggle = toggle(buttonBuilder, x.getKey(), x.getValue());
+            list.add(toggle);
+        }
+        tabs.set(list);
 
         wrap = new Splitting(tabs, 0, content.view());
 

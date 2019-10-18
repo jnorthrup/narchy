@@ -185,7 +185,11 @@ public interface Path<N, E> {
 
 
     default double sum(ToDoubleFunction<FromTo<Node<N, E>, E>> v) {
-        double s = fetch(0, nodeCount()).stream().mapToDouble(v).sum();
+        double s = 0.0;
+        for (FromTo<Node<N, E>, E> nodeEFromTo : fetch(0, nodeCount())) {
+            double v1 = v.applyAsDouble(nodeEFromTo);
+            s += v1;
+        }
         return s;
     }
 

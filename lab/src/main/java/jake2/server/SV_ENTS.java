@@ -290,8 +290,15 @@ public class SV_ENTS {
         if ((pflags & Defines.PS_RDFLAGS) != 0)
             MSG.WriteByte(msg, ps.rdflags);
 
-        
-        int statbits = IntStream.range(0, Defines.MAX_STATS).filter(i -> ps.stats[i] != ops.stats[i]).map(i -> 1 << i).reduce(0, (a, b) -> a | b);
+
+        int statbits = 0;
+        int bound = Defines.MAX_STATS;
+        for (int i1 = 0; i1 < bound; i1++) {
+            if (ps.stats[i1] != ops.stats[i1]) {
+                int i2 = 1 << i1;
+                statbits = statbits | i2;
+            }
+        }
         MSG.WriteLong(msg, statbits);
         for (int i = 0; i < Defines.MAX_STATS; i++)
             if ((statbits & (1 << i)) != 0)

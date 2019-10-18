@@ -843,10 +843,15 @@ public final class CL {
         while (NET.GetPacket(Defines.NS_CLIENT, Globals.net_from,
                 Globals.net_message)) {
 
-            
-            
-            
-            if (IntStream.of(0, 1, 2, 3).allMatch(i -> Globals.net_message.data[i] == -1)) {
+
+            boolean b = true;
+            for (int i : new int[]{0, 1, 2, 3}) {
+                if (Globals.net_message.data[i] != -1) {
+                    b = false;
+                    break;
+                }
+            }
+            if (b) {
                 
                 ConnectionlessPacket();
                 continue;

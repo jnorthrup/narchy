@@ -1068,14 +1068,22 @@ public class CM {
         Math3D.VectorSubtract(p, origin, p_l);
 
         
-        if (headnode != box_headnode
-                && (IntStream.of(0, 1, 2).anyMatch(i -> angles[i] != 0))) {
-            Math3D.AngleVectors(angles, forward, right, up);
+        if (headnode != box_headnode) {
+            boolean b = false;
+            for (int i : new int[]{0, 1, 2}) {
+                if (angles[i] != 0) {
+                    b = true;
+                    break;
+                }
+            }
+            if (b) {
+                Math3D.AngleVectors(angles, forward, right, up);
 
-            Math3D.VectorCopy(p_l, temp);
-            p_l[0] = Math3D.DotProduct(temp, forward);
-            p_l[1] = -Math3D.DotProduct(temp, right);
-            p_l[2] = Math3D.DotProduct(temp, up);
+                Math3D.VectorCopy(p_l, temp);
+                p_l[0] = Math3D.DotProduct(temp, forward);
+                p_l[1] = -Math3D.DotProduct(temp, right);
+                p_l[2] = Math3D.DotProduct(temp, up);
+            }
         }
 
         int l = CM_PointLeafnum_r(p_l, headnode);

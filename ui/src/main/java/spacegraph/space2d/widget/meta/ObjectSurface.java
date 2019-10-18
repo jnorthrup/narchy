@@ -38,7 +38,7 @@ import static java.util.stream.Collectors.toList;
  */
 public class ObjectSurface extends MutableUnitContainer<Surface> {
 
-    public static final AutoBuilder.AutoBuilding<Object, Surface> DefaultObjectSurfaceBuilder = (@Nullable Object ctx, List<Pair<Object, Iterable<Surface>>> target, @Nullable Object obj) -> {
+    public static final AutoBuilder.AutoBuilding<Object, Surface> DefaultObjectSurfaceBuilder = (@Nullable var ctx, var target, @Nullable var obj) -> {
 
         List<Surface> outer = new FasterList(0, EmptySurfaceArray);
 
@@ -165,13 +165,9 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
         builtin.put(Map.Entry.class, (Map.Entry x, Object relation) ->
                 new VectorLabel(x.toString())
         );
-        builtin.put(FloatRange.class, (FloatRange x, Object relation) -> {
-            return new BindingFloatSlider(objLabel(x, relation), x.min, x.max, x, x::set);
-        });
+        builtin.put(FloatRange.class, (FloatRange x, Object relation) -> new BindingFloatSlider(objLabel(x, relation), x.min, x.max, x, x::set));
 
-        builtin.put(PLink.class, (PLink x, Object relation) -> {
-            return new BindingFloatSlider(objLabel(x, relation), 0, 1, x, x::pri);
-        });
+        builtin.put(PLink.class, (PLink x, Object relation) -> new BindingFloatSlider(objLabel(x, relation), 0, 1, x, x::pri));
 
         builtin.put(IntRange.class, (IntRange x, Object relation) -> !(x instanceof MutableEnum) ? new MyIntSlider(x, relationLabel(relation)) : null);
 

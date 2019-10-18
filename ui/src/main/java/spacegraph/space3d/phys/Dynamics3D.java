@@ -198,9 +198,7 @@ public class Dynamics3D<X> extends Collisions<X> {
         nextCollidables.clear();
 
         final short[] i = {0};
-        spatials.forEach((s) -> {
-
-
+        for (Spatial<X> s : spatials) {
             s.order = i[0]++;
 
             s.update(this);
@@ -214,8 +212,8 @@ public class Dynamics3D<X> extends Collisions<X> {
 
                     nextCollidables.add(d);
 
-                    if (d.getActivationState() != Collidable.ISLAND_SLEEPING)
-                        d.saveKinematicState(dt); 
+                    if (d.getActivationState() != ISLAND_SLEEPING)
+                        d.saveKinematicState(dt);
 
                     if (gravity != null) {
                         if (!d.isStaticOrKinematicObject())
@@ -230,9 +228,12 @@ public class Dynamics3D<X> extends Collisions<X> {
             });
 
             List<TypedConstraint> cc = s.constraints();
-            if (cc!=null)
-                cc.forEach(this::addConstraint);
-        });
+            if (cc != null) {
+                for (TypedConstraint typedConstraint : cc) {
+                    addConstraint(typedConstraint);
+                }
+            }
+        }
 
 
         this.collidable = coll.commitRead();
@@ -362,14 +363,14 @@ public class Dynamics3D<X> extends Collisions<X> {
         
 		float deactivationTime = isDeactivationDisabled() ? 0 : getDeactivationTime();
 
-        collidable.forEach(colObj -> {
+        for (Collidable colObj : collidable) {
             Body3D body = ifDynamic(colObj);
             if (body != null) {
                 body.updateDeactivation(timeStep);
 
                 if (deactivationTime > 0 && body.wantsSleeping(deactivationTime)) {
                     if (body.isStaticOrKinematicObject()) {
-                        body.setActivationState(Collidable.ISLAND_SLEEPING);
+                        body.setActivationState(ISLAND_SLEEPING);
                     } else {
                         switch (body.getActivationState()) {
                             case Collidable.ACTIVE_TAG:
@@ -388,7 +389,7 @@ public class Dynamics3D<X> extends Collisions<X> {
                     }
                 }
             }
-        });
+        }
     }
 
 
@@ -498,7 +499,7 @@ public class Dynamics3D<X> extends Collisions<X> {
 
         islands.updateActivationState(this);
 
-        forEachConstraint((TypedConstraint constraint) -> {
+        forEachConstraint(constraint -> {
             Body3D colObj0 = constraint.getRigidBodyA();
             if (colObj0 == null || !colObj0.isActive() || colObj0.isStaticOrKinematicObject())
                 return;
@@ -516,7 +517,9 @@ public class Dynamics3D<X> extends Collisions<X> {
     }
 
     private void forEachConstraint(Consumer<TypedConstraint> e) {
-        constraints.forEach(e);
+        for (TypedConstraint constraint : constraints) {
+            e.accept(constraint);
+        }
     }
 
     private void integrateTransforms(float timeStep) {
@@ -958,7 +961,12 @@ public class Dynamics3D<X> extends Collisions<X> {
                         
                         OArrayList<PersistentManifold> manifoldArray = new OArrayList<>();
                         collisionPair.algorithm.getAllContactManifolds(manifoldArray);
-                        return manifoldArray.stream().noneMatch(aManifoldArray -> aManifoldArray.numContacts() > 0);
+                        for (PersistentManifold aManifoldArray : manifoldArray) {
+                            if (aManifoldArray.numContacts() > 0) {
+                                return false;
+                            }
+                        }
+                        return true;
                     }
                 }
             }

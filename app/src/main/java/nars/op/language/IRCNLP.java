@@ -131,11 +131,7 @@ public class IRCNLP extends IRC {
 
     void hear(String text, String src) {
 
-        NARHear.hearIfNotNarsese(nar, text, src, (t) -> {
-            return new NARHear(nar, NARHear.tokenize(t.toLowerCase()), src, 200);
-
-
-        });
+        NARHear.hearIfNotNarsese(nar, text, src, (t) -> new NARHear(nar, NARHear.tokenize(t.toLowerCase()), src, 200));
     }
 
     @Override

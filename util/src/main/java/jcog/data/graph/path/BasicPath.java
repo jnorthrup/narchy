@@ -30,6 +30,7 @@ import jcog.data.list.FasterList;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -74,7 +75,11 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
         if (ncnt == 0 || ncnt == 1) return Collections.EMPTY_LIST; //empty
 
 
-        List<E> l = fetch(beginIndex, endIndex).stream().map(FromTo::id).collect(Collectors.toList());
+        List<E> l = new ArrayList<>();
+        for (FromTo<Node<N, E>, E> nodeEFromTo : fetch(beginIndex, endIndex)) {
+            E id = nodeEFromTo.id();
+            l.add(id);
+        }
 
         return l;
     }
@@ -154,7 +159,13 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
     public int count(N n) {
         if (n == null) return 0;
         int s = nodeCount();
-        int cnt = (int) IntStream.range(0, s).filter(ni -> n.equals(node(ni))).count();
+        long count = 0L;
+        for (int ni = 0; ni < s; ni++) {
+            if (n.equals(node(ni))) {
+                count++;
+            }
+        }
+        int cnt = (int) count;
 
         return cnt;
     }

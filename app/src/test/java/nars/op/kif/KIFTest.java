@@ -11,6 +11,7 @@ import nars.link.TaskLinks;
 import nars.memory.RadixTreeMemory;
 import nars.task.EternalTask;
 import nars.task.util.PriBuffer;
+import nars.term.Term;
 import nars.term.util.TermTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -73,7 +74,7 @@ class KIFTest {
                     return Collections.EMPTY_LIST;
                 }
             }
-        ).forEach((Iterable ww) ->
+        ).forEach(ww ->
             ww.forEach((x) -> w.accept((Task)x)));
 
         //System.out.println(Joiner.on("\n").join(n.stats().entrySet()));
@@ -347,7 +348,9 @@ class KIFTest {
     public void testCapabilityExtension() throws IOException {
 
         KIF k = KIF.file("/home/me/sumo/Merge.kif");
-        k.assertions.forEach(System.out::println);
+        for (Term assertion : k.assertions) {
+            System.out.println(assertion);
+        }
 
     }
 

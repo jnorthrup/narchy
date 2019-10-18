@@ -97,7 +97,9 @@ public class DFA {
 
     private static void dfsClosure(NFAState state, Set<NFAState> closure) {
         closure.add(state);
-        state.directTable.forEach(next -> dfsClosure(next, closure));
+        for (NFAState next : state.directTable) {
+            dfsClosure(next, closure);
+        }
     }
 
     private static Set<NFAState> traceReachable(Set<NFAState> closure, char ch, Map<NFAState, Set<NFAState>> closureMap) {

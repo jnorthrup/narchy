@@ -101,7 +101,12 @@ public class RBM {
     }
 
     public double propup(double[] v, double[] w, double b) {
-        double pre_sigmoid_activation = IntStream.range(0, n_visible).mapToDouble(j -> w[j] * v[j]).sum();
+        double pre_sigmoid_activation = 0.0;
+        int bound = n_visible;
+        for (int j = 0; j < bound; j++) {
+            double v1 = w[j] * v[j];
+            pre_sigmoid_activation += v1;
+        }
         pre_sigmoid_activation += b;
         return activate(pre_sigmoid_activation);
     }
@@ -111,7 +116,12 @@ public class RBM {
     }
 
     public double propdown(double[] h, int i, double b) {
-        double pre_sigmoid_activation = IntStream.range(0, n_hidden).mapToDouble(j -> W[j][i] * h[j]).sum();
+        double pre_sigmoid_activation = 0.0;
+        int bound = n_hidden;
+        for (int j = 0; j < bound; j++) {
+            double v = W[j][i] * h[j];
+            pre_sigmoid_activation += v;
+        }
         pre_sigmoid_activation += b;
         return activate(pre_sigmoid_activation);
     }

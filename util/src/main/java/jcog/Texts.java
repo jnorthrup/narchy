@@ -1,9 +1,7 @@
 package jcog;
 
 import com.google.common.escape.Escapers;
-import org.HdrHistogram.AbstractHistogram;
-import org.HdrHistogram.AtomicHistogram;
-import org.HdrHistogram.DoubleHistogram;
+import org.HdrHistogram.*;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -575,7 +573,14 @@ public enum Texts {
 	}
 
 	public static int countRows(String s, char x) {
-		int c = (int) IntStream.range(0, s.length()).filter(i -> s.charAt(i) == x).count();
+		long count = 0L;
+		int bound = s.length();
+		for (int i = 0; i < bound; i++) {
+			if (s.charAt(i) == x) {
+				count++;
+			}
+		}
+		int c = (int) count;
 
         return c;
 	}
@@ -631,7 +636,12 @@ public enum Texts {
 	 */
 	public static String n2(byte... v) {
         int s = v.length;
-        String sb = IntStream.range(0, s).mapToObj(i -> Integer.toHexString(Byte.toUnsignedInt(v[i])) + ' ').collect(Collectors.joining());
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < s; i++) {
+			String s1 = Integer.toHexString(Byte.toUnsignedInt(v[i])) + ' ';
+			result.append(s1);
+		}
+		String sb = result.toString();
 		return sb;
 	}
 
@@ -720,28 +730,28 @@ public enum Texts {
 
 	public static void histogramDecode(AbstractHistogram h, String header, int linearStep, BiConsumer<String, Object> x) {
 		int digits = (int) (1 + Math.log10(h.getMaxValue()));
-		h.linearBucketValues(linearStep).forEach((p) -> {
+		for (HistogramIterationValue p : h.linearBucketValues(linearStep)) {
 			x.accept(header + " [" +
-					iPad(p.getValueIteratedFrom(), digits) + ".." + iPad(p.getValueIteratedTo(), digits) + ']',
-				p.getCountAddedInThisIterationStep());
-		});
+							iPad(p.getValueIteratedFrom(), digits) + ".." + iPad(p.getValueIteratedTo(), digits) + ']',
+					p.getCountAddedInThisIterationStep());
+		}
 	}
 
 	public static void histogramDecode(DoubleHistogram h, String header, double linearStep, BiConsumer<String, Object> x) {
 		final char[] order = {'a'};
-		h.linearBucketValues(linearStep).forEach((p) -> {
+		for (DoubleHistogramIterationValue p : h.linearBucketValues(linearStep)) {
 			x.accept(header + ' ' + (order[0]++) +
-					'[' + n4(p.getValueIteratedFrom()) + ".." + n4(p.getValueIteratedTo()) + ']',
-				p.getCountAddedInThisIterationStep());
-		});
+							'[' + n4(p.getValueIteratedFrom()) + ".." + n4(p.getValueIteratedTo()) + ']',
+					p.getCountAddedInThisIterationStep());
+		}
 	}
 
 	public static void histogramDecode(AbstractHistogram h, String header, BiConsumer<String, Object> x) {
-		h.percentiles(1).forEach(p -> {
+		for (HistogramIterationValue p : h.percentiles(1)) {
 			x.accept(header + " [" +
-					p.getValueIteratedFrom() + ".." + p.getValueIteratedTo() + ']',
-				p.getCountAddedInThisIterationStep());
-		});
+							p.getValueIteratedFrom() + ".." + p.getValueIteratedTo() + ']',
+					p.getCountAddedInThisIterationStep());
+		}
 	}
 
 	public static String histogramString(AbstractHistogram h, boolean percentiles) {

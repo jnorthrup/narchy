@@ -107,7 +107,9 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
         }
 
         System.err.println("TODO:");
-        todo.forEach(System.err::println);
+        for (String s : todo) {
+            System.err.println(s);
+        }
 
         //assert (todo.isEmpty());
 

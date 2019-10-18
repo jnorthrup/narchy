@@ -71,7 +71,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                     //x.term()
                     x.term().concept()
                             .hashCode())
-            .thenComparing((Task x) -> -x.priElseZero());
+            .thenComparing(x -> -x.priElseZero());
 
     static boolean equal(Task thiz, Object that) {
         return (thiz == that) ||

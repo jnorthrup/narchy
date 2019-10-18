@@ -89,7 +89,12 @@ public class ImageTracer {
 
 
     private static int arraycontains(String[] arr, String str) {
-        return IntStream.range(0, arr.length).filter(j -> arr[j].toLowerCase().equals(str)).findFirst().orElse(-1);
+        for (int j = 0; j < arr.length; j++) {
+            if (arr[j].toLowerCase().equals(str)) {
+                return j;
+            }
+        }
+        return -1;
     }
 
 
@@ -169,19 +174,11 @@ public class ImageTracer {
             }
             svgstr.append('>');
 
-            render(options, w, h, (path, color)->{
-
-
-
-
-
-
-                svgpathstring(svgstr,
-                        "",
-                        path,
-                        tosvgcolorstr(color),
-                        options);
-            });
+            render(options, w, h, (path, color)-> svgpathstring(svgstr,
+                    "",
+                    path,
+                    tosvgcolorstr(color),
+                    options));
 
 
 

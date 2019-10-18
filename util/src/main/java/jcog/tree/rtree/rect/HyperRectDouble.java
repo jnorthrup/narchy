@@ -26,6 +26,7 @@ import jcog.tree.rtree.point.DoubleND;
 import jcog.util.ArrayUtil;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -123,7 +124,11 @@ public class HyperRectDouble implements HyperRegion, Serializable {
     @Override
     public double cost() {
         int dim = dim();
-        double sigma = IntStream.range(0, dim).mapToDouble(i -> rangeIfFinite(i, 1 /* an infinite dimension can not be compared, so just ignore it */)).reduce(1f, (a, b) -> a * b);
+        double sigma = 1f;
+        for (int i = 0; i < dim; i++) {
+            double v = rangeIfFinite(i, 1 /* an infinite dimension can not be compared, so just ignore it */);
+            sigma = sigma * v;
+        }
         return sigma;
     }
 
@@ -161,7 +166,14 @@ public class HyperRectDouble implements HyperRegion, Serializable {
 
     public DoubleND center() {
         int dim = dim();
-        double[] c = IntStream.range(0, dim).mapToDouble(this::centerF).toArray();
+        double[] c = new double[10];
+        int count = 0;
+        for (int i = 0; i < dim; i++) {
+            double v = centerF(i);
+            if (c.length == count) c = Arrays.copyOf(c, count * 2);
+            c[count++] = v;
+        }
+        c = Arrays.copyOfRange(c, 0, count);
         return new DoubleND(c);
     }
 

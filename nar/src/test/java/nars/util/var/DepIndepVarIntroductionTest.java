@@ -102,6 +102,14 @@ class DepIndepVarIntroductionTest {
     private final NAR n = NARS.shell();
 
     private SortedSet<Term> introduce(String term, int iterations) {
-        return(SortedSet<Term>) IntStream.range(0, iterations).mapToObj(i -> n.eval($.func("varIntro", $$(term).normalize()))).filter(Objects::nonNull).collect(Collectors.toCollection((Supplier<SortedSet>) TreeSet::new));
+        Supplier<SortedSet> collectionFactory = TreeSet::new;
+        SortedSet sortedSet = collectionFactory.get();
+        for (int i = 0; i < iterations; i++) {
+            Term varIntro = n.eval($.func("varIntro", $$(term).normalize()));
+            if (varIntro != null) {
+                sortedSet.add(varIntro);
+            }
+        }
+        return(SortedSet<Term>) sortedSet;
     }
 }

@@ -600,12 +600,22 @@ public class LevelPanel extends JComponent implements MouseListener
 	 */
 	public boolean isHandleSelected(Handle handle) {
 
-        return selection.stream().anyMatch(h -> h == handle);
+		for (Handle h : selection) {
+			if (h == handle) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public boolean isSelected(LevelObject obj) {
 
-        return selection.stream().anyMatch(h -> h.getLevelObject() == obj);
+		for (Handle h : selection) {
+			if (h.getLevelObject() == obj) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**

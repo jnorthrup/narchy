@@ -14,6 +14,7 @@ import spacegraph.audio.modem.reedsolomon.CRCGen;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 /**
@@ -126,7 +127,15 @@ public class Encoder implements Constants {
         //add a sinusoid of the hail frequency, amplitude kAmplitude and duration kDuration
         double innerMultiplier = Constants.kSOSFrequency * (1 / kSamplingFrequency) * 2 * Math.PI;
         /*kAmplitude **/
-        double[] signal = IntStream.range(0, kSamplesPerDuration).mapToDouble(l -> Math.cos(innerMultiplier * l)).toArray();
+        double[] signal = new double[10];
+        int count = 0;
+        int bound = kSamplesPerDuration;
+        for (int l = 0; l < bound; l++) {
+            double cos = Math.cos(innerMultiplier * l);
+            if (signal.length == count) signal = Arrays.copyOf(signal, count * 2);
+            signal[count++] = cos;
+        }
+        signal = Arrays.copyOfRange(signal, 0, count);
         return getByteArrayFromDoubleArray(smoothWindow(signal, 0.3));
     }
 
@@ -137,7 +146,15 @@ public class Encoder implements Constants {
         //add a sinusoid of the hail frequency, amplitude kAmplitude and duration kDuration
         double innerMultiplier = Constants.kHailFrequency * (1 / kSamplingFrequency) * 2 * Math.PI;
         /*kAmplitude **/
-        double[] signal = IntStream.range(0, kSamplesPerDuration).mapToDouble(l -> Math.cos(innerMultiplier * l)).toArray();
+        double[] signal = new double[10];
+        int count = 0;
+        int bound = kSamplesPerDuration;
+        for (int l = 0; l < bound; l++) {
+            double cos = Math.cos(innerMultiplier * l);
+            if (signal.length == count) signal = Arrays.copyOf(signal, count * 2);
+            signal[count++] = cos;
+        }
+        signal = Arrays.copyOfRange(signal, 0, count);
         return getByteArrayFromDoubleArray(smoothWindow(signal, 0.3));
     }
 

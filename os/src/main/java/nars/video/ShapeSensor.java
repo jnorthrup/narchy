@@ -307,9 +307,7 @@ public class ShapeSensor extends NARPart {
 
             if (grid != null) {
                 final int[] i = {0};
-                grid.image.forEach(pSet -> {
-
-
+                for (Term pSet : grid.image) {
                     float scale = Math.max(w(), h()) / Math.max(grid.gx, grid.gy);
 
                     float dx = x();
@@ -329,7 +327,7 @@ public class ShapeSensor extends NARPart {
                     i[0]++;
 
 
-                });
+                }
             }
         }
     }

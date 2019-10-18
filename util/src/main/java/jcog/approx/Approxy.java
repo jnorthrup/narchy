@@ -104,12 +104,9 @@ import java.util.function.Function;
                     new MLPMap.Layer(1, null)
             ).randomize(new XoRoShiRo128PlusRandom());
 
-            experience.forEach(xy -> {
-                //TODO m.put(xEncoded,yEncoded..)
-            });
-            approx = (x)->{
-                return experience.get(null /*encode(x)*/);
-            };
+            for (ActualExecution xy : experience) {//TODO m.put(xEncoded,yEncoded..)
+            }
+            approx = (x)-> experience.get(null /*encode(x)*/);
         }
 
         protected void learn(Object x, Object y) {

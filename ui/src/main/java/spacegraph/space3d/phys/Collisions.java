@@ -206,9 +206,9 @@ public abstract class Collisions<X> extends BulletGlobals {
     private void updateAabbs() {
 
 
-        collidables().forEach(this::updateAabbsIfActive);
-
-
+        for (Collidable collidable : collidables()) {
+            updateAabbsIfActive(collidable);
+        }
 
 
     }

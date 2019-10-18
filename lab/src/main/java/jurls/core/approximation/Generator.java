@@ -19,19 +19,25 @@ public class Generator {
     public static DiffableFunctionGenerator generateWavelets(
             int numFeatures
     ) {
-        return (int numInputs) -> {
+        return numInputs -> {
             GeneratorContext gc = new GeneratorContext(numInputs);
             List<DiffableFunctionSource> xs = new ArrayList<>();
 
             for (int i = 0; i < numFeatures; ++i) {
 
-                DiffableFunctionSource s = new Sum(Arrays.stream(gc.getInputScalars()).map(input -> new Product(
-                        gc.newParameter(1),
-                        new Sum(
-                                gc.newParameter(-1, 0),
-                                input
-                        )
-                )).map(f -> new Product(f, f)).toArray(DiffableFunctionSource[]::new));
+                List<Product> list = new ArrayList<>();
+                for (Scalar input : gc.getInputScalars()) {
+                    Product f = new Product(
+                            gc.newParameter(1),
+                            new Sum(
+                                    gc.newParameter(-1, 0),
+                                    input
+                            )
+                    );
+                    Product product = new Product(f, f);
+                    list.add(product);
+                }
+                DiffableFunctionSource s = new Sum(list.toArray(new DiffableFunctionSource[0]));
 
                 DiffableFunctionSource g = new Cosine(new Product(gc.newParameter(50), s));
 
@@ -59,18 +65,22 @@ public class Generator {
             ActivationFunctionFactory outputLayer,
             int numFeatures
     ) {
-        return (int numInputs) -> {
+        return numInputs -> {
             GeneratorContext gc = new GeneratorContext(numInputs);
             List<DiffableFunctionSource> xs = new ArrayList<>();
 
             for (int i = 0; i < numFeatures; ++i) {
-                List<DiffableFunctionSource> ys = Arrays.stream(gc.getInputScalars()).map(input -> new Product(
-                        gc.newParameter(0, 10),
-                        new Sum(
-                                gc.newParameter(-1, 0),
-                                input
-                        )
-                )).collect(Collectors.toList());
+                List<DiffableFunctionSource> ys = new ArrayList<>();
+                for (Scalar input : gc.getInputScalars()) {
+                    Product product = new Product(
+                            gc.newParameter(0, 10),
+                            new Sum(
+                                    gc.newParameter(-1, 0),
+                                    input
+                            )
+                    );
+                    ys.add(product);
+                }
 
                 ys.add(gc.newParameter(0));
                 xs.add(
@@ -98,18 +108,22 @@ public class Generator {
     public static DiffableFunctionGenerator generateFourierBasis(
             int numFeatures
     ) {
-        return (int numInputs) -> {
+        return numInputs -> {
             GeneratorContext gc = new GeneratorContext(numInputs);
             List<DiffableFunctionSource> xs = new ArrayList<>();
 
             for (int i = 1; i <= numFeatures; ++i) {
-                List<DiffableFunctionSource> ys = Arrays.stream(gc.getInputScalars()).map(input -> new Product(
-                        gc.newParameter(0, 1),
-                        new Sum(
-                                gc.newParameter(-1, 0),
-                                input
-                        )
-                )).collect(Collectors.toList());
+                List<DiffableFunctionSource> ys = new ArrayList<>();
+                for (Scalar input : gc.getInputScalars()) {
+                    Product product = new Product(
+                            gc.newParameter(0, 1),
+                            new Sum(
+                                    gc.newParameter(-1, 0),
+                                    input
+                            )
+                    );
+                    ys.add(product);
+                }
 
                 ys.add(gc.newParameter(-1,1));
 
@@ -144,19 +158,17 @@ public class Generator {
     public static ParameterizedFunctionGenerator generateGradientFourierBasis(
             ApproxParameters approxParameters,
             int numFeatures) {
-        return (int numInputVectorElements) -> {
-            return new OutputNormalizer(
-                    new InputNormalizer(
-                            new GradientFitter(
-                                    approxParameters,
-                                    new DiffableFunctionMarshaller(
-                                            Generator.generateFourierBasis(numFeatures),
-                                            numInputVectorElements
-                                    )
-                            )
-                    )
-            );
-        };
+        return numInputVectorElements -> new OutputNormalizer(
+                new InputNormalizer(
+                        new GradientFitter(
+                                approxParameters,
+                                new DiffableFunctionMarshaller(
+                                        Generator.generateFourierBasis(numFeatures),
+                                        numInputVectorElements
+                                )
+                        )
+                )
+        );
     }
 
     public static ParameterizedFunctionGenerator generateGradientFFNN(
@@ -164,39 +176,35 @@ public class Generator {
             ActivationFunctionFactory outputLayer,
             ApproxParameters approxParameters,
             int numFeatures) {
-        return (int numInputVectorElements) -> {
-            return new OutputNormalizer(
-                    new InputNormalizer(
-                            new GradientFitter(
-                                    approxParameters,
-                                    new DiffableFunctionMarshaller(
-                                            Generator.generateFFNN(
-                                                    hiddenLayer,
-                                                    outputLayer,
-                                                    numFeatures
-                                            ),
-                                            numInputVectorElements
-                                    )
-                            )
-                    )
-            );
-        };
+        return numInputVectorElements -> new OutputNormalizer(
+                new InputNormalizer(
+                        new GradientFitter(
+                                approxParameters,
+                                new DiffableFunctionMarshaller(
+                                        Generator.generateFFNN(
+                                                hiddenLayer,
+                                                outputLayer,
+                                                numFeatures
+                                        ),
+                                        numInputVectorElements
+                                )
+                        )
+                )
+        );
     }
 
     public static ParameterizedFunctionGenerator generateCNFFunction(
             int numInputBits,
             int numOutputBits
     ) {
-        return (int numInputVectorElements) -> {
-            return new OutputNormalizer(
-                    new InputNormalizer(
-                            new CNFBooleanFunction(
-                                    numInputBits,
-                                    numOutputBits,
-                                    numInputVectorElements
-                            )
-                    )
-            );
-        };
+        return numInputVectorElements -> new OutputNormalizer(
+                new InputNormalizer(
+                        new CNFBooleanFunction(
+                                numInputBits,
+                                numOutputBits,
+                                numInputVectorElements
+                        )
+                )
+        );
     }
 }

@@ -140,7 +140,11 @@ public enum MetaGoal {
             //if (Math.abs(c) > Float.MIN_NORMAL) {
             //valued = true;
             //}
-            double v = IntStream.range(0, want.length).mapToDouble(w -> want[w] * credit[w]).sum();
+            double v = 0.0;
+            for (int w = 0; w < want.length; w++) {
+                double v1 = want[w] * credit[w];
+                v += v1;
+            }
 
             ci.value(
                 //valued ? (float)v : Float.NaN
@@ -219,9 +223,7 @@ public enum MetaGoal {
 
         public Report add(Iterable<Cause> cc) {
 
-            cc.forEach(c -> {
-
-//                int i = 0;
+            for (Cause c : cc) {//                int i = 0;
 //                MetaGoal[] values = MetaGoal.values();
                 //TODO
 //                for (Credit t : c.credit) {
@@ -237,7 +239,7 @@ public enum MetaGoal {
 //                    i++;
 //                }
 
-            });
+            }
             return this;
         }
 

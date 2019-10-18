@@ -78,7 +78,13 @@ public class PredVarInst {
         for (String var : varTypes.keySet()) {
             for (String rel : kb.kbCache.relations) {
                 if (kb.kbCache.valences.get(rel).equals(predVarArity.get(var))) {
-                    boolean ok = varTypes.get(var).stream().allMatch(varType -> kb.isInstanceOf(rel, varType));
+                    boolean ok = true;
+                    for (String varType : varTypes.get(var)) {
+                        if (!kb.isInstanceOf(rel, varType)) {
+                            ok = false;
+                            break;
+                        }
+                    }
 
                     if (ok == true) {
                         Formula f = input.deepCopy();
@@ -428,7 +434,12 @@ public class PredVarInst {
         HashSet<String> predVars = gatherPredVars(kb,f);
         FormulaPreprocessor fp = new FormulaPreprocessor();
         HashMap<String,HashSet<String>> typeMap = FormulaPreprocessor.computeVariableTypes(f, kb);
-        HashMap<String,HashSet<String>> result = predVars.stream().filter(typeMap::containsKey).collect(Collectors.toMap(var -> var, typeMap::get, (a, b) -> b, HashMap::new));
+        HashMap<String, HashSet<String>> result = new HashMap<>();
+        for (String var : predVars) {
+            if (typeMap.containsKey(var)) {
+                result.put(var, typeMap.get(var));
+            }
+        }
         return result;
     }
     

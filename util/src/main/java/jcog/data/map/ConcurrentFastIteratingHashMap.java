@@ -122,7 +122,11 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
     @Override
     public final void forEach(BiConsumer<? super X, ? super Y> action) {
-        this.map.forEach(action);
+        for (Entry<X, Y> entry : this.map.entrySet()) {
+            X key = entry.getKey();
+            Y value = entry.getValue();
+            action.accept(key, value);
+        }
     }
 
 
@@ -176,7 +180,12 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
     public boolean whileEachValue(Predicate<? super Y> action) {
         Y[] x = valueArray();
-        return Arrays.stream(x).allMatch(action);
+        for (Y y : x) {
+            if (!action.test(y)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean whileEachValueReverse(Predicate<? super Y> action) {

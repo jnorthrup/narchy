@@ -396,9 +396,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
      * returns true if modified
      */
     private void each(TriConsumer<V, V, E> edge) {
-        eachNode((an, bn, e) -> {
-            edge.accept(an.v, bn.v, e);
-        });
+        eachNode((an, bn, e) -> edge.accept(an.v, bn.v, e));
     }
 
 
@@ -409,12 +407,12 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     private AdjGraph<V, E> compact(TriFunction<V, V, E, E> retain) {
         AdjGraph g = new AdjGraph(directed);
         each((a, b, e) -> {
-            
-            e = retain.apply(a, b, e);
-            if (e != null) {
+
+            E e1 = retain.apply(a, b, e);
+            if (e1 != null) {
                 int aa = g.addNode(a);
                 int bb = g.addNode(b);
-                g.setEdge(aa, bb, e);
+                g.setEdge(aa, bb, e1);
             }
         });
         return g;
@@ -432,11 +430,9 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
             out.println("node [ id " + k.id + " label \"" +
                     k.v.toString().replace('\"','\'') + "\" ]");
 
-        eachNode((a, b, e) -> {
-            out.println(
-                    "edge [ source " + a.id + " target " + b.id + " label \"" +
-                            e.toString().replace('\"','\'') + "\" ]");
-        });
+        eachNode((a, b, e) -> out.println(
+                "edge [ source " + a.id + " target " + b.id + " label \"" +
+                        e.toString().replace('\"','\'') + "\" ]"));
 
         out.println("]");
     }

@@ -41,19 +41,26 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
 
     public boolean replace(BiFunction<? super X, ? super Y, ? extends Y> function) {
         List<Object[]> replacements = new FasterList();
-        map.forEach((v,val)->{
-           if (val!=null) {
-               Y x = val.get();
-               if (x!=null) {
-                   Y y = function.apply(v, x);
-                   if (!x.equals(y)) {
-                       replacements.add(new Object[] { v, y });
-                   }
-               }
-           }
-        });
+        for (Entry<X, Versioned<Y>> entry : map.entrySet()) {
+            X v = entry.getKey();
+            Versioned<Y> val = entry.getValue();
+            if (val != null) {
+                Y x = val.get();
+                if (x != null) {
+                    Y y = function.apply(v, x);
+                    if (!x.equals(y)) {
+                        replacements.add(new Object[]{v, y});
+                    }
+                }
+            }
+        }
         if (!replacements.isEmpty()) {
-            return replacements.stream().allMatch(r -> set((X) r[0], (Y) r[1]));
+            for (Object[] r : replacements) {
+                if (!set((X) r[0], (Y) r[1])) {
+                    return false;
+                }
+            }
+            return true;
         }
         return true;
     }
@@ -147,12 +154,14 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
         else {
 
             ArrayUnenforcedSet<Entry<X, Y>> e = new ArrayUnenforcedSet<>(0, new Entry[s]);
-            map.forEach((k, v) -> {
+            for (Entry<X, Versioned<Y>> entry : map.entrySet()) {
+                X k = entry.getKey();
+                Versioned<Y> v = entry.getValue();
                 Y vv = v.get();
                 if (vv != null) {
                     e.add(new AbstractMap.SimpleImmutableEntry<>(k, vv));
                 }
-            });
+            }
 
             return e;
         }
@@ -166,10 +175,12 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
         //else if (s == 1) ...
         else {
             ArrayUnenforcedSet<X> e = new ArrayUnenforcedSet(0, new Object[s]);
-            map.forEach((k, v) -> {
-                if (v!=null)
+            for (Entry<X, Versioned<Y>> entry : map.entrySet()) {
+                X k = entry.getKey();
+                Versioned<Y> v = entry.getValue();
+                if (v != null)
                     e.add(k);
-            });
+            }
             return e;
         }
     }
@@ -203,11 +214,13 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
 
 
     public void forEach(BiConsumer<? super X, ? super Y> each) {
-        map.forEach((x,yy)->{
+        for (Entry<X, Versioned<Y>> entry : map.entrySet()) {
+            X x = entry.getKey();
+            Versioned<Y> yy = entry.getValue();
             Y y = yy.get();
-            if (y!=null)
+            if (y != null)
                 each.accept(x, y);
-        });
+        }
     }
 
 

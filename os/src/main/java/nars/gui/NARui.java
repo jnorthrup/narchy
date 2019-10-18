@@ -71,10 +71,7 @@ import spacegraph.video.Draw;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.*;
 import java.util.stream.Collectors;
@@ -266,22 +263,20 @@ public class NARui {
                 path,
                 new Gridding(
                         mode,
-                        new PushButton("save").clicked(() -> {
-                            Exe.runLater(() -> {
-                                try {
-                                    nar.output(new File(path.text()), false);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+                        new PushButton("save").clicked(() -> Exe.runLater(() -> {
+                            try {
+                                nar.output(new File(path.text()), false);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
 
-                            });
-                        })
+                        }))
                 ));
     }
 
     public static Surface taskView(NAR n) {
         List<Predicate<Task>> filter = new CopyOnWriteArrayList<>();
-        Consumer<Task> printer = (Task t) -> {
+        Consumer<Task> printer = t -> {
             if (Util.and(t, (Iterable) filter))
                 System.out.println(t);
         };
@@ -476,7 +471,11 @@ public class NARui {
             }
             color.set(0.5f, 0.5f, 0.5f);
         };
-        var d = c.stream().map(x -> new ConceptColorIcon(x.term(), nar, colorize)).collect(toList());
+        var d = new ArrayList<>();
+        for (Termed x : c) {
+            ConceptColorIcon conceptColorIcon = new ConceptColorIcon(x.term(), nar, colorize);
+            d.add(conceptColorIcon);
+        }
         return grid(d);
     }
 
@@ -488,7 +487,9 @@ public class NARui {
                 input.text("");
                 try {
                     var t = n.input(s);
-                    t.forEach(onTask);
+                    for (Task task : t) {
+                        onTask.accept(task);
+                    }
                 } catch (Narsese.NarseseException e) {
                     onException.accept(e);
                 }
@@ -603,9 +604,9 @@ public class NARui {
 
 
         Map<String,Supplier<Surface>> attentions = new HashMap();
-        n.what.forEach((v)->{
-           attentions.put(v.id.toString(), ()->attentionUI(v));
-        });
+        for (What v : n.what) {
+            attentions.put(v.id.toString(), () -> attentionUI(v));
+        }
         var atMenu = new TabMenu(attentions);
         return new Splitting(new TabMenu(global), 0.25f, atMenu).horizontal(true).resizeable();
     }
@@ -654,7 +655,9 @@ public class NARui {
                 snapshot.clearFast();
                 var c = active.capacity();
                 snapshot.ensureCapacity(c);
-                active.forEach(snapshot::addFast);
+                for (TaskLink taskLink : active) {
+                    snapshot.addFast(taskLink);
+                }
                 s.next(color);
             }
 

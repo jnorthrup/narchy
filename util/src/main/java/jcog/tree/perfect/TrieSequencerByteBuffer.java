@@ -31,7 +31,12 @@ public class TrieSequencerByteBuffer implements TrieSequencer<ByteBuffer>
    @Override
    public int matches( ByteBuffer sequenceA, int indexA, ByteBuffer sequenceB, int indexB, int count )
    {
-       return IntStream.range(0, count).filter(i -> sequenceA.get(indexA + i) != sequenceB.get(indexB + i)).findFirst().orElse(count);
+       for (int i = 0; i < count; i++) {
+           if (sequenceA.get(indexA + i) != sequenceB.get(indexB + i)) {
+               return i;
+           }
+       }
+       return count;
 
    }
 

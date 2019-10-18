@@ -95,7 +95,9 @@ public class CaffeineMemory extends Memory implements /*CacheLoader<Term, Concep
 
 	@Override
 	public void forEach(Consumer<? super Concept> c) {
-		concepts.asMap().values().forEach(c);
+		for (Concept concept : concepts.asMap().values()) {
+			c.accept(concept);
+		}
 	}
 
 	@Override

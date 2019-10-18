@@ -50,10 +50,10 @@ public class DefaultTreeEvaluator implements TreeEvaluator {
             Pattern regex = Pattern.compile(sb.toString());
             Matcher matcher = regex.matcher("");
 
-            context.getCurrentDataSet().
-                getExamples().
-                    forEach(e ->
-                        eval(results, matcher, e));
+            for (Example e : context.getCurrentDataSet().
+                    getExamples()) {
+                eval(results, matcher, e);
+            }
 
         } catch (PatternSyntaxException ex) {
             throw new TreeEvaluationException(ex);

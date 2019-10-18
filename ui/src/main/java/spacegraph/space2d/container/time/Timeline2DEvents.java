@@ -56,9 +56,7 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
             Timeline2D.EventBuffer model = gg.model;
             float yl = g.bottom(), yh = g.top();
 
-            g.forEachValue(t -> {
-                layout(t, gg, model, minVisibleWidth, yl, yh);
-            });
+            g.forEachValue(t -> layout(t, gg, model, minVisibleWidth, yl, yh));
         }
 
         protected void layout(NodeVis<E> jj, Timeline2DEvents gg, Timeline2D.EventBuffer model, float minVisibleWidth, float yl, float yh) {

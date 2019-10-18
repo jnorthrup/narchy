@@ -644,7 +644,14 @@ public class Reflect {
 
         if (declared.length == actual.length) {
 
-            return IntStream.range(0, actual.length).filter(i -> actual[i] != NULL.class).allMatch(i -> wrapper(declared[i]).isAssignableFrom(wrapper(actual[i])));
+            for (int i = 0; i < actual.length; i++) {
+                if (actual[i] != NULL.class) {
+                    if (!wrapper(declared[i]).isAssignableFrom(wrapper(actual[i]))) {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
         else {
             return false;

@@ -61,7 +61,12 @@ class GeometryUtil {
 
 	private static boolean notExist(Vector4f planeEquation, OArrayList<Vector4f> planeEquations) {
 		int numbrushes = planeEquations.size();
-        return planeEquations.stream().noneMatch(N1 -> VectorUtil.dot3(planeEquation, N1) > 0.999f);
+        for (Vector4f N1 : planeEquations) {
+            if (VectorUtil.dot3(planeEquation, N1) > 0.999f) {
+                return false;
+            }
+        }
+        return true;
 	}
 
 	public static void getPlaneEquationsFromVertices(OArrayList<v3> vertices, OArrayList<Vector4f> planeEquationsOut) {

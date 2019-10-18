@@ -6,6 +6,7 @@ import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 
 import java.io.*;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.StreamSupport;
@@ -28,7 +29,12 @@ public class CSVOutput extends PrintStream {
     }
 
     public void out(double... row) {
-        println(DoubleStream.of(row).mapToObj(String::valueOf).collect(Collectors.joining(",")));
+        StringJoiner joiner = new StringJoiner(",");
+        for (double v : row) {
+            String s = String.valueOf(v);
+            joiner.add(s);
+        }
+        println(joiner.toString());
     }
 
     public void out(float... row) {

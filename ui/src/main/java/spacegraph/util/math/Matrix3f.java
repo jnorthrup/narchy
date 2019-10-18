@@ -34,6 +34,7 @@ package spacegraph.util.math;
 import jcog.math.VecMathUtil;
 import jcog.math.v3;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 /**
@@ -1137,8 +1138,15 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             throw new SingularMatrixException(VecMathI18N.getString("Matrix3f12"));
         }
 
-        
-        double[] result = IntStream.range(0, 9).mapToDouble(i -> 0.0).toArray();
+
+        double[] result = new double[10];
+        int count = 0;
+        for (int i = 0; i < 9; i++) {
+            double v = 0.0;
+            if (result.length == count) result = Arrays.copyOf(result, count * 2);
+            result[count++] = v;
+        }
+        result = Arrays.copyOfRange(result, 0, count);
         result[0] = 1.0;
         result[4] = 1.0;
         result[8] = 1.0;

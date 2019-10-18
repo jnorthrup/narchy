@@ -253,10 +253,10 @@ class BooleanTest {
                 float bConf = n.confDefault(BELIEF);
                 //get all structural transformed inputs (ex: images)
                 n.tasks().filter(z -> (beliefOrGoal ? z.isBelief() : z.isGoal()) && z.conf() >= bConf).forEach(inputs::add);
-                inputs.forEach(z -> {
+                for (Task z : inputs) {
                     n.concept(z).remove(z);
                     z.delete();
-                });
+                }
             }
 
             if (i >= cRemoveInputs) {

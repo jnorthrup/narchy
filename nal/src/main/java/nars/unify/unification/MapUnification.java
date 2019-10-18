@@ -33,11 +33,13 @@ public class MapUnification extends DeterministicUnification {
 
     @Override
     public boolean apply(Unify u) {
-        xy.forEach((tx, ty) -> {
+        for (Map.Entry<Variable, Term> entry : xy.entrySet()) {
+            Variable tx = entry.getKey();
+            Term ty = entry.getValue();
             /*HACK*/
             boolean applied = u.putXY(tx, ty);
             assert (applied);
-        });
+        }
         return true;
     }
 

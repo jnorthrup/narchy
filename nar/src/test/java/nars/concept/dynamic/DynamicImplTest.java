@@ -117,7 +117,13 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
         n.input("x. %0.95%");
         n.input("y.");
 
-        var  results = IntStream.range(0, 100).mapToObj(i -> n.belief($$("(x==>y)"))).map(Task::toStringWithoutBudget).collect(Collectors.toCollection((Supplier<HashBag>) HashBag::new));
+        Supplier<HashBag> collectionFactory = HashBag::new;
+        var results = collectionFactory.get();
+        for (int i = 0; i < 100; i++) {
+            Task belief = n.belief($$("(x==>y)"));
+            String toStringWithoutBudget = belief.toStringWithoutBudget();
+            results.add(toStringWithoutBudget);
+        }
         System.out.println(((HashBag)results).toStringOfItemToCount());
     }
 }

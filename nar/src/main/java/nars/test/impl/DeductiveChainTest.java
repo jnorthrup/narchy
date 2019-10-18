@@ -21,11 +21,11 @@ public class DeductiveChainTest  {
         Term apply(int x, int y);
     }
 
-    public static final @Nullable IndexedStatementBuilder inh = (int x, int y) ->
+    public static final @Nullable IndexedStatementBuilder inh = (x, y) ->
             $.inh(a(x), a(y));
-    public static final @Nullable IndexedStatementBuilder sim = (int x, int y) ->
+    public static final @Nullable IndexedStatementBuilder sim = (x, y) ->
             $.sim(a(x), a(y));
-    public static final @Nullable IndexedStatementBuilder impl = (int x, int y) ->
+    public static final @Nullable IndexedStatementBuilder impl = (x, y) ->
             $.impl(a(x), a(y));
 
 

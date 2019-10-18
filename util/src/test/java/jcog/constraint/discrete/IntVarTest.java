@@ -31,7 +31,12 @@ abstract class IntVarTest {
 
   
   private static boolean containsAll(IntVar x, int... values) {
-      return IntStream.range(0, values.length).allMatch(i -> x.contains(values[i]));
+      for (int i = 0; i < values.length; i++) {
+          if (!x.contains(values[i])) {
+              return false;
+          }
+      }
+      return true;
   }
 
   

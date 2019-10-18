@@ -11,10 +11,7 @@ import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.video.Draw;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -31,16 +28,16 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
 
         Draw.colorHash(w.id, w.shapeColor);
 
-        w.edges().forEach(x -> {
+        for (EDraw<?> x : w.edges()) {
             x.r = 1;
             x.g = 0.5f;
             x.b = 0;
             x.a = 1;
-            x.width = x.pri()*4;
-            
+            x.width = x.pri() * 4;
+
             x.attraction = 0.1f;
             x.attractionDist = 8;
-        });
+        }
     };
 
     
@@ -124,8 +121,13 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
     }
 
     public SimpleGraph3D<X> commit(MapNodeGraph<X,Object> g) {
+        List<X> list = new ArrayList<>();
+        for (Node<X, Object> xObjectNode : g.nodes()) {
+            X id = xObjectNode.id();
+            list.add(id);
+        }
         return commit(
-                g.nodes().stream().map(Node::id).collect(Collectors.toList()),
+                list,
                 x-> StreamSupport.stream(g.node(x).edges(false, true).spliterator(), false).map(zz -> zz.to().id())
                         .collect(Collectors.toList()));
     }
@@ -137,18 +139,17 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
     private SimpleGraph3D<X> update(Iterable<X> nodes, Function<X, Iterable<X>> edges, boolean addOrReplace) {
         List<Spatial<X>> n2 = new FasterList();
 
-        nodes.forEach((x)->{
+        for (X x : nodes) {
             DefaultSpaceWidget<X> src = cache.computeIfAbsent(x, DefaultSpaceWidget::new);
 
-            edges.apply(x).forEach((X edge) ->
-            
-                    src.edges.add(new EDraw<>(
-                            src, cache.computeIfAbsent(edge, DefaultSpaceWidget::new)
-                            , 0.5f))
-            );
+            for (X edge : edges.apply(x)) {
+                src.edges.add(new EDraw<>(
+                        src, cache.computeIfAbsent(edge, DefaultSpaceWidget::new)
+                        , 0.5f));
+            }
 
             n2.add(src);
-        });
+        }
 
         if (addOrReplace)
             this.active.addAll(n2);

@@ -113,7 +113,9 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
 	@Override
 	public void forEach(Consumer<? super Concept> c) {
-		concepts.forEach(c);
+		for (Concept concept : concepts) {
+			c.accept(concept);
+		}
 	}
 
 	@Override

@@ -110,8 +110,8 @@ public class ProtoWidget extends Bordering {
         add("ShapeDetect", TODO, "Video");
 
         add("split", TODO, "Math");
-        add("concat", ()-> new BiFunctionChip<>(Tensor.class, Tensor.class, Tensor.class, (Tensor a, Tensor b) -> TensorChain.get(a, b)), "Math");
-        add("OneHotBit", ()-> new BiFunctionChip<>(Integer.class, Integer.class, Tensor.class, (Integer signal, Integer range) -> {
+        add("concat", ()-> new BiFunctionChip<>(Tensor.class, Tensor.class, Tensor.class, (a, b) -> TensorChain.get(a, b)), "Math");
+        add("OneHotBit", ()-> new BiFunctionChip<>(Integer.class, Integer.class, Tensor.class, (signal, range) -> {
             //TODO optimize with a special Tensor impl
             if (signal >= 0 && signal < range) {
                 float[] x = new float[range];
@@ -121,7 +121,7 @@ public class ProtoWidget extends Bordering {
                 return null;
             }
         }), "Math");
-        add("HaarWavelet", ()->new FunctionChip<>(Tensor.class, HaarWaveletTensor.class, (Tensor t)-> new HaarWaveletTensor(t, 64)).buffered(), "Math");
+        add("HaarWavelet", ()->new FunctionChip<>(Tensor.class, HaarWaveletTensor.class, t -> new HaarWaveletTensor(t, 64)).buffered(), "Math");
 
 //        add("SlidingDFT", ()->new AccumulatorChip<>(Tensor.class, SlidingDFTTensor.class, (Tensor t)->{
 //            return new SlidingDFTTensor( 64, true).;
@@ -174,7 +174,9 @@ public class ProtoWidget extends Bordering {
 
         Map<String,Supplier<Surface>> categories = new TreeMap<>();
         //categories.put("...", OmniBox::new);
-        library.byTag.asMap().forEach((t,v)->{
+        for (Map.Entry<String, Collection<Pair<String, Supplier<Surface>>>> entry : library.byTag.asMap().entrySet()) {
+            String t = entry.getKey();
+            Collection<Pair<String, Supplier<Surface>>> v = entry.getValue();
             Surface[] fields = v.stream()
                     .sorted(Comparator.comparing(Pair::getOne))
                     .map(x -> {
@@ -190,8 +192,8 @@ public class ProtoWidget extends Bordering {
 //                    gl.glColor3f(0,0, 0);
 //                    Draw.rect(bounds, gl);
 //                }
-            }, new Gridding( fields )) ));
-        });
+            }, new Gridding(fields))));
+        }
 
         set(new TabMenu(categories, new GridMenuView(), (l)->{
             String icon;

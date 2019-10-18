@@ -10,6 +10,7 @@ import alice.tuprolog.*;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
@@ -286,17 +287,19 @@ public class ThreadLibrary extends PrologLib {
 
 	public void unlockAll() {
 
-		locks.forEach((k, mutex) -> {
-			boolean unlocked = false;
-			while (!unlocked) {
-				try {
-					mutex.unlock();
-				} catch (IllegalMonitorStateException e) {
-					unlocked = true;
-				}
-			}
-		});
-	}
+        for (Map.Entry<String, ReentrantLock> entry : locks.entrySet()) {
+            String k = entry.getKey();
+            ReentrantLock mutex = entry.getValue();
+            boolean unlocked = false;
+            while (!unlocked) {
+                try {
+                    mutex.unlock();
+                } catch (IllegalMonitorStateException e) {
+                    unlocked = true;
+                }
+            }
+        }
+    }
 
 
 	public int queueSize(int id) {

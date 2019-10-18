@@ -54,15 +54,16 @@ import static nars.Op.BELIEF;
         final float[] last = {0};
         actionUnipolar(t, (f) -> {
 
-            boolean unknown = (f != f) || (f < thresh && (f > (1f - thresh)));
+            float f1 = f;
+            boolean unknown = (f1 != f1) || (f1 < thresh && (f1 > (1f - thresh)));
             if (unknown) {
-                f = defaultValue == defaultValue ? defaultValue : last[0];
+                f1 = defaultValue == defaultValue ? defaultValue : last[0];
             }
 
             if (last[0] > 0.5f)
-                f = Util.lerp(momentumOn, f, last[0]);
+                f1 = Util.lerp(momentumOn, f1, last[0]);
 
-            boolean positive = f > 0.5f;
+            boolean positive = f1 > 0.5f;
 
 
             if (positive) {

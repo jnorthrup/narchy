@@ -327,7 +327,7 @@ public class PatternHow extends CondHow {
 
     public static Stream<PremiseRule> parse(Stream<String> rules, TruthModel truthModel) {
         final String[] currentTag = {null};
-        Stream<PremiseRule> s = rules.flatMap((String line)->{
+        Stream<PremiseRule> s = rules.flatMap(line ->{
             if (!line.contains("|-")) {
                 if (line.endsWith("{")) {
                     //start tag

@@ -157,7 +157,9 @@ public class Utils {
         });
 
         if (!toRemove.isEmpty()) {
-            toRemove.forEach(r::removeKey);
+            for (Node node : toRemove) {
+                r.removeKey(node);
+            }
             return r;
             
         }
@@ -244,7 +246,12 @@ public class Utils {
 
                 int end = Math.min(i + n, word.length());
 
-                String builder = IntStream.range(i, end).mapToObj(c -> escape(word.charAt(c))).collect(Collectors.joining());
+                StringBuilder sb = new StringBuilder();
+                for (int c = i; c < end; c++) {
+                    String escape = escape(word.charAt(c));
+                    sb.append(escape);
+                }
+                String builder = sb.toString();
                 /* estimate */
                 subparts.add(builder);
             }

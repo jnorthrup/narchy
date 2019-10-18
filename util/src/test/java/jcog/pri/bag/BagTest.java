@@ -94,13 +94,11 @@ public class BagTest {
 
     public static void printDist(@NotNull EmpiricalDistribution f) {
         System.out.println(f.getSampleStats().toString().replace("\n", " "));
-        f.getBinStats().forEach(
-                s -> {
-                    /*if (s.getN() > 0)*/
-                    System.out.println(
-                            n4(s.getMin()) + ".." + n4(s.getMax()) + ":\t" + s.getN());
-                }
-        );
+        /*if (s.getN() > 0)*/
+        for (SummaryStatistics s : f.getBinStats()) {
+            System.out.println(
+                    n4(s.getMin()) + ".." + n4(s.getMax()) + ":\t" + s.getN());
+        }
     }
 
 

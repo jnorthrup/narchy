@@ -101,16 +101,18 @@ public class Vocalization extends NARPart {
 
             if (!tt.isEmpty()) {
                 LongArrayList ll = new LongArrayList(tt.size());
-                tt.forEach(ll::add);
+                for (Long aLong : tt) {
+                    ll.add(aLong);
+                }
 
                 ll.forEach(t -> {
                     Set<Map.Entry<Term, TruthAccumulator>> entries = vocalize.row(t).entrySet();
                     if (t >= startOfNow) {
-                        entries.forEach(e -> {
+                        for (Map.Entry<Term, TruthAccumulator> e : entries) {
                             Truth x = e.getValue().commitSum();
                             if (x.expectation() > expectationThreshold)
                                 pending.add(Tuples.pair(e.getKey(), x));
-                        });
+                        }
                     }
                     entries.clear();
                 });

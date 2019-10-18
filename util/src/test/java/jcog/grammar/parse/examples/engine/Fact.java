@@ -8,7 +8,9 @@ package jcog.grammar.parse.examples.engine;
  * including the implied warranty of merchantability.
  */
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * A Fact is a Structure that contains only other Facts.
@@ -177,7 +179,12 @@ public class Fact extends Structure implements Axiom, DynamicAxiom {
 	 * Create an array of (atomic) facts from an array of objects.
 	 */
 	static Fact[] facts(Object[] objects) {
-		Fact[] facts = Arrays.stream(objects).map(Atom::new).toArray(Fact[]::new);
+		List<Atom> list = new ArrayList<>();
+		for (Object object : objects) {
+			Atom atom = new Atom(object);
+			list.add(atom);
+		}
+		Fact[] facts = list.toArray(new Fact[0]);
         return facts;
 	}
 

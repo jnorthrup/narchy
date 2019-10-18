@@ -5,7 +5,9 @@ import jcog.learn.decision.feature.DiscretizedScalarFeature;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -62,10 +64,14 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
 
         depthToPrecision = (i) -> (0.9f / (1 + (i - 1) / ((float) maxDepth)));
 
-        this.cols = IntStream.range(0, table.cols.length)
-                .mapToObj(x -> new DiscretizedScalarFeature(x, table.cols[x],
-                        discretization, new QuantileDiscretize1D()
-        )).toArray(DiscretizedScalarFeature[]::new);
+        List<DiscretizedScalarFeature> list = new ArrayList<>();
+        for (int x1 = 0; x1 < table.cols.length; x1++) {
+            DiscretizedScalarFeature discretizedScalarFeature = new DiscretizedScalarFeature(x1, table.cols[x1],
+                    discretization, new QuantileDiscretize1D()
+            );
+            list.add(discretizedScalarFeature);
+        }
+        this.cols = list.toArray(new DiscretizedScalarFeature[0]);
 
         switch (discretization) {
             case 2:

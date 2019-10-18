@@ -10,8 +10,10 @@ import nars.term.anon.Intrin;
 import nars.term.anon.IntrinAtomic;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
@@ -179,7 +181,12 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
                 }
             } else {
                 //replace negative only
-                tt = IntStream.range(0, n).mapToObj(i -> (a[i] == fid ? to : term(a[i]))).toArray(Term[]::new);
+                List<Term> list = new ArrayList<>();
+                for (int i = 0; i < n; i++) {
+                    Term term = (a[i] == fid ? to : term(a[i]));
+                    list.add(term);
+                }
+                tt = list.toArray(new Term[0]);
 
             }
             return new TermList(tt);
@@ -376,7 +383,12 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
             int s = subterms.length;
             if (ss.subs() != s)
                 return false;
-            return IntStream.range(0, s).allMatch(i -> subEquals(i, ss.sub(i)));
+            for (int i = 0; i < s; i++) {
+                if (!subEquals(i, ss.sub(i))) {
+                    return false;
+                }
+            }
+            return true;
 
         }
         return false;

@@ -2,6 +2,8 @@ package asanf.FOM.Util;
 
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -36,7 +38,12 @@ public class DTMatrix<E> {
 	 */
 	protected double[][] allocateMatrix(int size)
 	{
-		double[][] tmp = IntStream.range(0, size).mapToObj(i -> new double[i + 1]).toArray(double[][]::new);
+		List<double[]> list = new ArrayList<>();
+		for (int i = 0; i < size; i++) {
+			double[] doubles = new double[i + 1];
+			list.add(doubles);
+		}
+		double[][] tmp = list.toArray(new double[0][]);
         return tmp;
 	}
 	

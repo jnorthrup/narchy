@@ -183,11 +183,13 @@ public class ContinuousConstraintSolver {
      */
     public void update() {
 
-        vars.forEach((key, value) -> {
+        for (Map.Entry<DoubleVar, Symbol> entry : vars.entrySet()) {
+            DoubleVar key = entry.getKey();
+            Symbol value = entry.getValue();
             var row = rows.get(value);
-            if (row!=null)
+            if (row != null)
                 key.value(row.getConstant());
-        });
+        }
     }
 
 
@@ -331,10 +333,14 @@ public class ContinuousConstraintSolver {
 
         if (rowptr != null) {
             var deleteQueue = new ArrayList<>();
-            rows.forEach((key, value) -> {
+            for (Map.Entry<Symbol, Row> entry : rows.entrySet()) {
+                Symbol key = entry.getKey();
+                Row value = entry.getValue();
                 if (value == rowptr) deleteQueue.add(key);
-            });
-            deleteQueue.forEach(symbol -> rows.remove(symbol));
+            }
+            for (Object symbol : deleteQueue) {
+                rows.remove(symbol);
+            }
 
             if (rowptr.cells.isEmpty()) {
                 res = success;
@@ -353,7 +359,9 @@ public class ContinuousConstraintSolver {
 
         }
         if (!completed) {
-            rows.values().forEach(r -> r.remove(art));
+            for (Row r : rows.values()) {
+                r.remove(art);
+            }
 
             objective.remove(art);
 
@@ -450,10 +458,15 @@ public class ContinuousConstraintSolver {
      * If no such symbol is present, and Invalid symbol will be returned.
      */
     private static Symbol anyPivotableSymbol(Row row) {
+        Optional<Symbol> found = Optional.empty();
+        for (Symbol k : row.cells.keySet()) {
+            if (k.type == Symbol.Type.SLACK || k.type == Symbol.Type.ERROR) {
+                found = Optional.of(k);
+                break;
+            }
+        }
         var symbol =
-                row.cells.keySet().stream()
-                        .filter(k -> k.type == Symbol.Type.SLACK || k.type == Symbol.Type.ERROR)
-                        .findFirst().orElseGet(() -> new Symbol(Symbol.Type.INVALID));
+                found.orElseGet(() -> new Symbol(Symbol.Type.INVALID));
 
 
 
@@ -511,7 +524,12 @@ public class ContinuousConstraintSolver {
      * Test whether a row is composed of all dummy variables.
      */
     private static boolean allDummies(Row row) {
-        return row.cells.keySet().stream().allMatch(x -> x.type == Symbol.Type.DUMMY);
+        for (Symbol x : row.cells.keySet()) {
+            if (x.type != Symbol.Type.DUMMY) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

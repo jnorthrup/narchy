@@ -39,10 +39,7 @@ public class NQuadsRDFTest {
                 NQuadsRDF.stream(n, new File(
                         
                         "/home/me/Downloads/nquad"
-                )).peek(t -> {
-                    pout.println(t.term().toString() + t.punc());
-                    
-                })
+                )).peek(t -> pout.println(t.term().toString() + t.punc()))
         );
 
         pout.close();

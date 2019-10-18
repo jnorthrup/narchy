@@ -74,17 +74,11 @@ public class WebcamStereoTest {
 
         VideoSource[] ab = WebCam.theFirst(2);
 
-        OrthoSurfaceGraph g = window(new LazySurface(() -> {
-
-
-            return new LabeledPane(new Gridding(new PushButton("stereo", ()->{
-                stereo3d(ab[0], ab[1]);
-            })),
-            new Gridding(
-                    new VideoSurface(ab[0]),
-                    new VideoSurface(ab[1])
-            ));
-        }), 1400, 800);
+        OrthoSurfaceGraph g = window(new LazySurface(() -> new LabeledPane(new Gridding(new PushButton("stereo", ()-> stereo3d(ab[0], ab[1]))),
+        new Gridding(
+                new VideoSurface(ab[0]),
+                new VideoSurface(ab[1])
+        ))), 1400, 800);
 
     }
 
@@ -496,7 +490,13 @@ public class WebcamStereoTest {
 
             FastQueue<AssociatedIndex> matchIndexes = associate.getMatches();
 
-            List<AssociatedPair> matches = IntStream.range(0, matchIndexes.size).mapToObj(matchIndexes::get).map(a -> new AssociatedPair(findMatches.pointsA.get(a.src), findMatches.pointsB.get(a.dst))).collect(Collectors.toList());
+            List<AssociatedPair> matches = new ArrayList<>();
+            int bound = matchIndexes.size;
+            for (int i = 0; i < bound; i++) {
+                AssociatedIndex a = matchIndexes.get(i);
+                AssociatedPair associatedPair = new AssociatedPair(findMatches.pointsA.get(a.src), findMatches.pointsB.get(a.dst));
+                matches.add(associatedPair);
+            }
 
             return matches;
         }

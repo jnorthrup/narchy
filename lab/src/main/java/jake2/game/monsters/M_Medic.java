@@ -861,10 +861,19 @@ public class M_Medic {
             if ((self.s.frame == FRAME_attack9)
                     || (self.s.frame == FRAME_attack12))
                 effect = Defines.EF_BLASTER;
-            else if (IntStream.of(FRAME_attack19, FRAME_attack22, FRAME_attack25, FRAME_attack28).anyMatch(i -> (self.s.frame == i)))
-                effect = Defines.EF_HYPERBLASTER;
-            else
-                effect = 0;
+            else {
+                boolean b = false;
+                for (int i : new int[]{FRAME_attack19, FRAME_attack22, FRAME_attack25, FRAME_attack28}) {
+                    if ((self.s.frame == i)) {
+                        b = true;
+                        break;
+                    }
+                }
+                if (b)
+                    effect = Defines.EF_HYPERBLASTER;
+                else
+                    effect = 0;
+            }
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
             Math3D.G_ProjectSource(self.s.origin,

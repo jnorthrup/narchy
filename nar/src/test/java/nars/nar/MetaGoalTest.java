@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.function.Predicate;
 
@@ -36,17 +37,19 @@ class MetaGoalTest {
         n.run(cycles);
 
 
-        n.control.why.forEach(w -> {
-            System.out.println(w.id + " " + w);
-        });
-        tasks.forEach((c,t)->{
-            System.out.println(c + "\t" + t);
-        });
+        n.control.why.forEach(w -> System.out.println(w.id + " " + w));
+        tasks.forEach((c,t)-> System.out.println(c + "\t" + t));
 
         assertTrue(tasks.size() > 2);
         Collection<Task> tt = tasks.values();
         Predicate<Task> isDerived = x -> !x.isInput();
-        assertTrue(tt.stream().filter(isDerived).count() >= 1);
+        long count = 0L;
+        for (Task task : tt) {
+            if (isDerived.test(task)) {
+                count++;
+            }
+        }
+        assertTrue(count >= 1);
 
         assertTrue(tt.stream().allMatch(x -> {
             int ww = new ShortHashSet(x.why().volume()).size();
@@ -85,9 +88,11 @@ class MetaGoalTest {
     private static void analyzeCauses(NAR n) {
 
         SortedMap<String, Object> x = n.stats(true, true);
-        x.forEach((k, v) -> {
+        for (Map.Entry<String, Object> entry : x.entrySet()) {
+            String k = entry.getKey();
+            Object v = entry.getValue();
             System.out.println(k + '\t' + v);
-        });
+        }
 
 //        n.control.why.forEach(c -> {
 //            c.commit();

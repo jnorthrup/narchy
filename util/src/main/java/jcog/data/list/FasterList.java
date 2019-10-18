@@ -53,7 +53,9 @@ public class FasterList<X> extends FastList<X> {
 
     public FasterList(Iterable<X> copy, int sizeEstimate) {
         super(sizeEstimate);
-        copy.forEach(this::add);
+        for (X x : copy) {
+            add(x);
+        }
     }
 
     public FasterList(Collection<X> copy) {
@@ -259,7 +261,12 @@ public class FasterList<X> extends FastList<X> {
         int s = size;
         if (s > 0) {
             X[] items = this.items;
-            return IntStream.range(Math.max(0, atOrAfter), s).filter(i -> p.test(items[i])).findFirst().orElse(-1);
+            for (int i = Math.max(0, atOrAfter); i < s; i++) {
+                if (p.test(items[i])) {
+                    return i;
+                }
+            }
+            return -1;
         }
         return -1;
     }
@@ -271,7 +278,12 @@ public class FasterList<X> extends FastList<X> {
     public int indexOf(int atOrAfter, IntPredicate p) {
         int s = size;
         if (s > 0) {
-            return IntStream.range(Math.max(0, atOrAfter), s).filter(p).findFirst().orElse(-1);
+            for (int i = Math.max(0, atOrAfter); i < s; i++) {
+                if (p.test(i)) {
+                    return i;
+                }
+            }
+            return -1;
         }
         return -1;
     }
@@ -285,7 +297,12 @@ public class FasterList<X> extends FastList<X> {
         int s = size;
         if (s > 0) {
             X[] items = this.items;
-            return IntStream.range(0, s).filter(i -> object.equals(items[i])).findFirst().orElse(-1);
+            for (int i = 0; i < s; i++) {
+                if (object.equals(items[i])) {
+                    return i;
+                }
+            }
+            return -1;
         }
         return -1;
     }
@@ -294,7 +311,12 @@ public class FasterList<X> extends FastList<X> {
         int s = size;
         if (s > 0) {
             X[] items = this.items;
-            return IntStream.range(0, s).filter(i -> items[i] == x).findFirst().orElse(-1);
+            for (int i = 0; i < s; i++) {
+                if (items[i] == x) {
+                    return i;
+                }
+            }
+            return -1;
         }
         return -1;
     }
@@ -973,7 +995,12 @@ public class FasterList<X> extends FastList<X> {
         }
         X[] a = this.items;
         X[] b = x.items;
-        return IntStream.range(0, s).allMatch(i -> a[i].equals(b[i]));
+        for (int i = 0; i < s; i++) {
+            if (!a[i].equals(b[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
@@ -1005,7 +1032,12 @@ public class FasterList<X> extends FastList<X> {
         int s = size;
         if (s > 0) {
             X[] items = this.items;
-            return IntStream.range(0, s).allMatch(i -> predicate.test(items[i]));
+            for (int i = 0; i < s; i++) {
+                if (!predicate.test(items[i])) {
+                    return false;
+                }
+            }
+            return true;
         }
         return true;
     }
@@ -1017,7 +1049,12 @@ public class FasterList<X> extends FastList<X> {
             X[] items = this.items;
             if (items!=null) { //if deleted
                 s = Math.min(s, items.length);
-                return IntStream.range(0, s).anyMatch(i -> predicate.accept(items[i]));
+                for (int i = 0; i < s; i++) {
+                    if (predicate.accept(items[i])) {
+                        return true;
+                    }
+                }
+                return false;
             }
         }
         return false;
@@ -1027,7 +1064,12 @@ public class FasterList<X> extends FastList<X> {
         int s = size;
         if (s > 0 && s > from) {
             X[] items = this.items;
-            return IntStream.range(from, to).anyMatch(i -> predicate2.test(items[i]));
+            for (int i = from; i < to; i++) {
+                if (predicate2.test(items[i])) {
+                    return true;
+                }
+            }
+            return false;
         }
         return false;
     }
@@ -1036,7 +1078,12 @@ public class FasterList<X> extends FastList<X> {
         int s = size;
         if (s > 0) {
             X[] items = this.items;
-            return IntStream.range(0, s).anyMatch(i -> predicate2.accept(items[i], parameter));
+            for (int i = 0; i < s; i++) {
+                if (predicate2.accept(items[i], parameter)) {
+                    return true;
+                }
+            }
+            return false;
         }
         return false;
     }
@@ -1045,7 +1092,12 @@ public class FasterList<X> extends FastList<X> {
         int s = size;
         if (s > 0) {
             X[] items = this.items;
-            return IntStream.range(0, s).allMatch(i -> predicate2.accept(items[i], parameter));
+            for (int i = 0; i < s; i++) {
+                if (!predicate2.accept(items[i], parameter)) {
+                    return false;
+                }
+            }
+            return true;
         }
         return true;
     }

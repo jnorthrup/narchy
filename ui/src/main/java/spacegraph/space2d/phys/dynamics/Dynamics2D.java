@@ -679,7 +679,9 @@ public class Dynamics2D {
     }
 
     public void bodies(Consumer<Body2D> each) {
-        bodies.forEach(each);
+        for (Body2D body : bodies) {
+            each.accept(body);
+        }
     }
 
     public Iterable<Joint> joints() {
@@ -687,7 +689,9 @@ public class Dynamics2D {
     }
 
     public void joints(Consumer<Joint> each) {
-        joints.forEach(each);
+        for (Joint joint : joints) {
+            each.accept(joint);
+        }
     }
 
     /**
@@ -874,7 +878,9 @@ public class Dynamics2D {
         });
 
         if (!preRemove.isEmpty()) {
-            preRemove.forEach(this::removeBody);
+            for (Body2D body2D : preRemove) {
+                removeBody(body2D);
+            }
             preRemove.clear();
         }
 

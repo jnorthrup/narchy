@@ -56,7 +56,12 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 	public boolean hasNext() {
 		if (values==null) return false;
 		int size = iterables.length;
-        return IntStream.range(0, size).anyMatch(i -> iterators[i].hasNext());
+		for (int i = 0; i < size; i++) {
+			if (iterators[i].hasNext()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

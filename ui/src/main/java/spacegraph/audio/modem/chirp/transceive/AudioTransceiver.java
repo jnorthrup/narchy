@@ -215,7 +215,13 @@ public class AudioTransceiver {
                 // Decode the Sample.
                 pReedSolomonDecoder.decode(lPacketized, synth.errLen);
                 // Declare the search metric.
-                boolean lIsValid = IntStream.range(0, synth.identifier.length()).mapToObj(i -> synth.identifier.charAt(i) == (synth.range.chars.charAt(lPacketized[i]))).reduce(true, (a, b) -> a && b);
+                Boolean acc = true;
+                int bound = synth.identifier.length();
+                for (int i1 = 0; i1 < bound; i1++) {
+                    Boolean aBoolean = synth.identifier.charAt(i1) == (synth.range.chars.charAt(lPacketized[i1]));
+                    acc = acc && aBoolean;
+                }
+                boolean lIsValid = acc;
                 // Iterate the Identifier characters.
                 // Update the search metric.
                 // Is the message directed to us?
@@ -521,7 +527,7 @@ public class AudioTransceiver {
             // Fetch the corresponding character.
             Character lCharacter = mapFreqChar.get(freqs[lIndex]);
             // Return the Character.
-            return Optional.ofNullable(lCharacter).orElse((char) 0);
+            return Optional.ofNullable(lCharacter).orElseGet(() -> (char) 0);
         }
 
         /**

@@ -65,7 +65,7 @@ public final class VarIndep extends NormalizedVariable {
                     return (xo == VAR_INDEP) || (xo.statement && x.varIndep() > 0);
                 },
                 x -> x.hasAny(Op.StatementBits | Op.VAR_INDEP.bit),
-                (ByteList path, Term indepVarOrStatement) -> {
+                (path, indepVarOrStatement) -> {
                     if (!path.isEmpty()) {
                         ImmutableByteList p = path.toImmutable();
                         List<ByteList> s = (indepVarOrStatement.op() == VAR_INDEP) ?

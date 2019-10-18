@@ -37,7 +37,7 @@ public class BagView<X extends Prioritized> extends TabMenu {
                 },
                 "histo", () -> bagHistogram(bag, 20, nar),
                 "treechart", () -> {
-                    BagChart<X> b = new BagChart<>(bag, (NodeVis<X> n) -> {
+                    BagChart<X> b = new BagChart<>(bag, n -> {
                         Prioritized p = n.id;
                         float pri = n.pri = Math.max(p.priElseZero(), 1f / (2 * bag.capacity()));
                         n.color(pri, 0.25f, 0.25f);
@@ -58,9 +58,7 @@ public class BagView<X extends Prioritized> extends TabMenu {
         DurSurface hc = DurSurface.get(new HistogramChart(
                         () -> d,
                         new Color3f(0.25f, 0.5f, 0f), new Color3f(1f, 0.5f, 0.1f)),
-                n, () -> {
-                    PriReference.histogram(bag, d);
-                });
+                n, () -> PriReference.histogram(bag, d));
 
         return Splitting.column(
                 hc, 0.1f, new Gridding(

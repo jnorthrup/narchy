@@ -23,6 +23,7 @@ import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.geo.IRL;
 import spacegraph.util.geo.osm.Osm;
 import spacegraph.util.geo.osm.OsmElement;
+import spacegraph.util.geo.osm.OsmNode;
 import spacegraph.util.geo.osm.OsmWay;
 import spacegraph.video.Draw;
 import spacegraph.video.OsmSpace;
@@ -99,7 +100,9 @@ public class OsmSurface extends PaintSurface {
                 renderTouchedIndexBounds(gl);
             }
 
-            hilight.forEach(each -> renderBounds(gl, each));
+            for (OsmElement each : hilight) {
+                renderBounds(gl, each);
+            }
 
         }
 
@@ -182,7 +185,9 @@ public class OsmSurface extends PaintSurface {
 //                                new float[] { }
 //                        );
                         o.ways.forEach(r::addWay);
-                        o.nodes.values().forEach(r::addNode);
+                        for (OsmNode osmNode : o.nodes.values()) {
+                            r.addNode(osmNode);
+                        }
 //                        //index.index.forEach(e -> {//whileEachIntersecting(viewBounds,e->{
 //                            if (e instanceof OsmWay)
 //                                r.addWay((OsmWay)e);

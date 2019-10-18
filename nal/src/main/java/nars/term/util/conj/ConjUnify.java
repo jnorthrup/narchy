@@ -76,7 +76,7 @@ public class ConjUnify {
                 if (!Arrays.equals(xl.when, yl.when))
                     return false; //TODO allow time splicing/shifting
 
-                xl.removeIf((long when, Term z) -> {
+                xl.removeIf((when, z) -> {
                     if (!u.varIn(z)) {
                         yl.remove(when, z);
                         return true;

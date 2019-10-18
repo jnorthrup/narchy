@@ -269,68 +269,76 @@ public class BomberPlayer extends Thread {
      */
     public void keyReleased(KeyEvent evt) {
         /** if a direction key is released */
-        if (!isExploding && !isDead && (
-                IntStream.of(UP, DOWN, LEFT, RIGHT).anyMatch(i -> evt.getKeyCode() == keys[i]))) {
-            /** if down key is released */
-            if (evt.getKeyCode() == keys[DOWN]) {
-                /** remove key from the all keys down buffer */
-                dirKeysDown ^= BDOWN;
-                /** reset current key down */
-                currentDirKeyDown ^= BDOWN;
-                /** remove it from the key queue */
-                keyQueue.removeItems(BDOWN);
-            }
-            /** if up key is released */
-            else if (evt.getKeyCode() == keys[UP]) {
-                /** remove key from the all keys down buffer */
-                dirKeysDown ^= BUP;
-                /** reset current key down */
-                currentDirKeyDown ^= BUP;
-                /** remove it from the key queue */
-                keyQueue.removeItems(BUP);
-            }
-            /** if left key is released */
-            else if (evt.getKeyCode() == keys[LEFT]) {
-                /** remove key from the all keys down buffer */
-                dirKeysDown ^= BLEFT;
-                /** reset current key down */
-                currentDirKeyDown ^= BLEFT;
-                /** remove it from the key queue */
-                keyQueue.removeItems(BLEFT);
-            }
-            /** if right key is released */
-            else if (evt.getKeyCode() == keys[RIGHT]) {
-                /** remove key from the all keys down buffer */
-                dirKeysDown ^= BRIGHT;
-                /** reset current key down */
-                currentDirKeyDown ^= BRIGHT;
-                /** remove it from the key queue */
-                keyQueue.removeItems(BRIGHT);
-            }
-            /** if no key is currently down */
-            if (currentDirKeyDown == 0) {
-                /** see if last key pressed is still pressed or not */
-                boolean keyFound = false;
-                /** search for last key pressed */
-                while (!keyFound && keyQueue.size() > 0) {
-                    /** if key is found then exit the loop */
-                    if ((keyQueue.getLastItem() & dirKeysDown) > 0) {
-                        currentDirKeyDown = keyQueue.getLastItem();
-                        keyFound = true;
-                    }
-                    /** if key is not found then pop the current key */
-                    /** and on to the next one */
-                    else keyQueue.pop();
+        if (!isExploding && !isDead) {
+            boolean b = false;
+            for (int i : new int[]{UP, DOWN, LEFT, RIGHT}) {
+                if (evt.getKeyCode() == keys[i]) {
+                    b = true;
+                    break;
                 }
-                /** if no key found */
-                if (!keyFound) {
-                    /** remove all keys from queue if not already removed */
-                    keyQueue.removeAll();
-                    /** reset key buffers */
-                    currentDirKeyDown = 0x00;
-                    dirKeysDown = 0x00;
-                    keyPressed = false;
-                    interrupt();
+            }
+            if (b) {
+                /** if down key is released */
+                if (evt.getKeyCode() == keys[DOWN]) {
+                    /** remove key from the all keys down buffer */
+                    dirKeysDown ^= BDOWN;
+                    /** reset current key down */
+                    currentDirKeyDown ^= BDOWN;
+                    /** remove it from the key queue */
+                    keyQueue.removeItems(BDOWN);
+                }
+                /** if up key is released */
+                else if (evt.getKeyCode() == keys[UP]) {
+                    /** remove key from the all keys down buffer */
+                    dirKeysDown ^= BUP;
+                    /** reset current key down */
+                    currentDirKeyDown ^= BUP;
+                    /** remove it from the key queue */
+                    keyQueue.removeItems(BUP);
+                }
+                /** if left key is released */
+                else if (evt.getKeyCode() == keys[LEFT]) {
+                    /** remove key from the all keys down buffer */
+                    dirKeysDown ^= BLEFT;
+                    /** reset current key down */
+                    currentDirKeyDown ^= BLEFT;
+                    /** remove it from the key queue */
+                    keyQueue.removeItems(BLEFT);
+                }
+                /** if right key is released */
+                else if (evt.getKeyCode() == keys[RIGHT]) {
+                    /** remove key from the all keys down buffer */
+                    dirKeysDown ^= BRIGHT;
+                    /** reset current key down */
+                    currentDirKeyDown ^= BRIGHT;
+                    /** remove it from the key queue */
+                    keyQueue.removeItems(BRIGHT);
+                }
+                /** if no key is currently down */
+                if (currentDirKeyDown == 0) {
+                    /** see if last key pressed is still pressed or not */
+                    boolean keyFound = false;
+                    /** search for last key pressed */
+                    while (!keyFound && keyQueue.size() > 0) {
+                        /** if key is found then exit the loop */
+                        if ((keyQueue.getLastItem() & dirKeysDown) > 0) {
+                            currentDirKeyDown = keyQueue.getLastItem();
+                            keyFound = true;
+                        }
+                        /** if key is not found then pop the current key */
+                        /** and on to the next one */
+                        else keyQueue.pop();
+                    }
+                    /** if no key found */
+                    if (!keyFound) {
+                        /** remove all keys from queue if not already removed */
+                        keyQueue.removeAll();
+                        /** reset key buffers */
+                        currentDirKeyDown = 0x00;
+                        dirKeysDown = 0x00;
+                        keyPressed = false;
+                        interrupt();
+                    }
                 }
             }
         }

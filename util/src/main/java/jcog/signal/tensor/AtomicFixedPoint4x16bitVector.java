@@ -5,6 +5,7 @@ import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -63,13 +64,22 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 //            s += toFloat(x, i);
 //        return s;
 
-        long s = IntStream.range(0, 4).mapToLong(i -> shortAt(x, i)).sum();
+        long s = 0L;
+        for (int i = 0; i < 4; i++) {
+            long shortAt = shortAt(x, i);
+            s += shortAt;
+        }
         return toFloat(s);
     }
 
     @Override
     public String toString() {
-        return IntStream.of(0, 1, 2, 3).mapToObj(this::toString).collect(Collectors.joining(","));
+        StringJoiner joiner = new StringJoiner(",");
+        for (int i : new int[]{0, 1, 2, 3}) {
+            String s = toString(i);
+            joiner.add(s);
+        }
+        return joiner.toString();
     }
 
     private String toString(int component) {

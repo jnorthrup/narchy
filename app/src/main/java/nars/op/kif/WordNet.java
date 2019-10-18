@@ -1907,7 +1907,12 @@ public class WordNet {
     private static boolean arrayContains(int[] ar, int value) {
 
 
-        return Arrays.stream(ar).anyMatch(anAr -> anAr == value);
+        for (int anAr : ar) {
+            if (anAr == value) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

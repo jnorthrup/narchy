@@ -53,7 +53,13 @@ public class OutputLayer {
             double sum;
             Unit[] weights = _hiddenToOutputLayerWeights[i];
 
-            sum = IntStream.range(0, controllerSize).mapToDouble(j -> weights[j].value * hiddenLayerNeurons[j]).sum();
+            double result = 0.0;
+            int bound = controllerSize;
+            for (int j = 0; j < bound; j++) {
+                double v = weights[j].value * hiddenLayerNeurons[j];
+                result += v;
+            }
+            sum = result;
 
             
             sum += weights[controllerSize].value;
@@ -70,7 +76,13 @@ public class OutputLayer {
                 double sum;
                 Unit[] headWeights = headsWeights[j];
 
-                sum = IntStream.range(0, controllerSize).mapToDouble(k -> headWeights[k].value * hiddenLayerNeurons[k]).sum();
+                double result = 0.0;
+                int bound = controllerSize;
+                for (int k = 0; k < bound; k++) {
+                    double v = headWeights[k].value * hiddenLayerNeurons[k];
+                    result += v;
+                }
+                sum = result;
 
                 
                 sum += headWeights[controllerSize].value;

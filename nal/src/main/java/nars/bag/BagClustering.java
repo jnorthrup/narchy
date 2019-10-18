@@ -163,8 +163,11 @@ public class BagClustering<X> {
             net.setLambdaPeriod((int) Math.ceil((bag.capacity()) * lambdaFactor));
 
             Consumer<VLink<X>> l = this::learn;
-            for (int i = 0; i < learningIterations; i++)
-                bag.forEach(l);
+            for (int i = 0; i < learningIterations; i++) {
+                for (VLink<X> xvLink : bag) {
+                    l.accept(xvLink);
+                }
+            }
 //        }
     }
 

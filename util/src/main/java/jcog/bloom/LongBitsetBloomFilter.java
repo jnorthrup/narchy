@@ -18,6 +18,7 @@ package jcog.bloom;
 import jcog.bloom.hash.Murmur3Hash;
 import jcog.data.bit.MetalBitSet;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -70,7 +71,14 @@ public class LongBitsetBloomFilter {
     public LongBitsetBloomFilter(List<Long> serializedBloom) {
         this(serializedBloom.get(0), Double.longBitsToDouble(serializedBloom.get(1)));
         List<Long> bitSet = serializedBloom.subList(2, serializedBloom.size());
-        long[] data = bitSet.stream().mapToLong(aLong -> aLong).toArray();
+        long[] data = new long[10];
+        int count = 0;
+        for (Long aLong : bitSet) {
+            long l = aLong;
+            if (data.length == count) data = Arrays.copyOf(data, count * 2);
+            data[count++] = l;
+        }
+        data = Arrays.copyOfRange(data, 0, count);
         this.bitSet = new MetalBitSet.LongArrayBitSet(data);
     }
 
@@ -104,7 +112,13 @@ public class LongBitsetBloomFilter {
         int m = this.m;
         MetalBitSet bits = bitSet;
 
-        return IntStream.rangeClosed(1, k).map(i -> combineHash(hash1, hash2, i)).allMatch(combinedHash -> bits.get( /*pos*/ combinedHash % m));
+        for (int i = 1; i <= k; i++) {
+            int combinedHash = combineHash(hash1, hash2, i);
+            if (!bits.get( /*pos*/ combinedHash % m)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 

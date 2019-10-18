@@ -122,7 +122,9 @@ class ImpilerTest {
     private static List<Task> deduce(ImpilerDeduction d, Term x, boolean forward, long at) {
         System.out.println((forward ? "forward: " : "reverse: " ) + x);
         List<Task> t = d.get(x, at, forward);
-        t.forEach(System.out::println);
+        for (Task task : t) {
+            System.out.println(task);
+        }
         return t;
     }
 

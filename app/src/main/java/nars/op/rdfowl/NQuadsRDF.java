@@ -103,7 +103,7 @@ public abstract class NQuadsRDF {
 
     public static Stream<Task> stream(@NotNull NAR nar, @NotNull Stream<Node[]> nxp) {
 
-        return nxp.map((Node[] nx) -> {
+        return nxp.map(nx -> {
             if (nx.length >= 3) {
                 
 

@@ -719,7 +719,9 @@ public enum OsmSpace  { ;
 
         @Override
         public void accept(GL2 g) {
-            draw.forEach(d -> d.accept(g));
+            for (Consumer<GL2> d : draw) {
+                d.accept(g);
+            }
         }
     }
 
@@ -799,7 +801,7 @@ public enum OsmSpace  { ;
             if (draws.length == 1)
                 this.draw = draws[0];
             else {
-                this.draw = (GL2 G)->{
+                this.draw = G ->{
                     for (Consumer<GL2> d : draws)
                         d.accept(G);
                 };

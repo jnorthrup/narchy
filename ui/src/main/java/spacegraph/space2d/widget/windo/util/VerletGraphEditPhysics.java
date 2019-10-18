@@ -18,6 +18,7 @@ import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.video.Draw;
 import toxi.geom.Vec2D;
 import toxi.physics2d.VerletParticle2D;
+import toxi.physics2d.VerletPhysics2D;
 import toxi.physics2d.behavior.AttractionBehavior2D;
 import toxi.physics2d.spring.VerletSpring2D;
 
@@ -115,7 +116,10 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
             List<VerletSpring2D> springs = chain.getTwo();
             on(() -> {
                 //destroy the chain springs on destruction
-                springs.forEach(physics.physics::removeSpringAndItsParticles);
+                VerletPhysics2D verletPhysics2D = physics.physics;
+                for (VerletSpring2D spring : springs) {
+                    verletPhysics2D.removeSpringAndItsParticles(spring);
+                }
             });
 
             final List<VerletParticle2D> points = chain.getOne();

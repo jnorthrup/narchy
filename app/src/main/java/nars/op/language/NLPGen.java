@@ -4,12 +4,14 @@ import nars.*;
 import nars.derive.premise.PatternTermBuilder;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.time.Tense;
 import nars.unify.Unify;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static nars.Op.VAR_PATTERN;
 
@@ -83,13 +85,15 @@ public class NLPGen {
 
 
                                 final String[] r = {natural};
-                                xy.forEach((x, y) -> {
+                                for (Map.Entry<Variable, Term> entry : xy.entrySet()) {
+                                    Variable x = entry.getKey();
+                                    Term y = entry.getValue();
                                     String var = x.toString();
                                     if (!var.startsWith("%"))
-                                        return;
-                                    var = String.valueOf(((char) (var.charAt(1) - '1' + 'A'))); 
+                                        continue;
+                                    var = String.valueOf(((char) (var.charAt(1) - '1' + 'A')));
                                     r[0] = r[0].replace(var, y.toString());
-                                });
+                                }
 
                                 result[0] = r[0];
                                 return false;

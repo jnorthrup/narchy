@@ -98,7 +98,9 @@ public class EllipsisTest {
                             Set<Term> varArgTerms = new HashSet(1);
                             if (u instanceof Fragment) {
                                 Fragment m = (Fragment) u;
-                                m.forEach(varArgTerms::add);
+                                for (Term term : m) {
+                                    varArgTerms.add(term);
+                                }
                             } else {
                                 varArgTerms.add(u);
                             }

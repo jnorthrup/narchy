@@ -2,6 +2,7 @@ package jcog.grammar.parse;
 
 import jcog.data.set.ArrayUnenforcedSet;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -105,9 +106,14 @@ public class Alternation extends CollectionParser {
 	 */
 	private List<String> randomSettle(int maxDepth, int depth) {
 
-		
 
-		List<Terminal> terms = subparsers.stream().filter(j -> j instanceof Terminal).map(j -> (Terminal) j).collect(Collectors.toList());
+        List<Terminal> terms = new ArrayList<>();
+        for (Parser j : subparsers) {
+            if (j instanceof Terminal) {
+                Terminal terminal = (Terminal) j;
+                terms.add(terminal);
+            }
+        }
 
 
         List<? extends Parser> which = terms;

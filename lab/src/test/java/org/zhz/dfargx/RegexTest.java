@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.zhz.dfargx.automata.DFA;
 import org.zhz.dfargx.automata.NFA;
+import org.zhz.dfargx.automata.NFAState;
 import org.zhz.dfargx.node.Node;
 
 import java.util.UUID;
@@ -55,7 +56,9 @@ public class RegexTest {
 
         NFA nfa = new NFA(root);
         System.out.println("NFA has " + nfa.states.size() + " states");
-        nfa.states.forEach(System.out::println);
+        for (NFAState state : nfa.states) {
+            System.out.println(state);
+        }
         System.out.println();
 
         DFA dfa = new DFA(nfa.states);

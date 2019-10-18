@@ -288,7 +288,13 @@ public class M extends JFrame {
         
           
           rank = 1;
-            rank += IntStream.range(1, 4).filter(i -> vehicleMetrics[0][1] < vehicleMetrics[i][1]).count();
+          long count = 0L;
+          for (int i1 = 1; i1 < 4; i1++) {
+            if (vehicleMetrics[0][1] < vehicleMetrics[i1][1]) {
+              count++;
+            }
+          }
+          rank += count;
 
           
           if (hitWallCount > 0) {

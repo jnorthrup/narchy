@@ -30,6 +30,8 @@ import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static com.jcraft.jcterm.Terminal.SFTP;
@@ -842,7 +844,12 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
             dialog.setVisible(true);
             Object o = pane.getValue();
             if (o != null && (Integer) o == JOptionPane.OK_OPTION) {
-                String[] response = IntStream.range(0, prompt.length).mapToObj(i -> texts[i].getText()).toArray(String[]::new);
+                List<String> list = new ArrayList<>();
+                for (int i = 0; i < prompt.length; i++) {
+                    String text = texts[i].getText();
+                    list.add(text);
+                }
+                String[] response = list.toArray(new String[0]);
                 return response;
             } else {
                 return null;

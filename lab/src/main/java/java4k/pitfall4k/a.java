@@ -383,51 +383,60 @@ public class a extends GamePanel {
 						
 
 						restartDelay--;
-					} else if (IntStream.of(VK_JUMP, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT).anyMatch(v -> a[v])) {
+					} else {
+						boolean b = false;
+						for (int v : new int[]{VK_JUMP, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT}) {
+							if (a[v]) {
+								b = true;
+								break;
+							}
+						}
+						if (b) {
 
-						
-						attractMode = false;
-						harryJumping = false;
-						harryClimbing = false;
-						harryClimbedDown = false;
-						harrySinking = false;
-						harrySwinging = false;
-						wallOnLeft = false;
-						resetScreen = false;
-						pit = false;
-						crocodiles = false;
-						vine = false;
-						harryLanded = true;
-						treasures = 32;
-						score = 2000;
-						clockMinutes = 20;
-						clockSeconds = 0;
-						clockTicks = 0;
-						harryX = 8;
-						harryY = UPPER_FLOOR_Y;
-						harryVy = 0;
-						screen = 196;
-						screenIndex = 0;
-						scene = SCENE_LADDER;
-						background = BACKGROUND_3;
-						harryDirection = 0;
-						harryOffsetY = 0;
-						harryCrushed = 0;
-						timer = 0;
-						vineTimer = 0;
-						pitTimer = 0;
-						crocodileTimer = 0;
-						extraLives = 2;
-						harrySprite = SPRITE_HARRY_STANDING;
-						collectedTreasures = new boolean[256];
 
-						queue.clear();
-						object = new int[OBJECT_ARRAY_SIZE];
-						queue.add(object);
-						object[OBJECT_X] = 116;
-						object[OBJECT_Y] = 111;
-						object[OBJECT_SPRITE_INDEX] = SPRITE_LOG;
-						object[OBJECT_SPRITE_DIRECTION] = LEFT;
+							attractMode = false;
+							harryJumping = false;
+							harryClimbing = false;
+							harryClimbedDown = false;
+							harrySinking = false;
+							harrySwinging = false;
+							wallOnLeft = false;
+							resetScreen = false;
+							pit = false;
+							crocodiles = false;
+							vine = false;
+							harryLanded = true;
+							treasures = 32;
+							score = 2000;
+							clockMinutes = 20;
+							clockSeconds = 0;
+							clockTicks = 0;
+							harryX = 8;
+							harryY = UPPER_FLOOR_Y;
+							harryVy = 0;
+							screen = 196;
+							screenIndex = 0;
+							scene = SCENE_LADDER;
+							background = BACKGROUND_3;
+							harryDirection = 0;
+							harryOffsetY = 0;
+							harryCrushed = 0;
+							timer = 0;
+							vineTimer = 0;
+							pitTimer = 0;
+							crocodileTimer = 0;
+							extraLives = 2;
+							harrySprite = SPRITE_HARRY_STANDING;
+							collectedTreasures = new boolean[256];
+
+							queue.clear();
+							object = new int[OBJECT_ARRAY_SIZE];
+							queue.add(object);
+							object[OBJECT_X] = 116;
+							object[OBJECT_Y] = 111;
+							object[OBJECT_SPRITE_INDEX] = SPRITE_LOG;
+							object[OBJECT_SPRITE_DIRECTION] = LEFT;
+						}
 					}
 
 				} else if (restartDelay > 0) {

@@ -49,9 +49,7 @@ public class RateIterator<X> implements Iterator<X> {
     }
 
     public Thread threadEachRemaining(Consumer<X> each) {
-        return new Thread(()->{
-            forEachRemaining(each);
-        });
+        return new Thread(()-> forEachRemaining(each));
     }
 
 }

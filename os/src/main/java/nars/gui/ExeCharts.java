@@ -56,7 +56,9 @@ public class ExeCharts {
 //            , s, Draw::colorBipolar);
 
         return DurSurface.get(g, nar, ()->{
-			controls.forEach(WhySurface::update);
+            for (WhySurface control : controls) {
+                control.update();
+            }
         });
     }
 

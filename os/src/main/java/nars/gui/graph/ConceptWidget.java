@@ -81,7 +81,9 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
         @Override
         public void accept(List<ConceptWidget> pending) {
-            pending.forEach(ConceptVis1::each);
+            for (ConceptWidget conceptWidget : pending) {
+                each(conceptWidget);
+            }
         }
 
         public static void each(ConceptWidget cw) {

@@ -80,8 +80,16 @@ public class MergesSynthesis {
         if (!GrammarSynthesis.getCheck(oracle, firstRep.getData().context, firstExamplesSimple) || !GrammarSynthesis.getCheck(oracle, secondRep.getData().context, secondExamplesSimple)) {
             return;
         }
-        Collection<String> firstExamples = secondExampleMap.get(secondRep).stream().map(example -> example + example).collect(Collectors.toList());
-        Collection<String> secondExamples = firstExampleMap.get(firstRep).stream().map(example -> example + example).collect(Collectors.toList());
+        Collection<String> firstExamples = new ArrayList<>();
+        for (String example1 : secondExampleMap.get(secondRep)) {
+            String s1 = example1 + example1;
+            firstExamples.add(s1);
+        }
+        Collection<String> secondExamples = new ArrayList<>();
+        for (String example : firstExampleMap.get(firstRep)) {
+            String s = example + example;
+            secondExamples.add(s);
+        }
         if ((isStructuredExample(firstRep) && isStructuredExample(secondRep))
                 || (GrammarSynthesis.getCheck(oracle, firstRep.getData().context, firstExamples) && GrammarSynthesis.getCheck(oracle, secondRep.getData().context, secondExamples))) {
             Log.info("MERGE NODE FIRST:\n" + firstRep.getData().context.pre + " ## " + firstRep.getData().example + " ## " + firstRep.getData().context.post);

@@ -138,7 +138,7 @@ public class WidgetTest {
         return Map.of(
                 "Empty", () -> wiringDemo((g) -> {
                 }),
-                "Intro", () -> wiringDemo((GraphEdit2D g) -> {
+                "Intro", () -> wiringDemo(g -> {
                     g.add(WidgetTest.widgetDemo()).posRel(1, 1, 0.5f, 0.25f);
                     for (int i = 1; i < 3; i++)
                         g.add(new WizardFrame(new ProtoWidget())).posRel(0.5f, 0.5f, 0.45f / i, 0.35f / i);

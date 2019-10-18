@@ -10,12 +10,14 @@ import nars.Op;
 import nars.Task;
 import nars.task.NALTask;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import tech.tablesaw.api.Row;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -68,9 +70,14 @@ public class NALData {
         List<Term> meta = new FasterList();
 
         int n = a.columnCount();
+        List<nars.term.Variable> list = new ArrayList<>();
+        for (int i1 = 0; i1 < n; i1++) {
+            nars.term.Variable variable = $.varDep(i1 + 1);
+            list.add(variable);
+        }
         Term pattern = pointGenerator.apply(
             name(a),
-            IntStream.range(0,n).mapToObj(i -> $.varDep(i+1)).toArray(Term[]::new)
+                list.toArray(new Term[0])
         );
         for (int i = 0; i < n; i++) {
             String ai = a.attrName(i);
@@ -134,7 +141,7 @@ public class NALData {
 
     public static Stream<Term> terms(DataTable a, BiFunction<Term, Term[], Term> generator) {
         Term ctx = name(a);
-        return StreamSupport.stream(a.spliterator(),false).map((Row point)->{
+        return StreamSupport.stream(a.spliterator(),false).map(point ->{
             //ImmutableList point = instance.data;
             int n = point.columnCount();
             Term[] t = new Term[n];

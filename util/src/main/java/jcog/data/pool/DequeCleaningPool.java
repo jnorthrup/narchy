@@ -78,9 +78,7 @@ public final class DequeCleaningPool<X> {
 
 
     public static <X> ThreadLocal<DequeCleaningPool<X>> threadLocal(Supplier<X> builder, Consumer<X> cleaner) {
-        ThreadLocal<DequeCleaningPool<X>> t = ThreadLocal.withInitial(() -> {
-            return new DequeCleaningPool<>(builder, cleaner);
-        });
+        ThreadLocal<DequeCleaningPool<X>> t = ThreadLocal.withInitial(() -> new DequeCleaningPool<>(builder, cleaner));
         return t;
     }
 

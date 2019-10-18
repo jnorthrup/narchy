@@ -37,7 +37,12 @@ public class SerialCompound extends DynBytes implements SameSubtermsCompound, Th
         super(subterms.length * 4 /* estimate */);
 
         int v = 1;
-        v += Arrays.stream(subterms).mapToInt(Termlike::volume).sum();
+        int sum = 0;
+        for (Term subterm : subterms) {
+            int i = subterm.volume();
+            sum += i;
+        }
+        v += sum;
 
         if (v > NAL.term.COMPOUND_VOLUME_MAX)
             throw new TermException("complexity overflow");

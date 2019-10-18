@@ -99,7 +99,11 @@ public class HyperIterator<X>  {
         int leaves = plan.size(); //assert(leaves > 0);
         int[] remain = new int[leaves];
         Object[] pp = plan.items;
-        int n = IntStream.range(0, leaves).map(i -> (remain[i] = ((RLeaf) pp[i]).size)).sum();
+        int n = 0;
+        for (int i = 0; i < leaves; i++) {
+            int i1 = (remain[i] = ((RLeaf) pp[i]).size);
+            n += i1;
+        }
         int c = 0;
         int k = 0;
         int o = random.nextInt(n * leaves); //shuffles the inner-leaf visiting order

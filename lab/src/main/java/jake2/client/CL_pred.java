@@ -62,15 +62,33 @@ public class CL_pred {
                 Globals.cl.predicted_origins[frame], delta);
 
 
-        int len = IntStream.of(0, 1, 2).map(i2 -> Math.abs(delta[i2])).sum();
+        int len = 0;
+        for (int i2 : new int[]{0, 1, 2}) {
+            int abs = Math.abs(delta[i2]);
+            len += abs;
+        }
         if (len > 640) 
         { 
             Math3D.VectorClear(Globals.cl.prediction_error);
         } else {
-            if (Globals.cl_showmiss.value != 0.0f
-                    && (IntStream.of(0, 1, 2).anyMatch(i1 -> delta[i1] != 0)))
-                Com.Printf("prediction miss on " + Globals.cl.frame.serverframe
-                        + ": " + (IntStream.of(0, 1, 2).map(v -> delta[v]).sum()) + '\n');
+            if (Globals.cl_showmiss.value != 0.0f) {
+                boolean b = false;
+                for (int i11 : new int[]{0, 1, 2}) {
+                    if (delta[i11] != 0) {
+                        b = true;
+                        break;
+                    }
+                }
+                if (b) {
+                    int sum = 0;
+                    for (int v : new int[]{0, 1, 2}) {
+                        int i1 = delta[v];
+                        sum += i1;
+                    }
+                    Com.Printf("prediction miss on " + Globals.cl.frame.serverframe
+                            + ": " + (sum) + '\n');
+                }
+            }
 
             Math3D.VectorCopy(Globals.cl.frame.playerstate.pmove.origin,
                     Globals.cl.predicted_origins[frame]);

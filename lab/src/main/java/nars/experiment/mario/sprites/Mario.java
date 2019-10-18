@@ -583,7 +583,13 @@ public class Mario extends Sprite {
     }
 
     public byte getKeyMask() {
-        int mask = IntStream.range(0, 7).filter(i -> keys[i]).map(i -> (1 << i)).reduce(0, (a, b) -> a | b);
+        int mask = 0;
+        for (int i = 0; i < 7; i++) {
+            if (keys[i]) {
+                int i1 = (1 << i);
+                mask = mask | i1;
+            }
+        }
         return (byte) mask;
     }
 

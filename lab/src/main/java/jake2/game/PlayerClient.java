@@ -27,6 +27,7 @@ import jake2.game.monsters.M_Player;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 public class PlayerClient {
@@ -292,7 +293,14 @@ public class PlayerClient {
             return;
         }
 
-        if (Stream.of("jail2", "jail4", "mine1", "mine2", "mine3", "mine4", "lab", "boss1", "fact3", "biggun", "space", "command", "power2", "strike").anyMatch(s -> (Lib.Q_stricmp(GameBase.level.mapname, s) == 0))) {
+        boolean b = false;
+        for (String s : Arrays.asList("jail2", "jail4", "mine1", "mine2", "mine3", "mine4", "lab", "boss1", "fact3", "biggun", "space", "command", "power2", "strike")) {
+            if ((Lib.Q_stricmp(GameBase.level.mapname, s) == 0)) {
+                b = true;
+                break;
+            }
+        }
+        if (b) {
             
             self.think = PlayerClient.SP_FixCoopSpots;
             self.nextthink = GameBase.level.time + Defines.FRAMETIME;

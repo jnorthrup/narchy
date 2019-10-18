@@ -17,6 +17,7 @@ package jcog.grammar.synthesize.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -44,7 +45,12 @@ public class ParseTreeUtils {
             this.start = start;
             this.rep = rep;
             this.end = end;
-            String sb = rep.stream().map(ParseTreeNode::getExample).collect(Collectors.joining("", start.getExample(), end.getExample()));
+            StringJoiner joiner = new StringJoiner("", start.getExample(), end.getExample());
+            for (ParseTreeNode parseTreeNode : rep) {
+                String parseTreeNodeExample = parseTreeNode.getExample();
+                joiner.add(parseTreeNodeExample);
+            }
+            String sb = joiner.toString();
             this.example = sb;
         }
 
@@ -170,7 +176,11 @@ public class ParseTreeUtils {
     }
 
     public static List<ParseTreeNode> getParseTreeAlt(MultiAlternationNode node) {
-        List<ParseTreeNode> parseTreeNodes = node.getChildren().stream().map(child -> new ParseTreeMultiAlternationNode(node, getParseTreeRepConst(child))).collect(Collectors.toList());
+        List<ParseTreeNode> parseTreeNodes = new ArrayList<>();
+        for (Node child : node.getChildren()) {
+            ParseTreeMultiAlternationNode parseTreeMultiAlternationNode = new ParseTreeMultiAlternationNode(node, getParseTreeRepConst(child));
+            parseTreeNodes.add(parseTreeMultiAlternationNode);
+        }
         return parseTreeNodes;
     }
 
@@ -222,8 +232,13 @@ public class ParseTreeUtils {
     }
 
     public static List<ParseTreeNode>[] getDescendantsByType(ParseTreeNode node) {
+        List<List<ParseTreeNode>> list = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            List<ParseTreeNode> parseTreeNodes = new ArrayList<>();
+            list.add(parseTreeNodes);
+        }
         @SuppressWarnings("unchecked")
-        List<ParseTreeNode>[] descendants = IntStream.range(0, 2).<List<ParseTreeNode>>mapToObj(i -> new ArrayList<>()).toArray(List[]::new);
+        List<ParseTreeNode>[] descendants = list.toArray(new List[0]);
         getDescendantsByTypeHelper(node, descendants);
         return descendants;
     }
@@ -234,7 +249,11 @@ public class ParseTreeUtils {
         } else if (node instanceof ParseTreeRepetitionNode) {
             ParseTreeRepetitionNode repNode = (ParseTreeRepetitionNode) node;
 
-            List<ParseTreeNode> newRep = repNode.rep.stream().map(rep -> getSubstitute(rep, cur, sub)).collect(Collectors.toList());
+            List<ParseTreeNode> newRep = new ArrayList<>();
+            for (ParseTreeNode rep : repNode.rep) {
+                ParseTreeNode substitute = getSubstitute(rep, cur, sub);
+                newRep.add(substitute);
+            }
 
             return new ParseTreeRepetitionNode(repNode.node,
                     getSubstitute(repNode.start, cur, sub),

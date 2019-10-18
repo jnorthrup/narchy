@@ -152,7 +152,14 @@ public class C4 {
 
         public Surface beliefCharts() {
 
-            List<Term> c =(List<Term>) IntStream.range(0, play.game.cols).mapToObj(i -> dropConcept(i, true).term()).collect(Collectors.toCollection((Supplier<FasterList>) FasterList::new));
+            Supplier<FasterList> collectionFactory = FasterList::new;
+            FasterList fasterList = collectionFactory.get();
+            int bound = play.game.cols;
+            for (int i = 0; i < bound; i++) {
+                Term term = dropConcept(i, true).term();
+                fasterList.add(term);
+            }
+            List<Term> c =(List<Term>) fasterList;
 
             c.add($.$$("whoWon(c,1)"));
             c.add($.$$("whoWon(c,0)"));

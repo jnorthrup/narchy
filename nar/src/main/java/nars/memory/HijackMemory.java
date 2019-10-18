@@ -165,7 +165,9 @@ public class HijackMemory extends Memory {
     @Override
     public void forEach(Consumer<? super Concept> c) {
 
-        table.forEach(k->c.accept(k.get()));
+        for (PLink<Concept> k : table) {
+            c.accept(k.get());
+        }
 
     }
 

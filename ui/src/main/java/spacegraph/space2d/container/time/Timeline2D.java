@@ -18,6 +18,8 @@ import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.video.Draw;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -371,7 +373,13 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         @Override
         public Iterable<E> events(long start, long end) {
 
-            return this.stream().filter(x -> intersects(x, start, end)).collect(Collectors.toList());
+            List<E> list = new ArrayList<>();
+            for (E x : this) {
+                if (intersects(x, start, end)) {
+                    list.add(x);
+                }
+            }
+            return list;
         }
 
         @Override

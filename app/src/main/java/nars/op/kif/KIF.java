@@ -138,9 +138,8 @@ public class KIF implements Iterable<Task> {
     private void process() {
         KB kb = KBmanager.manager.addKB("preprocess");
 
-        kif.formulaMap.values().forEach(xx -> {
-
-            FormulaPreprocessor.preProcess(xx, false, kb).forEach(x -> {
+        for (Formula xx : kif.formulaMap.values()) {
+            for (Formula x : FormulaPreprocessor.preProcess(xx, false, kb)) {
                 try {
                     Term y = formulaToTerm(x, 0);
                     if (y != null) {
@@ -150,15 +149,17 @@ public class KIF implements Iterable<Task> {
                     logger.error("{} {}", x, e.getMessage());
                     e.printStackTrace();
                 }
-            });
+            }
 
 
 
             /*Unknown operators: {=>=466, rangeSubclass=5, inverse=1, relatedInternalConcept=7, documentation=128, range=29, exhaustiveAttribute=1, trichotomizingOn=4, subrelation=22, not=2, partition=12, contraryAttribute=1, subAttribute=2, disjoint=5, domain=102, disjointDecomposition=2, domainSubclass=9, <=>=70}*/
-        });
+        }
 
 
-        fn.forEach((f, s) -> {
+        for (Map.Entry<Term, FnDef> entry : fn.entrySet()) {
+            Term f = entry.getKey();
+            FnDef s = entry.getValue();
             int ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
             Term[] vt = Util.map(0, ds, Term[]::new, i -> $.varDep(1 + i));
             Term v = null;
@@ -185,7 +186,7 @@ public class KIF implements Iterable<Task> {
                 }
             }
 
-        });
+        }
 
         if (symmetricRelations.size()>1 /*SymmetricRelation exists in the set initially */) {
 
@@ -266,8 +267,16 @@ public class KIF implements Iterable<Task> {
             throw new WTF();
         }
 
-        List<String> sargs = IntStream.range(1, l).mapToObj(x::getArgument).collect(Collectors.toList());
-        List<Term> args = sargs.stream().map((z) -> formulaToTerm(z, level + 1)).collect(Collectors.toList());
+        List<String> sargs = new ArrayList<>();
+        for (int i = 1; i < l; i++) {
+            String argument = x.getArgument(i);
+            sargs.add(argument);
+        }
+        List<Term> args = new ArrayList<>();
+        for (String sarg : sargs) {
+            Term formulaToTerm = formulaToTerm(sarg, level + 1);
+            args.add(formulaToTerm);
+        }
 
         if (args.contains(null))
             return Bool.Null;
@@ -394,7 +403,13 @@ public class KIF implements Iterable<Task> {
                     forVar = forVar.substring(1, forVar.length() - 1); 
                 }
                 String[] forVars = forVar.split(" ");
-                boolean missingAParamVar = Arrays.stream(forVars).anyMatch(vv -> !sargs.get(1).contains(vv));
+                boolean missingAParamVar = false;
+                for (String vv : forVars) {
+                    if (!sargs.get(1).contains(vv)) {
+                        missingAParamVar = true;
+                        break;
+                    }
+                }
                 if (!missingAParamVar) {
                     y = args.get(1); 
                 } else {
@@ -634,12 +649,14 @@ public class KIF implements Iterable<Task> {
             });
         }
         for (MutableSet<Term> ab : new MutableSet[]{_aVars, _bVars}) {
-            ab.stream().filter(aa -> aa.op() == VAR_INDEP && !common.contains(aa)).forEach(aa -> {
-                String str = aa.toString().substring(1);
-                Variable bb = $.v(VAR_DEP, str);
-                if (!remap.containsKey(bb))
-                    remap.put(aa, bb);
-            });
+            for (Term aa : ab) {
+                if (aa.op() == VAR_INDEP && !common.contains(aa)) {
+                    String str = aa.toString().substring(1);
+                    Variable bb = $.v(VAR_DEP, str);
+                    if (!remap.containsKey(bb))
+                        remap.put(aa, bb);
+                }
+            }
         }
 
         if (!remap.isEmpty()) {

@@ -449,7 +449,9 @@ public class UDPeer extends UDP {
 
     private RecycledSummaryStatistics latencyAvg() {
         RecycledSummaryStatistics r = new RecycledSummaryStatistics();
-        them.forEach(x -> r.accept(x.latency()));
+        for (UDProfile x : them) {
+            r.accept(x.latency());
+        }
         return r;
     }
 

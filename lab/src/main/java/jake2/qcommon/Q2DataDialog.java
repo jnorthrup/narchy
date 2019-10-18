@@ -379,10 +379,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.fill = GridBagConstraints.NONE;
             constraints.anchor = GridBagConstraints.SOUTHWEST;
             JButton exit = new JButton("Exit");
-            exit.addActionListener(e -> {
-                
-                System.exit(0);
-            });
+            exit.addActionListener(e -> System.exit(0));
 
 
 

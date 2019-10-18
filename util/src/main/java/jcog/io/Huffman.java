@@ -45,7 +45,7 @@ public class Huffman {
     private static final long PRIME64_3 = 1609587929392839161L;
     private static final long PRIME64_4 = -8796714831421723037L; //9650029242287828579
     private static final long PRIME64_5 = 2870177450012600261L;
-    private final Weigher<ByteAry, Integer> memoryUsageWeigher = (ByteAry key, Integer value) -> key.ary.length + 32;
+    private final Weigher<ByteAry, Integer> memoryUsageWeigher = (key, value) -> key.ary.length + 32;
     private int nodeId;
     private int symbl2CodLstIdx;
     private int maxSymbolLength;

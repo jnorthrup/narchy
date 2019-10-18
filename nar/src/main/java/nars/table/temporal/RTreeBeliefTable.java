@@ -72,7 +72,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 		} else {
             //null-terminated
-            return Arrays.stream(((RBranch<TaskRegion>) next).data).takeWhile(Objects::nonNull).allMatch(bb -> findEvictable(tree, bb, /*closest, */weakest, mergeableLeaf));
+			for (RNode<TaskRegion> bb : ((RBranch<TaskRegion>) next).data) {
+				if (bb == null) {
+					break;
+				}
+				if (!findEvictable(tree, bb, /*closest, */weakest, mergeableLeaf)) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		return true;
@@ -131,7 +139,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	private static boolean mergeOrEvict(Task weakest, Task merged, TruthProjection merging, Remember r) {
 		long now = r.nar.time();
 		double weakEvictionValue = -eviFast(weakest, now);
-		double mergeValue = eviFast(merged, now) - merging.sumOfDouble((Task t) -> eviFast(t, now));
+		double mergeValue = eviFast(merged, now) - merging.sumOfDouble(t -> eviFast(t, now));
 
 		return mergeValue >= weakEvictionValue;
 	}

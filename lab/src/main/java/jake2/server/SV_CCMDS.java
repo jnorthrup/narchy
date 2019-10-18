@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.stream.Stream;
 
@@ -617,11 +618,14 @@ public class SV_CCMDS {
 		Com.Printf("Loading game...\n");
 
 		String dir = Cmd.Argv(1);
-		if (Stream.of("..", "/", "\\").anyMatch(dir::contains)) {
-			Com.Printf("Bad savedir.\n");
+		for (String s : Arrays.asList("..", "/", "\\")) {
+			if (dir.contains(s)) {
+				Com.Printf("Bad savedir.\n");
+				break;
+			}
 		}
 
-		
+
 		String name = FS.Gamedir() + "/save/" + Cmd.Argv(1) + "/server.ssv";
 		RandomAccessFile f;
 		try {
@@ -680,10 +684,13 @@ public class SV_CCMDS {
 		}
 
         String dir = Cmd.Argv(1);
-		if (Stream.of("..", "/", "\\").anyMatch(dir::contains)) {
-			Com.Printf("Bad savedir.\n");
+		for (String s : Arrays.asList("..", "/", "\\")) {
+			if (dir.contains(s)) {
+				Com.Printf("Bad savedir.\n");
+				break;
+			}
 		}
-		
+
 		Com.Printf("Saving game...\n");
 
 		

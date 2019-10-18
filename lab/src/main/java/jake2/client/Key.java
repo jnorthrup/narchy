@@ -467,7 +467,13 @@ public class Key extends Globals {
 		if (str.length() == 1)
 			return str.charAt(0);
 
-        return IntStream.range(0, keynames.length).filter(i -> str.equalsIgnoreCase(keynames[i])).findFirst().orElse(-1);
+        int bound = keynames.length;
+        for (int i = 0; i < bound; i++) {
+            if (str.equalsIgnoreCase(keynames[i])) {
+                return i;
+            }
+        }
+        return -1;
 
     }
 

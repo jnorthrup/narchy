@@ -181,7 +181,13 @@ public interface Tensor  {
     default int volume() {
         int[] s = shape();
         int v = s[0];
-        v *= Arrays.stream(s, 1, s.length).reduce(1, (a, b) -> a * b);
+        int acc = 1;
+        int bound = s.length;
+        for (int j = 1; j < bound; j++) {
+            int i = s[j];
+            acc = acc * i;
+        }
+        v *= acc;
         return v;
     }
 
@@ -228,9 +234,7 @@ public interface Tensor  {
     }
 
     default void writeTo(FloatToFloatFunction perElement, float[] target, int offset) {
-        forEach((i, v) -> {
-            target[i + offset] = perElement.valueOf(v);
-        });
+        forEach((i, v) -> target[i + offset] = perElement.valueOf(v));
     }
 
     /** should not need subclassed */
@@ -239,9 +243,7 @@ public interface Tensor  {
     }
 
     default void writeTo(FloatFloatToFloatFunction perElement, float[] target, int offset) {
-        forEach((i, v) -> {
-            target[i + offset] = perElement.apply(target[i + offset], v);
-        });
+        forEach((i, v) -> target[i + offset] = perElement.apply(target[i + offset], v));
     }
 
     default TensorFunc apply(FloatToFloatFunction f) {

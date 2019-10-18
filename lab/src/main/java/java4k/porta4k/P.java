@@ -8,6 +8,8 @@ import javax.sound.sampled.SourceDataLine;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class P extends GamePanel {
@@ -286,8 +288,14 @@ public class P extends GamePanel {
 			int gameState = 0;
 			int animation = 0;
 
-			
-			final Color[] color = IntStream.range(0, str_colors.length() >> 1).mapToObj(i -> new Color((str_colors.charAt(2 * i + 0) << 16) + str_colors.charAt(2 * i + 1))).toArray(Color[]::new);
+
+			List<Color> list = new ArrayList<>();
+			int bound = str_colors.length() >> 1;
+			for (int i1 = 0; i1 < bound; i1++) {
+				Color color1 = new Color((str_colors.charAt(2 * i1 + 0) << 16) + str_colors.charAt(2 * i1 + 1));
+				list.add(color1);
+			}
+			final Color[] color = list.toArray(new Color[0]);
 
             int i, k;
 			int j = data.length();

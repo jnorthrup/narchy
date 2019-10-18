@@ -74,8 +74,14 @@ public class Simplify2D {
 		MetalBitSet usePt = MetalBitSet.bits(n);
 		usePt.setAll();
 		simplifySection(usePt, distanceTolerance, vertices, 0, n - 1);
-		FasterList<v2> result = IntStream.range(0, n).filter(usePt::get).mapToObj(vertices::get).collect(Collectors.toCollection(FasterList::new));
-        return result;
+		FasterList<v2> result = new FasterList<>();
+		for (int i = 0; i < n; i++) {
+			if (usePt.get(i)) {
+				v2 v2 = vertices.get(i);
+				result.add(v2);
+			}
+		}
+		return result;
 	}
 
 	private static void simplifySection(MetalBitSet usePt, float _distanceTolerance, FasterList<v2> vertices, int i, int j) {
@@ -228,8 +234,14 @@ public class Simplify2D {
 	public static FasterList<v2> mergeIdenticalPoints(FasterList<v2> vertices) {
 		FasterList<v2> results = new FasterList<>();
         for (v2 vOriginal : vertices) {
-            boolean alreadyExists = results.stream().anyMatch(vOriginal::equals);
-            if (!alreadyExists) results.add(vOriginal);
+			boolean alreadyExists = false;
+			for (v2 result : results) {
+				if (vOriginal.equals(result)) {
+					alreadyExists = true;
+					break;
+				}
+			}
+			if (!alreadyExists) results.add(vOriginal);
         }
 		return results;
 	}

@@ -88,9 +88,9 @@ public class SpaceLog {
 
         
         if (x instanceof ArrayNode) {
-            x.forEach(e -> {
-               input(origin, e);
-            });
+            for (JsonNode e : x) {
+                input(origin, e);
+            }
             return true;
         }
 

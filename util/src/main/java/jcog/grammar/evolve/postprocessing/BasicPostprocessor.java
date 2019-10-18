@@ -113,7 +113,11 @@ public class BasicPostprocessor implements Postprocessor {
         Iterator<Example> it = dataset.getExamples().iterator();
         for (Bounds[] extractionsOfExample : extractions) {
             Example example = it.next();
-            List<String> extractionsOfExampleStrings = Arrays.stream(extractionsOfExample).map(bounds -> example.getString().substring(bounds.start, bounds.end)).collect(Collectors.toList());
+            List<String> extractionsOfExampleStrings = new ArrayList<>();
+            for (Bounds bounds : extractionsOfExample) {
+                String substring = example.getString().substring(bounds.start, bounds.end);
+                extractionsOfExampleStrings.add(substring);
+            }
             evaluationsStrings.add(extractionsOfExampleStrings);
         }
         return evaluationsStrings;

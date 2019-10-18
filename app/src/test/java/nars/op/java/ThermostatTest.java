@@ -95,7 +95,7 @@ public class ThermostatTest {
                     System.out.println("EPISODE START");
                     n.clear();
 
-                    env.teach("down", condition, (Thermostat x) -> {
+                    env.teach("down", condition, x -> {
 
 
                         n.run(1);

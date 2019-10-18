@@ -20,6 +20,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
@@ -89,7 +91,7 @@ public class Box2DTests extends JComponent implements Runnable {
     private volatile v2 mousePosition = new v2();
 
     private void initMouse() {
-        addMouseWheelListener((MouseWheelEvent e) -> {
+        addMouseWheelListener(e -> {
             if (e.getWheelRotation() < 0) {
                 zoom *= 1.25f * -e.getWheelRotation();
             } else {
@@ -503,7 +505,13 @@ public class Box2DTests extends JComponent implements Runnable {
 
             pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
 
-            String[] caseNames = IntStream.range(0, cases.length).mapToObj(i -> (i + 1) + ". " + cases[i]).toArray(String[]::new);
+            List<String> list = new ArrayList<>();
+            int bound = cases.length;
+            for (int i = 0; i < bound; i++) {
+                String s = (i + 1) + ". " + cases[i];
+                list.add(s);
+            }
+            String[] caseNames = list.toArray(new String[0]);
 
             JComboBox petList = new JComboBox(caseNames);
             pane.add(petList);

@@ -319,7 +319,9 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
     }
 
     public void print(PrintStream p) {
-        forEach(p::println);
+        for (Y y : this) {
+            p.println(y);
+        }
     }
 
     public abstract void forEach(int max, Consumer<? super Y> action);
@@ -329,11 +331,11 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
      */
     public float priIfyNonDeleted(float initial, FloatFloatToFloatFunction reduce) {
         float[] x = {initial};
-        forEach(y -> {
+        for (Y y : this) {
             float p = pri(y);
             if (p == p)
                 x[0] = reduce.apply(x[0], p);
-        });
+        }
         return x[0];
     }
 
@@ -381,11 +383,11 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 
     public float[] histogram(float[] x) {
         int bins = x.length;
-        forEach(budget -> {
+        for (Y budget : this) {
             float p = priElse(budget, 0);
             int b = Util.bin(p, bins - 1);
             x[b]++;
-        });
+        }
         double total = 0;
         for (float e : x) {
             total += e;
@@ -421,7 +423,9 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 
     @Override
     public void forEachKey(Consumer<? super X> each) {
-        forEach(b -> each.accept(key(b)));
+        for (Y b : this) {
+            each.accept(key(b));
+        }
     }
 
     /** sets the bag's merge strategy */

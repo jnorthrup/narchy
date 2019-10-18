@@ -84,7 +84,7 @@ public abstract class Signal extends TaskConcept implements GameLoop, PermanentC
 
     @Deprecated public static FloatToObjectFunction<Truth> truther(float freqRes, float conf, Game g) {
         float c = g.ditherConf(conf);
-        return (float nextValue) ->
+        return nextValue ->
             nextValue==nextValue ?
                 DiscreteTruth.the(g.ditherFreq(nextValue, freqRes),c) : null;
     }

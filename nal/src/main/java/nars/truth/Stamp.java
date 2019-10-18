@@ -506,11 +506,21 @@ public interface Stamp {
     }
 
     static boolean overlap(Task a, IntToObjectFunction<Task> b, int from, int to) {
-        return IntStream.range(from, to).anyMatch(i -> Stamp.overlap(a, b.apply(i)));
+        for (int i = from; i < to; i++) {
+            if (Stamp.overlap(a, b.apply(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     static boolean overlapsAny(MetalLongSet aa,  long[] b) {
-        return Arrays.stream(b).anyMatch(aa::contains);
+        for (long l : b) {
+            if (aa.contains(l)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     static boolean overlapNullable(@Nullable Task x, Task y) {
@@ -615,7 +625,13 @@ public interface Stamp {
                 int rr = ptr[i];
                 if (rr >= 0) {
                     long[] ss = stamps.get(i);
-                    repeats += IntStream.range(0, rr).filter(j -> l.contains(ss[j])).count();
+                    long count = 0L;
+                    for (int j = 0; j < rr; j++) {
+                        if (l.contains(ss[j])) {
+                            count++;
+                        }
+                    }
+                    repeats += count;
                 }
             }
         }
@@ -703,7 +719,13 @@ public interface Stamp {
         return Util.unitize(((float) common) / denom);
     }
     private static int overlapCount(LongSet aa,  long[] b) {
-        int common = (int) Arrays.stream(b).filter(aa::contains).count();
+        long count = 0L;
+        for (long l : b) {
+            if (aa.contains(l)) {
+                count++;
+            }
+        }
+        int common = (int) count;
         return common;
     }
 

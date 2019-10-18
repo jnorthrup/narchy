@@ -14,7 +14,9 @@ public class Spiral<X> implements SpaceTransform<X> {
     @Override
     public void update(Iterable<Spatial<X>> g, float dt) {
         this.order = 0;
-        g.forEach(this::update);
+        for (Spatial<X> xSpatial : g) {
+            update(xSpatial);
+        }
     }
 
 

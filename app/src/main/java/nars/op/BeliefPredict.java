@@ -114,7 +114,9 @@ public class BeliefPredict extends NARPart {
 
         List<PredictionTask> oldPred = this.predictions;
         //TODO also directly remove from table?
-        oldPred.forEach(AtomicPri::delete);
+        for (PredictionTask predictionTask : oldPred) {
+            predictionTask.delete();
+        }
         oldPred.clear();
 
 

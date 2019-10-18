@@ -833,8 +833,15 @@ public class ap extends GamePanel {
             polygonYs[p] = SCREEN_CENTER_Y - (int)(K * ps[1][MAP_Y]);
           }
         }
-                
-        if (IntStream.of(0, 1, 2, 3).allMatch(v -> polygonYs[v] > -128)) {
+
+        boolean b = true;
+        for (int v : new int[]{0, 1, 2, 3}) {
+          if (polygonYs[v] <= -128) {
+            b = false;
+            break;
+          }
+        }
+        if (b) {
           
           g.setColor(roadColors[
               k == 0 ? (startingLine >> 1) : (band % ROAD_COLORS)]);

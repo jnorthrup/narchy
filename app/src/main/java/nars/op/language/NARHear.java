@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -55,9 +56,7 @@ public class NARHear extends Loop {
      * set wordDelayMS to 0 to disable twenglish function
      */
     public static Loop hear(NAR nar, String msg, String src, int wordDelayMS, float pri) {
-        return hearIfNotNarsese(nar, msg, src, (m) -> {
-            return hearText(nar, msg, src, wordDelayMS, pri);
-        });
+        return hearIfNotNarsese(nar, msg, src, (m) -> hearText(nar, msg, src, wordDelayMS, pri));
     }
 
     public static Loop hearText(NAR nar, String msg, String src, int wordDelayMS, float pri) {
@@ -119,7 +118,12 @@ public class NARHear extends Loop {
 
 
     public static @NotNull List<Term> tokenize(String msg) {
-        return Twokenize.tokenize(msg).stream().map(Twenglish::spanToTerm).collect(Collectors.toList());
+        List<Term> list = new ArrayList<>();
+        for (Twokenize.Span span : Twokenize.tokenize(msg)) {
+            Term term = Twenglish.spanToTerm(span);
+            list.add(term);
+        }
+        return list;
     }
 
     @Override

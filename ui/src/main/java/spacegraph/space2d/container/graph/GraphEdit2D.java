@@ -35,7 +35,9 @@ import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.space2d.widget.windo.util.Box2DGraphEditPhysics;
 import spacegraph.space2d.widget.windo.util.GraphEditPhysics;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -92,7 +94,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
         physics.start(this);
 
-        loop = root().animate(((float dt) -> {
+        loop = root().animate((dt -> {
             //constraints.update();
             this.physics.update(GraphEdit2D.this, dt);
             return true;
@@ -383,7 +385,9 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
         @Override
         protected void onRemoved(Node<Surface, Wire> r) {
-            r.edges(true, true).forEach(e -> e.id().remove());
+            for (FromTo<Node<Surface, Wire>, Wire> e : r.edges(true, true)) {
+                e.id().remove();
+            }
         }
 
     }
@@ -452,7 +456,12 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
         void update() {
             boundsInfo.text(GraphEdit2D.this.bounds.toString());
 
-            children.text(Joiner.on("\n").join(GraphEdit2D.this.keySet().stream().map(t -> info(t, getValue(t))).collect(Collectors.toList())));
+            List<String> list = new ArrayList<>();
+            for (Surface t : GraphEdit2D.this.keySet()) {
+                String info = info(t, getValue(t));
+                list.add(info);
+            }
+            children.text(Joiner.on("\n").join(list));
         }
 
         private String info(Surface x, ContainerSurface w) {

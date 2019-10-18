@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.textedit.keybind.basic;
 
 import com.google.common.base.Charsets;
 import spacegraph.space2d.widget.textedit.TextEditModel;
+import spacegraph.space2d.widget.textedit.buffer.BufferLine;
 import spacegraph.space2d.widget.textedit.keybind.Action;
 
 import javax.swing.*;
@@ -24,14 +25,14 @@ public class SaveFileAction implements Action {
       try (OutputStreamWriter writer =
           new OutputStreamWriter(new FileOutputStream(fileChooser.getSelectedFile()),
               Charsets.UTF_8)) {
-          editor.buffer().lines.forEach(l -> {
-          try {
-            writer.append(l.toLineString());
-            writer.append("\n");
-          } catch (Exception e) {
-            throw new RuntimeException("ファイルの書込みに失敗しました。");
+          for (BufferLine l : editor.buffer().lines) {
+              try {
+                  writer.append(l.toLineString());
+                  writer.append("\n");
+              } catch (Exception e) {
+                  throw new RuntimeException("ファイルの書込みに失敗しました。");
+              }
           }
-        });
       } catch (IOException e) {
         JOptionPane.showMessageDialog(null, e.getMessage());
       }

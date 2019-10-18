@@ -570,7 +570,9 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                 }
 
 
-                reinsertions.forEach(this::put);
+                for (X reinsertion : reinsertions) {
+                    put(reinsertion);
+                }
 
                 return true;
             default:

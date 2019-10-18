@@ -220,9 +220,7 @@ public class Jake2Agent extends GameX implements Runnable {
 
         rewardNormalized("health", -1, +1, new FloatFirstOrderDifference(nar::time, () -> player.health).nanIfZero());
 
-        rewardNormalized("speed", 0, +1, new FloatNormalized(() -> {
-            return player.speed;
-        }));
+        rewardNormalized("speed", 0, +1, new FloatNormalized(() -> player.speed));
         rewardNormalized("frags", 0, +1,
                 new FloatFirstOrderDifference(nar::time, player.damageInflicted::getOpaque).nanIfZero());
 

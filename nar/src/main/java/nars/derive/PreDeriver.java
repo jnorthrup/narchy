@@ -67,13 +67,14 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
         ByteHijackMemoize<PremiseKey, short[]> whats = Snapshot.get(preDerivation.taskTerm, d.nar,
             "ConceptMetaMemoizer_" + System.identityHashCode(d.deriver), d.time, -1, (c, w) -> {
-            if (w == null) {
+                    ByteHijackMemoize<PremiseKey, short[]> w1 = w;
+                    if (w1 == null) {
                 int capacity = 512;
-                w = new ByteHijackMemoize<>(PreDeriver::run,
+                w1 = new ByteHijackMemoize<>(PreDeriver::run,
                     capacity,
                     DEFAULT_HIJACK_REPROBES, false);
             }
-            return w;
+            return w1;
         } );
 
         if (whats!=null)

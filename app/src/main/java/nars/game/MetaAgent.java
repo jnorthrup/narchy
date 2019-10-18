@@ -112,7 +112,9 @@ public abstract class MetaAgent extends Game {
 	void actionCtlPriNodeRecursive(PriNode s, MapNodeGraph<PriNode, Object> g) {
 		if (s instanceof PriAmp)
 			priAction((PriAmp) s);
-		s.node(g).nodes(false, true).forEach((Node<PriNode, Object> x) -> actionCtlPriNodeRecursive(x.id(), g));
+		for (Node<PriNode, Object> x : s.node(g).nodes(false, true)) {
+			actionCtlPriNodeRecursive(x.id(), g);
+		}
 	}
 
 	void priAction(PriSource a) {
@@ -207,39 +209,41 @@ public abstract class MetaAgent extends Game {
 //        actionCtl($.inh(SELF, goalPri), n.goalPriDefault.amp.subRange(maxPri/dynamic, maxPri));
 
 			actionUnipolar($.inh(SELF, precise), (x) -> {
-			    float y;
-				if (x >= 0.75f) {
-					x = 0.01f;
+				float x1 = x;
+				float y;
+				if (x1 >= 0.75f) {
+					x1 = 0.01f;
 					y = 1;
-				} else if (x >= 0.5f) {
-					x = 0.05f;
+				} else if (x1 >= 0.5f) {
+					x1 = 0.05f;
 					y = 0.66f;
-				} else if (x >= 0.25f) {
-					x = 0.10f;
+				} else if (x1 >= 0.25f) {
+					x1 = 0.10f;
 					y = 0.33f;
 				} else {
-					x = 0.20f;
+					x1 = 0.20f;
 					y = 0;
 				}
-				nar.freqResolution.set(x);
+				nar.freqResolution.set(x1);
 				return y;
 			});
 			actionUnipolar($.inh(SELF, careful), (x) -> {
+				float x1 = x;
 				float y;
-				if (x >= 0.75f) {
-					x = 0.01f;
+				if (x1 >= 0.75f) {
+					x1 = 0.01f;
 					y = 1f;
-				} else if (x >= 0.5f) {
-					x = 0.02f;
+				} else if (x1 >= 0.5f) {
+					x1 = 0.02f;
 					y = 0.66f;
-				} else if (x >= 0.25f) {
-					x = 0.03f;
+				} else if (x1 >= 0.25f) {
+					x1 = 0.03f;
 					y = 0.33f;
 				} else {
-					x = 0.04f;
+					x1 = 0.04f;
 					y = 0;
 				}
-				nar.confResolution.set(x);
+				nar.confResolution.set(x1);
 				return y;
 			});
 //			//potentially dangerous, may become unable to convince itself to un-ignore things

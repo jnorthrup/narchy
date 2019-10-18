@@ -100,7 +100,8 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
         wave.forEach((freq, conf, start, end) -> {
 
-            if (start > maxT || end < minT)
+            long end1 = end;
+            if (start > maxT || end1 < minT)
                 return;
 
             colorize.colorize(gl, freq, conf);
@@ -111,10 +112,10 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
             gl.glVertex2f(x1, midY);
             gl.glVertex2f(x1, Y);
 
-            if (start == end)
-                end = start + 1;
+            if (start == end1)
+                end1 = start + 1;
 
-            float x2 = xTime(end);
+            float x2 = xTime(end1);
             gl.glVertex2f(x2, Y);
             gl.glVertex2f(x2, midY);
 

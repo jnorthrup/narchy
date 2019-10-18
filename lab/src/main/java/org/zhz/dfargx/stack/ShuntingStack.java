@@ -60,7 +60,9 @@ public class ShuntingStack {
         ArrayDeque<BranchNode> bs = this.branchStack;
         ArrayDeque<Node> fs = this.finalStack;
 
-        bs.forEach(fs::push);
+        for (BranchNode b : bs) {
+            fs.push(b);
+        }
         bs.clear();
 
         result.addAll(fs);

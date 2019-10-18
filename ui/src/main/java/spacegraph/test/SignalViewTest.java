@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamException;
 import com.google.common.util.concurrent.RateLimiter;
+import jcog.TODO;
 import jcog.Util;
 import jcog.exe.Every;
 import jcog.exe.Exe;
@@ -41,6 +42,7 @@ import javax.sound.sampled.LineUnavailableException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -112,10 +114,11 @@ public class SignalViewTest {
                     Windo ll = g.add(local).sizeRel(0.25f, 0.25f);
 
 
-                    n.sensors.values().stream().map(s -> new PushButton(s.id)).forEach(ss -> {
+                    for (Sensor s : n.sensors.values()) {
+                        PushButton ss = new PushButton(s.id);
                         Windo w = g.add(ss).sizeRel(0.1f, 0.1f);
                         g.addWire(new Wire(local, ss));
-                    });
+                    }
                 });
             });
 
@@ -321,7 +324,14 @@ public class SignalViewTest {
 
 
         private List<SensorStatus> manifest() {
-            return sensors.values().stream().filter(Sensor::on).map(Sensor::status).collect(toList());
+            List<SensorStatus> list = new ArrayList<>();
+            for (Sensor sensor : sensors.values()) {
+                if (sensor.on()) {
+                    SensorStatus status = sensor.status();
+                    list.add(status);
+                }
+            }
+            return list;
         }
 
         public VideoSensor add(Webcam ww) {
@@ -367,9 +377,7 @@ public class SignalViewTest {
             }
 
             for (Webcam ww : Webcam.getWebcams()) {
-                Exe.runLater(() -> {
-                    add(ww);
-                });
+                Exe.runLater(() -> add(ww));
             }
         }
     }
@@ -381,14 +389,14 @@ public class SignalViewTest {
         public RealTimeLine(SensorNode node) {
             super(VERTICAL);
 
-            node.sensors.values().forEach(s -> {
+            for (Sensor s : node.sensors.values()) {
                 if (s instanceof VideoSensor)
                     add(((VideoSensor) s), s.events);
                 else if (s instanceof AudioSensor)
                     add(((AudioSensor) s), s.events);
                 else
-                    throw new jcog.TODO();
-            });
+                    throw new TODO();
+            }
         }
 
         public Timeline2D newTrack(String label, Supplier<Surface> control) {

@@ -267,7 +267,12 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
     }
 
     private static String printArray(double[] fitness) {
-        String sb = Arrays.stream(fitness).mapToObj(v -> String.valueOf(Math.round(v * 100) / 100f)).collect(Collectors.joining(",", "[", "]"));
+        StringJoiner joiner = new StringJoiner(",", "[", "]");
+        for (double v : fitness) {
+            String s = String.valueOf(Math.round(v * 100) / 100f);
+            joiner.add(s);
+        }
+        String sb = joiner.toString();
         return sb;
     }
 

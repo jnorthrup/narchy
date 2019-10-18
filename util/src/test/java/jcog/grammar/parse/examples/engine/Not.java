@@ -8,7 +8,9 @@ package jcog.grammar.parse.examples.engine;
  * including the implied warranty of merchantability.
  */
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -136,7 +138,12 @@ public class Not extends Structure {
 	 * @return a <code>ConsultingNot</code> counterpart that can prove itself
 	 */
 	public Term copyForProof(AxiomSource as, Scope scope) {
-		Term[] newTerms = Arrays.stream(terms).map(term -> term.copyForProof(as, scope)).toArray(Term[]::new);
+		List<Term> list = new ArrayList<>();
+		for (Term term : terms) {
+			Term copyForProof = term.copyForProof(as, scope);
+			list.add(copyForProof);
+		}
+		Term[] newTerms = list.toArray(new Term[0]);
         return new ConsultingNot(new ConsultingStructure(as, functor, newTerms));
 	}
 
@@ -156,7 +163,13 @@ public class Not extends Structure {
 		if (!functorAndArityEquals(n)) {
 			return false;
 		}
-        return IntStream.range(0, terms.length).allMatch(i -> terms[i].equals(n.terms[i]));
+		int bound = terms.length;
+		for (int i = 0; i < bound; i++) {
+			if (!terms[i].equals(n.terms[i])) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

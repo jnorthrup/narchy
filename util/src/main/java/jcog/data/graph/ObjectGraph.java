@@ -186,7 +186,7 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
 
     /** creates a field setter from a path */
     public static <X,V> BiConsumer<X,V> setter(FastList<Pair<Class, Accessor>> path) {
-        return (X root, V val) -> {
+        return (root, val) -> {
             Object current = root;
 
             for (int i = 0, pathSize = path.size()-1; i < pathSize; i++)
@@ -197,7 +197,7 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
     }
     /** creates a field getter from a path */
     public static <X,Y> Function<X,Y> getter(FastList<Pair<Class, Accessor>> path) {
-        return (X root) -> {
+        return root -> {
             Object current = root;
 
             for (int i = 0, pathSize = path.size()-1; i < pathSize; i++)

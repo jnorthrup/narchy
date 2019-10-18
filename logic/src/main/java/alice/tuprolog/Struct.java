@@ -263,7 +263,13 @@ public class Struct extends Term {
     public boolean isGround() {
         if (!isAtomic()) {
             Term[] a = this.subs;
-            return IntStream.range(0, subs()).allMatch(i -> a[i].isGround());
+            int bound = subs();
+            for (int i = 0; i < bound; i++) {
+                if (!a[i].isGround()) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         return true;
@@ -295,7 +301,17 @@ public class Struct extends Term {
                 }
             }
         }
-        return IntStream.range(0, subs()).filter(i -> subs[i] instanceof Struct).mapToObj(i -> (Struct) subs[i]).map(s -> s.sub(name)).filter(Objects::nonNull).findFirst().orElse(null);
+        int bound = subs();
+        for (int i = 0; i < bound; i++) {
+            if (subs[i] instanceof Struct) {
+                Struct s = (Struct) subs[i];
+                Struct sub = s.sub(name);
+                if (sub != null) {
+                    return sub;
+                }
+            }
+        }
+        return null;
     }
 
 
@@ -383,7 +399,13 @@ public class Struct extends Term {
             Struct ts = (Struct) t;
             if (subs() == ts.subs() && name.equals(ts.name)) {
                 if (this.subs!=ts.subs) {
-                    return IntStream.range(0, subs()).allMatch(c -> subs[c].equals(ts.subs[c]));
+                    int bound = subs();
+                    for (int c = 0; c < bound; c++) {
+                        if (!subs[c].equals(ts.subs[c])) {
+                            return false;
+                        }
+                    }
+                    return true;
 
                 }
                 return true;
@@ -717,7 +739,15 @@ public class Struct extends Term {
                 Term[] xarg = this.subs;
                 Term[] yarg = yy.subs;
                 //repeat term, skip
-                return IntStream.range(0, arity).filter(c -> c <= 0 || xarg[c] != xarg[c - 1] || yarg[c] != yarg[c - 1]).allMatch(c -> xarg[c].unify(vl1, vl2, yarg[c]));
+                int bound = arity;
+                for (int c = 0; c < bound; c++) {
+                    if (c <= 0 || xarg[c] != xarg[c - 1] || yarg[c] != yarg[c - 1]) {
+                        if (!xarg[c].unify(vl1, vl2, yarg[c])) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
             }
         } else if (y instanceof Var) {
             return y.unify(vl2, vl1, this);

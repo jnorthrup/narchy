@@ -14,6 +14,7 @@ import nars.unify.Unify;
 import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 
 import java.util.Arrays;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -95,7 +96,11 @@ public final class CommonVariable extends UnnormalizedVariable {
         if (cv.length < 2 || cv.length > NAL.unify.UNIFY_COMMON_VAR_MAX)
             return Null;
 
-        MetalTreeSet<Variable> s = Arrays.stream(cv).map(o -> (Variable) o).collect(Collectors.toCollection(MetalTreeSet::new));
+        MetalTreeSet<Variable> s = new MetalTreeSet<>();
+        for (Object o : cv) {
+            Variable variable = (Variable) o;
+            s.add(variable);
+        }
 
         int ss = s.size();
         if (ss < 2 || ss > NAL.unify.UNIFY_COMMON_VAR_MAX)
@@ -123,7 +128,12 @@ public final class CommonVariable extends UnnormalizedVariable {
 
     static String key(Op o, IntrinSubterms vars) {
         int n = vars.subs();
-        String sb = IntStream.range(0, n).mapToObj(i -> String.valueOf(vars.sub(i))).collect(Collectors.joining("", String.valueOf(o.ch), ""));
+        StringJoiner joiner = new StringJoiner("", String.valueOf(o.ch), "");
+        for (int i = 0; i < n; i++) {
+            String s = String.valueOf(vars.sub(i));
+            joiner.add(s);
+        }
+        String sb = joiner.toString();
         return sb;
     }
 

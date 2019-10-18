@@ -150,15 +150,28 @@ public class PerformacesObjective implements Objective {
             int extractedEnd = extractedBounds.end;
             int extractedStart = extractedBounds.start;
 
-            overallNumChars += expectedRanges.stream().mapToInt(expectedBounds -> Math.min(extractedEnd, expectedBounds.end) -
-                    Math.max(extractedStart, expectedBounds.start)).map(numChars -> Math.max(0, numChars)).sum();
+            int sum = 0;
+            for (Bounds expectedBounds : expectedRanges) {
+                int numChars = Math.min(extractedEnd, expectedBounds.end) -
+                        Math.max(extractedStart, expectedBounds.start);
+                int max = Math.max(0, numChars);
+                sum += max;
+            }
+            overallNumChars += sum;
         }
         return overallNumChars;
     }
 
     
     private static int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
-        int identicalRanges = (int) Arrays.stream(rangesA).filter(boundsA -> rangesB.stream().anyMatch(boundsA::equals)).count();
+        int identicalRanges = (int) Arrays.stream(rangesA).filter(boundsA -> {
+            for (Bounds bounds : rangesB) {
+                if (boundsA.equals(bounds)) {
+                    return true;
+                }
+            }
+            return false;
+        }).count();
 
         return identicalRanges;
     }

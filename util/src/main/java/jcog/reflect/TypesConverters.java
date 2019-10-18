@@ -25,6 +25,7 @@ package jcog.reflect;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -56,7 +57,14 @@ public class TypesConverters
         ToStringConverters convs = (ToStringConverters) toString;
         if (convs == null) return null;
 
-        return convs.entrySet().stream().filter(classToStringConverterEntry -> classToStringConverterEntry.getKey() != null).filter(classToStringConverterEntry -> classToStringConverterEntry.getKey() == c).findFirst().map(Map.Entry::getValue).orElse(null);
+        for (Map.Entry<Class, Function<Object, String>> classToStringConverterEntry : convs.entrySet()) {
+            if (classToStringConverterEntry.getKey() != null) {
+                if (classToStringConverterEntry.getKey() == c) {
+                    return Optional.of(classToStringConverterEntry).map(Map.Entry::getValue).orElse(null);
+                }
+            }
+        }
+        return Optional.<Map.Entry<Class, Function<Object, String>>>empty().map(Map.Entry::getValue).orElse(null);
 
     }
 
@@ -74,7 +82,14 @@ public class TypesConverters
         Map<Class, Function<String, Object>> convs = toValues;
         if (convs == null) return null;
 
-        return convs.entrySet().stream().filter(classToValueConvertorEntry -> classToValueConvertorEntry.getKey() != null).filter(classToValueConvertorEntry -> classToValueConvertorEntry.getKey() == c).findFirst().map(Map.Entry::getValue).orElse(null);
+        for (Map.Entry<Class, Function<String, Object>> classToValueConvertorEntry : convs.entrySet()) {
+            if (classToValueConvertorEntry.getKey() != null) {
+                if (classToValueConvertorEntry.getKey() == c) {
+                    return Optional.of(classToValueConvertorEntry).map(Map.Entry::getValue).orElse(null);
+                }
+            }
+        }
+        return Optional.<Map.Entry<Class, Function<String, Object>>>empty().map(Map.Entry::getValue).orElse(null);
 
     }
 }

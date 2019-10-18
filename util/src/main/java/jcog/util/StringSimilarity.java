@@ -138,7 +138,13 @@ public class StringSimilarity {
                     si++;
                 }
             }
-            int transpositions = (int) IntStream.range(0, ms1.length).filter(mi -> ms1[mi] != ms2[mi]).count();
+            long count = 0L;
+            for (int i = 0; i < ms1.length; i++) {
+                if (ms1[i] != ms2[i]) {
+                    count++;
+                }
+            }
+            int transpositions = (int) count;
             int prefix = 0;
             for (int mi = 0; mi < min.length(); mi++) {
                 if (s1.charAt(mi) == s2.charAt(mi)) {

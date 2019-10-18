@@ -72,11 +72,11 @@ public class Islands {
         find.reset(num);
 
         final int[] i = {0};
-        cc.forEach((collidable) -> {
+        for (Collidable collidable : cc) {
             collidable.setIslandTag(i[0]++);
             collidable.setCompanionId(-1);
             collidable.setHitFraction(1f);
-        });
+        }
 
 
         findUnions(colWorld);

@@ -343,11 +343,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      * adapter
      */
     public Off onUpdate(Animated c) {
-        return onUpdate.on((JoglWindow s) -> c.animate(dtS));
+        return onUpdate.on(s -> c.animate(dtS));
     }
 
     public Off onUpdate(Runnable c) {
-        return onUpdate.on((JoglWindow s) -> c.run());
+        return onUpdate.on(s -> c.run());
     }
 
     /**

@@ -4,6 +4,7 @@ import jcog.learn.decision.RealDecisionTree;
 import jcog.sort.TopN;
 import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.tuple.primitive.FloatObjectPair;
+import tech.tablesaw.api.Row;
 
 import java.io.PrintStream;
 import java.util.HashMap;
@@ -40,13 +41,17 @@ public class DefaultScientist<S,E> extends Scientist<S,E> {
 
     protected void conclude() {
         PrintStream out = System.out;
-        best.forEach((experiment,b) -> {
+        for (Map.Entry<String, TopN<FloatObjectPair<String>>> entry : best.entrySet()) {
+            String experiment = entry.getKey();
+            TopN<FloatObjectPair<String>> b = entry.getValue();
             out.println(experiment);
-            b.forEach(bb -> out.println(bb.getTwo()) );
+            for (FloatObjectPair<String> bb : b) {
+                out.println(bb.getTwo());
+            }
             out.println();
             out.println();
             out.println();
-        });
+        }
     }
 
     @Override public int experimentIterations() {
@@ -57,13 +62,13 @@ public class DefaultScientist<S,E> extends Scientist<S,E> {
     public void analyze(Optimize<S, E> results) {
 
         TopN<FloatObjectPair<String>> b = bestsTable(results);
-        results.data.forEach(r -> {
+        for (Row r : results.data) {
             float score = (float) r.getDouble(0);
             if (score > b.minValueIfFull()) {
                 String report = r.toString();
                 b.accept(pair(score, report));
             }
-        });
+        }
 
         PrintStream out = System.out;
 

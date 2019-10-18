@@ -16,7 +16,9 @@ public class TextEditView implements BufferListener {
     protected TextEditView(Buffer buffer) {
         this.document = buffer;
         this.cursor = new CursorView(buffer.cursor());
-        document.lines.forEach(this::_addLine);
+        for (BufferLine line : document.lines) {
+            _addLine(line);
+        }
         buffer.addListener(this);
     }
 

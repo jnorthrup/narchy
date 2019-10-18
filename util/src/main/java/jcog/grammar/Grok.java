@@ -327,7 +327,12 @@ public class Grok implements Serializable {
         int strLen;
         if (str != null && (strLen = str.length()) != 0) {
 
-            return IntStream.range(0, strLen).allMatch(i -> Character.isWhitespace(str.charAt(i)));
+            for (int i = 0; i < strLen; i++) {
+                if (!Character.isWhitespace(str.charAt(i))) {
+                    return false;
+                }
+            }
+            return true;
         } else {
             return true;
         }
@@ -337,7 +342,10 @@ public class Grok implements Serializable {
         if (!str.isEmpty()) {
             int sl = sub.length();
             if (sl > 0) {
-                int count = (int) IntStream.iterate(0, idx -> (idx = str.indexOf(sub, idx)) != -1, idx -> idx + sl).count();
+                int count = (int) IntStream.iterate(0, idx -> {
+                    int idx1 = idx;
+                    return (idx1 = str.indexOf(sub, idx1)) != -1;
+                }, idx -> idx + sl).count();
 
 
                 return count;

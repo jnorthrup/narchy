@@ -272,7 +272,12 @@ public class Checkers {
                 } else
                     dsts = canJump() ? pieceCouldJumpToFrom(srcX, srcY) : pieceCouldMoveToFrom(srcX, srcY);
 
-                return dsts.stream().anyMatch(dst -> dst[0] == dstX && dst[1] == dstY);
+                for (int[] dst : dsts) {
+                    if (dst[0] == dstX && dst[1] == dstY) {
+                        return true;
+                    }
+                }
+                return false;
             }
         }
 

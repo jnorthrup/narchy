@@ -88,9 +88,16 @@ public class BurrowsWheeler {
 
 		Arrays.sort(in); // sort last word
 
-		int[] next = IntStream.range(0, n).map(i -> positions.get(in[i]).removeAtIndex(0)).toArray();
+		int[] next = new int[10];
+		int count = 0;
+		for (int i1 = 0; i1 < n; i1++) {
+			int removeAtIndex = positions.get(in[i1]).removeAtIndex(0);
+			if (next.length == count) next = Arrays.copyOf(next, count * 2);
+			next[count++] = removeAtIndex;
+		}
+		next = Arrays.copyOfRange(next, 0, count);
 
-        int cur = key;
+		int cur = key;
 		for (int i = 0; i < n; i++) {
 			out[i] = in[cur];
 			cur = next[cur];

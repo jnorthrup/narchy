@@ -45,9 +45,7 @@ public enum GraphIO { ;
 
         for (int i = 0; i < g.size(); ++i) {
             int ii = i;
-            g.neighborsOut(i).forEach(o -> {
-                out.println(ii + " " + o);
-            });
+            g.neighborsOut(i).forEach(o -> out.println(ii + " " + o));
         }
     }
 
@@ -63,9 +61,7 @@ public enum GraphIO { ;
 
         for (int i = 0; i < g.size(); ++i) {
             out.print(i + " ");
-            g.neighborsOut(i).forEach(o -> {
-                out.print(o + " ");
-            });
+            g.neighborsOut(i).forEach(o -> out.print(o + " "));
             out.println();
         }
     }
@@ -134,10 +130,8 @@ public enum GraphIO { ;
         out.println("*Arcs");
         for (int i = 0; i < g.size(); ++i) {
             int ii = i;
-            g.neighborsOut(i).forEach(o -> {
-                out.println((ii + 1) + " " +
-                        (o + 1) + " 1");
-            });
+            g.neighborsOut(i).forEach(o -> out.println((ii + 1) + " " +
+                    (o + 1) + " 1"));
         }
         out.println("*Edges");
     }
@@ -154,9 +148,7 @@ public enum GraphIO { ;
 
         for (int i = 0; i < g.size(); ++i) {
             out.print(" " + (i + 1));
-            g.neighborsOut(i).forEach(o -> {
-                out.print(" " + (o + 1));
-            });
+            g.neighborsOut(i).forEach(o -> out.print(" " + (o + 1)));
             out.println();
         }
         out.println();
@@ -196,14 +188,17 @@ public enum GraphIO { ;
         if (g.directed()) System.err.println(
                 "warning: you're saving a directed graph in Chaco format");
 
-        long edges = IntStream.range(0, g.size()).mapToLong(i -> g.neighborsOut(i).size()).sum();
+        long edges = 0L;
+        int bound = g.size();
+        for (int i1 = 0; i1 < bound; i1++) {
+            long size = g.neighborsOut(i1).size();
+            edges += size;
+        }
 
         out.println(g.size() + " " + edges / 2);
 
         for (int i = 0; i < g.size(); ++i) {
-            g.neighborsOut(i).forEach(o -> {
-                out.print((o + 1) + " ");
-            });
+            g.neighborsOut(i).forEach(o -> out.print((o + 1) + " "));
             out.println();
         }
 

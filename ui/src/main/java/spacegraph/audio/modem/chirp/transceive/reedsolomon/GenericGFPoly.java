@@ -177,7 +177,14 @@ final class GenericGFPoly {
             return this;
         }
         int size = coefficients.length;
-        int[] product = Arrays.stream(coefficients).map(coefficient -> field.multiply(coefficient, scalar)).toArray();
+        int[] product = new int[10];
+        int count = 0;
+        for (int coefficient : coefficients) {
+            int multiply = field.multiply(coefficient, scalar);
+            if (product.length == count) product = Arrays.copyOf(product, count * 2);
+            product[count++] = multiply;
+        }
+        product = Arrays.copyOfRange(product, 0, count);
         return new GenericGFPoly(field, product);
     }
 

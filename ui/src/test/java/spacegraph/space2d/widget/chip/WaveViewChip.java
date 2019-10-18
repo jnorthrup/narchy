@@ -13,7 +13,7 @@ public class WaveViewChip extends TypedPort<ObjectIntPair<float[]>> {
     public WaveViewChip() {
         super(ObjectIntPair.class);
 
-        on((ObjectIntPair<float[]> nextBuffer)->{
+        on(nextBuffer ->{
             float[] b = nextBuffer.getOne();
             buffer.freeHead(b.length);
             buffer.write(b);

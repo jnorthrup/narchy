@@ -53,7 +53,13 @@ public class World {
 		if(!inside(x, SIZE) || !inside(y, SIZE)) {
 			return true;
 		}
-        return IntStream.range(0, obstacles.length).anyMatch(i -> obstacles[i].pointCollides(x, y));
+        int bound = obstacles.length;
+        for (int i = 0; i < bound; i++) {
+            if (obstacles[i].pointCollides(x, y)) {
+                return true;
+            }
+        }
+        return false;
 	}
 
 	public int getTime() {

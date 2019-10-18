@@ -59,7 +59,11 @@ public class DecisionTree<K, V> {
 
         Map<V, Long> labelCount = data.collect(groupingBy((x) -> x.apply(value), counting()));
 
-        long totalCount = labelCount.values().stream().mapToLong(x -> x).sum();
+        long totalCount = 0L;
+        for (Long x : labelCount.values()) {
+            long l = x;
+            totalCount += l;
+        }
         for (Map.Entry<V, Long> e: labelCount.entrySet()) {
             long nbOfLabels = e.getValue();
             if ((nbOfLabels / (double) totalCount) >= homogenityPercentage) {
@@ -95,8 +99,17 @@ public class DecisionTree<K, V> {
      */
     static <K, V> V majority(K value, Stream<Function<K, V>> data) {
 
-        return data.collect(groupingBy(x -> x.apply(value), counting()))
-                .entrySet().stream().max(Map.Entry.comparingByValue()).get().getKey();
+        boolean seen = false;
+        Map.Entry<V, Long> best = null;
+        Comparator<Map.Entry<V, Long>> comparator = Map.Entry.comparingByValue();
+        for (Map.Entry<V, Long> vLongEntry : data.collect(groupingBy(x -> x.apply(value), counting()))
+                .entrySet()) {
+            if (!seen || comparator.compare(vLongEntry, best) > 0) {
+                seen = true;
+                best = vLongEntry;
+            }
+        }
+        return (seen ? Optional.of(best) : Optional.<Map.Entry<V, Long>>empty()).get().getKey();
     }
 
     private static void printSubtree(DecisionNode<?> node, PrintStream o) {
@@ -283,14 +296,18 @@ public class DecisionTree<K, V> {
     /** var is the name of the target value */
     public SortedMap<DecisionNode.LeafNode<V>, List<String>> explainedConditions() {
         SortedMap<DecisionNode.LeafNode<V>, List<String>> map = new TreeMap<>();
-        explanations().entrySet().forEach((e) -> {
+        for (Map.Entry<DecisionNode.LeafNode<V>, List<ObjectBooleanPair<DecisionNode<V>>>> e : explanations().entrySet()) {
             DecisionNode.LeafNode<V> result = e.getKey();
-            List<String> cond = e.getValue().stream().map(c ->
-                c.getOne().condition(c.getTwo())
-            ).filter(x -> !"false".equals(x)).collect(toList());
+            List<String> cond = new ArrayList<>();
+            for (ObjectBooleanPair<DecisionNode<V>> c : e.getValue()) {
+                String x = c.getOne().condition(c.getTwo());
+                if (!"false".equals(x)) {
+                    cond.add(x);
+                }
+            }
             if (!cond.isEmpty())
                 map.put(result, cond);
-        });
+        }
         return map;
     }
 
@@ -460,6 +477,10 @@ public class DecisionTree<K, V> {
     }
 
     public void printExplanations(PrintStream out) {
-        explainedConditions().forEach((leaf, path) -> out.println(leaf + "\n\t" + path));
+        for (Map.Entry<DecisionNode.LeafNode<V>, List<String>> entry : explainedConditions().entrySet()) {
+            DecisionNode.LeafNode<V> leaf = entry.getKey();
+            List<String> path = entry.getValue();
+            out.println(leaf + "\n\t" + path);
+        }
     }
 }

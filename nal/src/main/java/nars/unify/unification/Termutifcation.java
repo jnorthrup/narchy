@@ -12,6 +12,7 @@ import nars.unify.mutate.Termutator;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -75,9 +76,20 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
                 //HACK could be better
                 /* equals between Term and Unification:
                 Reports calls to .equals() where the target and argument are of incompatible types. While such a call might theoretically be useful, most likely it represents a bug. */
-                return shuffle(this, base.random).stream().map(a -> a.transform(x)).collect(Collectors.toList()).stream().filter(z -> z != null
-                        &&
-                        z != Unification.Null).collect(Collectors.toList());
+                List<Term> result = new ArrayList<>();
+                List<Term> list1 = new ArrayList<>();
+                for (DeterministicUnification a : shuffle(this, base.random)) {
+                    Term transform = a.transform(x);
+                    list1.add(transform);
+                }
+                for (Term z : list1) {
+                    if (z != null
+                            &&
+                            z != Unification.Null) {
+                        result.add(z);
+                    }
+                }
+                return result;
         }
     }
 

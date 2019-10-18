@@ -125,8 +125,12 @@ public abstract class Parser {
 	 * @return a copy of the input Set, cloning each element of it
 	 */
 	static Set<Assembly> elementClone(Set<Assembly> v) {
-		Set<Assembly> copy = v.stream().map(Assembly::clone).collect(Collectors.toSet());
-        return copy;
+		Set<Assembly> copy = new HashSet<>();
+		for (Assembly assembly : v) {
+			Assembly clone = assembly.clone();
+			copy.add(clone);
+		}
+		return copy;
 	}
 
 	/**

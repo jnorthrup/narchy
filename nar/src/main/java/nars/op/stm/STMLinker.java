@@ -115,7 +115,13 @@ public class STMLinker extends TaskAction {
 			//TODO test
 			//int i = 0;
 			int h = stm.head();
-			novel= IntStream.range(0, capacity).mapToObj(i -> link(x, stm.peek(h, i), factor, why, d)).reduce(true, (a, b) -> a && b);
+			Boolean acc = true;
+			int bound = capacity;
+			for (int i = 0; i < bound; i++) {
+				Boolean link = link(x, stm.peek(h, i), factor, why, d);
+				acc = acc && link;
+			}
+			novel= acc;
 		}
 
 		if (novel && keep(x)) {

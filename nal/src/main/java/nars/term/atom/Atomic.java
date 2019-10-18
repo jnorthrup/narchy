@@ -343,7 +343,12 @@ public abstract class Atomic implements Term {
         if ((t0 == '\"') && (t.charAt(len - 1) == '\"'))
             return false;
 
-        return IntStream.range(0, len).anyMatch(i -> !Atom.isValidAtomChar(t.charAt(i)));
+        for (int i = 0; i < len; i++) {
+            if (!Atom.isValidAtomChar(t.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

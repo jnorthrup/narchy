@@ -21,7 +21,11 @@ import java.util.stream.IntStream;
 public class GrammarUtils {
     public static <V> Map<V, Integer> getInverse(List<V> list) {
         int l = list.size();
-        Map<V, Integer> inverse = IntStream.range(0, l).boxed().collect(Collectors.toMap(list::get, i -> i, (a, b) -> b, () -> new HashMap<>(l)));
+        Map<V, Integer> inverse = new HashMap<>(l);
+        for (int i = 0; i < l; i++) {
+            Integer integer = i;
+            inverse.put(list.get(integer), integer);
+        }
         return inverse;
     }
 

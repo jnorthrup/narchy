@@ -52,12 +52,13 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
         int width = src.width();
         int height = src.height();
 
-        IntStream.range(0, blobs).forEach(i->{
-            Term base = $.func("blob" , $.the(i), root);
+        for (int j = 0; j < blobs; j++) {
+            int i = j;
+            Term base = $.func("blob", $.the(i), root);
 
             FloatSupplier v2 = () -> {
                 Centroid node = net.node(i);
-                if (node!=null)
+                if (node != null)
                     return (float) node.getEntry(0);
                 else
                     return Float.NaN;
@@ -65,7 +66,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
             agent.sense($.inh(base, Atomic.the("x")), new FloatNormalized(v2, 0f, 1f));
             FloatSupplier v1 = () -> {
                 Centroid node = net.node(i);
-                if (node!=null)
+                if (node != null)
                     return (float) node.getEntry(1);
                 else
                     return Float.NaN;
@@ -73,17 +74,15 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
             agent.sense($.inh(base, Atomic.the("y")), new FloatNormalized(v1, 0f, 1f));
             FloatSupplier v = () -> {
                 Centroid node = net.node(i);
-                if (node!=null)
+                if (node != null)
                     return (float) node.getEntry(2);
                 else
                     return Float.NaN;
             };
             agent.sense($.inh(base, Atomic.the("c")), new FloatNormalized(v, 0f, 1f));
 
-            
-            
-            
-        });
+
+        }
 
 
         agent.onFrame(this);

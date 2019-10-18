@@ -241,7 +241,12 @@ public abstract class Main extends Base {
             return false;
 
         cplane_t[] frustum = this.frustum;
-        return IntStream.range(0, 4).anyMatch(i -> Math3D.BoxOnPlaneSide(mins, maxs, frustum[i]) == 2);
+        for (int i = 0; i < 4; i++) {
+            if (Math3D.BoxOnPlaneSide(mins, maxs, frustum[i]) == 2) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -599,7 +604,13 @@ public abstract class Main extends Base {
     static int SignbitsForPlane(cplane_t out) {
 
         float[] n = out.normal;
-        int bits = IntStream.range(0, 3).filter(j -> n[j] < 0).map(j -> (1 << j)).reduce(0, (a, b) -> a | b);
+        int bits = 0;
+        for (int j = 0; j < 3; j++) {
+            if (n[j] < 0) {
+                int i = (1 << j);
+                bits = bits | i;
+            }
+        }
         return bits;
     }
 

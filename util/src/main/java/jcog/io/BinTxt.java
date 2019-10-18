@@ -1,5 +1,6 @@
 package jcog.io;
 
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -11,7 +12,12 @@ public class BinTxt {
 	public static final char[] symbols;
 
 	static {
-		String x = IntStream.rangeClosed(192, 255).mapToObj(i -> String.valueOf((char) i)).collect(Collectors.joining("", "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.~", ""));
+        StringJoiner joiner = new StringJoiner("", "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.~", "");
+        for (int i = 192; i <= 255; i++) {
+            String s = String.valueOf((char) i);
+            joiner.add(s);
+        }
+        String x = joiner.toString();
 
 
         symbols = x.toCharArray();

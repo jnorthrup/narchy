@@ -553,9 +553,7 @@ public class TermTestMisc {
 
 
     public static void assertValidTermValidConceptInvalidTaskContent(String o) {
-        assertThrows(TaskException.class, () -> {
-            NARS.shell().input(o);
-        });
+        assertThrows(TaskException.class, () -> NARS.shell().input(o));
     }
 
 
@@ -622,9 +620,7 @@ public class TermTestMisc {
 
 
     static void assertInvalid(@NotNull String o) {
-        assertThrows(TermException.class, () -> {
-            $(o);
-        });
+        assertThrows(TermException.class, () -> $(o));
     }
 
     @Test

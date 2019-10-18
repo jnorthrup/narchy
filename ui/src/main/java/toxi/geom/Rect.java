@@ -29,6 +29,7 @@ package toxi.geom;
 
 import toxi.math.MathUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -281,7 +282,11 @@ public class Rect implements Shape2D {
 
     @Override
     public List<Line2D> getEdges() {
-        List<Line2D> edges = IntStream.range(0, 4).mapToObj(this::getEdge).collect(Collectors.toList());
+        List<Line2D> edges = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            Line2D edge = getEdge(i);
+            edges.add(edge);
+        }
         return edges;
     }
 

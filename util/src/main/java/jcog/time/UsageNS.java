@@ -24,7 +24,13 @@ public class UsageNS<X> {
     protected void print(PrintStream out) {
         //FasterList<Pair<X, AtomicHistogram>> l = usage.entrySet().stream().map(e -> Tuples.pair(e.getKey(), e.getValue())).collect(toList());
         FasterList<HashCachedPair<X, AtomicHistogram>> fl = new FasterList();
-        usage.forEach((x,h)->{if (h.getTotalCount() > 0)  {fl.add(new HashCachedPair(x,h.copy()));}});
+        for (Map.Entry<X, AtomicHistogram> entry : usage.entrySet()) {
+            X x = entry.getKey();
+            AtomicHistogram h = entry.getValue();
+            if (h.getTotalCount() > 0) {
+                fl.add(new HashCachedPair(x, h.copy()));
+            }
+        }
         fl.sortThis((a,b) -> {
             if (a ==b) return 0;
             AtomicHistogram aa = a.getTwo();

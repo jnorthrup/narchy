@@ -157,7 +157,13 @@ public class Lab<X> {
      * @param goal
      */
     public Optimize<X, X> optimize(Consumer<X> procedure, Goal<X> goal) {
-        return optimize(subject, vars.values().stream().filter(Var::ready).collect(toList()),(s -> {
+        List<Var<X, ?>> list = new ArrayList<>();
+        for (Var<X, ?> xVar : vars.values()) {
+            if (xVar.ready()) {
+                list.add(xVar);
+            }
+        }
+        return optimize(subject, list,(s -> {
                     X ss = s.get();
                     procedure.accept(ss);
                     return ss;
@@ -165,7 +171,13 @@ public class Lab<X> {
     }
 
     public <Y> Optimize<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, List<Sensor<Y, ?>> sensors) {
-        return optimize(subject, vars.values().stream().filter(Var::ready).collect(toList()), procedure, goal, sensors
+        List<Var<X, ?>> list = new ArrayList<>();
+        for (Var<X, ?> xVar : vars.values()) {
+            if (xVar.ready()) {
+                list.add(xVar);
+            }
+        }
+        return optimize(subject, list, procedure, goal, sensors
         );
     }
 
@@ -176,7 +188,12 @@ public class Lab<X> {
 
     @SafeVarargs
     public final <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, FloatFunction<Y>... goal) {
-        return optilive(procedure, Stream.of(goal).map(Goal::new).collect(toList()), Collections.EMPTY_LIST);
+        List<Goal<Y>> list = new ArrayList<>();
+        for (FloatFunction<Y> yFloatFunction : goal) {
+            Goal<Y> yGoal = new Goal<>(yFloatFunction);
+            list.add(yGoal);
+        }
+        return optilive(procedure, list, Collections.EMPTY_LIST);
     }
 
     @SafeVarargs
@@ -185,12 +202,24 @@ public class Lab<X> {
     }
 
     public <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, List<Goal<Y>> goal, List<Sensor<Y, ?>> sensors) {
+        List<Var<X, ?>> list = new ArrayList<>();
+        for (Var<X, ?> xVar : vars.values()) {
+            if (xVar.ready()) {
+                list.add(xVar);
+            }
+        }
         return new Optilive<>(subject, procedure, goal,
-                    vars.values().stream().filter(Var::ready).collect(toList()), sensors);
+                list, sensors);
     }
 
     public <Y> Optimize<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, Lab<Y> sensors) {
-        return optimize(subject, vars.values().stream().filter(Var::ready).collect(toList()),
+        List<Var<X, ?>> list = new ArrayList<>();
+        for (Var<X, ?> xVar : vars.values()) {
+            if (xVar.ready()) {
+                list.add(xVar);
+            }
+        }
+        return optimize(subject, list,
                 procedure, goal, new FasterList(sensors.sensors.values())
         );
     }
@@ -397,7 +426,7 @@ public class Lab<X> {
     }
 
     public Lab<X> var(String key, Function<X, Integer> get, ObjectIntProcedure<X> apply) {
-        return var(key, Float.NaN, Float.NaN, Float.NaN, (x) -> get.apply(x).floatValue() /* HACK */, (X x, float v) -> {
+        return var(key, Float.NaN, Float.NaN, Float.NaN, (x) -> get.apply(x).floatValue() /* HACK */, (x, v) -> {
             int i = Math.round(v);
             apply.value(x, i);
             return i;
@@ -407,7 +436,7 @@ public class Lab<X> {
     public Lab<X> var(String key, int min, int max, int inc, Function<X, Integer> get, ObjectIntProcedure<X> apply) {
         return var(key, min, max, inc < 0 ? Float.NaN : inc,
             (x) -> get!=null ? get.apply(x).floatValue() : null /* HACK */,
-            (X x, float v) -> {
+            (x, v) -> {
                 int i = Math.round(v);
                 apply.value(x, i);
                 return i;
@@ -504,9 +533,7 @@ public class Lab<X> {
             IntRange.class, (sample, k, p) -> {
                 final Function<X, IntRange> get = ObjectGraph.getter(p);
                 IntRange fr = get.apply(sample);
-                var(k, fr.min, fr.max, -1, null /* TODO */, (ObjectIntProcedure<X>) (x, v) -> {
-                    get.apply(x).set(v);
-                });
+                var(k, fr.min, fr.max, -1, null /* TODO */, (ObjectIntProcedure<X>) (x, v) -> get.apply(x).set(v));
             },
 
 

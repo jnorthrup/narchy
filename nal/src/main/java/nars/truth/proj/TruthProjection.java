@@ -230,7 +230,13 @@ public abstract class TruthProjection extends TaskList {
 		if (s == 0)
 			return 0;
 		double[] evi = this.evi;
-		int y = (int) IntStream.range(0, s).filter(i -> sane(evi[i])).count();
+		long count = 0L;
+		for (int i = 0; i < s; i++) {
+			if (sane(evi[i])) {
+				count++;
+			}
+		}
+		int y = (int) count;
         return y;
 	}
 
@@ -243,7 +249,13 @@ public abstract class TruthProjection extends TaskList {
 		if (evi == null || evi.length < s)
 			evi = this.evi = new double[s];
 
-		int count = (int) IntStream.range(0, s).filter(this::update).count();
+		long result = 0L;
+		for (int i = 0; i < s; i++) {
+			if (update(i)) {
+				result++;
+			}
+		}
+		int count = (int) result;
 
         if (count > 0) {
 			if (count!=s)
@@ -493,9 +505,13 @@ public abstract class TruthProjection extends TaskList {
 			return Stamp.zip(s0, stamp(1), (float) (evi[0] / (evi[0] + evi[1])), capacity);
 		}
 
-		int lenSum = IntStream.range(0, n).map(i -> stamp(i).length).sum();
+		int lenSum = 0;
+		for (int i1 = 0; i1 < n; i1++) {
+			int length = stamp(i1).length;
+			lenSum += length;
+		}
 
-        if (lenSum <= capacity) {
+		if (lenSum <= capacity) {
 			//return Stamp.toMutableSet(maxPossibleStampLen, this::stamp, n).toSortedArray();
 
 
@@ -596,7 +612,15 @@ public abstract class TruthProjection extends TaskList {
 
 	private double eviSum(@Nullable IntPredicate each) {
 		int n = size;
-		double e = IntStream.range(0, n).filter(i -> each == null || each.test(i)).mapToDouble(i -> evi[i]).filter(TruthProjection::sane).sum();
+		double e = 0.0;
+		for (int i = 0; i < n; i++) {
+			if (each == null || each.test(i)) {
+				double v = evi[i];
+				if (sane(v)) {
+					e += v;
+				}
+			}
+		}
 		return e;
 	}
 
@@ -666,7 +690,9 @@ public abstract class TruthProjection extends TaskList {
 
 	public final TruthProjection add(Collection<? extends Tasked> tasks) {
 		ensureCapacity(tasks.size());
-		tasks.forEach(this::addFast);
+		for (Tasked task : tasks) {
+			addFast(task);
+		}
 		return this;
 	}
 
@@ -826,8 +852,12 @@ public abstract class TruthProjection extends TaskList {
 
 							if (remain-1 >= minComponents) {
 								//determine whether to keep B if B can be removed
-								double eviLoss = IntStream.range(0, B).mapToDouble(x -> evi[x] * (1 - discA)).sum();
-                                if (eviLoss > evi[B]) {
+								double eviLoss = 0.0;
+								for (int x = 0; x < B; x++) {
+									double v = evi[x] * (1 - discA);
+									eviLoss += v;
+								}
+								if (eviLoss > evi[B]) {
 									nullify(B); //intermpolating with B is too costly
 									remain--;
 									assert(remain >= minComponents);
@@ -839,7 +869,12 @@ public abstract class TruthProjection extends TaskList {
 							}
 
 							ea = 0;
-                            ea += IntStream.range(0, B).mapToDouble(x -> (evi[x] *= discA)).sum();
+							double sum = 0.0;
+							for (int x = 0; x < B; x++) {
+								double v = (evi[x] *= discA);
+								sum += v;
+							}
+							ea += sum;
 						}
 
 

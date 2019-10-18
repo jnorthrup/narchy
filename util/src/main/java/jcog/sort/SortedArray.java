@@ -330,7 +330,13 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     public boolean isSorted(FloatFunction<X> f) {
         X[] ii = this.items;
         //TODO use valueAt(
-        return IntStream.range(1, size).noneMatch(i -> f.floatValueOf(ii[i - 1]) >= f.floatValueOf(ii[i]));
+        int bound = size;
+        for (int i = 1; i < bound; i++) {
+            if (f.floatValueOf(ii[i - 1]) >= f.floatValueOf(ii[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public int indexOf(final X element, FloatFunction<X> cmp) {
@@ -448,7 +454,15 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         if (s > 0) {
             X[] ii = items;
             //(X) ITEM.getOpaque(ii,i)
-            return Arrays.stream(ii, 0, s).filter(Objects::nonNull).allMatch(action);
+            for (int i = 0; i < s; i++) {
+                X x = ii[i];
+                if (x != null) {
+                    if (!action.test(x)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
         return true;
     }

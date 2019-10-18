@@ -1806,7 +1806,12 @@ public class OOLibrary extends PrologLib {
     
     private static boolean matchClasses(Class<?>[] mclasses, Class<?>... pclasses) {
         if (mclasses.length == pclasses.length) {
-            return IntStream.range(0, mclasses.length).allMatch(i -> matchClass(mclasses[i], pclasses[i]));
+            for (int i = 0; i < mclasses.length; i++) {
+                if (!matchClass(mclasses[i], pclasses[i])) {
+                    return false;
+                }
+            }
+            return true;
         }
         return false;
     }
@@ -1846,7 +1851,12 @@ public class OOLibrary extends PrologLib {
         Class<?>[] p1 = c1.getParameterTypes();
         Class<?>[] p2 = c2.getParameterTypes();
         int n = p1.length;
-        return IntStream.range(0, n).allMatch(i -> matchClass(p2[i], p1[i]));
+        for (int i = 0; i < n; i++) {
+            if (!matchClass(p2[i], p1[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static Constructor<?> mostSpecificConstructor(Vector<Constructor<?>> constructors)
@@ -1874,7 +1884,12 @@ public class OOLibrary extends PrologLib {
         Class<?>[] p1 = c1.getParameterTypes();
         Class<?>[] p2 = c2.getParameterTypes();
         int n = p1.length;
-        return IntStream.range(0, n).allMatch(i -> matchClass(p2[i], p1[i]));
+        for (int i = 0; i < n; i++) {
+            if (!matchClass(p2[i], p1[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     

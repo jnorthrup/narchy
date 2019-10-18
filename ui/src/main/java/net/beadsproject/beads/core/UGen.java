@@ -587,7 +587,12 @@ public abstract class UGen extends Auvent {
 			}
 			if (inputCount == 0) {
 
-                inputCount += Arrays.stream(inputsAtChannel).mapToInt(FasterList::size).sum();
+				int sum = 0;
+				for (FasterList<BufferPointer> bufferPointers : inputsAtChannel) {
+					int size = bufferPointers.size();
+					sum += size;
+				}
+				inputCount += sum;
 			}
 			if (inputCount == 0) {
 				noInputs = true;

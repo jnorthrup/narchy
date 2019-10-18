@@ -379,7 +379,13 @@ public class ClassReloader extends ClassLoader {
             }
             ClassLoader parent = current.getParent();
             Field[] fields = ClassLoader.class.getDeclaredFields();
-            Field parentField = Arrays.stream(fields).filter(f -> f.getName().compareTo("parent") == 0).findFirst().orElse(null);
+            Field parentField = null;
+            for (Field f : fields) {
+                if (f.getName().compareTo("parent") == 0) {
+                    parentField = f;
+                    break;
+                }
+            }
             if (parentField != null) {
                 parentField.setAccessible(true);
                 try {
@@ -560,7 +566,13 @@ public class ClassReloader extends ClassLoader {
     }
 
     protected Class<?> retrieveFromCache(String s) {
-        Class<?> clazz = this.reloadableClassCache.stream().filter(c -> c.getName().compareTo(s) == 0).findFirst().orElse(null);
+        Class<?> clazz = null;
+        for (Class<?> c : this.reloadableClassCache) {
+            if (c.getName().compareTo(s) == 0) {
+                clazz = c;
+                break;
+            }
+        }
         return clazz;
     }
 

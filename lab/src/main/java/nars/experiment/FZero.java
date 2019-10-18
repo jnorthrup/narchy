@@ -107,9 +107,7 @@ public class FZero extends GameX {
         //        {
             int nx = 4;
             AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(
-                    $.p(id,$.the("cam")), vision, nx, nx, (subX, subY) -> {
-                return new float[]{/*cc.X, cc.Y*/};
-            }, 12, this);
+                    $.p(id,$.the("cam")), vision, nx, nx, (subX, subY) -> new float[]{/*cc.X, cc.Y*/}, 12, this);
             camAE.alpha(0.01f);
             camAE.noise.set(0.0f);
 
@@ -232,15 +230,11 @@ public class FZero extends GameX {
 //            //return Util.equals(damage, 0, 0.01f) ? Float.NaN : 0; //Math.max(0, 1 - damage);
 //            return Util.equals(damage, 0, 0.01f) ? 1 : 0;
 //        });
-        Reward race = rewardNormalized("race", -1, +1, (() -> {
-            return Util.clamp(progress * 0.5f, -1, +1);
-        }));
+        Reward race = rewardNormalized("race", -1, +1, (() -> Util.clamp(progress * 0.5f, -1, +1)));
         //race.resolution().set(0.1f);
 
         FloatAveragedWindow f = new FloatAveragedWindow(64, 0.25f, 0).mode(FloatAveragedWindow.Mode.Mean);
-        Reward race2 = rewardNormalized("RaceRace", -1, +1, (() -> {
-            return f.valueOf(Util.clamp(progress * 0.5f, -1, +1));
-        }));
+        Reward race2 = rewardNormalized("RaceRace", -1, +1, (() -> f.valueOf(Util.clamp(progress * 0.5f, -1, +1))));
         //race2.resolution().set(0.1f);
 
 //        rewardNormalized("efficient", 0, +1, (() -> {

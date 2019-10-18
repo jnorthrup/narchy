@@ -5,6 +5,8 @@ package jcog.event;
 import jcog.exe.Exe;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
@@ -42,7 +44,15 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
 
 
         for (Field field : fieldCache.computeIfAbsent(c, (cc) ->
-                Stream.of(cc.getFields()).filter(x -> x.getType() == Topic.class).toArray(Field[]::new)
+                {
+                    List<Field> list = new ArrayList<>();
+                    for (Field x : cc.getFields()) {
+                        if (x.getType() == Topic.class) {
+                            list.add(x);
+                        }
+                    }
+                    return list.toArray(new Field[0]);
+                }
         )) {
             f.accept(field);
         }

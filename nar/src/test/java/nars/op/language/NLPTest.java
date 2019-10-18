@@ -28,9 +28,7 @@ class NLPTest {
         
         n.freqResolution.set(0.1f);
 
-        n.addOpN("say", (args, nn) -> {
-            System.err.println(Joiner.on(" ").join(args));
-        });
+        n.addOpN("say", (args, nn) -> System.err.println(Joiner.on(" ").join(args)));
 
         
         

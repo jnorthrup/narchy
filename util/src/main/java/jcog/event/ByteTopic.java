@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.data.bit.MetalBitSet;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,7 +40,14 @@ public class ByteTopic<X> {
 
     @Override
     public String toString() {
-        return Stream.of(chan).filter(Objects::nonNull).map(Object::toString).collect(Collectors.joining(","));
+        StringJoiner joiner = new StringJoiner(",");
+        for (Topic<X> consumers : chan) {
+            if (consumers != null) {
+                String toString = consumers.toString();
+                joiner.add(toString);
+            }
+        }
+        return joiner.toString();
     }
 
     protected Topic<X> newTopic(byte c) {

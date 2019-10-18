@@ -85,20 +85,33 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     }
 
     public int size() {
-        long size = Arrays.stream(sections).mapToLong(s -> s.size.getOpaque()).sum();
+        long size = 0L;
+        for (Section<K, V> s : sections) {
+            long opaque = s.size.getOpaque();
+            size += opaque;
+        }
         if (size >= Integer.MAX_VALUE)
             return Integer.MAX_VALUE-1; 
         return (int) size;
     }
 
     public long capacity() {
-        long capacity = Arrays.stream(sections).mapToLong(s -> s.capacity).sum();
+        long capacity = 0L;
+        for (Section<K, V> s : sections) {
+            long l = s.capacity;
+            capacity += l;
+        }
         return capacity;
     }
 
     public boolean isEmpty() {
 
-        return Arrays.stream(sections).noneMatch(s -> s.size.getOpaque() != 0);
+        for (Section<K, V> s : sections) {
+            if (s.size.getOpaque() != 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public V get(Object key) {
@@ -168,7 +181,11 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
      */
     public List<K> keys() {
         List<K> keys = Lists.newArrayList();
-        forEach((key, value) -> keys.add(key));
+        for (Entry<K, V> entry : this.entrySet()) {
+            K key = entry.getKey();
+            V value = entry.getValue();
+            keys.add(key);
+        }
         return keys;
     }
 
@@ -183,12 +200,14 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
         final int[] i = {0};
         V[] t = target;
-        forEach((k, v) -> {
-            if (v!=null) {
+        for (Entry<K, V> entry : this.entrySet()) {
+            K k = entry.getKey();
+            V v = entry.getValue();
+            if (v != null) {
                 if (i[0] < s)
                     t[i[0]++] = v;
             }
-        });
+        }
 
         if (i[0] < s) {
             return Arrays.copyOf(t, i[0]); //dont leave suffix nulls; create new list
@@ -199,7 +218,11 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
     public List<V> values() {
         List<V> values = new FasterList(size());
-        forEach((key, value) -> values.add(value));
+        for (Entry<K, V> entry : this.entrySet()) {
+            K key = entry.getKey();
+            V value = entry.getValue();
+            values.add(value);
+        }
         return values;
     }
 

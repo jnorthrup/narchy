@@ -85,12 +85,11 @@ import java.io.PrintStream;
     private void prioritize() {
 
 
-        graph.nodes().forEach(x->{
-            //if (x.edgeCount(true, false)==0) { //root
-
-                x.id().update(graph);
-            //}
-        });
+        //if (x.edgeCount(true, false)==0) { //root
+        //}
+        for (Node<PriNode, Object> x : graph.nodes()) {
+            x.id().update(graph);
+        }
     }
 
     /**

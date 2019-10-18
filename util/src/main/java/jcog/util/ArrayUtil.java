@@ -2327,10 +2327,22 @@ public enum ArrayUtil {
     public static int indexOf(Object[] array, Object objectToFind, int startIndex) {
 
         if (startIndex < 0) startIndex = 0;
-        if (objectToFind == null)
-            return IntStream.range(startIndex, array.length).filter(i -> array[i] == null).findFirst().orElse(INDEX_NOT_FOUND);
-        else
-            return IntStream.range(startIndex, array.length).filter(i -> objectToFind.equals(array[i])).findFirst().orElse(INDEX_NOT_FOUND);
+        if (objectToFind == null) {
+            for (int i = startIndex; i < array.length; i++) {
+                if (array[i] == null) {
+                    return i;
+                }
+            }
+            return INDEX_NOT_FOUND;
+        }
+        else {
+            for (int i = startIndex; i < array.length; i++) {
+                if (objectToFind.equals(array[i])) {
+                    return i;
+                }
+            }
+            return INDEX_NOT_FOUND;
+        }
     }
 
     public static <X> int indexOf(X[] array, Predicate<X> test) {
@@ -2341,7 +2353,12 @@ public enum ArrayUtil {
 //        if (startIndex < 0)
 //            startIndex = 0;
 
-        return IntStream.range(startIndex, array.length).filter(i -> test.test(array[i])).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (test.test(array[i])) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
 
     }
 
@@ -2428,7 +2445,12 @@ public enum ArrayUtil {
     public static int indexOf(long[] array, long valueToFind, int startIndex) {
         if (array == null) return INDEX_NOT_FOUND;
         if (startIndex < 0) startIndex = 0;
-        return IntStream.range(startIndex, array.length).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -2510,7 +2532,12 @@ public enum ArrayUtil {
     public static int indexOf(int[] array, int valueToFind, int startIndex) {
         if (array == null) return INDEX_NOT_FOUND;
         if (startIndex < 0) startIndex = 0;
-        return IntStream.range(startIndex, array.length).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -2518,7 +2545,12 @@ public enum ArrayUtil {
      * returns first matching index, though others could exist
      */
     public static int indexOfInstance(Object[] xx, Object y) {
-        return IntStream.range(0, xx.length).filter(i -> y == xx[i]).findFirst().orElse(-1);
+        for (int i = 0; i < xx.length; i++) {
+            if (y == xx[i]) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**
@@ -2599,7 +2631,12 @@ public enum ArrayUtil {
      */
     public static int indexOf(short[] array, short valueToFind, int startIndex) {
         if (array == null) return INDEX_NOT_FOUND;
-        return IntStream.range(startIndex, array.length).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -2683,7 +2720,12 @@ public enum ArrayUtil {
     public static int indexOf(char[] array, char valueToFind, int startIndex) {
         if (array == null) return INDEX_NOT_FOUND;
         if (startIndex < 0) startIndex = 0;
-        return IntStream.range(startIndex, array.length).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -2769,7 +2811,12 @@ public enum ArrayUtil {
 //        if (array != null) {
 //            if (startIndex < 0)
 //                startIndex = 0;
-        return IntStream.range(startIndex, endIndex).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < endIndex; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
 //        }
     }
 
@@ -2873,7 +2920,12 @@ public enum ArrayUtil {
     public static int indexOf(double[] array, double valueToFind, int startIndex) {
         if (array.length == 0) return INDEX_NOT_FOUND;
         if (startIndex < 0) startIndex = 0;
-        return IntStream.range(startIndex, array.length).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -2898,7 +2950,12 @@ public enum ArrayUtil {
         if (startIndex < 0) startIndex = 0;
         double min = valueToFind - tolerance;
         double max = valueToFind + tolerance;
-        return IntStream.range(startIndex, array.length).filter(i -> array[i] >= min && array[i] <= max).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (array[i] >= min && array[i] <= max) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -3040,7 +3097,12 @@ public enum ArrayUtil {
     public static int indexOf(float[] array, float valueToFind, int startIndex) {
         if (array.length == 0) return INDEX_NOT_FOUND;
         if (startIndex < 0) startIndex = 0;
-        return IntStream.range(startIndex, array.length).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -3123,7 +3185,12 @@ public enum ArrayUtil {
     public static int indexOf(boolean[] array, boolean valueToFind, int startIndex) {
         if (array.length == 0) return INDEX_NOT_FOUND;
         if (startIndex < 0) startIndex = 0;
-        return IntStream.range(startIndex, array.length).filter(i -> valueToFind == array[i]).findFirst().orElse(INDEX_NOT_FOUND);
+        for (int i = startIndex; i < array.length; i++) {
+            if (valueToFind == array[i]) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
     }
 
     /**
@@ -3223,7 +3290,12 @@ public enum ArrayUtil {
     public static Character[] toObject(char[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_CHARACTER_OBJECT_ARRAY;
-        Character[] result = IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Character[]::new);
+        List<Character> list = new ArrayList<>();
+        for (int i = 0; i < array.length; i++) {
+            Character character = array[i];
+            list.add(character);
+        }
+        Character[] result = list.toArray(new Character[0]);
         return result;
     }
 
@@ -3239,7 +3311,14 @@ public enum ArrayUtil {
     public static long[] toPrimitive(Long[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_LONG_ARRAY;
-        long[] result = Arrays.stream(array).mapToLong(aLong -> aLong).toArray();
+        long[] result = new long[10];
+        int count = 0;
+        for (Long aLong : array) {
+            long l = aLong;
+            if (result.length == count) result = Arrays.copyOf(result, count * 2);
+            result[count++] = l;
+        }
+        result = Arrays.copyOfRange(result, 0, count);
         return result;
     }
 
@@ -3274,7 +3353,12 @@ public enum ArrayUtil {
     public static Long[] toObject(long[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_LONG_OBJECT_ARRAY;
-        Long[] result = Arrays.stream(array).boxed().toArray(Long[]::new);
+        List<Long> list = new ArrayList<>();
+        for (long l : array) {
+            Long aLong = l;
+            list.add(aLong);
+        }
+        Long[] result = list.toArray(new Long[0]);
         return result;
     }
 
@@ -3290,7 +3374,14 @@ public enum ArrayUtil {
     public static int[] toPrimitive(Integer[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_INT_ARRAY;
-        int[] result = Arrays.stream(array).mapToInt(integer -> integer).toArray();
+        int[] result = new int[10];
+        int count = 0;
+        for (Integer integer : array) {
+            int i = integer;
+            if (result.length == count) result = Arrays.copyOf(result, count * 2);
+            result[count++] = i;
+        }
+        result = Arrays.copyOfRange(result, 0, count);
         return result;
     }
 
@@ -3325,7 +3416,12 @@ public enum ArrayUtil {
     public static Integer[] toObject(int[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_INTEGER_OBJECT_ARRAY;
-        Integer[] result = Arrays.stream(array).boxed().toArray(Integer[]::new);
+        List<Integer> list = new ArrayList<>();
+        for (int i : array) {
+            Integer integer = i;
+            list.add(integer);
+        }
+        Integer[] result = list.toArray(new Integer[0]);
         return result;
     }
 
@@ -3377,7 +3473,12 @@ public enum ArrayUtil {
     public static Short[] toObject(short[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_SHORT_OBJECT_ARRAY;
-        Short[] result = IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Short[]::new);
+        List<Short> list = new ArrayList<>();
+        for (int i = 0; i < array.length; i++) {
+            Short aShort = array[i];
+            list.add(aShort);
+        }
+        Short[] result = list.toArray(new Short[0]);
         return result;
     }
 
@@ -3433,7 +3534,12 @@ public enum ArrayUtil {
     public static Byte[] toObject(byte[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_BYTE_OBJECT_ARRAY;
-        Byte[] result = IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Byte[]::new);
+        List<Byte> list = new ArrayList<>();
+        for (int i = 0; i < array.length; i++) {
+            Byte aByte = array[i];
+            list.add(aByte);
+        }
+        Byte[] result = list.toArray(new Byte[0]);
         return result;
     }
 
@@ -3450,7 +3556,17 @@ public enum ArrayUtil {
         double[] res;
         if (array == null) res = null;
         else if (array.length == 0) res = EMPTY_DOUBLE_ARRAY;
-        else res = Arrays.stream(array).mapToDouble(aDouble -> aDouble).toArray();
+        else {
+            double[] arr = new double[10];
+            int count = 0;
+            for (Double aDouble : array) {
+                double v = aDouble;
+                if (arr.length == count) arr = Arrays.copyOf(arr, count * 2);
+                arr[count++] = v;
+            }
+            arr = Arrays.copyOfRange(arr, 0, count);
+            res = arr;
+        }
         return res;
     }
 
@@ -3485,7 +3601,12 @@ public enum ArrayUtil {
     public static Double[] toObject(double[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_DOUBLE_OBJECT_ARRAY;
-        Double[] result = Arrays.stream(array).boxed().toArray(Double[]::new);
+        List<Double> list = new ArrayList<>();
+        for (double v : array) {
+            Double aDouble = v;
+            list.add(aDouble);
+        }
+        Double[] result = list.toArray(new Double[0]);
         return result;
     }
 
@@ -3537,7 +3658,12 @@ public enum ArrayUtil {
     public static Float[] toObject(float[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_FLOAT_OBJECT_ARRAY;
-        Float[] result = IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Float[]::new);
+        List<Float> list = new ArrayList<>();
+        for (int i = 0; i < array.length; i++) {
+            Float aFloat = array[i];
+            list.add(aFloat);
+        }
+        Float[] result = list.toArray(new Float[0]);
         return result;
     }
 
@@ -3589,7 +3715,12 @@ public enum ArrayUtil {
     public static Boolean[] toObject(boolean[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_BOOLEAN_OBJECT_ARRAY;
-        Boolean[] result = IntStream.range(0, array.length).mapToObj(i -> (array[i] ? Boolean.TRUE : Boolean.FALSE)).toArray(Boolean[]::new);
+        List<Boolean> list = new ArrayList<>();
+        for (int i = 0; i < array.length; i++) {
+            Boolean aBoolean = (array[i] ? Boolean.TRUE : Boolean.FALSE);
+            list.add(aBoolean);
+        }
+        Boolean[] result = list.toArray(new Boolean[0]);
         return result;
     }
 
@@ -5934,7 +6065,13 @@ public enum ArrayUtil {
     public static <T> T[] removeNulls(T[] array) {
         if (array.length == 0)
             return array;
-        int nulls = (int) Arrays.stream(array).filter(Objects::isNull).count();
+        long count = 0L;
+        for (T t : array) {
+            if (t == null) {
+                count++;
+            }
+        }
+        int nulls = (int) count;
         if (nulls == 0)
             return array;
         else
@@ -5968,7 +6105,12 @@ public enum ArrayUtil {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_STRING_ARRAY;
 
-        String[] result = Arrays.stream(array).map(Object::toString).toArray(String[]::new);
+        List<String> list = new ArrayList<>();
+        for (Object o : array) {
+            String toString = o.toString();
+            list.add(toString);
+        }
+        String[] result = list.toArray(new String[0]);
 
         return result;
     }
@@ -6762,7 +6904,12 @@ public enum ArrayUtil {
     public static boolean equalsIdentity(Object[] x, Object[] y) {
         if (Arrays.equals(x, y)) return true;
         if (x.length!=y.length) return false;
-        return IntStream.range(0, x.length).noneMatch(i -> x[i] != y[i]);
+        for (int i = 0; i < x.length; i++) {
+            if (x[i] != y[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static short[] toShort(int[] x) {
@@ -6790,6 +6937,11 @@ public enum ArrayUtil {
         if (b.length != len)
             return false;
 
-        return IntStream.range(0, len).allMatch(i -> a[i].equals(b[i]));
+        for (int i = 0; i < len; i++) {
+            if (!a[i].equals(b[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -6,6 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.concept.TaskConcept;
 import nars.game.Game;
+import nars.game.action.ActionSignal;
 import nars.game.sensor.ComponentSignal;
 import nars.game.sensor.Signal;
 import nars.game.sensor.VectorSensor;
@@ -56,7 +57,9 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
         if (src instanceof PixelBag) {
             //HACK sub-pri the actions for this attn group
-            ((PixelBag)src).actions.forEach(aa -> n.control.input(aa.pri, pri));
+            for (ActionSignal aa : ((PixelBag) src).actions) {
+                n.control.input(aa.pri, pri);
+            }
         }
 
         /** modes */

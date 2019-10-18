@@ -59,7 +59,7 @@ public class NAgentOptimize {
 //                .var("beliefPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.beliefPriDefault.setAt(f))
                 .var("questionPriDefault", 0, 1f, 0.1f,
-                        (NAR n, float f) -> {
+                        (n, f) -> {
                             n.questionPriDefault.pri(f);
                             n.questPriDefault.pri(f);
                         })

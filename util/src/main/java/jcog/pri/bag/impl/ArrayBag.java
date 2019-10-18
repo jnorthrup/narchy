@@ -952,7 +952,9 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
             popBatch(s, popped::add);
 
-            popped.forEach(each);
+            for (Y y : popped) {
+                each.accept(y);
+            }
         }
 
     }
@@ -1109,7 +1111,9 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         @Override
         public void forEachKey(Consumer<? super X> each) {
-            forEach(t -> each.accept(key(t)));
+            for (Y t : this) {
+                each.accept(key(t));
+            }
         }
 
         public void clear() {
@@ -1128,7 +1132,11 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         }
 
         public final void forEach(BiConsumer<X, Y> each) {
-            map.forEach(each);
+            for (Map.Entry<X, Y> entry : map.entrySet()) {
+                X key = entry.getKey();
+                Y value = entry.getValue();
+                each.accept(key, value);
+            }
         }
 
         public final Y get(Object key) {

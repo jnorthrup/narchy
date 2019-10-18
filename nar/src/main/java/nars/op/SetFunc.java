@@ -104,7 +104,7 @@ public class SetFunc {
                 Comparator<Term> cmp;
                 if (param instanceof Atomic && !param.hasVars()) {
                     
-                    cmp = Comparator.comparing((Term t) -> eval(t, (Atomic) param)).thenComparing((Term t) -> t);
+                    cmp = Comparator.comparing((Term t) -> eval(t, (Atomic) param)).thenComparing(t -> t);
                 } else
                     return Null; 
 

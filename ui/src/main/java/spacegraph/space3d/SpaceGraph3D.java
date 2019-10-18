@@ -188,19 +188,23 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
 
         update(dtMS);
 
-        forEach(s -> s.renderAbsolute(gl, dtMS));
+        for (Spatial<X> xSpatial : this) {
+            xSpatial.renderAbsolute(gl, dtMS);
+        }
 
-        forEach(s -> s.forEachBody(body -> {
+        for (Spatial<X> s : this) {
+            s.forEachBody(body -> {
 
-            gl.glPushMatrix();
+                gl.glPushMatrix();
 
-            Draw.transform(gl, body.transform);
+                Draw.transform(gl, body.transform);
 
-            s.renderRelative(gl, body, dtS);
+                s.renderRelative(gl, body, dtS);
 
-            gl.glPopMatrix();
+                gl.glPopMatrix();
 
-        }));
+            });
+        }
 
         //renderSky();
 

@@ -61,10 +61,11 @@ public interface Prioritizable extends Prioritized, ScalarValue {
         final float[] before = new float[1];
 
         float after = pri((x,a)->{
-            if (x!=x)
-                x = 0;
-            before[0] = x;
-            return x + a;
+            float x1 = x;
+            if (x1 != x1)
+                x1 = 0;
+            before[0] = x1;
+            return x1 + a;
         }, amount);
 
         float b = before[0];
@@ -139,7 +140,7 @@ public interface Prioritizable extends Prioritized, ScalarValue {
 
         assert (src.length > 0);
 
-        double priTarget = Math.min(maxPri, Util.sumDouble((X s) -> {
+        double priTarget = Math.min(maxPri, Util.sumDouble(s -> {
             if (s == null) return 0;
             return getPri.apply(s).priElseZero();
         }, src));

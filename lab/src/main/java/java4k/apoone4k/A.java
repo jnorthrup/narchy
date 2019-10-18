@@ -136,7 +136,14 @@ public class A extends GamePanel {
 		while (think >= 10000000L) {
 			think -= 10000000L;
 
-			if (IntStream.of(KeyEvent.VK_SPACE, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN).anyMatch(v -> (pressed[v]))) {
+			boolean b = false;
+			for (int v : new int[]{KeyEvent.VK_SPACE, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN}) {
+				if ((pressed[v])) {
+					b = true;
+					break;
+				}
+			}
+			if (b) {
 				if (!boolValues[1]) {
 					boolValues[1] = true;
 					boolValues[3] = boolValues[2] = false;

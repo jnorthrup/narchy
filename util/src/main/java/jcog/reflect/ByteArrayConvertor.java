@@ -68,7 +68,12 @@ public class ByteArrayConvertor {
         if (bytes == null) {
             throw new IllegalArgumentException("bytes==null");
         }
-        String sb = Arrays.stream(bytes).map(ByteArrayConvertor::getHex).collect(Collectors.joining());
+        StringBuilder result = new StringBuilder();
+        for (Byte aByte : bytes) {
+            String hex = getHex(aByte);
+            result.append(hex);
+        }
+        String sb = result.toString();
         return sb;
     }
 

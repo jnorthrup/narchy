@@ -116,9 +116,7 @@ public class MIDITaskifier {
 
 
 
-            s.listen(c, (k) -> {
-                return new SineWave((float) (100 + Math.random() * 1000));
-            });
+            s.listen(c, (k) -> new SineWave((float) (100 + Math.random() * 1000)));
 
         }
 

@@ -228,9 +228,7 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
     /** asynchronous sum integrator */
     public AtomicSummaryStatistics sumIntegrator() {
         final AtomicSummaryStatistics i = new AtomicSummaryStatistics();
-        on((x) -> {
-            i.accept(x.sum);
-        });
+        on((x) -> i.accept(x.sum));
         return i;
     }
 

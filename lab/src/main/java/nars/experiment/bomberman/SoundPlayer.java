@@ -13,6 +13,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Vector;
 import java.util.stream.Stream;
 
@@ -201,9 +202,12 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     private void addSound(File file) {
         String s = file.getName();
         /** if the file has right extension */
-        if (Stream.of(".au", ".rmf", ".mid", ".wav", ".aif", ".aiff").anyMatch(s::endsWith)) {
-            /** add the file */
-            sounds.add(file);
+        /** add the file */
+        for (String s1 : Arrays.asList(".au", ".rmf", ".mid", ".wav", ".aif", ".aiff")) {
+            if (s.endsWith(s1)) {
+                sounds.add(file);
+                break;
+            }
         }
     }
 

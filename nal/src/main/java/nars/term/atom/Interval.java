@@ -103,7 +103,12 @@ public final class Interval extends AbstractAtomic implements /*The, */Iterable<
 
     public boolean AND(Subterms s, ObjectIntPredicate<Term> each) {
         int n = size();
-        return IntStream.range(0, n).allMatch(i -> each.accept(s.sub(key[i]), value[i]));
+        for (int i = 0; i < n; i++) {
+            if (!each.accept(s.sub(key[i]), value[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean OR(Subterms s, ObjectIntPredicate<Term> each) {

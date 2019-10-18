@@ -60,13 +60,17 @@ public class Weather extends NARPart {
     protected void update() {
 
         synchronized (events) {
-            events.forEach(ScalarValue::delete);
+            for (Task event : events) {
+                event.delete();
+            }
             events.clear();
 
             updateSunRiseSetTime();
             updateWeatherGov();
 
-            events.forEach(x -> x.pri(nar));
+            for (Task x : events) {
+                x.pri(nar);
+            }
 
             nar.input(events);
         }

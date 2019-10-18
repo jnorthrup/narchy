@@ -714,9 +714,13 @@ public final class Com
 		
 		int crc = CRC.CRC_Block(chkb, length);
 
-		int x = IntStream.range(0, length).map(n -> chkb[n] & 0xFF).sum();
+		int x = 0;
+		for (int n = 0; n < length; n++) {
+			int i = chkb[n] & 0xFF;
+			x += i;
+		}
 
-        crc ^= x;
+		crc ^= x;
 
 		return (byte)(crc & 0xFF);
 	}

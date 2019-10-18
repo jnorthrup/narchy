@@ -20,9 +20,7 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Clob;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -824,7 +822,12 @@ public class ExtendedCastGraph extends CastGraph {
         @Override
         public Object apply(Object from) {
             Character[] ca = (Character[]) from;
-            String sb = Arrays.stream(ca).map(String::valueOf).collect(Collectors.joining());
+            StringBuilder result = new StringBuilder();
+            for (Character character : ca) {
+                String s = String.valueOf(character);
+                result.append(s);
+            }
+            String sb = result.toString();
             return sb;
         }
 
@@ -855,7 +858,13 @@ public class ExtendedCastGraph extends CastGraph {
         @Override
         public Object apply(Object from) {
             String str = ((String) from);
-            Character[] arr = IntStream.range(0, str.length()).mapToObj(str::charAt).toArray(Character[]::new);
+            List<Character> list = new ArrayList<>();
+            int bound = str.length();
+            for (int i = 0; i < bound; i++) {
+                Character charAt = str.charAt(i);
+                list.add(charAt);
+            }
+            Character[] arr = list.toArray(new Character[0]);
             return arr;
         }
 

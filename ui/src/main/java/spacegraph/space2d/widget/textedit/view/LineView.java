@@ -105,7 +105,13 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 
         final CharView[] leaved = new CharView[1];
         update((chars) -> {
-            CharView leave = chars.stream().filter(c -> c.bufferChar() == bc).findFirst().orElse(null);
+            CharView leave = null;
+            for (CharView c : chars) {
+                if (c.bufferChar() == bc) {
+                    leave = c;
+                    break;
+                }
+            }
             leaved[0] = leave;
             chars.remove(leave);
         });

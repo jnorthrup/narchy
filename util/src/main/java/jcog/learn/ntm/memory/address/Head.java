@@ -3,6 +3,8 @@ package jcog.learn.ntm.memory.address;
 import jcog.learn.ntm.control.Unit;
 import jcog.learn.ntm.control.UnitFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -67,7 +69,12 @@ public class Head
     }
 
     public static Head[] getVector(int length, Function<Integer, Integer> constructorParamGetter) {
-        Head[] vector = IntStream.range(0, length).mapToObj(i -> new Head(constructorParamGetter.apply(i))).toArray(Head[]::new);
+        List<Head> list = new ArrayList<>();
+        for (int i = 0; i < length; i++) {
+            Head head = new Head(constructorParamGetter.apply(i));
+            list.add(head);
+        }
+        Head[] vector = list.toArray(new Head[0]);
         return vector;
     }
 

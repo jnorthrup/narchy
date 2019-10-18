@@ -51,10 +51,7 @@ import tech.tablesaw.columns.strings.StringColumnType;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
@@ -508,9 +505,9 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
             throw new RuntimeException("schemas differ");
         }
         final boolean[] changed = {false};
-        incoming.forEach(p -> {
+        for (Row p : incoming) {
             changed[0] |= add(p);
-        });
+        }
         return changed[0];
     }
 
@@ -629,7 +626,12 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
 
         public boolean put(X x) {
             int n = columnCount();
-            Object[] o = IntStream.range(0, n).mapToObj(i -> extractor[i].apply(x)).toArray();
+            List<Object> list = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                Object apply = extractor[i].apply(x);
+                list.add(apply);
+            }
+            Object[] o = list.toArray();
             return add(o);
         }
     }

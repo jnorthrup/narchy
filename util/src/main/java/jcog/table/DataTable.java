@@ -46,7 +46,13 @@ public class DataTable extends Table implements Externalizable {
             addColumns(column.emptyCopy(rc));
         }
 
-        int[] rows = IntStream.range(0, rc).toArray();
+        int[] rows = new int[10];
+        int count = 0;
+        for (int i = 0; i < rc; i++) {
+            if (rows.length == count) rows = Arrays.copyOf(rows, count * 2);
+            rows[count++] = i;
+        }
+        rows = Arrays.copyOfRange(rows, 0, count);
         Rows.copyRowsToTable(rows, copy, this);
         nominalCats = new HashMap<>();
     }

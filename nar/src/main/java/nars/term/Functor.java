@@ -165,7 +165,7 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
     }
 
     public static <X extends Term> LambdaFunctor f1Const(String termAtom, Function<X, Term> ff) {
-        return f1(fName(termAtom), (Term x) ->
+        return f1(fName(termAtom), x ->
                 ((x == null) || x.hasVars()) ? null : ff.apply((X) x)
         );
     }

@@ -77,7 +77,13 @@ class QuadraticSplitTest {
 
         RBranch<RectDouble> root = (RBranch<RectDouble>) rTree.root();
         RNode<RectDouble>[] children = root.data;
-        int childCount = (int) Arrays.stream(children).filter(Objects::nonNull).count();
+        long count = 0L;
+        for (RNode<RectDouble> child : children) {
+            if (child != null) {
+                count++;
+            }
+        }
+        int childCount = (int) count;
         assertEquals(2, childCount, "Expected different number of children after split");
 
         RNode<RectDouble> child1 = children[0];

@@ -15,7 +15,9 @@ import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.iterator.MutableLongIterator;
 import org.eclipse.collections.impl.iterator.ImmutableEmptyLongIterator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -162,7 +164,12 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     public final boolean contains(long w, X what, int startIndex, int finalIndexExc) {
         long[] longs = this.when;
         X[] ii = this.items;
-        return IntStream.range(startIndex, finalIndexExc).anyMatch(i -> longs[i] == w && ii[i].equals(what));
+        for (int i = startIndex; i < finalIndexExc; i++) {
+            if (longs[i] == w && ii[i].equals(what)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** assumes its been sorted */
@@ -186,7 +193,12 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     public String toString() {
         //HACK this could be better
         final int[] i = {0};
-        return Joiner.on(',').join(this.stream().map(n -> when[i[0]++] + ":" + n).collect(Collectors.toList()));
+        List<String> list = new ArrayList<>();
+        for (X n : this) {
+            String s = when[i[0]++] + ":" + n;
+            list.add(s);
+        }
+        return Joiner.on(',').join(list);
     }
 
     /**

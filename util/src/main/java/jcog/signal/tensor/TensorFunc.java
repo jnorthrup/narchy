@@ -45,9 +45,7 @@ public class TensorFunc implements Tensor {
 
     @Override
     public void forEach(IntFloatProcedure sequential, int start, int end) {
-        from.forEach((i,v) -> {
-            sequential.value(i, func.valueOf(v));
-        }, start, end);
+        from.forEach((i,v) -> sequential.value(i, func.valueOf(v)), start, end);
     }
 
 }

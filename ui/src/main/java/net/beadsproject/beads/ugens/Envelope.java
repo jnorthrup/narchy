@@ -328,7 +328,11 @@ public class Envelope extends UGen {
     }
 
     public LinkedList<Segment> getSegments() {
-        LinkedList<Segment> segmentsCopy = segments.stream().map(Segment::new).collect(Collectors.toCollection(LinkedList::new));
+        LinkedList<Segment> segmentsCopy = new LinkedList<>();
+        for (Segment segment : segments) {
+            Segment segment1 = new Segment(segment);
+            segmentsCopy.add(segment1);
+        }
         return segmentsCopy;
     }
 

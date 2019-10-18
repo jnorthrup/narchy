@@ -195,12 +195,8 @@ public class GameTest {
         nar.time.dur(dur);
         Game a = new Game("x", GameTime.durs(dursPerFrame));
 
-        a.onFrame(()->{
-            aFrames.add(nar.time());
-        });
-        nar.onDur(() -> {
-            sFrames.add(nar.time());
-        }).durs(dursPerService);
+        a.onFrame(()-> aFrames.add(nar.time()));
+        nar.onDur(() -> sFrames.add(nar.time())).durs(dursPerService);
         nar.run(50);
         assertEquals("[10, 30, 50]", aFrames.toString());
         assertEquals("[0, 10, 40]", sFrames.toString());

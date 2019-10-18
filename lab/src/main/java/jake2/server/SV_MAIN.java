@@ -555,8 +555,15 @@ public class SV_MAIN {
         while (NET.GetPacket(Defines.NS_SERVER, Globals.net_from,
                 Globals.net_message)) {
 
-            
-            if (IntStream.of(0, 1, 2, 3).allMatch(v -> (Globals.net_message.data[v] == -1))) {
+
+            boolean b = true;
+            for (int v : new int[]{0, 1, 2, 3}) {
+                if ((Globals.net_message.data[v] != -1)) {
+                    b = false;
+                    break;
+                }
+            }
+            if (b) {
                 SV_ConnectionlessPacket();
                 continue;
             }

@@ -367,12 +367,23 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
     protected boolean wrapsNeg() {
         int s = subs();
-        return IntStream.range(0, s).anyMatch(i -> subMap(i) < 0);
+        for (int i = 0; i < s; i++) {
+            if (subMap(i) < 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected int negs() {
         int n, s = subs();
-        n = (int) IntStream.range(0, s).filter(i -> subMap(i) < 0).count();
+        long count = 0L;
+        for (int i = 0; i < s; i++) {
+            if (subMap(i) < 0) {
+                count++;
+            }
+        }
+        n = (int) count;
         return n;
     }
 

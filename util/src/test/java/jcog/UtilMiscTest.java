@@ -7,6 +7,8 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -42,7 +44,12 @@ class UtilMiscTest {
     @Test
     void testCurveSawtooth() {
         int N = 32;
-        Integer[] x = IntStream.range(0, N).mapToObj(i -> Math.round(Util.sawtoothCurved((float) i / (N - 1)) * N)).toArray(Integer[]::new);
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < N; i++) {
+            Integer round = Math.round(Util.sawtoothCurved((float) i / (N - 1)) * N);
+            list.add(round);
+        }
+        Integer[] x = list.toArray(new Integer[0]);
         System.out.println(SparkLine.render(x));
     }
     @Test
