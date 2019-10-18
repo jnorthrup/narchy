@@ -19,12 +19,12 @@ import static jcog.Util.lerpSafe;
  */
 public enum Should { ;
 	@Deprecated static float momentum = 0.5f;
-	static float explorationRate = 0.01f;
+	static float explorationRate = 0.005f;
 
 	/** uses a small MLP for each cause to predict its value for the current metagoal vector */
 	public static final BiConsumer<NAR,FasterList<Cause>> predictMLP = new BiConsumer<>() {
 
-		float learningRate = 0.05f;
+		float learningRate = 0.03f;
 
 		float[] f = ArrayUtil.EMPTY_FLOAT_ARRAY;
 		float[] fNorm = ArrayUtil.EMPTY_FLOAT_ARRAY;

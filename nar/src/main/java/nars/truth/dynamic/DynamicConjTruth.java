@@ -123,7 +123,7 @@ public enum DynamicConjTruth {
 
             //special cases:
             //  1. parallel / xternal with co-negated events that need separated in time
-            if (dtSpecial(conj.dt()) && conj.hasAny(NEG)) spreadCoNegations(conj, start, end, c);
+            if (start!=ETERNAL && dtSpecial(conj.dt()) && conj.hasAny(NEG)) spreadCoNegations(conj, start, end, c);
 
             //  2. depvar events that need pre-grouped with other events before evaluating
             if (conj.hasAny(VAR_DEP) && !pairVars(c)) return false; //give up
