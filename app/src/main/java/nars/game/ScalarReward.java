@@ -212,12 +212,12 @@ public abstract class ScalarReward extends Reward {
     protected abstract float reward(Game a);
 
     @Override
-    public final float happiness(float dur) {
+    public final float happiness(long start, long end, float dur) {
 
-        float b = rewardFreq(true, dur);
+        float b = rewardFreq(true, start, end, dur);
         if (b!=b) return NaN;
 
-        float g = rewardFreq(false, dur);
+        float g = rewardFreq(false, start, end, dur);
         if (g!=g) return NaN;
 
         return (1 - Math.abs(b - g));
@@ -225,12 +225,12 @@ public abstract class ScalarReward extends Reward {
     }
 
     @Override
-    protected float rewardFreq(boolean beliefOrGoal, float dur) {
+    protected float rewardFreq(boolean beliefOrGoal, long start, long end, float dur) {
         Signal c = this.concept;
         if (c==null)
             return NaN;
 
-        Truth t = (beliefOrGoal ? c.beliefs() : c.goals()).truth(game.time(), dur, nar());
+        Truth t = (beliefOrGoal ? c.beliefs() : c.goals()).truth(start, end, dur, nar());
         if (t!=null) {
             float f = t.freq();
             return negate ? 1 - f : f;

@@ -69,6 +69,7 @@ public abstract class MetaAgent extends Game {
 		input = Atomic.the("input"),
 		duration = Atomic.the("dur"),
 		happy = Atomic.the("happy"),
+		optimistic = Atomic.the("optimistic"),
 		dex = Atomic.the("dex");
 
 
@@ -275,20 +276,37 @@ public abstract class MetaAgent extends Game {
 //                Math.max(nar.goalPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
 //                nar.goalPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
 
-			rewardNormalized(happy, 1, 0, ScalarValue.EPSILON, () -> {
+			float emotionalMomentumDurs = 4;
+
+			reward(happy, () -> {
 				float dur = dur();
-				return (float) nar.parts(Game.class)
-					.filter(g -> g != SelfMetaAgent.this)
-					.filter(Part::isOn)
-					.mapToDouble(g -> g.happiness(dur))
-					.average()
-					.orElseGet(() -> 0);
+				long now = nar.time();
+				return (happiness(Math.round(now - dur), now, dur, nar) * 2
+					+
+					//historic happiness ~= gradient momentum / echo effect
+					happiness(Math.round(now - (dur * (emotionalMomentumDurs+1))), Math.round(now - dur), dur, nar)) /3;
 			});
 
+			/** encourage predicted future happiness */
+			reward(optimistic, () -> {
+				float dur = dur();
+				long now = nar.time();
+				float h = happiness(now, Math.round(now+(emotionalMomentumDurs * dur)), dur, nar);
+				return h;
+			});
 //        ThreadCPUTimeTracker.getCPUTime()
 //        reward("lazy", 1, ()->{
 //            return 1-nar.loop.throttle.floatValue();
 //        });
+		}
+
+		float happiness(long start, long end, float dur, NAR nar) {
+			return (float) nar.parts(Game.class)
+				.filter(g -> g != SelfMetaAgent.this)
+				.filter(Part::isOn)
+				.mapToDouble(g -> g.happiness(start, end, dur))
+				.average()
+				.orElseGet(() -> 0);
 		}
 	}
 
@@ -373,7 +391,7 @@ public abstract class MetaAgent extends Game {
 			Reward h = rewardNormalized($.inh(gid, happy), 1, 0, ScalarValue.EPSILON, () -> {
 				//new FloatFirstOrderDifference(nar::time, (() -> {
 				return g.isOn() ? (//(float)((0.01f + g.dexterity()) *
-					g.happiness(dur() /* supervisory dur of the meta-agent */)) : Float.NaN;
+					g.happiness()) : Float.NaN;
 			});
 
 

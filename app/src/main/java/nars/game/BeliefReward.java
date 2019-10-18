@@ -10,7 +10,7 @@ public class BeliefReward extends ScalarReward {
 
     @Override
     protected float reward(Game a) {
-        return rewardFreq(true, a.dur());
+        return rewardFreq(true, a.nowPercept.start, a.nowPercept.end, a.dur());
     }
 
 }

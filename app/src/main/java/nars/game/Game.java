@@ -147,7 +147,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     }
 
     public final float happiness() {
-        return happiness(dur());
+        return happiness(nowPercept.start, nowPercept.end, dur());
     }
 
     /**
@@ -156,8 +156,8 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
      * happiness metric applied to all reward concepts
      */
     @Paper
-    public final float happiness(float dur) {
-        return (float) rewards.meanBy(rr -> rr.happiness(dur));
+    public final float happiness(long start, long end, float dur) {
+        return (float) rewards.meanBy(rr -> rr.happiness(start, end, dur));
     }
 
     /** happiness metric applied to all sensor concepts */
@@ -405,7 +405,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     /** perceptual duration */
     public final float dur() {
-        return what().dur();
+        return nowPercept.dur;
     }
 
     /** physical/sensory duration */
@@ -511,9 +511,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
             long nextStart = Math.max(lastEnd+1, (long)Math.floor(now - durLoop/2));
             long nextEnd = Math.max(nextStart, Math.round(Math.ceil(now + durLoop/2 - 1)));
 
-            float durPercept = dur();
-
-            nowPercept.range(nextStart, nextEnd).dur(durPercept);
+            nowPercept.range(nextStart, nextEnd).dur(what.dur());
             nowLoop.range(nextStart, nextEnd).dur(durLoop);
 
             this.confDefaultBelief = nar.confDefault(BELIEF);

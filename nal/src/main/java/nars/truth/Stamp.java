@@ -482,6 +482,9 @@ public interface Stamp {
         if (A == 1 && B == 1)
             return a[0]==b[0];
 
+        if (!LongInterval.intersectsRaw(a[0], a[A -1], b[0], b[B -1]))
+            return false; //intervals are completely disjoint
+
         if (A > B) {
             //swap to get the larger stamp in the inner loop
             long[] _a = a;
