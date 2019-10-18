@@ -654,27 +654,30 @@ public class a extends GamePanel {
 													}
 												}
 
-												if (itemsTable[j][3] == 0) {
-													if (multiplier < 4) {
-														multiplier++;
-													}
-												} else if (itemsTable[j][3] == 1) {
+                                                switch (itemsTable[j][3]) {
+                                                    case 0:
+                                                        if (multiplier < 4) {
+                                                            multiplier++;
+                                                        }
+                                                        break;
+                                                    case 1:
 
-													score += multiplier * 125;
+                                                        score += multiplier * 125;
 
 
-                                                    float[] ball2;
-                                                    if (ballCount < 3) {
-														ball2 = balls[ballCount++] = new float[8];
-														ball2[BALL_X] = 475;
-														ball2[BALL_Y] = 369;
-													}
-													if (ballCount < 3) {
-														ball2 = balls[ballCount++] = new float[8];
-														ball2[BALL_X] = 624;
-														ball2[BALL_Y] = 590;
-													}
-												}
+                                                        float[] ball2;
+                                                        if (ballCount < 3) {
+                                                            ball2 = balls[ballCount++] = new float[8];
+                                                            ball2[BALL_X] = 475;
+                                                            ball2[BALL_Y] = 369;
+                                                        }
+                                                        if (ballCount < 3) {
+                                                            ball2 = balls[ballCount++] = new float[8];
+                                                            ball2[BALL_X] = 624;
+                                                            ball2[BALL_Y] = 590;
+                                                        }
+                                                        break;
+                                                }
 												break;
 											} else if (itemsTable[j][3] == itemsTable[k][3] && itemsTable[k][2] == 0) {
 												

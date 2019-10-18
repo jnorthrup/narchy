@@ -165,17 +165,18 @@ public class Lib {
 	
 			charfield.append(readableChar(v));
 			i++;
-	
-			
-			if ((i & 0xf) == 0) {
-				result.append(charfield);
-				result.append('\n');
-				charfield.setLength(0);
-			}
-			
-			else if ((i & 0xf) == 8) {
-				result.append(' ');
-			}
+
+
+            switch (i & 0xf) {
+                case 0:
+                    result.append(charfield);
+                    result.append('\n');
+                    charfield.setLength(0);
+                    break;
+                case 8:
+                    result.append(' ');
+                    break;
+            }
 		}
 		return result.toString();
 	}

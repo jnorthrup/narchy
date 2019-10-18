@@ -9,7 +9,7 @@ import java.util.function.ToIntFunction;
 import static jcog.exe.realtime.TimedFuture.*;
 
 /** where each wheel is simply its own concurrent queue */
-public class MetalConcurrentQueueWheelModel extends HashedWheelTimer.WheelModel {
+public  class  MetalConcurrentQueueWheelModel extends WheelModel {
 
     /** the wheels (array of queues) */
     final MetalConcurrentQueue<TimedFuture>[] q;
@@ -24,44 +24,56 @@ public class MetalConcurrentQueueWheelModel extends HashedWheelTimer.WheelModel 
 
     @Override
     public int run(int c, HashedWheelTimer timer) {
+        int result = 1;
         MetalConcurrentQueue<TimedFuture> q = this.q[c];
 
         int n = q.size();
-        if (n == 0)
-            return 0;
-        else if (n==1) {
-            //special optimized case: the only element can be peek'd without poll/offer in case it remains pending
-            TimedFuture r = q.peek();
-            switch (r.state()) {
-                case CANCELLED:
-                    q.poll();
-                    break;
-                case READY:
-                    q.poll();
-                    r.execute(timer);
-                    break;
-                case PENDING:
-                    break; //<--- ideally most common path
-            }
-        } else {
-
-            //TODO if n=2 and the previous or next queue is empty try moving one of the items there. this will distribute items across wheels so each has an ideal 0 or 1 size
-
-            for (int i = 0; i < n; i++) {
-                TimedFuture r = q.poll();
+        switch (n) {
+            case 0:
+                result = 0;
+                break;
+            case 1:
+                //special optimized case: the only element can be peek'd without poll/offer in case it remains pending
+            {
+                var r = q.peek();
                 switch (r.state()) {
                     case CANCELLED:
+                        q.poll();
                         break;
                     case READY:
+                        q.poll();
                         r.execute(timer);
                         break;
                     case PENDING:
-                        q.offer(r); //re-insert
-                        break;
+                        break; //<--- ideally most common path
                 }
             }
+            break;
+            default:
+
+                //TODO if n=2 and the previous or next queue is empty try moving one of the items there. this will distribute items across wheels so each has an ideal 0 or 1 size
+
+                for (int i = 0; i < n; i++) {
+                    {
+                        TimedFuture timedFuture = q.poll();
+                        switch (timedFuture.state()) {
+                            case CANCELLED:
+                                break;
+                            case READY:
+                                timedFuture.execute(timer);
+                                break;
+                            case PENDING:
+                                q.offer(timedFuture); //re-insert
+                                break;
+                        }
+                    }
+                }
+                break;
         }
-        return n;
+        if (result == 1) {
+            result = n;
+        }
+        return result;
     }
 
     @Override

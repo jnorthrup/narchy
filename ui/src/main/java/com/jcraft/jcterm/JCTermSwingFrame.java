@@ -192,30 +192,33 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         OutputStream out = null;
         InputStream in = null;
 
-        if (mode == SHELL) {
-            channel = jschsession.getSession().openChannel("shell");
-            if (xforwarding) {
-                jschsession.getSession().setX11Host(xhost);
-                jschsession.getSession().setX11Port(xport + 6000);
-                channel.setXForwarding(true);
-            }
+        switch (mode) {
+            case SHELL:
+                channel = jschsession.getSession().openChannel("shell");
+                if (xforwarding) {
+                    jschsession.getSession().setX11Host(xhost);
+                    jschsession.getSession().setX11Port(xport + 6000);
+                    channel.setXForwarding(true);
+                }
 
-            out = channel.getOutputStream();
-            in = channel.getInputStream();
+                out = channel.getOutputStream();
+                in = channel.getInputStream();
 
-            channel.connect();
-        } else if (mode == SFTP) {
+                channel.connect();
+                break;
+            case SFTP:
 
-            out = new PipedOutputStream();
-            in = new PipedInputStream();
+                out = new PipedOutputStream();
+                in = new PipedInputStream();
 
-            channel = jschsession.getSession().openChannel("sftp");
+                channel = jschsession.getSession().openChannel("sftp");
 
-            channel.connect();
+                channel.connect();
 
-            (new Sftp((ChannelSftp) channel, new PipedInputStream(
-                    (PipedOutputStream) out), new PipedOutputStream(
-                    (PipedInputStream) in))).kick();
+                (new Sftp((ChannelSftp) channel, new PipedInputStream(
+                        (PipedOutputStream) out), new PipedOutputStream(
+                        (PipedInputStream) in))).kick();
+                break;
         }
 
         OutputStream fout = out;
@@ -384,10 +387,13 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         String action = e.getActionCommand();
 
         int _mode = SHELL;
-        if ("Open SHELL Session...".equals(action)) {
-            _mode = SHELL;
-        } else if ("Open SFTP Session...".equals(action)) {
-            _mode = SFTP;
+        switch (action) {
+            case "Open SHELL Session...":
+                _mode = SHELL;
+                break;
+            case "Open SFTP Session...":
+                _mode = SFTP;
+                break;
         }
 
         switch (action) {

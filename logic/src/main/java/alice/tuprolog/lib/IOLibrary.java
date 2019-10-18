@@ -69,11 +69,14 @@ public class IOLibrary extends PrologLib {
      * @param executionType
      */
     public void setExecutionType(String executionType) {
-        if (executionType.equals(consoleExecution)) {
-            stdIn = System.in;
-        } else if (executionType.equals(graphicExecution)) {
-            input = new UserContextInputStream();
-            stdIn = input;
+        switch (executionType) {
+            case consoleExecution:
+                stdIn = System.in;
+                break;
+            case graphicExecution:
+                input = new UserContextInputStream();
+                stdIn = input;
+                break;
         }
 
         inputStream = stdIn;
@@ -300,6 +303,7 @@ public class IOLibrary extends PrologLib {
         
 
         String st = "";
+        label:
         do {
             try {
                 ch = inputStream.read();
@@ -313,16 +317,20 @@ public class IOLibrary extends PrologLib {
                 break;
             }
 
-            if (ch == '\'') {
-                open_apices = !open_apices;
-            } else if (ch == '\"') {
-                open_apices2 = !open_apices2;
-            } else {
-                if (ch == '.') {
-                    if (!open_apices && !open_apices2) {
-                        break;
+            switch (ch) {
+                case '\'':
+                    open_apices = !open_apices;
+                    break;
+                case '\"':
+                    open_apices2 = !open_apices2;
+                    break;
+                default:
+                    if (ch == '.') {
+                        if (!open_apices && !open_apices2) {
+                            break label;
+                        }
                     }
-                }
+                    break;
             }
 
             boolean can_add = true;

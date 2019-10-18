@@ -83,12 +83,17 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
         int n = tt.subs();
 
         Term y;
-        if (n == 0)
-            y = x;
-        else if (n == 1)
-            y = tt.sub(0);
-        else
-            y = subtermDecide(tt, x, rng);
+        switch (n) {
+            case 0:
+                y = x;
+                break;
+            case 1:
+                y = tt.sub(0);
+                break;
+            default:
+                y = subtermDecide(tt, x, rng);
+                break;
+        }
 
         if (y instanceof Img || y instanceof Bool)
             return x; //HACK

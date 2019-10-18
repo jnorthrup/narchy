@@ -346,21 +346,29 @@ public class InputParser implements Closeable {
 			//Handle CAP Code; remove extra from params
 			String capCommand = parsedLine.get(1);
 			ImmutableList<String> capParams = ImmutableList.copyOf(StringUtils.split(parsedLine.get(2)));
-			if ("LS".equals(capCommand)) {
-				log.debug("Starting Cap Handlers {}", getCapHandlersRemaining());
-				for (CapHandler curCapHandler : getCapHandlersRemaining()) {
-					if (curCapHandler.handleLS(bot, capParams)) addCapHandlerFinished(curCapHandler);
-				}
-			} else if ("ACK".equals(capCommand)) {
-				//Server is enabling a capability, store that
-				bot.getEnabledCapabilities().addAll(capParams);
-				for (CapHandler curCapHandler : getCapHandlersRemaining()) if (curCapHandler.handleACK(bot, capParams)) addCapHandlerFinished(curCapHandler);
-			} else if ("NAK".equals(capCommand)) {
-				for (CapHandler curCapHandler : getCapHandlersRemaining()) if (curCapHandler.handleNAK(bot, capParams)) addCapHandlerFinished(curCapHandler);
-			} else {
-				//Maybe the CapHandlers know how to use it
-				for (CapHandler curCapHandler : getCapHandlersRemaining()) if (curCapHandler.handleUnknown(bot, rawLine)) addCapHandlerFinished(curCapHandler);
-			}
+            switch (capCommand) {
+                case "LS":
+                    log.debug("Starting Cap Handlers {}", getCapHandlersRemaining());
+                    for (CapHandler curCapHandler : getCapHandlersRemaining()) {
+                        if (curCapHandler.handleLS(bot, capParams)) addCapHandlerFinished(curCapHandler);
+                    }
+                    break;
+                case "ACK":
+                    //Server is enabling a capability, store that
+                    bot.getEnabledCapabilities().addAll(capParams);
+                    for (CapHandler curCapHandler : getCapHandlersRemaining())
+                        if (curCapHandler.handleACK(bot, capParams)) addCapHandlerFinished(curCapHandler);
+                    break;
+                case "NAK":
+                    for (CapHandler curCapHandler : getCapHandlersRemaining())
+                        if (curCapHandler.handleNAK(bot, capParams)) addCapHandlerFinished(curCapHandler);
+                    break;
+                default:
+                    //Maybe the CapHandlers know how to use it
+                    for (CapHandler curCapHandler : getCapHandlersRemaining())
+                        if (curCapHandler.handleUnknown(bot, rawLine)) addCapHandlerFinished(curCapHandler);
+                    break;
+            }
 		} else 
 		//Pass to CapHandlers, could be important
 		for (CapHandler curCapHandler : getCapHandlersRemaining()) if (curCapHandler.handleUnknown(bot, rawLine)) addCapHandlerFinished(curCapHandler);
@@ -535,249 +543,299 @@ public class InputParser implements Closeable {
 	public void processServerResponse(int code, String rawResponse, List<String> parsedResponseOrig) {
 		ImmutableList<String> parsedResponse = ImmutableList.copyOf(parsedResponseOrig);
 		//Parsed response format: Everything after code
-		if (code == 433) {
-			//EXAMPLE: * AnAlreadyUsedName :Nickname already in use
-			//EXAMPLE: AnAlreadyUsedName :Nickname already in use (spec)
-			//TODO: When output parsing is implemented intercept outgoing NICK?
-			//Nickname in use, rename
-			boolean autoNickChange = configuration.isAutoNickChange();
-            String usedNick = null;
-			boolean doAutoNickChange = false;
-			//Ignore cases where we already have a valid nick but changed to a used one
-			if (parsedResponse.size() == 3) {
-				usedNick = parsedResponse.get(1);
-				if ("*".equals(parsedResponse.get(0))) {
-					doAutoNickChange = true;
-				}
-			} //For spec-compilant servers, if were not logged in its safe to assume we don't have a valid nick on connect
-			 else {
-				usedNick = parsedResponse.get(0);
-				if (!bot.loggedIn) {
-					doAutoNickChange = true;
-				}
-			}
-            String autoNewNick = null;
-            if (autoNickChange && doAutoNickChange) {
-				nickSuffix++;
-				autoNewNick = configuration.getName() + nickSuffix;
-				bot.sendIRC().changeNick(autoNewNick);
-				bot.setNick(autoNewNick);
-				bot.getUserChannelDao().renameUser(bot.getUserChannelDao().getUser(usedNick), autoNewNick);
-			}
-			configuration.getListenerManager().onEvent(new NickAlreadyInUseEvent(bot, usedNick, autoNewNick, autoNickChange));
-		} else if (code == RPL_LISTSTART) {
-			//EXAMPLE: 321 Channel :Users Name (actual text)
-			//A channel list is about to be sent
-			channelListBuilder = ImmutableList.builder();
-			channelListRunning = true;
-		} else if (code == RPL_LIST) {
-			//This is part of a full channel listing as part of /LIST
-			//EXAMPLE: 322 lordquackstar #xomb 12 :xomb exokernel project @ www.xomb.org
-			String channel = parsedResponse.get(1);
-			int userCount = Utils.tryParseInt(parsedResponse.get(2), -1);
-			String topic = parsedResponse.get(3);
-			channelListBuilder.add(new ChannelListEntry(channel, userCount, topic));
-		} else if (code == RPL_LISTEND) {
-			//EXAMPLE: 323 :End of /LIST
-			//End of channel list, dispatch event
-			configuration.getListenerManager().onEvent(new ChannelInfoEvent(bot, channelListBuilder.build()));
-			channelListBuilder = null;
-			channelListRunning = false;
-		} else if (code == RPL_TOPIC) {
-			//EXAMPLE: 332 PircBotX #aChannel :I'm some random topic
-			//This is topic about a channel we've just joined. From /JOIN or /TOPIC
-			Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
-			String topic = parsedResponse.get(2);
-			channel.setTopic(topic);
-		} else if (code == RPL_TOPICINFO) {
-			//EXAMPLE: 333 PircBotX #aChannel ISetTopic 1564842512
-			//This is information on the topic of the channel we've just joined. From /JOIN or /TOPIC
-			Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
-			UserHostmask setBy = configuration.getBotFactory().createUserHostmask(bot, parsedResponse.get(2));
-			long date = Utils.tryParseLong(parsedResponse.get(3), -1);
-			channel.setTopicTimestamp(date * 1000);
-			channel.setTopicSetter(setBy);
-			configuration.getListenerManager().onEvent(new TopicEvent(bot, channel, null, channel.getTopic(), setBy, date, false));
-		} else if (code == RPL_WHOREPLY) {
-			//EXAMPLE: 352 PircBotX #aChannel ~someName 74.56.56.56.my.Hostmask wolfe.freenode.net someNick H :0 Full Name
-			//Part of a WHO reply on information on individual users
-			Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
-			//Setup user
-			String nick = parsedResponse.get(5);
-			User curUser = bot.getUserChannelDao().containsUser(nick) ? bot.getUserChannelDao().getUser(nick) : null;
-			UserHostmask curUserHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, null, nick, parsedResponse.get(2), parsedResponse.get(3));
-			curUser = createUserIfNull(curUser, curUserHostmask);
-			curUser.setServer(parsedResponse.get(4));
-			processUserStatus(channel, curUser, parsedResponse.get(6));
-			//Extra parsing needed since tokenizer stopped at :
-			String rawEnding = parsedResponse.get(7);
-			int rawEndingSpaceIndex = rawEnding.indexOf(' ');
-			if (rawEndingSpaceIndex == -1) {
-				//parsedResponse data is trimmed, so if the index == -1, then there was no real name given and the space separating hops from real name was trimmed.
-				curUser.setHops(Integer.parseInt(rawEnding));
-				curUser.setRealName("");
-			} else {
-				//parsedResponse data contains a real name
-				curUser.setHops(Integer.parseInt(rawEnding.substring(0, rawEndingSpaceIndex)));
-				curUser.setRealName(rawEnding.substring(rawEndingSpaceIndex + 1));
-			}
-			//Associate with channel
-			bot.getUserChannelDao().addUserToChannel(curUser, channel);
-		} else if (code == RPL_ENDOFWHO) {
-			//EXAMPLE: 315 PircBotX #aChannel :End of /WHO list
-			//End of the WHO reply
-			Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
-			configuration.getListenerManager().onEvent(new UserListEvent(bot, channel, bot.getUserChannelDao().getUsers(channel), true));
-		} else if (code == RPL_CHANNELMODEIS) {
-			//EXAMPLE: 324 PircBotX #aChannel +cnt
-			//Full channel mode (In response to MODE <channel>)
-			Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
-			ImmutableList<String> modeParsed = parsedResponse.subList(2, parsedResponse.size());
-			String mode = StringUtils.join(modeParsed, ' ');
-			channel.setMode(mode, modeParsed);
-			configuration.getListenerManager().onEvent(new ModeEvent(bot, channel, null, null, mode, modeParsed));
-		} else if (code == 329) {
-			//EXAMPLE: 329 lordquackstar #botters 1199140245
-			//Tells when channel was created. From /JOIN
-			Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
-			int createDate = Utils.tryParseInt(parsedResponse.get(2), -1);
-			//Set in channel
-			channel.setCreateTimestamp(createDate);
-		} else if (code == RPL_MOTDSTART) 
-		//Example: 375 PircBotX :- wolfe.freenode.net Message of the Day -
-		//Motd is starting, reset the StringBuilder
-		motdBuilder = new StringBuilder(); else if (code == RPL_MOTD) 
-		//Example: 372 PircBotX :- Welcome to wolfe.freenode.net in Manchester, England, Uk!  Thanks to
-		//This is part of the MOTD, add a new line
-		motdBuilder.append((parsedResponse.get(1).substring(1)).trim()).append('\n'); else if (code == RPL_ENDOFMOTD) {
-			//Example: PircBotX :End of /MOTD command.
-			//End of MOTD, clean it and dispatch MotdEvent
-			ServerInfo serverInfo = bot.getServerInfo();
-			serverInfo.setMotd(motdBuilder.toString().trim());
-			motdBuilder = null;
-			configuration.getListenerManager().onEvent(new MotdEvent(bot, serverInfo.getMotd()));
-		} else if (code == 4 || code == 5) {
-			//Example: 004 PircBotX sendak.freenode.net ircd-seven-1.1.3 DOQRSZaghilopswz CFILMPQbcefgijklmnopqrstvz bkloveqjfI
-			//Server info line, remove ending comment and let ServerInfo class parse it
-			int endCommentIndex = rawResponse.lastIndexOf(" :");
-			if (endCommentIndex > 1) {
-				String endComment = rawResponse.substring(endCommentIndex + 2);
-				int lastIndex = parsedResponseOrig.size() - 1;
-				if (endComment.equals(parsedResponseOrig.get(lastIndex))) parsedResponseOrig.remove(lastIndex);
-			}
-			bot.getServerInfo().parse(code, parsedResponseOrig);
-		} else if (code == RPL_WHOISUSER) {
-			//Example: 311 TheLQ Plazma ~Plazma freenode/staff/plazma * :Plazma Rooolz!
-			//New whois is starting
-			String whoisNick = parsedResponse.get(1);
-			WhoisEvent.Builder builder = WhoisEvent.builder();
-			builder.nick(whoisNick);
-			builder.login(parsedResponse.get(2));
-			builder.hostname(parsedResponse.get(3));
-			builder.realname(parsedResponse.get(5));
-			whoisBuilder.put(whoisNick, builder);
-		} else if (code == RPL_AWAY) {
-			//Example: 301 PircBotXUser TheLQ_ :I'm away, sorry
-			//Can be sent during whois
-			String nick = parsedResponse.get(1);
-			String awayMessage = parsedResponse.get(2);
-			if (bot.getUserChannelDao().containsUser(nick)) bot.getUserChannelDao().getUser(nick).setAwayMessage(awayMessage);
-			if (whoisBuilder.containsKey(nick)) whoisBuilder.get(nick).awayMessage(awayMessage);
-		} else if (code == RPL_WHOISCHANNELS) {
-			//Example: 319 TheLQ Plazma :+#freenode
-			//Channel list from whois. Re-tokenize since they're after the :
-			String whoisNick = parsedResponse.get(1);
-			ImmutableList<String> parsedChannels = ImmutableList.copyOf(Utils.tokenizeLine(parsedResponse.get(2)));
-			whoisBuilder.get(whoisNick).channels(parsedChannels);
-		} else if (code == RPL_WHOISSERVER) {
-			//Server info from whois
-			//312 TheLQ Plazma leguin.freenode.net :Ume?, SE, EU
-			String whoisNick = parsedResponse.get(1);
-			whoisBuilder.get(whoisNick).server(parsedResponse.get(2));
-			whoisBuilder.get(whoisNick).serverInfo(parsedResponse.get(3));
-		} else if (code == RPL_WHOISIDLE) {
-			//Idle time from whois
-			//317 TheLQ md_5 6077 1347373349 :seconds idle, signon time
-			String whoisNick = parsedResponse.get(1);
-			whoisBuilder.get(whoisNick).idleSeconds(Long.parseLong(parsedResponse.get(2)));
-			whoisBuilder.get(whoisNick).signOnTime(Long.parseLong(parsedResponse.get(3)));
-		} else if (code == 330) {
-			//RPL_WHOISACCOUNT: Extra Whois info
-			//330 TheLQ Utoxin Utoxin :is logged in as
-			//Make sure we set registered as to the nick, not to the note after the colon
-			String registeredNick = "";
-			if (!rawResponse.endsWith(':' + parsedResponse.get(2))) registeredNick = parsedResponse.get(2);
-			whoisBuilder.get(parsedResponse.get(1)).registeredAs(registeredNick);
-		} else if (code == 307) {
-			//If shown, tells us that the user is registered with nickserv
-			//307 TheLQ TheLQ-PircBotX :has identified for this nick
-			whoisBuilder.get(parsedResponse.get(1)).registeredAs("");
-		} else if (code == ERR_NOSUCHSERVER) {
-			//Whois failed when doing "WHOIS invaliduser invaliduser"
-			//402 TheLQ asdfasdf :No such server
-			String whoisNick = parsedResponse.get(1);
-			WhoisEvent event = WhoisEvent.builder().nick(whoisNick).exists(false).generateEvent(bot);
-			configuration.getListenerManager().onEvent(event);
-		} else if (code == RPL_ENDOFWHOIS) {
-			//End of whois
-			//318 TheLQ Plazma :End of /WHOIS list.
-			String whoisNick = parsedResponse.get(1);
-			WhoisEvent.Builder builder;
-			if (whoisBuilder.containsKey(whoisNick)) {
-				builder = whoisBuilder.get(whoisNick);
-				builder.exists(true);
-			} else {
-				builder = WhoisEvent.builder();
-				builder.nick(whoisNick);
-				builder.exists(false);
-			}
-			configuration.getListenerManager().onEvent(builder.generateEvent(bot));
-			whoisBuilder.remove(whoisNick);
-		} else if (code == 367) {
-			//Ban list entry
-			//367 TheLQ #aChannel *!*@test1.host TheLQ!~quackstar@some.host 1415143822
-			Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
-			UserHostmask recipient = bot.getConfiguration().getBotFactory().createUserHostmask(bot, parsedResponse.get(2));
-			UserHostmask source = bot.getConfiguration().getBotFactory().createUserHostmask(bot, parsedResponse.get(3));
-			long time = Long.parseLong(parsedResponse.get(4));
-			banListBuilder.put(channel, new BanListEvent.Entry(recipient, source, time));
-			log.debug("Adding entry");
-		} else if (code == 368) {
-			//Ban list is finished
-			//368 TheLQ #aChannel :End of Channel Ban List
-			Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
-			ImmutableList<BanListEvent.Entry> entries = ImmutableList.copyOf(banListBuilder.removeAll(channel));
-			log.debug("Dispatching event");
-			configuration.getListenerManager().onEvent(new BanListEvent(bot, channel, entries));
-		} else if (code == 353) {
-			//NAMES response
-			//353 PircBotXUser = #aChannel :aUser1 aUser2
-			for (String curUser : StringUtils.split(parsedResponse.get(3))) {
-				//Siphon off any levels this user has
-				String nick = curUser;
-				List<UserLevel> levels = Lists.newArrayList();
-				UserLevel parsedLevel;
-				while ((parsedLevel = UserLevel.fromSymbol(nick.charAt(0))) != null) {
-					nick = nick.substring(1);
-					levels.add(parsedLevel);
-				}
-				User user;
-				if (!bot.getUserChannelDao().containsUser(nick)) 
-				//Create user with nick only
-				user = bot.getUserChannelDao().createUser(new UserHostmask(bot, nick)); else user = bot.getUserChannelDao().getUser(nick);
-				Channel chan = bot.getUserChannelDao().getChannel(parsedResponse.get(2));
-				bot.getUserChannelDao().addUserToChannel(user, chan);
-				//Now that the user is created, add them to the appropiate levels
-				for (UserLevel curLevel : levels) {
-					bot.getUserChannelDao().addUserToLevel(curLevel, user, chan);
-				}
-			}
-		} else if (code == 366) {
-			//NAMES response finished
-			//366 PircBotXUser #aChannel :End of /NAMES list.
-			Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
-			configuration.getListenerManager().onEvent(new UserListEvent(bot, channel, bot.getUserChannelDao().getUsers(channel), false));
-		}
+        switch (code) {
+            case 433:
+                //EXAMPLE: * AnAlreadyUsedName :Nickname already in use
+                //EXAMPLE: AnAlreadyUsedName :Nickname already in use (spec)
+                //TODO: When output parsing is implemented intercept outgoing NICK?
+                //Nickname in use, rename
+                boolean autoNickChange = configuration.isAutoNickChange();
+                String usedNick = null;
+                boolean doAutoNickChange = false;
+                //Ignore cases where we already have a valid nick but changed to a used one
+                if (parsedResponse.size() == 3) {
+                    usedNick = parsedResponse.get(1);
+                    if ("*".equals(parsedResponse.get(0))) {
+                        doAutoNickChange = true;
+                    }
+                } //For spec-compilant servers, if were not logged in its safe to assume we don't have a valid nick on connect
+                else {
+                    usedNick = parsedResponse.get(0);
+                    if (!bot.loggedIn) {
+                        doAutoNickChange = true;
+                    }
+                }
+                String autoNewNick = null;
+                if (autoNickChange && doAutoNickChange) {
+                    nickSuffix++;
+                    autoNewNick = configuration.getName() + nickSuffix;
+                    bot.sendIRC().changeNick(autoNewNick);
+                    bot.setNick(autoNewNick);
+                    bot.getUserChannelDao().renameUser(bot.getUserChannelDao().getUser(usedNick), autoNewNick);
+                }
+                configuration.getListenerManager().onEvent(new NickAlreadyInUseEvent(bot, usedNick, autoNewNick, autoNickChange));
+                break;
+            case RPL_LISTSTART:
+                //EXAMPLE: 321 Channel :Users Name (actual text)
+                //A channel list is about to be sent
+                channelListBuilder = ImmutableList.builder();
+                channelListRunning = true;
+                break;
+            case RPL_LIST: {
+                //This is part of a full channel listing as part of /LIST
+                //EXAMPLE: 322 lordquackstar #xomb 12 :xomb exokernel project @ www.xomb.org
+                String channel = parsedResponse.get(1);
+                int userCount = Utils.tryParseInt(parsedResponse.get(2), -1);
+                String topic = parsedResponse.get(3);
+                channelListBuilder.add(new ChannelListEntry(channel, userCount, topic));
+                break;
+            }
+            case RPL_LISTEND:
+                //EXAMPLE: 323 :End of /LIST
+                //End of channel list, dispatch event
+                configuration.getListenerManager().onEvent(new ChannelInfoEvent(bot, channelListBuilder.build()));
+                channelListBuilder = null;
+                channelListRunning = false;
+                break;
+            case RPL_TOPIC: {
+                //EXAMPLE: 332 PircBotX #aChannel :I'm some random topic
+                //This is topic about a channel we've just joined. From /JOIN or /TOPIC
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                String topic = parsedResponse.get(2);
+                channel.setTopic(topic);
+                break;
+            }
+            case RPL_TOPICINFO: {
+                //EXAMPLE: 333 PircBotX #aChannel ISetTopic 1564842512
+                //This is information on the topic of the channel we've just joined. From /JOIN or /TOPIC
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                UserHostmask setBy = configuration.getBotFactory().createUserHostmask(bot, parsedResponse.get(2));
+                long date = Utils.tryParseLong(parsedResponse.get(3), -1);
+                channel.setTopicTimestamp(date * 1000);
+                channel.setTopicSetter(setBy);
+                configuration.getListenerManager().onEvent(new TopicEvent(bot, channel, null, channel.getTopic(), setBy, date, false));
+                break;
+            }
+            case RPL_WHOREPLY: {
+                //EXAMPLE: 352 PircBotX #aChannel ~someName 74.56.56.56.my.Hostmask wolfe.freenode.net someNick H :0 Full Name
+                //Part of a WHO reply on information on individual users
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                //Setup user
+                String nick = parsedResponse.get(5);
+                User curUser = bot.getUserChannelDao().containsUser(nick) ? bot.getUserChannelDao().getUser(nick) : null;
+                UserHostmask curUserHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, null, nick, parsedResponse.get(2), parsedResponse.get(3));
+                curUser = createUserIfNull(curUser, curUserHostmask);
+                curUser.setServer(parsedResponse.get(4));
+                processUserStatus(channel, curUser, parsedResponse.get(6));
+                //Extra parsing needed since tokenizer stopped at :
+                String rawEnding = parsedResponse.get(7);
+                int rawEndingSpaceIndex = rawEnding.indexOf(' ');
+                if (rawEndingSpaceIndex == -1) {
+                    //parsedResponse data is trimmed, so if the index == -1, then there was no real name given and the space separating hops from real name was trimmed.
+                    curUser.setHops(Integer.parseInt(rawEnding));
+                    curUser.setRealName("");
+                } else {
+                    //parsedResponse data contains a real name
+                    curUser.setHops(Integer.parseInt(rawEnding.substring(0, rawEndingSpaceIndex)));
+                    curUser.setRealName(rawEnding.substring(rawEndingSpaceIndex + 1));
+                }
+                //Associate with channel
+                bot.getUserChannelDao().addUserToChannel(curUser, channel);
+                break;
+            }
+            case RPL_ENDOFWHO: {
+                //EXAMPLE: 315 PircBotX #aChannel :End of /WHO list
+                //End of the WHO reply
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                configuration.getListenerManager().onEvent(new UserListEvent(bot, channel, bot.getUserChannelDao().getUsers(channel), true));
+                break;
+            }
+            case RPL_CHANNELMODEIS: {
+                //EXAMPLE: 324 PircBotX #aChannel +cnt
+                //Full channel mode (In response to MODE <channel>)
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                ImmutableList<String> modeParsed = parsedResponse.subList(2, parsedResponse.size());
+                String mode = StringUtils.join(modeParsed, ' ');
+                channel.setMode(mode, modeParsed);
+                configuration.getListenerManager().onEvent(new ModeEvent(bot, channel, null, null, mode, modeParsed));
+                break;
+            }
+            case 329: {
+                //EXAMPLE: 329 lordquackstar #botters 1199140245
+                //Tells when channel was created. From /JOIN
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                int createDate = Utils.tryParseInt(parsedResponse.get(2), -1);
+                //Set in channel
+                channel.setCreateTimestamp(createDate);
+                break;
+            }
+            case RPL_MOTDSTART:
+//Example: 375 PircBotX :- wolfe.freenode.net Message of the Day -
+                //Motd is starting, reset the StringBuilder
+                motdBuilder = new StringBuilder();
+                break;
+            case RPL_MOTD:
+//Example: 372 PircBotX :- Welcome to wolfe.freenode.net in Manchester, England, Uk!  Thanks to
+                //This is part of the MOTD, add a new line
+                motdBuilder.append((parsedResponse.get(1).substring(1)).trim()).append('\n');
+                break;
+            case RPL_ENDOFMOTD:
+                //Example: PircBotX :End of /MOTD command.
+                //End of MOTD, clean it and dispatch MotdEvent
+                ServerInfo serverInfo = bot.getServerInfo();
+                serverInfo.setMotd(motdBuilder.toString().trim());
+                motdBuilder = null;
+                configuration.getListenerManager().onEvent(new MotdEvent(bot, serverInfo.getMotd()));
+                break;
+            case 4:
+            case 5:
+                //Example: 004 PircBotX sendak.freenode.net ircd-seven-1.1.3 DOQRSZaghilopswz CFILMPQbcefgijklmnopqrstvz bkloveqjfI
+                //Server info line, remove ending comment and let ServerInfo class parse it
+                int endCommentIndex = rawResponse.lastIndexOf(" :");
+                if (endCommentIndex > 1) {
+                    String endComment = rawResponse.substring(endCommentIndex + 2);
+                    int lastIndex = parsedResponseOrig.size() - 1;
+                    if (endComment.equals(parsedResponseOrig.get(lastIndex))) parsedResponseOrig.remove(lastIndex);
+                }
+                bot.getServerInfo().parse(code, parsedResponseOrig);
+                break;
+            case RPL_WHOISUSER: {
+                //Example: 311 TheLQ Plazma ~Plazma freenode/staff/plazma * :Plazma Rooolz!
+                //New whois is starting
+                String whoisNick = parsedResponse.get(1);
+                WhoisEvent.Builder builder = WhoisEvent.builder();
+                builder.nick(whoisNick);
+                builder.login(parsedResponse.get(2));
+                builder.hostname(parsedResponse.get(3));
+                builder.realname(parsedResponse.get(5));
+                whoisBuilder.put(whoisNick, builder);
+                break;
+            }
+            case RPL_AWAY: {
+                //Example: 301 PircBotXUser TheLQ_ :I'm away, sorry
+                //Can be sent during whois
+                String nick = parsedResponse.get(1);
+                String awayMessage = parsedResponse.get(2);
+                if (bot.getUserChannelDao().containsUser(nick))
+                    bot.getUserChannelDao().getUser(nick).setAwayMessage(awayMessage);
+                if (whoisBuilder.containsKey(nick)) whoisBuilder.get(nick).awayMessage(awayMessage);
+                break;
+            }
+            case RPL_WHOISCHANNELS: {
+                //Example: 319 TheLQ Plazma :+#freenode
+                //Channel list from whois. Re-tokenize since they're after the :
+                String whoisNick = parsedResponse.get(1);
+                ImmutableList<String> parsedChannels = ImmutableList.copyOf(Utils.tokenizeLine(parsedResponse.get(2)));
+                whoisBuilder.get(whoisNick).channels(parsedChannels);
+                break;
+            }
+            case RPL_WHOISSERVER: {
+                //Server info from whois
+                //312 TheLQ Plazma leguin.freenode.net :Ume?, SE, EU
+                String whoisNick = parsedResponse.get(1);
+                whoisBuilder.get(whoisNick).server(parsedResponse.get(2));
+                whoisBuilder.get(whoisNick).serverInfo(parsedResponse.get(3));
+                break;
+            }
+            case RPL_WHOISIDLE: {
+                //Idle time from whois
+                //317 TheLQ md_5 6077 1347373349 :seconds idle, signon time
+                String whoisNick = parsedResponse.get(1);
+                whoisBuilder.get(whoisNick).idleSeconds(Long.parseLong(parsedResponse.get(2)));
+                whoisBuilder.get(whoisNick).signOnTime(Long.parseLong(parsedResponse.get(3)));
+                break;
+            }
+            case 330:
+                //RPL_WHOISACCOUNT: Extra Whois info
+                //330 TheLQ Utoxin Utoxin :is logged in as
+                //Make sure we set registered as to the nick, not to the note after the colon
+                String registeredNick = "";
+                if (!rawResponse.endsWith(':' + parsedResponse.get(2))) registeredNick = parsedResponse.get(2);
+                whoisBuilder.get(parsedResponse.get(1)).registeredAs(registeredNick);
+                break;
+            case 307:
+                //If shown, tells us that the user is registered with nickserv
+                //307 TheLQ TheLQ-PircBotX :has identified for this nick
+                whoisBuilder.get(parsedResponse.get(1)).registeredAs("");
+                break;
+            case ERR_NOSUCHSERVER: {
+                //Whois failed when doing "WHOIS invaliduser invaliduser"
+                //402 TheLQ asdfasdf :No such server
+                String whoisNick = parsedResponse.get(1);
+                WhoisEvent event = WhoisEvent.builder().nick(whoisNick).exists(false).generateEvent(bot);
+                configuration.getListenerManager().onEvent(event);
+                break;
+            }
+            case RPL_ENDOFWHOIS: {
+                //End of whois
+                //318 TheLQ Plazma :End of /WHOIS list.
+                String whoisNick = parsedResponse.get(1);
+                WhoisEvent.Builder builder;
+                if (whoisBuilder.containsKey(whoisNick)) {
+                    builder = whoisBuilder.get(whoisNick);
+                    builder.exists(true);
+                } else {
+                    builder = WhoisEvent.builder();
+                    builder.nick(whoisNick);
+                    builder.exists(false);
+                }
+                configuration.getListenerManager().onEvent(builder.generateEvent(bot));
+                whoisBuilder.remove(whoisNick);
+                break;
+            }
+            case 367: {
+                //Ban list entry
+                //367 TheLQ #aChannel *!*@test1.host TheLQ!~quackstar@some.host 1415143822
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                UserHostmask recipient = bot.getConfiguration().getBotFactory().createUserHostmask(bot, parsedResponse.get(2));
+                UserHostmask source = bot.getConfiguration().getBotFactory().createUserHostmask(bot, parsedResponse.get(3));
+                long time = Long.parseLong(parsedResponse.get(4));
+                banListBuilder.put(channel, new BanListEvent.Entry(recipient, source, time));
+                log.debug("Adding entry");
+                break;
+            }
+            case 368: {
+                //Ban list is finished
+                //368 TheLQ #aChannel :End of Channel Ban List
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                ImmutableList<BanListEvent.Entry> entries = ImmutableList.copyOf(banListBuilder.removeAll(channel));
+                log.debug("Dispatching event");
+                configuration.getListenerManager().onEvent(new BanListEvent(bot, channel, entries));
+                break;
+            }
+            case 353:
+                //NAMES response
+                //353 PircBotXUser = #aChannel :aUser1 aUser2
+                for (String curUser : StringUtils.split(parsedResponse.get(3))) {
+                    //Siphon off any levels this user has
+                    String nick = curUser;
+                    List<UserLevel> levels = Lists.newArrayList();
+                    UserLevel parsedLevel;
+                    while ((parsedLevel = UserLevel.fromSymbol(nick.charAt(0))) != null) {
+                        nick = nick.substring(1);
+                        levels.add(parsedLevel);
+                    }
+                    User user;
+                    if (!bot.getUserChannelDao().containsUser(nick))
+                        //Create user with nick only
+                        user = bot.getUserChannelDao().createUser(new UserHostmask(bot, nick));
+                    else user = bot.getUserChannelDao().getUser(nick);
+                    Channel chan = bot.getUserChannelDao().getChannel(parsedResponse.get(2));
+                    bot.getUserChannelDao().addUserToChannel(user, chan);
+                    //Now that the user is created, add them to the appropiate levels
+                    for (UserLevel curLevel : levels) {
+                        bot.getUserChannelDao().addUserToLevel(curLevel, user, chan);
+                    }
+                }
+                break;
+            case 366: {
+                //NAMES response finished
+                //366 PircBotXUser #aChannel :End of /NAMES list.
+                Channel channel = bot.getUserChannelDao().getChannel(parsedResponse.get(1));
+                configuration.getListenerManager().onEvent(new UserListEvent(bot, channel, bot.getUserChannelDao().getUsers(channel), false));
+                break;
+            }
+        }
 		configuration.getListenerManager().onEvent(new ServerResponseEvent(bot, code, rawResponse, parsedResponse));
 	}
 
@@ -804,10 +862,19 @@ public class InputParser implements Closeable {
 			String modeLetters = params.next();
 			for (int i = 0; i < modeLetters.length(); i++) {
 				char curModeChar = modeLetters.charAt(i);
-				if (curModeChar == '+') adding = true; else if (curModeChar == '-') adding = false; else {
-					ChannelModeHandler modeHandler = configuration.getChannelModeHandlers().get(curModeChar);
-					if (modeHandler != null) modeHandler.handleMode(bot, channel, userHostmask, user, params, adding, true);
-				}
+                switch (curModeChar) {
+                    case '+':
+                        adding = true;
+                        break;
+                    case '-':
+                        adding = false;
+                        break;
+                    default:
+                        ChannelModeHandler modeHandler = configuration.getChannelModeHandlers().get(curModeChar);
+                        if (modeHandler != null)
+                            modeHandler.handleMode(bot, channel, userHostmask, user, params, adding, true);
+                        break;
+                }
 			}
 			configuration.getListenerManager().onEvent(new ModeEvent(bot, channel, userHostmask, user, mode, modeParsed));
 		} else {

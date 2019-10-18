@@ -247,9 +247,13 @@ public class ImpilerDeduction extends Search<Term, Task> {
 			if (forward) before = before.negIf(e.isNegative());
 
 			int dt = ee.dt();
-			if (dt == DTERNAL) dt = 0; //HACK
-			else if (dt == XTERNAL)
-				throw new UnsupportedOperationException();
+            switch (dt) {
+                case DTERNAL:
+                    dt = 0; //HACK
+                    break;
+                case XTERNAL:
+                    throw new UnsupportedOperationException();
+            }
 
 			next = ee.sub(ees);
 			if (!forward) next = next.negIf(e.isNegative());

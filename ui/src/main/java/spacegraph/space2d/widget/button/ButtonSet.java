@@ -42,14 +42,17 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
             @Nullable ObjectBooleanProcedure<ToggleButton> outerAction = b.action;
             b.on((bb,e) -> {
                 if (e) {
-                    if (mode == Mode.Multi) {
+                    switch (mode) {
+                        case Multi:
 
-                    } else if (mode == Mode.One) {
-                        for (T cc : this.buttons) {
-                            if (cc != bb) {
-                                cc.on(false);
+                            break;
+                        case One:
+                            for (T cc : this.buttons) {
+                                if (cc != bb) {
+                                    cc.on(false);
+                                }
                             }
-                        }
+                            break;
                     }
 
 

@@ -1556,9 +1556,15 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
             /* [sound] */
             if (choice > 0) {
                 /* [sound] */
-                if ("ax-inf".equals(axiomArr[choice].label)) audioName = "hypspc";
+                switch (axiomArr[choice].label) {
+                    case "ax-inf":
+                        audioName = "hypspc";
+                        break;
                     /* [sound] */
-                else if ("ax-ac".equals(axiomArr[choice].label)) audioName = "ni";
+                    case "ax-ac":
+                        audioName = "ni";
+                        break;
+                }
                 /* [sound] */
             }
             /* [sound] */ // End sound effects

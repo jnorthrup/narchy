@@ -346,37 +346,44 @@ public class a extends GamePanel {
 						object[OBJ_X2] = x;
 						object[OBJ_Y2] = y;
 						value >>= 8;
-						if (value == SYMBOL_BLUE_HORIZONTAL_DOOR) {
-							object[OBJ_TYPE] = TYPE_HORIZONTAL_DOOR;
-							object[OBJ_PARALLEL] = PARALLEL_X;
-						} else if (value == SYMBOL_YELLOW_HORIZONTAL_DOOR) {
-							object[OBJ_TYPE] = TYPE_HORIZONTAL_DOOR;
-							object[OBJ_PARALLEL] = PARALLEL_X;
-							object[OBJ_SPRITE] = SPRITE_YELLOW_DOOR;
-							object[OBJ_HITS] = 1;
-						} else if (value == SYMBOL_BLUE_VERTICAL_DOOR) {
-							object[OBJ_TYPE] = TYPE_VERTICAL_DOOR;
-							object[OBJ_PARALLEL] = PARALLEL_Y;
-						} else if (value == SYMBOL_YELLOW_VERTICAL_DOOR) {
-							object[OBJ_TYPE] = TYPE_VERTICAL_DOOR;
-							object[OBJ_PARALLEL] = PARALLEL_Y;
-							object[OBJ_SPRITE] = SPRITE_YELLOW_DOOR;
-							object[OBJ_HITS] = 1;
-						} else if (value == SYMBOL_BOSS) {
-							object[OBJ_TYPE] = TYPE_MAN;
-							object[OBJ_SPRITE] = SPRITE_BOSS;
-							object[OBJ_HEIGHT] = 51;
-							object[OBJ_WIDTH] = 16;
-							object[OBJ_HITS] = 32;
-							object[OBJ_BOSS] = 1;
-							map[y][x] = MAP_EMPTY;
-						} else {
-							object[OBJ_TYPE] = TYPE_KEY;
-							object[OBJ_WIDTH] = 16;
-							object[OBJ_HEIGHT] = 8;
-							object[OBJ_SPRITE] = SPRITE_KEY;
-							map[y][x] = MAP_EMPTY;
-						}
+                        switch (value) {
+                            case SYMBOL_BLUE_HORIZONTAL_DOOR:
+                                object[OBJ_TYPE] = TYPE_HORIZONTAL_DOOR;
+                                object[OBJ_PARALLEL] = PARALLEL_X;
+                                break;
+                            case SYMBOL_YELLOW_HORIZONTAL_DOOR:
+                                object[OBJ_TYPE] = TYPE_HORIZONTAL_DOOR;
+                                object[OBJ_PARALLEL] = PARALLEL_X;
+                                object[OBJ_SPRITE] = SPRITE_YELLOW_DOOR;
+                                object[OBJ_HITS] = 1;
+                                break;
+                            case SYMBOL_BLUE_VERTICAL_DOOR:
+                                object[OBJ_TYPE] = TYPE_VERTICAL_DOOR;
+                                object[OBJ_PARALLEL] = PARALLEL_Y;
+                                break;
+                            case SYMBOL_YELLOW_VERTICAL_DOOR:
+                                object[OBJ_TYPE] = TYPE_VERTICAL_DOOR;
+                                object[OBJ_PARALLEL] = PARALLEL_Y;
+                                object[OBJ_SPRITE] = SPRITE_YELLOW_DOOR;
+                                object[OBJ_HITS] = 1;
+                                break;
+                            case SYMBOL_BOSS:
+                                object[OBJ_TYPE] = TYPE_MAN;
+                                object[OBJ_SPRITE] = SPRITE_BOSS;
+                                object[OBJ_HEIGHT] = 51;
+                                object[OBJ_WIDTH] = 16;
+                                object[OBJ_HITS] = 32;
+                                object[OBJ_BOSS] = 1;
+                                map[y][x] = MAP_EMPTY;
+                                break;
+                            default:
+                                object[OBJ_TYPE] = TYPE_KEY;
+                                object[OBJ_WIDTH] = 16;
+                                object[OBJ_HEIGHT] = 8;
+                                object[OBJ_SPRITE] = SPRITE_KEY;
+                                map[y][x] = MAP_EMPTY;
+                                break;
+                        }
 					}
 
 					
@@ -910,17 +917,22 @@ public class a extends GamePanel {
             final int VK_W = 0x57;
             final int VK_DOWN = 0x28;
             final int VK_LEFT = 0x25;
-            if (k == VK_W) {
-                final int VK_UP = 0x26;
-                k = VK_UP;
-			} else if (k == VK_D) {
-                final int VK_RIGHT = 0x27;
-                k = VK_RIGHT;
-			} else if (k == VK_A) {
-				k = VK_LEFT;
-			} else if (k == VK_S) {
-				k = VK_DOWN;
-			}
+            switch (k) {
+                case VK_W:
+                    final int VK_UP = 0x26;
+                    k = VK_UP;
+                    break;
+                case VK_D:
+                    final int VK_RIGHT = 0x27;
+                    k = VK_RIGHT;
+                    break;
+                case VK_A:
+                    k = VK_LEFT;
+                    break;
+                case VK_S:
+                    k = VK_DOWN;
+                    break;
+            }
             final int VK_SPACE = 0x20;
             final int VK_SHOOT = 0x42;
             a[(k >= VK_LEFT && k <= VK_DOWN) || k == VK_SPACE ? k : VK_SHOOT] = keyEvent.getID() != 402;

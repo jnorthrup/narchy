@@ -399,10 +399,13 @@ public class LevelGenerator {
 
     private void blockify(Level level, boolean[][] blocks, int width, int height) {
         int to = 0;
-        if (type == LevelGenerator.TYPE_CASTLE) {
-            to = 4 * 2;
-        } else if (type == LevelGenerator.TYPE_UNDERGROUND) {
-            to = 4 * 3;
+        switch (type) {
+            case LevelGenerator.TYPE_CASTLE:
+                to = 4 * 2;
+                break;
+            case LevelGenerator.TYPE_UNDERGROUND:
+                to = 4 * 3;
+                break;
         }
 
         boolean[][] b = new boolean[2][2];

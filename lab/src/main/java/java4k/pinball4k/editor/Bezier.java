@@ -111,11 +111,12 @@ public class Bezier extends LevelObject {
 		 */
 		@Override
         public Point getCenter() {
-			if (pointIdx == 1) {
-				return p2;
-			} else if (pointIdx == 2) {
-				return p3;
-			}
+            switch (pointIdx) {
+                case 1:
+                    return p2;
+                case 2:
+                    return p3;
+            }
 			
 			return p;
 		}

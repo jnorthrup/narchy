@@ -743,14 +743,18 @@ public class SV_CCMDS {
 			Com.Printf("%3i ", new Vargs().add(i));
 			Com.Printf("%5i ", new Vargs().add(cl.edict.client.ps.stats[Defines.STAT_FRAGS]));
 
-			if (cl.state == Defines.cs_connected)
-				Com.Printf("CNCT ");
-			else if (cl.state == Defines.cs_zombie)
-				Com.Printf("ZMBI ");
-			else {
-				int ping = cl.ping < 9999 ? cl.ping : 9999;
-				Com.Printf("%4i ", new Vargs().add(ping));
-			}
+            switch (cl.state) {
+                case Defines.cs_connected:
+                    Com.Printf("CNCT ");
+                    break;
+                case Defines.cs_zombie:
+                    Com.Printf("ZMBI ");
+                    break;
+                default:
+                    int ping = cl.ping < 9999 ? cl.ping : 9999;
+                    Com.Printf("%4i ", new Vargs().add(ping));
+                    break;
+            }
 
 			Com.Printf("%s", new Vargs().add(cl.name));
 			int l = 16 - cl.name.length();

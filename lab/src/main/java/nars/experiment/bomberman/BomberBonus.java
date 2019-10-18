@@ -97,11 +97,17 @@ public class BomberBonus extends Thread {
     public void giveToPlayer(int player) {
         BomberSndEffect.playSound("Bonus");
         /** if it's a fire bonus */
-        if (type == FIRE) /** then increase the fire length by 1 */
-            BomberGame.players[player - 1].fireLength += 1;
-        /** if it's a bomb bonus */
-        else if (type == BOMB) /** then increase the bomb count by 1 */
-            BomberGame.players[player - 1].totalBombs += 1;
+        switch (type) {
+            case FIRE:
+/** then increase the fire length by 1 */
+                BomberGame.players[player - 1].fireLength += 1;
+                break;
+            /** if it's a bomb bonus */
+            case BOMB:
+/** then increase the bomb count by 1 */
+                BomberGame.players[player - 1].totalBombs += 1;
+                break;
+        }
         kill();
     }
 

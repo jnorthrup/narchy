@@ -252,13 +252,17 @@ final class GenericGFPoly {
                 }
                 if (degree == 0 || coefficient != 1) {
                     int alphaPower = field.log(coefficient);
-                    if (alphaPower == 0) {
-                        result.append('1');
-                    } else if (alphaPower == 1) {
-                        result.append('a');
-                    } else {
-                        result.append("a^");
-                        result.append(alphaPower);
+                    switch (alphaPower) {
+                        case 0:
+                            result.append('1');
+                            break;
+                        case 1:
+                            result.append('a');
+                            break;
+                        default:
+                            result.append("a^");
+                            result.append(alphaPower);
+                            break;
                     }
                 }
                 if (degree != 0) {

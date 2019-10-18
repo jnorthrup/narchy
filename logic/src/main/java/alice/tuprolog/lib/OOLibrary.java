@@ -440,13 +440,14 @@ public class OOLibrary extends PrologLib {
 				Struct sel = (Struct) objId;
 				if (".".equals(sel.name()) && sel.subs() == 2
 						&& method.subs() == 1) {
-					if ("setAt".equals(methodName)) {
-						return java_set(sel.subResolve(0), sel.subResolve(1), method
-								.subResolve(0));
-					} else if ("get".equals(methodName)) {
-						return java_get(sel.subResolve(0), sel.subResolve(1), method
-								.subResolve(0));
-					}
+                    switch (methodName) {
+                        case "setAt":
+                            return java_set(sel.subResolve(0), sel.subResolve(1), method
+                                    .subResolve(0));
+                        case "get":
+                            return java_get(sel.subResolve(0), sel.subResolve(1), method
+                                    .subResolve(0));
+                    }
 				}
 			}
 			args = parseArg(method);

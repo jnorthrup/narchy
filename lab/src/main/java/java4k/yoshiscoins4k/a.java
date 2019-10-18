@@ -86,6 +86,7 @@ public class a extends Applet implements Runnable {
 		}
         int bestColumn = -1;
         int max = -2 * INFINITY;
+        label:
         for (int i = 0; i < 7; i++) {
 			int largestValue = -1;
 			int largestColumn = -1;
@@ -103,35 +104,38 @@ public class a extends Applet implements Runnable {
 
 			m(board, largestColumn, stone);
 			int x = 0;
-			if (board[7][1] == NODE_INTERMEDIATE) {
-				if (depth == maxDepth && freeColumns > 1) {
-					x = stone * board[7][0];
-				} else {
-					n(board, sorts, depth + 1, -stone, -beta, -alpha, maxDepth, permutations, result);
-					x = -result[0];
-				}
-			} else if (board[7][1] == NODE_TIE) {
-				x = 0;
-			} else {
-				x = INFINITY - (depth << 5);
-				board[++board[6][largestColumn]][largestColumn] = STONE_EMPTY;
-				board[7][0] -= stone * W[board[6][largestColumn]][largestColumn];
+            switch (board[7][1]) {
+                case NODE_INTERMEDIATE:
+                    if (depth == maxDepth && freeColumns > 1) {
+                        x = stone * board[7][0];
+                    } else {
+                        n(board, sorts, depth + 1, -stone, -beta, -alpha, maxDepth, permutations, result);
+                        x = -result[0];
+                    }
+                    break;
+                case NODE_TIE:
+                    x = 0;
+                    break;
+                default:
+                    x = INFINITY - (depth << 5);
+                    board[++board[6][largestColumn]][largestColumn] = STONE_EMPTY;
+                    board[7][0] -= stone * W[board[6][largestColumn]][largestColumn];
 
-				for (int j = 0; j < 7; j++) {
-					if (sorts[depth][j] == 0 && j != largestColumn && board[6][j] >= 0) {
-						m(board, j, stone);
-						if (board[7][1] == NODE_INTERMEDIATE || board[7][1] == NODE_TIE) {
-							x--;
-						}
-						board[++board[6][j]][j] = STONE_EMPTY;
-						board[7][0] -= stone * W[board[6][j]][j];
-					}
-				}
+                    for (int j = 0; j < 7; j++) {
+                        if (sorts[depth][j] == 0 && j != largestColumn && board[6][j] >= 0) {
+                            m(board, j, stone);
+                            if (board[7][1] == NODE_INTERMEDIATE || board[7][1] == NODE_TIE) {
+                                x--;
+                            }
+                            board[++board[6][j]][j] = STONE_EMPTY;
+                            board[7][0] -= stone * W[board[6][j]][j];
+                        }
+                    }
 
-				max = x;
-				bestColumn = largestColumn;
-				break;
-			}
+                    max = x;
+                    bestColumn = largestColumn;
+                    break label;
+            }
 			board[++board[6][largestColumn]][largestColumn] = STONE_EMPTY;
 			board[7][0] -= stone * W[board[6][largestColumn]][largestColumn];
 
@@ -149,7 +153,7 @@ public class a extends Applet implements Runnable {
 			}
 		}
 
-		result[0] = max;
+        result[0] = max;
 		result[1] = bestColumn;
 	}
 
@@ -356,94 +360,100 @@ public class a extends Applet implements Runnable {
 					}
 				}
 
-				if (state == STATE_X_CHOOSING) {
-					coinX = a[MOUSE_X] - 12;
-					coinY = 51;
-					if (mouseReleased && a[MOUSE_PRESSED] == 1) {
-						mouseReleased = false;
-						move = a[MOUSE_X] / 26;
-						moveStone = STONE_X;
-						if (move >= 0 && move < 7 && board[6][move] >= 0) {
-							coinX = 1 + move * 26;
-							coinVy = 0;
-							targetY = 77 + board[6][move] * 26;
-							state = STATE_COIN_DROPPING;
-						}
-					}
-				} else if (state == STATE_COIN_DROPPING) {
-					coinVy += GRAVITY;
-					coinY += coinVy;
-					if (coinY >= targetY) {
-						coinY = targetY;
-						state = STATE_WAIT_FOR_PAINT;
-					}
-				} else if (state == STATE_EVALUATE_MOVE) {
-					spriteBoard[board[6][move]][move] = coinSprite + 1;
-					m(board, move, moveStone);
-					if (board[7][1] != NODE_INTERMEDIATE) {
-						if (board[7][1] != NODE_TIE) {
-							x = board[7][2];
-							y = board[7][3];
-							for (i = 0; i < 4; i++) {
-								bouncingCoins[i][COIN_X] = 1 + x * 26;
-								bouncingCoins[i][COIN_FLOOR_Y] = bouncingCoins[i][COIN_Y] = 77 + y * 26;
-								bouncingCoins[i][COIN_VY] = COIN_JUMP_VY;
-								bouncingCoins[i][COIN_DELAY] = i << 2;
-								bouncingCoins[i][COIN_SPRITE] = spriteBoard[y][x] - 1;
-								spriteBoard[y][x] = 0;
-								if (board[7][4] < x) {
-									x--;
-								} else if (board[7][4] > x) {
-									x++;
-								}
-								if (board[7][5] < y) {
-									y--;
-								} else if (board[7][5] > y) {
-									y++;
-								}
-							}
-							state = STATE_BOUNCING;
-							advanceLevel = moveStone == STONE_X;
-						} else {
-							state = STATE_TIE;
-						}
-					} else {
-						stareCountdown = staring ? 64 : (5 + random.nextInt(10)) << 6;
-						state = moveStone == STONE_X ? STATE_O_CHOOSING : STATE_X_CHOOSING;
-						coinSprite = random.nextInt(8);
-						if (state == STATE_O_CHOOSING) {
-							coinSprite += 8;
-						} else {
-							coinY = 51;
-							coinX = a[MOUSE_X] - 12;
-						}
-					}
-				} else if (state == STATE_O_CHOOSING) {
-					
-					n(board, sorts, 0, STONE_O, -INFINITY, INFINITY, level + 3, permutations, result);
-					move = result[1];
-					moveStone = STONE_O;
-					coinY = 16;
-					coinX = 1 + move * 26;
-					yoshiX = coinX + 13;
-					coinVy = 0;
-					targetY = 77 + board[6][move] * 26;
-					state = STATE_COIN_DROPPING;
-					nextFrameStartTime = System.nanoTime();
-				} else if (state == STATE_BOUNCING) {
-					for (i = 0; i < 4; i++) {
-						if (bouncingCoins[i][COIN_DELAY] > 0) {
-							bouncingCoins[i][COIN_DELAY]--;
-						} else {
-							bouncingCoins[i][COIN_VY] += COIN_JUMP_GRAVITY;
-							bouncingCoins[i][COIN_Y] += bouncingCoins[i][COIN_VY];
-							if (bouncingCoins[i][COIN_VY] > 0 && bouncingCoins[i][COIN_Y] >= bouncingCoins[i][COIN_FLOOR_Y]) {
-								bouncingCoins[i][COIN_Y] = bouncingCoins[i][COIN_FLOOR_Y];
-								bouncingCoins[i][COIN_VY] = COIN_JUMP_VY;
-							}
-						}
-					}
-				}
+                switch (state) {
+                    case STATE_X_CHOOSING:
+                        coinX = a[MOUSE_X] - 12;
+                        coinY = 51;
+                        if (mouseReleased && a[MOUSE_PRESSED] == 1) {
+                            mouseReleased = false;
+                            move = a[MOUSE_X] / 26;
+                            moveStone = STONE_X;
+                            if (move >= 0 && move < 7 && board[6][move] >= 0) {
+                                coinX = 1 + move * 26;
+                                coinVy = 0;
+                                targetY = 77 + board[6][move] * 26;
+                                state = STATE_COIN_DROPPING;
+                            }
+                        }
+                        break;
+                    case STATE_COIN_DROPPING:
+                        coinVy += GRAVITY;
+                        coinY += coinVy;
+                        if (coinY >= targetY) {
+                            coinY = targetY;
+                            state = STATE_WAIT_FOR_PAINT;
+                        }
+                        break;
+                    case STATE_EVALUATE_MOVE:
+                        spriteBoard[board[6][move]][move] = coinSprite + 1;
+                        m(board, move, moveStone);
+                        if (board[7][1] != NODE_INTERMEDIATE) {
+                            if (board[7][1] != NODE_TIE) {
+                                x = board[7][2];
+                                y = board[7][3];
+                                for (i = 0; i < 4; i++) {
+                                    bouncingCoins[i][COIN_X] = 1 + x * 26;
+                                    bouncingCoins[i][COIN_FLOOR_Y] = bouncingCoins[i][COIN_Y] = 77 + y * 26;
+                                    bouncingCoins[i][COIN_VY] = COIN_JUMP_VY;
+                                    bouncingCoins[i][COIN_DELAY] = i << 2;
+                                    bouncingCoins[i][COIN_SPRITE] = spriteBoard[y][x] - 1;
+                                    spriteBoard[y][x] = 0;
+                                    if (board[7][4] < x) {
+                                        x--;
+                                    } else if (board[7][4] > x) {
+                                        x++;
+                                    }
+                                    if (board[7][5] < y) {
+                                        y--;
+                                    } else if (board[7][5] > y) {
+                                        y++;
+                                    }
+                                }
+                                state = STATE_BOUNCING;
+                                advanceLevel = moveStone == STONE_X;
+                            } else {
+                                state = STATE_TIE;
+                            }
+                        } else {
+                            stareCountdown = staring ? 64 : (5 + random.nextInt(10)) << 6;
+                            state = moveStone == STONE_X ? STATE_O_CHOOSING : STATE_X_CHOOSING;
+                            coinSprite = random.nextInt(8);
+                            if (state == STATE_O_CHOOSING) {
+                                coinSprite += 8;
+                            } else {
+                                coinY = 51;
+                                coinX = a[MOUSE_X] - 12;
+                            }
+                        }
+                        break;
+                    case STATE_O_CHOOSING:
+
+                        n(board, sorts, 0, STONE_O, -INFINITY, INFINITY, level + 3, permutations, result);
+                        move = result[1];
+                        moveStone = STONE_O;
+                        coinY = 16;
+                        coinX = 1 + move * 26;
+                        yoshiX = coinX + 13;
+                        coinVy = 0;
+                        targetY = 77 + board[6][move] * 26;
+                        state = STATE_COIN_DROPPING;
+                        nextFrameStartTime = System.nanoTime();
+                        break;
+                    case STATE_BOUNCING:
+                        for (i = 0; i < 4; i++) {
+                            if (bouncingCoins[i][COIN_DELAY] > 0) {
+                                bouncingCoins[i][COIN_DELAY]--;
+                            } else {
+                                bouncingCoins[i][COIN_VY] += COIN_JUMP_GRAVITY;
+                                bouncingCoins[i][COIN_Y] += bouncingCoins[i][COIN_VY];
+                                if (bouncingCoins[i][COIN_VY] > 0 && bouncingCoins[i][COIN_Y] >= bouncingCoins[i][COIN_FLOOR_Y]) {
+                                    bouncingCoins[i][COIN_Y] = bouncingCoins[i][COIN_FLOOR_Y];
+                                    bouncingCoins[i][COIN_VY] = COIN_JUMP_VY;
+                                }
+                            }
+                        }
+                        break;
+                }
 
 				if (fading) {
 					fadeRadius += fadeDirection;

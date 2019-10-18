@@ -90,12 +90,14 @@ public abstract class AbstractAgent {
      * @return
      */
     protected static ColorPalette makePalette(String paletteName) {
-        if ("NTSC".equals(paletteName))
-            return new NTSCPalette();
-        else if ("SECAM".equals(paletteName))
-            return new SECAMPalette();
-        else
-            throw new IllegalArgumentException("Invalid palette: "+paletteName);
+        switch (paletteName) {
+            case "NTSC":
+                return new NTSCPalette();
+            case "SECAM":
+                return new SECAMPalette();
+            default:
+                throw new IllegalArgumentException("Invalid palette: " + paletteName);
+        }
     }
 
     /** Initialize relevant bits of the agent

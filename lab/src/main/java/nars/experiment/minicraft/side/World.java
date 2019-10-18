@@ -219,14 +219,15 @@ public class World implements java.io.Serializable {
     private static double getSpeed(Tool tool) {
 
 
-        if (tool.toolPower == Tool.ToolPower.Wood) {
-            return 3;
-        } else if (tool.toolPower == Tool.ToolPower.Stone) {
-            return 2.5;
-        } else if (tool.toolPower == Tool.ToolPower.Metal) {
-            return 2;
-        } else {
-            return 1;
+        switch (tool.toolPower) {
+            case Wood:
+                return 3;
+            case Stone:
+                return 2.5;
+            case Metal:
+                return 2;
+            default:
+                return 1;
         }
     }
 

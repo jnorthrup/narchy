@@ -383,18 +383,21 @@ public enum Texts {
 	 */
 	public static long l(String s) throws NumberFormatException {
 		int sl = s.length();
-		if (sl == 1) {
-			char c = s.charAt(0);
-			int i = i(c);
-			if (i != -1) return i;
-		} else if (sl == 2) {
-			int dig1 = i(s.charAt(1));
-			if (dig1 != -1) {
-				int dig10 = i(s.charAt(0));
-				if (dig10 != -1)
-					return dig10 * 10 + dig1;
-			}
-		}
+        switch (sl) {
+            case 1:
+                char c = s.charAt(0);
+                int i = i(c);
+                if (i != -1) return i;
+                break;
+            case 2:
+                int dig1 = i(s.charAt(1));
+                if (dig1 != -1) {
+                    int dig10 = i(s.charAt(0));
+                    if (dig10 != -1)
+                        return dig10 * 10 + dig1;
+                }
+                break;
+        }
 		return Long.parseLong(s);
 	}
 

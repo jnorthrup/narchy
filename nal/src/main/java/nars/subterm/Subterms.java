@@ -369,40 +369,45 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default /*@NotNull*/ SortedSet<Term> toSetSorted(Predicate<Term> t) {
         int s = subs();
-        if (s == 1) {
-            Term the = sub(0);
-            return t.test(the) ? ArrayUnenforcedSortedSet.the(the) : ArrayUnenforcedSortedSet.empty;
-        } else if (s == 2) {
-            Term a = sub(0);
-            Term b = sub(1);
-            boolean aok = t.test(a);
-            boolean bok = t.test(b);
-            if (aok && bok) {
-                return ArrayUnenforcedSortedSet.the(a, b);
-            } else if (!aok && !bok) {
-                return ArrayUnenforcedSortedSet.empty;
-            } else if (!bok) {
-                return ArrayUnenforcedSortedSet.the(a);
-            } else
-                return ArrayUnenforcedSortedSet.the(b);
-        } else {
+        switch (s) {
+            case 1:
+                Term the = sub(0);
+                return t.test(the) ? ArrayUnenforcedSortedSet.the(the) : ArrayUnenforcedSortedSet.empty;
+            case 2:
+                Term a = sub(0);
+                Term b = sub(1);
+                boolean aok = t.test(a);
+                boolean bok = t.test(b);
+                if (aok && bok) {
+                    return ArrayUnenforcedSortedSet.the(a, b);
+                } else if (!aok && !bok) {
+                    return ArrayUnenforcedSortedSet.empty;
+                } else if (!bok) {
+                    return ArrayUnenforcedSortedSet.the(a);
+                } else
+                    return ArrayUnenforcedSortedSet.the(b);
+            default:
 
 
-            List<Term> u = new FasterList<>(s);
-            for (Term x : this) {
-                if (t.test(x)) u.add(x);
-            }
-            int us = u.size();
-            if (us == s) {
-                if (this instanceof TermVector)
-                    return ArrayUnenforcedSortedSet.the(this.arrayShared());
-            }
-            switch (us) {
-                case 0: return ArrayUnenforcedSortedSet.empty;
-                case 1: return ArrayUnenforcedSortedSet.the(u.get(0));
-                case 2: return ArrayUnenforcedSortedSet.the(u.get(0), u.get(1));
-                default: return ArrayUnenforcedSortedSet.the(u.toArray(Op.EmptyTermArray));
-            }
+                List<Term> u = new FasterList<>(s);
+                for (Term x : this) {
+                    if (t.test(x)) u.add(x);
+                }
+                int us = u.size();
+                if (us == s) {
+                    if (this instanceof TermVector)
+                        return ArrayUnenforcedSortedSet.the(this.arrayShared());
+                }
+                switch (us) {
+                    case 0:
+                        return ArrayUnenforcedSortedSet.empty;
+                    case 1:
+                        return ArrayUnenforcedSortedSet.the(u.get(0));
+                    case 2:
+                        return ArrayUnenforcedSortedSet.the(u.get(0), u.get(1));
+                    default:
+                        return ArrayUnenforcedSortedSet.the(u.toArray(Op.EmptyTermArray));
+                }
         }
 
     }

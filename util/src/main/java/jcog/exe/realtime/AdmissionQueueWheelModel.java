@@ -14,7 +14,7 @@ import static jcog.exe.realtime.TimedFuture.*;
  * uses central concurrent admission queue which is drained each cycle.
  * the wheel queues are (hopefully fast) ArrayDeque's safely accessed from one thread only
  */
-public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
+public class AdmissionQueueWheelModel extends WheelModel {
 
     /** capacity of incoming admission queue (not the entire wheel) */
     static final int ADMISSION_CAPACITY = 4096;

@@ -1203,21 +1203,25 @@ public final class SCR extends Globals {
                 
                 
                 else if (cl.cinematictime > 0) {
-                    if (cls.key_dest == key_menu) {
-                        if (cl.cinematicpalette_active) {
-                            re.CinematicSetPalette(null);
-                            cl.cinematicpalette_active = false;
-                        }
-                        Menu.Draw();
-                    } else if (cls.key_dest == key_console) {
-                        if (cl.cinematicpalette_active) {
-                            re.CinematicSetPalette(null);
-                            cl.cinematicpalette_active = false;
-                        }
-                        DrawConsole();
-                    } else {
-                        
-                        DrawCinematic();
+                    switch (cls.key_dest) {
+                        case key_menu:
+                            if (cl.cinematicpalette_active) {
+                                re.CinematicSetPalette(null);
+                                cl.cinematicpalette_active = false;
+                            }
+                            Menu.Draw();
+                            break;
+                        case key_console:
+                            if (cl.cinematicpalette_active) {
+                                re.CinematicSetPalette(null);
+                                cl.cinematicpalette_active = false;
+                            }
+                            DrawConsole();
+                            break;
+                        default:
+
+                            DrawCinematic();
+                            break;
                     }
                 } else {
                     

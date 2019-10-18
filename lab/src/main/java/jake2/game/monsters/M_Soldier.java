@@ -1056,16 +1056,20 @@ public class M_Soldier {
             self.takedamage = Defines.DAMAGE_YES;
             self.s.skinnum |= 1;
 
-            if (self.s.skinnum == 1)
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_death_light,
-                        1, Defines.ATTN_NORM, 0);
-            else if (self.s.skinnum == 3)
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_death, 1,
-                        Defines.ATTN_NORM, 0);
-            else
-                
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_death_ss, 1,
-                        Defines.ATTN_NORM, 0);
+            switch (self.s.skinnum) {
+                case 1:
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_death_light,
+                            1, Defines.ATTN_NORM, 0);
+                    break;
+                case 3:
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_death, 1,
+                            Defines.ATTN_NORM, 0);
+                    break;
+                default:
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_death_ss, 1,
+                            Defines.ATTN_NORM, 0);
+                    break;
+            }
 
             if (Math.abs((self.s.origin[2] + self.viewheight) - point[2]) <= 4) {
                 
@@ -1074,16 +1078,23 @@ public class M_Soldier {
             }
 
             n = Lib.rand() % 5;
-            if (n == 0)
-                self.monsterinfo.currentmove = soldier_move_death1;
-            else if (n == 1)
-                self.monsterinfo.currentmove = soldier_move_death2;
-            else if (n == 2)
-                self.monsterinfo.currentmove = soldier_move_death4;
-            else if (n == 3)
-                self.monsterinfo.currentmove = soldier_move_death5;
-            else
-                self.monsterinfo.currentmove = soldier_move_death6;
+            switch (n) {
+                case 0:
+                    self.monsterinfo.currentmove = soldier_move_death1;
+                    break;
+                case 1:
+                    self.monsterinfo.currentmove = soldier_move_death2;
+                    break;
+                case 2:
+                    self.monsterinfo.currentmove = soldier_move_death4;
+                    break;
+                case 3:
+                    self.monsterinfo.currentmove = soldier_move_death5;
+                    break;
+                default:
+                    self.monsterinfo.currentmove = soldier_move_death6;
+                    break;
+            }
         }
     };
 
@@ -1390,15 +1401,20 @@ public class M_Soldier {
             self.pain_debounce_time = GameBase.level.time + 3;
 
             int n = self.s.skinnum | 1;
-            if (n == 1)
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain_light,
-                        1, Defines.ATTN_NORM, 0);
-            else if (n == 3)
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain, 1,
-                        Defines.ATTN_NORM, 0);
-            else
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain_ss, 1,
-                        Defines.ATTN_NORM, 0);
+            switch (n) {
+                case 1:
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain_light,
+                            1, Defines.ATTN_NORM, 0);
+                    break;
+                case 3:
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain, 1,
+                            Defines.ATTN_NORM, 0);
+                    break;
+                default:
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain_ss, 1,
+                            Defines.ATTN_NORM, 0);
+                    break;
+            }
 
             if (self.velocity[2] > 100) {
                 self.monsterinfo.currentmove = soldier_move_pain4;

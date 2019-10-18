@@ -122,12 +122,13 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
 
     @Override
     public double range(int dim) {
-        if (dim == 0) {
-            return max.x - min.x;
-        } else if (dim == 1) {
-            return max.y - min.y;
-        } else {
-            throw new IllegalArgumentException("Invalid dimension");
+        switch (dim) {
+            case 0:
+                return max.x - min.x;
+            case 1:
+                return max.y - min.y;
+            default:
+                throw new IllegalArgumentException("Invalid dimension");
         }
     }
 

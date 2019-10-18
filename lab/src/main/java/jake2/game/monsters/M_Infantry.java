@@ -877,18 +877,22 @@ public class M_Infantry {
             self.takedamage = Defines.DAMAGE_YES;
 
             n = Lib.rand() % 3;
-            if (n == 0) {
-                self.monsterinfo.currentmove = infantry_move_death1;
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_die2, 1,
-                        Defines.ATTN_NORM, 0);
-            } else if (n == 1) {
-                self.monsterinfo.currentmove = infantry_move_death2;
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_die1, 1,
-                        Defines.ATTN_NORM, 0);
-            } else {
-                self.monsterinfo.currentmove = infantry_move_death3;
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_die2, 1,
-                        Defines.ATTN_NORM, 0);
+            switch (n) {
+                case 0:
+                    self.monsterinfo.currentmove = infantry_move_death1;
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_die2, 1,
+                            Defines.ATTN_NORM, 0);
+                    break;
+                case 1:
+                    self.monsterinfo.currentmove = infantry_move_death2;
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_die1, 1,
+                            Defines.ATTN_NORM, 0);
+                    break;
+                default:
+                    self.monsterinfo.currentmove = infantry_move_death3;
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_die2, 1,
+                            Defines.ATTN_NORM, 0);
+                    break;
             }
         }
     };

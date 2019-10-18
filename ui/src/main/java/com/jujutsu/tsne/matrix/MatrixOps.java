@@ -692,35 +692,39 @@ public enum MatrixOps { ;
 		
 		
 		double [][] result;
-		if( axis == 0) {
-			result = new double[1][matrix[0].length];
-			for (int j = 0; j < matrix[0].length; j++) {
-				double colsum = 0.0;
-				for (double[] aMatrix : matrix) {
-					colsum += aMatrix[j];
-				}
-				result[0][j] = colsum / matrix.length;
-			}
-		}   else if (axis == 1) {
-			result = new double[matrix.length][1];
-			for (int i = 0; i < matrix.length; i++) {
-				double rowsum = 0.0;
-				for (int j = 0; j < matrix[0].length; j++) {
-					rowsum += matrix[i][j];
-				}
-				result[i][0] = rowsum / matrix[0].length;
-			}
-		}   else if (axis == 2) {
-			result = new double[1][1];
-			for (int j = 0; j < matrix[0].length; j++) {
-				for (double[] aMatrix : matrix) {
-					result[0][0] += aMatrix[j];
-				}
-			}
-			result[0][0] /=  (matrix[0].length *  matrix.length);
-		}else {
-			throw  new IllegalArgumentException("Axes other than 0,1,2 is unsupported");
-		}
+        switch (axis) {
+            case 0:
+                result = new double[1][matrix[0].length];
+                for (int j = 0; j < matrix[0].length; j++) {
+                    double colsum = 0.0;
+                    for (double[] aMatrix : matrix) {
+                        colsum += aMatrix[j];
+                    }
+                    result[0][j] = colsum / matrix.length;
+                }
+                break;
+            case 1:
+                result = new double[matrix.length][1];
+                for (int i = 0; i < matrix.length; i++) {
+                    double rowsum = 0.0;
+                    for (int j = 0; j < matrix[0].length; j++) {
+                        rowsum += matrix[i][j];
+                    }
+                    result[i][0] = rowsum / matrix[0].length;
+                }
+                break;
+            case 2:
+                result = new double[1][1];
+                for (int j = 0; j < matrix[0].length; j++) {
+                    for (double[] aMatrix : matrix) {
+                        result[0][0] += aMatrix[j];
+                    }
+                }
+                result[0][0] /= (matrix[0].length * matrix.length);
+                break;
+            default:
+                throw new IllegalArgumentException("Axes other than 0,1,2 is unsupported");
+        }
 		return result;
 	}
 
@@ -730,27 +734,30 @@ public enum MatrixOps { ;
 		
 		
 		double [][] result;
-		if( axis == 0) {
-			result = new double[1][matrix[0].length];
-			for (int j = 0; j < matrix[0].length; j++) {
-				double rowsum = 0.0;
-				for (double[] aMatrix : matrix) {
-					rowsum += aMatrix[j];
-				}
-				result[0][j] = rowsum;
-			}
-		}   else if (axis == 1) {
-			result = new double[matrix.length][1];
-			for (int i = 0; i < matrix.length; i++) {
-				double colsum = 0.0;
-				for (int j = 0; j < matrix[0].length; j++) {
-					colsum += matrix[i][j];
-				}
-				result[i][0] = colsum;
-			}
-		}   else {
-			throw  new IllegalArgumentException("Axes other than 0,1 is unsupported");
-		}
+        switch (axis) {
+            case 0:
+                result = new double[1][matrix[0].length];
+                for (int j = 0; j < matrix[0].length; j++) {
+                    double rowsum = 0.0;
+                    for (double[] aMatrix : matrix) {
+                        rowsum += aMatrix[j];
+                    }
+                    result[0][j] = rowsum;
+                }
+                break;
+            case 1:
+                result = new double[matrix.length][1];
+                for (int i = 0; i < matrix.length; i++) {
+                    double colsum = 0.0;
+                    for (int j = 0; j < matrix[0].length; j++) {
+                        colsum += matrix[i][j];
+                    }
+                    result[i][0] = colsum;
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Axes other than 0,1 is unsupported");
+        }
 		return result;
 	}
 

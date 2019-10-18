@@ -223,23 +223,28 @@ public class GameItems {
                     other.client.pers.selected_item = other.client.ps.stats[Defines.STAT_SELECTED_ITEM] = (short) ITEM_INDEX(ent.item);
     
                 if (ent.item.pickup == Pickup_Health) {
-                    if (ent.count == 2)
-                        game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                                .soundindex("items/s_health.wav"), 1,
-                                Defines.ATTN_NORM, 0);
-                    else if (ent.count == 10)
-                        game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                                .soundindex("items/n_health.wav"), 1,
-                                Defines.ATTN_NORM, 0);
-                    else if (ent.count == 25)
-                        game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                                .soundindex("items/l_health.wav"), 1,
-                                Defines.ATTN_NORM, 0);
-                    else
-                        
-                        game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                                .soundindex("items/m_health.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                    switch (ent.count) {
+                        case 2:
+                            game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
+                                            .soundindex("items/s_health.wav"), 1,
+                                    Defines.ATTN_NORM, 0);
+                            break;
+                        case 10:
+                            game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
+                                            .soundindex("items/n_health.wav"), 1,
+                                    Defines.ATTN_NORM, 0);
+                            break;
+                        case 25:
+                            game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
+                                            .soundindex("items/l_health.wav"), 1,
+                                    Defines.ATTN_NORM, 0);
+                            break;
+                        default:
+                            game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
+                                            .soundindex("items/m_health.wav"), 1,
+                                    Defines.ATTN_NORM, 0);
+                            break;
+                    }
                 } else if (ent.item.pickup_sound != null) {
                     game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
                             .soundindex(ent.item.pickup_sound), 1,
@@ -980,20 +985,28 @@ public class GameItems {
             return false;
 
         int max;
-        if (item.tag == Defines.AMMO_BULLETS)
-            max = ent.client.pers.max_bullets;
-        else if (item.tag == Defines.AMMO_SHELLS)
-            max = ent.client.pers.max_shells;
-        else if (item.tag == Defines.AMMO_ROCKETS)
-            max = ent.client.pers.max_rockets;
-        else if (item.tag == Defines.AMMO_GRENADES)
-            max = ent.client.pers.max_grenades;
-        else if (item.tag == Defines.AMMO_CELLS)
-            max = ent.client.pers.max_cells;
-        else if (item.tag == Defines.AMMO_SLUGS)
-            max = ent.client.pers.max_slugs;
-        else
-            return false;
+        switch (item.tag) {
+            case Defines.AMMO_BULLETS:
+                max = ent.client.pers.max_bullets;
+                break;
+            case Defines.AMMO_SHELLS:
+                max = ent.client.pers.max_shells;
+                break;
+            case Defines.AMMO_ROCKETS:
+                max = ent.client.pers.max_rockets;
+                break;
+            case Defines.AMMO_GRENADES:
+                max = ent.client.pers.max_grenades;
+                break;
+            case Defines.AMMO_CELLS:
+                max = ent.client.pers.max_cells;
+                break;
+            case Defines.AMMO_SLUGS:
+                max = ent.client.pers.max_slugs;
+                break;
+            default:
+                return false;
+        }
 
         int index = ITEM_INDEX(item);
     
@@ -1318,23 +1331,28 @@ public class GameItems {
                 other.client.pers.selected_item = other.client.ps.stats[Defines.STAT_SELECTED_ITEM] = (short) ITEM_INDEX(ent.item);
     
             if (ent.item.pickup == Pickup_Health) {
-                if (ent.count == 2)
-                    game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                            .soundindex("items/s_health.wav"), 1,
-                            Defines.ATTN_NORM, 0);
-                else if (ent.count == 10)
-                    game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                            .soundindex("items/n_health.wav"), 1,
-                            Defines.ATTN_NORM, 0);
-                else if (ent.count == 25)
-                    game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                            .soundindex("items/l_health.wav"), 1,
-                            Defines.ATTN_NORM, 0);
-                else
-                    
-                    game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
-                            .soundindex("items/m_health.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                switch (ent.count) {
+                    case 2:
+                        game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
+                                        .soundindex("items/s_health.wav"), 1,
+                                Defines.ATTN_NORM, 0);
+                        break;
+                    case 10:
+                        game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
+                                        .soundindex("items/n_health.wav"), 1,
+                                Defines.ATTN_NORM, 0);
+                        break;
+                    case 25:
+                        game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
+                                        .soundindex("items/l_health.wav"), 1,
+                                Defines.ATTN_NORM, 0);
+                        break;
+                    default:
+                        game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
+                                        .soundindex("items/m_health.wav"), 1,
+                                Defines.ATTN_NORM, 0);
+                        break;
+                }
             } else if (ent.item.pickup_sound != null) {
                 game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
                         .soundindex(ent.item.pickup_sound), 1,

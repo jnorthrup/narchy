@@ -38,31 +38,34 @@ class HttpSelector implements ConnectionStateChangeListener {
 
     @Override
     public void connectionStateChange(HttpConnection conn, STATE oldState, STATE newState) {
-        if (newState == STATE.CLOSED) {
-            conn.key.attach(null);
-            conn.key.cancel();
-            try {
-                conn.channel.close();
-            } catch (IOException ex) {
-                logger.error("{}", ex);
-            }
-
-        } else if (newState == STATE.UPGRADE) {
-            conn.key.attach(null);
-            conn.key.cancel();
-
-            if (conn.websocket && upgradeWebSocketHandler != null) {
-                ByteBuffer rawHead = conn.rawHead;
-                conn.rawHead = null;
-                rawHead.flip();
-                upgradeWebSocketHandler.upgradeWebSocketHandler(conn, rawHead);
-            } else {
+        switch (newState) {
+            case CLOSED:
+                conn.key.attach(null);
+                conn.key.cancel();
                 try {
                     conn.channel.close();
                 } catch (IOException ex) {
                     logger.error("{}", ex);
                 }
-            }
+
+                break;
+            case UPGRADE:
+                conn.key.attach(null);
+                conn.key.cancel();
+
+                if (conn.websocket && upgradeWebSocketHandler != null) {
+                    ByteBuffer rawHead = conn.rawHead;
+                    conn.rawHead = null;
+                    rawHead.flip();
+                    upgradeWebSocketHandler.upgradeWebSocketHandler(conn, rawHead);
+                } else {
+                    try {
+                        conn.channel.close();
+                    } catch (IOException ex) {
+                        logger.error("{}", ex);
+                    }
+                }
+                break;
         }
     }
 

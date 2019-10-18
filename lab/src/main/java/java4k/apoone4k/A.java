@@ -344,64 +344,83 @@ public class A extends GamePanel {
 				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 285);
 			}
 		} else {
-			if ((int) p[2] == 0) {
-				s = "The game starts really easy ...";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 60);
-			} else if ((int) p[2] == 2) {
-				s = "Nice a little doublejump ...";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 320);
-			} else if ((int) p[2] == 3) {
-				s = "That level is too easy ...";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 60);
-			} else if ((int) p[2] == 5) {
-				s = "First tripple jump ... *gaehn*";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 320);
-			} else if ((int) p[2] == 6) {
-				s = "Those who died in that level ...";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 60);
-			} else if ((int) p[2] == 8) {
-				s = "You died " + (int) (p[3]) + " times? OMG";
-				if (p[3] < 1) {
-					s = "Until now you are doing it right ...";
-				}
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 320);
-			} else if ((int) p[2] == 9) {
-				s = "Ok, tripple jumps ...";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 60);
-			} else if ((int) p[2] == 11) {
-				s = "The next level will be harder! I promise!";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 320);
-			} else if ((int) p[2] == 12) {
-				s = "I like the tunnel levels";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 60);
-			} else if ((int) p[2] == 14) {
-				s = "Then you will love the next level";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 320);
-			} else if ((int) p[2] == 15) {
-				s = "I heard someone died here ... often ...";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 60);
-			} else if ((int) p[2] == 18) {
-				s = "And now FASTER";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 60);
-			} else if ((int) p[2] == 26) {
-				s = "The last level :'(";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 320);
-			}
+            switch ((int) p[2]) {
+                case 0:
+                    s = "The game starts really easy ...";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 60);
+                    break;
+                case 2:
+                    s = "Nice a little doublejump ...";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 320);
+                    break;
+                case 3:
+                    s = "That level is too easy ...";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 60);
+                    break;
+                case 5:
+                    s = "First tripple jump ... *gaehn*";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 320);
+                    break;
+                case 6:
+                    s = "Those who died in that level ...";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 60);
+                    break;
+                case 8:
+                    s = "You died " + (int) (p[3]) + " times? OMG";
+                    if (p[3] < 1) {
+                        s = "Until now you are doing it right ...";
+                    }
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 320);
+                    break;
+                case 9:
+                    s = "Ok, tripple jumps ...";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 60);
+                    break;
+                case 11:
+                    s = "The next level will be harder! I promise!";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 320);
+                    break;
+                case 12:
+                    s = "I like the tunnel levels";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 60);
+                    break;
+                case 14:
+                    s = "Then you will love the next level";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 320);
+                    break;
+                case 15:
+                    s = "I heard someone died here ... often ...";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 60);
+                    break;
+                case 18:
+                    s = "And now FASTER";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 60);
+                    break;
+                case 26:
+                    s = "The last level :'(";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 320);
+                    break;
+            }
 
 			offscreennGraphics.setColor(c[0]);
-			if ((int) p[2] == 1) {
-				s = "You know space is your friend ...";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 160);
-			} else if ((int) p[2] == 4) {
-				s = "I hope the next levels will be harder ...";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 160);
-			} else if ((int) p[2] == 7) {
-				s = "Can't play and have no skills ...";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 160);
-			} else if ((int) p[2] == 13) {
-				s = "You like that level too?";
-				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 160);
-			}
+            switch ((int) p[2]) {
+                case 1:
+                    s = "You know space is your friend ...";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 160);
+                    break;
+                case 4:
+                    s = "I hope the next levels will be harder ...";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 160);
+                    break;
+                case 7:
+                    s = "Can't play and have no skills ...";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 160);
+                    break;
+                case 13:
+                    s = "You like that level too?";
+                    offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 40 + 160);
+                    break;
+            }
 		}
 
 		

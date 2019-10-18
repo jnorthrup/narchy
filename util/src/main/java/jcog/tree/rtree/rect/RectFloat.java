@@ -173,12 +173,13 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
     @Override
     public double range(int dim) {
-        if (dim == 0) {
-            return w;
-        } else if (dim == 1) {
-            return h;
-        } else {
-            throw new IllegalArgumentException("Invalid dimension");
+        switch (dim) {
+            case 0:
+                return w;
+            case 1:
+                return h;
+            default:
+                throw new IllegalArgumentException("Invalid dimension");
         }
     }
 

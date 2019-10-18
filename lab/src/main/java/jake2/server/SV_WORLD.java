@@ -158,153 +158,141 @@ public class SV_WORLD {
      * =============== SV_UnlinkEdict ===============
      */
     public static void SV_UnlinkEdict(edict_t ent) {
-        if (null == ent.area.prev)
-            return; 
-        RemoveLink(ent.area);
-        ent.area.prev = ent.area.next = null;
+        if (null != ent.area.prev) {
+            RemoveLink(ent.area);
+            ent.area.prev = ent.area.next = null;
+        }
     }
 
     public static void SV_LinkEdict(edict_t ent) {
         if (ent.area.prev != null)
-            SV_UnlinkEdict(ent); 
-        if (ent == GameBase.g_edicts[0])
-            return; 
-        if (!ent.inuse)
-            return;
-        
-        Math3D.VectorSubtract(ent.maxs, ent.mins, ent.size);
+            SV_UnlinkEdict(ent);
+        if (ent != GameBase.g_edicts[0]) {
+            if (ent.inuse) {
+                Math3D.VectorSubtract(ent.maxs, ent.mins, ent.size);
+                int j;
+                if (ent.solid == Defines.SOLID_BBOX
+                        && 0 == (ent.svflags & Defines.SVF_DEADMONSTER)) {
 
-        int j;
-        if (ent.solid == Defines.SOLID_BBOX
-                && 0 == (ent.svflags & Defines.SVF_DEADMONSTER)) {
-            
-            int i = (int) (ent.maxs[0] / 8);
-            if (i < 1)
-                i = 1;
-            if (i > 31)
-                i = 31;
-            
-            j = (int) ((-ent.mins[2]) / 8);
-            if (j < 1)
-                j = 1;
-            if (j > 31)
-                j = 31;
+                    int i = (int) (ent.maxs[0] / 8);
+                    if (i < 1)
+                        i = 1;
+                    if (i > 31)
+                        i = 31;
 
-            int k = (int) ((ent.maxs[2] + 32) / 8);
-            if (k < 1)
-                k = 1;
-            if (k > 63)
-                k = 63;
-            ent.s.solid = (k << 10) | (j << 5) | i;
-        } else if (ent.solid == Defines.SOLID_BSP) {
-            ent.s.solid = 31; 
-        } else
-            ent.s.solid = 0;
-        
-        if (ent.solid == Defines.SOLID_BSP
-                && (IntStream.of(0, 1, 2).anyMatch(i1 -> ent.s.angles[i1] != 0))) {
+                    j = (int) ((-ent.mins[2]) / 8);
+                    if (j < 1)
+                        j = 1;
+                    if (j > 31)
+                        j = 31;
 
-            float max = 0;
-            for (int i = 0; i < 3; i++) {
-                float v = Math.abs(ent.mins[i]);
-                if (v > max)
-                    max = v;
-                v = Math.abs(ent.maxs[i]);
-                if (v > max)
-                    max = v;
-            }
-            for (int i = 0; i < 3; i++) {
-                float ei = ent.s.origin[i];
-                ent.absmin[i] = ei - max;
-                ent.absmax[i] = ei + max;
-            }
-        } else {
-            
-            Math3D.VectorAdd(ent.s.origin, ent.mins, ent.absmin);
-            Math3D.VectorAdd(ent.s.origin, ent.maxs, ent.absmax);
-        }
-        
-        
-        ent.absmin[0]--;
-        ent.absmin[1]--;
-        ent.absmin[2]--;
-        ent.absmax[0]++;
-        ent.absmax[1]++;
-        ent.absmax[2]++;
-        
-        ent.num_clusters = 0;
-        ent.areanum = 0;
-        ent.areanum2 = 0;
-
-        int topnode = 0;
-        int[] iw = {topnode};
-        int num_leafs = CM.CM_BoxLeafnums(ent.absmin, ent.absmax, SV_WORLD.leafs,
-                SV_WORLD.MAX_TOTAL_ENT_LEAFS, iw);
-        topnode = iw[0];
-        
-        for (int i = 0; i < num_leafs; i++) {
-            SV_WORLD.clusters[i] = CM.CM_LeafCluster(SV_WORLD.leafs[i]);
-            int area = CM.CM_LeafArea(SV_WORLD.leafs[i]);
-            if (area != 0) {
-                
-                
-                if (ent.areanum != 0 && ent.areanum != area) {
-                    if (ent.areanum2 != 0 && ent.areanum2 != area
-                            && SV_INIT.sv.state == Defines.ss_loading)
-                        Com.DPrintf("Object touching 3 areas at "
-                                + ent.absmin[0] + ' ' + ent.absmin[1] + ' '
-                                + ent.absmin[2] + '\n');
-                    ent.areanum2 = area;
+                    int k = (int) ((ent.maxs[2] + 32) / 8);
+                    if (k < 1)
+                        k = 1;
+                    if (k > 63)
+                        k = 63;
+                    ent.s.solid = (k << 10) | (j << 5) | i;
+                } else if (ent.solid == Defines.SOLID_BSP) {
+                    ent.s.solid = 31;
                 } else
-                    ent.areanum = area;
-            }
-        }
-        if (num_leafs >= SV_WORLD.MAX_TOTAL_ENT_LEAFS) {
-            
-            ent.num_clusters = -1;
-            ent.headnode = topnode;
-        } else {
-            ent.num_clusters = 0;
-            for (int i = 0; i < num_leafs; i++) {
-                if (SV_WORLD.clusters[i] == -1)
-                    continue; 
-                for (j = 0; j < i; j++)
-                    if (SV_WORLD.clusters[j] == SV_WORLD.clusters[i])
-                        break;
-                if (j == i) {
-                    if (ent.num_clusters == Defines.MAX_ENT_CLUSTERS) {
-                        
-                        ent.num_clusters = -1;
-                        ent.headnode = topnode;
-                        break;
+                    ent.s.solid = 0;
+                if (ent.solid == Defines.SOLID_BSP
+                        && (IntStream.of(0, 1, 2).anyMatch(i1 -> ent.s.angles[i1] != 0))) {
+
+                    float max = 0;
+                    for (int i = 0; i < 3; i++) {
+                        float v = Math.abs(ent.mins[i]);
+                        if (v > max)
+                            max = v;
+                        v = Math.abs(ent.maxs[i]);
+                        if (v > max)
+                            max = v;
                     }
-                    ent.clusternums[ent.num_clusters++] = SV_WORLD.clusters[i];
+                    for (int i = 0; i < 3; i++) {
+                        float ei = ent.s.origin[i];
+                        ent.absmin[i] = ei - max;
+                        ent.absmax[i] = ei + max;
+                    }
+                } else {
+
+                    Math3D.VectorAdd(ent.s.origin, ent.mins, ent.absmin);
+                    Math3D.VectorAdd(ent.s.origin, ent.maxs, ent.absmax);
+                }
+                ent.absmin[0]--;
+                ent.absmin[1]--;
+                ent.absmin[2]--;
+                ent.absmax[0]++;
+                ent.absmax[1]++;
+                ent.absmax[2]++;
+                ent.num_clusters = 0;
+                ent.areanum = 0;
+                ent.areanum2 = 0;
+                int topnode = 0;
+                int[] iw = {topnode};
+                int num_leafs = CM.CM_BoxLeafnums(ent.absmin, ent.absmax, SV_WORLD.leafs,
+                        SV_WORLD.MAX_TOTAL_ENT_LEAFS, iw);
+                topnode = iw[0];
+                for (int i = 0; i < num_leafs; i++) {
+                    SV_WORLD.clusters[i] = CM.CM_LeafCluster(SV_WORLD.leafs[i]);
+                    int area = CM.CM_LeafArea(SV_WORLD.leafs[i]);
+                    if (area != 0) {
+
+
+                        if (ent.areanum != 0 && ent.areanum != area) {
+                            if (ent.areanum2 != 0 && ent.areanum2 != area
+                                    && SV_INIT.sv.state == Defines.ss_loading)
+                                Com.DPrintf("Object touching 3 areas at "
+                                        + ent.absmin[0] + ' ' + ent.absmin[1] + ' '
+                                        + ent.absmin[2] + '\n');
+                            ent.areanum2 = area;
+                        } else
+                            ent.areanum = area;
+                    }
+                }
+                if (num_leafs >= SV_WORLD.MAX_TOTAL_ENT_LEAFS) {
+
+                    ent.num_clusters = -1;
+                    ent.headnode = topnode;
+                } else {
+                    ent.num_clusters = 0;
+                    for (int i = 0; i < num_leafs; i++) {
+                        if (SV_WORLD.clusters[i] == -1)
+                            continue;
+                        for (j = 0; j < i; j++)
+                            if (SV_WORLD.clusters[j] == SV_WORLD.clusters[i])
+                                break;
+                        if (j == i) {
+                            if (ent.num_clusters == Defines.MAX_ENT_CLUSTERS) {
+
+                                ent.num_clusters = -1;
+                                ent.headnode = topnode;
+                                break;
+                            }
+                            ent.clusternums[ent.num_clusters++] = SV_WORLD.clusters[i];
+                        }
+                    }
+                }
+                if (0 == ent.linkcount) {
+                    Math3D.VectorCopy(ent.s.origin, ent.s.old_origin);
+                }
+                ent.linkcount++;
+                if (ent.solid != Defines.SOLID_NOT) {
+                    areanode_t node = SV_WORLD.sv_areanodes[0];
+                    while (node.axis != -1) {
+                        if (ent.absmin[node.axis] > node.dist)
+                            node = node.children[0];
+                        else if (ent.absmax[node.axis] < node.dist)
+                            node = node.children[1];
+                        else
+                            break;
+                    }
+                    if (ent.solid == Defines.SOLID_TRIGGER)
+                        InsertLinkBefore(ent.area, node.trigger_edicts);
+                    else
+                        InsertLinkBefore(ent.area, node.solid_edicts);
                 }
             }
-        }
-        
-        if (0 == ent.linkcount) {
-            Math3D.VectorCopy(ent.s.origin, ent.s.old_origin);
-        }
-        ent.linkcount++;
-        if (ent.solid == Defines.SOLID_NOT)
-            return;
-
-        areanode_t node = SV_WORLD.sv_areanodes[0];
-        while (node.axis != -1) {
-            if (ent.absmin[node.axis] > node.dist)
-                node = node.children[0];
-            else if (ent.absmax[node.axis] < node.dist)
-                node = node.children[1];
-            else
-                break; 
-        }
-        
-        if (ent.solid == Defines.SOLID_TRIGGER)
-            InsertLinkBefore(ent.area, node.trigger_edicts);
-        else
-            InsertLinkBefore(ent.area, node.solid_edicts);
-    }
+        }     }
 
     /*
      * ==================== SV_AreaEdicts_r

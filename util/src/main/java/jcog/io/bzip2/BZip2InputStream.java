@@ -567,10 +567,13 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                 int s = -1;
                 int N = 1;
                 do {
-                    if (nextSym == RUNA) {
-                        s += N;
-                    } else if (nextSym == RUNB) {
-                        s += (1 + 1) * N;
+                    switch (nextSym) {
+                        case RUNA:
+                            s += N;
+                            break;
+                        case RUNB:
+                            s += (1 + 1) * N;
+                            break;
                     }
                     N *= 2;
                     {

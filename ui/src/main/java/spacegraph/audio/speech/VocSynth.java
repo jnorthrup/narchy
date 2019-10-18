@@ -518,36 +518,41 @@ class VocSynthApplet extends Applet implements ActionListener {
 	public void actionPerformed(ActionEvent e)    // Handle Buttons
 	{
 		String command = e.getActionCommand();
-		if (command == "start") {
+        switch (command) {
+            case "start":
 //			if (sampleStream != null && !playing) {
 //				AudioPlayer.player.start(sampleStream);
-				playing = true;
-				calcresponse();
+                playing = true;
+                calcresponse();
 //			}
-		} else if (command == "stop") {
+                break;
+            case "stop":
 //			if (sampleStream != null) {
 //				AudioPlayer.player.stop(sampleStream);
-				playing = false;
+                playing = false;
 //			}
-		} else if (command == "Hello") {
-			generateglwave(false);
-			wpan.inw.repaint();
-			preset("EH");
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException ex) {
-			}
-			generateglwave(true);
-			wpan.inw.repaint();
-			preset("EH");
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException ex) {
-			}
-			preset("OH");
-		} else {
-			preset(command);
-		}
+                break;
+            case "Hello":
+                generateglwave(false);
+                wpan.inw.repaint();
+                preset("EH");
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ex) {
+                }
+                generateglwave(true);
+                wpan.inw.repaint();
+                preset("EH");
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ex) {
+                }
+                preset("OH");
+                break;
+            default:
+                preset(command);
+                break;
+        }
 	}
 
 	public Insets insets() {

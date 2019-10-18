@@ -225,24 +225,27 @@ public class G extends Applet implements Runnable {
 				gfx.setColor(Color.BLACK);
 				for (y = 0; y < MAP_HEIGHT; y++) {
 					for (x = 0; x < MAP_WIDTH; x++) {
-						if (currentLevel.charAt((y * MAP_WIDTH) + x) == TILE_WALL) {
-							gfx.drawImage(wallImage, x * TILE_SIZE, y * TILE_SIZE, null);
+                        switch (currentLevel.charAt((y * MAP_WIDTH) + x)) {
+                            case TILE_WALL:
+                                gfx.drawImage(wallImage, x * TILE_SIZE, y * TILE_SIZE, null);
 
-							if (y != 0 && currentLevel.charAt(((y - 1) * MAP_WIDTH) + x) != TILE_WALL)
-								gfx.drawLine(x * TILE_SIZE, y * TILE_SIZE, x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE); 
-							
-							if (y != MAP_HEIGHT - 1 && currentLevel.charAt(((y + 1) * MAP_WIDTH) + x) != TILE_WALL)
-								gfx.drawLine(x * TILE_SIZE, y * TILE_SIZE + TILE_SIZE, x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE + TILE_SIZE); 
-							
-							if (x != 0 && currentLevel.charAt((y * MAP_WIDTH) + (x - 1)) == TILE_SPACE)
-								gfx.drawLine(x * TILE_SIZE, y * TILE_SIZE, x * TILE_SIZE, y * TILE_SIZE + TILE_SIZE); 
-							
-							if (x != MAP_WIDTH - 1 && currentLevel.charAt((y * MAP_WIDTH) + (x + 1)) == TILE_SPACE)
-								gfx.drawLine(x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE, x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE + TILE_SIZE); 
-							
-						} else if (currentLevel.charAt((y * MAP_WIDTH) + x) == TILE_LADDER) {
-							gfx.drawImage(ladderImage, x * TILE_SIZE, y * TILE_SIZE, null);
-						}
+                                if (y != 0 && currentLevel.charAt(((y - 1) * MAP_WIDTH) + x) != TILE_WALL)
+                                    gfx.drawLine(x * TILE_SIZE, y * TILE_SIZE, x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE);
+
+                                if (y != MAP_HEIGHT - 1 && currentLevel.charAt(((y + 1) * MAP_WIDTH) + x) != TILE_WALL)
+                                    gfx.drawLine(x * TILE_SIZE, y * TILE_SIZE + TILE_SIZE, x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE + TILE_SIZE);
+
+                                if (x != 0 && currentLevel.charAt((y * MAP_WIDTH) + (x - 1)) == TILE_SPACE)
+                                    gfx.drawLine(x * TILE_SIZE, y * TILE_SIZE, x * TILE_SIZE, y * TILE_SIZE + TILE_SIZE);
+
+                                if (x != MAP_WIDTH - 1 && currentLevel.charAt((y * MAP_WIDTH) + (x + 1)) == TILE_SPACE)
+                                    gfx.drawLine(x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE, x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE + TILE_SIZE);
+
+                                break;
+                            case TILE_LADDER:
+                                gfx.drawImage(ladderImage, x * TILE_SIZE, y * TILE_SIZE, null);
+                                break;
+                        }
 					}
 				}
 
@@ -592,27 +595,41 @@ public class G extends Applet implements Runnable {
     public void processKeyEvent(KeyEvent e) {
 		int keyCode = e.getKeyCode();
 		if (e.getID() == KeyEvent.KEY_PRESSED) {
-			if (keyCode == KeyEvent.VK_SPACE)
-				BUTTON_FIRE_PRESSED = YES;
-			else if (keyCode == KeyEvent.VK_LEFT)
-				PLAYER_MOVING_LEFT = YES;
-			else if (keyCode == KeyEvent.VK_RIGHT)
-				PLAYER_MOVING_RIGHT = YES;
-			else if (keyCode == KeyEvent.VK_UP)
-				PLAYER_MOVING_UP = YES;
-			else if (keyCode == KeyEvent.VK_DOWN)
-				PLAYER_MOVING_DOWN = YES;
+            switch (keyCode) {
+                case KeyEvent.VK_SPACE:
+                    BUTTON_FIRE_PRESSED = YES;
+                    break;
+                case KeyEvent.VK_LEFT:
+                    PLAYER_MOVING_LEFT = YES;
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    PLAYER_MOVING_RIGHT = YES;
+                    break;
+                case KeyEvent.VK_UP:
+                    PLAYER_MOVING_UP = YES;
+                    break;
+                case KeyEvent.VK_DOWN:
+                    PLAYER_MOVING_DOWN = YES;
+                    break;
+            }
 		} else if (e.getID() == KeyEvent.KEY_RELEASED) {
-			if (keyCode == KeyEvent.VK_SPACE)
-				BUTTON_FIRE_PRESSED = NO;
-			else if (keyCode == KeyEvent.VK_LEFT)
-				PLAYER_MOVING_LEFT = NO;
-			else if (keyCode == KeyEvent.VK_RIGHT)
-				PLAYER_MOVING_RIGHT = NO;
-			else if (keyCode == KeyEvent.VK_UP)
-				PLAYER_MOVING_UP = NO;
-			else if (keyCode == KeyEvent.VK_DOWN)
-				PLAYER_MOVING_DOWN = NO;
+            switch (keyCode) {
+                case KeyEvent.VK_SPACE:
+                    BUTTON_FIRE_PRESSED = NO;
+                    break;
+                case KeyEvent.VK_LEFT:
+                    PLAYER_MOVING_LEFT = NO;
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    PLAYER_MOVING_RIGHT = NO;
+                    break;
+                case KeyEvent.VK_UP:
+                    PLAYER_MOVING_UP = NO;
+                    break;
+                case KeyEvent.VK_DOWN:
+                    PLAYER_MOVING_DOWN = NO;
+                    break;
+            }
 		}
 	}
 }

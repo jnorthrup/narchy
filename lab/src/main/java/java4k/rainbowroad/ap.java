@@ -200,17 +200,23 @@ public class ap extends GamePanel {
         for(j = 0; j < 30; j++) {
           for(k = 0; k < 14; k++) {
             q = S.charAt(20 + j * 14 + k);
-            if (q == 'a') {
-              q = 0;
-            } else if (q == 'b') {
-              q = 0xFF000000;
-            } else if (q == 'c') {
-              q = p;
-            } else if (q == 'd') {
-              q = 0xffe0a888;
-            } else {
-              q = 0xff284848;
-            }
+              switch (q) {
+                  case 'a':
+                      q = 0;
+                      break;
+                  case 'b':
+                      q = 0xFF000000;
+                      break;
+                  case 'c':
+                      q = p;
+                      break;
+                  case 'd':
+                      q = 0xffe0a888;
+                      break;
+                  default:
+                      q = 0xff284848;
+                      break;
+              }
             sprites[i].setRGB(k, j, q);
             sprites[i].setRGB(27 - k, j, q);
           }
@@ -220,17 +226,23 @@ public class ap extends GamePanel {
         for(j = 0; j < 12; j++) {
           for(k = 0; k < 7; k++) {
             q = S.charAt((i < 11 ? 440 : (i * 84 - 400)) + j * 7 + k);
-            if (q == 'a') {
-              q = 0;
-            } else if (q == 'b') {
-              q = 0xFF000000;
-            } else if (q == 'c') {
-              q = i == 9 ? 0xFF00FF00 : i == 10 ? 0xFF7F00FF : 0xFFFF0000;
-            } else if (q == 'f') {
-              q = 0xFFFFFFFF;
-            } else {
-              q = 0xFFFFFF00;
-            }
+              switch (q) {
+                  case 'a':
+                      q = 0;
+                      break;
+                  case 'b':
+                      q = 0xFF000000;
+                      break;
+                  case 'c':
+                      q = i == 9 ? 0xFF00FF00 : i == 10 ? 0xFF7F00FF : 0xFFFF0000;
+                      break;
+                  case 'f':
+                      q = 0xFFFFFFFF;
+                      break;
+                  default:
+                      q = 0xFFFFFF00;
+                      break;
+              }
             sprites[i].setRGB(k, j, q);
             sprites[i].setRGB(13 - k, j, q);
           }

@@ -216,12 +216,14 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
         }
 //        if (nodeIndex >= nodeCount())
 //            return null;
-        if (nodeIndex == 0) {
-            return Direction.AB.next(list.get(0));
-        } else if (nodeIndex == 1) {
-            return Direction.BA.next(list.get(0));
-        } else {
-            return Direction.BA.next(list.get(nodeIndex - 1)); //??
+        switch (nodeIndex) {
+            case 0:
+                return Direction.AB.next(list.get(0));
+            case 1:
+                return Direction.BA.next(list.get(0));
+            default:
+                return Direction.BA.next(list.get(nodeIndex - 1)); //??
+
 //            switch (direction) {
 //                case AB:
 //                    return edge.to().id();

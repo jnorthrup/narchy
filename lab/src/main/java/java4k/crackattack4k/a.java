@@ -340,47 +340,50 @@ public class a extends GamePanel {
 
 			if (menuMode) {
 
-				if (fadeState == FADE_OUT) {
-					fadeIntensity += 8;
-					if (fadeIntensity >= 255) {
-						fadeIntensity = 255;
-						fadeState = FADE_IN;
-						menuMode = false;
-						resetLevel = true;
-						score = level >= lastLevel ? lastScore : 0;
-					}
-				} else if (fadeState == FADE_NONE) {
-					x = a[MOUSE_X] / 3;
-					y = a[MOUSE_Y] / 3;
-					overButton = OVER_NONE;
-					if (x >= 44 && x < 60) {
-						if (y >= 62 && y < 78) {
-							overButton = OVER_UP;
-						}
-						if (y >= 90 && y < 106) {
-							overButton = OVER_DOWN;
-						}
-					}
-					if (x >= 36 && x < 68 && y >= 150 && y < 166) {
-						overButton = OVER_START;
-					}
+                switch (fadeState) {
+                    case FADE_OUT:
+                        fadeIntensity += 8;
+                        if (fadeIntensity >= 255) {
+                            fadeIntensity = 255;
+                            fadeState = FADE_IN;
+                            menuMode = false;
+                            resetLevel = true;
+                            score = level >= lastLevel ? lastScore : 0;
+                        }
+                        break;
+                    case FADE_NONE:
+                        x = a[MOUSE_X] / 3;
+                        y = a[MOUSE_Y] / 3;
+                        overButton = OVER_NONE;
+                        if (x >= 44 && x < 60) {
+                            if (y >= 62 && y < 78) {
+                                overButton = OVER_UP;
+                            }
+                            if (y >= 90 && y < 106) {
+                                overButton = OVER_DOWN;
+                            }
+                        }
+                        if (x >= 36 && x < 68 && y >= 150 && y < 166) {
+                            overButton = OVER_START;
+                        }
 
-					if (a[MOUSE_DOWN] > 0) {
-						if (mouseReleased) {
-							mouseReleased = false;
-							if (overButton == OVER_DOWN && level > 0) {
-								level--;
-							} else if (overButton == OVER_UP && level < 44) {
-								level++;
-							} else if (overButton == OVER_START) {
-								fadeState = FADE_OUT;
-								fadeIntensity = 0;
-							}
-						}
-					} else {
-						mouseReleased = true;
-					}
-				}
+                        if (a[MOUSE_DOWN] > 0) {
+                            if (mouseReleased) {
+                                mouseReleased = false;
+                                if (overButton == OVER_DOWN && level > 0) {
+                                    level--;
+                                } else if (overButton == OVER_UP && level < 44) {
+                                    level++;
+                                } else if (overButton == OVER_START) {
+                                    fadeState = FADE_OUT;
+                                    fadeIntensity = 0;
+                                }
+                            }
+                        } else {
+                            mouseReleased = true;
+                        }
+                        break;
+                }
 
 				continue;
 			}

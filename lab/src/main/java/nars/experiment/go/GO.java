@@ -62,15 +62,18 @@ public class GO extends JPanel implements MouseListener {
 
         for (int i = 1; i < DIM - 1; i++) {
             for (int k = 1; k < DIM - 1; k++) {
-                if (boardHist.get(turn)[i][k] == 1) {
-                    g.setColor(Color.BLACK);
-                    g.fillOval(4 + i * 26, 4 + k * 26, 20, 20);
-                } else if (boardHist.get(turn)[i][k] == 2) {
-                    g.setColor(Color.WHITE);
-                    g.fillOval(4 + i * 26, 4 + k * 26, 20, 20);
+                switch (boardHist.get(turn)[i][k]) {
+                    case 1:
+                        g.setColor(Color.BLACK);
+                        g.fillOval(4 + i * 26, 4 + k * 26, 20, 20);
+                        break;
+                    case 2:
+                        g.setColor(Color.WHITE);
+                        g.fillOval(4 + i * 26, 4 + k * 26, 20, 20);
 
-                    g.setColor(Color.BLACK);
-                    g.drawOval(4 + i * 26, 4 + k * 26, 20, 20);
+                        g.setColor(Color.BLACK);
+                        g.drawOval(4 + i * 26, 4 + k * 26, 20, 20);
+                        break;
                 }
             }
         }

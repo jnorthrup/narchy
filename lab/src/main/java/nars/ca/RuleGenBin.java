@@ -115,12 +115,17 @@ public class RuleGenBin {
 		if (iCnt > 0) {
             String sChr = iVal == 0 ? "a" : "b";
 
-            if (iCnt == 1)
-				sRetStr = sChr;
-			else if (iCnt == 2)
-				sRetStr = sChr + sChr;
-			else
-				sRetStr = iCnt + sChr;
+            switch (iCnt) {
+                case 1:
+                    sRetStr = sChr;
+                    break;
+                case 2:
+                    sRetStr = sChr + sChr;
+                    break;
+                default:
+                    sRetStr = iCnt + sChr;
+                    break;
+            }
 		}
 		return sRetStr;
 	}

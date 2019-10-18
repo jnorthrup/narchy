@@ -634,12 +634,17 @@ public class PMove {
             if (pml.velocity[2] <= -300)
                 return;
 
-            if (pm.watertype == Defines.CONTENTS_WATER)
-                pml.velocity[2] = 100;
-            else if (pm.watertype == Defines.CONTENTS_SLIME)
-                pml.velocity[2] = 80;
-            else
-                pml.velocity[2] = 50;
+            switch (pm.watertype) {
+                case Defines.CONTENTS_WATER:
+                    pml.velocity[2] = 100;
+                    break;
+                case Defines.CONTENTS_SLIME:
+                    pml.velocity[2] = 80;
+                    break;
+                default:
+                    pml.velocity[2] = 50;
+                    break;
+            }
             return;
         }
 

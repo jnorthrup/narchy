@@ -379,12 +379,16 @@ public class Gradius4K extends GamePanel {
                                 queue.add(blade);
                                 blade[OBJ_TYPE] = TYPE_ENEMY;
                                 blade[OBJ_X2] = (k << 8) + 896;
-                                if (k == 0) {
-                                    blade[OBJ_Y2] = 0.01f;
-                                } else if (k == 1) {
-                                    blade[OBJ_Y2] = -0.01f;
-                                } else {
-                                    blade[OBJ_Y2] = 0.012f;
+                                switch (k) {
+                                    case 0:
+                                        blade[OBJ_Y2] = 0.01f;
+                                        break;
+                                    case 1:
+                                        blade[OBJ_Y2] = -0.01f;
+                                        break;
+                                    default:
+                                        blade[OBJ_Y2] = 0.012f;
+                                        break;
                                 }
                                 blade[OBJ_SCALE_X] = 1;
                                 blade[OBJ_SCALE_Y] = 1;
@@ -412,22 +416,31 @@ public class Gradius4K extends GamePanel {
                     boss[OBJ_X] = 2624;
                     boss[OBJ_Y] = boss[OBJ_Y2] = 128;
                     boss[OBJ_VX] = -1;
-                    if (level == 0) {
-                        boss[OBJ_SPRITE] = 21128;
-                    } else if (level == 1) {
-                        boss[OBJ_SPRITE] = 26679;
-                    } else if (level == 2) {
-                        boss[OBJ_SPRITE] = 29320;
-                    } else if (level == 3) {
-                        boss[OBJ_SPRITE] = 35123;
-                    } else if (level == 4) {
-                        boss[OBJ_SPRITE] = 39148;
-                    } else if (level == 5) {
-                        boss[OBJ_SPRITE] = 43096;
-                    } else if (level == 6) {
-                        boss[OBJ_SPRITE] = 54784;
-                    } else {
-                        boss[OBJ_SPRITE] = 51319;
+                    switch (level) {
+                        case 0:
+                            boss[OBJ_SPRITE] = 21128;
+                            break;
+                        case 1:
+                            boss[OBJ_SPRITE] = 26679;
+                            break;
+                        case 2:
+                            boss[OBJ_SPRITE] = 29320;
+                            break;
+                        case 3:
+                            boss[OBJ_SPRITE] = 35123;
+                            break;
+                        case 4:
+                            boss[OBJ_SPRITE] = 39148;
+                            break;
+                        case 5:
+                            boss[OBJ_SPRITE] = 43096;
+                            break;
+                        case 6:
+                            boss[OBJ_SPRITE] = 54784;
+                            break;
+                        default:
+                            boss[OBJ_SPRITE] = 51319;
+                            break;
                     }
                     boss[OBJ_SCALE_X] = 4 + (level >> 1);
                     boss[OBJ_SCALE_Y] = 4 + (level >> 1);
@@ -930,16 +943,21 @@ public class Gradius4K extends GamePanel {
             final int VK_W = 0x57;
             final int VK_DOWN = 0x28;
             final int VK_LEFT = 0x25;
-            if (k == VK_W) {
-                final int VK_UP = 0x26;
-                k = VK_UP;
-            } else if (k == VK_D) {
-                final int VK_RIGHT = 0x27;
-                k = VK_RIGHT;
-            } else if (k == VK_A) {
-                k = VK_LEFT;
-            } else if (k == VK_S) {
-                k = VK_DOWN;
+            switch (k) {
+                case VK_W:
+                    final int VK_UP = 0x26;
+                    k = VK_UP;
+                    break;
+                case VK_D:
+                    final int VK_RIGHT = 0x27;
+                    k = VK_RIGHT;
+                    break;
+                case VK_A:
+                    k = VK_LEFT;
+                    break;
+                case VK_S:
+                    k = VK_DOWN;
+                    break;
             }
             final int VK_SHOOT = 0x42;
             keys[(k >= VK_LEFT && k <= VK_DOWN) ? k : VK_SHOOT] = keyEvent.getID() != 402;

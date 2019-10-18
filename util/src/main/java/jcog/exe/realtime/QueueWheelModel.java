@@ -11,7 +11,7 @@ import java.util.function.ToIntFunction;
 
 import static jcog.exe.realtime.TimedFuture.*;
 
-public class QueueWheelModel extends HashedWheelTimer.WheelModel {
+public class QueueWheelModel extends WheelModel {
 
 	/**
 	 * the wheels (array of queues)

@@ -1642,13 +1642,14 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public @Nullable TaskTable tableDynamic(Termed concept, byte punc) {
-        if (punc == BELIEF)
-            return tableDynamic(concept, true);
-        else if (punc==GOAL)
-            return tableDynamic(concept, false);
-        else {
-            Concept exist = concept(concept);
-            return (exist!=null) ? exist.table(punc) : null;
+        switch (punc) {
+            case BELIEF:
+                return tableDynamic(concept, true);
+            case GOAL:
+                return tableDynamic(concept, false);
+            default:
+                Concept exist = concept(concept);
+                return (exist != null) ? exist.table(punc) : null;
         }
     }
 

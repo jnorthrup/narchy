@@ -264,145 +264,155 @@ public class a extends GamePanel {
 				subweaponReleased = true;
 			}
 
-			if (gameState == GAME_STATE_RISING) {
-				
-				if ((counter & 1) == 1 && --headY == -10) {
-					gameState = GAME_STATE_FIGHTING;
-				}
-			} else if (gameState == GAME_STATE_FIGHTING) {
+            switch (gameState) {
+                case GAME_STATE_RISING:
 
-				
-				if (draculaState == DRACULA_STATE_FADE_IN) {
-					draculaCounter -= 8;
-					if (draculaCounter < 8) {
-						if (draculaPower == 0 && playerPower > 0) {
-							draculaState = DRACULA_STATE_DEAD;
-							draculaCounter = 0;
-						} else {
-							draculaState = DRACULA_STATE_PAUSED;
-							draculaCounter = 24;
-							firstFadeIn = false;
+                    if ((counter & 1) == 1 && --headY == -10) {
+                        gameState = GAME_STATE_FIGHTING;
+                    }
+                    break;
+                case GAME_STATE_FIGHTING:
 
-							
-							queue.add(head);
-							head[OBJ_X] = draculaX;
-							head[OBJ_Y] = 128;
-							head[OBJ_X1] = draculaReversed ? -2 : -6;
-							head[OBJ_Y1] = -10;
-							head[OBJ_X2] = head[OBJ_X1] + 8;
-							head[OBJ_SPRITE] = SPRITE_NONE;
-							head[OBJ_COLLIDES] = 1;
-							head[OBJ_TYPE] = TYPE_DRACULA_HEAD;
-						}
-					}
-				} else if (draculaState == DRACULA_STATE_PAUSED) {
-					if (--draculaCounter == 0) {
-						draculaState = DRACULA_STATE_FIRING;
-						draculaOpened = true;
-						draculaCounter = 64;
 
-						
-						if (draculaPower >= 22 || (draculaPower > 10 && draculaPower < 16) || (draculaPower < 6)) {
-							float[] fireball = new float[32];
-							queue.add(fireball);
-							fireball[OBJ_X] = draculaX;
-							fireball[OBJ_Y] = 156 + (random.nextInt(2) << 3);
-							fireball[OBJ_DX] = -3;
-							fireball[OBJ_COLLIDES] = 1;
-							fireball[OBJ_X1] = -4;
-							fireball[OBJ_Y1] = 0;
-							fireball[OBJ_X2] = 3;
-							fireball[OBJ_Y2] = 5;
-							fireball[OBJ_SPRITE] = SPRITE_FIREBALL;
-							fireball[OBJ_TYPE] = TYPE_FIREBALL;
-							fireball[OBJ_VX] = FIREBALL_SPEED;
-							if (draculaReversed) {
-								fireball[OBJ_REVERSED] = 1;
-								fireball[OBJ_VX] *= -1;
-							}
-						}
+                    switch (draculaState) {
+                        case DRACULA_STATE_FADE_IN:
+                            draculaCounter -= 8;
+                            if (draculaCounter < 8) {
+                                if (draculaPower == 0 && playerPower > 0) {
+                                    draculaState = DRACULA_STATE_DEAD;
+                                    draculaCounter = 0;
+                                } else {
+                                    draculaState = DRACULA_STATE_PAUSED;
+                                    draculaCounter = 24;
+                                    firstFadeIn = false;
 
-						if (draculaPower > 10 && draculaPower < 22) {
-							
-							j = 8 + (random.nextInt(8) << 4);
-							for (i = 0; i < 2; i++) {
-								float[] igor = new float[32];
-								queue.add(igor);
-								igor[OBJ_X] = j + (i << 7);
-								igor[OBJ_Y] = 64;
-								igor[OBJ_DX] = -8;
-								igor[OBJ_X1] = -8;
-								igor[OBJ_X2] = 7;
-								igor[OBJ_Y2] = 15;
-								igor[OBJ_COLLIDES] = 1;
-								igor[OBJ_SPRITE] = SPRITE_IGOR_1;
-								igor[OBJ_TYPE] = TYPE_IGOR;
-							}
-						} else if (draculaPower <= 10) {
-							
-							j = random.nextInt(4);
-							for (i = 0; i < 4; i++) {
-								float[] brick = new float[32];
-								queue.add(brick);
-								brick[OBJ_X] = (j + (i << 2)) << 4;
-								brick[OBJ_Y] = 32;
-								brick[OBJ_X2] = 15;
-								brick[OBJ_Y2] = 15;
-								brick[OBJ_COLLIDES] = 1;
-								brick[OBJ_SPRITE] = SPRITE_BLOCK;
-								brick[OBJ_TYPE] = TYPE_BRICK;
-							}
-						}
-					}
-				} else if (draculaState == DRACULA_STATE_FIRING) {
-					if (--draculaCounter == 0) {
-						draculaState = DRACULA_STATE_HIDDEN;
-						draculaCounter = 128;
-						queue.remove(head);
-					}
-				} else if (draculaState == DRACULA_STATE_HIDDEN) {
-					if (--draculaCounter == 0) {
-						draculaState = DRACULA_STATE_FADE_IN;
-						draculaOpened = false;
-						draculaCounter = 0xFF;
-						if (draculaPower == 0 && playerPower > 0) {
-							draculaReversed = false;
-							draculaX = 132;
-							crosses.clear();
-							queue.clear();
-						} else {
-							draculaRight = !draculaRight;
-							draculaX = 40 + (random.nextInt(5) << 4);
-							if (draculaRight) {
-								draculaX += 112;
-							}
-							draculaReversed = draculaX + 8 > playerX;
-						}
-					}
-				} else {
-					if (draculaCounter < 511) {
-						draculaCounter++;
 
-						
-						if ((draculaCounter & 7) == 7) {
-							float[] flame = new float[32];
-							queue.add(flame);
-							flame[OBJ_X] = 120 + random.nextInt(12);
-							flame[OBJ_Y] = 128 + random.nextInt(32);
-							flame[OBJ_SPRITE] = SPRITE_FLAME_1;
-							flame[OBJ_TYPE] = TYPE_FLAME;
-						}
-					} else if (queue.size() - crosses.size() == 0) {
-						
-						continue;
-					}
-				}
-			} else {
-				if (playerX < 80) {
-					
-					gameState = GAME_STATE_RISING;
-				}
-			}
+                                    queue.add(head);
+                                    head[OBJ_X] = draculaX;
+                                    head[OBJ_Y] = 128;
+                                    head[OBJ_X1] = draculaReversed ? -2 : -6;
+                                    head[OBJ_Y1] = -10;
+                                    head[OBJ_X2] = head[OBJ_X1] + 8;
+                                    head[OBJ_SPRITE] = SPRITE_NONE;
+                                    head[OBJ_COLLIDES] = 1;
+                                    head[OBJ_TYPE] = TYPE_DRACULA_HEAD;
+                                }
+                            }
+                            break;
+                        case DRACULA_STATE_PAUSED:
+                            if (--draculaCounter == 0) {
+                                draculaState = DRACULA_STATE_FIRING;
+                                draculaOpened = true;
+                                draculaCounter = 64;
+
+
+                                if (draculaPower >= 22 || (draculaPower > 10 && draculaPower < 16) || (draculaPower < 6)) {
+                                    float[] fireball = new float[32];
+                                    queue.add(fireball);
+                                    fireball[OBJ_X] = draculaX;
+                                    fireball[OBJ_Y] = 156 + (random.nextInt(2) << 3);
+                                    fireball[OBJ_DX] = -3;
+                                    fireball[OBJ_COLLIDES] = 1;
+                                    fireball[OBJ_X1] = -4;
+                                    fireball[OBJ_Y1] = 0;
+                                    fireball[OBJ_X2] = 3;
+                                    fireball[OBJ_Y2] = 5;
+                                    fireball[OBJ_SPRITE] = SPRITE_FIREBALL;
+                                    fireball[OBJ_TYPE] = TYPE_FIREBALL;
+                                    fireball[OBJ_VX] = FIREBALL_SPEED;
+                                    if (draculaReversed) {
+                                        fireball[OBJ_REVERSED] = 1;
+                                        fireball[OBJ_VX] *= -1;
+                                    }
+                                }
+
+                                if (draculaPower > 10 && draculaPower < 22) {
+
+                                    j = 8 + (random.nextInt(8) << 4);
+                                    for (i = 0; i < 2; i++) {
+                                        float[] igor = new float[32];
+                                        queue.add(igor);
+                                        igor[OBJ_X] = j + (i << 7);
+                                        igor[OBJ_Y] = 64;
+                                        igor[OBJ_DX] = -8;
+                                        igor[OBJ_X1] = -8;
+                                        igor[OBJ_X2] = 7;
+                                        igor[OBJ_Y2] = 15;
+                                        igor[OBJ_COLLIDES] = 1;
+                                        igor[OBJ_SPRITE] = SPRITE_IGOR_1;
+                                        igor[OBJ_TYPE] = TYPE_IGOR;
+                                    }
+                                } else if (draculaPower <= 10) {
+
+                                    j = random.nextInt(4);
+                                    for (i = 0; i < 4; i++) {
+                                        float[] brick = new float[32];
+                                        queue.add(brick);
+                                        brick[OBJ_X] = (j + (i << 2)) << 4;
+                                        brick[OBJ_Y] = 32;
+                                        brick[OBJ_X2] = 15;
+                                        brick[OBJ_Y2] = 15;
+                                        brick[OBJ_COLLIDES] = 1;
+                                        brick[OBJ_SPRITE] = SPRITE_BLOCK;
+                                        brick[OBJ_TYPE] = TYPE_BRICK;
+                                    }
+                                }
+                            }
+                            break;
+                        case DRACULA_STATE_FIRING:
+                            if (--draculaCounter == 0) {
+                                draculaState = DRACULA_STATE_HIDDEN;
+                                draculaCounter = 128;
+                                queue.remove(head);
+                            }
+                            break;
+                        case DRACULA_STATE_HIDDEN:
+                            if (--draculaCounter == 0) {
+                                draculaState = DRACULA_STATE_FADE_IN;
+                                draculaOpened = false;
+                                draculaCounter = 0xFF;
+                                if (draculaPower == 0 && playerPower > 0) {
+                                    draculaReversed = false;
+                                    draculaX = 132;
+                                    crosses.clear();
+                                    queue.clear();
+                                } else {
+                                    draculaRight = !draculaRight;
+                                    draculaX = 40 + (random.nextInt(5) << 4);
+                                    if (draculaRight) {
+                                        draculaX += 112;
+                                    }
+                                    draculaReversed = draculaX + 8 > playerX;
+                                }
+                            }
+                            break;
+                        default:
+                            if (draculaCounter < 511) {
+                                draculaCounter++;
+
+
+                                if ((draculaCounter & 7) == 7) {
+                                    float[] flame = new float[32];
+                                    queue.add(flame);
+                                    flame[OBJ_X] = 120 + random.nextInt(12);
+                                    flame[OBJ_Y] = 128 + random.nextInt(32);
+                                    flame[OBJ_SPRITE] = SPRITE_FLAME_1;
+                                    flame[OBJ_TYPE] = TYPE_FLAME;
+                                }
+                            } else if (queue.size() - crosses.size() == 0) {
+
+                                continue;
+                            }
+                            break;
+                    }
+                    break;
+                default:
+                    if (playerX < 80) {
+
+                        gameState = GAME_STATE_RISING;
+                    }
+                    break;
+            }
 
 			
 			if (playerJumping) {

@@ -579,125 +579,128 @@ public abstract class Image extends Main {
         int column;
         int row;
         int pixbuf;
-        if (targa_header.image_type == 2) {
-            for (row = rows - 1; row >= 0; row--) {
+        switch (targa_header.image_type) {
+            case 2:
+                for (row = rows - 1; row >= 0; row--) {
 
-                pixbuf = row * columns * 4;
+                    pixbuf = row * columns * 4;
 
-                for (column = 0; column < columns; column++) {
-                    switch (targa_header.pixel_size) {
-                    case 24:
-
-                        blue = buf_p.get();
-                        green = buf_p.get();
-                        red = buf_p.get();
-                        pic[pixbuf++] = red;
-                        pic[pixbuf++] = green;
-                        pic[pixbuf++] = blue;
-                        pic[pixbuf++] = (byte) 255;
-                        break;
-                    case 32:
-                        blue = buf_p.get();
-                        green = buf_p.get();
-                        red = buf_p.get();
-                        alphabyte = buf_p.get();
-                        pic[pixbuf++] = red;
-                        pic[pixbuf++] = green;
-                        pic[pixbuf++] = blue;
-                        pic[pixbuf++] = alphabyte;
-                        break;
-                    }
-                }
-            }
-        } else if (targa_header.image_type == 10) { 
-                                                    
-            for (row = rows - 1; row >= 0; row--) {
-
-                pixbuf = row * columns * 4;
-                try {
-
-                    for (column = 0; column < columns;) {
-
-                        int packetHeader = buf_p.get() & 0xFF;
-                        int packetSize = 1 + (packetHeader & 0x7f);
-
-                        int j;
-                        if ((packetHeader & 0x80) != 0) {
-                            switch (targa_header.pixel_size) {
+                    for (column = 0; column < columns; column++) {
+                        switch (targa_header.pixel_size) {
                             case 24:
+
                                 blue = buf_p.get();
                                 green = buf_p.get();
                                 red = buf_p.get();
-                                alphabyte = (byte) 255;
+                                pic[pixbuf++] = red;
+                                pic[pixbuf++] = green;
+                                pic[pixbuf++] = blue;
+                                pic[pixbuf++] = (byte) 255;
                                 break;
                             case 32:
                                 blue = buf_p.get();
                                 green = buf_p.get();
                                 red = buf_p.get();
                                 alphabyte = buf_p.get();
-                                break;
-                            }
-
-                            for (j = 0; j < packetSize; j++) {
                                 pic[pixbuf++] = red;
                                 pic[pixbuf++] = green;
                                 pic[pixbuf++] = blue;
                                 pic[pixbuf++] = alphabyte;
-                                column++;
-                                if (column == columns) { 
-                                                         
-                                    column = 0;
-                                    if (row > 0)
-                                        row--;
-                                    else
-                                        
-                                        throw new longjmpException();
+                                break;
+                        }
+                    }
+                }
+                break;
+            case 10:
 
-                                    pixbuf = row * columns * 4;
-                                }
-                            }
-                        } else { 
-                            for (j = 0; j < packetSize; j++) {
+                for (row = rows - 1; row >= 0; row--) {
+
+                    pixbuf = row * columns * 4;
+                    try {
+
+                        for (column = 0; column < columns; ) {
+
+                            int packetHeader = buf_p.get() & 0xFF;
+                            int packetSize = 1 + (packetHeader & 0x7f);
+
+                            int j;
+                            if ((packetHeader & 0x80) != 0) {
                                 switch (targa_header.pixel_size) {
-                                case 24:
-                                    blue = buf_p.get();
-                                    green = buf_p.get();
-                                    red = buf_p.get();
-                                    pic[pixbuf++] = red;
-                                    pic[pixbuf++] = green;
-                                    pic[pixbuf++] = blue;
-                                    pic[pixbuf++] = (byte) 255;
-                                    break;
-                                case 32:
-                                    blue = buf_p.get();
-                                    green = buf_p.get();
-                                    red = buf_p.get();
-                                    alphabyte = buf_p.get();
+                                    case 24:
+                                        blue = buf_p.get();
+                                        green = buf_p.get();
+                                        red = buf_p.get();
+                                        alphabyte = (byte) 255;
+                                        break;
+                                    case 32:
+                                        blue = buf_p.get();
+                                        green = buf_p.get();
+                                        red = buf_p.get();
+                                        alphabyte = buf_p.get();
+                                        break;
+                                }
+
+                                for (j = 0; j < packetSize; j++) {
                                     pic[pixbuf++] = red;
                                     pic[pixbuf++] = green;
                                     pic[pixbuf++] = blue;
                                     pic[pixbuf++] = alphabyte;
-                                    break;
-                                }
-                                column++;
-                                if (column == columns) { 
-                                                         
-                                    column = 0;
-                                    if (row > 0)
-                                        row--;
-                                    else
-                                        
-                                        throw new longjmpException();
+                                    column++;
+                                    if (column == columns) {
 
-                                    pixbuf = row * columns * 4;
+                                        column = 0;
+                                        if (row > 0)
+                                            row--;
+                                        else
+
+                                            throw new longjmpException();
+
+                                        pixbuf = row * columns * 4;
+                                    }
+                                }
+                            } else {
+                                for (j = 0; j < packetSize; j++) {
+                                    switch (targa_header.pixel_size) {
+                                        case 24:
+                                            blue = buf_p.get();
+                                            green = buf_p.get();
+                                            red = buf_p.get();
+                                            pic[pixbuf++] = red;
+                                            pic[pixbuf++] = green;
+                                            pic[pixbuf++] = blue;
+                                            pic[pixbuf++] = (byte) 255;
+                                            break;
+                                        case 32:
+                                            blue = buf_p.get();
+                                            green = buf_p.get();
+                                            red = buf_p.get();
+                                            alphabyte = buf_p.get();
+                                            pic[pixbuf++] = red;
+                                            pic[pixbuf++] = green;
+                                            pic[pixbuf++] = blue;
+                                            pic[pixbuf++] = alphabyte;
+                                            break;
+                                    }
+                                    column++;
+                                    if (column == columns) {
+
+                                        column = 0;
+                                        if (row > 0)
+                                            row--;
+                                        else
+
+                                            throw new longjmpException();
+
+                                        pixbuf = row * columns * 4;
+                                    }
                                 }
                             }
                         }
+                    } catch (longjmpException e) {
+
                     }
-                } catch (longjmpException e) {
-                    
                 }
-            }
+                break;
         }
         return pic;
     }
@@ -1097,14 +1100,18 @@ public abstract class Image extends Main {
         }
 
         int comp;
-        if (samples == gl_solid_format)
-            comp = gl_tex_solid_format;
-        else if (samples == gl_alpha_format)
-            comp = gl_tex_alpha_format;
-        else {
-            VID.Printf(Defines.PRINT_ALL,
-                    "Unknown number of texture components " + samples + '\n');
-            comp = samples;
+        switch (samples) {
+            case gl_solid_format:
+                comp = gl_tex_solid_format;
+                break;
+            case gl_alpha_format:
+                comp = gl_tex_alpha_format;
+                break;
+            default:
+                VID.Printf(Defines.PRINT_ALL,
+                        "Unknown number of texture components " + samples + '\n');
+                comp = samples;
+                break;
         }
 
         

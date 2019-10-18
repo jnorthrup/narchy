@@ -163,16 +163,19 @@ public class Osm {
                     for (int j = 0; j < l; j++) {
                         Node wayChild = wayChildren.item(j);
                         String node = wayChild.getNodeName();
-                        if ("nd".equals(node)) {
-                            Element wayChildElement = (Element) wayChild;
-                            refOsmNodes.add(
-                                    this.nodes.get(l(wayChildElement.getAttribute("ref")))
-                            );
-                        } else if ("tag".equals(node)) {
-                            Element nodeChildElement = (Element) wayChild;
-                            if (osmTags == null)
-                                osmTags = new UnifiedMap<>(1);
-                            osmTags.put(nodeChildElement.getAttribute("k"), nodeChildElement.getAttribute("v"));
+                        switch (node) {
+                            case "nd":
+                                Element wayChildElement = (Element) wayChild;
+                                refOsmNodes.add(
+                                        this.nodes.get(l(wayChildElement.getAttribute("ref")))
+                                );
+                                break;
+                            case "tag":
+                                Element nodeChildElement = (Element) wayChild;
+                                if (osmTags == null)
+                                    osmTags = new UnifiedMap<>(1);
+                                osmTags.put(nodeChildElement.getAttribute("k"), nodeChildElement.getAttribute("v"));
+                                break;
                         }
                     }
 

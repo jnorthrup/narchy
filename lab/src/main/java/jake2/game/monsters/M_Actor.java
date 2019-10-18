@@ -1231,12 +1231,17 @@ public class M_Actor {
             }
 
             int n = Lib.rand() % 3;
-            if (n == 0)
-                self.monsterinfo.currentmove = actor_move_pain1;
-            else if (n == 1)
-                self.monsterinfo.currentmove = actor_move_pain2;
-            else
-                self.monsterinfo.currentmove = actor_move_pain3;
+            switch (n) {
+                case 0:
+                    self.monsterinfo.currentmove = actor_move_pain1;
+                    break;
+                case 1:
+                    self.monsterinfo.currentmove = actor_move_pain2;
+                    break;
+                default:
+                    self.monsterinfo.currentmove = actor_move_pain3;
+                    break;
+            }
         }
     };
 

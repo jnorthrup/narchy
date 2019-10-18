@@ -591,21 +591,25 @@ public class Z extends GamePanel {
 		playerY = 50f * (heightX[px] * heightZ[pz] - 0.1f);
 		outside = true;
 		if (playerY > -1) {
-			if (tileType == FOREST) { 
-				if (tx < 0x60 || tx > 0xA0 || tz < 0x60 || tz > 0xA0) {
-					playerX = rx;
-					playerZ = rz;
-				}
-			} else if (tileType == BUILDING) { 
-				outside = false;
-				if ((tx > 0x70 && tx < 0x90) || (tz > 0x70 && tz < 0x90) || (tx > 0x14 && tx < 0xEC && tz > 0x14 && tz < 0xEC)) {
-					playerX = rx;
-					playerZ = rz;
-				}
-			} else { 
-				playerX = rx;
-				playerZ = rz;
-			}
+            switch (tileType) {
+                case FOREST:
+                    if (tx < 0x60 || tx > 0xA0 || tz < 0x60 || tz > 0xA0) {
+                        playerX = rx;
+                        playerZ = rz;
+                    }
+                    break;
+                case BUILDING:
+                    outside = false;
+                    if ((tx > 0x70 && tx < 0x90) || (tz > 0x70 && tz < 0x90) || (tx > 0x14 && tx < 0xEC && tz > 0x14 && tz < 0xEC)) {
+                        playerX = rx;
+                        playerZ = rz;
+                    }
+                    break;
+                default:
+                    playerX = rx;
+                    playerZ = rz;
+                    break;
+            }
 		}
 
 		

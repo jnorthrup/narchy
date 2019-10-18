@@ -721,11 +721,14 @@ public class PlayerView {
 
         if (ent.powerarmor_time > GameBase.level.time) {
             int pa_type = GameItems.PowerArmorType(ent);
-            if (pa_type == Defines.POWER_ARMOR_SCREEN) {
-                ent.s.effects |= Defines.EF_POWERSCREEN;
-            } else if (pa_type == Defines.POWER_ARMOR_SHIELD) {
-                ent.s.effects |= Defines.EF_COLOR_SHELL;
-                ent.s.renderfx |= Defines.RF_SHELL_GREEN;
+            switch (pa_type) {
+                case Defines.POWER_ARMOR_SCREEN:
+                    ent.s.effects |= Defines.EF_POWERSCREEN;
+                    break;
+                case Defines.POWER_ARMOR_SHIELD:
+                    ent.s.effects |= Defines.EF_COLOR_SHELL;
+                    ent.s.renderfx |= Defines.RF_SHELL_GREEN;
+                    break;
             }
         }
 

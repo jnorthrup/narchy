@@ -40,21 +40,28 @@ class ParensTest {
 			Stack<Character> stack = new Stack<>();
 			for (int i = 0; i < query.length(); i++) {
 				char c = query.charAt(i);
-				if (c == '(' || c == '[' || c == '{') {
-					
-					stack.push(c);
-				} else if (c == ')' || c == ']' || c == '}') {
-					
-					if (stack.isEmpty()) {
-						return false;
-					}
-					char d = stack.pop();
-					if ((d == '(' && c != ')') || (d == '[' && c != ']') || (d == '{' && c != '}')) {
-						return false;
-					}
-				} else {
-					return false;
-				}
+                switch (c) {
+                    case '(':
+                    case '[':
+                    case '{':
+
+                        stack.push(c);
+                        break;
+                    case ')':
+                    case ']':
+                    case '}':
+
+                        if (stack.isEmpty()) {
+                            return false;
+                        }
+                        char d = stack.pop();
+                        if ((d == '(' && c != ')') || (d == '[' && c != ']') || (d == '{' && c != '}')) {
+                            return false;
+                        }
+                        break;
+                    default:
+                        return false;
+                }
 			}
 			return stack.isEmpty();
 		};

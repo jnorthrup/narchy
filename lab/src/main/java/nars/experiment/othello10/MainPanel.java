@@ -200,12 +200,15 @@ public class MainPanel extends JPanel implements MouseListener {
     private void drawStone(Graphics g) {
         for (int y = 0; y < MASU; y++) {
             for (int x = 0; x < MASU; x++) {
-                if (board[y][x] == BLANK) {
-                    continue;
-                } else if (board[y][x] == BLACK_STONE) {
-                    g.setColor(Color.BLACK);
-                } else {
-                    g.setColor(Color.WHITE);
+                switch (board[y][x]) {
+                    case BLANK:
+                        continue;
+                    case BLACK_STONE:
+                        g.setColor(Color.BLACK);
+                        break;
+                    default:
+                        g.setColor(Color.WHITE);
+                        break;
                 }
                 g.fillOval(x * GS + 3, y * GS + 3, GS - 6, GS - 6);
             }

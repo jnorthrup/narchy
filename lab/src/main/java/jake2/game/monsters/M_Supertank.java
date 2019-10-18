@@ -768,13 +768,17 @@ public class M_Supertank {
         public boolean think(edict_t self) {
             int flash_number;
 
-            if (self.s.frame == FRAME_attak2_8)
-                flash_number = Defines.MZ2_SUPERTANK_ROCKET_1;
-            else if (self.s.frame == FRAME_attak2_11)
-                flash_number = Defines.MZ2_SUPERTANK_ROCKET_2;
-            else
-                
-                flash_number = Defines.MZ2_SUPERTANK_ROCKET_3;
+            switch (self.s.frame) {
+                case FRAME_attak2_8:
+                    flash_number = Defines.MZ2_SUPERTANK_ROCKET_1;
+                    break;
+                case FRAME_attak2_11:
+                    flash_number = Defines.MZ2_SUPERTANK_ROCKET_2;
+                    break;
+                default:
+                    flash_number = Defines.MZ2_SUPERTANK_ROCKET_3;
+                    break;
+            }
 
             float[] right = {0, 0, 0};
             float[] forward = {0, 0, 0};

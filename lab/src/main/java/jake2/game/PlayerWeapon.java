@@ -1175,10 +1175,14 @@ public class PlayerWeapon {
         float[] _distance = { 0, 0, 0 };
 
         Math3D.VectorCopy(distance, _distance);
-        if (client.pers.hand == Defines.LEFT_HANDED)
-            _distance[1] *= -1;
-        else if (client.pers.hand == Defines.CENTER_HANDED)
-            _distance[1] = 0;
+        switch (client.pers.hand) {
+            case Defines.LEFT_HANDED:
+                _distance[1] *= -1;
+                break;
+            case Defines.CENTER_HANDED:
+                _distance[1] = 0;
+                break;
+        }
         Math3D.G_ProjectSource(point, _distance, forward, right, result);
     }
 

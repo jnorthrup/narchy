@@ -100,14 +100,19 @@ public class AudioFormat {
         }
 
         String var4;
-        if (this.channels == 1) {
-            var4 = "mono, ";
-        } else if (this.channels == 2) {
-            var4 = "stereo, ";
-        } else if (this.channels == -1) {
-            var4 = " unknown number of channels, ";
-        } else {
-            var4 = this.channels + " channels, ";
+        switch (this.channels) {
+            case 1:
+                var4 = "mono, ";
+                break;
+            case 2:
+                var4 = "stereo, ";
+                break;
+            case -1:
+                var4 = " unknown number of channels, ";
+                break;
+            default:
+                var4 = this.channels + " channels, ";
+                break;
         }
 
         String var5;

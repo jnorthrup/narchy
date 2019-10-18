@@ -75,21 +75,25 @@ public class AudioSourcePCM16 extends AudioSource {
 
         int r = samples;
         int j = 0;
-        if (channels == 1) {
-            while (r > 0) {
-                short s = sb.get();
-                target[j++] = (float) (s * gain);
-                r--;
-            }
-        } else if(channels == 2) {
-            while (r > 0) {
-                short a = sb.get();
-                short b = sb.get();
-                target[j++] = (float) (((a * gain) +( b * gain)) /2);
-                r--;
-            }
-        } else
-            throw new TODO();
+        switch (channels) {
+            case 1:
+                while (r > 0) {
+                    short s = sb.get();
+                    target[j++] = (float) (s * gain);
+                    r--;
+                }
+                break;
+            case 2:
+                while (r > 0) {
+                    short a = sb.get();
+                    short b = sb.get();
+                    target[j++] = (float) (((a * gain) + (b * gain)) / 2);
+                    r--;
+                }
+                break;
+            default:
+                throw new TODO();
+        }
 
     }
 

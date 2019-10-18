@@ -161,14 +161,17 @@ public class ConnectFour {
         }
 
         private void setWinPositionFor(int row, int col, int playerNum) {
-            if (playerNum == 1) {
-                if (!isWinPositionFor(row, col, 1))
-                    winPositions1++;
-            } else if (playerNum == 2) {
-                if (!isWinPositionFor(row, col, 2))
-                    winPositions2++;
-            } else {
-                throw new IllegalArgumentException("Wrong player number.");
+            switch (playerNum) {
+                case 1:
+                    if (!isWinPositionFor(row, col, 1))
+                        winPositions1++;
+                    break;
+                case 2:
+                    if (!isWinPositionFor(row, col, 2))
+                        winPositions2++;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Wrong player number.");
             }
             board[row * cols + col] |= playerNum * 4;
         }

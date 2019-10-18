@@ -1127,12 +1127,17 @@ public class CL_fx {
 
 			p.time = Globals.cl.time;
 
-			if (type == Defines.MZ_LOGIN)
-				p.color = 0xd0 + (Lib.rand() & 7); 
-			else if (type == Defines.MZ_LOGOUT)
-				p.color = 0x40 + (Lib.rand() & 7); 
-			else
-				p.color = 0xe0 + (Lib.rand() & 7); 
+            switch (type) {
+                case Defines.MZ_LOGIN:
+                    p.color = 0xd0 + (Lib.rand() & 7);
+                    break;
+                case Defines.MZ_LOGOUT:
+                    p.color = 0x40 + (Lib.rand() & 7);
+                    break;
+                default:
+                    p.color = 0xe0 + (Lib.rand() & 7);
+                    break;
+            }
 
 			p.org[0] = org[0] - 16 + Globals.rnd.nextFloat() * 32;
 			p.org[1] = org[1] - 16 + Globals.rnd.nextFloat() * 32;

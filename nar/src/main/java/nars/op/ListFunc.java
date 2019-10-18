@@ -80,19 +80,20 @@ public enum ListFunc {
         protected Term computeFromXY(Evaluation e, Term x, Term y, Term xy) {
 
             int l = xy.subs();
-            if (l == 0) {
-                return e.is(x, Op.EmptyProduct,y, Op.EmptyProduct) ? null : Bool.Null;
-            } else if (l == 1) {
-                return e.is(x, Op.EmptyProduct, y, xy) && e.is(x, xy, y, Op.EmptyProduct) ? null : Bool.Null;
-            } else {
-                Subterms xys = xy.subterms();
+            switch (l) {
+                case 0:
+                    return e.is(x, Op.EmptyProduct, y, Op.EmptyProduct) ? null : Bool.Null;
+                case 1:
+                    return e.is(x, Op.EmptyProduct, y, xy) && e.is(x, xy, y, Op.EmptyProduct) ? null : Bool.Null;
+                default:
+                    Subterms xys = xy.subterms();
 
-                List<Predicate<Termerator>> list = IntStream.range(-1, l).mapToObj(finalI -> Termerator.assign(
-                    x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
-                    y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))).collect(toList());
-                e.canBe(list);
+                    List<Predicate<Termerator>> list = IntStream.range(-1, l).mapToObj(finalI -> Termerator.assign(
+                            x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
+                            y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))).collect(toList());
+                    e.canBe(list);
 
-                return null;
+                    return null;
             }
 
         }

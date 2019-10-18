@@ -663,14 +663,18 @@ public final class SloppyMath {
                   finished = true;
               }
           } else if (m == 1) {
-              if (k == 0) {
-                  result = (n - r) / (double) n;
-                  finished = true;
-              } else if (k == 1) {
-                  result = r / (double) n;
-                  finished = true;
-              } else {
-                  finished = true;
+              switch (k) {
+                  case 0:
+                      result = (n - r) / (double) n;
+                      finished = true;
+                      break;
+                  case 1:
+                      result = r / (double) n;
+                      finished = true;
+                      break;
+                  default:
+                      finished = true;
+                      break;
               }
           } else if (m == 0) {
               if (k == 0) {

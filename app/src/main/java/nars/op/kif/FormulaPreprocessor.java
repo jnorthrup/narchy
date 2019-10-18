@@ -244,8 +244,14 @@ public class FormulaPreprocessor {
 
                 boolean addSortals = quantifiedVariables.stream().map(varmap::get).anyMatch(strings -> strings != null && !strings.isEmpty());
                 if (addSortals) {
-                    if (carstr.equals(Formula.EQUANT)) sb.append("(and ");
-                    else if (carstr.equals(Formula.UQUANT)) sb.append("(=> (and ");
+                    switch (carstr) {
+                        case Formula.EQUANT:
+                            sb.append("(and ");
+                            break;
+                        case Formula.UQUANT:
+                            sb.append("(=> (and ");
+                            break;
+                    }
                 }
 
                 for (String existentiallyQV : quantifiedVariables) {
@@ -451,15 +457,20 @@ public class FormulaPreprocessor {
         String carstr = form.car();
 
         if (Formula.atom(carstr) && Formula.isLogicalOperator(carstr)) {
-            if (carstr.equals(Formula.EQUANT) || carstr.equals(Formula.UQUANT)) {
-                for (int i = 2; i < form.listLength(); i++)
-                    findExplicitTypesRecurse(kb, new Formula(form.getArgument(i)), false, varExplicitTypes, varExplicitClasses);
-            } else if (carstr.equals(Formula.NOT)) {
-                for (int i = 1; i < form.listLength(); i++)
-                    findExplicitTypesRecurse(kb, new Formula(form.getArgument(i)), true, varExplicitTypes, varExplicitClasses);
-            } else {
-                for (int i = 1; i < form.listLength(); i++)
-                    findExplicitTypesRecurse(kb, new Formula(form.getArgument(i)), false, varExplicitTypes, varExplicitClasses);
+            switch (carstr) {
+                case Formula.EQUANT:
+                case Formula.UQUANT:
+                    for (int i = 2; i < form.listLength(); i++)
+                        findExplicitTypesRecurse(kb, new Formula(form.getArgument(i)), false, varExplicitTypes, varExplicitClasses);
+                    break;
+                case Formula.NOT:
+                    for (int i = 1; i < form.listLength(); i++)
+                        findExplicitTypesRecurse(kb, new Formula(form.getArgument(i)), true, varExplicitTypes, varExplicitClasses);
+                    break;
+                default:
+                    for (int i = 1; i < form.listLength(); i++)
+                        findExplicitTypesRecurse(kb, new Formula(form.getArgument(i)), false, varExplicitTypes, varExplicitClasses);
+                    break;
             }
         } else if (form.isSimpleClause(kb)) {
             if (isNegativeLiteral == true)
@@ -830,8 +841,14 @@ public class FormulaPreprocessor {
                     if (f.listP() && !f.empty()) {
                         arg0 = f.car();
                         int start = -1;
-                        if ("subclass".equals(arg0)) start = 0;
-                        else if ("instance".equals(arg0)) start = 1;
+                        switch (arg0) {
+                            case "subclass":
+                                start = 0;
+                                break;
+                            case "instance":
+                                start = 1;
+                                break;
+                        }
                         if (start > -1) {
                             ArrayList<String> args =
                                 new ArrayList<>(Arrays.asList(f.getArgument(1), f.getArgument(2)));

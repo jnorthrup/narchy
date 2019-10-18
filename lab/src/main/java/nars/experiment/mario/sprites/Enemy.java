@@ -85,10 +85,13 @@ public class Enemy extends Sprite {
                         deadTime = 10;
                         winged = false;
 
-                        if (type == Enemy.ENEMY_RED_KOOPA) {
-                            spriteContext.addSprite(new Shell(world, x, y, 0));
-                        } else if (type == Enemy.ENEMY_GREEN_KOOPA) {
-                            spriteContext.addSprite(new Shell(world, x, y, 1));
+                        switch (type) {
+                            case Enemy.ENEMY_RED_KOOPA:
+                                spriteContext.addSprite(new Shell(world, x, y, 0));
+                                break;
+                            case Enemy.ENEMY_GREEN_KOOPA:
+                                spriteContext.addSprite(new Shell(world, x, y, 1));
+                                break;
                         }
                     }
                 } else {

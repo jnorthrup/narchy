@@ -738,15 +738,20 @@ public class a extends GamePanel {
   public void processKeyEvent(KeyEvent keyEvent) {
     int k = keyEvent.getKeyCode();
     if (k > 0) {
-      if (k == 0x57) { 
-        k = 0x26; 
-      } else if (k == 0x53) { 
-        k = 0x28; 
-      } else if (k == 0x41) { 
-        k = 0x25; 
-      } else if (k == 0x44) { 
-        k = 0x27; 
-      }
+        switch (k) {
+            case 0x57:
+                k = 0x26;
+                break;
+            case 0x53:
+                k = 0x28;
+                break;
+            case 0x41:
+                k = 0x25;
+                break;
+            case 0x44:
+                k = 0x27;
+                break;
+        }
       a[k >= 0x25 && k <= 0x28 ? k : 0x20] = keyEvent.getID() != 402;
     }
   }

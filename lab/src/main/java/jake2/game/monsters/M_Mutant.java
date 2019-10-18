@@ -367,15 +367,20 @@ public class M_Mutant {
         @Override
         public boolean think(edict_t self) {
             int n = (Lib.rand() + 1) % 3;
-            if (n == 0)
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_step1, 1,
-                        Defines.ATTN_NORM, 0);
-            else if (n == 1)
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_step2, 1,
-                        Defines.ATTN_NORM, 0);
-            else
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_step3, 1,
-                        Defines.ATTN_NORM, 0);
+            switch (n) {
+                case 0:
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_step1, 1,
+                            Defines.ATTN_NORM, 0);
+                    break;
+                case 1:
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_step2, 1,
+                            Defines.ATTN_NORM, 0);
+                    break;
+                default:
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_step3, 1,
+                            Defines.ATTN_NORM, 0);
+                    break;
+            }
             return true;
         }
     };

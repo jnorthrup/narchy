@@ -1959,12 +1959,16 @@ public final class Menu extends Key {
         } else {
             int isdeveloper = FS.Developer_searchpath(1);
 
-            if (isdeveloper == 1) 
-                credits = xatcredits;
-            else if (isdeveloper == 2) 
-                credits = roguecredits;
-            else {
-                credits = idcredits;
+            switch (isdeveloper) {
+                case 1:
+                    credits = xatcredits;
+                    break;
+                case 2:
+                    credits = roguecredits;
+                    break;
+                default:
+                    credits = idcredits;
+                    break;
             }
 
         }
@@ -3067,14 +3071,18 @@ public final class Menu extends Key {
         } else if (f == s_spawn_farthest_box) {
             bit = DF_SPAWN_FARTHEST;
         } else if (f == s_teamplay_box) {
-            if (f.curvalue == 1) {
-                flags |= DF_SKINTEAMS;
-                flags &= ~DF_MODELTEAMS;
-            } else if (f.curvalue == 2) {
-                flags |= DF_MODELTEAMS;
-                flags &= ~DF_SKINTEAMS;
-            } else {
-                flags &= ~(DF_MODELTEAMS | DF_SKINTEAMS);
+            switch (f.curvalue) {
+                case 1:
+                    flags |= DF_SKINTEAMS;
+                    flags &= ~DF_MODELTEAMS;
+                    break;
+                case 2:
+                    flags |= DF_MODELTEAMS;
+                    flags &= ~DF_SKINTEAMS;
+                    break;
+                default:
+                    flags &= ~(DF_MODELTEAMS | DF_SKINTEAMS);
+                    break;
             }
 
             setvalue(flags);

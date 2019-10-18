@@ -267,95 +267,95 @@ public class a extends GamePanel {
 					attackReleased = true;
 				}
 
-				
-				if (fadeState == FADE_IN) {
 
-					if (level == 6) {
-						
-						continue;
-					}
+                switch (fadeState) {
+                    case FADE_IN:
 
-					fadeCount -= 8;
-					if (fadeCount <= 0) {
-						fadeState = FADE_NONE;
-						fadeRed = false;
-						fadeCount = 0;
-					}
-					continue;
-				} else if (fadeState == FADE_OUT) {
-					fadeCount += 8;
-					if (fadeCount >= 255) {
-						fadeCount = 255;
-						fadeState = FADE_IN;
+                        if (level == 6) {
 
-						if (advanceLevel) {
-							level++;
-							advanceLevel = false;
-						}
+                            continue;
+                        }
 
-						
+                        fadeCount -= 8;
+                        if (fadeCount <= 0) {
+                            fadeState = FADE_NONE;
+                            fadeRed = false;
+                            fadeCount = 0;
+                        }
+                        continue;
+                    case FADE_OUT:
+                        fadeCount += 8;
+                        if (fadeCount >= 255) {
+                            fadeCount = 255;
+                            fadeState = FADE_IN;
 
-						counter = 0;
-						cameraX = 0;
-						minCameraX = 128;
-						enemyPower = -1;
-						enemyPowerCounter = 0;
-						enemyCountdown = 0;
-						enemiesRemaining = 4 + level;
-						enemiesAlive = 0;
-						advancesRemaining = 2;
-						createBoss = false;
-						hitPoints = 25 - (level << 1);
+                            if (advanceLevel) {
+                                level++;
+                                advanceLevel = false;
+                            }
 
-						
-						player = new float[64];
-						player[OBJ_Y] = FLOOR_Y;
-						player[OBJ_Z] = 64;
-						player[OBJ_REVERSED] = 1;
-						player[OBJ_FADE] = 63;
-						player[OBJ_HITS] = 3;
-						player[OBJ_POWER] = 100;
-						queue.clear();
-						queue.add(player);
 
-						
-						x = 0;
-						int lastColor = 0;
-						int lastHeight = 0;
-						while (x < 240) {
-							do {
-								z = random.nextInt(8) << 3;
-								k = 2 + (random.nextInt(6) << 1);
-							} while (z == lastColor || k == lastHeight);
-							lastColor = z;
-							lastHeight = k;
-							y = 5 + random.nextInt(4);
-							for (i = 0; i < 24; i++) {
-								for (j = 0; j < y; j++) {
-									cityscape[0][i][j + x] = (i < k) ? -1 : z;
-									cityscape[1][i][j + x] = (i < k + 3) ? SPRITE_BRICKS : SPRITE_WINDOW;
-								}
-							}
-							x += y;
-						}
+                            counter = 0;
+                            cameraX = 0;
+                            minCameraX = 128;
+                            enemyPower = -1;
+                            enemyPowerCounter = 0;
+                            enemyCountdown = 0;
+                            enemiesRemaining = 4 + level;
+                            enemiesAlive = 0;
+                            advancesRemaining = 2;
+                            createBoss = false;
+                            hitPoints = 25 - (level << 1);
 
-						
-						for (i = 0; i < 96; i++) {
-							for (j = 0; j < 256; j++) {
-								pixels[(i << 8) | j] = Color.HSBtoRGB(.06f + 0.17f * level, .92f, i / 95f);
-							}
-						}
-						skyImage = new BufferedImage(256, 96, 1);
-						skyImage.setRGB(0, 0, 256, 96, pixels, 0, 256);
 
-						
-						nextFrameStartTime = System.nanoTime();
+                            player = new float[64];
+                            player[OBJ_Y] = FLOOR_Y;
+                            player[OBJ_Z] = 64;
+                            player[OBJ_REVERSED] = 1;
+                            player[OBJ_FADE] = 63;
+                            player[OBJ_HITS] = 3;
+                            player[OBJ_POWER] = 100;
+                            queue.clear();
+                            queue.add(player);
 
-						
-					}
 
-					continue;
-				}
+                            x = 0;
+                            int lastColor = 0;
+                            int lastHeight = 0;
+                            while (x < 240) {
+                                do {
+                                    z = random.nextInt(8) << 3;
+                                    k = 2 + (random.nextInt(6) << 1);
+                                } while (z == lastColor || k == lastHeight);
+                                lastColor = z;
+                                lastHeight = k;
+                                y = 5 + random.nextInt(4);
+                                for (i = 0; i < 24; i++) {
+                                    for (j = 0; j < y; j++) {
+                                        cityscape[0][i][j + x] = (i < k) ? -1 : z;
+                                        cityscape[1][i][j + x] = (i < k + 3) ? SPRITE_BRICKS : SPRITE_WINDOW;
+                                    }
+                                }
+                                x += y;
+                            }
+
+
+                            for (i = 0; i < 96; i++) {
+                                for (j = 0; j < 256; j++) {
+                                    pixels[(i << 8) | j] = Color.HSBtoRGB(.06f + 0.17f * level, .92f, i / 95f);
+                                }
+                            }
+                            skyImage = new BufferedImage(256, 96, 1);
+                            skyImage.setRGB(0, 0, 256, 96, pixels, 0, 256);
+
+
+                            nextFrameStartTime = System.nanoTime();
+
+
+                        }
+
+                        continue;
+                }
 
 				if (cameraX >= minCameraX && --enemyCountdown < 0) {
 					enemyCountdown = 255;

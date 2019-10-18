@@ -348,15 +348,20 @@ public class a extends GamePanel {
             if ((counter & 1) == 0) {
               x = enemy[ENEMY_X];
               y = enemy[ENEMY_Y];
-              if (enemy[ENEMY_DIRECTION] == DIRECTION_UP) {
-                y--;
-              } else if (enemy[ENEMY_DIRECTION] == DIRECTION_DOWN) {
-                y++;
-              } else if (enemy[ENEMY_DIRECTION] == DIRECTION_LEFT) {
-                x--;
-              } else {
-                x++;
-              }
+                switch (enemy[ENEMY_DIRECTION]) {
+                    case DIRECTION_UP:
+                        y--;
+                        break;
+                    case DIRECTION_DOWN:
+                        y++;
+                        break;
+                    case DIRECTION_LEFT:
+                        x--;
+                        break;
+                    default:
+                        x++;
+                        break;
+                }
               if (map[(y - 8) >> 4][x >> 4] == MAP_EMPTY
                   && map[(y + 7) >> 4][x >> 4] == MAP_EMPTY
                   && map[y >> 4][(x + 7) >> 4] == MAP_EMPTY
@@ -413,15 +418,20 @@ public class a extends GamePanel {
 
         if (attacking > 0) {
           attacking--;
-          if (playerDirection == DIRECTION_UP) {
-            playerSprite = SPRITE_LINK_UP_LUNGE;
-          } else if (playerDirection == DIRECTION_DOWN) {
-            playerSprite = SPRITE_LINK_DOWN_LUNGE;
-          } else if (playerDirection == DIRECTION_LEFT) {
-            playerSprite = SPRITE_LINK_LEFT_LUNGE;
-          } else {
-            playerSprite = SPRITE_LINK_RIGHT_LUNGE;
-          }
+            switch (playerDirection) {
+                case DIRECTION_UP:
+                    playerSprite = SPRITE_LINK_UP_LUNGE;
+                    break;
+                case DIRECTION_DOWN:
+                    playerSprite = SPRITE_LINK_DOWN_LUNGE;
+                    break;
+                case DIRECTION_LEFT:
+                    playerSprite = SPRITE_LINK_LEFT_LUNGE;
+                    break;
+                default:
+                    playerSprite = SPRITE_LINK_RIGHT_LUNGE;
+                    break;
+            }
         } else if (acquiredSword && attackReleased && a[VK_ATTACK]) {
           attackReleased = false;
           attacking = 10;
@@ -432,15 +442,20 @@ public class a extends GamePanel {
           x = playerX;
           y = playerY;
           if (playerStunned > 56) {
-            if (playerDirection == DIRECTION_UP) {
-              y += 4;
-            } else if (playerDirection == DIRECTION_DOWN) {
-              y -= 4;
-            } else if (playerDirection == DIRECTION_LEFT) {
-              x += 4;
-            } else {
-              x -= 4;
-            }
+              switch (playerDirection) {
+                  case DIRECTION_UP:
+                      y += 4;
+                      break;
+                  case DIRECTION_DOWN:
+                      y -= 4;
+                      break;
+                  case DIRECTION_LEFT:
+                      x += 4;
+                      break;
+                  default:
+                      x -= 4;
+                      break;
+              }
           } else if (a[VK_UP]) {
             playerWalkCount++;
             y -= i;
@@ -467,20 +482,25 @@ public class a extends GamePanel {
             playerWalkCount++;
             playerLastDirection = playerDirection;
 
-            
-            if (playerDirection == DIRECTION_UP) {
-              playerSprite = playerSprite != SPRITE_LINK_UP_1
-                  ? SPRITE_LINK_UP_1 : SPRITE_LINK_UP_2;
-            } else if (playerDirection == DIRECTION_DOWN) {
-              playerSprite = playerSprite != SPRITE_LINK_DOWN_1
-                  ? SPRITE_LINK_DOWN_1 : SPRITE_LINK_DOWN_2;
-            } else if (playerDirection == DIRECTION_LEFT) {
-              playerSprite = playerSprite != SPRITE_LINK_LEFT_1
-                  ? SPRITE_LINK_LEFT_1 : SPRITE_LINK_LEFT_2;
-            } else {
-              playerSprite = playerSprite != SPRITE_LINK_RIGHT_1
-                  ? SPRITE_LINK_RIGHT_1 : SPRITE_LINK_RIGHT_2;
-            }
+
+              switch (playerDirection) {
+                  case DIRECTION_UP:
+                      playerSprite = playerSprite != SPRITE_LINK_UP_1
+                              ? SPRITE_LINK_UP_1 : SPRITE_LINK_UP_2;
+                      break;
+                  case DIRECTION_DOWN:
+                      playerSprite = playerSprite != SPRITE_LINK_DOWN_1
+                              ? SPRITE_LINK_DOWN_1 : SPRITE_LINK_DOWN_2;
+                      break;
+                  case DIRECTION_LEFT:
+                      playerSprite = playerSprite != SPRITE_LINK_LEFT_1
+                              ? SPRITE_LINK_LEFT_1 : SPRITE_LINK_LEFT_2;
+                      break;
+                  default:
+                      playerSprite = playerSprite != SPRITE_LINK_RIGHT_1
+                              ? SPRITE_LINK_RIGHT_1 : SPRITE_LINK_RIGHT_2;
+                      break;
+              }
           }
 
           
@@ -641,15 +661,20 @@ public class a extends GamePanel {
           i = playerX - cameraX + 8;
           j = playerY - cameraY + 72;
           float angle = 1.57f * (playerDirection - 1);
-          if (playerDirection == DIRECTION_UP) {
-            i -= 2;
-          } else if (playerDirection == DIRECTION_DOWN) {
-            i += 2;
-          } else if (playerDirection == DIRECTION_LEFT) {
-            j += 2;
-          } else {
-            j++;
-          }
+            switch (playerDirection) {
+                case DIRECTION_UP:
+                    i -= 2;
+                    break;
+                case DIRECTION_DOWN:
+                    i += 2;
+                    break;
+                case DIRECTION_LEFT:
+                    j += 2;
+                    break;
+                default:
+                    j++;
+                    break;
+            }
           g.translate(i, j);
           g.rotate(angle);
           g.drawImage(sprites[SPRITE_SWORD], -8,

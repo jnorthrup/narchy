@@ -23,12 +23,16 @@ public class LChar extends LeafNode {
     @Override
     public String toString() {
         String result;
-        if (c == ' ') {
-            result = "\\s";
-        } else if (c == '\t') {
-            result = "\\t";
-        } else {
-            result = String.valueOf(c);
+        switch (c) {
+            case ' ':
+                result = "\\s";
+                break;
+            case '\t':
+                result = "\\t";
+                break;
+            default:
+                result = String.valueOf(c);
+                break;
         }
         return result;
     }
