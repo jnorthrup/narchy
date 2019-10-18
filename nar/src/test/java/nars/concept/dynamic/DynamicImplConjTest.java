@@ -303,6 +303,7 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
 
     }
 
+
     @Test
     void testDynamicImplSubjTemporalExact() throws Narsese.NarseseException {
         testDynamicImplSubjPredTemporalExact(1, false /* reversed */);
