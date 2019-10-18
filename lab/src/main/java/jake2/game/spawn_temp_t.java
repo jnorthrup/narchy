@@ -49,81 +49,41 @@ public class spawn_temp_t {
 	public float maxpitch;
 
 	public boolean set(String key, String value) {
+		boolean result = true;
 		if ("lip".equals(key)) {
-			lip=Lib.atoi(value);
-			return true;
-		} 
-		
-		if ("distance".equals(key)) {
-			distance=Lib.atoi(value);
-			return true;
-		} 
-		
-		if ("height".equals(key)) {
-			height=Lib.atoi(value);
-			return true;
-		} 
-		
-		if ("noise".equals(key)) {
+			lip = Lib.atoi(value);
+		} else if ("distance".equals(key)) {
+			distance = Lib.atoi(value);
+		} else if ("height".equals(key)) {
+			height = Lib.atoi(value);
+		} else if ("noise".equals(key)) {
 			noise = GameSpawn.ED_NewString(value);
-			return true;
-		} 
-		
-		if ("pausetime".equals(key)) {
+		} else if ("pausetime".equals(key)) {
 			pausetime = Lib.atof(value);
-			return true;
-		} 
-		
-		if ("item".equals(key)) {
+		} else if ("item".equals(key)) {
 			item = GameSpawn.ED_NewString(value);
-			return true;
-		} 
-		
-		if ("gravity".equals(key)) {
-			 gravity = GameSpawn.ED_NewString(value);
-			return true;
-		} 
-		
-		if ("sky".equals(key)) {
+		} else if ("gravity".equals(key)) {
+			gravity = GameSpawn.ED_NewString(value);
+		} else if ("sky".equals(key)) {
 			sky = GameSpawn.ED_NewString(value);
-			return true;
-		} 
-		
-		if ("skyrotate".equals(key)) {
-			skyrotate=Lib.atof(value);
-			return true;
-		} 
-		
-		if ("skyaxis".equals(key)) {
-			skyaxis=Lib.atov(value);
-			return true;
-		} 
-		
-		if ("minyaw".equals(key)) {
-			minyaw=Lib.atof(value);
-			return true;
-		} 
-		
-		if ("maxyaw".equals(key)) {
-			maxyaw=Lib.atof(value);
-			return true;
-		} 
-		
-		if ("minpitch".equals(key)) {
+		} else if ("skyrotate".equals(key)) {
+			skyrotate = Lib.atof(value);
+		} else if ("skyaxis".equals(key)) {
+			skyaxis = Lib.atov(value);
+		} else if ("minyaw".equals(key)) {
+			minyaw = Lib.atof(value);
+		} else if ("maxyaw".equals(key)) {
+			maxyaw = Lib.atof(value);
+		} else if ("minpitch".equals(key)) {
 			minpitch = Lib.atof(value);
-			return true;
-		} 
-		
-		if ("maxpitch".equals(key)) {
+		} else if ("maxpitch".equals(key)) {
 			maxpitch = Lib.atof(value);
-			return true;
-		} 
-		
-		if ("nextmap".equals(key)) {
-			nextmap  = GameSpawn.ED_NewString(value);
-			return true;
-		} 
+		} else if ("nextmap".equals(key)) {
+			nextmap = GameSpawn.ED_NewString(value);
+		} else {
+			result = false;
+		}
 
-		return false;
+		return result;
 	}
 }

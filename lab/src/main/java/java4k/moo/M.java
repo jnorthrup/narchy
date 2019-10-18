@@ -316,47 +316,82 @@ public class M extends GamePanel {
 	}
 
 	boolean allowed(int a) {
+		boolean result = true;
+		boolean finished = false;
 		switch (a) {
-			
-			case -1: return true;
-			
-			case 0: return inRange() && !p_explored[selP][selE];
-			
-			case 1: return inRange() && p_explored[selP][selE] && p_owner[selP] == 0;
-			
+
+			case -1:
+				break;
+
+			case 0:
+				result = inRange() && !p_explored[selP][selE];
+				break;
+
+			case 1:
+				result = inRange() && p_explored[selP][selE] && p_owner[selP] == 0;
+				break;
+
 			case 2:
-				return 
-					inRange() &&
-					p_explored[selP][selE] &&
-					(p_owner[selP] == 0 || (p_owner[selP] == selE && p_out[selP])) &&
-					(p_special[selP] != 0 || e_terraform[selE]);
-			
-			case 3: case 4: return p_owner[selP] == selE;
-			
-			case 6: if (!e_cloak[selE] || e_ships[selE] == 0) { return false; } 
-			
-			case 5: if (p_out[selP]) { return false; } 
-			
-			case 7: return inRange() &&
-					p_explored[selP][selE] &&
-					p_owner[selP] != selE &&
-					p_owner[selP] != 0 &&
-					(a != 7 || e_ships[selE] > 0);
-			
-			case 9: return e_range[selE] == 5;
-			
-			case 10: return !e_terraform[selE];
-			
-			case 11: return !e_cloak[selE];
-			
-			case 12: return e_econBonus[selE] < 3;
-			
-			case 13: return e_gunBonus[selE] < 3;
-			
-			case 14: return !e_scanner[selE];
-			
-			case 8: case 15: case 16: return true;
-			
+				result = inRange() &&
+						p_explored[selP][selE] &&
+						(p_owner[selP] == 0 || (p_owner[selP] == selE && p_out[selP])) &&
+						(p_special[selP] != 0 || e_terraform[selE]);
+				break;
+
+			case 3:
+			case 4:
+				result = p_owner[selP] == selE;
+				break;
+
+			case 6:
+				if (!e_cloak[selE] || e_ships[selE] == 0) {
+					result = false;
+					break;
+				}
+
+			case 5:
+				if (p_out[selP]) {
+					result = false;
+					break;
+				}
+
+			case 7:
+				result = inRange() &&
+						p_explored[selP][selE] &&
+						p_owner[selP] != selE &&
+						p_owner[selP] != 0 &&
+						(a != 7 || e_ships[selE] > 0);
+				break;
+
+			case 9:
+				result = e_range[selE] == 5;
+				break;
+
+			case 10:
+				result = !e_terraform[selE];
+				break;
+
+			case 11:
+				result = !e_cloak[selE];
+				break;
+
+			case 12:
+				result = e_econBonus[selE] < 3;
+				break;
+
+			case 13:
+				result = e_gunBonus[selE] < 3;
+				break;
+
+			case 14:
+				result = !e_scanner[selE];
+				break;
+
+			case 8:
+			case 15:
+			case 16:
+				break;
+
 			case 17:
 				/*int p2 = selP;
 				int best = -1;
@@ -377,14 +412,21 @@ public class M extends GamePanel {
 				int best = -1;
 				int bestV = 0;
 				for (selP = 0; selP < 24; selP++) {
-					if (!allowed(7)) { continue; }
+					if (!allowed(7)) {
+						continue;
+					}
 					int v = 300 + p_money[selP] * 3 + value(7) + p_defence[selP] * 20;
 					int losses = (p_defence[selP] + (e_f_pos[p_owner[selP]]) == selP ? e_ships[p_owner[selP]] : 0) - e_ships[selE] / 3;
 					int newFleet = e_ships[selE];
 					int enFleet = e_f_pos[p_owner[selP]] == selP ? e_ships[p_owner[selP]] / 2 : e_ships[p_owner[selP]];
-					if (losses > 0) { v -= losses * 80; newFleet -= losses; }
-					if (e_f_pos[p_owner[selP]] == selP) { v += e_ships[p_owner[selP]] * 40; }
-					
+					if (losses > 0) {
+						v -= losses * 80;
+						newFleet -= losses;
+					}
+					if (e_f_pos[p_owner[selP]] == selP) {
+						v += e_ships[p_owner[selP]] * 40;
+					}
+
 					if (newFleet + p_defence[selP] / 2 <= enFleet * 4 / 3) {
 						v = 0;
 					}
@@ -396,30 +438,37 @@ public class M extends GamePanel {
 				selP = best;
 				if (best != -1) {
 					int losses = (p_defence[selP] + (e_f_pos[p_owner[selP]]) == selP ? e_ships[p_owner[selP]] : 0) - e_ships[selE] / 3;
-					return true;
+					break;
 				}
 				selP = p2;
 
-				return false;
-			
+				result = false;
+				break;
+
 			default:
 				int maxShips = 0;
 				for (int e = 1; e < 5; e++) {
-					if (e != selE && e_ships[e] > maxShips) { maxShips = e_ships[e]; }
+					if (e != selE && e_ships[e] > maxShips) {
+						maxShips = e_ships[e];
+					}
 				}
 				for (int p = 0; p < 24; p++) {
 					if (p_owner[p] == selE && p_defence[p] < maxShips + (a - 20)) {
 						int pp = selP;
 						selP = p;
 						if (e_money[selE] + value(4) >= 0) {
-							return true;
+							finished = true;
+							break;
 						} else {
 							selP = pp;
 						}
 					}
 				}
-				return false;
+				if (finished) break;
+				result = false;
+				break;
 		}
+		return result;
 	}
 
 	boolean inRange() {
@@ -429,60 +478,89 @@ public class M extends GamePanel {
 	}
 
 	int value(int a) {
-		if (a > 19) { a = 4; } 
+		int result = 0;
+		if (a > 19) {
+			a = 4;
+		}
 		switch (a) {
-			
-			case -1: return 0;
-			
-			case 0: return -10;
-			
-			case 1: return -30;
-			
-			case 2: return (e_terraform[selE] || p_special[selP] == 1) ? -70 : -140;
-			
+
+			case -1:
+				break;
+
+			case 0:
+				result = -10;
+				break;
+
+			case 1:
+				result = -30;
+				break;
+
+			case 2:
+				result = (e_terraform[selE] || p_special[selP] == 1) ? -70 : -140;
+				break;
+
 			case 16:
 				int pp = selP;
 				int best = -1;
 				for (selP = 0; selP < 24; selP++) {
 					if (inRange() &&
 							(best == -1 ||
-							
-							(p_owner[selP] == selE ? 3 : e_cloak[selE] ? 5 : 2) * p_money[selP]
-							>
-							(p_owner[best] == selE ? 3 : e_cloak[selE] ? 5 : 2) * p_money[best]) &&
-							p_owner[selP] != 0)
-					{
+
+									(p_owner[selP] == selE ? 3 : e_cloak[selE] ? 5 : 2) * p_money[selP]
+											>
+											(p_owner[best] == selE ? 3 : e_cloak[selE] ? 5 : 2) * p_money[best]) &&
+							p_owner[selP] != 0) {
 						best = selP;
 					}
 				}
 				if (best == -1) {
 					selP = pp;
-					return 0;
+					break;
 				}
 				selP = best;
-			
-			case 3: case 5: case 6: return p_money[selP];
-			
-			case 4: return -60 - 10 * p_defence[selP];
-			
-			case 17: case 7: return -50 - Math.max(0,
-					(
-					p_defence[selP] * 2
-					+ (e_f_pos[selE] == selP ? e_ships[p_owner[selP]] * (2 + e_gunBonus[p_owner[selP]]): 0)
-					- (e_ships[selE] * (2 + e_gunBonus[selE]))
-					)
-					* 50);
-			
-			case 8: return -60;
-			
-			case 12: return new int[] { -400, -1600, -4800, -1 }[e_econBonus[selE]];
-			
-			case 13: return new int[] { -400, -1200, -3600, -1 }[e_gunBonus[selE]];
-			
-			case 15: return -32000;
-			
-			default: return -400;
+
+			case 3:
+			case 5:
+			case 6:
+				result = p_money[selP];
+				break;
+
+			case 4:
+				result = -60 - 10 * p_defence[selP];
+				break;
+
+			case 17:
+			case 7:
+				result = -50 - Math.max(0,
+						(
+								p_defence[selP] * 2
+										+ (e_f_pos[selE] == selP ? e_ships[p_owner[selP]] * (2 + e_gunBonus[p_owner[selP]]) : 0)
+										- (e_ships[selE] * (2 + e_gunBonus[selE]))
+						)
+								* 50);
+				break;
+
+			case 8:
+				result = -60;
+				break;
+
+			case 12:
+				result = new int[]{-400, -1600, -4800, -1}[e_econBonus[selE]];
+				break;
+
+			case 13:
+				result = new int[]{-400, -1200, -3600, -1}[e_gunBonus[selE]];
+				break;
+
+			case 15:
+				result = -32000;
+				break;
+
+			default:
+				result = -400;
+				break;
 		}
+		return result;
 	}
 
 	String[] s_names = {

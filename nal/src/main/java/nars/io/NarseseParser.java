@@ -653,48 +653,68 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     }
 
     static Term buildCompound(List<Term> subs, String op) {
+        Term result = Bool.Null;
         switch (op) {
             case "&":
             case "&&":
-                return CONJ.the(subs);
+                result = CONJ.the(subs);
+                break;
             case "&|":
-                return CONJ.the(0, subs);
+                result = CONJ.the(0, subs);
+                break;
             case "&&+-":
-                return CONJ.the(XTERNAL, subs);
+                result = CONJ.the(XTERNAL, subs);
+                break;
 
             case "|": //TEMPORARY
             case DISJstr:
-                return Op.DISJ(subs.toArray(EmptyTermArray));
+                result = Op.DISJ(subs.toArray(EmptyTermArray));
+                break;
 
             case "||+-":
-                return CONJ.the(XTERNAL, $.neg(subs.toArray(EmptyTermArray))).neg();
+                result = CONJ.the(XTERNAL, $.neg(subs.toArray(EmptyTermArray))).neg();
+                break;
 
             case "=|>":
-                return IMPL.the(0, subs);
+                result = IMPL.the(0, subs);
+                break;
 
             case "-{-":
-                return subs.size() != 2 ? Bool.Null : $.inst(subs.get(0), subs.get(1));
+                result = subs.size() != 2 ? Bool.Null : $.inst(subs.get(0), subs.get(1));
+                break;
             case "-]-":
-                return subs.size() != 2 ? Bool.Null : $.prop(subs.get(0), subs.get(1));
+                result = subs.size() != 2 ? Bool.Null : $.prop(subs.get(0), subs.get(1));
+                break;
             case "{-]":
-                return subs.size() != 2 ? Bool.Null : $.instprop(subs.get(0), subs.get(1));
+                result = subs.size() != 2 ? Bool.Null : $.instprop(subs.get(0), subs.get(1));
+                break;
 
 
             case Op.DIFFi:
-                if (subs.size() != 2) return Bool.Null;
-                else return CONJ.the(subs.get(0), subs.get(1).neg());
+                if (subs.size() != 2) {
+                    break;
+                } else {
+                    result = CONJ.the(subs.get(0), subs.get(1).neg());
+                    break;
+                }
 
             case Op.DIFFe:
-                if (subs.size() != 2) return Bool.Null;
-                else return DISJ(subs.get(0), subs.get(1).neg());
+                if (subs.size() != 2) {
+                    break;
+                } else {
+                    result = DISJ(subs.get(0), subs.get(1).neg());
+                    break;
+                }
 
             default: {
                 Op o = Op.stringToOperator.get(op);
 //                if (o == null)
 //                    throw new UnsupportedOperationException();
-                return o.the(subs);
+                result = o.the(subs);
+                break;
             }
         }
+        return result;
     }
 
     @Cached

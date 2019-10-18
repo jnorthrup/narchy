@@ -124,39 +124,71 @@ public abstract class Atomic implements Term {
     }
 
     public static @Nullable Atomic the(char c) {
+        @Nullable Atomic result = Op.VarAuto;
+        boolean finished = false;
         switch (c) {
             case Op.VarAutoSym:
-                return Op.VarAuto;
+                finished = true;
+                break;
             case Op.NullSym:
-                return Null;
+                result = Null;
+                finished = true;
+                break;
 
             case Op.imIntSym:
-                return Op.ImgInt;
+                result = Op.ImgInt;
+                finished = true;
+                break;
             case Op.imExtSym:
-                return Op.ImgExt;
+                result = Op.ImgExt;
+                finished = true;
+                break;
             case '0':
-                return Int.pos[0];
+                result = Int.pos[0];
+                finished = true;
+                break;
             case '1':
-                return Int.pos[1];
+                result = Int.pos[1];
+                finished = true;
+                break;
             case '2':
-                return Int.pos[2];
+                result = Int.pos[2];
+                finished = true;
+                break;
             case '3':
-                return Int.pos[3];
+                result = Int.pos[3];
+                finished = true;
+                break;
             case '4':
-                return Int.pos[4];
+                result = Int.pos[4];
+                finished = true;
+                break;
             case '5':
-                return Int.pos[5];
+                result = Int.pos[5];
+                finished = true;
+                break;
             case '6':
-                return Int.pos[6];
+                result = Int.pos[6];
+                finished = true;
+                break;
             case '7':
-                return Int.pos[7];
+                result = Int.pos[7];
+                finished = true;
+                break;
             case '8':
-                return Int.pos[8];
+                result = Int.pos[8];
+                finished = true;
+                break;
             case '9':
-                return Int.pos[9];
+                result = Int.pos[9];
+                finished = true;
+                break;
+        }
+        if (!finished) {
+            result = AtomChar.chars[c];
         }
 
-        return AtomChar.chars[c];
+        return result;
     }
 
     /*@NotNull*/

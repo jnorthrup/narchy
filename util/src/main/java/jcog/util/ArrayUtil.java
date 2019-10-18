@@ -137,47 +137,44 @@ public enum ArrayUtil {
     public static final Consumer[] EMPTY_CONSUMER_ARRAY = new Consumer[0];
     public static final URL[] EMPTY_URL_ARRAY = new URL[0];
     public static final LongObjectPair[] EMPTY_LONGOBJECT_PAIR_ARRAY = new LongObjectPair[0];
-
+    public static final Comparator NullCompactingComparator = (o1, o2) -> {
+        if (o1 == o2) return 0;
+        if (o1 == null) return 1;
+        if (o2 == null) return -1;
+        return Integer.compare(
+                System.identityHashCode(o1),
+                System.identityHashCode(o2)
+        );
+    };
     /**
      * The number of distinct byte values.
      */
 //    private static final int NUM_BYTE_VALUES = 1 << 8;
-    private static final byte[] BYTE_ZERO = { 0 };
-    private static final byte[] BYTE_ONE = { 1 };
-    private static final byte[] BYTE_TWO = { 2 };
-    private static final byte[] BYTE_THREE = { 3 };
-    private static final byte[] BYTE_ZERO_ZERO = { 0, 0 };
-    private static final byte[] BYTE_ZERO_ONE = { 0, 1 };
-    private static final byte[] BYTE_ONE_ZERO = { 1, 0 };
-    private static final byte[] BYTE_ONE_ONE = { 1, 1 };
-    private static final byte[] BYTE_ONE_TWO = { 1, 2 };
-    private static final byte[] BYTE_ONE_NEGONE = { 1, -1 };
-    private static final byte[] BYTE_ONE_NEGTWO = { 1, -2 };
-    private static final byte[] BYTE_TWO_ONE = { 2, 1 };
-    private static final byte[] BYTE_TWO_TWO = { 2, 2 };
-    private static final byte[] BYTE_TWO_NEGONE = { 2, -1 };
-    private static final byte[] BYTE_TWO_NEGTWO = { 2, -2 };
-    private static final byte[] BYTE_NEGONE_ONE = { -1, 1 };
-    private static final byte[] BYTE_NEGONE_TWO = { -1, 2 };
-    private static final byte[] BYTE_NEGONE_NEGONE = { -1, -1 };
-    private static final byte[] BYTE_NEGONE_NEGTWO = { -1, -2 };
-
+    private static final byte[] BYTE_ZERO = {0};
+    private static final byte[] BYTE_ONE = {1};
+    private static final byte[] BYTE_TWO = {2};
+    private static final byte[] BYTE_THREE = {3};
+    private static final byte[] BYTE_ZERO_ZERO = {0, 0};
+    private static final byte[] BYTE_ZERO_ONE = {0, 1};
+    private static final byte[] BYTE_ONE_ZERO = {1, 0};
+    private static final byte[] BYTE_ONE_ONE = {1, 1};
+    private static final byte[] BYTE_ONE_TWO = {1, 2};
+    private static final byte[] BYTE_ONE_NEGONE = {1, -1};
+    private static final byte[] BYTE_ONE_NEGTWO = {1, -2};
+    private static final byte[] BYTE_TWO_ONE = {2, 1};
+    private static final byte[] BYTE_TWO_TWO = {2, 2};
+    private static final byte[] BYTE_TWO_NEGONE = {2, -1};
+    private static final byte[] BYTE_TWO_NEGTWO = {2, -2};
+    private static final byte[] BYTE_NEGONE_ONE = {-1, 1};
+    private static final byte[] BYTE_NEGONE_TWO = {-1, 2};
+    private static final byte[] BYTE_NEGONE_NEGONE = {-1, -1};
+    private static final byte[] BYTE_NEGONE_NEGTWO = {-1, -2};
 
     public static void sortNullsToEnd(Object[] x) {
         Arrays.sort(x, NullCompactingComparator);
     }
 
-	public static final Comparator NullCompactingComparator = (o1, o2) -> {
-		if (o1 == o2) return 0;
-		if (o1 == null) return 1;
-		if (o2 == null) return -1;
-		return Integer.compare(
-				System.identityHashCode(o1),
-				System.identityHashCode(o2)
-		);
-	};
-
-	/**
+    /**
      * <p>Shallow clones an array returning a typecast result and handling
      * {@code null}.
      *
@@ -1064,7 +1061,9 @@ public enum ArrayUtil {
                 a[1] = i;
                 break;
             }
-            default: reverse(a, 0, l); break;
+            default:
+                reverse(a, 0, l);
+                break;
         }
     }
 
@@ -1446,7 +1445,7 @@ public enum ArrayUtil {
         if (len == 1) swapByte(array, offset1, offset2);
         else {
             int alen = array.length;
-            if (alen <=1 || offset1 >= alen || offset2 >= alen) return;
+            if (alen <= 1 || offset1 >= alen || offset2 >= alen) return;
             if (offset1 < 0) offset1 = 0;
             if (offset2 < 0) offset2 = 0;
             len = Math.min(Math.min(len, alen - offset1), alen - offset2);
@@ -1456,7 +1455,7 @@ public enum ArrayUtil {
     }
 
     public static void swapByte(byte[] array, int offset1, int offset2) {
-        if (offset1==offset2)
+        if (offset1 == offset2)
             return;
         byte aux = array[offset1];
         array[offset1] = array[offset2];
@@ -1464,7 +1463,7 @@ public enum ArrayUtil {
     }
 
     public static void swapLong(long[] array, int offset1, int offset2) {
-        if (offset1==offset2)
+        if (offset1 == offset2)
             return;
         long aux = array[offset1];
         array[offset1] = array[offset2];
@@ -1472,7 +1471,7 @@ public enum ArrayUtil {
     }
 
     public static void swapInt(int[] array, int offset1, int offset2) {
-        if (offset1==offset2)
+        if (offset1 == offset2)
             return;
         int aux = array[offset1];
         array[offset1] = array[offset2];
@@ -1480,7 +1479,7 @@ public enum ArrayUtil {
     }
 
     public static void swapDouble(double[] array, int offset1, int offset2) {
-        if (offset1==offset2)
+        if (offset1 == offset2)
             return;
         double aux = array[offset1];
         array[offset1] = array[offset2];
@@ -1488,7 +1487,7 @@ public enum ArrayUtil {
     }
 
     public static void swapFloat(float[] array, int offset1, int offset2) {
-        if (offset1==offset2)
+        if (offset1 == offset2)
             return;
         float aux = array[offset1];
         array[offset1] = array[offset2];
@@ -1496,7 +1495,7 @@ public enum ArrayUtil {
     }
 
     public static void swapBool(boolean[] array, int offset1, int offset2) {
-        if (offset1==offset2)
+        if (offset1 == offset2)
             return;
         boolean aux = array[offset1];
         array[offset1] = array[offset2];
@@ -1504,7 +1503,7 @@ public enum ArrayUtil {
     }
 
     public static void swapObj(Object[] o, int a, int b) {
-        if (a==b)
+        if (a == b)
             return;
         Object aux = o[a];
         o[a] = o[b];
@@ -1512,7 +1511,7 @@ public enum ArrayUtil {
     }
 
     public static void swapObjFloat(Object[] o, float[] f, int a, int b) {
-        if (a==b)  return;
+        if (a == b) return;
 
         Object ox = o[a];
         o[a] = o[b];
@@ -1522,8 +1521,9 @@ public enum ArrayUtil {
         f[a] = f[b];
         f[b] = fx;
     }
+
     public static void swapObjShort(Object[] o, short[] f, int a, int b) {
-        if (a==b)  return;
+        if (a == b) return;
 
         Object ox = o[a];
         o[a] = o[b];
@@ -1533,8 +1533,9 @@ public enum ArrayUtil {
         f[a] = f[b];
         f[b] = fx;
     }
+
     public static void swapObjInt(Object[] o, int[] f, int a, int b) {
-        if (a==b)  return;
+        if (a == b) return;
 
         Object ox = o[a];
         o[a] = o[b];
@@ -1581,7 +1582,7 @@ public enum ArrayUtil {
         if (len == 1) swapLong(array, offset1, offset2);
         else {
             int alen = array.length;
-            if (alen <=1 || offset1 >= alen || offset2 >= alen) return;
+            if (alen <= 1 || offset1 >= alen || offset2 >= alen) return;
             if (offset1 < 0) offset1 = 0;
             if (offset2 < 0) offset2 = 0;
             len = Math.min(Math.min(len, alen - offset1), alen - offset2);
@@ -1594,7 +1595,7 @@ public enum ArrayUtil {
         if (len == 1) swapInt(array, offset1, offset2);
         else {
             int alen = array.length;
-            if (alen <=1 || offset1 >= alen || offset2 >= alen) return;
+            if (alen <= 1 || offset1 >= alen || offset2 >= alen) return;
             if (offset1 < 0) offset1 = 0;
             if (offset2 < 0) offset2 = 0;
             len = Math.min(Math.min(len, alen - offset1), alen - offset2);
@@ -1607,7 +1608,7 @@ public enum ArrayUtil {
         if (len == 1) swapShort(array, offset1, offset2);
         else {
             int alen = array.length;
-            if (alen <=1 || offset1 >= alen || offset2 >= alen) return;
+            if (alen <= 1 || offset1 >= alen || offset2 >= alen) return;
             if (offset1 < 0) offset1 = 0;
             if (offset2 < 0) offset2 = 0;
             len = Math.min(Math.min(len, alen - offset1), alen - offset2);
@@ -1753,7 +1754,7 @@ public enum ArrayUtil {
         if (len == 1) swapObj(array, offset1, offset2);
         else {
             int alen = array.length;
-            if (alen <=1 || offset1 >= alen || offset2 >= alen) return;
+            if (alen <= 1 || offset1 >= alen || offset2 >= alen) return;
             if (offset1 < 0) offset1 = 0;
             if (offset2 < 0) offset2 = 0;
             len = Math.min(Math.min(len, alen - offset1), alen - offset2);
@@ -2320,8 +2321,7 @@ public enum ArrayUtil {
         if (startIndex < 0) startIndex = 0;
         if (objectToFind == null) {
             return IntStream.range(startIndex, array.length).filter(i -> array[i] == null).findFirst().orElse(INDEX_NOT_FOUND);
-        }
-        else {
+        } else {
             return IntStream.range(startIndex, array.length).filter(i -> objectToFind.equals(array[i])).findFirst().orElse(INDEX_NOT_FOUND);
         }
     }
@@ -6339,13 +6339,16 @@ public enum ArrayUtil {
         for (int i = array.length; i > 1; i--)
             swapObj(array, i - 1, random.nextInt(i));
     }
-    /** from,to is an inclusive range which is non-standard wrt the other shuffle methods */
+
+    /**
+     * from,to is an inclusive range which is non-standard wrt the other shuffle methods
+     */
     public static void shuffle(int from, int to, Random random, IntIntProcedure swapper) {
-        int range = 1+(to - from);
+        int range = 1 + (to - from);
         for (int i = to; i > from; i--) {
             int a = i - 1;
             int b = random.nextInt(range) + from;
-            if (a!=b)
+            if (a != b)
                 swapper.value(a, b);
         }
     }
@@ -6555,7 +6558,6 @@ public enum ArrayUtil {
     }
 
 
-
     /**
      * Sorts the specified range of elements using the specified swapper and according to the order induced by the specified
      * comparator using mergesort.
@@ -6624,7 +6626,6 @@ public enum ArrayUtil {
         }
         return from;
     }
-
 
 
     public static void shuffle(int[] array, Random random) {
@@ -6710,68 +6711,154 @@ public enum ArrayUtil {
         };
     }
 
-    /** simple byte[] interner for low-count elements */
+    /**
+     * simple byte[] interner for low-count elements
+     */
     public static byte[] intern(byte[] map) {
+        byte[] result = map;
+        boolean finished = false;
         switch (map.length) {
-            case 0: return ArrayUtil.EMPTY_BYTE_ARRAY;
+            case 0:
+                result = ArrayUtil.EMPTY_BYTE_ARRAY;
+                break;
             case 1: {
                 switch (map[0]) {
-                    case 0: return BYTE_ZERO;
-                    case 1: return BYTE_ONE;
-                    case 2: return BYTE_TWO;
-                    case 3: return BYTE_THREE;
+                    case 0:
+                        result = BYTE_ZERO;
+                        finished = true;
+                        break;
+                    case 1:
+                        result = BYTE_ONE;
+                        finished = true;
+                        break;
+                    case 2:
+                        result = BYTE_TWO;
+                        finished = true;
+                        break;
+                    case 3:
+                        result = BYTE_THREE;
+                        finished = true;
+                        break;
                 }
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
             }
             case 2: {
                 switch (map[0]) {
-                    case 0: switch (map[1]) {
-                        case 0:
-                            return BYTE_ZERO_ZERO;
-                        case 1:
-                            return BYTE_ZERO_ONE;
-                    }
-                    case 1: switch (map[1]) {
-                        case 0:
-                            return BYTE_ONE_ZERO;
-                        case 1:
-                            return BYTE_ONE_ONE;
-                        case 2:
-                            return BYTE_ONE_TWO;
-                        case -1:
-                            return BYTE_ONE_NEGONE;
-                        case -2:
-                            return BYTE_ONE_NEGTWO;
-                    }
-                    case -1: switch (map[1]) {
-                        case 1:
-                            return BYTE_NEGONE_ONE;
-                        case 2:
-                            return BYTE_NEGONE_TWO;
-                        case -1:
-                            return BYTE_NEGONE_NEGONE;
-                        case -2:
-                            return BYTE_NEGONE_NEGTWO;
-                    }
-                    case 2: switch (map[1]) {
-                        case 1:
-                            return BYTE_TWO_ONE;
-                        case 2:
-                            return BYTE_TWO_TWO;
-                        case -1:
-                            return BYTE_TWO_NEGONE;
-                        case -2:
-                            return BYTE_TWO_NEGTWO;
-                    }
+                    case 0:
+                        switch (map[1]) {
+                            case 0:
+                                result = BYTE_ZERO_ZERO;
+                                finished = true;
+                                break;
+                            case 1:
+                                result = BYTE_ZERO_ONE;
+                                finished = true;
+                                break;
+                        }
+                        if (finished) break;
+                        if (finished) break;
+                    case 1:
+                        switch (map[1]) {
+                            case 0:
+                                result = BYTE_ONE_ZERO;
+                                finished = true;
+                                break;
+                            case 1:
+                                result = BYTE_ONE_ONE;
+                                finished = true;
+                                break;
+                            case 2:
+                                result = BYTE_ONE_TWO;
+                                finished = true;
+                                break;
+                            case -1:
+                                result = BYTE_ONE_NEGONE;
+                                finished = true;
+                                break;
+                            case -2:
+                                result = BYTE_ONE_NEGTWO;
+                                finished = true;
+                                break;
+                        }
+                        if (finished) break;
+                        if (finished) break;
+                        if (finished) break;
+                        if (finished) break;
+                        if (finished) break;
+                    case -1:
+                        switch (map[1]) {
+                            case 1:
+                                result = BYTE_NEGONE_ONE;
+                                finished = true;
+                                break;
+                            case 2:
+                                result = BYTE_NEGONE_TWO;
+                                finished = true;
+                                break;
+                            case -1:
+                                result = BYTE_NEGONE_NEGONE;
+                                finished = true;
+                                break;
+                            case -2:
+                                result = BYTE_NEGONE_NEGTWO;
+                                finished = true;
+                                break;
+                        }
+                        if (finished) break;
+                        if (finished) break;
+                        if (finished) break;
+                        if (finished) break;
+                    case 2:
+                        switch (map[1]) {
+                            case 1:
+                                result = BYTE_TWO_ONE;
+                                finished = true;
+                                break;
+                            case 2:
+                                result = BYTE_TWO_TWO;
+                                finished = true;
+                                break;
+                            case -1:
+                                result = BYTE_TWO_NEGONE;
+                                finished = true;
+                                break;
+                            case -2:
+                                result = BYTE_TWO_NEGTWO;
+                                finished = true;
+                                break;
+                        }
+                        if (finished) break;
+                        if (finished) break;
+                        if (finished) break;
+                        if (finished) break;
                 }
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
             }
         }
 
-        return map;
+        return result;
     }
 
     public static boolean equalsIdentity(Object[] x, Object[] y) {
         if (Arrays.equals(x, y)) return true;
-        if (x.length!=y.length) return false;
+        if (x.length != y.length) return false;
         return IntStream.range(0, x.length).noneMatch(i -> x[i] != y[i]);
     }
 
@@ -6789,7 +6876,7 @@ public enum ArrayUtil {
     }
 
     public static boolean containsIdentity(Object[] xx, Object x) {
-        return indexOfInstance(xx,x)!=-1;
+        return indexOfInstance(xx, x) != -1;
     }
 
     /**

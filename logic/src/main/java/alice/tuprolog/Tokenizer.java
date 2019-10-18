@@ -161,6 +161,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
     }
 
     Token readNextToken() throws IOException, InvalidTermException {
+        Token result;
         Tokenizer other = this;
         while (true) {
             int typea;
@@ -170,193 +171,226 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                 svala = other.pushBack2.svala;
                 other.pushBack2 = null;
             } else {
-            /*Castagna 06/2011*/
-                
+                /*Castagna 06/2011*/
+
                 typea = other.tokenConsume();
-            /**/
+                /**/
                 svala = other.sval;
             }
 
-            
-            
-            
+
             while (Tokenizer.isWhite(typea)) {
-        	/*Castagna 06/2011*/
-                
+                /*Castagna 06/2011*/
+
                 typea = other.tokenConsume();
-            /**/
+                /**/
                 svala = other.sval;
             }
 
-            
-            
+
             if (typea == '%') {
                 do {
-            	/*Castagna 06/2011*/
-                    
+                    /*Castagna 06/2011*/
+
                     typea = other.tokenConsume();
-                /**/
+                    /**/
                 } while (typea != '\r' && typea != '\n' && typea != TT_EOF);
-            /*Castagna 06/2011*/
-                
-                other.tokenPushBack();  
-            /**/
+                /*Castagna 06/2011*/
+
+                other.tokenPushBack();
+                /**/
                 continue;
             }
 
-            
+
             if (typea == '/') {
-        	/*Castagna 06/2011*/
-                
+                /*Castagna 06/2011*/
+
                 int typeb = other.tokenConsume();
-        	/**/
+                /**/
                 if (typeb == '*') {
                     do {
                         typea = '*';
-                	/*Castagna 06/2011*/
-                        
+                        /*Castagna 06/2011*/
+
                         typeb = other.tokenConsume();
                         if (typea == -1 && typeb == -1)
                             throw new InvalidTermException("Invalid multi-line comment statement");
-                    /**/
+                        /**/
                     } while (typea != '*' || typeb != '/');
                     continue;
                 } else {
-            	/*Castagna 06/2011*/
-                    
+                    /*Castagna 06/2011*/
+
                     other.tokenPushBack();
-            	/**/
+                    /**/
                 }
             }
 
-        /*Castagna 06/2011*/
-            
+            /*Castagna 06/2011*/
+
             other.tokenStart = other.tokenOffset - other.tokenLength + 1;
-        /**/
+            /**/
 
-            
-            if (typea == TT_EOF) return new Token("", Tokenizer.EOF);
-            if (typea == '(') return new Token("(", Tokenizer.LPAR);
-            if (typea == ')') return new Token(")", Tokenizer.RPAR);
-            if (typea == '{') return new Token("{", Tokenizer.LBRA2);
-            if (typea == '}') return new Token("}", Tokenizer.RBRA2);
-            if (typea == '[') return new Token("[", Tokenizer.LBRA);
-            if (typea == ']') return new Token("]", Tokenizer.RBRA);
-            if (typea == '|') return new Token("|", Tokenizer.BAR);
 
-            if (typea == '!') return new Token("!", Tokenizer.ATOM);
-            if (typea == ',') return new Token(",", Tokenizer.OPERATOR);
+            if (typea == TT_EOF) {
+                result = new Token("", Tokenizer.EOF);
+                break;
+            }
+            if (typea == '(') {
+                result = new Token("(", Tokenizer.LPAR);
+                break;
+            }
+            if (typea == ')') {
+                result = new Token(")", Tokenizer.RPAR);
+                break;
+            }
+            if (typea == '{') {
+                result = new Token("{", Tokenizer.LBRA2);
+                break;
+            }
+            if (typea == '}') {
+                result = new Token("}", Tokenizer.RBRA2);
+                break;
+            }
+            if (typea == '[') {
+                result = new Token("[", Tokenizer.LBRA);
+                break;
+            }
+            if (typea == ']') {
+                result = new Token("]", Tokenizer.RBRA);
+                break;
+            }
+            if (typea == '|') {
+                result = new Token("|", Tokenizer.BAR);
+                break;
+            }
 
-            if (typea == '.') { 
-        	/*Castagna 06/2011*/
-                
+            if (typea == '!') {
+                result = new Token("!", Tokenizer.ATOM);
+                break;
+            }
+            if (typea == ',') {
+                result = new Token(",", Tokenizer.OPERATOR);
+                break;
+            }
+
+            if (typea == '.') {
+                /*Castagna 06/2011*/
+
                 int typeb = other.tokenConsume();
-        	/**/
-                if (Tokenizer.isWhite(typeb) || typeb == '%' || typeb == StreamTokenizer.TT_EOF)
-                    return new Token(".", Tokenizer.END);
-                else
-            	/*Castagna 06/2011*/
-                    
+                /**/
+                if (Tokenizer.isWhite(typeb) || typeb == '%' || typeb == StreamTokenizer.TT_EOF) {
+                    result = new Token(".", Tokenizer.END);
+                    break;
+                } else
+                    /*Castagna 06/2011*/
+
                     other.tokenPushBack();
-            	/**/
+                /**/
             }
 
             boolean isNumber = false;
 
-            
+
             if (typea == TT_WORD) {
                 char firstChar = svala.charAt(0);
-                
-                if (Character.isUpperCase(firstChar) || '_' == firstChar)
-                    return new Token(svala, Tokenizer.VARIABLE);
 
-                else if (firstChar >= '0' && firstChar <= '9')    
-                    isNumber = true;                            
+                if (Character.isUpperCase(firstChar) || '_' == firstChar) {
+                    result = new Token(svala, Tokenizer.VARIABLE);
+                    break;
+                } else if (firstChar >= '0' && firstChar <= '9')
+                    isNumber = true;
 
-                else {                                            
-            	/*Castagna 06/2011*/
-                    
-                    
-                    int typeb = other.tokenConsume();                    
-                    other.tokenPushBack();                            
-            	/**/
-                    if (typeb == '(')
-                        return new Token(svala, Tokenizer.ATOM | Tokenizer.FUNCTOR);
-                    if (Tokenizer.isWhite(typeb))
-                        return new Token(svala, Tokenizer.ATOM | Tokenizer.OPERATOR);
-                    return new Token(svala, Tokenizer.ATOM);
+                else {
+                    /*Castagna 06/2011*/
+
+
+                    int typeb = other.tokenConsume();
+                    other.tokenPushBack();
+                    /**/
+                    if (typeb == '(') {
+                        result = new Token(svala, Tokenizer.ATOM | Tokenizer.FUNCTOR);
+                        break;
+                    }
+                    if (Tokenizer.isWhite(typeb)) {
+                        result = new Token(svala, Tokenizer.ATOM | Tokenizer.OPERATOR);
+                        break;
+                    }
+                    result = new Token(svala, Tokenizer.ATOM);
+                    break;
                 }
             }
 
-            
+
             if (typea == '\'' || typea == '\"' || typea == '`') {
                 int qType = typea;
                 StringBuilder quote = new StringBuilder();
-                while (true) { 
-            	/*Castagna 06/2011*/
-                    
+                while (true) {
+                    /*Castagna 06/2011*/
+
                     typea = other.tokenConsume();
-            	/**/
+                    /**/
                     svala = other.sval;
-                    
+
                     if (typea == '\\') {
-                	/*Castagna 06/2011*/
-                        
+                        /*Castagna 06/2011*/
+
                         int typeb = other.tokenConsume();
-                	/**/
-                        if (typeb == '\n') 
+                        /**/
+                        if (typeb == '\n')
                             continue;
                         if (typeb == '\r') {
-                    	/*Castagna 06/2011*/
-                            
+                            /*Castagna 06/2011*/
+
                             int typec = other.tokenConsume();
-                    	/**/
+                            /**/
                             if (typec == '\n')
-                                continue; 
-                    	/*Castagna 06/2011*/
-                            
+                                continue;
+                            /*Castagna 06/2011*/
+
                             other.tokenPushBack();
-                    	/**/
-                            continue; 
+                            /**/
+                            continue;
                         }
-                    /*Castagna 06/2011*/
-                        
-                        other.tokenPushBack(); 
-                    /**/
+                        /*Castagna 06/2011*/
+
+                        other.tokenPushBack();
+                        /**/
                     }
-                    
+
                     if (typea == qType) {
-                	/*Castagna 06/2011*/
-                        
+                        /*Castagna 06/2011*/
+
                         int typeb = other.tokenConsume();
-                	/**/
-                        if (typeb == qType) { 
+                        /**/
+                        if (typeb == qType) {
                             quote.append((char) qType);
                             continue;
                         } else {
-                    	/*Castagna 06/2011*/
-                            
+                            /*Castagna 06/2011*/
+
                             other.tokenPushBack();
-                    	/**/
-                            break; 
+                            /**/
+                            break;
                         }
                     }
                     if (typea == '\n' || typea == '\r')
-                	/*Castagna 06/2011*/
-                        
+                        /*Castagna 06/2011*/
+
                         throw new InvalidTermException("Line break in quote not allowed");
-                	/**/
+                    /**/
 
                     if (svala != null)
                         quote.append(svala);
                     else
-                /*Castagna 06/2011*/ {
+                        /*Castagna 06/2011*/ {
                         if (typea < 0)
                             throw new InvalidTermException("Invalid string");
 
                         quote.append((char) typea);
                     }
-                /**/
+                    /**/
                 }
 
                 String quoteBody = quote.toString();
@@ -365,172 +399,177 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
                 if (qType == SQ_SEQUENCE) {
                     if (Parser.isAtom(quoteBody))
                         qType = ATOM;
-                /*Castagna 06/2011*/
-                    
-                    
-                    int typeb = other.tokenConsume(); 
-                    other.tokenPushBack();                    
-                /**/
-                    if (typeb == '(')
-                        return new Token(quoteBody, qType | FUNCTOR);
+                    /*Castagna 06/2011*/
+
+
+                    int typeb = other.tokenConsume();
+                    other.tokenPushBack();
+                    /**/
+                    if (typeb == '(') {
+                        result = new Token(quoteBody, qType | FUNCTOR);
+                        break;
+                    }
                 }
-                return new Token(quoteBody, qType);
+                result = new Token(quoteBody, qType);
+                break;
             }
 
-            
+
             if (Arrays.binarySearch(Tokenizer.GRAPHIC_CHARS, (char) typea) >= 0) {
 
-            /*Castagna 06/2011*/
-                
-                
-        	/**/
+                /*Castagna 06/2011*/
+
+
+                /**/
                 StringBuilder symbols = new StringBuilder();
                 int typeb = typea;
-                
+
                 while (Arrays.binarySearch(Tokenizer.GRAPHIC_CHARS, (char) typeb) >= 0) {
                     symbols.append((char) typeb);
-                /*Castagna 06/2011*/
-                    
+                    /*Castagna 06/2011*/
+
                     typeb = other.tokenConsume();
-                /**/
-                    
+                    /**/
+
                 }
-            /*Castagna 06/2011*/
-                
+                /*Castagna 06/2011*/
+
                 other.tokenPushBack();
-            /**/
-
-                
+                /**/
 
 
-
-
-
-
-
-
-
-
-
-
-                return new Token(symbols.toString(), Tokenizer.OPERATOR);
+                result = new Token(symbols.toString(), Tokenizer.OPERATOR);
+                break;
             }
 
-            
-            if (isNumber) {
-                try { 
 
-                    
+            if (isNumber) {
+                try {
+
+
                     if (svala.startsWith("0")) {
-                        if (svala.indexOf('b') == 1)
-                            return new Token(String.valueOf(java.lang.Long.parseLong(svala.substring(2), 2)), Tokenizer.INTEGER); 
-                        if (svala.indexOf('o') == 1)
-                            return new Token(String.valueOf(java.lang.Long.parseLong(svala.substring(2), 8)), Tokenizer.INTEGER); 
-                        if (svala.indexOf('x') == 1)
-                            return new Token(String.valueOf(java.lang.Long.parseLong(svala.substring(2), 16)), Tokenizer.INTEGER); 
+                        if (svala.indexOf('b') == 1) {
+                            result = new Token(String.valueOf(Long.parseLong(svala.substring(2), 2)), Tokenizer.INTEGER);
+                            break;
+                        }
+                        if (svala.indexOf('o') == 1) {
+                            result = new Token(String.valueOf(Long.parseLong(svala.substring(2), 8)), Tokenizer.INTEGER);
+                            break;
+                        }
+                        if (svala.indexOf('x') == 1) {
+                            result = new Token(String.valueOf(Long.parseLong(svala.substring(2), 16)), Tokenizer.INTEGER);
+                            break;
+                        }
                     }
 
-                    
-                /*Castagna 06/2011*/
-                    
+
+                    /*Castagna 06/2011*/
+
                     int typeb = other.tokenConsume();
-                /**/
+                    /**/
                     String svalb = other.sval;
 
-                    
-                    if (typeb != '.' && typeb != '\'') { 
-                	 /*Castagna 06/2011*/
-                        
-                        other.tokenPushBack(); 
-                	/**/
-                        return new Token(String.valueOf(java.lang.Long.parseLong(svala)), Tokenizer.INTEGER);
+
+                    if (typeb != '.' && typeb != '\'') {
+                        /*Castagna 06/2011*/
+
+                        other.tokenPushBack();
+                        /**/
+                        result = new Token(String.valueOf(Long.parseLong(svala)), Tokenizer.INTEGER);
+                        break;
                     }
 
-                    
+
                     if (typeb == '\'' && "0".equals(svala)) {
-                	 /*Castagna 06/2011*/
-                        
-                        int typec = other.tokenConsume(); 
-                	/**/
+                        /*Castagna 06/2011*/
+
+                        int typec = other.tokenConsume();
+                        /**/
                         String svalc = other.sval;
                         int intVal;
-                        if ((intVal = isCharacterCodeConstantToken(typec, svalc)) != -1)
-                            return new Token(String.valueOf(intVal), Tokenizer.INTEGER);
+                        if ((intVal = isCharacterCodeConstantToken(typec, svalc)) != -1) {
+                            result = new Token(String.valueOf(intVal), Tokenizer.INTEGER);
+                            break;
+                        }
 
-                        
-                    /*Castagna 06/2011*/
-                        
+
+                        /*Castagna 06/2011*/
+
                         throw new InvalidTermException("Character code constant starting with 0'<X> cannot be recognized.");
-                    /**/
+                        /**/
                     }
 
-                    
-                    java.lang.Long.parseLong(svala); 
 
-                    
+                    Long.parseLong(svala);
+
+
                     if (typeb != '.')
-                	 /*Castagna 06/2011*/
-                        
-                        throw new InvalidTermException("A number starting with 0-9 cannot be rcognized as an int and does not have a fraction '.'");
-                	/**/
+                        /*Castagna 06/2011*/
 
-                    
-                /*Castagna 06/2011*/
-                    
+                        throw new InvalidTermException("A number starting with 0-9 cannot be rcognized as an int and does not have a fraction '.'");
+                    /**/
+
+
+                    /*Castagna 06/2011*/
+
                     int typec = other.tokenConsume();
-                /**/
+                    /**/
                     String svalc = other.sval;
 
-                    
-                    if (typec != TT_WORD) { 
-                	/*Castagna 06/2011*/
-                        
-                        other.tokenPushBack(); 
-                	/**/
-                        other.pushBack2 = new PushBack(typeb, svalb); 
-                        return new Token(svala, INTEGER); 
+
+                    if (typec != TT_WORD) {
+                        /*Castagna 06/2011*/
+
+                        other.tokenPushBack();
+                        /**/
+                        other.pushBack2 = new PushBack(typeb, svalb);
+                        result = new Token(svala, INTEGER);
+                        break;
                     }
 
-                    
+
                     int exponent = svalc.indexOf('E');
                     if (exponent == -1)
                         exponent = svalc.indexOf('e');
 
-                    if (exponent >= 1) {                                  
-                        if (exponent == svalc.length() - 1) {             
-                    	/*Castagna 06/2011*/
-                            
+                    if (exponent >= 1) {
+                        if (exponent == svalc.length() - 1) {
+                            /*Castagna 06/2011*/
+
                             int typeb2 = other.tokenConsume();
-                    	/**/
+                            /**/
                             if (typeb2 == '+' || typeb2 == '-') {
-                        	/*Castagna 06/2011*/
-                                
+                                /*Castagna 06/2011*/
+
                                 int typec2 = other.tokenConsume();
-                        	/**/
+                                /**/
                                 String svalc2 = other.sval;
                                 if (typec2 == TT_WORD) {
-                                    
-                                    java.lang.Long.parseLong(svalc.substring(0, exponent));
+
+                                    Long.parseLong(svalc.substring(0, exponent));
                                     Integer.parseInt(svalc2);
-                                    return new Token(svala + '.' + svalc + (char) typeb2 + svalc2, Tokenizer.FLOAT);
+                                    result = new Token(svala + '.' + svalc + (char) typeb2 + svalc2, Tokenizer.FLOAT);
+                                    break;
                                 }
                             }
                         }
                     }
-                    
-                    java.lang.Double.parseDouble(svala + '.' + svalc);
-                    return new Token(svala + '.' + svalc, Tokenizer.FLOAT);
+
+                    Double.parseDouble(svala + '.' + svalc);
+                    result = new Token(svala + '.' + svalc, Tokenizer.FLOAT);
+                    break;
 
                 } catch (NumberFormatException e) {
-                    
-            	/*Castagna 06/2011*/
-                    
+
+                    /*Castagna 06/2011*/
+
                     throw new InvalidTermException("A term starting with 0-9 cannot be parsed as a number");
-            	/**/
+                    /**/
                 }
             }
             throw new InvalidTermException("Unknown Unicode character: " + typea + "  (" + svala + ')');
         }
+        return result;
     }
 
     /*Castagna 06/2011*/

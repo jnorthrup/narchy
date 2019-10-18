@@ -343,146 +343,182 @@ public class GameUtil {
      * slower noticing monsters.
      */
     static boolean FindTarget(edict_t self) {
+        boolean result = true;
+        boolean finished = false;
 
         if ((self.monsterinfo.aiflags & Defines.AI_GOOD_GUY) != 0) {
             if (self.goalentity != null && self.goalentity.inuse
                     && self.goalentity.classname != null) {
-                if ("target_actor".equals(self.goalentity.classname))
-                    return false;
+                if ("target_actor".equals(self.goalentity.classname)) {
+                    result = false;
+                    finished = true;
+                }
             }
-            
-            
-            return false;
-        }
-
-        
-        if ((self.monsterinfo.aiflags & Defines.AI_COMBAT_POINT) != 0)
-            return false;
-
-
-        boolean heardit = false;
-        edict_t client;
-        if ((GameBase.level.sight_entity_framenum >= (GameBase.level.framenum - 1))
-                && 0 == (self.spawnflags & 1)) {
-            client = GameBase.level.sight_entity;           
-            if (client.enemy == self.enemy)             
-                return false;            
-        } else if (GameBase.level.sound_entity_framenum >= (GameBase.level.framenum - 1)) {
-            client = GameBase.level.sound_entity;
-            heardit = true;
-        } else if (null != (self.enemy)
-                && (GameBase.level.sound2_entity_framenum >= (GameBase.level.framenum - 1))
-                && 0 != (self.spawnflags & 1)) {
-            client = GameBase.level.sound2_entity;
-            heardit = true;
-        } else {
-            client = GameBase.level.sight_client;
-            if (client == null)
-                return false; 
-        }
-
-        
-        if (!client.inuse)
-            return false;
-
-        if (client.client != null) {
-            if ((client.flags & Defines.FL_NOTARGET) != 0)
-                return false;
-        } else if ((client.svflags & Defines.SVF_MONSTER) != 0) {
-            if (client.enemy == null)
-                return false;
-            if ((client.enemy.flags & Defines.FL_NOTARGET) != 0)
-                return false;
-        } else if (heardit) {
-            if ((client.owner.flags & Defines.FL_NOTARGET) != 0)
-                return false;
-        } else
-            return false;
-
-        if (!heardit) {
-            int r = range(self, client);
-
-            if (r == Defines.RANGE_FAR)
-                return false;
-
-            
-            
-            
-            if (client.light_level <= 5)
-                return false;
-
-            if (!visible(self, client)) 
-                return false;
-           
-
-            if (r == Defines.RANGE_NEAR) {
-                if (client.show_hostile < GameBase.level.time
-                        && !infront(self, client))               
-                    return false;                
-            } else if (r == Defines.RANGE_MID) {
-                if (!infront(self, client)) 
-                    return false;               
+            if (!finished) {
+                result = false;
+                finished = true;
             }
 
-            if (client == self.enemy)
-                return true; 
-            
-            self.enemy = client;
 
-            if (!"player_noise".equals(self.enemy.classname)) {
-                self.monsterinfo.aiflags &= ~Defines.AI_SOUND_TARGET;
+        }
+        if (!finished) {
+            if ((self.monsterinfo.aiflags & Defines.AI_COMBAT_POINT) != 0) {
+                result = false;
+            } else {
+                boolean heardit = false;
+                edict_t client = null;
+                if ((GameBase.level.sight_entity_framenum >= (GameBase.level.framenum - 1))
+                        && 0 == (self.spawnflags & 1)) {
+                    client = GameBase.level.sight_entity;
+                    if (client.enemy == self.enemy) {
+                        result = false;
+                        finished = true;
+                    }
+                } else if (GameBase.level.sound_entity_framenum >= (GameBase.level.framenum - 1)) {
+                    client = GameBase.level.sound_entity;
+                    heardit = true;
+                } else if (null != (self.enemy)
+                        && (GameBase.level.sound2_entity_framenum >= (GameBase.level.framenum - 1))
+                        && 0 != (self.spawnflags & 1)) {
+                    client = GameBase.level.sound2_entity;
+                    heardit = true;
+                } else {
+                    client = GameBase.level.sight_client;
+                    if (client == null) {
+                        result = false;
+                        finished = true;
+                    }
+                }
+                if (!finished) {
+                    if (!client.inuse) {
+                        result = false;
+                    } else {
+                        if (client.client != null) {
+                            if ((client.flags & Defines.FL_NOTARGET) != 0) {
+                                result = false;
+                                finished = true;
+                            }
+                        } else if ((client.svflags & Defines.SVF_MONSTER) != 0) {
+                            if (client.enemy == null) {
+                                result = false;
+                                finished = true;
+                            } else if ((client.enemy.flags & Defines.FL_NOTARGET) != 0) {
+                                result = false;
+                                finished = true;
+                            }
+                        } else if (heardit) {
+                            if ((client.owner.flags & Defines.FL_NOTARGET) != 0) {
+                                result = false;
+                                finished = true;
+                            }
+                        } else {
+                            result = false;
+                            finished = true;
+                        }
+                        if (!finished) {
+                            if (!heardit) {
+                                int r = range(self, client);
 
-                if (self.enemy.client == null) {
-                    self.enemy = self.enemy.enemy;
-                    if (self.enemy.client == null) {
-                        self.enemy = null;
-                        return false;
+                                if (r == Defines.RANGE_FAR) {
+                                    result = false;
+                                    finished = true;
+                                } else if (client.light_level <= 5) {
+                                    result = false;
+                                    finished = true;
+                                } else if (!visible(self, client)) {
+                                    result = false;
+                                    finished = true;
+                                } else {
+                                    if (r == Defines.RANGE_NEAR) {
+                                        if (client.show_hostile < GameBase.level.time
+                                                && !infront(self, client)) {
+                                            result = false;
+                                            finished = true;
+                                        }
+                                    } else if (r == Defines.RANGE_MID) {
+                                        if (!infront(self, client)) {
+                                            result = false;
+                                            finished = true;
+                                        }
+                                    }
+                                    if (!finished) {
+                                        if (client == self.enemy) {
+                                            finished = true;
+                                        } else {
+                                            self.enemy = client;
+                                            if (!"player_noise".equals(self.enemy.classname)) {
+                                                self.monsterinfo.aiflags &= ~Defines.AI_SOUND_TARGET;
+
+                                                if (self.enemy.client == null) {
+                                                    self.enemy = self.enemy.enemy;
+                                                    if (self.enemy.client == null) {
+                                                        self.enemy = null;
+                                                        result = false;
+                                                        finished = true;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+
+                            } else {
+
+                                if ((self.spawnflags & 1) != 0) {
+                                    if (!visible(self, client)) {
+                                        result = false;
+                                        finished = true;
+                                    }
+                                } else if (!game_import_t.inPHS(self.s.origin, client.s.origin)) {
+                                    result = false;
+                                    finished = true;
+                                }
+                                if (!finished) {
+                                    float[] temp = {0, 0, 0};
+                                    Math3D.VectorSubtract(client.s.origin, self.s.origin, temp);
+
+                                    if (Math3D.VectorLength(temp) > 1000) {
+                                        result = false;
+                                        finished = true;
+                                    } else {
+                                        if (client.areanum != self.areanum)
+                                            if (!game_import_t.AreasConnected(self.areanum, client.areanum)) {
+                                                result = false;
+                                                finished = true;
+                                            }
+                                        if (!finished) {
+                                            self.ideal_yaw = Math3D.vectoyaw(temp);
+                                            M.M_ChangeYaw(self);
+                                            self.monsterinfo.aiflags |= Defines.AI_SOUND_TARGET;
+                                            if (client == self.enemy) {
+                                                finished = true;
+                                            } else {
+                                                self.enemy = client;
+                                            }
+                                        }
+                                    }
+
+
+                                }
+
+                            }
+                            if (!finished) {
+                                FoundTarget(self);
+                                if (0 == (self.monsterinfo.aiflags & Defines.AI_SOUND_TARGET)
+                                        && (self.monsterinfo.sight != null))
+                                    self.monsterinfo.sight.interact(self, self.enemy);
+                            }
+                        }
                     }
                 }
             }
-        } else {
-
-            if ((self.spawnflags & 1) != 0) {
-                if (!visible(self, client))
-                    return false;
-            } else {
-                if (!game_import_t.inPHS(self.s.origin, client.s.origin))
-                    return false;
-            }
-
-            float[] temp = {0, 0, 0};
-            Math3D.VectorSubtract(client.s.origin, self.s.origin, temp);
-
-            if (Math3D.VectorLength(temp) > 1000) 
-                return false;
 
 
-            
-            
-            if (client.areanum != self.areanum)
-                if (!game_import_t.AreasConnected(self.areanum, client.areanum))
-                    return false;
-
-            self.ideal_yaw = Math3D.vectoyaw(temp);
-            M.M_ChangeYaw(self);
-
-            
-            self.monsterinfo.aiflags |= Defines.AI_SOUND_TARGET;
-            
-            if (client == self.enemy)
-                return true; 
-             
-            self.enemy = client;             
         }
-        
-        
-        FoundTarget(self);
 
-        if (0 == (self.monsterinfo.aiflags & Defines.AI_SOUND_TARGET)
-                && (self.monsterinfo.sight != null))
-            self.monsterinfo.sight.interact(self, self.enemy);
 
-        return true;
+        return result;
     }
 
     public static void FoundTarget(edict_t self) {

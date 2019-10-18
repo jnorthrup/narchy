@@ -254,49 +254,61 @@ public class PrologCore extends Prolog implements Consumer<Task> {
 
 
     private static Term nterm(alice.tuprolog.Term t) {
+        Term result;
         if (t instanceof Var) {
-            return $.varDep(((Var) t).name());
+            result = $.varDep(((Var) t).name());
         } else {
             Struct s = (Struct) t;
             if (s.subs() > 0) {
                 switch (s.name()) {
 
                     case "-->":
-                        return theTwoArity(Op.INH, s);
+                        result = theTwoArity(Op.INH, s);
+                        break;
                     case "<->":
-                        return theTwoArity(Op.SIM, s);
+                        result = theTwoArity(Op.SIM, s);
+                        break;
 
 
                     case "==>":
-                        return theTwoArity(Op.IMPL, s);
+                        result = theTwoArity(Op.IMPL, s);
+                        break;
 
 
                     case "[":
-                        return SETi.the((nterms(s)));
+                        result = SETi.the((nterms(s)));
+                        break;
                     case "{":
-                        return SETe.the((nterms(s)));
+                        result = SETe.the((nterms(s)));
+                        break;
 
                     case "*":
-                        return PROD.the((nterms(s)));
+                        result = PROD.the((nterms(s)));
+                        break;
                     case "&&":
-                        return CONJ.the((nterms(s)));
+                        result = CONJ.the((nterms(s)));
+                        break;
                     case "||":
-                        return DISJ(nterms(s));
+                        result = DISJ(nterms(s));
+                        break;
                     case "not":
-                        return (nterm(s, 0).neg());
+                        result = (nterm(s, 0).neg());
+                        break;
 
 
                     default:
-                        return $.func(unwrapAtom(s.name()), nterms(((Struct) t).subArrayShared()));
+                        result = $.func(unwrapAtom(s.name()), nterms(((Struct) t).subArrayShared()));
+                        break;
                 }
             } else {
                 String n = s.name();
                 if (n.startsWith("'#")) {
 
-                    return $.varDep(n.substring(2, n.length() - 1));
+                    result = $.varDep(n.substring(2, n.length() - 1));
+                } else {
+                    result = $.the(unwrapAtom(n));
                 }
 
-                return $.the(unwrapAtom(n));
             }
 
 
@@ -304,6 +316,7 @@ public class PrologCore extends Prolog implements Consumer<Task> {
 //        else {
 //            throw new RuntimeException(t + " untranslated");
 //        }
+        return result;
     }
 
 

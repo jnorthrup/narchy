@@ -622,93 +622,96 @@ public final class SloppyMath {
 	 * @return The hypergeometric value
 	 */
   public static double hypergeometric(int k, int n, int r, int m) {
-    if (k < 0 || r > n || m > n || n <= 0 || m < 0 || r < 0) {
-      throw new IllegalArgumentException("Invalid hypergeometric");
-    }
+      double result = 0.0;
+      boolean finished = false;
+      if (k < 0 || r > n || m > n || n <= 0 || m < 0 || r < 0) {
+          throw new IllegalArgumentException("Invalid hypergeometric");
+      }
 
-    
-    if (m > n / 2) {
-      m = n - m;
-      k = r - k;
-    }
-    if (r > n / 2) {
-      r = n - r;
-      k = m - k;
-    }
-    if (m > r) {
-      int temp = m;
-      m = r;
-      r = temp;
-    }
-    
 
-    if (k < (m + r) - n || k > m) {
-      return 0.0;
-    }
+      if (m > n / 2) {
+          m = n - m;
+          k = r - k;
+      }
+      if (r > n / 2) {
+          r = n - r;
+          k = m - k;
+      }
+      if (m > r) {
+          int temp = m;
+          m = r;
+          r = temp;
+      }
 
-    
-    
-    
-    
-    if (r == n) {
-      if (k == m) {
-        return 1.0;
-      } else {
-        return 0.0;
-      }
-    } else if (r == n - 1) {
-      if (k == m) {
-        return (n - m) / (double) n;
-      } else if (k == m - 1) {
-        return m / (double) n;
-      } else {
-        return 0.0;
-      }
-    } else if (m == 1) {
-      if (k == 0) {
-        return (n - r) / (double) n;
-      } else if (k == 1) {
-        return r / (double) n;
-      } else {
-        return 0.0;
-      }
-    } else if (m == 0) {
-      if (k == 0) {
-        return 1.0;
-      } else {
-        return 0.0;
-      }
-    } else if (k == 0) {
-      double ans = 1.0;
-      for (int m0 = 0; m0 < m; m0++) {
-        ans *= ((n - r) - m0);
-        ans /= (n - m0);
-      }
-      return ans;
-    }
 
-    double ans = 1.0;
-    
-    
-    
-    for (int nr = n - r, n0 = n; nr > (n - r) - (m - k); nr--, n0--) {
-      
-      ans *= nr;
-      
-      ans /= n0;
-    }
-    
-    for (int k0 = 0; k0 < k; k0++) {
-      ans *= (m - k0);
-      
-      ans /= ((n - (m - k0)) + 1);
-      
-      ans *= (r - k0);
-      
-      ans /= (k0 + 1);
-      
-    }
-    return ans;
+      if (k >= (m + r) - n && k <= m) {
+          if (r == n) {
+              if (k == m) {
+                  result = 1.0;
+                  finished = true;
+              } else {
+                  finished = true;
+              }
+          } else if (r == n - 1) {
+              if (k == m) {
+                  result = (n - m) / (double) n;
+                  finished = true;
+              } else if (k == m - 1) {
+                  result = m / (double) n;
+                  finished = true;
+              } else {
+                  finished = true;
+              }
+          } else if (m == 1) {
+              if (k == 0) {
+                  result = (n - r) / (double) n;
+                  finished = true;
+              } else if (k == 1) {
+                  result = r / (double) n;
+                  finished = true;
+              } else {
+                  finished = true;
+              }
+          } else if (m == 0) {
+              if (k == 0) {
+                  result = 1.0;
+                  finished = true;
+              } else {
+                  finished = true;
+              }
+          } else if (k == 0) {
+              double ans = 1.0;
+              for (int m0 = 0; m0 < m; m0++) {
+                  ans *= ((n - r) - m0);
+                  ans /= (n - m0);
+              }
+              result = ans;
+              finished = true;
+          }
+          if (!finished) {
+              double ans = 1.0;
+              for (int nr = n - r, n0 = n; nr > (n - r) - (m - k); nr--, n0--) {
+
+                  ans *= nr;
+
+                  ans /= n0;
+              }
+              for (int k0 = 0; k0 < k; k0++) {
+                  ans *= (m - k0);
+
+                  ans /= ((n - (m - k0)) + 1);
+
+                  ans *= (r - k0);
+
+                  ans /= (k0 + 1);
+
+              }
+              result = ans;
+          }
+      }
+
+
+      return result;
   }
 
 

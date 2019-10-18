@@ -291,9 +291,7 @@ public class SV_WORLD {
             return;
 
         areanode_t node = SV_WORLD.sv_areanodes[0];
-        while (true) {
-            if (node.axis == -1)
-                break;
+        while (node.axis != -1) {
             if (ent.absmin[node.axis] > node.dist)
                 node = node.children[0];
             else if (ent.absmax[node.axis] < node.dist)

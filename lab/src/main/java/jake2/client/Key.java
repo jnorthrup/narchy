@@ -510,48 +510,49 @@ public class Key extends Globals {
 	 * Interactive line editing and console scrollback.
 	 */
 	public static void Console(int key) {
+		boolean finished = false;
 
 		switch (key) {
-			case K_KP_SLASH :
+			case K_KP_SLASH:
 				key = '/';
 				break;
-			case K_KP_MINUS :
+			case K_KP_MINUS:
 				key = '-';
 				break;
-			case K_KP_PLUS :
+			case K_KP_PLUS:
 				key = '+';
 				break;
-			case K_KP_HOME :
+			case K_KP_HOME:
 				key = '7';
 				break;
-			case K_KP_UPARROW :
+			case K_KP_UPARROW:
 				key = '8';
 				break;
-			case K_KP_PGUP :
+			case K_KP_PGUP:
 				key = '9';
 				break;
-			case K_KP_LEFTARROW :
+			case K_KP_LEFTARROW:
 				key = '4';
 				break;
-			case K_KP_5 :
+			case K_KP_5:
 				key = '5';
 				break;
-			case K_KP_RIGHTARROW :
+			case K_KP_RIGHTARROW:
 				key = '6';
 				break;
-			case K_KP_END :
+			case K_KP_END:
 				key = '1';
 				break;
-			case K_KP_DOWNARROW :
+			case K_KP_DOWNARROW:
 				key = '2';
 				break;
-			case K_KP_PGDN :
+			case K_KP_PGDN:
 				key = '3';
 				break;
-			case K_KP_INS :
+			case K_KP_INS:
 				key = '0';
 				break;
-			case K_KP_DEL :
+			case K_KP_DEL:
 				key = '.';
 				break;
 		}
@@ -559,106 +560,79 @@ public class Key extends Globals {
 		if (key == 'l') {
 			if (Globals.keydown[K_CTRL]) {
 				Cbuf.AddText("clear\n");
-				return;
+				finished = true;
 			}
 		}
+		if (!finished) {
+			if (key == K_ENTER || key == K_KP_ENTER) {
 
-		if (key == K_ENTER || key == K_KP_ENTER) {
-			
-			if (Globals.key_lines[Globals.edit_line][1] == '\\' || Globals.key_lines[Globals.edit_line][1] == '/')
-				Cbuf.AddText(
-					new String(Globals.key_lines[Globals.edit_line], 2, Lib.strlen(Globals.key_lines[Globals.edit_line]) - 2));
-			else
-				Cbuf.AddText(
-					new String(Globals.key_lines[Globals.edit_line], 1, Lib.strlen(Globals.key_lines[Globals.edit_line]) - 1));
+				if (Globals.key_lines[Globals.edit_line][1] == '\\' || Globals.key_lines[Globals.edit_line][1] == '/')
+					Cbuf.AddText(
+							new String(Globals.key_lines[Globals.edit_line], 2, Lib.strlen(Globals.key_lines[Globals.edit_line]) - 2));
+				else
+					Cbuf.AddText(
+							new String(Globals.key_lines[Globals.edit_line], 1, Lib.strlen(Globals.key_lines[Globals.edit_line]) - 1));
 
-			
-			Cbuf.AddText("\n");
-		
-			Com.Printf(new String(Globals.key_lines[Globals.edit_line], 0, Lib.strlen(Globals.key_lines[Globals.edit_line])) + '\n');
-			Globals.edit_line = (Globals.edit_line + 1) & 31;
-			history_line = Globals.edit_line;
-		
-			Globals.key_lines[Globals.edit_line][0] = ']';
-			Globals.key_linepos = 1;
-			if (Globals.cls.state == Defines.ca_disconnected)
-				SCR.UpdateScreen(); 
-			return;
-		}
 
-		if (key == K_TAB) {
-			
-			CompleteCommand();
-			return;
-		}
+				Cbuf.AddText("\n");
 
-		if ((key == K_BACKSPACE) || (key == K_LEFTARROW) || (key == K_KP_LEFTARROW) || ((key == 'h') && (Globals.keydown[K_CTRL]))) {
-			if (Globals.key_linepos > 1)
-				Globals.key_linepos--;
-			return;
-		}
+				Com.Printf(new String(Globals.key_lines[Globals.edit_line], 0, Lib.strlen(Globals.key_lines[Globals.edit_line])) + '\n');
+				Globals.edit_line = (Globals.edit_line + 1) & 31;
+				history_line = Globals.edit_line;
 
-		if ((key == K_UPARROW) || (key == K_KP_UPARROW) || ((key == 'p') && Globals.keydown[K_CTRL])) {
-			do {
-				history_line = (history_line - 1) & 31;
-			}
-			while (history_line != Globals.edit_line && Globals.key_lines[history_line][1] == 0);
-			if (history_line == Globals.edit_line)
-				history_line = (Globals.edit_line + 1) & 31;
-			
-			System.arraycopy(Globals.key_lines[history_line], 0, Globals.key_lines[Globals.edit_line], 0, Globals.key_lines[Globals.edit_line].length);
-			Globals.key_linepos = Lib.strlen(Globals.key_lines[Globals.edit_line]);
-			return;
-		}
-
-		if ((key == K_DOWNARROW) || (key == K_KP_DOWNARROW) || ((key == 'n') && Globals.keydown[K_CTRL])) {
-			if (history_line == Globals.edit_line)
-				return;
-			do {
-				history_line = (history_line + 1) & 31;
-			}
-			while (history_line != Globals.edit_line && Globals.key_lines[history_line][1] == 0);
-			if (history_line == Globals.edit_line) {
 				Globals.key_lines[Globals.edit_line][0] = ']';
 				Globals.key_linepos = 1;
-			}
-			else {
-				
+				if (Globals.cls.state == Defines.ca_disconnected)
+					SCR.UpdateScreen();
+			} else if (key == K_TAB) {
+
+				CompleteCommand();
+			} else if ((key == K_BACKSPACE) || (key == K_LEFTARROW) || (key == K_KP_LEFTARROW) || ((key == 'h') && (Globals.keydown[K_CTRL]))) {
+				if (Globals.key_linepos > 1)
+					Globals.key_linepos--;
+			} else if ((key == K_UPARROW) || (key == K_KP_UPARROW) || ((key == 'p') && Globals.keydown[K_CTRL])) {
+				do {
+					history_line = (history_line - 1) & 31;
+				}
+				while (history_line != Globals.edit_line && Globals.key_lines[history_line][1] == 0);
+				if (history_line == Globals.edit_line)
+					history_line = (Globals.edit_line + 1) & 31;
+
 				System.arraycopy(Globals.key_lines[history_line], 0, Globals.key_lines[Globals.edit_line], 0, Globals.key_lines[Globals.edit_line].length);
 				Globals.key_linepos = Lib.strlen(Globals.key_lines[Globals.edit_line]);
-			}
-			return;
-		}
+			} else if ((key == K_DOWNARROW) || (key == K_KP_DOWNARROW) || ((key == 'n') && Globals.keydown[K_CTRL])) {
+				if (history_line != Globals.edit_line) {
+					do {
+						history_line = (history_line + 1) & 31;
+					}
+					while (history_line != Globals.edit_line && Globals.key_lines[history_line][1] == 0);
+					if (history_line == Globals.edit_line) {
+						Globals.key_lines[Globals.edit_line][0] = ']';
+						Globals.key_linepos = 1;
+					} else {
 
-		if (key == K_PGUP || key == K_KP_PGUP) {
-			Globals.con.display -= 2;
-			return;
-		}
-
-		if (key == K_PGDN || key == K_KP_PGDN) {
-			Globals.con.display += 2;
-			if (Globals.con.display > Globals.con.current)
+						System.arraycopy(Globals.key_lines[history_line], 0, Globals.key_lines[Globals.edit_line], 0, Globals.key_lines[Globals.edit_line].length);
+						Globals.key_linepos = Lib.strlen(Globals.key_lines[Globals.edit_line]);
+					}
+				}
+			} else if (key == K_PGUP || key == K_KP_PGUP) {
+				Globals.con.display -= 2;
+			} else if (key == K_PGDN || key == K_KP_PGDN) {
+				Globals.con.display += 2;
+				if (Globals.con.display > Globals.con.current)
+					Globals.con.display = Globals.con.current;
+			} else if (key == K_HOME || key == K_KP_HOME) {
+				Globals.con.display = Globals.con.current - Globals.con.totallines + 10;
+			} else if (key == K_END || key == K_KP_END) {
 				Globals.con.display = Globals.con.current;
-			return;
-		}
+			} else if (key >= 32 && key <= 127) {
+				if (Globals.key_linepos < Defines.MAXCMDLINE - 1) {
+					Globals.key_lines[Globals.edit_line][Globals.key_linepos] = (byte) key;
+					Globals.key_linepos++;
+					Globals.key_lines[Globals.edit_line][Globals.key_linepos] = 0;
+				}
+			}
 
-		if (key == K_HOME || key == K_KP_HOME) {
-			Globals.con.display = Globals.con.current - Globals.con.totallines + 10;
-			return;
-		}
-
-		if (key == K_END || key == K_KP_END) {
-			Globals.con.display = Globals.con.current;
-			return;
-		}
-
-		if (key < 32 || key > 127)
-			return; 
-
-		if (Globals.key_linepos < Defines.MAXCMDLINE - 1) {
-			Globals.key_lines[Globals.edit_line][Globals.key_linepos] = (byte) key;
-			Globals.key_linepos++;
-			Globals.key_lines[Globals.edit_line][Globals.key_linepos] = 0;
 		}
 
 	}

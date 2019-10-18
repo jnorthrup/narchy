@@ -514,10 +514,13 @@ public class StreamTokenizer_s {
      */
     @SuppressWarnings("HardcodedFileSeparator")
     public int nextToken() throws IOException {
+        int result = 0;
+        boolean finished = false;
         while (true) {
             if (pushedBack) {
                 pushedBack = false;
-                return ttype;
+                result = ttype;
+                break;
             }
             byte[] ct = ctype;
             sval = null;
@@ -529,7 +532,8 @@ public class StreamTokenizer_s {
             if (c == SKIP_LF) {
                 c = read();
                 if (c < 0) {
-                    return ttype = TT_EOF;
+                    result = ttype = TT_EOF;
+                    break;
                 }
                 if (c == '\n') {
                     c = NEED_CHAR;
@@ -538,14 +542,15 @@ public class StreamTokenizer_s {
             if (c == NEED_CHAR) {
                 c = read();
                 if (c < 0) {
-                    return ttype = TT_EOF;
+                    result = ttype = TT_EOF;
+                    break;
                 }
             }
-            ttype = c;		/* Just to be safe */
+            ttype = c;        /* Just to be safe */
 
-        /* Set peekc so that the next invocation of nextToken will read
-         * another character unless peekc is reset in this invocation
-         */
+            /* Set peekc so that the next invocation of nextToken will read
+             * another character unless peekc is reset in this invocation
+             */
             peekc = NEED_CHAR;
 
             int ctype = c < 256 ? ct[c] : CT_ALPHA;
@@ -554,7 +559,9 @@ public class StreamTokenizer_s {
                     LINENO++;
                     if (eolIsSignificantP) {
                         peekc = SKIP_LF;
-                        return ttype = TT_EOL;
+                        result = ttype = TT_EOL;
+                        finished = true;
+                        break;
                     }
                     c = read();
                     if (c == '\n') {
@@ -564,16 +571,23 @@ public class StreamTokenizer_s {
                     if (c == '\n') {
                         LINENO++;
                         if (eolIsSignificantP) {
-                            return ttype = TT_EOL;
+                            result = ttype = TT_EOL;
+                            finished = true;
+                            break;
                         }
                     }
                     c = read();
                 }
                 if (c < 0) {
-                    return ttype = TT_EOF;
+                    result = ttype = TT_EOF;
+                    finished = true;
+                    break;
                 }
                 ctype = c < 256 ? ct[c] : CT_ALPHA;
             }
+            if (finished) break;
+            if (finished) break;
+            if (finished) break;
 
             if ((ctype & CT_DIGIT) != 0) {
                 boolean neg = false;
@@ -581,7 +595,8 @@ public class StreamTokenizer_s {
                     c = read();
                     if (c != '.' && (c < '0' || c > '9')) {
                         peekc = c;
-                        return ttype = '-';
+                        result = ttype = '-';
+                        break;
                     }
                     neg = true;
                 }
@@ -607,11 +622,12 @@ public class StreamTokenizer_s {
                         denom *= 10;
                         decexp--;
                     }
-                /* Do one division of a likely-to-be-more-accurate number */
+                    /* Do one division of a likely-to-be-more-accurate number */
                     v /= denom;
                 }
                 nval = neg ? -v : v;
-                return ttype = TT_NUMBER;
+                result = ttype = TT_NUMBER;
+                break;
             }
 
             if ((ctype & CT_ALPHA) != 0) {
@@ -631,18 +647,19 @@ public class StreamTokenizer_s {
                 if (forceLower) {
                     sval = sval.toLowerCase();
                 }
-                return ttype = TT_WORD;
+                result = ttype = TT_WORD;
+                break;
             }
 
             if ((ctype & CT_QUOTE) != 0) {
                 ttype = c;
                 int i = 0;
-            /* Invariants (because \Octal needs a lookahead):
-             *   (i)  c contains char value
-             *   (ii) d contains the lookahead
-             */
+                /* Invariants (because \Octal needs a lookahead):
+                 *   (i)  c contains char value
+                 *   (ii) d contains the lookahead
+                 */
                 int d = read();
-                
+
                 while (d >= 0 && d != ttype) {
                     if (d == '\\') {
                         c = read();
@@ -701,14 +718,15 @@ public class StreamTokenizer_s {
                     buf[i++] = (char) c;
                 }
 
-            /* If we broke out of the loop because we found a matching quote
-             * character then arrange to read a new character next time
-             * around; otherwise, save the character.
-             */
+                /* If we broke out of the loop because we found a matching quote
+                 * character then arrange to read a new character next time
+                 * around; otherwise, save the character.
+                 */
                 peekc = (d == ttype) ? NEED_CHAR : d;
 
                 sval = String.copyValueOf(buf, 0, i);
-                return ttype;
+                result = ttype;
+                break;
             }
 
             if (c == '/' && (slashSlashCommentsP || slashStarCommentsP)) {
@@ -729,25 +747,26 @@ public class StreamTokenizer_s {
                             }
                         }
                         if (c < 0) {
-                            return ttype = TT_EOF;
+                            result = ttype = TT_EOF;
+                            finished = true;
+                            break;
                         }
                         prevc = c;
                     }
+                    if (finished) break;
                     continue;
                 } else if (c == '/' && slashSlashCommentsP) {
                     while ((c = read()) != '\n' && c != '\r' && c >= 0) ;
                     peekc = c;
                     continue;
+                } else if ((ct['/'] & CT_COMMENT) != 0) {
+                    while ((c = read()) != '\n' && c != '\r' && c >= 0) ;
+                    peekc = c;
+                    continue;
                 } else {
-                /* Now see if it is still a single line comment */
-                    if ((ct['/'] & CT_COMMENT) != 0) {
-                        while ((c = read()) != '\n' && c != '\r' && c >= 0) ;
-                        peekc = c;
-                        continue;
-                    } else {
-                        peekc = c;
-                        return ttype = '/';
-                    }
+                    peekc = c;
+                    result = ttype = '/';
+                    break;
                 }
             }
 
@@ -757,8 +776,10 @@ public class StreamTokenizer_s {
                 continue;
             }
 
-            return ttype = c;
+            result = ttype = c;
+            break;
         }
+        return result;
     }
 
     /**

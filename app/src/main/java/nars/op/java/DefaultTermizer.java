@@ -111,75 +111,57 @@ public class DefaultTermizer implements Termizer {
 
     @Nullable
     Term obj2term(@Nullable Object o) {
+        @Nullable Term result = EMPTY;
 
-        if (o == null)
-            return NULL;
-
-
-        if (o instanceof Term) return (Term) o;
-
-        if (o instanceof String)
-            return $.quote(o);
-
-        if (o instanceof Boolean)
-            return ((Boolean) o) ? TRUE_TERM : FALSE_TERM;
-
-        if (o instanceof Character)
-            return $.quote(String.valueOf(o));
-
-        if (o instanceof Number)
-            return number((Number) o);
-
-        if (o instanceof Class) {
+        if (o == null) {
+            result = NULL;
+        } else if (o instanceof Term) {
+            result = (Term) o;
+        } else if (o instanceof String) {
+            result = $.quote(o);
+        } else if (o instanceof Boolean) {
+            result = ((Boolean) o) ? TRUE_TERM : FALSE_TERM;
+        } else if (o instanceof Character) {
+            result = $.quote(String.valueOf(o));
+        } else if (o instanceof Number) {
+            result = number((Number) o);
+        } else if (o instanceof Class) {
             Class oc = (Class) o;
-            return classTerm(oc);
-        }
-
-        if (o instanceof Path) {
-            return $.the((Path)o);
-        }
-        if (o instanceof URI) {
-            return $.the((URI)o);
-        }
-        if (o instanceof URL) {
-            return $.the((URL)o);
-        }
-
-        if (o instanceof int[]) {
-            return $.p((int[]) o);
-        }
-
-
-        if (o instanceof Object[]) {
+            result = classTerm(oc);
+        } else if (o instanceof Path) {
+            result = $.the((Path) o);
+        } else if (o instanceof URI) {
+            result = $.the((URI) o);
+        } else if (o instanceof URL) {
+            result = $.the((URL) o);
+        } else if (o instanceof int[]) {
+            result = $.p((int[]) o);
+        } else if (o instanceof Object[]) {
             List<Term> arg = Arrays.stream((Object[]) o).map(this::term).collect(Collectors.toList());
-            if (arg.isEmpty()) return EMPTY;
-            return $.p(arg);
-        }
-
-        if (o instanceof List) {
-            if (((Collection) o).isEmpty()) return EMPTY;
-
-
-            Collection c = (Collection) o;
-            List<Term> arg = $.newArrayList(c.size());
-            for (Object x: c) {
-                Term y = term(x);
-                arg.add(y);
+            if (!arg.isEmpty()) {
+                result = $.p(arg);
             }
-
-            if (arg.isEmpty()) return EMPTY;
-
-            return $.p(arg);
-
-        /*} else if (o instanceof Stream) {
+        } else if (o instanceof List) {
+            if (!((Collection) o).isEmpty()) {
+                Collection c = (Collection) o;
+                List<Term> arg = $.newArrayList(c.size());
+                for (Object x : c) {
+                    Term y = term(x);
+                    arg.add(y);
+                }
+                if (!arg.isEmpty()) {
+                    result = $.p(arg);/*} else if (o instanceof Stream) {
             return Atom.quote(o.toString().substring(17));
         }*/
-        }
+                }
+            }
 
-        if (o instanceof Set) {
+
+        } else if (o instanceof Set) {
             Collection<Term> arg = (Collection<Term>) ((Collection) o).stream().map(this::term).collect(Collectors.toList());
-            if (arg.isEmpty()) return EMPTY;
-            return SETe.the(arg);
+            if (!arg.isEmpty()) {
+                result = SETe.the(arg);
+            }
         } else if (o instanceof Map) {
 
             Map mapo = (Map) o;
@@ -195,14 +177,15 @@ public class DefaultTermizer implements Termizer {
                     );
                 }
             });
-            if (components.isEmpty()) return EMPTY;
-            return SETe.the(components);
+            if (!components.isEmpty()) {
+                result = SETe.the(components);
+            }
+        } else {
+            result = instanceTerm(o);
         }
 
 
-        return instanceTerm(o);
-
-
+        return result;
     }
 
     protected static Term number(Number o) {

@@ -51,36 +51,51 @@ public abstract class Joint {
     }
 
     public static Joint build(Dynamics2D world, JointDef def) {
+        Joint result;
 
         switch (def.type) {
             case MOUSE:
-                return new MouseJoint(world.pool, (MouseJointDef) def);
+                result = new MouseJoint(world.pool, (MouseJointDef) def);
+                break;
             case DISTANCE:
-                return new DistanceJoint(world.pool, (DistanceJointDef) def);
+                result = new DistanceJoint(world.pool, (DistanceJointDef) def);
+                break;
             case PRISMATIC:
-                return new PrismaticJoint(world.pool, (PrismaticJointDef) def);
+                result = new PrismaticJoint(world.pool, (PrismaticJointDef) def);
+                break;
             case REVOLUTE:
-                return new RevoluteJoint(world.pool, (RevoluteJointDef) def);
+                result = new RevoluteJoint(world.pool, (RevoluteJointDef) def);
+                break;
             case WELD:
-                return new WeldJoint(world.pool, (WeldJointDef) def);
+                result = new WeldJoint(world.pool, (WeldJointDef) def);
+                break;
             case FRICTION:
-                return new FrictionJoint(world.pool, (FrictionJointDef) def);
+                result = new FrictionJoint(world.pool, (FrictionJointDef) def);
+                break;
             case WHEEL:
-                return new WheelJoint(world.pool, (WheelJointDef) def);
+                result = new WheelJoint(world.pool, (WheelJointDef) def);
+                break;
             case GEAR:
-                return new GearJoint(world.pool, (GearJointDef) def);
+                result = new GearJoint(world.pool, (GearJointDef) def);
+                break;
             case PULLEY:
-                return new PulleyJoint(world.pool, (PulleyJointDef) def);
+                result = new PulleyJoint(world.pool, (PulleyJointDef) def);
+                break;
             case CONSTANT_VOLUME:
-                return new ConstantVolumeJoint(world, (ConstantVolumeJointDef) def);
+                result = new ConstantVolumeJoint(world, (ConstantVolumeJointDef) def);
+                break;
             case ROPE:
-                return new RopeJoint(world.pool, (RopeJointDef) def);
+                result = new RopeJoint(world.pool, (RopeJointDef) def);
+                break;
             case MOTOR:
-                return new MotorJoint(world.pool, (MotorJointDef) def);
+                result = new MotorJoint(world.pool, (MotorJointDef) def);
+                break;
             case UNKNOWN:
             default:
-                return null;
+                result = null;
+                break;
         }
+        return result;
     }
 
     public static void destroy(Joint joint) {
