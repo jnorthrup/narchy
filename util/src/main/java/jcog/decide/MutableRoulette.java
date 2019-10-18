@@ -77,7 +77,7 @@ public class MutableRoulette {
         reweigh();
     }
 
-    private void realloc(int newSize) {
+    private static void realloc(int newSize) {
         throw new TODO();
     }
 
@@ -235,7 +235,7 @@ public class MutableRoulette {
         throw new RuntimeException();
     }
 
-    private boolean validWeight(float nextWeight) {
+    private static boolean validWeight(float nextWeight) {
         return nextWeight==nextWeight /*!NaN*/ && nextWeight >= EPSILON;
     }
 

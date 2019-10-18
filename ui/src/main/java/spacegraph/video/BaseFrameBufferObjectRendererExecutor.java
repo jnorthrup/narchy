@@ -130,7 +130,7 @@ class BaseFrameBufferObjectRendererExecutor {
         inGL.glTexParameteri(textureTarget, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
 
-    public void stopColouredRendering(GL2 inGL) {
+    public static void stopColouredRendering(GL2 inGL) {
         inGL.glBindTexture(GL_TEXTURE_2D, 0);
         
         inGL.glPopAttrib();
@@ -195,7 +195,7 @@ class BaseFrameBufferObjectRendererExecutor {
         }
     }
 
-    private void checkFrameBufferObjectCompleteness(GL inGL) {
+    private static void checkFrameBufferObjectCompleteness(GL inGL) {
         
         int tError = inGL.glCheckFramebufferStatus(GL_FRAMEBUFFER);
         switch (tError) {

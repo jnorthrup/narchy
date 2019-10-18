@@ -417,7 +417,7 @@ public class Osm {
         }
     }
 
-    private void printNode(int indent, Node node) {
+    private static void printNode(int indent, Node node) {
         if (node.getNodeType() != Node.ELEMENT_NODE) {
             return;
         }

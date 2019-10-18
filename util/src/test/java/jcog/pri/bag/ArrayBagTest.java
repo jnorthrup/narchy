@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ArrayBagTest {
 
 
-    private ArrayBag<PLink<String>, PLink<String>> newBag(int n, PriMerge mergeFunction) {
+    private static ArrayBag<PLink<String>, PLink<String>> newBag(int n, PriMerge mergeFunction) {
         return new PLinkArrayBag(mergeFunction, n);
     }
 

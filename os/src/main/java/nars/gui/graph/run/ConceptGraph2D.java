@@ -77,7 +77,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
     }
 
 
-    public Graph2DUpdater<Term> getLayout() {
+    public static Graph2DUpdater<Term> getLayout() {
         return new ForceDirected2D<>() {
 
             @Override
@@ -94,7 +94,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
         };
     }
 
-    void updateNode(NodeVis<Term> nn) {
+    static void updateNode(NodeVis<Term> nn) {
         Term i = nn.id;
         if (i != null && nn.visible()) {
 

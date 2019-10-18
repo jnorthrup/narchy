@@ -44,7 +44,7 @@ public class VerifyingTermBuilder extends TermBuilder {
         return aa;
     }
 
-    protected boolean equals(Term x, Term y) {
+    protected static boolean equals(Term x, Term y) {
         try {
             TermTest.assertEq(x, y);
             return true;
@@ -54,7 +54,7 @@ public class VerifyingTermBuilder extends TermBuilder {
         }
     }
 
-    protected boolean equals(Subterms x, Subterms y) {
+    protected static boolean equals(Subterms x, Subterms y) {
         try {
             TermTest.assertEq(x, y);
             return true;

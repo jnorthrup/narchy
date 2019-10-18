@@ -111,9 +111,9 @@ class MetaFlowTest {
 
     static class GeneralInterceptor {
         @RuntimeType
-        public Object intercept(@AllArguments Object[] args,
-                                //@Origin Method method
-                                @SuperCall Callable<?> zuper
+        public static Object intercept(@AllArguments Object[] args,
+                                       //@Origin Method method
+                                       @SuperCall Callable<?> zuper
         ) {
             // intercept any method of any signature
             try {
@@ -132,11 +132,11 @@ class MetaFlowTest {
         }
 
         @MetaFlow.Value
-        public float test() {
+        public static float test() {
             return 1f;
         }
         @MetaFlow.Value
-        public float test(float param) {
+        public static float test(float param) {
             return param;
         }
     }

@@ -319,7 +319,7 @@ public class TermBuffer {
         return next;
     }
 
-    private Term emptySubterms(Op op) {
+    private static Term emptySubterms(Op op) {
 
         if (op == PROD)
             return EmptyProduct;
@@ -328,7 +328,7 @@ public class TermBuffer {
 
     }
 
-    private int dt(byte[] ii, int[] range) {
+    private static int dt(byte[] ii, int[] range) {
         int p = range[0];
         range[0] += 4;
         int dt = Ints.fromBytes(ii[p++], ii[p++], ii[p++], ii[p/*++*/]);
@@ -373,7 +373,7 @@ public class TermBuffer {
     }
 
     /** expand a fragment */
-    private Term[] nextFrag(Term[] subterms, int i, Term fragment, byte len, int fragmentLen) {
+    private static Term[] nextFrag(Term[] subterms, int i, Term fragment, byte len, int fragmentLen) {
         if (subterms == null)
             subterms = new Term[len];
         else if (subterms.length != len) {

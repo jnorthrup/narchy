@@ -59,7 +59,7 @@ public class AnonWithVarShift extends CachedAnon {
 
 
 
-    Shiftability shiftability(Term base, int mask) {
+    static Shiftability shiftability(Term base, int mask) {
         Shiftability s = new Shiftability();
         base.recurseTermsOrdered(b-> b.hasAny(mask), s, null);
         return s;

@@ -534,7 +534,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
     }
 
     /** to be overridden */
-    public Term applyAtomicConstant(Atomic x) {
+    public static Term applyAtomicConstant(Atomic x) {
         return x;
     }
 

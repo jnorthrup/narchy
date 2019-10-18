@@ -560,7 +560,7 @@ public class SLAMTest extends JPanel {
      * Select two views which are the closest to an idea stereo pair. Little rotation and little translation along
      * z-axis
      */
-    private int[] selectBestPair(SceneStructureMetric structure) {
+    private static int[] selectBestPair(SceneStructureMetric structure) {
         SceneStructureMetric.View w0 = structure.views.get(0);
         SceneStructureMetric.View w1 = structure.views.size() > 1 ? structure.views.get(1) : null;
         SceneStructureMetric.View w2 = structure.views.size() > 2 ? structure.views.get(2) : null;
@@ -603,7 +603,7 @@ public class SLAMTest extends JPanel {
     /**
      * Give lower scores to transforms with no rotation and translations along x or y axis.
      */
-    private double score(Se3_F64 se) {
+    private static double score(Se3_F64 se) {
 //		Rodrigues_F64 rod = new Rodrigues_F64();
 //		ConvertRotation3D_F64.matrixToRodrigues(se.R,rod);
 
@@ -619,7 +619,7 @@ public class SLAMTest extends JPanel {
         return 1.0 / r; // ignoring rotation seems to work better <shrug>
     }
 
-    public <C extends ImageBase<C>>
+    public static <C extends ImageBase<C>>
     void rectifyImages(C distorted1,
                        C distorted2,
                        Se3_F64 leftToRight,

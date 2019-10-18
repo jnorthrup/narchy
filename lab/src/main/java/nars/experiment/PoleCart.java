@@ -450,20 +450,20 @@ public class PoleCart extends GameX {
 	}
 
 
-	int pixX(Dimension d, double v) {
+	static int pixX(Dimension d, double v) {
 		return (int) Math.round((v + 2.5) / 5.0 * d.width);
 	}
 
 
-	int pixDX(Dimension d, double v) {
+	static int pixDX(Dimension d, double v) {
 		return (int) Math.round(v / 5.0 * d.width);
 	}
 
-	int pixY(Dimension d, double v) {
+	static int pixY(Dimension d, double v) {
 		return (int) Math.round(d.height - (v + 0.5f) / 2.0 * d.height);
 	}
 
-	public int pixDY(Dimension d, double v) {
+	public static int pixDY(Dimension d, double v) {
 		return (int) Math.round(-v / 2.0 * d.height);
 	}
 

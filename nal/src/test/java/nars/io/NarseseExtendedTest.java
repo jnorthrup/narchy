@@ -39,14 +39,14 @@ class NarseseExtendedTest extends NarseseTest {
         assertSame(Bool.Null, $$("null"));
     }
 
-    private void eternal(Task t) {
+    private static void eternal(Task t) {
         assertNotNull(t);
         tensed(t, true, Tense.Eternal);
     }
-    private void tensed(@NotNull Task t, @NotNull Tense w) {
+    private static void tensed(@NotNull Task t, @NotNull Tense w) {
         tensed(t, false, w);
     }
-    private void tensed(@NotNull Task t, boolean eternal, @NotNull Tense w) {
+    private static void tensed(@NotNull Task t, boolean eternal, @NotNull Tense w) {
         assertEquals(eternal, t.start() == ETERNAL);
         if (!eternal) {
             switch (w) {

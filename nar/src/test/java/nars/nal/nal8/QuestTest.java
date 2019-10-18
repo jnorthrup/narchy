@@ -43,7 +43,7 @@ class QuestTest {
     }
 
 
-    private void testQuest(boolean goalFirst, int timeBetween, int timeAfter) throws Narsese.NarseseException {
+    private static void testQuest(boolean goalFirst, int timeBetween, int timeAfter) throws Narsese.NarseseException {
 
         final NAR nar = NARS.tmp(1);
         
@@ -65,7 +65,7 @@ class QuestTest {
         assertTrue(valid.get());
     }
 
-    private void quest(NAR nar, AtomicBoolean valid) throws Narsese.NarseseException {
+    private static void quest(NAR nar, AtomicBoolean valid) throws Narsese.NarseseException {
         nar.onTask(a -> {
             if (a.toString().contains("(b-->a)!"))
                 valid.set(true);
@@ -74,7 +74,7 @@ class QuestTest {
         nar.quest($("a:?b@"));
     }
 
-    private void goal(NAR nar) throws Narsese.NarseseException {
+    private static void goal(NAR nar) throws Narsese.NarseseException {
         nar.want($.$("a:b"), Tense.Eternal, 1.0f, 0.9f);
     }
 

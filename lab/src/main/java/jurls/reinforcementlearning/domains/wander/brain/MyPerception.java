@@ -48,7 +48,7 @@ public class MyPerception  {
         return player.x + Math.cos(player.angle - a * RADAR_R) * d * RADAR_D;
     }
 
-    public boolean isUnipolar() {
+    public static boolean isUnipolar() {
         return false;
     }
 

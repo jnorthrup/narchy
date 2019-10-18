@@ -35,7 +35,7 @@ public class Midimath {
 	 * @return   a parser that will recognize a Midimath 
 	 *           expression
 	 */
-    private Parser expression() {
+    private static Parser expression() {
 		Seq expression = new Seq();
 
 		Seq plusTerm = new Seq();
@@ -52,7 +52,7 @@ public class Midimath {
 	 * Demonstrate a parser for Midimath.
 	 */
 	public static void main(String args[]) {
-		Assembly out = new Midimath().expression().bestMatch(new TokenAssembly("2 + 3 * 7 + 19"));
+		Assembly out = Midimath.expression().bestMatch(new TokenAssembly("2 + 3 * 7 + 19"));
 		System.out.println(out.pop());
 	}
 
@@ -63,7 +63,7 @@ public class Midimath {
 	 * @return   a parser that will recognize arithmetic
 	 *           expressions containing just multiplication
 	 */
-    private Parser term() {
+    private static Parser term() {
 		Seq term = new Seq();
 
 		Num n = new Num();

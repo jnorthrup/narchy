@@ -48,7 +48,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
         }
 
         /** decides what premises can be interned */
-        protected boolean intern(PreDerivation d) {
+        protected static boolean intern(PreDerivation d) {
             return
                 !(((Derivation)d)._task instanceof TaskLink) &&
                 (d.taskTerm.volume() + d.beliefTerm.volume() <= 3 * InterningTermBuilder.volMaxDefault);

@@ -486,7 +486,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
         graphics.setRenderingHints(hints);
     }
 
-    public void setCompression(int compression) {
+    public static void setCompression(int compression) {
         if (compression < 0 || 9 < compression)
             return;
     }

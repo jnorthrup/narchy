@@ -175,7 +175,7 @@ public abstract class TermBuilder implements TermConstructor {
         return !x.hasAny(Op.Temporal) ? x : _root(x);
     }
 
-    protected Term _root(Compound x) {
+    protected static Term _root(Compound x) {
         return NAL.conceptualization.apply(x);
     }
 
@@ -228,7 +228,7 @@ public abstract class TermBuilder implements TermConstructor {
 
     }
 
-    public Term neg(Term u) {
+    public static Term neg(Term u) {
 
         if (u instanceof Neg || u instanceof Bool)
             return u.neg();

@@ -119,7 +119,7 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
             gl.glPopMatrix();
         }
 
-        protected void drawTri(float rad, GL2 gl) {
+        protected static void drawTri(float rad, GL2 gl) {
             float w = rad/2;
             float x1 = rad * 0.5f;
             float x2 = rad * 1f;

@@ -108,7 +108,7 @@ public class NLPGen {
         });
     }
 
-    private boolean timeMatch(@NotNull Task t, Tense tense) {
+    private static boolean timeMatch(@NotNull Task t, Tense tense) {
         return t.isEternal() && tense == Tense.Eternal;
         
     }

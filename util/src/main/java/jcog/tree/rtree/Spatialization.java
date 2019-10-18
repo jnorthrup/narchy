@@ -61,7 +61,7 @@ public class Spatialization<X> {
         return x;
     }
 
-    public double epsilon() {
+    public static double epsilon() {
         return EPSILON;
     }
 

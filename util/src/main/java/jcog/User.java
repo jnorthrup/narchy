@@ -222,7 +222,7 @@ public class User {
         }
     }
 
-    public void run(Runnable r) {
+    public static void run(Runnable r) {
         Exe.executor().execute(r);
     }
 
@@ -408,7 +408,7 @@ public class User {
         return d;
     }
 
-    private String codec(Object input) {
+    private static String codec(Object input) {
 
         String c;
         switch (input.getClass().getSimpleName()) {

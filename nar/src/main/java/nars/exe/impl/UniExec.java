@@ -87,7 +87,7 @@ public class UniExec extends Exec {
     }
 
     /* absolute stop time (in systemNS) for the next executed What; return Long.MIN_VALUE to use immediate */
-    protected long timeSliceNS() {
+    protected static long timeSliceNS() {
         return Long.MIN_VALUE;
     }
 

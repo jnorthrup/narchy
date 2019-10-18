@@ -62,7 +62,7 @@ public class MJOpen {
 
 
         MJTools mjT = new MJTools();
-		if (mjT.LoadTextFile(sFilePath, vLines)) 
+		if (MJTools.LoadTextFile(sFilePath, vLines))
 		{
 			if (!vLines.isEmpty()) 
 			{
@@ -116,7 +116,7 @@ public class MJOpen {
 
 	
 	
-	private String CorrectFileName(String sFileName) {
+	private static String CorrectFileName(String sFileName) {
 		String sNew;
 		sNew = sFileName.replace(' ', '_');
 		sNew = sNew.replace('\'', '_');
@@ -182,7 +182,7 @@ public class MJOpen {
 
 		
 		if (!m_sRules.isEmpty()) {
-			mjb.SetRule(mjUI.mjr.GetGameIndex(m_sGame), "", m_sRules);
+			mjb.SetRule(MJRules.GetGameIndex(m_sGame), "", m_sRules);
 		}
 
 		mjb.RedrawBoard(true);

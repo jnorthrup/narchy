@@ -42,7 +42,7 @@ public abstract class DynamicLayout2D<X> implements Graph2D.Graph2DUpdater<X> {
 
     private boolean get(Graph2D<X> g) {
         g.forEachValue(v -> {
-            if (v.visible() && !v.pinned()) {
+            if (v.visible() && !NodeVis.pinned()) {
                 MutableRectFloat<X> m = nodesPool.get();
                 m.set(v);
                 nodes.add(m);

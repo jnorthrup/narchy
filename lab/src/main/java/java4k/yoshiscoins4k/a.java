@@ -75,7 +75,7 @@ public class a extends Applet implements Runnable {
 	
 	
 	
-	private void n(int[][] board, int[][] sorts, int depth, int stone, int alpha, int beta, int maxDepth, int[][] permutations, int[] result) {
+	private static void n(int[][] board, int[][] sorts, int depth, int stone, int alpha, int beta, int maxDepth, int[][] permutations, int[] result) {
 
 		int max = -2 * INFINITY;
 		int bestColumn = -1;
@@ -154,7 +154,7 @@ public class a extends Applet implements Runnable {
 	}
 
 	
-	private void m(int[][] board, int column, int stone) {
+	private static void m(int[][] board, int column, int stone) {
 
 		int y = board[6][column]--;
 

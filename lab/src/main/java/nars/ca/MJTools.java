@@ -15,7 +15,7 @@ public class MJTools {
 
 	
 	
-	public boolean LoadTextFile(String sPath, Vector vLines) {
+	public static boolean LoadTextFile(String sPath, Vector vLines) {
 		boolean fRetVal = false;
 		URL theUrl;
 		DataInputStream theFile;
@@ -55,7 +55,7 @@ public class MJTools {
 	
 	
 	
-	public boolean LoadResTextFile(String sPath, Vector vLines) {
+	public static boolean LoadResTextFile(String sPath, Vector vLines) {
 		boolean fRetVal = false;
 		String sBff;
 

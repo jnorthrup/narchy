@@ -147,7 +147,7 @@ public class TaskTest {
         inputTwoUniqueTasks(new Default());
     }*/
 
-    private void inputTwoUniqueTasks(@NotNull NAR n) throws Narsese.NarseseException {
+    private static void inputTwoUniqueTasks(@NotNull NAR n) throws Narsese.NarseseException {
 
 
 

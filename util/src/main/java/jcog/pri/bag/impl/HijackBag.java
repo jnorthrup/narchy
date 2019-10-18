@@ -410,10 +410,10 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         return null; //not found
     }
 
-    protected boolean optimisticPut() {
+    protected static boolean optimisticPut() {
         return false;
     }
-    protected boolean optimisticRemove() {
+    protected static boolean optimisticRemove() {
         return false;
     }
 
@@ -449,11 +449,11 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     /** default impl = x.hashCode() */
-    protected int hash(Object x) {
+    protected static int hash(Object x) {
         return x.hashCode();
     }
 
-    private int index(int h, int cap) {
+    private static int index(int h, int cap) {
 
 
         //mix for additional mix
@@ -520,14 +520,14 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         return update(k, null, REMOVE, null);
     }
 
-    public Random random() {
+    public static Random random() {
         return ThreadLocalRandom.current();
     }
 
     /**
      * roulette fair
      */
-    private boolean hijackFair(float newPri, float oldPri) {
+    private static boolean hijackFair(float newPri, float oldPri) {
         return random().nextFloat() < newPri / (newPri + oldPri);
 
 //        float priEpsilon = ScalarValue.EPSILON;

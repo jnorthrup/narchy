@@ -56,11 +56,11 @@ public class ReplChip extends Gridding {
 //        return false;
 //    }
 
-    protected boolean clearOnEnter() {
+    protected static boolean clearOnEnter() {
         return true;
     }
 
-    protected boolean enterOrControlEnter() {
+    protected static boolean enterOrControlEnter() {
         return true;
     }
 }

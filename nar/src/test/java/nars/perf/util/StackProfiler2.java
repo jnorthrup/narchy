@@ -289,7 +289,7 @@ public class StackProfiler2 implements InternalProfiler {
         }
 
 
-        String toString(final Map<Thread.State, HashBag<StackRecord>> stacks) {
+        static String toString(final Map<Thread.State, HashBag<StackRecord>> stacks) {
 
             int top = 32;
 

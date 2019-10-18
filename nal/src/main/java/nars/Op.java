@@ -51,7 +51,7 @@ public enum Op {
 
     NEG("--", 1, Args.One) {
         @Override public Term the(Term u) {
-            return Op.terms.neg(u);
+            return TermBuilder.neg(u);
         }
 
         @Override public Term the(TermBuilder b, int dt, Term[] u) {

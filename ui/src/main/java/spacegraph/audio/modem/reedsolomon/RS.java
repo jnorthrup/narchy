@@ -52,7 +52,7 @@ public class RS implements Settings {
         compute_genpoly(Settings.kParityBytes, genPoly);
     }
 
-    void zero_fill_from(byte[] buf, int from, int to) {
+    static void zero_fill_from(byte[] buf, int from, int to) {
         int i;
         for (i = from; i < to; i++)
             buf[i] = 0;

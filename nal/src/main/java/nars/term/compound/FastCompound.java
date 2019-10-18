@@ -144,7 +144,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         return y;
     }
 
-    public void print() {
+    public static void print() {
         System.out.println();
     }
 

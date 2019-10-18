@@ -151,7 +151,7 @@ public class ConjClustering extends TaskAction {
 //    }
 
 
-    protected float pri(Task t) {
+    protected static float pri(Task t) {
         return    (1 + 0.5f * t.priElseZero())
                 * (1 + 0.5f * t.conf())
                 * (1 + 0.5f * t.polarity())

@@ -286,7 +286,7 @@ public class BagTest {
 
 
 
-    private float maxMinRatio(@NotNull EmpiricalDistribution d) {
+    private static float maxMinRatio(@NotNull EmpiricalDistribution d) {
         List<SummaryStatistics> bins = d.getBinStats();
         return ((float) bins.get(bins.size() - 1).getN() / (bins.get(0).getN()));
     }

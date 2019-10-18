@@ -66,7 +66,7 @@ public class TensorRing extends AbstractShapedTensor implements WritableTensor {
         return idx(linearCell, offset, volume());
     }
 
-    protected int idx(int linearCell, int offset, int v) {
+    protected static int idx(int linearCell, int offset, int v) {
         return (offset + linearCell) % v;
     }
 

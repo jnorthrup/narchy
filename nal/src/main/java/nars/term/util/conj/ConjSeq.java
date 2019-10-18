@@ -191,7 +191,7 @@ public enum ConjSeq { ;
                 break;
             }
             default: {
-                int center = events.centerByIndex(start, end);
+                int center = ConjList.centerByIndex(start, end);
                 //int center = events.centerByVolume(start, end);
                 left = sequenceBalancedTree(B, events, start, center + 1);
                 if (left == Null) return Null;

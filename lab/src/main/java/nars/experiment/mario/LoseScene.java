@@ -27,7 +27,7 @@ public class LoseScene extends Scene {
         drawString(g, scrollMessage, 160 - scrollMessage.length() * 4, 160, 0);
     }
 
-    private void drawString(Graphics g, String text, int x, int y, int c) {
+    private static void drawString(Graphics g, String text, int x, int y, int c) {
         char[] ch = text.toCharArray();
         for (int i = 0; i < ch.length; i++) {
             g.drawImage(Art.font[ch[i] - 32][c], x + i * 8, y, null);

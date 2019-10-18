@@ -379,7 +379,7 @@ public class AudioTransceiver {
         return AudioTransceiver.encode(msg, period);
     }
 
-    private boolean isActive() {
+    private static boolean isActive() {
         boolean active = true;
         return active;
     }

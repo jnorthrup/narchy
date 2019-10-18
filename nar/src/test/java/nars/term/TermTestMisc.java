@@ -308,7 +308,7 @@ public class TermTestMisc {
         assertEquals($.$(b), $.$(b));
     }
 
-    private void testTermEqualityNonNormalizing(@NotNull String s) {
+    private static void testTermEqualityNonNormalizing(@NotNull String s) {
         try {
             testTermEquality(s, false);
         } catch (Narsese.NarseseException e) {
@@ -316,7 +316,7 @@ public class TermTestMisc {
         }
     }
 
-    private void testTermEquality(@NotNull String s) {
+    private static void testTermEquality(@NotNull String s) {
         try {
             testTermEquality(s, true);
         } catch (Narsese.NarseseException e) {
@@ -325,7 +325,7 @@ public class TermTestMisc {
     }
 
 
-    private void testTermEquality(@NotNull String s, boolean conceptualize) throws Narsese.NarseseException {
+    private static void testTermEquality(@NotNull String s, boolean conceptualize) throws Narsese.NarseseException {
 
 
         Term a = $.$(s).term();
@@ -443,7 +443,7 @@ public class TermTestMisc {
         statementHash("<<{i10} --> r> ==> A(1)>", "<<{i11} --> r> ==> A(0)>");
     }
 
-    private void statementHash(@NotNull String a, @NotNull String b) throws Narsese.NarseseException {
+    private static void statementHash(@NotNull String a, @NotNull String b) throws Narsese.NarseseException {
 
 
         Term ta = $(a);
@@ -491,11 +491,11 @@ public class TermTestMisc {
         testTermComplexityMass(n, "<$a --> (c & #d)>", 3, 5, 1, 1, 0);
     }
 
-    private void testTermComplexityMass(@NotNull Timed n, @NotNull String x, int complexity, int mass) throws Narsese.NarseseException {
+    private static void testTermComplexityMass(@NotNull Timed n, @NotNull String x, int complexity, int mass) throws Narsese.NarseseException {
         testTermComplexityMass(n, x, complexity, mass, 0, 0, 0);
     }
 
-    private void testTermComplexityMass(@NotNull Timed n, @NotNull String x, int complexity, int mass, int varIndep, int varDep, int varQuery) throws Narsese.NarseseException {
+    private static void testTermComplexityMass(@NotNull Timed n, @NotNull String x, int complexity, int mass, int varIndep, int varDep, int varQuery) throws Narsese.NarseseException {
         Term t = $.$(x).term();
 
         assertNotNull(t);
@@ -515,7 +515,8 @@ public class TermTestMisc {
         assertEquals((varDep + varIndep + varQuery) != 0, t.vars() > 0);
     }
 
-    @NotNull <C extends Compound> C testStructure(@NotNull String term, String bits) throws Narsese.NarseseException {
+    @NotNull
+    static <C extends Compound> C testStructure(@NotNull String term, String bits) throws Narsese.NarseseException {
 
         C a = (C) $.$(term).term();
         assertEquals(bits, toBinaryString(a.structure()));
@@ -595,7 +596,7 @@ public class TermTestMisc {
         testUniqueHash("$1", "#1");
     }
 
-    private void testUniqueHash(@NotNull String a, @NotNull String b) throws Narsese.NarseseException {
+    private static void testUniqueHash(@NotNull String a, @NotNull String b) throws Narsese.NarseseException {
 
         Timed t = NARS.shell();
         int h1 = $.$(a).hashCode();

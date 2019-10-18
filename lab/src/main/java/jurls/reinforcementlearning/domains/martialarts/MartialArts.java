@@ -73,7 +73,7 @@ public class MartialArts implements RLEnvironment {
         }
     }
 
-    private void computePlayer(Player player) {
+    private static void computePlayer(Player player) {
         int[] pixel = new int[1];
         int w = 0;
         int h = 0;
@@ -185,7 +185,7 @@ public class MartialArts implements RLEnvironment {
         return true;
     }
 
-    private void takeAction(int action, Player player) {
+    private static void takeAction(int action, Player player) {
         if (player.moveIndex < 0) {
             player.moveIndex = action;
             player.moveImageIndex = 0;

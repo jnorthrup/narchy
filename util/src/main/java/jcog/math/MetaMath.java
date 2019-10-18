@@ -2127,7 +2127,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
     /* [sound] */ // Sound effects
     /* [sound] */
-    public void playAudio() {
+    public static void playAudio() {
         /* [sound] */
         if (enableAudioFlag && audioName != null) {
             /* [sound] */     // Find out if we've already read this one in so we don't read it again

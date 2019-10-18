@@ -32,6 +32,7 @@ import nars.term.anon.IntrinAtomic;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
+import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.TermTransform;
@@ -602,7 +603,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     Term replace(Term from, Term to);
 
     default Term neg() {
-        return Op.terms.neg(this);
+        return TermBuilder.neg(this);
     }
 
     default Term negIf(boolean negate) {

@@ -90,12 +90,12 @@ public class Autoencoder {
     }
 
     /** preprocessing filter, applied to each x[]'s value */
-    public float pre(float x) {
+    public static float pre(float x) {
         if(!Float.isFinite(x))
             return 0;
         return x;
     }
-    public float post(float x) {
+    public static float post(float x) {
         return pre(x);
     }
 

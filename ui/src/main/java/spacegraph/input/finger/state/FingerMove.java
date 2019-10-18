@@ -32,7 +32,7 @@ public abstract class FingerMove extends Dragging {
 
     /** whether the position adjustment is tracked incrementally (delta from last iteration),
      * or absolutely (delta from initial conditions) */
-    protected boolean incremental() {
+    protected static boolean incremental() {
         return false;
     }
 

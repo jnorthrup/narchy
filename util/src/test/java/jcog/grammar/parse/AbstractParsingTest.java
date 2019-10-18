@@ -31,7 +31,7 @@ abstract class AbstractParsingTest {
 
 	protected abstract Parser getParser();
 
-	Object popValueFromAssembly(Assembly result) {
+	static Object popValueFromAssembly(Assembly result) {
 		return ((Token) result.getStack().pop()).value();
 	}
 

@@ -57,7 +57,7 @@ class PermutationsTest {
         testShuffleReset(5, 1);
     }
 
-    private void testShuffleReset(int size, int selected) {
+    private static void testShuffleReset(int size, int selected) {
 
         int expected = factorial(size);
         int attempts = (1+expected/selected)*(1+expected/selected); 

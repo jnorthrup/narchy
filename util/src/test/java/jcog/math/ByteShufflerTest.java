@@ -19,7 +19,7 @@ class ByteShufflerTest {
             testPermutes(b, rng, i);
     }
 
-    private void testPermutes(ByteShuffler b, Random rng, int len) {
+    private static void testPermutes(ByteShuffler b, Random rng, int len) {
         int permutations = (int) org.apache.commons.math3.util.CombinatoricsUtils.factorial(len);
         int iterates = permutations * 12 /* to be sure */;
         TreeSet<String> combos = new TreeSet<>();

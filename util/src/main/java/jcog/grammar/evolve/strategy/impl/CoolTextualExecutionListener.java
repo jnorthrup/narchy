@@ -236,7 +236,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
         }
     }
 
-    private String progress(int done) {
+    private static String progress(int done) {
         StringBuilder builder = new StringBuilder();
 
         builder.append("=".repeat(Math.max(0, done)));
@@ -259,14 +259,14 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
         return this;
     }
 
-    private String printRegex(String regex) {
+    private static String printRegex(String regex) {
         if (regex.length() > 65) {
             return regex.substring(0, 64) + " [..]";
         }
         return regex;
     }
 
-    private String printArray(double[] fitness) {
+    private static String printArray(double[] fitness) {
         String sb = Arrays.stream(fitness).mapToObj(v -> String.valueOf(Math.round(v * 100) / 100f)).collect(Collectors.joining(",", "[", "]"));
         return sb;
     }

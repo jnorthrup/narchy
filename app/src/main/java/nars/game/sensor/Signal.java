@@ -126,7 +126,7 @@ public abstract class Signal extends TaskConcept implements GameLoop, PermanentC
 
 
     /** whether to tasklink on change; returns false in batch signal cases */
-    protected boolean autoTaskLink() {
+    protected static boolean autoTaskLink() {
         return true;
     }
 

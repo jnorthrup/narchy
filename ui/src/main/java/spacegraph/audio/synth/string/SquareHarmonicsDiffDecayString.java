@@ -11,7 +11,7 @@ public class SquareHarmonicsDiffDecayString extends SquareHarmonicsString {
         setDeltaVolume(calcDecay(frequency));
     }
 
-    private double calcDecay(double frequency) {
+    private static double calcDecay(double frequency) {
         double factor = 440 / frequency;
         return Math.pow(.996, factor);
     }

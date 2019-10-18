@@ -116,7 +116,7 @@ public class KeyboardControl extends JPanel {
         });
     }
 
-    private int note(InputEvent key, int code) {
+    private static int note(InputEvent key, int code) {
         int note = NOTE_MAP[code];
         if (key.isControlDown())
             note -= 24;
@@ -157,14 +157,14 @@ public class KeyboardControl extends JPanel {
         }
     }
 
-    private void paintRoundRect(Graphics2D g, Rectangle rect, int size, Color color) {
+    private static void paintRoundRect(Graphics2D g, Rectangle rect, int size, Color color) {
         g.setColor(color);
         g.setStroke(new BasicStroke(size));
         //g.drawRoundRect(rect.x, rect.y, rect.width, rect.height, 6, 6);
         g.drawRect(rect.x, rect.y, rect.width, rect.height);
     }
 
-    private void paintRoundRectFill(Graphics2D g, Rectangle rect, Color color) {
+    private static void paintRoundRectFill(Graphics2D g, Rectangle rect, Color color) {
         g.setColor(color);
         g.fillRoundRect(rect.x, rect.y, rect.width, rect.height, 6, 6);
     }

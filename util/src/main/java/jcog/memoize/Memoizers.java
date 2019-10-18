@@ -64,7 +64,7 @@ public class Memoizers {
     }
 
     /** provides default memoizer implementation */
-    private <X, Y> Memoize<X,Y> memoizer(Function<X, Y> computation, int capacity) {
+    private static <X, Y> Memoize<X,Y> memoizer(Function<X, Y> computation, int capacity) {
         return new HijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES);
 
         //return new CollisionMemoize<>(capacity, computation);

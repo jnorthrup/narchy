@@ -40,7 +40,7 @@ class NAL3GoalTest {
         //TODO more cases
     }
 
-    private void testGoalDiff(boolean goalPolarity, boolean beliefPolarity, boolean diffIsGoal, boolean diffIsFwd, float f, float c, boolean subjOrPred) {
+    private static void testGoalDiff(boolean goalPolarity, boolean beliefPolarity, boolean diffIsGoal, boolean diffIsFwd, float f, float c, boolean subjOrPred) {
 
         String goalTerm, beliefTerm;
         String first, second;

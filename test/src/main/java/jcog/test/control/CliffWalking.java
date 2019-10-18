@@ -44,7 +44,7 @@ public class CliffWalking extends AbstractAgentTest {
 
     int x = sx, y = sy;
 
-    private int index(int x, int y) {
+    private static int index(int x, int y) {
         return shapeX * y + x;
     }
 

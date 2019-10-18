@@ -121,7 +121,7 @@ public class JavaDynamicClassLoaderTestCase {
         paths[1] = file.getCanonicalPath();
     }
 
-    private URL[] getURLsFromStringArray(String... paths) throws MalformedURLException {
+    private static URL[] getURLsFromStringArray(String... paths) throws MalformedURLException {
         URL[] urls = new URL[paths.length];
 
         for (int i = 0; i < paths.length; i++) {

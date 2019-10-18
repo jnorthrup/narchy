@@ -192,7 +192,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		return r;
 	}
 
-	protected <X> void reject(TimedFuture<X> r) {
+	protected static <X> void reject(TimedFuture<X> r) {
 		r.cancel(false);
 		logger.error("reject {}", r);
 	}

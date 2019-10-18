@@ -38,7 +38,7 @@ public class ByteHijackMemoize<X extends ByteKeyExternal,Y> extends HijackMemoiz
                 Huffman.fastestCompDecompTime()));
     }
 
-    public Huffman buildCodec(Huffman h) {
+    public static Huffman buildCodec(Huffman h) {
         //TODO add incremental codec building from multiple ByteHijackMemoize's
         return h;
     }
@@ -58,7 +58,7 @@ public class ByteHijackMemoize<X extends ByteKeyExternal,Y> extends HijackMemoiz
         return valueBase(x) * DEFAULT_VALUE;
     }
 
-    private float valueBase(ByteKey x) {
+    private static float valueBase(ByteKey x) {
         return 1;
         //return 1/((1+x.length()));
         //return (float) (1 /(Math.log(1+x.length())));

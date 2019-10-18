@@ -66,9 +66,9 @@ public class TextEditView implements BufferListener {
         if (document.isLineStart()) {
 //            x = (float) lv.getChars().stream().mapToDouble(cv -> cv.width() / 2).findFirst()
 //                    .orElse(cursor.getWidth() / 2);
-            x = cursor.getWidth()/2; //lv.getChars().get(0).width()/2;
+            x = CursorView.getWidth()/2; //lv.getChars().get(0).width()/2;
         } else if (c.getCol() >= lineChars) {
-            x = lv.getWidth() + (cursor.getWidth() / 2);
+            x = lv.getWidth() + (CursorView.getWidth() / 2);
         } else {
             x = lv.getChars().get(c.getCol()).position.x;
         }

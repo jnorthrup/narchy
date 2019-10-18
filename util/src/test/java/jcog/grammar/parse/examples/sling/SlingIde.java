@@ -230,7 +230,7 @@ public class SlingIde {
 	/*
 	 * Creates and returns the box that contains a slider.
 	 */
-    private Box sliderBox(String name, JSlider s) {
+    private static Box sliderBox(String name, JSlider s) {
 		Box b = Box.createHorizontalBox();
 		JLabel label = new JLabel(name);
 		label.setFont(SwingUtensil.ideFont());

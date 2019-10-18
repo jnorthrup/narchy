@@ -264,7 +264,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
                 colorize.colorize(gl, freq, conf);
 
-                float yBottom = BeliefTableChart.this.y(freq) - ph / 2;
+                float yBottom = BeliefTableChart.y(freq) - ph / 2;
                 float width = end - start;
                 if (width < taskWidthMin) {
                     //point-like
@@ -285,7 +285,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
     }
 
-    private float y(float y) {
+    private static float y(float y) {
         //TODO map to space within some margin
         return y;
     }

@@ -79,14 +79,14 @@ public abstract class Spatial<X> implements Active {
     }
 
 
-    boolean collidable() {
+    static boolean collidable() {
         return true;
     }
 
     /**
      * returns true if the event has been absorbed, false if it should continue propagating
      */
-    public Surface onTouch(Finger finger, Collidable body, ClosestRay hitPoint, short[] buttons, SpaceGraph3D space) {
+    public static Surface onTouch(Finger finger, Collidable body, ClosestRay hitPoint, short[] buttons, SpaceGraph3D space) {
         return null;
     }
 

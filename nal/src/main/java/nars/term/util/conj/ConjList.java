@@ -555,7 +555,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     }
 
-    public int centerByIndex(int startIndex, int endIndex) {
+    public static int centerByIndex(int startIndex, int endIndex) {
         return startIndex + (endIndex - 1 - startIndex) / 2;
     }
 

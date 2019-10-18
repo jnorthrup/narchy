@@ -113,7 +113,7 @@ public class Rule1DBin {
 
 	
 	
-	private String LPad(String sStr, int num, char chPad) {
+	private static String LPad(String sStr, int num, char chPad) {
 		int i;
         int iLen = sStr.length();
 		if (iLen < num) {
@@ -125,7 +125,7 @@ public class Rule1DBin {
 
 	
 	
-	private String CvtBinStr2HexStr(String sBin) {
+	private static String CvtBinStr2HexStr(String sBin) {
 		int iVal;
 		String sTok;
 
@@ -155,7 +155,7 @@ public class Rule1DBin {
 
 	
 	
-	private String CvtHexStr2BinStr(String sHex) {
+	private static String CvtHexStr2BinStr(String sHex) {
         int i;
 
         String sBinBff = "";
@@ -218,7 +218,7 @@ public class Rule1DBin {
 
 	
 	
-	private String DelLedChr(String sStr, char cChar) {
+	private static String DelLedChr(String sStr, char cChar) {
 		while ((!sStr.isEmpty()) && (sStr.charAt(0) == cChar))
 			sStr = sStr.substring(1);
 

@@ -111,7 +111,7 @@ public class Windo extends MutableUnitContainer {
     /**
      * alllows filtering of certain finger modes
      */
-    boolean fingerable(DragEdit d) {
+    static boolean fingerable(DragEdit d) {
         return d != null; //HACK
     }
 

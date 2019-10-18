@@ -158,7 +158,7 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
     }
 
 
-    void cellVisible(Surface s, float cw, float ch, float cx, float cy) {
+    static void cellVisible(Surface s, float cw, float ch, float cx, float cy) {
         s.pos(RectFloat.XYWH(cx, cy, cw, ch));
     }
 

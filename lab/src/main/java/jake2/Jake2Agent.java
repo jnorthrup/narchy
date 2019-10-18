@@ -122,7 +122,7 @@ public class Jake2Agent extends GameX implements Runnable {
 
     }
 
-    protected String nextMap() {
+    protected static String nextMap() {
         return "demo1";
     }
 

@@ -18,7 +18,7 @@ public class MJPalette {
 
 	
 	
-	private int MakeRGB(int r, int g, int b) {
+	private static int MakeRGB(int r, int g, int b) {
 		return b + (g << 8) + (r << 16) + (0xff << 24);
 	}
 

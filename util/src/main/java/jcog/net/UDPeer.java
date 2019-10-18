@@ -439,7 +439,7 @@ public class UDPeer extends UDP {
         //nothing
     }
 
-    protected boolean share(Msg m, @Nullable UDProfile from) {
+    protected static boolean share(Msg m, @Nullable UDProfile from) {
         return from!=null; //default: only share from known peers
     }
 

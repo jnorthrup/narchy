@@ -77,7 +77,7 @@ public class CompoundDecompose extends NativeHow {
 	/**
 	 * selects the decomposition strategy for the given Compound
 	 */
-	protected TermDecomposer decomposer(Compound t) {
+	protected static TermDecomposer decomposer(Compound t) {
 		switch (t.op()) {
 			case IMPL:
 				return DynamicTermDecomposer.WeightedImpl;
@@ -92,7 +92,8 @@ public class CompoundDecompose extends NativeHow {
 	 * determines forward growth target. null to disable
 	 * override to provide a custom termlink supplier
 	 */
-    protected @Nullable Term decompose(Compound src, Derivation d) {
+    protected @Nullable
+	static Term decompose(Compound src, Derivation d) {
 		return decomposer(src).decompose(src, d.random);
 	}
 

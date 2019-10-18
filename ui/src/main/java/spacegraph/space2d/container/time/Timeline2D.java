@@ -228,7 +228,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         }
     }
 
-    private void setLayerTime(Surface x, long s, long e) {
+    private static void setLayerTime(Surface x, long s, long e) {
         if (x instanceof TimeRangeAware)
             ((TimeRangeAware) x).setTime(s, e);
     }

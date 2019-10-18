@@ -127,7 +127,7 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
         return true;
     }
 
-    private boolean includeNull() {
+    private static boolean includeNull() {
         return false;
     }
 

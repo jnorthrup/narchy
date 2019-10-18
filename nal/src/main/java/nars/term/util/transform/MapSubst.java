@@ -173,7 +173,7 @@ public enum MapSubst { ;
 
     }
 
-    public MapSubst clear() {
+    public static MapSubst clear() {
         throw new UnsupportedOperationException();
 //        xy.clear();
 //        return this;

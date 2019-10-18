@@ -53,7 +53,7 @@ public class MJFavourities extends Dialog implements ActionListener {
 
         Vector vLines = new Vector();
         MJTools mjT = new MJTools();
-		if (mjT.LoadResTextFile("fav.txt", vLines)) {
+		if (MJTools.LoadResTextFile("fav.txt", vLines)) {
 			for (i = 0; i < vLines.size(); i++) {
 				if (!((String) vLines.elementAt(i)).startsWith("//"))
 					LstFiles.add((String) vLines.elementAt(i));
@@ -81,7 +81,7 @@ public class MJFavourities extends Dialog implements ActionListener {
 					sGameName = sItem.substring(0, whereSep); 
 					sRuleName = sItem.substring(whereSep + 1); 
 
-					sGameName = mjUI.mjr.GetGameName(mjUI.mjr
+					sGameName = MJRules.GetGameName(MJRules
 							.GetGameIndex(sGameName));
 					mjUI.ActivateGame(sGameName);
 					mjUI.ActivateRule(sRuleName);

@@ -43,11 +43,11 @@ public final class StatePath extends FasterList<Context> {
         return m;
     }
 
-    private Iterator all(String key) {
+    private static Iterator all(String key) {
         throw new TODO();
     }
 
-    public <X> X first(String key) {
+    public static <X> X first(String key) {
         return (X)(all(key).next());
     }
 

@@ -91,7 +91,7 @@ public class HiddenLayer {
         }
     }
 
-    public double[] dropout(int size, double p, Random rng) {
+    public static double[] dropout(int size, double p, Random rng) {
         double[] mask = IntStream.range(0, size).mapToDouble(i -> binomial(1, p, rng)).toArray();
 
         return mask;

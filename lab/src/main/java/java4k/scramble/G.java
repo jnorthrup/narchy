@@ -895,7 +895,7 @@ public class G extends Applet implements Runnable
         }
     }
 
-    public int addSprite(int[] st, int[] sx, int[] sy, int[] sd, int t, int x, int y )
+    public static int addSprite(int[] st, int[] sx, int[] sy, int[] sd, int t, int x, int y)
     {
         final int G_FLAT    = 15;
         for( int i = t < G_FLAT ? 0 : 40; i < st.length; i++ )

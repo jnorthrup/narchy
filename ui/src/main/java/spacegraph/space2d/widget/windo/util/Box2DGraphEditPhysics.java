@@ -533,7 +533,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             return radius(sourceBody);
         }
 
-        private float radius(@Nullable Body2D t) {
+        private static float radius(@Nullable Body2D t) {
             Fixture tf = t!=null ? t.fixtures : null;
             return tf!=null ? tf.getAABB(0).extents().length() : 1;
         }

@@ -462,7 +462,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
         }*/
     }
 
-    public boolean collision(VectorSprite object1, VectorSprite object2) {
+    public static boolean collision(VectorSprite object1, VectorSprite object2) {
 
 
         return IntStream.range(0, object1.drawShape.npoints).anyMatch(i -> object2.drawShape.contains(object1.drawShape.xpoints[i], object1.drawShape.ypoints[i]) && object1.active && object2.active) || IntStream.range(0, object2.drawShape.npoints).anyMatch(i -> object1.drawShape.contains(object2.drawShape.xpoints[i], object2.drawShape.ypoints[i]) && object1.active && object2.active);

@@ -122,21 +122,21 @@ public class AudioEvent {
     }
 
     public double getdBSPL() {
-        return this.soundPressureLevel(this.floatBuffer);
+        return AudioEvent.soundPressureLevel(this.floatBuffer);
     }
 
     public void clearFloatBuffer() {
         Arrays.fill(this.floatBuffer, 0.0F);
     }
 
-    private double soundPressureLevel(float[] var1) {
+    private static double soundPressureLevel(float[] var1) {
         double var2 = Math.pow(AudioEvent.localEnergy(var1), 0.5D);
         var2 /= (double) var1.length;
         return AudioEvent.linearToDecibel(var2);
     }
 
     public boolean isSilence(double var1) {
-        return this.soundPressureLevel(this.floatBuffer) < var1;
+        return AudioEvent.soundPressureLevel(this.floatBuffer) < var1;
     }
 
     public void setBytesProcessing(int var1) {

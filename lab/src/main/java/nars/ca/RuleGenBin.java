@@ -30,7 +30,7 @@ public class RuleGenBin {
 
 	
 	
-	private String ExpandIt(String sStr) {
+	private static String ExpandIt(String sStr) {
 		int i, j;
         String sRetString = "";
 		char cChar;
@@ -112,7 +112,7 @@ public class RuleGenBin {
 	}
 
 	
-	private String OneToken(int iVal, int iCnt) {
+	private static String OneToken(int iVal, int iCnt) {
 		String sChr;
 
         String sRetStr = "";
@@ -130,7 +130,7 @@ public class RuleGenBin {
 	}
 
 	
-	private String CompactIt(String sStr) {
+	private static String CompactIt(String sStr) {
 		int i, iThis;
         String sResult = "";
 

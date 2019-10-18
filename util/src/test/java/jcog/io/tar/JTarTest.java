@@ -157,7 +157,7 @@ class JTarTest {
 		rif.close();
 	}
 	
-	private void untar(TarInputStream tis, String destFolder) throws IOException {
+	private static void untar(TarInputStream tis, String destFolder) throws IOException {
 		BufferedOutputStream dest = null;
 
 		TarEntry entry;
@@ -188,7 +188,7 @@ class JTarTest {
 		}
 	}
 
-	private void tarFolder(String parent, String path, TarOutputStream out) throws IOException {
+	private static void tarFolder(String parent, String path, TarOutputStream out) throws IOException {
 		BufferedInputStream origin = null;
 		File f = new File(path);
 		String files[] = f.list();
@@ -264,7 +264,7 @@ class JTarTest {
 		assertTrue(fileEntry.equals(createdEntry));
 	}
 
-	private void assertFileContents(File destFolder) throws IOException {
+	private static void assertFileContents(File destFolder) throws IOException {
 		assertEquals("HPeX2kD5kSTc7pzCDX", TARTestUtils.readFile(new File(destFolder, "tartest/one")));
 		assertEquals("gTzyuQjfhrnyX9cTBSy", TARTestUtils.readFile(new File(destFolder, "tartest/two")));
 		assertEquals("KG889vdgjPHQXUEXCqrr", TARTestUtils.readFile(new File(destFolder, "tartest/three")));

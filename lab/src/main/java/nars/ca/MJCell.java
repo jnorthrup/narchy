@@ -190,12 +190,12 @@ public class MJCell extends Applet {
 	
 	
 	
-	public String getAppletVersion() {
+	public static String getAppletVersion() {
 		return VSN_NUM;
 	}
 
 	
-	public String getAppletName() {
+	public static String getAppletName() {
 		return "Mirek's Java Cellebration v." + getAppletVersion();
 	}
 

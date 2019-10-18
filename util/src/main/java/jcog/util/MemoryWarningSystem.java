@@ -61,7 +61,7 @@ public class MemoryWarningSystem {
 
     public MemoryWarningSystem() {
         MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
-        tenuredGenPool = this.findTenuredGenPool();
+        tenuredGenPool = MemoryWarningSystem.findTenuredGenPool();
         NotificationEmitter emitter = (NotificationEmitter) mbean;
         emitter.addNotificationListener((n, hb) -> {
             if (MemoryNotificationInfo.MEMORY_THRESHOLD_EXCEEDED.equals(n.getType())) {
@@ -100,7 +100,7 @@ public class MemoryWarningSystem {
      * Tenured Space Pool can be determined by it being of type
      * HEAP and by it being possible to set the usage threshold.
      */
-    private MemoryPoolMXBean findTenuredGenPool() {
+    private static MemoryPoolMXBean findTenuredGenPool() {
         MemoryPoolMXBean last = null;
         for (MemoryPoolMXBean pool : ManagementFactory.getMemoryPoolMXBeans()) {
             // I don't know whether this approach is better, or whether

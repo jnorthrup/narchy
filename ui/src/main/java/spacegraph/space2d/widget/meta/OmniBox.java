@@ -250,7 +250,7 @@ public class OmniBox extends Widget {
             public Querying start() {
                 if (query.get() == this) {
 
-                    user.run(this);
+                    User.run(this);
                 }
                 return this;
             }

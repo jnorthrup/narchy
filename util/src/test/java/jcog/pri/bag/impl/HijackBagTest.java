@@ -194,7 +194,7 @@ class HijackBagTest {
 
     }
 
-    private void assertApproximatelySized(Table<String, ?> b, int expected, float closeness) {
+    private static void assertApproximatelySized(Table<String, ?> b, int expected, float closeness) {
         int bSize = b.size();
         float error = Math.abs(expected - bSize) / (Math.max(bSize, (float) expected));
         System.out.println(bSize + "  === " + expected + ", diff=" + error);

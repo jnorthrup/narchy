@@ -210,7 +210,7 @@ public class TinySpeech {
         return bufPos;
     }
 
-    private float resonator(float f0, int s) {
+    private static float resonator(float f0, int s) {
         float x = sawtooth(s * (f0 * PI_2 / SAMPLE_FREQUENCY));
         return x;
     }

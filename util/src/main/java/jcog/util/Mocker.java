@@ -189,7 +189,7 @@ public enum Mocker {
         protected abstract Object doInvoke(Object proxy, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException;
 
         @SuppressWarnings("WeakerAccess")
-        MethodHandle methodHandleForProxy(Object proxy, Method m) {
+        static MethodHandle methodHandleForProxy(Object proxy, Method m) {
             try {
                 Class<?> declaringClass = m.getDeclaringClass();
                 final MethodHandles.Lookup lookup = PRIVATE_LOOKUP.get(declaringClass);

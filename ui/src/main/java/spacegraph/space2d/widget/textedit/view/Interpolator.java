@@ -83,7 +83,7 @@ public enum Interpolator {
       });
 
   /** point sample: x in range 0..1, y in range 0..1 */
-  public float get(float x) {
+  public static float get(float x) {
       throw new TODO();
   }
 

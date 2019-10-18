@@ -56,7 +56,7 @@ class RouletteTest {
     }
 
 
-    private void testMutableRouletteRandom(int uniques, int samples, int seed) {
+    private static void testMutableRouletteRandom(int uniques, int samples, int seed) {
         XoRoShiRo128PlusRandom rng = new XoRoShiRo128PlusRandom(seed);
 
         float[] w = new float[uniques];
@@ -66,7 +66,7 @@ class RouletteTest {
         testMutableRoulette(rng, uniques, samples, w);
     }
 
-    private void testMutableRoulette(Random rng, int uniques, int samples, float[] w) {
+    private static void testMutableRoulette(Random rng, int uniques, int samples, float[] w) {
         MutableRoulette m = new MutableRoulette(uniques, (i) -> w[i], rng);
 
         Frequency f = new Frequency();

@@ -75,7 +75,7 @@ public class HopfieldMap<X> {
         return this;
     }
 
-    public float alpha() {
+    public static float alpha() {
         return 0.2f;
     }
 
@@ -123,7 +123,7 @@ public class HopfieldMap<X> {
         return this;
     }
 
-    protected float out(float v) {
+    protected static float out(float v) {
         
         return v >= 0 ? 1 : -1;
         

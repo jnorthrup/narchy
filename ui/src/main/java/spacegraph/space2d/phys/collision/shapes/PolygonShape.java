@@ -510,7 +510,7 @@ public class PolygonShape extends Shape {
         return false;
     }
 
-    private void computeCentroidToOut(final v2[] vs, final int count, final v2 out) {
+    private static void computeCentroidToOut(final v2[] vs, final int count, final v2 out) {
         assert (count >= 3);
 
         out.set(0.0f, 0.0f);

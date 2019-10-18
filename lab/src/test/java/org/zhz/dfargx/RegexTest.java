@@ -103,7 +103,7 @@ public class RegexTest {
         testSearchingSpeed(regex, str, num);
     }
 
-    private void testMatchingSpeed(String regex, String str, int num) {
+    private static void testMatchingSpeed(String regex, String str, int num) {
         System.out.println("Matching " + num + " strings using: ");
         System.out.println("[Pattern] " + regex);
         System.out.println("[String]" + str);
@@ -133,11 +133,11 @@ public class RegexTest {
         Assertions.assertTrue(dfaResult == jpResult);
     }
 
-    private float matchesPerMS(float num, long pre) {
+    private static float matchesPerMS(float num, long pre) {
         return (num * 1f)/(System.nanoTime() - pre);
     }
 
-    private void testSearchingSpeed(String regex, String str, int num) {
+    private static void testSearchingSpeed(String regex, String str, int num) {
         long pre = System.nanoTime();
         RegexSearcher searcher = new RegexSearcher(regex);
         for (int i = 0; i < num; i++) {

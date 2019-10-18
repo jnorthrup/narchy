@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static nars.$.$;
 
@@ -68,7 +67,7 @@ public class SoNAR extends TimerTask {
                 return null;
         }
 
-        public SoundProducer byHash(Object x) {
+        public static SoundProducer byHash(Object x) {
 
 
 
@@ -214,20 +213,20 @@ public class SoNAR extends TimerTask {
         SoNAR s = new SoNAR(n);
         SampleDirectory d = new SampleDirectory();
         d.samples("/home/me/wav/legoweltkord");
-        s.listen(n.conceptualize($("a")), d::byHash);
-        s.listen(n.conceptualize($("b")), d::byHash);
-        s.listen(n.conceptualize($("c")), d::byHash);
-        s.listen(n.conceptualize($("d")), d::byHash);
-        s.listen(n.conceptualize($("e")), d::byHash);
-        s.listen(n.conceptualize($("f")), d::byHash);
-        s.listen(n.conceptualize($("g")), d::byHash);
-        s.listen(n.conceptualize($("a:b")), d::byHash);
-        s.listen(n.conceptualize($("b:c")), d::byHash);
-        s.listen(n.conceptualize($("c:d")), d::byHash);
-        s.listen(n.conceptualize($("d:e")), d::byHash);
-        s.listen(n.conceptualize($("e:f")), d::byHash);
-        s.listen(n.conceptualize($("f:g")), d::byHash);
-        s.listen(n.conceptualize($("a:g")), d::byHash);
+        s.listen(n.conceptualize($("a")), SampleDirectory::byHash);
+        s.listen(n.conceptualize($("b")), SampleDirectory::byHash);
+        s.listen(n.conceptualize($("c")), SampleDirectory::byHash);
+        s.listen(n.conceptualize($("d")), SampleDirectory::byHash);
+        s.listen(n.conceptualize($("e")), SampleDirectory::byHash);
+        s.listen(n.conceptualize($("f")), SampleDirectory::byHash);
+        s.listen(n.conceptualize($("g")), SampleDirectory::byHash);
+        s.listen(n.conceptualize($("a:b")), SampleDirectory::byHash);
+        s.listen(n.conceptualize($("b:c")), SampleDirectory::byHash);
+        s.listen(n.conceptualize($("c:d")), SampleDirectory::byHash);
+        s.listen(n.conceptualize($("d:e")), SampleDirectory::byHash);
+        s.listen(n.conceptualize($("e:f")), SampleDirectory::byHash);
+        s.listen(n.conceptualize($("f:g")), SampleDirectory::byHash);
+        s.listen(n.conceptualize($("a:g")), SampleDirectory::byHash);
         try {
             s.audio.record("/tmp/test.raw");
         } catch (FileNotFoundException e) {

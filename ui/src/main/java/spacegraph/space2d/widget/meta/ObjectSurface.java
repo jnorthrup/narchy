@@ -128,11 +128,11 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
         return builder.build(x);
     }
 
-    public String objLabel(Object x, Object relation) {
+    public static String objLabel(Object x, Object relation) {
         return relation == null ? x.toString() : relationLabel(relation);
     }
 
-    public String relationLabel(@Nullable Object relation) {
+    public static String relationLabel(@Nullable Object relation) {
         if (relation == null) return "";
         else if (relation instanceof Field) {
             return ((Field) relation).getName();
@@ -152,7 +152,7 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
         super.starting();
     }
 
-    protected String label(Object obj) {
+    protected static String label(Object obj) {
         return obj.toString();
     }
 

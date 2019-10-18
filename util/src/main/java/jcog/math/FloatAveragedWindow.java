@@ -140,7 +140,7 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
     /**
      * supplies a "high-pass filter" view of this window
      */
-    public FloatAveragedWindow highpass() {
+    public static FloatAveragedWindow highpass() {
 //                if (x != x)
 //                    return this.prev;
 //
@@ -254,7 +254,7 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
     }
 
     /** @standard deviation */
-    public double stddev(){
+    public static double stddev(){
         throw new TODO();
 //        float mean = mean();
 //        float sum = 0;

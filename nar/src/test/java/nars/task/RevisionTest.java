@@ -155,7 +155,7 @@ public class RevisionTest {
 
     }
 
-    private Task merge(Task t01, Task t45, NAR n) {
+    private static Task merge(Task t01, Task t45, NAR n) {
         return Revision.merge(n, false, 2, 2, new Task[]{t01, t45}).getOne();
     }
 
@@ -324,7 +324,7 @@ public class RevisionTest {
         testConfidenceAccumulation(3, 1f, 0.9f);
     }
 
-    private void testConfidenceAccumulation(int repeats, float freq, float inConf) {
+    private static void testConfidenceAccumulation(int repeats, float freq, float inConf) {
         int maxBeliefs = repeats * 4;
 
         NAR n = newNAR(maxBeliefs);
@@ -474,7 +474,7 @@ public class RevisionTest {
         testRevision(32, false);
     }
 
-    private void testRevision(int delay1, boolean beliefOrGoal) {
+    private static void testRevision(int delay1, boolean beliefOrGoal) {
 
 
         NAR n = newNAR(6);

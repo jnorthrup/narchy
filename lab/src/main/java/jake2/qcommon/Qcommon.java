@@ -77,13 +77,13 @@ public final class Qcommon extends Globals {
 			Cbuf.Execute();
 
 			if (Globals.dedicated.value != 1.0f) {
-				Jake2.q2DataTool.setStatus("initializing filesystem...");
+				Q2DataTool.setStatus("initializing filesystem...");
 	                }
 			
 			FS.InitFilesystem();
 
 			if (Globals.dedicated.value != 1.0f) {
-				Jake2.q2DataTool.setStatus("loading config...");
+				Q2DataTool.setStatus("loading config...");
 			}
 			
 			reconfigure(false);
@@ -120,19 +120,19 @@ public final class Qcommon extends Globals {
 			Cvar.Get("version", s, CVAR_SERVERINFO | CVAR_NOSET);
 
 			if (Globals.dedicated.value != 1.0f) {
-				Jake2.q2DataTool.setStatus("initializing network subsystem...");
+				Q2DataTool.setStatus("initializing network subsystem...");
 			}
 			
 			NET.Init();	
 			Netchan.Netchan_Init();	
 
 			if (Globals.dedicated.value != 1.0f) {			
-				Jake2.q2DataTool.setStatus("initializing server subsystem...");
+				Q2DataTool.setStatus("initializing server subsystem...");
 			}
 			SV_MAIN.SV_Init();	
 			
 			if (Globals.dedicated.value != 1.0f) {
-				Jake2.q2DataTool.setStatus("initializing client subsystem...");
+				Q2DataTool.setStatus("initializing client subsystem...");
 			}
 			
 			CL.Init();

@@ -30,7 +30,7 @@ public abstract class SpaceMouse extends MouseAdapter {
 
 
 
-    public Spatial pickSpatial(float x, float y) {
+    public static Spatial pickSpatial(float x, float y) {
         throw new TODO();
     }
 

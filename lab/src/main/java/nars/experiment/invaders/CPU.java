@@ -341,7 +341,7 @@ public class CPU {
         System.out.println();
     }
 
-    public boolean parity(int x, int size) {
+    public static boolean parity(int x, int size) {
         int i;
         int p = 0;
         x &= ((1 << size) - 1);
@@ -354,7 +354,7 @@ public class CPU {
         return (0 == (p & 0x1));
     }
 
-    public void UnimplementedInstruction() {
+    public static void UnimplementedInstruction() {
         System.out.println("Error: Unimplemented instruction\n");
         System.exit(0);
     }

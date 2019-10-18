@@ -265,7 +265,7 @@ public class ISOIOPrologLibTestCase {
 
 
 
-	private String getStringDataWritten(String filePath) throws IOException
+	private static String getStringDataWritten(String filePath) throws IOException
 	{
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));
 		String dataRead = reader.readLine();
@@ -273,7 +273,7 @@ public class ISOIOPrologLibTestCase {
 		return dataRead;
 	}
 
-	private int getByteDataWritten(String filePath) throws IOException
+	private static int getByteDataWritten(String filePath) throws IOException
 	{
 		FileInputStream fins = new FileInputStream(filePath);
 		int dataRead = fins.read();

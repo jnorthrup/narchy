@@ -20,11 +20,11 @@ public class TreePrinter {
         return instance;
     }
 
-    public void printTreeCopied(Node root) {
+    public static void printTreeCopied(Node root) {
         printTree(copyTree(root));
     }
 
-    public void printTree(Node root) {
+    public static void printTree(Node root) {
         int h = calculateDepth(root, 0);
         complete(root, 0, h, LNull::new);
         Queue<Node> q = new ArrayDeque<>();
@@ -69,11 +69,11 @@ public class TreePrinter {
         }
     }
 
-    private void complete(Node node, int k, int h) {
+    private static void complete(Node node, int k, int h) {
         complete(node, k, h, LNull::new);
     }
 
-    private void complete(Node node, int k, int h, Supplier<Node> fillEmptyWith) {
+    private static void complete(Node node, int k, int h, Supplier<Node> fillEmptyWith) {
         if (k + 1 < h) {
             node.ifEmptyLeft(fillEmptyWith);
             complete(node.left(), k + 1, h, fillEmptyWith);
@@ -82,7 +82,7 @@ public class TreePrinter {
         }
     }
 
-    private int calculateDepth(Node node, int depth) {
+    private static int calculateDepth(Node node, int depth) {
         depth += 1;
         int l = depth, r = depth;
         if (node.hasLeft()) {
@@ -94,7 +94,7 @@ public class TreePrinter {
         return l > r ? l : r > depth ? r : depth;
     }
 
-    private Node copyTree(Node root) {
+    private static Node copyTree(Node root) {
         Node newRoot = root.copy();
         if (root.hasLeft()) {
             newRoot.setLeft(copyTree(root.left()));

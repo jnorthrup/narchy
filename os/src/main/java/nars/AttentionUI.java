@@ -249,14 +249,14 @@ public class AttentionUI {
 		}
 
 		private void update() {
-			List<Surface> channel = n.parts(What.class).map(this::mix).collect(toList());
+			List<Surface> channel = n.parts(What.class).map(WhatMixer::mix).collect(toList());
 			if (channel.isEmpty())
 				set(new BitmapLabel("Empty"));
 			else
 				set(channel);
 		}
 
-		private Surface mix(What p) {
+		private static Surface mix(What p) {
 			FloatSlider amp = new WhatPri(p);
 			//Surface s = new Bordering(amp);
 			return LabeledPane.the(

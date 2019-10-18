@@ -1,7 +1,6 @@
 package jcog.lab;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
 import com.google.common.primitives.Primitives;
 import jcog.data.graph.ObjectGraph;
 import jcog.data.list.FasterList;
@@ -313,7 +312,7 @@ public class Lab<X> {
                     return false;
 
                 Class<?> targetType = target.getClass();
-                if (!filter.includeClass(targetType))
+                if (!DiscoveryFilter.includeClass(targetType))
                     return false;
 
                 if (contains(targetType)) {
@@ -327,23 +326,23 @@ public class Lab<X> {
             @Override
             public boolean recurse(Object x) {
                 Class<?> xc = x.getClass();
-                return filter.includeClass(xc) && !contains(xc);
+                return DiscoveryFilter.includeClass(xc) && !contains(xc);
             }
 
             @Override
             public boolean includeValue(Object v) {
-                return filter.includeClass(v.getClass());
+                return DiscoveryFilter.includeClass(v.getClass());
             }
 
             @Override
             public boolean includeClass(Class<?> c) {
-                return filter.includeClass(c);
+                return DiscoveryFilter.includeClass(c);
             }
 
             @Override
             public boolean includeField(Field f) {
                 int m = f.getModifiers();
-                if (!Modifier.isPublic(m) || !filter.includeField(f))
+                if (!Modifier.isPublic(m) || !DiscoveryFilter.includeField(f))
                     return false;
 
                 Class<?> t = Primitives.wrap(f.getType());
@@ -463,11 +462,11 @@ public class Lab<X> {
 
         public static final DiscoveryFilter all = new DiscoveryFilter();
 
-        protected boolean includeField(Field f) {
+        protected static boolean includeField(Field f) {
             return true;
         }
 
-        protected boolean includeClass(Class<?> targetType) {
+        protected static boolean includeClass(Class<?> targetType) {
             return true;
         }
 

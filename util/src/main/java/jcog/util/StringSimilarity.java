@@ -98,7 +98,7 @@ public class StringSimilarity {
             return 1.0 - similarity(s1, s2);
         }
 
-        private int[] matches(final String s1, final String s2) {
+        private static int[] matches(final String s1, final String s2) {
             String max, min;
             if (s1.length() > s2.length()) {
                 max = s1;

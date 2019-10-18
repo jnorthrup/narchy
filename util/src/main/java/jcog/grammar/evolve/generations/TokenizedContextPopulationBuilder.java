@@ -211,7 +211,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
     static final String d = "\\d";
     
     
-    private Node createIndividualFromTokenizedString(List<String> tokenizedString, Map<String,Double> winnerTokens, boolean compact, boolean useMinMaxQuantifier){
+    private static Node createIndividualFromTokenizedString(List<String> tokenizedString, Map<String, Double> winnerTokens, boolean compact, boolean useMinMaxQuantifier){
          
         Deque<Node> nodes = new LinkedList<>();
         Deque<Node> tmp = new LinkedList<>();

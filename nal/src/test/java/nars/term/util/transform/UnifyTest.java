@@ -937,7 +937,7 @@ public class UnifyTest {
      */
 
 
-    private Unify testUnify(Compound a, Compound b, boolean matches) {
+    private static Unify testUnify(Compound a, Compound b, boolean matches) {
 
         AtomicBoolean matched = new AtomicBoolean(false);
 

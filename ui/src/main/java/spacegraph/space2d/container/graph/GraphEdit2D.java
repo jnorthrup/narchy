@@ -1,7 +1,6 @@
 package spacegraph.space2d.container.graph;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
 import com.jogamp.opengl.GL2;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
@@ -117,7 +116,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
     /**
      * wraps window content for a new window
      */
-    private Scale windowContent(Surface xx) {
+    private static Scale windowContent(Surface xx) {
         return new Scale(new MetaFrame(xx), 0.98f);
     }
 

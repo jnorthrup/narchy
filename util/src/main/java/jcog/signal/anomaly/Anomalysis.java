@@ -37,7 +37,7 @@ public class Anomalysis {
     }
 
     /** trainer provided meta-classification of the classification, for interactive or online training purposes */
-    public void feedback(double accuracy, double utility /* .... */) {
+    public static void feedback(double accuracy, double utility /* .... */) {
         throw new TODO();
     }
 

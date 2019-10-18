@@ -1432,7 +1432,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 //        return control.amp(task);
 //    }
 
-    public float value(Term why) {
+    public static float value(Term why) {
         throw new TODO();
     }
 

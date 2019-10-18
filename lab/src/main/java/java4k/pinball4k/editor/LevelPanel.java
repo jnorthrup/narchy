@@ -70,7 +70,7 @@ public class LevelPanel extends JComponent implements MouseListener
 		
 		openLevel(new File(System.getProperty("user.dir") + "/a"));
 		
-		Dimension preferredSize = new Dimension(level.getSize());
+		Dimension preferredSize = new Dimension(Level.getSize());
 		preferredSize.height += 32;
 		setPreferredSize(preferredSize);
 		revalidate();
@@ -171,7 +171,7 @@ public class LevelPanel extends JComponent implements MouseListener
             	g.drawLine(y*16*8, 0, y*16*8, 10000);
             }
             g.setColor(Color.RED);
-            g.drawRect(0, 0, level.getSize().width, level.getSize().height);
+            g.drawRect(0, 0, Level.getSize().width, Level.getSize().height);
             
             level.draw(g2d, this);
             level.drawHandles(g2d, this);
@@ -614,7 +614,7 @@ public class LevelPanel extends JComponent implements MouseListener
 	 * @param p2
 	 * @return
 	 */
-	public Rectangle toRect(Point p1, Point p2) {
+	public static Rectangle toRect(Point p1, Point p2) {
 		return new Rectangle(p1, new Dimension()).union(new Rectangle(p2, new Dimension()));
 	}
 	

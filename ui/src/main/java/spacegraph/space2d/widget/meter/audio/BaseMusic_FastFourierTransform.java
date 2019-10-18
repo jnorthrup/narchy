@@ -50,7 +50,7 @@ class BaseMusic_FastFourierTransform {
     }
 
     
-    private int bitrev( int pJ, int pNu ) {
+    private static int bitrev(int pJ, int pNu) {
         int j1 = pJ;
         int j2;
         int k = 0;

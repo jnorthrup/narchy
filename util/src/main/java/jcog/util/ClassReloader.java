@@ -496,7 +496,7 @@ public class ClassReloader extends ClassLoader {
                 if (allowedPackages != null && !allowedPackages.contains(pkg)) {
                     continue;
                 }
-                this.markClassAsReloadable(this.getClassName(file, pkg));
+                this.markClassAsReloadable(ClassReloader.getClassName(file, pkg));
             } else if (file.isDirectory()) {
                 String newPkg;
                 if (!pkg.isEmpty()) {
@@ -509,7 +509,7 @@ public class ClassReloader extends ClassLoader {
         }
     }
 
-    private String getClassName(File file, String pkg) {
+    private static String getClassName(File file, String pkg) {
         String classSimpleName = file.getName();
         int lastDotIdx = classSimpleName.lastIndexOf('.');
         String className = classSimpleName.substring(0, lastDotIdx);
@@ -759,7 +759,7 @@ public class ClassReloader extends ClassLoader {
             }
         }
 
-        private byte[] loadFile(File file) throws IOException {
+        private static byte[] loadFile(File file) throws IOException {
             int size = (int) file.length();
             byte[] buff = new byte[size];
             FileInputStream fis = new FileInputStream(file);
@@ -818,7 +818,7 @@ public class ClassReloader extends ClassLoader {
             return res;
         }
 
-        private String indentation(boolean indent) {
+        private static String indentation(boolean indent) {
             if (indent) return "    ";
             else return "";
         }

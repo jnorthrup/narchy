@@ -452,7 +452,7 @@ class MJCellUI extends Frame {
         String sGameName = cmbGames.getSelectedItem();
 
 		cmbRules.removeAll();
-        int iGame = mjr.GetGameIndex(sGameName);
+        int iGame = MJRules.GetGameIndex(sGameName);
 		if (iGame >= 0) {
 			for (i = 0; i < mjr.Rules[iGame].size(); i++)
 				cmbRules.addItem(((CARule) mjr.Rules[iGame].elementAt(i)).name);
@@ -463,13 +463,13 @@ class MJCellUI extends Frame {
 	
 	
 	public void ActivateGame(String sGame) {
-		cmbGames.select(mjr.GetGameName(mjr.GetGameIndex(sGame)));
+		cmbGames.select(MJRules.GetGameName(MJRules.GetGameIndex(sGame)));
 		InitRules();
 	}
 
 	public void ActivateGame(int iGame) {
 		if ((iGame >= MJRules.GAME_LIFE) && (iGame <= MJRules.GAME_LAST)) {
-			ActivateGame(mjr.GetGameName(iGame));
+			ActivateGame(MJRules.GetGameName(iGame));
 		}
 	}
 
@@ -488,7 +488,7 @@ class MJCellUI extends Frame {
 		String sGameName = cmbGames.getSelectedItem();
 
         mjb.stop();
-        int iGame = mjr.GetGameIndex(sGameName);
+        int iGame = MJRules.GetGameIndex(sGameName);
         String sRuleDef = mjr.GetRuleDef(sGameName, sRuleName);
 		SendRule(iGame, sRuleName, sRuleDef);
 
@@ -814,7 +814,7 @@ class MJCellUI extends Frame {
 				" Enter your own rules (refer to the rules lexicon for syntax):");
 		requestFocus();
 		if (ib.isAccepted) {
-			String sGameName = mjr.GetGameName(mjb.CrrGame); 
+			String sGameName = MJRules.GetGameName(mjb.CrrGame);
 			String sRuleDef = ib.txtFld.getText();
 			sRuleDef = mjr.CorrectRuleDef(sGameName, sRuleDef);
 
@@ -1093,7 +1093,7 @@ class MJCellUI extends Frame {
 		btnPnl.setBackground(Color.lightGray);
 		btnPnl.add(btnOk);
 		ta.setEditable(false);
-		ta.append("Rule family: " + mjr.GetGameName(mjb.CrrGame) + '\n');
+		ta.append("Rule family: " + MJRules.GetGameName(mjb.CrrGame) + '\n');
 		ta.append("Rule name: " + mjb.RuleName + '\n');
 		ta.append("Rule definition: " + mjb.RuleDef + '\n');
 		ta.append("Count of states: " + mjb.StatesCount + '\n');

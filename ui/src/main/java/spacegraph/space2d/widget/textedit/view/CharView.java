@@ -14,7 +14,7 @@ import spacegraph.video.Tex;
     this.bufferChar = bufferChar;
   }
 
-  public float width() {
+  public static float width() {
     return 1; //textureProvider.getWidth(String.valueOf(bufferChar.getChar()));
   }
 

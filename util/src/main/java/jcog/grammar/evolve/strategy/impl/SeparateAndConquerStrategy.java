@@ -76,7 +76,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
     }
 
 
-    private void initialize() {
+    private static void initialize() {
         throw new RuntimeException("share the impl from DiversityElitismStrategy");
 
 

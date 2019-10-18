@@ -209,7 +209,7 @@ public class SarsaLearner {
      * @param traces
      * @param factor
      */
-    protected void decayTraces(double[] traces, double factor) {
+    protected static void decayTraces(double[] traces, double factor) {
         for (int f = 0; f < traces.length; f++)
             traces[f] *= factor;
     }
@@ -220,7 +220,7 @@ public class SarsaLearner {
      * @param factor
      * @param state
      */
-    protected void replaceTraces(double[] traces, double factor, double[] state) {
+    protected static void replaceTraces(double[] traces, double factor, double[] state) {
         for (int f = 0; f < traces.length; f++) {
             
             if (state[f] == 0)

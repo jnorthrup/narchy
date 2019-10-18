@@ -74,7 +74,7 @@ public class Dropout {
                     hiddenLayers[i].forward(layer_input, layer_output);
 
                     if(dropout) {
-                        double[] mask = hiddenLayers[i].dropout(layer_output.length, p_dropout, rng);
+                        double[] mask = HiddenLayer.dropout(layer_output.length, p_dropout, rng);
                         for(int j=0; j<layer_output.length; j++) layer_output[j] *= mask[j];
 
                         dropout_masks.add(mask.clone());

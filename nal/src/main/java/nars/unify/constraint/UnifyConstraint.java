@@ -105,7 +105,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 
 					} else if (!xRel && !yRel) {
 						//uni constraint
-						if (!x.remainAmong(y))
+						if (!UnifyConstraint.remainAmong(y))
 							return false;
 					}
 
@@ -115,7 +115,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 		return true;
 	}
 
-	protected boolean remainAmong(UnifyConstraint y) {
+	protected static boolean remainAmong(UnifyConstraint y) {
 		return true;
 	}
 

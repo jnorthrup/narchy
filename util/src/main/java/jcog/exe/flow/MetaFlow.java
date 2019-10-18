@@ -185,7 +185,7 @@ public class MetaFlow {
 //                    } else { //TODO
                         return !equalsClassAndMethod(f, base);
 //                    }
-                }).filter(MetaFlow.this::frameFilter).forEach(buffer::add);
+                }).filter(MetaFlow::frameFilter).forEach(buffer::add);
                 return null;
             });
 
@@ -279,7 +279,7 @@ public class MetaFlow {
     }
 
     /** shared by all cursors */
-    protected boolean frameFilter(StackWalker.StackFrame f) {
+    protected static boolean frameFilter(StackWalker.StackFrame f) {
         return !f.getClassName().equals(thisClassName);
     }
 

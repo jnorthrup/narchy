@@ -363,19 +363,19 @@ class MyCMAESOptimizerTest {
 	 * @param maxEvaluations Maximum number of evaluations.
 	 * @param expected       Expected point / value.
 	 */
-	private void doTest(MultivariateFunction func,
-						double[] startPoint,
-						double[] inSigma,
-						double[][] boundaries,
-						GoalType goal,
-						int lambda,
-						boolean isActive,
-						int diagonalOnly,
-						double stopValue,
-						double fTol,
-						double pointTol,
-						int maxEvaluations,
-						PointValuePair expected) {
+	private static void doTest(MultivariateFunction func,
+							   double[] startPoint,
+							   double[] inSigma,
+							   double[][] boundaries,
+							   GoalType goal,
+							   int lambda,
+							   boolean isActive,
+							   int diagonalOnly,
+							   double stopValue,
+							   double fTol,
+							   double pointTol,
+							   int maxEvaluations,
+							   PointValuePair expected) {
 		int dim = startPoint.length;
 
 		MyCMAESOptimizer optim = new MyCMAESOptimizer(10000, stopValue, isActive, diagonalOnly,

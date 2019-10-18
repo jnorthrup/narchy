@@ -54,7 +54,7 @@ public class JsonPostProcessor extends BasicPostprocessor {
         
     }
 
-    private void saveToJson(Results results, String pathOfFile) {
+    private static void saveToJson(Results results, String pathOfFile) {
         try {
             Util.jsonMapper.writerFor(Results.class).writeValue(new File(pathOfFile), results);
         } catch (IOException e) {
@@ -66,7 +66,7 @@ public class JsonPostProcessor extends BasicPostprocessor {
 
     }
 
-    private void saveFile(String text, String pathOfFile) {
+    private static void saveFile(String text, String pathOfFile) {
         try {
             Writer writer = new OutputStreamWriter(new FileOutputStream(pathOfFile), StandardCharsets.UTF_8);
             writer.write(text);

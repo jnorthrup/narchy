@@ -55,7 +55,7 @@ public class FloatRange extends MutableFloat /*AtomicFloat*/ {
     }
 
 
-    public FloatRange mapRange(float mapMin, float mapMax) {
+    public static FloatRange mapRange(float mapMin, float mapMax) {
         throw new TODO();
     }
 

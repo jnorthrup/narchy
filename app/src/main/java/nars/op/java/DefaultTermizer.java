@@ -210,7 +210,7 @@ public class DefaultTermizer implements Termizer {
     }
 
 
-    private boolean reportClassInPackage( Class oc) {
+    private static boolean reportClassInPackage(Class oc) {
         if (classInPackageExclusions.contains(oc)) return false;
 
         if (Term.class.isAssignableFrom(oc)) return false;
@@ -224,7 +224,7 @@ public class DefaultTermizer implements Termizer {
      * (#arg1, #arg2, ...), #returnVar
      */
     
-    private Term[] getMethodArgVariables( Method m) {
+    private static Term[] getMethodArgVariables(Method m) {
 
 
         String varPrefix = m.getName() + '_';
@@ -350,7 +350,7 @@ public class DefaultTermizer implements Termizer {
         return oe;
     }
 
-    private boolean cacheableInstance(Object o) {
+    private static boolean cacheableInstance(Object o) {
 
 
         return true;

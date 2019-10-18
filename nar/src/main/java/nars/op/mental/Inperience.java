@@ -169,7 +169,7 @@ public class Inperience extends TaskTransformAction {
     }
 
     /** attempt to filter believe(believe(.... */
-    private boolean isRecursive(Task t, Term self) {
+    private static boolean isRecursive(Task t, Term self) {
         Term x = t.term();
          if (x.hasAll(INH.bit | PROD.bit) && x.op()==INH && x.sub(0).op()==PROD && x.sub(1).equals(verb(t.punc()))) {
              Term inperiencer = x.sub(0).sub(0);

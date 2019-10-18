@@ -135,7 +135,7 @@ public class FeatureMap {
      * 
      * @return
      */
-    public int historyLength() {
+    public static int historyLength() {
         return 1;
     }
 }

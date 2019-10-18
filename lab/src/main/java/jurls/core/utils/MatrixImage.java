@@ -56,7 +56,7 @@ public class MatrixImage extends JComponent {
         this.maxValue = max;
     }
 
-    public int val2col(final double n, final double min, final double max) {
+    public static int val2col(final double n, final double min, final double max) {
         final double mean = (max + min) / 2.0;
         final double n5 = min + 2.0 * (max - min) / 3.0;
         int r;
@@ -116,7 +116,7 @@ public class MatrixImage extends JComponent {
 
     }
 
-    public int getColor(final double value) {
+    public static int getColor(final double value) {
         return val2col(value, -1, 1);
     }
 
@@ -229,7 +229,7 @@ public class MatrixImage extends JComponent {
         repaint();
     }
 
-    protected void pixel(BufferedImage image, int j, int i, double value) {
+    protected static void pixel(BufferedImage image, int j, int i, double value) {
         image.setRGB(j, i, getColor(value));
     }
 

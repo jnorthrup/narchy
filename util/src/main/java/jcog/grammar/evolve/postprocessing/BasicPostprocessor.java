@@ -72,9 +72,9 @@ public class BasicPostprocessor implements Postprocessor {
         }
         try {
             
-            results.setBestExtractions(this.getEvaluations(results.getBestSolution().getSolution(), config, Context.EvaluationPhases.LEARNING));
-            results.setBestExtractionsStrings(this.getEvaluationsStrings(results.getBestExtractions(),config.getDatasetContainer().getLearningDataset()));
-            results.setBestExtractionsStats(this.getEvaluationStats(results.getBestExtractions(), config));
+            results.setBestExtractions(BasicPostprocessor.getEvaluations(results.getBestSolution().getSolution(), config, Context.EvaluationPhases.LEARNING));
+            results.setBestExtractionsStrings(BasicPostprocessor.getEvaluationsStrings(results.getBestExtractions(),config.getDatasetContainer().getLearningDataset()));
+            results.setBestExtractionsStats(BasicPostprocessor.getEvaluationStats(results.getBestExtractions(), config));
         } catch (TreeEvaluationException ex) {
             Logger.getLogger(BasicPostprocessor.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -102,13 +102,13 @@ public class BasicPostprocessor implements Postprocessor {
         
     }
     
-    private List<Bounds[]> getEvaluations(String solution, Configuration configuration, Context.EvaluationPhases phase) throws TreeEvaluationException{
+    private static List<Bounds[]> getEvaluations(String solution, Configuration configuration, Context.EvaluationPhases phase) throws TreeEvaluationException{
         TreeEvaluator treeEvaluator = configuration.getEvaluator();
         Node bestIndividualReplica = new Constant(solution);
         return treeEvaluator.evaluate(bestIndividualReplica, new Context(phase, configuration));
     }
     
-    private List<List<String>> getEvaluationsStrings(List<Bounds[]> extractions, DataSet dataset){
+    private static List<List<String>> getEvaluationsStrings(List<Bounds[]> extractions, DataSet dataset){
         List<List<String>> evaluationsStrings = new ArrayList<>();
         Iterator<Example> it = dataset.getExamples().iterator();
         for (Bounds[] extractionsOfExample : extractions) {
@@ -121,7 +121,7 @@ public class BasicPostprocessor implements Postprocessor {
 
     
     
-    private List<BasicStats> getEvaluationStats(List<Bounds[]> evaluation, Configuration config) {
+    private static List<BasicStats> getEvaluationStats(List<Bounds[]> evaluation, Configuration config) {
         DataSet dataset = config.getDatasetContainer().getLearningDataset();
         List<BasicStats> statsPerExample = new LinkedList<>();
         for (int index = 0; index < dataset.getExamples().size(); index++) {

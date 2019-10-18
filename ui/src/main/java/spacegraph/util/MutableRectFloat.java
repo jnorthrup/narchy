@@ -147,7 +147,7 @@ public class MutableRectFloat<X> extends v2 {
         y = Util.clampSafe(y, bounds.bottom() + h / 2, bounds.top() - h / 2);
     }
 
-    private void randomize(RectFloat bounds) {
+    private static void randomize(RectFloat bounds) {
         throw new TODO();
     }
 

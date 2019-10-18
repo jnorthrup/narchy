@@ -173,7 +173,7 @@ public class Berlekamp implements Settings {
         }
     }
 
-    void compute_next_omega(int d, int[] A, int[] dst, int[] src) {
+    static void compute_next_omega(int d, int[] A, int[] dst, int[] src) {
         int i;
         for (i = 0; i < Settings.kMaxDeg; i++) {
             dst[i] = src[i] ^ Galois.gmult(d, A[i]);

@@ -306,7 +306,7 @@ public class ALEPipes {
     }
 
     /** Parses a hex byte in the given String, at position 'ptr'. */
-    private int byteAt(String line, int ptr) {
+    private static int byteAt(String line, int ptr) {
         int ld = line.charAt(ptr+1);
         int hd = line.charAt(ptr);
 

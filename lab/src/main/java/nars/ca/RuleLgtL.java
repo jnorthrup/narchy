@@ -179,7 +179,7 @@ public class RuleLgtL {
 	}
 
 	
-	private int BoundInt(int iMin, int iVal, int iMax) {
+	private static int BoundInt(int iMin, int iVal, int iMax) {
 		if (iVal < iMin)
 			return iMin;
 		if (iVal > iMax)

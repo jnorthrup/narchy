@@ -489,7 +489,7 @@ public class Reflect {
      * Determines if a method has a "similar" signature, especially if wrapping
      * primitive argument types would result in an exactly matching signature.
      */
-    private boolean isSimilarSignature(Method possiblyMatchingMethod, String desiredMethodName, Class<?>[] desiredParamTypes) {
+    private static boolean isSimilarSignature(Method possiblyMatchingMethod, String desiredMethodName, Class<?>[] desiredParamTypes) {
         return possiblyMatchingMethod.getName().equals(desiredMethodName) && match(possiblyMatchingMethod.getParameterTypes(), desiredParamTypes);
     }
 
@@ -609,7 +609,7 @@ public class Reflect {
 //        return (P) as(proxyType, handler);
 //    }
 
-    public Object as(Class proxyType, InvocationHandler handler) {
+    public static Object as(Class proxyType, InvocationHandler handler) {
         return Proxy.newProxyInstance(proxyType.getClassLoader(), new Class[] { proxyType }, handler);
     }
 
@@ -638,7 +638,7 @@ public class Reflect {
      * Check whether two arrays of types match, converting primitive types to
      * their corresponding wrappers.
      */
-    private boolean match(Class<?>[] declared, Class<?>[] actual) {
+    private static boolean match(Class<?>[] declared, Class<?>[] actual) {
         if (Arrays.equals(declared, actual))
             return true;
 

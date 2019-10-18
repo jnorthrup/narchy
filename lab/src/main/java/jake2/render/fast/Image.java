@@ -849,8 +849,8 @@ public abstract class Image extends Main {
     /*
      * GL_ResampleTexture
      */
-    void GL_ResampleTexture(int[] in, int inwidth, int inheight, int[] out,
-                            int outwidth, int outheight) {
+    static void GL_ResampleTexture(int[] in, int inwidth, int inheight, int[] out,
+                                   int outwidth, int outheight) {
 
         Arrays.fill(p1, 0);
         Arrays.fill(p2, 0);

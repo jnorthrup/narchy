@@ -63,7 +63,7 @@ public abstract class AbstractTaskView<X> extends MutableUnitContainer implement
 
 	protected abstract X transform(Task x);
 
-	protected boolean filter(Task x) {
+	protected static boolean filter(Task x) {
 		return true;
 	}
 

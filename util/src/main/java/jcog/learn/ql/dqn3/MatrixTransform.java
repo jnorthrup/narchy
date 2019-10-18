@@ -115,7 +115,7 @@ class MatrixTransform {
             }
         }
 
-        private void mulBack(final Mat m1, final Mat m2, final Mat out) {
+        private static void mulBack(final Mat m1, final Mat m2, final Mat out) {
 
 
             final int n = m1.n;

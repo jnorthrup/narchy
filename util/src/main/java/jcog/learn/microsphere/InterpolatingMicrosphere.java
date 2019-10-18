@@ -419,7 +419,7 @@ public class InterpolatingMicrosphere {
         }
     }
 
-    protected void maxData(float[] d, float illumination, float sampleValue, int sampleNum) {
+    protected static void maxData(float[] d, float illumination, float sampleValue, int sampleNum) {
 
         d[0] = illumination;
 

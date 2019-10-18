@@ -18,7 +18,7 @@ public class AdjacentIndexer implements AdjacentConcepts {
 
 	int ATOM_TANGENT_REFRESH_DURS = 1;
 
-	protected boolean cache(Term target) {
+	protected static boolean cache(Term target) {
 		//return target instanceof Atom;
 		return target.volume() <=
 			//5

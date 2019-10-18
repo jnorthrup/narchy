@@ -169,7 +169,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         a.move((float) dx[0], (float) dy[0]);
     }
 
-    private float weightToVelocity(float weight) {
+    private static float weightToVelocity(float weight) {
         //return 1;
         return weight;
         //return weight * weight;

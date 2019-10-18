@@ -149,7 +149,7 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
             Object t = picked.data();
             if (t instanceof Spatial) {
                 pickedSpatial = ((Spatial) t);
-                if (pickedSpatial.onTouch(finger, picked, cray, buttons, space) != null) {
+                if (Spatial.onTouch(finger, picked, cray, buttons, space) != null) {
 
 
                     clearDrag();

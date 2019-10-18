@@ -38,7 +38,7 @@ public class Q2DataTool {
     void dispose() {
     }
     
-    void setStatus(String text) {
+    static void setStatus(String text) {
         System.err.println(text);
         System.err.println();
     }

@@ -148,7 +148,8 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
     /** returns feedback truth value */
     protected abstract @Nullable Truth updateAction(@Nullable Truth beliefTruth, @Nullable Truth actionTruth, Game g);
 
-    private  @Nullable Truth truth(@Nullable TruthProjection t, When when, int shift) {
+    private  @Nullable
+    static Truth truth(@Nullable TruthProjection t, When when, int shift) {
         return t!=null ?
             t.truth(when.start + shift, when.end + shift, NAL.truth.EVI_MIN,
             false, false, null) :

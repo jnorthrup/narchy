@@ -28,7 +28,7 @@ public final class TaskLinkSnapshot {
 	 * caches an AtomLinks instance in the Concept's meta table, attached by a SoftReference
 	 */
 
-	protected int cap(int bagSize) {
+	protected static int cap(int bagSize) {
 		return Math.max(4, (int) Math.ceil(1f * Math.sqrt(bagSize)) /* estimate */);
 		//return bagSize;
 	}

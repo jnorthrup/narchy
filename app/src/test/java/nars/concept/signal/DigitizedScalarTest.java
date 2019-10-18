@@ -35,7 +35,7 @@ class DigitizedScalarTest {
         }, n);
     }
 
-    private void testSteadyFreqCondition(AtomicFloat m, DigitizedScalar f, FloatPredicate withFreqSum, NAR n) {
+    private static void testSteadyFreqCondition(AtomicFloat m, DigitizedScalar f, FloatPredicate withFreqSum, NAR n) {
 
 
         for (int i = 0; i < 5; i++) {

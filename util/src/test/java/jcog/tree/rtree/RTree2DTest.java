@@ -170,7 +170,7 @@ class RTree2DTest {
      *  - QUADRATIC seems to be ideal for small search bounding boxes.
      */
     @Disabled
-    void treeSearchStatsTest() {
+    static void treeSearchStatsTest() {
 
         final int entryCount = 5000;
 
@@ -232,7 +232,7 @@ class RTree2DTest {
     }
 
     @Disabled
-    void treeRemoveAndRebalanceTest() {
+    static void treeRemoveAndRebalanceTest() {
         final RTree<RectDouble> rTree = createRect2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         RectDouble[] rect = new RectDouble[65];

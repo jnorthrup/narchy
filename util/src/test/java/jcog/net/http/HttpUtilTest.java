@@ -27,7 +27,7 @@ class HttpUtilTest
                 testBinarySizeUTF8_string("\uD834\uDD1E");
         }
         
-        private void testBinarySizeUTF8_string(String test)
+        private static void testBinarySizeUTF8_string(String test)
         {
                 assertEquals(test.getBytes(Charset.forName("UTF-8")).length, HttpUtil.binarySizeUTF8(test));
         }

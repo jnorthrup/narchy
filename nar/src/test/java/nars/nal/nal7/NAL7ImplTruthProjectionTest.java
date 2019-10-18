@@ -322,7 +322,7 @@ class NAL7ImplTruthProjectionTest {
      * both {@code null}. When {@code a} and {@code b} have the same function
      * value, {@code a} is returned.
      */
-    private double[] best(double[] a, double[] b, boolean isMinim) {
+    private static double[] best(double[] a, double[] b, boolean isMinim) {
         if (a == null) {
             return b;
         }

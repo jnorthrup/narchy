@@ -37,7 +37,7 @@ public class TrackXY  {
         this.grid = new ArrayBitmap2D(this.W = W, this.H = H);
     }
 
-    public Random random() {
+    public static Random random() {
         return ThreadLocalRandom.current();
     }
 
@@ -106,9 +106,9 @@ public class TrackXY  {
             public void accept(TrackXY t) {
                 float targetSpeed = t.targetSpeed.floatValue();
                 float ty;
-                float tx = Util.clamp(t.tx + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.W - 1);
+                float tx = Util.clamp(t.tx + 2 * targetSpeed * (TrackXY.random().nextFloat() - 0.5f), 0, t.W - 1);
                 if (t.H > 1) {
-                    ty = Util.clamp(t.ty + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.H - 1);
+                    ty = Util.clamp(t.ty + 2 * targetSpeed * (TrackXY.random().nextFloat() - 0.5f), 0, t.H - 1);
                 } else {
                     ty = 0;
                 }

@@ -564,7 +564,7 @@ public class Grok implements Serializable {
          * @param groks Map of the pattern name and grok instance
          * @return the map sorted by grok pattern complexity
          */
-        private Map<String, Grok> sort(Map<String, Grok> groks) {
+        private static Map<String, Grok> sort(Map<String, Grok> groks) {
 
             Collection<Grok> n = groks.values();
             List<Grok> groky = new ArrayList<>(n);
@@ -582,7 +582,7 @@ public class Grok implements Serializable {
          * @param expandedPattern regex string
          * @return the complexity of the regex
          */
-        private int complexity(String expandedPattern) {
+        private static int complexity(String expandedPattern) {
             int score = 0;
 
             score += complexity.split(expandedPattern, -1).length - 1;
@@ -628,7 +628,7 @@ public class Grok implements Serializable {
             }
 
             
-            Map<String, Grok> patterns = this.sort(groks);
+            Map<String, Grok> patterns = Discovery.sort(groks);
 
             
             
@@ -638,7 +638,7 @@ public class Grok implements Serializable {
 
                 
                 
-                if (this.complexity(value.namedRegex()) < 20) {
+                if (Discovery.complexity(value.namedRegex()) < 20) {
                     continue;
                 }
 
@@ -676,7 +676,7 @@ public class Grok implements Serializable {
          * @param text text
          * @return string
          */
-        private String getPart(Match m, String text) {
+        private static String getPart(Match m, String text) {
 
             if (m == null || text == null) {
                 return "";
@@ -1073,7 +1073,7 @@ public class Grok implements Serializable {
          * @param value string to pure: "my/text"
          * @return unquoted string: my/text
          */
-        private String cleanString(String value) {
+        private static String cleanString(String value) {
             if (value == null) {
                 return null;
             }

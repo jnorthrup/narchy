@@ -53,7 +53,7 @@ public class Level {
 	 * Gets the size of the level in pixels.
 	 * @return the size of the level
 	 */
-	public Dimension getSize() {
+	public static Dimension getSize() {
 		return new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
 	
@@ -124,7 +124,7 @@ public class Level {
 		}
 	}
 	
-	private ArrayList<ArrayList<Line>> createLineStrips(ArrayList<Line> lines) {
+	private static ArrayList<ArrayList<Line>> createLineStrips(ArrayList<Line> lines) {
 		ArrayList<Line> clone = (ArrayList<Line>) lines.clone();
 		ArrayList<ArrayList<Line>> strips = new ArrayList<>();
 		
@@ -142,7 +142,7 @@ public class Level {
 	 * Creates a strip from lines and removes strip from lines.
 	 * @param lines line soup
 	 */
-	private ArrayList<Line> createStrip(ArrayList<Line> lines) {
+	private static ArrayList<Line> createStrip(ArrayList<Line> lines) {
 		ArrayList<Line> strip = new ArrayList<>();
 		
 		ArrayList<Line> searchList = (ArrayList<Line>) lines.clone();
@@ -167,7 +167,7 @@ public class Level {
 		return strip;
 	}
 
-	private Line findConnectedLine(ArrayList<Line> lines, Line source, boolean forward) {
+	private static Line findConnectedLine(ArrayList<Line> lines, Line source, boolean forward) {
 		for (int i=0; i<lines.size(); i++) {
 			Line line = lines.get(i);
 			if (line.getSortValue() == source.getSortValue()) {
@@ -406,7 +406,7 @@ public class Level {
 	}
 	
 	
-	private int getFlags(LevelObject obj) {
+	private static int getFlags(LevelObject obj) {
 		int flags = 0;
 		if (obj.visible) {
 			flags |= VISIBLE_MASK;

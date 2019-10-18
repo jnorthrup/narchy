@@ -299,7 +299,7 @@ public class Taskify extends ProxyTerm {
         return t;
     }
 
-    private boolean same(Derivation d, NAR nar) {
+    private static boolean same(Derivation d, NAR nar) {
         nar.emotion.deriveFailParentDuplicate.increment();
         return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_SAME);
     }

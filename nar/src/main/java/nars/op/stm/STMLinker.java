@@ -81,11 +81,11 @@ public class STMLinker extends TaskAction {
 		w.links.link(l);
 	}
 
-	public boolean keep(Task x) {
+	public static boolean keep(Task x) {
 		return x.isInput();
 	}
 
-	public boolean filter(Task x) {
+	public static boolean filter(Task x) {
 		return x.isInput();
 	}
 

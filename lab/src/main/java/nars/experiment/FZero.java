@@ -714,7 +714,7 @@ public class FZero extends GameX {
 
         }
 
-        public int C(double angle, double light, double dark) {
+        public static int C(double angle, double light, double dark) {
             return (D(angle, light, dark) << 16)
                     | (D(angle + 2 * Math.PI / 3, light, dark) << 8)
                     | (D(angle - 2 * Math.PI / 3, light, dark));
@@ -1054,7 +1054,7 @@ public class FZero extends GameX {
 
         }
 
-        public int D(double angle, double light, double dark) {
+        public static int D(double angle, double light, double dark) {
             return (int) (255 * Math.pow((Math.cos(angle) + 1) / 2, light) / dark);
         }
 

@@ -43,7 +43,7 @@ class NQueensTest {
     assertEquals(724, solveNQueens(10));
   }
 
-  private int solveNQueens(int n) {   
+  private static int solveNQueens(int n) {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar[] queens = new IntVar[n];
     IntVar[] queensUp = new IntVar[n];

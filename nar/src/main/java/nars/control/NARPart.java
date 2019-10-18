@@ -39,7 +39,7 @@ public abstract class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
         if (id == null)
             return ((Termed) x).term();
         else
-            return x.singleton() ? (x.id) : $.p(id, $.identity(x));
+            return NARPart.singleton() ? (x.id) : $.p(id, $.identity(x));
     }
     /**
      * resume
@@ -186,7 +186,7 @@ public abstract class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
      * --etc
      */
     /*abstract*/
-    public boolean singleton() {
+    public static boolean singleton() {
         return false;
     }
 

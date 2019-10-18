@@ -60,7 +60,7 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
         }
     }
 
-    public Surface newControlPanel() {
+    public static Surface newControlPanel() {
         return new Gridding(new VectorLabel("TODO"));
     }
 

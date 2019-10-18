@@ -65,7 +65,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
      */
     @Override
     public void setup(Configuration configuration) {
-        this.setup(configuration, configuration.getDatasetContainer().getTrainingDataset());
+        TokenizedContextTerminalSetBuilder.setup(configuration, configuration.getDatasetContainer().getTrainingDataset());
     }
     
     /**
@@ -77,7 +77,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
      * @param configuration
      * @param trainingDataset
      */
-    public void setup(Configuration configuration, DataSet trainingDataset) {
+    public static void setup(Configuration configuration, DataSet trainingDataset) {
 
         
         

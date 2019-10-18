@@ -172,7 +172,7 @@ class RuleGrammarTest {
 		printGrammar(grammar);
 	}
 
-	private void printGrammar(Grammar grammar) {
+	private static void printGrammar(Grammar grammar) {
 		StringWriter sw = new StringWriter();
 		grammar.printOn(new PrintWriter(sw));
 		System.out.println(sw);

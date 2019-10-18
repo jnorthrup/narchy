@@ -160,7 +160,7 @@ public class Audio implements Runnable {
         alive = false;
     }
 
-    public int bufferSizeInFrames() {
+    public static int bufferSizeInFrames() {
         return bufferSize;
     }
 

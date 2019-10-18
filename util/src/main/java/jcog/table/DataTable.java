@@ -229,7 +229,7 @@ public class DataTable extends Table implements Externalizable {
     }
 
 
-    public void printCSV() {
+    public static void printCSV() {
         printCSV(new FilterOutputStream(System.out) {
             @Override
             public void close() {
@@ -238,7 +238,7 @@ public class DataTable extends Table implements Externalizable {
         });
     }
 
-    private void printCSV(OutputStream o) {
+    private static void printCSV(OutputStream o) {
         throw new TODO();
 //        CsvWriteOptions.builder(o).header(true).build();
 //                .write();

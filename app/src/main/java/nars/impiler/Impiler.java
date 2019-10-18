@@ -208,15 +208,15 @@ public class Impiler {
 //			super.next(w, kontinue);
 //		}
 
-		protected boolean filter(Term term) {
+		protected static boolean filter(Term term) {
 			return !term.hasVars();
 		}
 
-		protected float leak(Task next, What what) {
+		protected static float leak(Task next, What what) {
 			return deduce(next, what, true);
 		}
 
-		float deduce(Task task, What what, boolean forward) {
+		static float deduce(Task task, What what, boolean forward) {
 			Term target = task.term();
 
 			ImpilerDeduction x = new ImpilerDeduction(what.nar);
@@ -257,11 +257,11 @@ public class Impiler {
 //            return next.punc() == BELIEF;
 //        }
 
-		protected boolean filter(Term term) {
+		protected static boolean filter(Term term) {
 			return filter(term);
 		}
 
-		protected float leak(Task t, What what) {
+		protected static float leak(Task t, What what) {
 			_impile(t, what.nar);
 			return 1;
 		}

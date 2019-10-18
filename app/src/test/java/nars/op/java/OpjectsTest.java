@@ -27,10 +27,10 @@ public class OpjectsTest {
             return v;
         }
 
-        public boolean bool() {
+        public static boolean bool() {
             return true;
         }
-        public boolean boolFalse() {
+        public static boolean boolFalse() {
             return false;
         }
     }
@@ -109,13 +109,13 @@ public class OpjectsTest {
         StringBuilder sb = new StringBuilder(1024);
         n.log(sb);
 
-        x.bool();
+        SimpleClass.bool();
         //n.input("hashCode(x,#h)! :|:");
         //n.run(1);
         n.run(1);
         assertTrue(sb.toString().contains("bool(x). 0⋈1 %1.0;.90%"));
 
-        x.boolFalse();
+        SimpleClass.boolFalse();
         n.run(1);
         assertTrue(sb.toString().contains("boolFalse(x). 1⋈2 %0.0;.90%"));
     }

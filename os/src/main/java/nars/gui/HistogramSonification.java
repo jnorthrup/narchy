@@ -37,7 +37,7 @@ public class HistogramSonification extends Gridding {
     }
 
     /** maps the bin to a musical note */
-    float freq(int bin) {
+    static float freq(int bin) {
         //TODO scale select
         int shift = 1;
         float note = bin*4; //

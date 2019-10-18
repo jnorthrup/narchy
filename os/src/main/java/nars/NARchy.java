@@ -60,7 +60,7 @@ public class NARchy extends NARS {
 
             {
                 NARSpeak s = new NARSpeak(nar);
-                s.spoken.on(new NativeSpeechDispatcher()::speak);
+                s.spoken.on(  NativeSpeechDispatcher ::speak);
                 
             }
 

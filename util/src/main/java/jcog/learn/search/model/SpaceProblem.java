@@ -11,7 +11,7 @@ public class SpaceProblem implements Problem<SpaceProblem.SpaceFind> {
     public double cost(SpaceFind currentNode, SpaceFind successorNode) {
         return dist(currentNode.x, currentNode.y, successorNode.x, successorNode.y);
     }
-    public double dist(int x, int y, int otherX, int otherY) {
+    public static double dist(int x, int y, int otherX, int otherY) {
         return Math.sqrt(Math.pow(x - otherX, 2) + Math.pow(y - otherY, 2));
     }
 

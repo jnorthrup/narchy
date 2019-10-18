@@ -121,7 +121,7 @@ public class AudioContext {
         //super(null, audioFormat.outputs);
 
         maxReserveBufs = 32;
-        setBufferSize(audio.bufferSizeInFrames());
+        setBufferSize(Audio.bufferSizeInFrames());
 
 
         this.audioFormat = audioFormat;

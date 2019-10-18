@@ -161,11 +161,11 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     }
 
     /** happiness metric applied to all sensor concepts */
-    @Paper public final float happinessSensorsMean() {
+    @Paper public static float happinessSensorsMean() {
         throw new TODO();
     }
     /** happiness metric applied to all action concepts */
-    @Paper public final float happinessActionsMean() {
+    @Paper public static float happinessActionsMean() {
         throw new TODO();
     }
 
@@ -360,7 +360,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         return reward(reward, freq, normalize(rewardFunc, min, max));
     }
 
-    public FloatSupplier normalize(FloatSupplier rewardFunc, float min, float max) {
+    public static FloatSupplier normalize(FloatSupplier rewardFunc, float min, float max) {
         return new FloatClamped(new FloatNormalized(rewardFunc, min, max, false), 0, 1);
     }
 

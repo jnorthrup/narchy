@@ -366,7 +366,7 @@ public class BomberPlayer extends Thread {
             isExploding = true;
             /** release keys */
             keyPressed = false;
-            BomberMain.sndEffectPlayer.playSound("Die");
+            BomberSndEffect.playSound("Die");
             /** wake up and die */
             interrupt();
         }

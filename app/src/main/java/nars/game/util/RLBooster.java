@@ -134,7 +134,7 @@ public class RLBooster  {
         return input;
     }
 
-    private float valueMissing() {
+    private static float valueMissing() {
         return 0.5f;
     }
 
@@ -172,7 +172,7 @@ public class RLBooster  {
         return feedback;
     }
 
-    private float truthFeedback(Truth t) {
+    private static float truthFeedback(Truth t) {
         return t.freq();
         //return t.expectation();
     }

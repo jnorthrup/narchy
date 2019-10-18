@@ -50,7 +50,7 @@ class QuestionTest {
     /**
      * question to answer matching
      */
-    private void testQuestionAnswer(int cycles, String belief, String question, String expectedSolution) throws Narsese.NarseseException {
+    private static void testQuestionAnswer(int cycles, String belief, String question, String expectedSolution) throws Narsese.NarseseException {
         AtomicInteger ok = new AtomicInteger(0);
 
 

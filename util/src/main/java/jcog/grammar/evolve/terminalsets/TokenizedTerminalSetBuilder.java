@@ -43,11 +43,11 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
     private final Tokenizer tokenizer = new BasicTokenizer();
     
     
-    private boolean matchW(String string){
+    private static boolean matchW(String string){
         return (string.length()==1 && matchW(string.charAt(0)));
     }
     
-    private boolean matchW(char character){
+    private static boolean matchW(char character){
         return Character.isAlphabetic(character) || Character.isDigit(character) || character == '_';
     }
     

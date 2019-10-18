@@ -204,7 +204,7 @@ public class Gridding extends MutableListContainer {
         }
     }
 
-    protected int layoutIndex(int i) {
+    protected static int layoutIndex(int i) {
         return i;
     }
 

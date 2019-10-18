@@ -67,22 +67,22 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
     private void toggleKey(int keyCode, boolean isPressed) {
         if (keyCode == KeyEvent.VK_LEFT) {
-            scene.key(Mario.KEY_LEFT, isPressed);
+            Scene.key(Mario.KEY_LEFT, isPressed);
         }
         if (keyCode == KeyEvent.VK_RIGHT) {
-            scene.key(Mario.KEY_RIGHT, isPressed);
+            Scene.key(Mario.KEY_RIGHT, isPressed);
         }
         if (keyCode == KeyEvent.VK_DOWN) {
-            scene.key(Mario.KEY_DOWN, isPressed);
+            Scene.key(Mario.KEY_DOWN, isPressed);
         }
         if (keyCode == KeyEvent.VK_UP) {
-            scene.key(Mario.KEY_UP, isPressed);
+            Scene.key(Mario.KEY_UP, isPressed);
         }
         if (keyCode == KeyEvent.VK_A) {
-            scene.key(Mario.KEY_SPEED, isPressed);
+            Scene.key(Mario.KEY_SPEED, isPressed);
         }
         if (keyCode == KeyEvent.VK_S) {
-            scene.key(Mario.KEY_JUMP, isPressed);
+            Scene.key(Mario.KEY_JUMP, isPressed);
         }
         if (isPressed && keyCode == KeyEvent.VK_ESCAPE) {
 
@@ -173,7 +173,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
         Art.stopMusic();
     }
 
-    private void drawString(Graphics g, String text, int x, int y, int c) {
+    private static void drawString(Graphics g, String text, int x, int y, int c) {
         char[] ch = text.toCharArray();
         for (int i = 0; i < ch.length; i++) {
             g.drawImage(Art.font[ch[i] - 32][c], x + i * 8, y, null);
@@ -220,7 +220,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
     public void levelWon() {
         scene = mapScene;
-        mapScene.startMusic();
+        MapScene.startMusic();
         mapScene.levelWon();
     }
 

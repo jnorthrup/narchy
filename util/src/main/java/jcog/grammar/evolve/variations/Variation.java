@@ -176,7 +176,7 @@ public class Variation {
                 && root.getParent() != null;
     }
 
-    private void replaceNode(Node oldChild, Node newChild) {
+    private static void replaceNode(Node oldChild, Node newChild) {
 
         ParentNode parent = oldChild.getParent();
         List<Node> childs = parent.children();

@@ -47,7 +47,7 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
     }
 
     /** truth -> decidability */
-    public float q(Truth g) {
+    public static float q(Truth g) {
         //return g.expectation();
         return g.freq();
     }

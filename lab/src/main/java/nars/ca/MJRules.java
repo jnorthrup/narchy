@@ -86,7 +86,7 @@ public class MJRules {
 
         Vector vLines = new Vector();
         MJTools mjT = new MJTools();
-		if (mjT.LoadResTextFile("rul.txt", vLines)) 
+		if (MJTools.LoadResTextFile("rul.txt", vLines))
 		{
 			for (i = 0; i < vLines.size(); i++) {
 				sBff = ((String) vLines.elementAt(i)).trim();
@@ -115,7 +115,7 @@ public class MJRules {
 
 	
 	
-	public int GetGameIndex(String sGameName) {
+	public static int GetGameIndex(String sGameName) {
 		int iGame = -1;
 		
 		if ((sGameName.compareTo(GAME_GENE_Name) == 0) 
@@ -165,7 +165,7 @@ public class MJRules {
 
 	
 	
-	public String GetGameName(int iGame) {
+	public static String GetGameName(int iGame) {
 		String sRetVal;
 		switch (iGame) {
 		case GAME_LIFE:
@@ -219,7 +219,7 @@ public class MJRules {
 
 	
 	
-	public boolean IsGameIdxValid(int iGame) {
+	public static boolean IsGameIdxValid(int iGame) {
 		return (iGame >= GAME_LIFE) && (iGame <= GAME_LAST);
 	}
 
@@ -264,7 +264,7 @@ public class MJRules {
 
 	
 	
-	public String CorrectRuleDef(String sGameName, String sRuleDef) {
+	public static String CorrectRuleDef(String sGameName, String sRuleDef) {
 		sRuleDef = sRuleDef.trim();
 		int iGame = GetGameIndex(sGameName);
 

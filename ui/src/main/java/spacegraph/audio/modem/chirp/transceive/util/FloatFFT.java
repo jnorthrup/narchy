@@ -6321,7 +6321,7 @@ public strictfp class FloatFFT {
         }
     }
 
-    private void cftfsub(int n, float[] a, int offa, int[] ip, int nw, float[] w) {
+    private static void cftfsub(int n, float[] a, int offa, int[] ip, int nw, float[] w) {
         if (n > 8) {
             if (n > 32) {
                 cftf1st(n, a, offa, w, nw - (n >> 2));
@@ -6349,7 +6349,7 @@ public strictfp class FloatFFT {
         }
     }
 
-    private void cftbsub(int n, float[] a, int offa, int[] ip, int nw, float[] w) {
+    private static void cftbsub(int n, float[] a, int offa, int[] ip, int nw, float[] w) {
         if (n > 8) {
             if (n > 32) {
                 cftb1st(n, a, offa, w, nw - (n >> 2));
@@ -6377,7 +6377,7 @@ public strictfp class FloatFFT {
         }
     }
 
-    private void cftrec4_th(final int n, final float[] a, final int offa, final int nw, final float[] w) {
+    private static void cftrec4_th(final int n, final float[] a, final int offa, final int nw, final float[] w) {
         int i;
         int idx = 0;
         int nthreads = 2;
@@ -6435,7 +6435,7 @@ public strictfp class FloatFFT {
         ConcurrencyUtils.waitForCompletion(futures);
     }
 
-    private void cftrec4(int n, float[] a, int offa, int nw, float[] w) {
+    private static void cftrec4(int n, float[] a, int offa, int nw, float[] w) {
         int isplt, j;
 
         int m = n;

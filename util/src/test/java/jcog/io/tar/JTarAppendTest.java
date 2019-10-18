@@ -79,7 +79,7 @@ class JTarAppendTest {
 		assertInEqualsOut();
 	}
 
-	private void copyFileToStream(File file, OutputStream out) throws IOException {
+	private static void copyFileToStream(File file, OutputStream out) throws IOException {
 		final byte[] buffer = new byte[BUFFER];
 		int length = 0;
 

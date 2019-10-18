@@ -161,7 +161,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         }
     }
 
-    public boolean tangible() {
+    public static boolean tangible() {
 
         return true;
     }

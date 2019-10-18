@@ -201,7 +201,7 @@ public class Opjects extends DefaultTermizer {
     /**
      * whether NAR can envoke the method internally
      */
-    public boolean methodEvokable(Method m) {
+    public static boolean methodEvokable(Method m) {
         return isPublic(m);
     }
 
@@ -723,7 +723,7 @@ public class Opjects extends DefaultTermizer {
         return true;
     }
 
-    protected Subterms validArgs(Subterms args) {
+    protected static Subterms validArgs(Subterms args) {
         if (args.sub(0).op() != ATOM)
             return null;
 
@@ -758,12 +758,12 @@ public class Opjects extends DefaultTermizer {
     }
 
     static final int VALID_PARAM_TERM = Op.or(ATOM, INT, VAR_DEP, PROD, BOOL);
-    private boolean validParamTerm(Op o1) {
+    private static boolean validParamTerm(Op o1) {
         return o1.isAny(VALID_PARAM_TERM);
     }
 
 
-    protected boolean validMethod(Method m) {
+    protected static boolean validMethod(Method m) {
         if (methodExclusions.contains(m.getName()))
             return false;
         else {

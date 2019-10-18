@@ -61,7 +61,7 @@ public abstract class ListModel<X> implements GridModel<X> {
     protected abstract int size();
 
     /** thickenss of the table, one by default */
-    private int depth() {
+    private static int depth() {
         return 1;
     }
 

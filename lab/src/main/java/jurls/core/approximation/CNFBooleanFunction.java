@@ -68,7 +68,7 @@ public class CNFBooleanFunction implements ParameterizedFunction {
         intermediates = new long[cnf.length];
     }
 
-    private boolean increment(int[] indices, int k, int n) {
+    private static boolean increment(int[] indices, int k, int n) {
         indices[k]++;
         if (indices[k] > n) {
             if (k == 0) {

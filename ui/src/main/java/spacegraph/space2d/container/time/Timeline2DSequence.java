@@ -26,7 +26,7 @@ public class Timeline2DSequence implements Timeline2D.EventBuffer<Pair<Longerval
     /** time to sample conversion
      * TODO
      * */
-    protected int sample(long t) {
+    protected static int sample(long t) {
         return Math.round(t);
         //return (int) t / bufferSize();
     }
@@ -35,7 +35,7 @@ public class Timeline2DSequence implements Timeline2D.EventBuffer<Pair<Longerval
         return bufferSize();
     }
 
-    protected long time(int sample) {
+    protected static long time(int sample) {
         return sample;
         ///return (long)(((double)sample) * bufferSize());
     }

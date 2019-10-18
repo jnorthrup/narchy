@@ -186,7 +186,7 @@ public class Plot2D extends Widget {
         return add(newSeries(name, data).autorange());
     }
 
-    protected AbstractSeries newSeries(String name, float[] data) {
+    protected static AbstractSeries newSeries(String name, float[] data) {
         //return new ArraySeries(name, data);
         return new RingTensorSeries(name, data);
     }

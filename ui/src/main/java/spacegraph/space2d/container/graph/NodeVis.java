@@ -71,7 +71,7 @@ public class NodeVis<X> extends Windo {
         color(r,g,b,1);
     }
 
-    public boolean pinned() {
+    public static boolean pinned() {
 
         return false;
     }

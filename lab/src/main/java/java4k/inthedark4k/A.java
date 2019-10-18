@@ -86,7 +86,7 @@ public class A extends GamePanel {
 		new Thread(this).start();
 	}
 
-	private void addEntity(ArrayList<int[]> entities, int type, int x, int y, int z, int dirX, int dirY, int dirZ, int model, int angle, int life, int fx, int fy, int fz, int animSpeed) {
+	private static void addEntity(ArrayList<int[]> entities, int type, int x, int y, int z, int dirX, int dirY, int dirZ, int model, int angle, int life, int fx, int fy, int fz, int animSpeed) {
 		entities.add(
 				new int[] {
 					

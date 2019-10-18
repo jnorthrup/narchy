@@ -37,7 +37,7 @@ abstract class HashedWheelTimerTest {
         timer = new HashedWheelTimer(q, waitStrategy());
     }
 
-    protected HashedWheelTimer.WheelModel model(long resolution, int wheels) {
+    protected static HashedWheelTimer.WheelModel model(long resolution, int wheels) {
         //return new AdmissionQueueWheelModel(wheels, resolution);
         return new QueueWheelModel(wheels, resolution, ()->new MpscArrayQueue<>(32));
     }

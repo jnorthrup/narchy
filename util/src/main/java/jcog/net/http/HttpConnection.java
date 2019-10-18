@@ -115,11 +115,11 @@ public class HttpConnection {
                 content, !this.keepAlive, null));
     }
 
-    public void respond(byte[] content) {
+    public static void respond(byte[] content) {
         throw new TODO();
     }
 
-    public void respond(InputStream content) {
+    public static void respond(InputStream content) {
         throw new TODO();
     }
 

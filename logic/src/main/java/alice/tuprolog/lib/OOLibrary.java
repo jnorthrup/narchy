@@ -269,7 +269,7 @@ public class OOLibrary extends PrologLib {
      * @throws JavaException, Exception
      */
     @SuppressWarnings("unchecked")
-	public boolean new_lambda_3(Term interfaceName, Term implementation, Term id) {
+	public static boolean new_lambda_3(Term interfaceName, Term implementation, Term id) {
 
 
 

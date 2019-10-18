@@ -355,7 +355,7 @@ public class EllipsisTest {
         testSect("&&");
     }
 
-    private void testSect(String o) throws Narsese.NarseseException {
+    private static void testSect(String o) throws Narsese.NarseseException {
         new CommutiveEllipsisTest1("%2..+", p('(' + o + ',', ")")).test(2, 2, 4);
     }
 

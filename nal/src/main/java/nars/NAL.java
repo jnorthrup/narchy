@@ -493,7 +493,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     }
 
-    public final TruthProjection newProjection(final long start, final long end) {
+    public static TruthProjection newProjection(final long start, final long end) {
         return new LinearTruthProjection(start, end);
     }
 

@@ -65,7 +65,7 @@ class QueryVariableTest {
     }
 
 
-    private void testQuestionAnswer(String question, String belief) throws Narsese.NarseseException {
+    private static void testQuestionAnswer(String question, String belief) throws Narsese.NarseseException {
 
         int time = 32;
 
@@ -96,7 +96,7 @@ class QueryVariableTest {
     }
 
 
-    private void testQueryAnswered(int cyclesBeforeQuestion, int cyclesAfterQuestion) throws Narsese.NarseseException {
+    private static void testQueryAnswered(int cyclesBeforeQuestion, int cyclesAfterQuestion) throws Narsese.NarseseException {
 
         AtomicBoolean b = new AtomicBoolean(false);
 

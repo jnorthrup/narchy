@@ -161,7 +161,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         return p;
     }
 
-    protected byte[] alloc(int bufferSize) {
+    protected static byte[] alloc(int bufferSize) {
         return new byte[bufferSize];
     }
 
@@ -458,7 +458,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         return hashCode();
     }
 
-    public long hashMurmur() {
+    public static long hashMurmur() {
         //return Murmur3Hash.hash64(bytes, len); //<-- TODO requires any padding at 8 byte boundaries to be zero'd
         throw new TODO();
     }

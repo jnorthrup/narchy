@@ -73,7 +73,7 @@ public class Evaluation extends Termerator {
 		}
 	}
 
-	protected Random random() {
+	protected static Random random() {
 		return ThreadLocalRandom.current();
 	}
 
@@ -120,7 +120,7 @@ public class Evaluation extends Termerator {
 		return true;
 	}
 
-	private Iterable<Predicate<Termerator>> shuffle(Iterable<Predicate<Termerator>> t) {
+	private static Iterable<Predicate<Termerator>> shuffle(Iterable<Predicate<Termerator>> t) {
 		return ShuffledPermutations.shuffle(t, random());
 	}
 

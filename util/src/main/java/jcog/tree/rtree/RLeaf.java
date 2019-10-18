@@ -352,7 +352,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
         final double bCostInc = Math.max(bxCost - ((/*bReg!=null ? */ bReg.cost()/* : 0*/) + tCost), 0.0);
 
         RLeaf<X> target;
-        double eps = model.epsilon();
+        double eps = Spatialization.epsilon();
         if (Util.equals(aCostInc, bCostInc, eps)) {
             if (Util.equals(axCost, bxCost, eps)) {
 

@@ -279,7 +279,7 @@ public final class DatasetContainer {
             }
         }
         String json = sb.toString();
-        this.loadDatasetJson(json);
+        DatasetContainer.loadDatasetJson(json);
     }
 
     /**
@@ -290,7 +290,7 @@ public final class DatasetContainer {
      *
      * @param jsonDataset
      */
-    public void loadDatasetJson(String jsonDataset) {
+    public static void loadDatasetJson(String jsonDataset) {
         throw new TODO();
 
 

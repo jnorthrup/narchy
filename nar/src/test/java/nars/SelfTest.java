@@ -300,7 +300,7 @@ public class SelfTest {
 
     private static final Logger logger = LoggerFactory.getLogger(SelfTest.class);
 
-    private void save(DataTable d, String filename) throws IOException {
+    private static void save(DataTable d, String filename) throws IOException {
         synchronized (d) {
             FileOutputStream fos = new FileOutputStream(filename, true);
             GZIPOutputStream os = new GZIPOutputStream(new BufferedOutputStream(fos, 64 * 1024));

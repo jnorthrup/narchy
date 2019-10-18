@@ -304,7 +304,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     /**
      * choose best zoom radius for the target rectangle according to current view aspect ratio
      */
-    private float targetDepth(float w, float h, float margin) {
+    private static float targetDepth(float w, float h, float margin) {
         float d = Math.max(w, h);
 //        if (((((float) pw()) / ph()) >= 1) == ((w / h) >= 1))
 //            d = h; //limit by height
@@ -315,7 +315,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     }
 
 
-    private float targetDepth(float viewDiameter) {
+    private static float targetDepth(float viewDiameter) {
         return (float) ((viewDiameter * sin(Math.PI / 2 - focusAngle / 2)) / sin(focusAngle / 2));
     }
 
@@ -333,7 +333,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
 
 
-    public boolean autosize() {
+    public static boolean autosize() {
         return true;
     }
 

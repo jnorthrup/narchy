@@ -13,12 +13,12 @@ public abstract class AbstractUnifyTransform extends RecursiveTermTransform.NegO
 	}
 
 	/** to be overridden */
-	public Term applyAtomicConstant(Atomic x) {
+	public static Term applyAtomicConstant(Atomic x) {
 		return x;
 	}
 
 	/** to be overridden */
-	public Term applyVariable(Variable x) {
+	public static Term applyVariable(Variable x) {
 		return x;
 	}
 

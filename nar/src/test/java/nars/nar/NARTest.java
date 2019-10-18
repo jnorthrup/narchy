@@ -208,7 +208,7 @@ class NARTest {
     }
 
 
-    private void testIntroduction(String subj, Op relation, String pred, String belief, String concl) {
+    private static void testIntroduction(String subj, Op relation, String pred, String belief, String concl) {
 
         NAR n = NARS.shell();
 

@@ -62,11 +62,11 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
     }
 
  
-    private boolean matchW(String string){
+    private static boolean matchW(String string){
         return (string.length()==1 && matchW(string.charAt(0)));
     }
     
-    private boolean matchW(char character){
+    private static boolean matchW(char character){
         return Character.isAlphabetic(character) || Character.isDigit(character) || character == '_';
     }
     
@@ -143,7 +143,7 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
 
     static final RegexRange LETTERS_RANGE = new RegexRange("A-Za-z");
 
-    private Node createIndividualFromString(List<String> tokenizedString, boolean compact, Map<String,Double> winnerTokens) {
+    private static Node createIndividualFromString(List<String> tokenizedString, boolean compact, Map<String, Double> winnerTokens) {
         Deque<Node> nodes = new LinkedList<>();
         Deque<Node> tmp = new LinkedList<>();
 

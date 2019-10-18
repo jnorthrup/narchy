@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Disassembler {
 
 
-    public int getCode(ArrayList<String> codebuffer, int pc) {
+    public static int getCode(ArrayList<String> codebuffer, int pc) {
         String code = "0x" + codebuffer.get(pc);
         code = code.toLowerCase();
         int opbytes = 1;

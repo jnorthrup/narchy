@@ -50,7 +50,7 @@ public class Grid2DBinaryPositioning implements World {
     void set(double[] d, int x, int y, double v) {
         d[y * h + x] = v;
     }
-    int i(double v) {
+    static int i(double v) {
         if (v > 0.5) return 1; 
         return 0;
     }

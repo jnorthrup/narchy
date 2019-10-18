@@ -171,7 +171,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      * allows an implementation to remove items which may have been deleted
      * (by anything) since commit checked for them
      */
-    protected boolean cleanAuto() {
+    protected static boolean cleanAuto() {
         return false;
     }
 
@@ -420,7 +420,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     }
 
     /** whether to delete immediately on pop, even if it cant be immediately removed from the bag during sampling */
-    protected boolean deleteOnPop() {
+    protected static boolean deleteOnPop() {
         return false;
     }
 
@@ -838,7 +838,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     /**
      * whether to attempt re-sorting the list after each merge, in-between commits
      */
-    protected boolean sortContinuously() {
+    protected static boolean sortContinuously() {
         //TODO try policy of: randomly in proportion to bag fill %
         return true;
         //return false;
