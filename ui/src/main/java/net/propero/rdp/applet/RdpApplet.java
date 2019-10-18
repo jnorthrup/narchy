@@ -168,13 +168,10 @@ public class RdpApplet extends Applet {
             if (!name.isEmpty()) {
                 args[i] = name;
                 i++;
-                args[i] = s;
-                i++;
-            } else {
-                args[i] = s;
-                i++;
-            }
-        }
+			}
+			args[i] = s;
+			i++;
+		}
         return i;
     }
 

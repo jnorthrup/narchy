@@ -42,7 +42,6 @@ import javax.sound.sampled.LineUnavailableException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -476,7 +475,7 @@ public class SignalViewTest {
                 BitmapMatrixView pp = new BitmapMatrixView(1, freqs,
                         //arrayRendererY(dft.apply(a).floatArray())
                         (xIgnored, y) -> {
-                            float fy = (float) (f[y]);
+                            float fy = f[y];
                             if (fy == fy) {
 
 

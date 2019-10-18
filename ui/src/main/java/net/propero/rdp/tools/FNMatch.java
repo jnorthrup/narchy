@@ -10,7 +10,7 @@ class FNMatch {
      * No wildcard can ever match `/'. A constant for bits set in the FLAGS
      * argument to fnmatch().
      */
-    private static final int FNM_PATHNAME = 1 << 0;
+    private static final int FNM_PATHNAME = 1;
 
     
     /**

@@ -353,7 +353,7 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
         }
     }
 
-    public final class BindingFloatSlider extends FloatPort {
+    public static final class BindingFloatSlider extends FloatPort {
 
         //private static final float EPSILON = 0.001f;
 

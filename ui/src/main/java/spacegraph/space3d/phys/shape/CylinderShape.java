@@ -80,14 +80,13 @@ public class CylinderShape extends BoxShape {
             VectorUtil.setCoord(out, XX, VectorUtil.coord(v, XX) * d);
 			VectorUtil.setCoord(out, YY, VectorUtil.coord(v, YY) < 0f ? -halfHeight : halfHeight);
 			VectorUtil.setCoord(out, ZZ, VectorUtil.coord(v, ZZ) * d);
-			return out;
 		}
 		else {
 			VectorUtil.setCoord(out, XX, radius);
 			VectorUtil.setCoord(out, YY, VectorUtil.coord(v, YY) < 0f ? -halfHeight : halfHeight);
 			VectorUtil.setCoord(out, ZZ, 0f);
-			return out;
 		}
+		return out;
 	}
 
 	@Override

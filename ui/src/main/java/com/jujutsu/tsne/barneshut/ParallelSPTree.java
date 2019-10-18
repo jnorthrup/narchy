@@ -76,7 +76,7 @@ public class ParallelSPTree extends SPTree {
 			D += buff[d] * buff[d];
 			
 			double cur_width = boundary.getWidth(d);
-			max_width = (max_width > cur_width) ? max_width : cur_width;
+			max_width = Math.max(max_width, cur_width);
 		}
 
 		if(is_leaf || max_width / sqrt(D) < theta) {

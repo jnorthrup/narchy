@@ -3,7 +3,6 @@ package com.jujutsu.tsne.barneshut;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
 
 public class ParallelVpTree<StorageType> extends VpTree<StorageType> {
 
@@ -18,15 +17,15 @@ public class ParallelVpTree<StorageType> extends VpTree<StorageType> {
 		searcherPool = pool;
 	}
 	
-	public List<Future<ParallelTreeNode.TreeSearchResult>> searchMultiple(ParallelVpTree<StorageType> tree, DataPoint [] targets, int k) {
-		Collection<ParallelTreeNode.ParallelTreeSearcher> searchers = new ArrayList<>(targets.length);
-		for(int n = 0; n < targets.length; n++) {
-			@SuppressWarnings("unchecked")
-			ParallelTreeNode node = (ParallelTreeNode) tree.getRoot();
-			searchers.add(node.new ParallelTreeSearcher(node,_items,targets[n], k, n));
-		}
-		return searcherPool.invokeAll(searchers);
-	}
+//	public List<Future<ParallelTreeNode.TreeSearchResult>> searchMultiple(ParallelVpTree<StorageType> tree, DataPoint [] targets, int k) {
+//		Collection<ParallelTreeNode.ParallelTreeSearcher> searchers = new ArrayList<>(targets.length);
+//		for(int n = 0; n < targets.length; n++) {
+//			@SuppressWarnings("unchecked")
+//			ParallelTreeNode node = (ParallelTreeNode) tree.getRoot();
+//			searchers.add(node.new ParallelTreeSearcher(node,_items,targets[n], k, n));
+//		}
+//		return searcherPool.invokeAll(searchers);
+//	}
 
 	@Override
 	protected VpTree<StorageType>.Node createNode() {

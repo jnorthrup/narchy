@@ -3,7 +3,6 @@ package spacegraph.audio.speech;
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.stream.IntStream;
 
 /**
  * Voice synthesizer models the vocal tract
@@ -16,10 +15,10 @@ public class VocSynth extends Canvas implements MouseListener, MouseMotionListen
 // Interface for displaying and changing vocal tract
 {
 //	VocSynth parent;
-	double tract[];
+	double[] tract;
 	int tlength;
 
-	public VocSynth(VocSynth par, double tract[], int tlength) {
+	public VocSynth(VocSynth par, double[] tract, int tlength) {
 //		parent = par;
 		this.tract = tract;
 		this.tlength = tlength;
@@ -118,9 +117,9 @@ class WaveDraw extends Canvas
 	int len;
 	Dimension size;
 	boolean trueSizeKnown = true;
-	double buf[];
+	double[] buf;
 
-	public WaveDraw(Container par, int iniw, int inih, double buf[], int len) {
+	public WaveDraw(Container par, int iniw, int inih, double[] buf, int len) {
 		parent = par;
 		this.len = len;
 		this.buf = buf;
@@ -251,7 +250,7 @@ class WPanel extends Panel
 	WaveDraw inw;
 	WaveDraw outw;
 
-	public WPanel(double input[], int lenin, double output[], int lenout) {
+	public WPanel(double[] input, int lenin, double[] output, int lenout) {
 		inw = new WaveDraw(this, 200, 64, input, lenin);
 		outw = new WaveDraw(this, 200, 64, output, lenout);
         Label l = new Label("Input:");
@@ -285,11 +284,11 @@ class WPanel extends Panel
 class VocSynthApplet extends Applet implements ActionListener {
 //	AudioData sampleData;
 //	ContinuousAudioDataStream sampleStream;
-	byte sample[];        //array for playing sound
-	double inpwave[];    //glottal wave
-	double outwave[];    //lip wave
+	byte[] sample;        //array for playing sound
+	double[] inpwave;    //glottal wave
+	double[] outwave;    //lip wave
 	int length = 64;        //samples per
-	double tract[];        //cross areas of tubes
+	double[] tract;        //cross areas of tubes
 	int tlength = 8;        //no of tubes
 	boolean playing = false;
 	//TubeCanvas tubecan;
@@ -376,11 +375,11 @@ class VocSynthApplet extends Applet implements ActionListener {
 	public void calcresponse()    // DSP routine to calculate output of lattice Filter
 	{
 		double c = 1.0; //constant k=qc
-		double r[] = new double[tlength + 1];    //reflections coefficients
-		double li[] = new double[tlength + 1];    //to lips input to reflection --(z-1)--li----lo--
-		double lo[] = new double[tlength + 1];    //to lips output of reflection          |refl|
-		double gi[] = new double[tlength + 1];    //to glottis input to reflection ------go----gi--
-		double go[] = new double[tlength + 1];    //to glottis output of reflection
+		double[] r = new double[tlength + 1];    //reflections coefficients
+		double[] li = new double[tlength + 1];    //to lips input to reflection --(z-1)--li----lo--
+		double[] lo = new double[tlength + 1];    //to lips output of reflection          |refl|
+		double[] gi = new double[tlength + 1];    //to glottis input to reflection ------go----gi--
+		double[] go = new double[tlength + 1];    //to glottis output of reflection
 		for (int i = 0; i <= tlength; i++) //clear all the values
 		{
 			r[i] = 0;

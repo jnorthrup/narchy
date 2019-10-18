@@ -864,7 +864,6 @@ class Polygon {
                 }
                 spoint.pop();
                 spoint.push(topStackPoint);
-                spoint.push(topQueuePoint);
 
             } else {
 
@@ -897,8 +896,8 @@ class Polygon {
                     } else
                         break;
                 }
-                spoint.push(topQueuePoint);
             }
+            spoint.push(topQueuePoint);
             qvertex.poll();
         }
 

@@ -74,7 +74,7 @@ public class Linebase implements SplayTreeItem {
 
     public void setKeyValue(double y) {
         if (_endp[1].y == _endp[0].y)
-            _key = _endp[0].x < _endp[1].x ? _endp[0].x : _endp[1].x;
+            _key = Math.min(_endp[0].x, _endp[1].x);
         else
             _key = (y - _endp[0].y) * (_endp[1].x - _endp[0].x) / (_endp[1].y - _endp[0].y) + _endp[0].x;
     }

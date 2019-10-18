@@ -42,7 +42,7 @@ public class PadSynthetizer {
 
     /* Random number generator */
     private static double RND(){
-        return (double) (Math.random() / (RAND_MAX+1.0));
+        return Math.random() / (RAND_MAX+1.0);
     }
 
     /* This is the profile of one harmonic

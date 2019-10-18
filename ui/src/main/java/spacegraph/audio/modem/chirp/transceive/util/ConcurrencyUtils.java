@@ -36,11 +36,7 @@ final class ConcurrencyUtils {
     }
 
     public static void setThreadsBeginN_1D_FFT_2Threads(int var0) {
-        if (var0 < 512) {
-            THREADS_BEGIN_N_1D_FFT_2THREADS = 512;
-        } else {
-            THREADS_BEGIN_N_1D_FFT_2THREADS = var0;
-        }
+        THREADS_BEGIN_N_1D_FFT_2THREADS = Math.max(var0, 512);
 
     }
 
@@ -49,11 +45,7 @@ final class ConcurrencyUtils {
     }
 
     public static void setThreadsBeginN_1D_FFT_4Threads(int var0) {
-        if (var0 < 512) {
-            THREADS_BEGIN_N_1D_FFT_4THREADS = 512;
-        } else {
-            THREADS_BEGIN_N_1D_FFT_4THREADS = var0;
-        }
+        THREADS_BEGIN_N_1D_FFT_4THREADS = Math.max(var0, 512);
 
     }
 
@@ -94,7 +86,6 @@ final class ConcurrencyUtils {
             var0 |= var0 >>> 4;
             var0 |= var0 >>> 8;
             var0 |= var0 >>> 16;
-            var0 |= var0 >>> 32;
             return var0 + 1;
         }
     }
@@ -103,7 +94,7 @@ final class ConcurrencyUtils {
         if (var0 < 1) {
             throw new IllegalArgumentException("x must be greater or equal 1");
         } else {
-            return (int) Math.pow(2.0D, Math.floor(Math.log((double) var0) / Math.log(2.0D)));
+            return (int) Math.pow(2.0D, Math.floor(Math.log(var0) / Math.log(2.0D)));
         }
     }
 

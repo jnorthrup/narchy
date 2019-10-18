@@ -184,12 +184,11 @@ public class Distance {
                     if (sgn > 0f) {
                         
                         v2.crossToOutUnsafe(1f, e12, out);
-                        return;
                     } else {
                         
                         v2.crossToOutUnsafe(e12, 1f, out);
-                        return;
                     }
+                    return;
                 default:
                     assert (false);
                     out.setZero();

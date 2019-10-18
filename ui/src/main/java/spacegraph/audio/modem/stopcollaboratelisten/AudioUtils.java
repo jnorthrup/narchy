@@ -261,7 +261,7 @@ public class AudioUtils {
         //audioInputStream.close();
 
         //sDecoder.stop();
-        Util.sleepMS(1*1000);
+        Util.sleepMS(1000);
         assertEquals("test", msg.toString());
     }
 

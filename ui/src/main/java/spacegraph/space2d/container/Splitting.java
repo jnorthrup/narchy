@@ -254,7 +254,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
         @Override
         public Surface finger(Finger f) {
-            return this /*null*/;
+            return f.test(drag) ? this : this /*null*/;
         }
     }
 

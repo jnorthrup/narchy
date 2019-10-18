@@ -789,7 +789,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         @Override
         public void calcVals() {
             ccc.calcCoeffs(freq, q, gain);
-            a0 = ccc.a0;
+            a0 = CustomCoeffCalculator.a0;
             a1 = ccc.a1;
             a2 = ccc.a2;
             b0 = ccc.b0;

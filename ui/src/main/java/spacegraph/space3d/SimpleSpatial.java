@@ -259,7 +259,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
                 mass(), 
                 shape, transform,
                 +1, 
-                collidesWithOthersLikeThis ? -1 : -1 & ~(+1) 
+                collidesWithOthersLikeThis ? -1 : ~(+1)
         );
 
         

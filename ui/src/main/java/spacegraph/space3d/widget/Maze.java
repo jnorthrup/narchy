@@ -175,7 +175,7 @@ public class Maze extends CompoundSpatial {
             for (int i = 1; (i < (rw * rh * 1000)) && (finishedCount < (rw * rh)); i++) {
                 int x = x1 + 2 * irand(rw);
                 int y = y1 + 2 * irand(rh);
-                if (cells[x][y] != true)
+                if (!cells[x][y])
                     continue;
 
                 int dx = (irand(2) == 1) ? (irand(2) * 2 - 1) : 0;

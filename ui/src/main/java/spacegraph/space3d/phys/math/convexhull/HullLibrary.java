@@ -33,8 +33,6 @@ import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.shape.ShapeHull;
 import spacegraph.space3d.phys.util.IntArrayList;
 
-import java.util.stream.IntStream;
-
 /**
  * HullLibrary class can create a convex hull from a collection of vertices, using
  * the ComputeHull method. The {@link ShapeHull} class uses this HullLibrary to create
@@ -114,9 +112,9 @@ public class HullLibrary {
 						int dest_idx = 0;
 
 						for (int i=0; i<hr.faceCount; i++) {
-							dest_ptr.set(dest_idx + 0, source_ptr.get(source_idx + 2));
+							dest_ptr.set(dest_idx, source_ptr.get(source_idx + 2));
 							dest_ptr.set(dest_idx + 1, source_ptr.get(source_idx + 1));
-							dest_ptr.set(dest_idx + 2, source_ptr.get(source_idx + 0));
+							dest_ptr.set(dest_idx + 2, source_ptr.get(source_idx));
 							dest_idx += 3;
 							source_idx += 3;
 						}
@@ -148,14 +146,14 @@ public class HullLibrary {
                     int dest_idx = 0;
 
                     for (int i=0; i<hr.faceCount; i++) {
-                        dest_ptr.set(dest_idx + 0, 3);
+                        dest_ptr.set(dest_idx, 3);
                         if (desc.hasHullFlag(HullFlags.REVERSE_ORDER)) {
                             dest_ptr.set(dest_idx + 1, source_ptr.get(source_idx + 2));
                             dest_ptr.set(dest_idx + 2, source_ptr.get(source_idx + 1));
-                            dest_ptr.set(dest_idx + 3, source_ptr.get(source_idx + 0));
+                            dest_ptr.set(dest_idx + 3, source_ptr.get(source_idx));
                         }
                         else {
-                            dest_ptr.set(dest_idx + 1, source_ptr.get(source_idx + 0));
+                            dest_ptr.set(dest_idx + 1, source_ptr.get(source_idx));
                             dest_ptr.set(dest_idx + 2, source_ptr.get(source_idx + 1));
                             dest_ptr.set(dest_idx + 3, source_ptr.get(source_idx + 2));
                         }
@@ -474,13 +472,10 @@ public class HullLibrary {
 		basis[1].cross(tmp, basis[0]);
 		tmp.set(-0.02f, 1f, 0f);
 		basis[2].cross(tmp, basis[0]);
-		if (basis[1].length() > basis[2].length()) {
-			basis[1].normalize();
-		}
-		else {
+		if (!(basis[1].length() > basis[2].length())) {
 			basis[1].set(basis[2]);
-			basis[1].normalize();
 		}
+		basis[1].normalize();
 		int p2 = maxdirsterid(verts, verts_count, basis[1], allow);
 		if (p2 == p0 || p2 == p1) {
 			tmp.negated(basis[1]);
@@ -533,13 +528,13 @@ public class HullLibrary {
 		Tri ta = allocateTriangle(v, t.getCoord(1), t.getCoord(2));
 		ta.n.set(t0.n.getCoord(0), n + 1, n + 2);
 		
-		tris.get(t0.n.getCoord(0)).neib(t.getCoord(1), t.getCoord(2)).set(n + 0);
+		tris.get(t0.n.getCoord(0)).neib(t.getCoord(1), t.getCoord(2)).set(n);
 		Tri tb = allocateTriangle(v, t.getCoord(2), t.getCoord(0));
-		tb.n.set(t0.n.getCoord(1), n + 2, n + 0);
+		tb.n.set(t0.n.getCoord(1), n + 2, n);
 		
 		tris.get(t0.n.getCoord(1)).neib(t.getCoord(2), t.getCoord(0)).set(n + 1);
 		Tri tc = allocateTriangle(v, t.getCoord(0), t.getCoord(1));
-		tc.n.set(t0.n.getCoord(2), n + 0, n + 1);
+		tc.n.set(t0.n.getCoord(2), n, n + 1);
 		
 		tris.get(t0.n.getCoord(2)).neib(t.getCoord(0), t.getCoord(1)).set(n + 2);
 		checkit(ta);
@@ -878,12 +873,11 @@ public class HullLibrary {
 
 		if (a.length() > b.length()) {
 			out.normalize(a);
-			return out;
 		}
 		else {
 			out.normalize(b);
-			return out;
 		}
+		return out;
 	}
 
 	private static int maxdirfiltered(FasterList<v3> p, int count, v3 dir, IntArrayList allow) {

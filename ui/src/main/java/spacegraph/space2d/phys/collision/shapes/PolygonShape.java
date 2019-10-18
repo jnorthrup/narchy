@@ -350,10 +350,10 @@ public class PolygonShape extends Shape {
 
             float vx = (xfqc * v2.x - xfqs * v2.y) + xfpx;
             float vy = (xfqs * v2.x + xfqc * v2.y) + xfpy;
-            lower.x = lower.x < vx ? lower.x : vx;
-            lower.y = lower.y < vy ? lower.y : vy;
-            upper.x = upper.x > vx ? upper.x : vx;
-            upper.y = upper.y > vy ? upper.y : vy;
+            lower.x = Math.min(lower.x, vx);
+            lower.y = Math.min(lower.y, vy);
+            upper.x = Math.max(upper.x, vx);
+            upper.y = Math.max(upper.y, vy);
         }
 
         lower.x -= skinRadius;

@@ -123,15 +123,14 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         RectFloat nextView = RectFloat.WH(w, h);
         if (this.view == null) {
             this.view = nextView; //initial
-            layoutModel();
         } else {
 
 
 //            Exe.invoke(() -> { //break suspected deadlock ?
                 this.view = Util.maybeEqual(this.view, nextView);
-                layoutModel();
-//            });
+            //            });
         }
+        layoutModel();
         return this;
     }
 

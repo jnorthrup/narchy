@@ -852,7 +852,7 @@ public enum MatrixOps { ;
 			double[] maxI = maxed[i];
 			double[] mmi = matrix[i];
 			for (int j = 0; j < l; j++) {
-				maxI[j] = mmi[j] > maxval ? mmi[j] : maxval;
+				maxI[j] = Math.max(mmi[j], maxval);
 			}
 		}
 		return maxed;

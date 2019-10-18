@@ -168,19 +168,19 @@ public class MathUtils extends PlatformMathUtils {
     }
 
     public static float max(float a, float b) {
-        return a > b ? a : b;
+        return Math.max(a, b);
     }
 
     public static int max(int a, int b) {
-        return a > b ? a : b;
+        return Math.max(a, b);
     }
 
     public static float min(float a, float b) {
-        return a < b ? a : b;
+        return Math.min(a, b);
     }
 
     public static int min(int a, int b) {
-        return a < b ? a : b;
+        return Math.min(a, b);
     }
 
     public static float map(float val, float fromMin, float fromMax,
@@ -199,18 +199,18 @@ public class MathUtils extends PlatformMathUtils {
 
     public static v2 clamp(v2 a, v2 low, v2 high) {
         v2 min = new v2();
-        min.x = a.x < high.x ? a.x : high.x;
-        min.y = a.y < high.y ? a.y : high.y;
-        min.x = low.x > min.x ? low.x : min.x;
-        min.y = low.y > min.y ? low.y : min.y;
+        min.x = Math.min(a.x, high.x);
+        min.y = Math.min(a.y, high.y);
+        min.x = Math.max(low.x, min.x);
+        min.y = Math.max(low.y, min.y);
         return min;
     }
 
     public static void clampToOut(v2 a, v2 low, v2 high, v2 dest) {
-        dest.x = a.x < high.x ? a.x : high.x;
-        dest.y = a.y < high.y ? a.y : high.y;
-        dest.x = low.x > dest.x ? low.x : dest.x;
-        dest.y = low.y > dest.y ? low.y : dest.y;
+        dest.x = Math.min(a.x, high.x);
+        dest.y = Math.min(a.y, high.y);
+        dest.x = Math.max(low.x, dest.x);
+        dest.y = Math.max(low.y, dest.y);
     }
 
     /**

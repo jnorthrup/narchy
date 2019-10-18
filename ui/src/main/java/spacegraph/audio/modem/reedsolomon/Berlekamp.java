@@ -123,8 +123,7 @@ public class Berlekamp implements Settings {
 
         mult_polys(product, Lambda, rs.synBytes);
         zero_poly(Omega);
-        for (int i = 0; i < Settings.kParityBytes; i++)
-            Omega[i] = product[i];
+        System.arraycopy(product, 0, Omega, 0, Settings.kParityBytes);
 
     }
 
@@ -194,8 +193,7 @@ public class Berlekamp implements Settings {
     }
 
     static void copy_poly(int[] dst, int[] src) {
-        for (int i = 0; i < Settings.kMaxDeg; i++)
-            dst[i] = src[i];
+        System.arraycopy(src, 0, dst, 0, Settings.kMaxDeg);
     }
 
     static void scale_poly(int k, int[] poly) {
@@ -210,8 +208,7 @@ public class Berlekamp implements Settings {
 
     /* multiply by z, i.e., shift right by 1 */
     static void mul_z_poly(int[] src) {
-        for (int i = Settings.kMaxDeg - 1; i > 0; i--)
-            src[i] = src[i - 1];
+        System.arraycopy(src, 0, src, 1, Settings.kMaxDeg - 1);
         src[0] = 0;
     }
 

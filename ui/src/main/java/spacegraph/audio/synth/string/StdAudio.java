@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 /**
  * <i>Standard audio</i>. This class provides a basic capability for
@@ -243,7 +242,7 @@ final class StdAudio {
         byte[] data = new byte[2 * samples.length];
         for (int i = 0; i < samples.length; i++) {
             int temp = (short) (samples[i] * MAX_16_BIT);
-            data[2 * i + 0] = (byte) temp;
+            data[2 * i] = (byte) temp;
             data[2 * i + 1] = (byte) (temp >> 8);
         }
 

@@ -311,19 +311,11 @@ public abstract class Tuple2i implements java.io.Serializable, Cloneable {
     public final void clamp(int min, int max, Tuple2i t) {
         if( t.x > max ) {
 	    x = max;
-        } else if( t.x < min ) {
-	    x = min;
-        } else {
-	    x = t.x;
-        }
+        } else x = Math.max(t.x, min);
 
         if( t.y > max ) {
 	    y = max;
-        } else if( t.y < min ) {
-	    y = min;
-        } else {
-	    y = t.y;
-        }
+        } else y = Math.max(t.y, min);
     }
 
 
@@ -334,9 +326,9 @@ public abstract class Tuple2i implements java.io.Serializable, Cloneable {
      *  @param t   the source tuple, which will not be modified
      */
     public final void clampMin(int min, Tuple2i t) {
-        x = t.x < min ? min : t.x;
+        x = Math.max(t.x, min);
 
-        y = t.y < min ? min : t.y;
+        y = Math.max(t.y, min);
     }
 
 
@@ -347,9 +339,9 @@ public abstract class Tuple2i implements java.io.Serializable, Cloneable {
      *  @param t   the source tuple, which will not be modified
      */
     public final void clampMax(int max, Tuple2i t) {
-        x = t.x > max ? max : t.x;
+        x = Math.min(t.x, max);
 
-        y = t.y > max ? max : t.y;
+        y = Math.min(t.y, max);
     }
 
 

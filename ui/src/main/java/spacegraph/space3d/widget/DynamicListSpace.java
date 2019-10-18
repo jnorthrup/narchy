@@ -5,7 +5,6 @@ import spacegraph.space3d.SpaceGraph3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.space3d.transform.EdgeDirected3D;
 import spacegraph.space3d.transform.Flatten;
-import spacegraph.util.Active;
 
 import java.util.Collections;
 import java.util.List;

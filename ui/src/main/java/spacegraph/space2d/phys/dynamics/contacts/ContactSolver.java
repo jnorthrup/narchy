@@ -406,7 +406,7 @@ public class ContactSolver {
 
                 
                 float a = vcp.normalImpulse + lambda;
-                float newImpulse = (a > 0.0f ? a : 0.0f);
+                float newImpulse = (Math.max(a, 0.0f));
                 lambda = newImpulse - vcp.normalImpulse;
                 vcp.normalImpulse = newImpulse;
 

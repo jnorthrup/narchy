@@ -422,10 +422,8 @@ public abstract class RdpPacket {
                 this.setLittleEndian16((short) name[j++]);
                 i += 2;
             }
-            this.setLittleEndian16(0); 
-        } else {
-            this.setLittleEndian16(0);
         }
+        this.setLittleEndian16(0);
     }
 
     /**

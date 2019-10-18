@@ -71,7 +71,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
                     } catch (Exception e) {
 
-                        f = new Font("monospace", 0, 1);
+                        f = new Font("monospace", Font.PLAIN, 1);
 
                     }
                     defaultFont = f;

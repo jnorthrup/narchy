@@ -14,7 +14,7 @@ public class Synth {
     private static JSlider volumeControl;
     private static JSlider forceControl;
 
-    public static void main(String[] args) throws MidiUnavailableException, ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException, InvalidMidiDataException {
+    public static void main(String[] args) throws MidiUnavailableException {
         //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         JFrame frame = new JFrame("Virtual MIDI Synthesizer");
         frame.setLayout(new BorderLayout());

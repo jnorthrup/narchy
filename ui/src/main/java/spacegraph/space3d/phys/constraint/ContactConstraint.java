@@ -188,7 +188,7 @@ public class ContactConstraint {
 		
 		float oldNormalImpulse = cpd.appliedImpulse;
 		float sum = oldNormalImpulse + normalImpulse;
-		cpd.appliedImpulse = 0f > sum ? 0f : sum;
+		cpd.appliedImpulse = Math.max(0f, sum);
 
 		normalImpulse = cpd.appliedImpulse - oldNormalImpulse;
 
@@ -350,7 +350,7 @@ public class ContactConstraint {
 		
 		float oldNormalImpulse = cpd.appliedImpulse;
 		float sum = oldNormalImpulse + normalImpulse;
-		cpd.appliedImpulse = 0f > sum ? 0f : sum;
+		cpd.appliedImpulse = Math.max(0f, sum);
 
 		normalImpulse = cpd.appliedImpulse - oldNormalImpulse;
 

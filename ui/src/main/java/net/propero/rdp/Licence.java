@@ -144,11 +144,7 @@ class Licence {
         Secure.setLittleEndian32(hwid, 2);
         byte[] name = Options.hostname.getBytes(StandardCharsets.US_ASCII);
 
-        if (name.length > LICENCE_HWID_SIZE - 4) {
-            System.arraycopy(name, 0, hwid, 4, LICENCE_HWID_SIZE - 4);
-        } else {
-            System.arraycopy(name, 0, hwid, 4, name.length);
-        }
+        System.arraycopy(name, 0, hwid, 4, Math.min(name.length, LICENCE_HWID_SIZE - 4));
         return hwid;
     }
 
@@ -392,7 +388,7 @@ class Licence {
         RC4 rc4_licence = new RC4();
 
         /* parse incoming packet and save encrypted token */
-        if (parse_authreq(data) != true) {
+        if (!parse_authreq(data)) {
             throw new RdesktopException("Authentication Request was corrupt!");
         }
         byte[] out_token = new byte[LICENCE_TOKEN_SIZE];

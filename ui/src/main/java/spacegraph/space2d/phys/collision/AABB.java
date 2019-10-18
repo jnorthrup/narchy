@@ -147,10 +147,10 @@ public class AABB {
      * @param aab
      */
     public final void combine(AABB aabb1, AABB aab) {
-        lowerBound.x = aabb1.lowerBound.x < aab.lowerBound.x ? aabb1.lowerBound.x : aab.lowerBound.x;
-        lowerBound.y = aabb1.lowerBound.y < aab.lowerBound.y ? aabb1.lowerBound.y : aab.lowerBound.y;
-        upperBound.x = aabb1.upperBound.x > aab.upperBound.x ? aabb1.upperBound.x : aab.upperBound.x;
-        upperBound.y = aabb1.upperBound.y > aab.upperBound.y ? aabb1.upperBound.y : aab.upperBound.y;
+        lowerBound.x = Math.min(aabb1.lowerBound.x, aab.lowerBound.x);
+        lowerBound.y = Math.min(aabb1.lowerBound.y, aab.lowerBound.y);
+        upperBound.x = Math.max(aabb1.upperBound.x, aab.upperBound.x);
+        upperBound.y = Math.max(aabb1.upperBound.y, aab.upperBound.y);
     }
 
     /**
@@ -168,10 +168,10 @@ public class AABB {
      * @param aabb
      */
     public final void combine(AABB aabb) {
-        lowerBound.x = lowerBound.x < aabb.lowerBound.x ? lowerBound.x : aabb.lowerBound.x;
-        lowerBound.y = lowerBound.y < aabb.lowerBound.y ? lowerBound.y : aabb.lowerBound.y;
-        upperBound.x = upperBound.x > aabb.upperBound.x ? upperBound.x : aabb.upperBound.x;
-        upperBound.y = upperBound.y > aabb.upperBound.y ? upperBound.y : aabb.upperBound.y;
+        lowerBound.x = Math.min(lowerBound.x, aabb.lowerBound.x);
+        lowerBound.y = Math.min(lowerBound.y, aabb.lowerBound.y);
+        upperBound.x = Math.max(upperBound.x, aabb.upperBound.x);
+        upperBound.y = Math.max(upperBound.y, aabb.upperBound.y);
     }
 
     /**

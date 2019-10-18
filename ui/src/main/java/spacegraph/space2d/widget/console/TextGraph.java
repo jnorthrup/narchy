@@ -15,7 +15,7 @@ public class TextGraph extends Graph2D { //extends Graph2D {
 
     public TextGraph() {
         super();
-        render((Graph2DRenderer) (node, graph) -> node.set(new VectorLabel("x")));
+        render((node, graph) -> node.set(new VectorLabel("x")));
         update((g,dt)->{
            //System.out.println(g.nodes());
         });

@@ -351,6 +351,6 @@ public abstract class Contact {
      * @return
      */
     private static float mixRestitution(float restitution1, float restitution2) {
-        return restitution1 > restitution2 ? restitution1 : restitution2;
+        return Math.max(restitution1, restitution2);
     }
 }

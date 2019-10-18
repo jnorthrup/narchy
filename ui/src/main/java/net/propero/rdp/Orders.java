@@ -214,27 +214,20 @@ public class Orders {
         if (Options.use_rdp5) {
 
             /* Begin compressedBitmapData */
-            pad2 = data.getLittleEndian16(); 
-            
-            size = data.getLittleEndian16(); 
-            row_size = data.getLittleEndian16(); 
-            
-            final_size = data.getLittleEndian16(); 
-            
-
-        } else {
-            data.incrementPosition(2); 
-            size = data.getLittleEndian16();
-            row_size = data.getLittleEndian16(); 
-            
-            final_size = data.getLittleEndian16(); 
-            
-            
-            
-        }
+            pad2 = data.getLittleEndian16();
 
 
-        int Bpp = (bpp + 7) / 8;
+		} else {
+            data.incrementPosition(2);
+
+
+		}
+		size = data.getLittleEndian16();
+		row_size = data.getLittleEndian16();
+		final_size = data.getLittleEndian16();
+
+
+		int Bpp = (bpp + 7) / 8;
         if (Bpp == 1) {
             byte[] pixel = Bitmap.decompress(width, height, size, data, 1);
             cache.putBitmap(cache_id, cache_idx, new Bitmap(Bitmap
@@ -453,12 +446,11 @@ public class Orders {
         if (delta) {
             byte change = (byte) data.get8();
             coordinate += change;
-            return coordinate;
-        } else {
+		} else {
             coordinate = data.getLittleEndian16();
-            return coordinate;
-        }
-    }
+		}
+		return coordinate;
+	}
 
     /**
      * Read a colour value from a packet

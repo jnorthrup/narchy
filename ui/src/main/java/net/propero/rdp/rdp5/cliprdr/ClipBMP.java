@@ -202,7 +202,7 @@ public class ClipBMP extends Component {
                     int[] ndata = new int[nheight * nwidth];
                     for (int j = 0; j < nheight; j++) {
                         for (int i = 0; i < nwidth; i++) {
-                            ndata[nwidth * (nheight - j - 1) + i] = (255 & 0xff) << 24
+                            ndata[nwidth * (nheight - j - 1) + i] = (0xff) << 24
                                     | ((brgb[nindex + 2] & 0xff) << 16)
                                     | ((brgb[nindex + 1] & 0xff) << 8)
                                     | brgb[nindex] & 0xff;
@@ -247,7 +247,7 @@ public class ClipBMP extends Component {
                     fs.read(bpalette, 0, nNumColors * 4);
                     int nindex8 = 0;
                     for (int n = 0; n < nNumColors; n++) {
-                        npalette[n] = (255 & 0xff) << 24
+                        npalette[n] = (0xff) << 24
                                 | ((bpalette[nindex8 + 2] & 0xff) << 16)
                                 | ((bpalette[nindex8 + 1] & 0xff) << 8)
                                 | bpalette[nindex8] & 0xff;
@@ -311,7 +311,7 @@ public class ClipBMP extends Component {
                     fs.read(bpalette, 0, nNumColors * 4);
                     int nindex8 = 0;
                     for (int n = 0; n < nNumColors; n++) {
-                        npalette[n] = (255 & 0xff) << 24
+                        npalette[n] = (0xff) << 24
                                 | ((bpalette[nindex8 + 2] & 0xff) << 16)
                                 | ((bpalette[nindex8 + 1] & 0xff) << 8)
                                 | bpalette[nindex8] & 0xff;
@@ -374,7 +374,7 @@ public class ClipBMP extends Component {
                     fs.read(bpalette, 0, nNumColors * 4);
                     int nindex8 = 0;
                     for (int n = 0; n < nNumColors; n++) {
-                        npalette[n] = (255 & 0xff) << 24
+                        npalette[n] = (0xff) << 24
                                 | ((bpalette[nindex8 + 2] & 0xff) << 16)
                                 | ((bpalette[nindex8 + 1] & 0xff) << 8)
                                 | bpalette[nindex8] & 0xff;

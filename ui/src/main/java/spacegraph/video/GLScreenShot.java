@@ -70,7 +70,7 @@ public class GLScreenShot implements Supplier<BufferedImage> {
 
 
                 WritableRaster raster1 = Raster.createInterleavedRaster(
-                        new DataBufferByte(bb, bb.length), width, height, width * 1, 1, grayOffsets, new Point());
+                        new DataBufferByte(bb, bb.length), width, height, width, 1, grayOffsets, new Point());
 
                 b = new BufferedImage(grayColorModel, raster1, false, null);
 

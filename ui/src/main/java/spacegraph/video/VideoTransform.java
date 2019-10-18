@@ -28,7 +28,7 @@ public abstract class VideoTransform<T extends VideoSource> extends VideoSource 
     protected abstract BufferedImage apply(BufferedImage image);
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         off.close();
         off = null;
         //src.close();

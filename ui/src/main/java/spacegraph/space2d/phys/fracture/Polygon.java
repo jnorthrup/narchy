@@ -9,7 +9,6 @@ import spacegraph.space2d.phys.fracture.poly2Tri.Triangulation;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.stream.IntStream;
 
 /**

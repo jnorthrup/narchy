@@ -354,8 +354,7 @@ public abstract class TerminalEmulator {
             x += char_width;
             x += char_width;
             w = char_width * 2;
-            h = char_height;
-        } else {
+		} else {
             pushChar(b);
             int foo = getASCII(term_width - (x / char_width));
             if (foo != 0) {
@@ -372,9 +371,9 @@ public abstract class TerminalEmulator {
             }
             x += (char_width * foo);
             w = char_width * foo;
-            h = char_height;
-        }
-        term.redraw(rx, ry - char_height, w, h);
+		}
+		h = char_height;
+		term.redraw(rx, ry - char_height, w, h);
         term.setCursor(x, y);
         term.draw_cursor();
     }

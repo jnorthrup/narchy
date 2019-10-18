@@ -511,8 +511,8 @@ public class HingeConstraint extends TypedConstraint {
 
             float unclippedMotorImpulse = kHinge * motor_relvel;
             
-            float clippedMotorImpulse = unclippedMotorImpulse > maxMotorImpulse ? maxMotorImpulse : unclippedMotorImpulse;
-            clippedMotorImpulse = clippedMotorImpulse < -maxMotorImpulse ? -maxMotorImpulse : clippedMotorImpulse;
+            float clippedMotorImpulse = Math.min(unclippedMotorImpulse, maxMotorImpulse);
+            clippedMotorImpulse = Math.max(clippedMotorImpulse, -maxMotorImpulse);
             v3 motorImp = new v3();
             motorImp.scale(clippedMotorImpulse, axisA);
 

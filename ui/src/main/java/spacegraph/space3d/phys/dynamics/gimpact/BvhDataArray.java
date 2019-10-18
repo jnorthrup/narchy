@@ -64,7 +64,7 @@ class BvhDataArray {
 
 		float[] b = this.bound;
 
-		float b0 = b[pos1+0];
+		float b0 = b[pos1];
 		float b1 = b[pos1+1];
 		float b2 = b[pos1+2];
 		float b3 = b[pos1+3];
@@ -72,7 +72,7 @@ class BvhDataArray {
 		float b5 = b[pos1+5];
 		int d = data[idx1];
 		
-		b[pos1+0] = b[pos2+0];
+		b[pos1] = b[pos2];
 		b[pos1+1] = b[pos2+1];
 		b[pos1+2] = b[pos2+2];
 		b[pos1+3] = b[pos2+3];
@@ -80,7 +80,7 @@ class BvhDataArray {
 		b[pos1+5] = b[pos2+5];
 		data[idx1] = data[idx2];
 
-		b[pos2+0] = b0;
+		b[pos2] = b0;
 		b[pos2+1] = b1;
 		b[pos2+2] = b2;
 		b[pos2+3] = b3;

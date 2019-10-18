@@ -360,16 +360,15 @@ public class MatrixUtil {
 			if ((theta2 * theta2) < (10f / BulletGlobals.SIMD_EPSILON)) {
 				t = 1f / (theta >= 0f ? theta + (float) Math.sqrt(1f + theta2) : theta - (float) Math.sqrt(1f + theta2));
 				cos = 1f / (float) Math.sqrt(1f + t * t);
-				sin = cos * t;
 			}
 			else {
 				
 				t = 1 / (theta * (2 + 0.5f / theta2));
 				cos = 1 - 0.5f * t * t;
-				sin = cos * t;
 			}
+			sin = cos * t;
 
-			
+
 			mat.setElement(p, q, 0f);
 			mat.setElement(q, p, 0f);
 			mat.setElement(p, p, mat.get(p, p) - t * mpq);

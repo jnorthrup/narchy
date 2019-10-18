@@ -453,7 +453,6 @@ public class HeightfieldTerrainShape extends ConcaveShape
 					getVertex(x + 1, j + 1, vertices[1]);
 					getVertex(x, j + 1, vertices[2]);
 
-					callback.processTriangle(vertices, x, j);
 				}
 				else
 				{
@@ -469,20 +468,10 @@ public class HeightfieldTerrainShape extends ConcaveShape
 					getVertex(x, j + 1, vertices[1]);
 					getVertex(x + 1, j + 1, vertices[2]);
 					checkNormal(vertices, callback);
-					callback.processTriangle(vertices, x, j);
 
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
 
 				}
+				callback.processTriangle(vertices, x, j);
 			}
 		}
 	}

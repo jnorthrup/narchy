@@ -61,7 +61,7 @@ class BvhTreeNodeArray {
 		int dpos = destIdx*6;
 		int spos = srcIdx*6;
 		
-		bound[dpos+0] = array.bound[spos+0];
+		bound[dpos] = array.bound[spos];
 		bound[dpos+1] = array.bound[spos+1];
 		bound[dpos+2] = array.bound[spos+2];
 		bound[dpos+3] = array.bound[spos+3];
@@ -74,7 +74,7 @@ class BvhTreeNodeArray {
 		int dpos = destIdx*6;
 		int spos = srcIdx*6;
 		
-		bound[dpos+0] = array.bound[spos+0];
+		bound[dpos] = array.bound[spos];
 		bound[dpos+1] = array.bound[spos+1];
 		bound[dpos+2] = array.bound[spos+2];
 		bound[dpos+3] = array.bound[spos+3];
@@ -85,14 +85,14 @@ class BvhTreeNodeArray {
 	
 	public BoxCollision.AABB getBound(int nodeIndex, BoxCollision.AABB out) {
 		int pos = nodeIndex*6;
-		out.min.set(bound[pos+0], bound[pos+1], bound[pos+2]);
+		out.min.set(bound[pos], bound[pos+1], bound[pos+2]);
 		out.max.set(bound[pos+3], bound[pos+4], bound[pos+5]);
 		return out;
 	}
 	
 	public void setBound(int nodeIndex, BoxCollision.AABB aabb) {
 		int pos = nodeIndex*6;
-		bound[pos+0] = aabb.min.x;
+		bound[pos] = aabb.min.x;
 		bound[pos+1] = aabb.min.y;
 		bound[pos+2] = aabb.min.z;
 		bound[pos+3] = aabb.max.x;

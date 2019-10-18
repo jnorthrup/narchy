@@ -684,14 +684,14 @@ public class ParticleSystem {
 
             float p2x = p1x + dt * v.x;
             float p2y = p1y + dt * v.y;
-            float bx = p1x < p2x ? p1x : p2x;
-            float by = p1y < p2y ? p1y : p2y;
-            lowerBound.x = lowerBound.x < bx ? lowerBound.x : bx;
-            lowerBound.y = lowerBound.y < by ? lowerBound.y : by;
-            float b1x = p1x > p2x ? p1x : p2x;
-            float b1y = p1y > p2y ? p1y : p2y;
-            upperBound.x = upperBound.x > b1x ? upperBound.x : b1x;
-            upperBound.y = upperBound.y > b1y ? upperBound.y : b1y;
+            float bx = Math.min(p1x, p2x);
+            float by = Math.min(p1y, p2y);
+            lowerBound.x = Math.min(lowerBound.x, bx);
+            lowerBound.y = Math.min(lowerBound.y, by);
+            float b1x = Math.max(p1x, p2x);
+            float b1y = Math.max(p1y, p2y);
+            upperBound.x = Math.max(upperBound.x, b1x);
+            upperBound.y = Math.max(upperBound.y, b1y);
         }
         sccallback.step = step;
         sccallback.system = this;

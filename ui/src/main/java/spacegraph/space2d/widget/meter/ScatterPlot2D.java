@@ -117,7 +117,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
 
 
         update((g, dtS)->{
-            float minVis = this.minVisPct;
+            float minVis = minVisPct;
             int n = g.nodes();
             float w = w(), h = h();
             MutableRectFloat e = extent.animated();

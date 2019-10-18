@@ -35,7 +35,6 @@ import jcog.math.VecMathUtil;
 import jcog.math.v3;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 /**
  * A single precision floating point 4 by 4 matrix.
@@ -2018,15 +2017,15 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
                     matrix1[rv + 3] * matrix2[cv + 4 * 3]) / matrix1[rv + 2];
 
             rv -= 4;
-            matrix2[cv + 4 * 1] = (matrix2[cv + 4 * 1] -
+            matrix2[cv + 4] = (matrix2[cv + 4] -
                     matrix1[rv + 2] * matrix2[cv + 4 * 2] -
                     matrix1[rv + 3] * matrix2[cv + 4 * 3]) / matrix1[rv + 1];
 
             rv -= 4;
-            matrix2[cv + 4 * 0] = (matrix2[cv + 4 * 0] -
-                    matrix1[rv + 1] * matrix2[cv + 4 * 1] -
+            matrix2[cv] = (matrix2[cv] -
+                    matrix1[rv + 1] * matrix2[cv + 4] -
                     matrix1[rv + 2] * matrix2[cv + 4 * 2] -
-                    matrix1[rv + 3] * matrix2[cv + 4 * 3]) / matrix1[rv + 0];
+                    matrix1[rv + 3] * matrix2[cv + 4 * 3]) / matrix1[rv];
         }
     }
 

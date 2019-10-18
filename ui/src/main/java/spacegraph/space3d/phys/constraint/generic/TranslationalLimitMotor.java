@@ -174,9 +174,9 @@ public class TranslationalLimitMotor {
 
 
 		if (unclippedMotorImpulse > 0.0f) {
-			clippedMotorImpulse = unclippedMotorImpulse > maxMotorForce ? maxMotorForce : unclippedMotorImpulse;
+			clippedMotorImpulse = Math.min(unclippedMotorImpulse, maxMotorForce);
 		} else {
-			clippedMotorImpulse = unclippedMotorImpulse < -maxMotorForce ? -maxMotorForce : unclippedMotorImpulse;
+			clippedMotorImpulse = Math.max(unclippedMotorImpulse, -maxMotorForce);
 		}
 
 		float normalImpulse = clippedMotorImpulse;

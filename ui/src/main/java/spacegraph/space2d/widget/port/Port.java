@@ -299,8 +299,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     final boolean recv(Wire from, X s) {
         if (!enabled) {
             in.accept(null, s);
-            return false;
-        } else {
+		} else {
             In<? super X> in = this.in;
             if (in != null) {
                 try {
@@ -315,10 +314,10 @@ public class Port<X> extends Widget implements Wiring.Wireable {
                     return false;
                 }
             }
-            return false;
-        }
+		}
+		return false;
 
-    }
+	}
 
     public void enable(boolean b) {
         this.enabled = b;

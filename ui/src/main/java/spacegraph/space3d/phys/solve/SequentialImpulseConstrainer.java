@@ -107,7 +107,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
     }
 
     private long rand2() {
-        btSeed2 = (1664525L * btSeed2 + 1013904223L) & 0xffffffff;
+        btSeed2 = (1664525L * btSeed2 + 1013904223L);
         return btSeed2;
     }
 
@@ -174,7 +174,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
             SolverConstraint contactConstraint,
             ContactSolverInfo solverInfo) {
 
-        if (contactConstraint.penetration < solverInfo.splitImpulsePenetrationThreshold) {
+        if (contactConstraint.penetration < ContactSolverInfo.splitImpulsePenetrationThreshold) {
             BulletStats.gNumSplitImpulseRecoveries++;
 
 
@@ -183,7 +183,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
 
             float rel_vel = vel1Dotn - vel2Dotn;
 
-            float positionalError = -contactConstraint.penetration * solverInfo.erp2 / solverInfo.timeStep;
+            float positionalError = -contactConstraint.penetration * ContactSolverInfo.erp2 / solverInfo.timeStep;
             
 
             float velocityError = contactConstraint.restitution - rel_vel;
@@ -195,7 +195,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
             
             float oldNormalImpulse = contactConstraint.appliedPushImpulse;
             float sum = oldNormalImpulse + normalImpulse;
-            contactConstraint.appliedPushImpulse = 0f > sum ? 0f : sum;
+            contactConstraint.appliedPushImpulse = Math.max(0f, sum);
 
             normalImpulse = contactConstraint.appliedPushImpulse - oldNormalImpulse;
 
@@ -226,7 +226,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
         float vel2Dotn = contactConstraint.contactNormal.dot(body2.linearVelocity) + contactConstraint.relpos2CrossNormal.dot(body2.angularVelocity);
 
         float positionalError = 0.f;
-        if (!solverInfo.splitImpulse || (contactConstraint.penetration > solverInfo.splitImpulsePenetrationThreshold)) {
+        if (!solverInfo.splitImpulse || (contactConstraint.penetration > ContactSolverInfo.splitImpulsePenetrationThreshold)) {
             positionalError = -contactConstraint.penetration * solverInfo.erp / solverInfo.timeStep;
         }
 
@@ -241,7 +241,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
         
         float oldNormalImpulse = contactConstraint.appliedImpulse;
         float sum = oldNormalImpulse + normalImpulse;
-        contactConstraint.appliedImpulse = 0f > sum ? 0f : sum;
+        contactConstraint.appliedImpulse = Math.max(0f, sum);
 
         normalImpulse = contactConstraint.appliedImpulse - oldNormalImpulse;
 
@@ -617,7 +617,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
 
                             
                             if ((infoGlobal.solverMode & SolverMode.SOLVER_USE_WARMSTARTING) != 0) {
-                                solverConstraint.appliedImpulse = cp.appliedImpulse * infoGlobal.warmstartingFactor;
+                                solverConstraint.appliedImpulse = cp.appliedImpulse * ContactSolverInfo.warmstartingFactor;
                                 if (rb0 != null) {
                                     tmp.scale(rb0.getInvMass(), solverConstraint.contactNormal);
                                     
@@ -645,15 +645,14 @@ public class SequentialImpulseConstrainer implements Constrainer {
                                     cp.lateralFrictionDir1.scaled(1f / (float) Math.sqrt(lat_rel_vel));
                                     addFrictionConstraint(cp.lateralFrictionDir1, solverBodyIdA, solverBodyIdB, frictionIndex, cp, rel_pos1, rel_pos2, colObj0, colObj1, relaxation);
                                     cp.lateralFrictionDir2.cross(cp.lateralFrictionDir1, cp.normalWorldOnB);
-                                    cp.lateralFrictionDir2.normalize(); 
-                                    addFrictionConstraint(cp.lateralFrictionDir2, solverBodyIdA, solverBodyIdB, frictionIndex, cp, rel_pos1, rel_pos2, colObj0, colObj1, relaxation);
+                                    cp.lateralFrictionDir2.normalize();
                                 } else {
                                     
 
                                     TransformUtil.planeSpace1(cp.normalWorldOnB, cp.lateralFrictionDir1, cp.lateralFrictionDir2);
                                     addFrictionConstraint(cp.lateralFrictionDir1, solverBodyIdA, solverBodyIdB, frictionIndex, cp, rel_pos1, rel_pos2, colObj0, colObj1, relaxation);
-                                    addFrictionConstraint(cp.lateralFrictionDir2, solverBodyIdA, solverBodyIdB, frictionIndex, cp, rel_pos1, rel_pos2, colObj0, colObj1, relaxation);
                                 }
+                                addFrictionConstraint(cp.lateralFrictionDir2, solverBodyIdA, solverBodyIdB, frictionIndex, cp, rel_pos1, rel_pos2, colObj0, colObj1, relaxation);
                                 cp.lateralFrictionInitialized = true;
 
                             } else {
@@ -664,7 +663,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
                             
                             SolverConstraint frictionConstraint1 = tmpSolverFrictionConstraintPool.get(solverConstraint.frictionIndex);
                             if ((infoGlobal.solverMode & SolverMode.SOLVER_USE_WARMSTARTING) != 0) {
-                                frictionConstraint1.appliedImpulse = cp.appliedImpulseLateral1 * infoGlobal.warmstartingFactor;
+                                frictionConstraint1.appliedImpulse = cp.appliedImpulseLateral1 * ContactSolverInfo.warmstartingFactor;
                                 if (rb0 != null) {
                                     tmp.scale(rb0.getInvMass(), frictionConstraint1.contactNormal);
                                     
@@ -681,7 +680,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
                             
                             SolverConstraint frictionConstraint2 = tmpSolverFrictionConstraintPool.get(solverConstraint.frictionIndex + 1);
                             if ((infoGlobal.solverMode & SolverMode.SOLVER_USE_WARMSTARTING) != 0) {
-                                frictionConstraint2.appliedImpulse = cp.appliedImpulseLateral2 * infoGlobal.warmstartingFactor;
+                                frictionConstraint2.appliedImpulse = cp.appliedImpulseLateral2 * ContactSolverInfo.warmstartingFactor;
                                 if (rb0 != null) {
                                     tmp.scale(rb0.getInvMass(), frictionConstraint2.contactNormal);
                                     

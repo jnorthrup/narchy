@@ -35,7 +35,6 @@ import jcog.math.VecMathUtil;
 import jcog.math.v3;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 /**
  * A single precision floating point 3 by 3 matrix.
@@ -1367,13 +1366,13 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             matrix2[cv + 3 * 2] /= matrix1[rv + 2];
 
             rv -= 3;
-            matrix2[cv + 3 * 1] = (matrix2[cv + 3 * 1] -
+            matrix2[cv + 3] = (matrix2[cv + 3] -
                     matrix1[rv + 2] * matrix2[cv + 3 * 2]) / matrix1[rv + 1];
 
             rv -= 3;
-            matrix2[cv + 4 * 0] = (matrix2[cv + 3 * 0] -
-                    matrix1[rv + 1] * matrix2[cv + 3 * 1] -
-                    matrix1[rv + 2] * matrix2[cv + 3 * 2]) / matrix1[rv + 0];
+            matrix2[cv] = (matrix2[cv] -
+                    matrix1[rv + 1] * matrix2[cv + 3] -
+                    matrix1[rv + 2] * matrix2[cv + 3 * 2]) / matrix1[rv];
 
         }
     }

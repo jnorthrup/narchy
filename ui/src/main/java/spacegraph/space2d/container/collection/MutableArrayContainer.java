@@ -58,7 +58,7 @@ public abstract class MutableArrayContainer<S extends Surface> extends AbstractM
     }
 
 
-    private <S extends Surface> S updateRestart(S r, S s) {
+    private S updateRestart(S r, S s) {
         if (r != s) {
                 if (r != null) {
                     //r.stop();
@@ -120,7 +120,7 @@ public abstract class MutableArrayContainer<S extends Surface> extends AbstractM
     @Override
     public boolean whileEach(Predicate<Surface> o) {
         int bound = length;
-        return IntStream.range(0, bound).mapToObj(children::getFast).filter(Objects::nonNull).allMatch(o::test);
+        return IntStream.range(0, bound).mapToObj(children::getFast).filter(Objects::nonNull).allMatch(o);
     }
 
     @Override

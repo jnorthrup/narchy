@@ -163,31 +163,31 @@ public class DbvtAabbMm {
 		v3 px = new v3();
 
 		switch (s) {
-			case (0 + 0 + 0):
+			case (0):
 				px.set(mi.x, mi.y, mi.z);
 				pi.set(mx.x, mx.y, mx.z);
 				break;
-			case (1 + 0 + 0):
+			case (1):
 				px.set(mx.x, mi.y, mi.z);
 				pi.set(mi.x, mx.y, mx.z);
 				break;
-			case (0 + 2 + 0):
+			case (2):
 				px.set(mi.x, mx.y, mi.z);
 				pi.set(mx.x, mi.y, mx.z);
 				break;
-			case (1 + 2 + 0):
+			case (1 + 2):
 				px.set(mx.x, mx.y, mi.z);
 				pi.set(mi.x, mi.y, mx.z);
 				break;
-			case (0 + 0 + 4):
+			case (4):
 				px.set(mi.x, mi.y, mx.z);
 				pi.set(mx.x, mx.y, mi.z);
 				break;
-			case (1 + 0 + 4):
+			case (1 + 4):
 				px.set(mx.x, mi.y, mx.z);
 				pi.set(mi.x, mx.y, mi.z);
 				break;
-			case (0 + 2 + 4):
+			case (2 + 4):
 				px.set(mi.x, mx.y, mx.z);
 				pi.set(mx.x, mi.y, mi.z);
 				break;
@@ -209,7 +209,7 @@ public class DbvtAabbMm {
 	public float ProjectMinimum(v3 v, int signs) {
 		v3[] b = { mx, mi };
 		v3 p = new v3();
-		p.set(b[(signs >> 0) & 1].x,
+		p.set(b[(signs) & 1].x,
 		      b[(signs >> 1) & 1].y,
 		      b[(signs >> 2) & 1].z);
 		return p.dot(v);
@@ -301,19 +301,9 @@ public class DbvtAabbMm {
 
 	public static void merge(DbvtAabbMm a, DbvtAabbMm b, DbvtAabbMm r) {
 		for (int i=0; i<3; i++) {
-			if (coord(a.mi, i) < coord(b.mi, i)) {
-				VectorUtil.setCoord(r.mi, i, coord(a.mi, i));
-			}
-			else {
-				VectorUtil.setCoord(r.mi, i, coord(b.mi, i));
-			}
-			
-			if (coord(a.mx, i) > coord(b.mx, i)) {
-				VectorUtil.setCoord(r.mx, i, coord(a.mx, i));
-			}
-			else {
-				VectorUtil.setCoord(r.mx, i, coord(b.mx, i));
-			}
+			VectorUtil.setCoord(r.mi, i, Math.min(coord(a.mi, i), coord(b.mi, i)));
+
+			VectorUtil.setCoord(r.mx, i, Math.max(coord(a.mx, i), coord(b.mx, i)));
 		}
 	}
 

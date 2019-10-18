@@ -222,10 +222,10 @@ public class DynamicTree implements BroadPhaseStrategy {
 
         float tempx = (p2x - p1x) * maxFraction + p1x;
         float tempy = (p2y - p1y) * maxFraction + p1y;
-        segAABB.lowerBound.x = p1x < tempx ? p1x : tempx;
-        segAABB.lowerBound.y = p1y < tempy ? p1y : tempy;
-        segAABB.upperBound.x = p1x > tempx ? p1x : tempx;
-        segAABB.upperBound.y = p1y > tempy ? p1y : tempy;
+        segAABB.lowerBound.x = Math.min(p1x, tempx);
+        segAABB.lowerBound.y = Math.min(p1y, tempy);
+        segAABB.upperBound.x = Math.max(p1x, tempx);
+        segAABB.upperBound.y = Math.max(p1y, tempy);
         
 
         stackPtr = 0;
@@ -277,10 +277,10 @@ public class DynamicTree implements BroadPhaseStrategy {
                     
                     tempx = (p2x - p1x) * maxFraction + p1x;
                     tempy = (p2y - p1y) * maxFraction + p1y;
-                    segAABB.lowerBound.x = p1x < tempx ? p1x : tempx;
-                    segAABB.lowerBound.y = p1y < tempy ? p1y : tempy;
-                    segAABB.upperBound.x = p1x > tempx ? p1x : tempx;
-                    segAABB.upperBound.y = p1y > tempy ? p1y : tempy;
+                    segAABB.lowerBound.x = Math.min(p1x, tempx);
+                    segAABB.lowerBound.y = Math.min(p1y, tempy);
+                    segAABB.upperBound.x = Math.max(p1x, tempx);
+                    segAABB.upperBound.y = Math.max(p1y, tempy);
                 }
             } else {
                 grow();

@@ -64,16 +64,16 @@ public class LoopPanel extends Gridding {
 //                        ),
                                 new CheckBox("On").on(loop.isRunning()).on((o)->{
                                     //synchronized(loop) {
+                                        //HACK maybe necessary
                                         if (o) {
                                             pause = false;
                                             loop.setFPS(fps.intValue());
-                                            update(); //HACK shouldnt be needed
                                         } else {
                                             pause = true;
                                             loop.stop();
-                                            update();  //HACK maybe necessary
                                         }
-                                    //}
+                                        update(); //HACK shouldnt be needed
+                                        //}
                                 }
                                 //)
                         ),

@@ -232,14 +232,9 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         return window(new Animating<>(g, ()->{
             Finger f = OrthoSurfaceGraph.this.fingers.get(0);
             Surface t = f.touching();
-            fingerInfo.text(
-                "buttn: " + f.buttonSummary() + '\n' +
-                "state: " +  f.fingering() + '\n' +
-                "posPx: " + f.posPixel + '\n' +
-                //"posGl: " + finger.posGlobal(layers.first(Zoomed.class)) + '\n' +
-                "touch: " + t + '\n' +
-                "posRl: " + (t!=null ? f.posRelative(t.bounds) : "?") + '\n' +
-                ""
+			//"posGl: " + finger.posGlobal(layers.first(Zoomed.class)) + '\n' +
+			fingerInfo.text(
+				"buttn: " + f.buttonSummary() + '\n' + "state: " + f.fingering() + '\n' + "posPx: " + f.posPixel + '\n' + "touch: " + t + '\n' + "posRl: " + (t != null ? f.posRelative(t.bounds) : "?") + '\n'
             );
         }, 0.1f),500,300);
     }

@@ -298,13 +298,12 @@ public final class EmulatorVT100 extends TerminalEmulator {
                             b = getChar();
                             if (b == 0x0f) { 
                                 exit_attribute_mode();
-                                continue;
-                            } else { 
+                            } else {
                                 exit_underline_mode();
                                 exit_standout_mode();
                                 pushChar(b);
-                                continue;
                             }
+                            continue;
                         }
 
                         for (int i = 0; i <= intargi; i++) {

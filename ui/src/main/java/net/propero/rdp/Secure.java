@@ -567,7 +567,7 @@ public class Secure {
 
         sec_data.setPosition(sec_data.getHeader(RdpPacket.SECURE_HEADER));
 
-        if (this.licenceIssued == false || (flags & SEC_ENCRYPT) != 0) {
+        if (!this.licenceIssued || (flags & SEC_ENCRYPT) != 0) {
             sec_data.setLittleEndian32(flags);
         }
 

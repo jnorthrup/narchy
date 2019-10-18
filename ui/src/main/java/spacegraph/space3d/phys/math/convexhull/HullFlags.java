@@ -30,7 +30,7 @@ package spacegraph.space3d.phys.math.convexhull;
  */
 public class HullFlags {
 	
-	public static final int TRIANGLES     = 1 << 0; 
+	public static final int TRIANGLES     = 1;
 	public static final int REVERSE_ORDER = 1 << 1; 
 	public static final int DEFAULT       = TRIANGLES;
 	

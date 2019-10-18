@@ -7,7 +7,6 @@ import jcog.TODO;
 
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.IntStream;
 
 public enum Interpolator {
 

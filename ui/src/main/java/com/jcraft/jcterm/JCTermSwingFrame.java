@@ -30,8 +30,6 @@ import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 import static com.jcraft.jcterm.Terminal.SFTP;

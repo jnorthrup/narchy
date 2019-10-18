@@ -593,7 +593,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                             shape,
                             S,
                             resultCallback,
-                            dispatchInfo.allowedCcdPenetration);
+                        DispatcherInfo.allowedCcdPenetration);
                 }
             }
         }
@@ -715,19 +715,16 @@ public abstract class Collisions<X> extends BulletGlobals {
             hitCollidable = convexResult.hitCollidable;
             if (normalInWorldSpace) {
                 hitNormalWorld.set(convexResult.hitNormalLocal);
-                if (hitNormalWorld.length() > 2) {
-                    System.out.println("CollisionWorld.addSingleResult world " + hitNormalWorld);
-                }
-            } else {
+			} else {
                 
                 hitNormalWorld.set(convexResult.hitNormalLocal);
                 hitCollidable.getWorldTransform(new Transform()).basis.transform(hitNormalWorld);
-                if (hitNormalWorld.length() > 2) {
-                    System.out.println("CollisionWorld.addSingleResult world " + hitNormalWorld);
-                }
-            }
+			}
+			if (hitNormalWorld.length() > 2) {
+				System.out.println("CollisionWorld.addSingleResult world " + hitNormalWorld);
+			}
 
-            hitPointWorld.set(convexResult.hitPointLocal);
+			hitPointWorld.set(convexResult.hitPointLocal);
             return convexResult.hitFraction;
         }
     }

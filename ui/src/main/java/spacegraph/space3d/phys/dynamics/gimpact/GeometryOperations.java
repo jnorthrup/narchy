@@ -42,7 +42,7 @@ class GeometryOperations {
 	public static final float PARALELENORMALS = 0.000001f;
 	
 	private static float CLAMP(float number, float minval, float maxval) {
-		return (number < minval? minval : (number > maxval? maxval : number));
+		return (number < minval? minval : (Math.min(number, maxval)));
 	}
 
 	/**

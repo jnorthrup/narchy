@@ -76,7 +76,7 @@ public final class ChainShape extends Shape {
         assert (0 <= index && index < m_count - 1);
         edge.skinRadius = skinRadius;
 
-        v2 v0 = m_vertices[index + 0];
+        v2 v0 = m_vertices[index];
         v2 v1 = m_vertices[index + 1];
         edge.m_vertex1.x = v0.x;
         edge.m_vertex1.y = v0.y;
@@ -160,10 +160,10 @@ public final class ChainShape extends Shape {
         float v2x = (xfq.c * vi2.x - xfq.s * vi2.y) + xfp.x;
         float v2y = (xfq.s * vi2.x + xfq.c * vi2.y) + xfp.y;
 
-        lower.x = v1x < v2x ? v1x : v2x;
-        lower.y = v1y < v2y ? v1y : v2y;
-        upper.x = v1x > v2x ? v1x : v2x;
-        upper.y = v1y > v2y ? v1y : v2y;
+        lower.x = Math.min(v1x, v2x);
+        lower.y = Math.min(v1y, v2y);
+        upper.x = Math.max(v1x, v2x);
+        upper.y = Math.max(v1y, v2y);
     }
 
     @Override

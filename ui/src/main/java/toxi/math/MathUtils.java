@@ -159,15 +159,15 @@ public final class MathUtils {
     }
 
     public static double clip(double a, double min, double max) {
-        return a < min ? min : (a > max ? max : a);
+        return a < min ? min : (Math.min(a, max));
     }
 
     public static float clip(float a, float min, float max) {
-        return a < min ? min : (a > max ? max : a);
+        return a < min ? min : (Math.min(a, max));
     }
 
     public static int clip(int a, int min, int max) {
-        return a < min ? min : (a > max ? max : a);
+        return a < min ? min : (Math.min(a, max));
     }
 
     public static double clipNormalized(double a) {
@@ -399,11 +399,11 @@ public final class MathUtils {
     }
 
     public static double max(double a, double b) {
-        return a > b ? a : b;
+        return Math.max(a, b);
     }
 
     public static double max(double a, double b, double c) {
-        return (a > b) ? ((a > c) ? a : c) : ((b > c) ? b : c);
+        return (a > b) ? (Math.max(a, c)) : (Math.max(b, c));
     }
 
     public static double max(double[] values) {
@@ -411,7 +411,7 @@ public final class MathUtils {
     }
 
     public static float max(float a, float b) {
-        return a > b ? a : b;
+        return Math.max(a, b);
     }
 
     /**
@@ -423,7 +423,7 @@ public final class MathUtils {
      * @return max val
      */
     public static float max(float a, float b, float c) {
-        return (a > b) ? ((a > c) ? a : c) : ((b > c) ? b : c);
+        return (a > b) ? (Math.max(a, c)) : (Math.max(b, c));
     }
 
     public static float max(float[] values) {
@@ -431,7 +431,7 @@ public final class MathUtils {
     }
 
     public static int max(int a, int b) {
-        return a > b ? a : b;
+        return Math.max(a, b);
     }
 
     /**
@@ -443,7 +443,7 @@ public final class MathUtils {
      * @return max val
      */
     public static int max(int a, int b, int c) {
-        return (a > b) ? ((a > c) ? a : c) : ((b > c) ? b : c);
+        return (a > b) ? (Math.max(a, c)) : (Math.max(b, c));
     }
 
     public static int max(int[] values) {
@@ -451,15 +451,15 @@ public final class MathUtils {
     }
 
     public static double min(double a, double b) {
-        return a < b ? a : b;
+        return Math.min(a, b);
     }
 
     public static double min(double a, double b, double c) {
-        return (a < b) ? ((a < c) ? a : c) : ((b < c) ? b : c);
+        return (a < b) ? (Math.min(a, c)) : (Math.min(b, c));
     }
 
     public static float min(float a, float b) {
-        return a < b ? a : b;
+        return Math.min(a, b);
     }
 
     /**
@@ -471,11 +471,11 @@ public final class MathUtils {
      * @return min val
      */
     public static float min(float a, float b, float c) {
-        return (a < b) ? ((a < c) ? a : c) : ((b < c) ? b : c);
+        return (a < b) ? (Math.min(a, c)) : (Math.min(b, c));
     }
 
     public static int min(int a, int b) {
-        return a < b ? a : b;
+        return Math.min(a, b);
     }
 
     /**
@@ -487,7 +487,7 @@ public final class MathUtils {
      * @return min val
      */
     public static int min(int a, int b, int c) {
-        return (a < b) ? ((a < c) ? a : c) : ((b < c) ? b : c);
+        return (a < b) ? (Math.min(a, c)) : (Math.min(b, c));
     }
 
     /**

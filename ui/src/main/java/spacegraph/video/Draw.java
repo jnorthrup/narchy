@@ -575,7 +575,6 @@ public enum Draw {
             gl.glTexCoord2f(s, 0.0f);
             gl.glVertex3f(x + w, y + h, z);
             gl.glTexCoord2f(0.0f, 0.0f);
-            gl.glVertex3f(x, y + h, z);
         } else {
             gl.glTexCoord2f(0.0f, 0.0f);
             gl.glVertex3f(x, y, z);
@@ -584,8 +583,8 @@ public enum Draw {
             gl.glTexCoord2f(s, s);
             gl.glVertex3f(x + w, y + h, z);
             gl.glTexCoord2f(0.0f, s);
-            gl.glVertex3f(x, y + h, z);
         }
+        gl.glVertex3f(x, y + h, z);
 
         gl.glEnd();
 
@@ -1176,7 +1175,6 @@ public enum Draw {
                 vbo.glColor4f(0, 0, 1, 1);
                 vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
                 vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
-                vbo.glEnd(gl);
             } else {
                 vbo.glBegin(GL.GL_TRIANGLES);
                 vbo.glColor4f(1, 0, 0, 1);
@@ -1185,8 +1183,8 @@ public enum Draw {
                 vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
                 vbo.glColor4f(0, 0, 1, 1);
                 vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
-                vbo.glEnd(gl);
             }
+            vbo.glEnd(gl);
         }
     }
 

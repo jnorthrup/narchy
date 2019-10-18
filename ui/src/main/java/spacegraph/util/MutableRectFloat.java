@@ -35,14 +35,14 @@ public class MutableRectFloat<X> extends v2 {
         set(r);
     }
 
-    private final MutableRectFloat setXYXY(float x1, float y1, float x2, float y2) {
+    private MutableRectFloat setXYXY(float x1, float y1, float x2, float y2) {
         this.x = (x1+x2)/2; this.y = (y1+y2)/2;
         return size(
             (x2-x1), (y2-y1)
         );
     }
 
-    private final MutableRectFloat setXYWH(float x, float y, float w, float h) {
+    private MutableRectFloat setXYWH(float x, float y, float w, float h) {
         this.cxPrev = this.x = x;
         this.cyPrev = this.y = y;
         return size(w, h);

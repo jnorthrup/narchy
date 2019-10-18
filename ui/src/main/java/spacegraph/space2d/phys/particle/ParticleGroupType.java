@@ -4,7 +4,7 @@ class ParticleGroupType {
     /**
      * resists penetration
      */
-    public static final int b2_solidParticleGroup = 1 << 0;
+    public static final int b2_solidParticleGroup = 1;
     /**
      * keeps its shape
      */

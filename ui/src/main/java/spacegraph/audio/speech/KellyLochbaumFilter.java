@@ -267,11 +267,7 @@ public class KellyLochbaumFilter /*implements Filter*/ {
 					phase -= T;
 					odd = ! odd;
 				}
-				if(odd) {
-					buf[i] = (float) (volume * y);
-				} else {
-					buf[i] = (float) (volume * y);
-				}
+				buf[i] = (float) (volume * y);
 			}
 		}
 

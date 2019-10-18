@@ -6,7 +6,6 @@ import jcog.signal.buffer.CircularFloatBuffer;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.container.time.Timeline2DEvents;
 import spacegraph.space2d.container.time.Timeline2DSequence;

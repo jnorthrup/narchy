@@ -10,7 +10,6 @@ import spacegraph.audio.modem.chirp.transceive.util.AudioFormat;
 import spacegraph.audio.modem.chirp.transceive.util.PitchProcessor;
 
 import java.util.*;
-import java.util.stream.IntStream;
 
 /**
  * adapted from
@@ -215,7 +214,7 @@ public class AudioTransceiver {
                 // Decode the Sample.
                 pReedSolomonDecoder.decode(lPacketized, synth.errLen);
                 // Declare the search metric.
-                Boolean acc = true;
+                boolean acc = true;
                 int bound = synth.identifier.length();
                 for (int i1 = 0; i1 < bound; i1++) {
                     Boolean aBoolean = synth.identifier.charAt(i1) == (synth.range.chars.charAt(lPacketized[i1]));
@@ -295,7 +294,7 @@ public class AudioTransceiver {
                 // Calculate the progression of the Ramp.
                 double lP = j / (double) lRw;
                 // Scale the corresponding samples.
-                lSampleArray[lIo + j + 0] *= lP;
+                lSampleArray[lIo + j] *= lP;
                 lSampleArray[lIa - j - 1] *= lP;
             }
         }

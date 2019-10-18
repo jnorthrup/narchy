@@ -27,8 +27,6 @@
 
 package spacegraph.space3d.phys.dynamics.gimpact;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 /**

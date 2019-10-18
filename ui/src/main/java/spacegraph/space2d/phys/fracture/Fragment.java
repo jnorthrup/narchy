@@ -4,7 +4,6 @@ import jcog.math.v2;
 import spacegraph.space2d.phys.common.PlatformMathUtils;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 /**
  * Polygon pre voronoi diagram. Funguje ako ArrayList 2D bodov typu Point2D,

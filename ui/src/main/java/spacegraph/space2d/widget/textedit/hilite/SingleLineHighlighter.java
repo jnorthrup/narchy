@@ -25,7 +25,7 @@ public class SingleLineHighlighter {
                 "long", "native", "new", "package", "private", "protected", "public", "return", "short", "static", "strictfp", "super", "switch", "synchronized",
                 "this", "throw", "throws", "transient", "try", "void", "volatile", "while", "false", "null", "true");
         javaSyntaxHilite.addBetweenMatchesRule(new TextStyle(Color.ORANGE.darker(), null, null), "\"", "\"", "\\");
-        javaSyntaxHilite.addBetweenMatchesRule(new TextStyle(Color.ORANGE.darker(), null, null), "\'", "\'", "\\");
+        javaSyntaxHilite.addBetweenMatchesRule(new TextStyle(Color.ORANGE.darker(), null, null), "'", "'", "\\");
         javaSyntaxHilite.addEverythingAfterMatchExceptInBetweenMatchRule(new TextStyle(new Color(160, 160, 160), null, null), "//", "\"");
         javaSyntaxHilite.addBetweenMatchesRule(new TextStyle(new Color(160, 160, 160), null, null), "/*", "*/", null);
 //                return lighter;

@@ -453,10 +453,10 @@ public abstract class RdesktopCanvas extends Canvas {
             y += yinc2; 
         }
 
-        int x_min = x1 < x2 ? x1 : x2;
-        int x_max = x1 > x2 ? x1 : x2;
-        int y_min = y1 < y2 ? y1 : y2;
-        int y_max = y1 > y2 ? y1 : y2;
+        int x_min = Math.min(x1, x2);
+        int x_max = Math.max(x1, x2);
+        int y_min = Math.min(y1, y2);
+        int y_max = Math.max(y1, y2);
 
         this.repaint(x_min, y_min, x_max - x_min + 1, y_max - y_min + 1);
     }
@@ -979,12 +979,8 @@ public abstract class RdesktopCanvas extends Canvas {
         int clipright = x + cx - 1;
         if (clipright > this.right)
             clipright = this.right;
-        int newx;
-        if (x < this.left)
-            newx = this.left;
-        else
-            newx = x;
-        int newcx = clipright - x + 1;
+        int newx = Math.max(x, this.left);
+		int newcx = clipright - x + 1;
 
         int clipbottom = y + cy - 1;
         if (clipbottom > this.bottom)

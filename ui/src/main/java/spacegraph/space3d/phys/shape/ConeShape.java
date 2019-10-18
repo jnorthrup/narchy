@@ -76,13 +76,12 @@ public class ConeShape extends ConvexInternalShape {
 				VectorUtil.setCoord(out, coneIndices[0], VectorUtil.coord(v, coneIndices[0]) * d);
 				VectorUtil.setCoord(out, coneIndices[1], -halfHeight);
 				VectorUtil.setCoord(out, coneIndices[2], VectorUtil.coord(v, coneIndices[2]) * d);
-				return out;
 			} else {
 				VectorUtil.setCoord(out, coneIndices[0], 0f);
 				VectorUtil.setCoord(out, coneIndices[1], -halfHeight);
 				VectorUtil.setCoord(out, coneIndices[2], 0f);
-				return out;
 			}
+			return out;
 		}
 	}
 

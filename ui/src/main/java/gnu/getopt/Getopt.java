@@ -1149,7 +1149,6 @@ public class Getopt  {
                     optarg = null;
                 }
 
-                nextchar = null;
             } else {
                 if (!nextchar.isEmpty()) {
                     optarg = nextchar;
@@ -1199,8 +1198,8 @@ public class Getopt  {
                     }
                 }
 
-                nextchar = null;
             }
+            nextchar = null;
         }
 
         return (c);

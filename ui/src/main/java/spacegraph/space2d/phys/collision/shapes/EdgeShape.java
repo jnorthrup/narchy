@@ -212,10 +212,10 @@ public class EdgeShape extends Shape {
         float v2x = (xfq.c * m_vertex2.x - xfq.s * m_vertex2.y) + xf.pos.x;
         float v2y = (xfq.s * m_vertex2.x + xfq.c * m_vertex2.y) + xf.pos.y;
 
-        lowerBound.x = v1x < v2x ? v1x : v2x;
-        lowerBound.y = v1y < v2y ? v1y : v2y;
-        upperBound.x = v1x > v2x ? v1x : v2x;
-        upperBound.y = v1y > v2y ? v1y : v2y;
+        lowerBound.x = Math.min(v1x, v2x);
+        lowerBound.y = Math.min(v1y, v2y);
+        upperBound.x = Math.max(v1x, v2x);
+        upperBound.y = Math.max(v1y, v2y);
 
         lowerBound.x -= skinRadius;
         lowerBound.y -= skinRadius;

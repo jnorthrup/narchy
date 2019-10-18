@@ -140,16 +140,14 @@ public class KeyboardControl extends JPanel {
 
             if (selected[key]) {
                 paintRoundRect(g, bounds, 6, Color.GRAY);
-                paintRoundRect(g, bounds, 3, Color.LIGHT_GRAY);
-                paintRoundRectFill(g, bounds, Color.WHITE);
-            } else {
+			} else {
                 // Draw a nice shadow
                 paintRoundRect(g, bounds, 7, Color.BLACK);
                 paintRoundRect(g, bounds, 5, Color.GRAY);
-                paintRoundRect(g, bounds, 3, Color.LIGHT_GRAY);
-                paintRoundRectFill(g, bounds, Color.WHITE);
-            }
-            g.setColor(Color.BLACK);
+			}
+			paintRoundRect(g, bounds, 3, Color.LIGHT_GRAY);
+			paintRoundRectFill(g, bounds, Color.WHITE);
+			g.setColor(Color.BLACK);
             char[] binds = KEY_CHARS[key];
             for (int c = 0; c != binds.length; c++) {
                 g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

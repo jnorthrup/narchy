@@ -140,14 +140,13 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
                         tmp.scale(t, v);
                         diff.sub(tmp);
                         cachedBC.usedVertexA = true;
-                        cachedBC.usedVertexB = true;
-                    } else {
+					} else {
                         t = 1;
                         diff.sub(v);
-                        
-                        cachedBC.usedVertexB = true;
-                    }
-                } else
+
+					}
+					cachedBC.usedVertexB = true;
+				} else
                 {
                     t = 0;
                     

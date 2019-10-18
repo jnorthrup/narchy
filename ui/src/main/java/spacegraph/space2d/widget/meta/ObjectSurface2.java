@@ -16,7 +16,6 @@ import spacegraph.space2d.widget.port.FloatRangePort;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -35,9 +34,7 @@ public class ObjectSurface2 extends MutableUnitContainer {
         DefaultBuilder.addEdge(from, builder, Surface.class);
     }
     {
-        build(List.class, (List<Object> x) -> {
-            return new Gridding(x.stream().map(this::build).toArray(Surface[]::new));
-        });
+        build(List.class, (List<Object> x) -> new Gridding(x.stream().map(this::build).toArray(Surface[]::new)));
         build(String.class, VectorLabel::new);
         build(FloatRange.class, FloatRangePort::new);
         build(FloatRange.class, x -> new VectorLabel(x.toString()));

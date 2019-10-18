@@ -111,7 +111,7 @@ public class TrimeshPrimitiveManager extends PrimitiveManagerBase {
 	}
 
 	private void get_indices(int face_index, int[] out) {
-		out[0] = vertexData.getIndex(face_index*3+0);
+		out[0] = vertexData.getIndex(face_index * 3);
 		out[1] = vertexData.getIndex(face_index*3+1);
 		out[2] = vertexData.getIndex(face_index*3+2);
 	}

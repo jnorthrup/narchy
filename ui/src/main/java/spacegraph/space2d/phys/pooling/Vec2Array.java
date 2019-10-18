@@ -25,9 +25,7 @@ package spacegraph.space2d.phys.pooling;
 
 import jcog.math.v2;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.stream.IntStream;
 
 /**

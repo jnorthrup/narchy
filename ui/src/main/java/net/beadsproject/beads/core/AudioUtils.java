@@ -140,7 +140,7 @@ public final class AudioUtils {
             int ib = startIndexInByteArray;
             int min = Math.min(out.length, startIndexInFloatArray + numFloats);
             for (int i = startIndexInFloatArray; i < min; ++i) {
-                float sample = ((in[ib + 0] << 8) | (in[ib + 1] & 0xFF)) / 32768.0F;
+                float sample = ((in[ib] << 8) | (in[ib + 1] & 0xFF)) / 32768.0F;
 
                 
                 
