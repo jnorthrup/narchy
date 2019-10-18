@@ -136,9 +136,7 @@ public class W extends GamePanel {
 
 			if (p[7] <= 0) {
 				float[] oldValues = new float[6];
-				for (int i = 0; i < 6; i++) {
-					oldValues[i] = playerspaddle[i];
-				}
+                System.arraycopy(playerspaddle, 0, oldValues, 0, 6);
 				playerspaddle[0] = p[0] - 30;
 				playerspaddle[1] = p[1] - 30;
 

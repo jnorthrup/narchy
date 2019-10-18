@@ -142,25 +142,25 @@ public enum ArrayUtil {
      * The number of distinct byte values.
      */
 //    private static final int NUM_BYTE_VALUES = 1 << 8;
-    private static final byte[] BYTE_ZERO = new byte[] { 0 };
-    private static final byte[] BYTE_ONE = new byte[] { 1 };
-    private static final byte[] BYTE_TWO = new byte[] { 2 };
-    private static final byte[] BYTE_THREE = new byte[] { 3 };
-    private static final byte[] BYTE_ZERO_ZERO = new byte[] { 0, 0 };
-    private static final byte[] BYTE_ZERO_ONE = new byte[] { 0, 1 };
-    private static final byte[] BYTE_ONE_ZERO = new byte[] { 1, 0 };
-    private static final byte[] BYTE_ONE_ONE = new byte[] { 1, 1 };
-    private static final byte[] BYTE_ONE_TWO = new byte[] { 1, 2 };
-    private static final byte[] BYTE_ONE_NEGONE = new byte[] { 1, -1 };
-    private static final byte[] BYTE_ONE_NEGTWO = new byte[] { 1, -2 };
-    private static final byte[] BYTE_TWO_ONE = new byte[] { 2, 1 };
-    private static final byte[] BYTE_TWO_TWO = new byte[] { 2, 2 };
-    private static final byte[] BYTE_TWO_NEGONE = new byte[] { 2, -1 };
-    private static final byte[] BYTE_TWO_NEGTWO = new byte[] { 2, -2 };
-    private static final byte[] BYTE_NEGONE_ONE = new byte[] { -1, 1 };
-    private static final byte[] BYTE_NEGONE_TWO = new byte[] { -1, 2 };
-    private static final byte[] BYTE_NEGONE_NEGONE = new byte[] { -1, -1 };
-    private static final byte[] BYTE_NEGONE_NEGTWO = new byte[] { -1, -2 };
+    private static final byte[] BYTE_ZERO = { 0 };
+    private static final byte[] BYTE_ONE = { 1 };
+    private static final byte[] BYTE_TWO = { 2 };
+    private static final byte[] BYTE_THREE = { 3 };
+    private static final byte[] BYTE_ZERO_ZERO = { 0, 0 };
+    private static final byte[] BYTE_ZERO_ONE = { 0, 1 };
+    private static final byte[] BYTE_ONE_ZERO = { 1, 0 };
+    private static final byte[] BYTE_ONE_ONE = { 1, 1 };
+    private static final byte[] BYTE_ONE_TWO = { 1, 2 };
+    private static final byte[] BYTE_ONE_NEGONE = { 1, -1 };
+    private static final byte[] BYTE_ONE_NEGTWO = { 1, -2 };
+    private static final byte[] BYTE_TWO_ONE = { 2, 1 };
+    private static final byte[] BYTE_TWO_TWO = { 2, 2 };
+    private static final byte[] BYTE_TWO_NEGONE = { 2, -1 };
+    private static final byte[] BYTE_TWO_NEGTWO = { 2, -2 };
+    private static final byte[] BYTE_NEGONE_ONE = { -1, 1 };
+    private static final byte[] BYTE_NEGONE_TWO = { -1, 2 };
+    private static final byte[] BYTE_NEGONE_NEGONE = { -1, -1 };
+    private static final byte[] BYTE_NEGONE_NEGTWO = { -1, -2 };
 
 
     public static void sortNullsToEnd(Object[] x) {
@@ -7490,7 +7490,7 @@ public enum ArrayUtil {
     }
 
     public static boolean equalsIdentity(Object[] x, Object[] y) {
-        if (x == y) return true;
+        if (Arrays.equals(x, y)) return true;
         if (x.length!=y.length) return false;
         return IntStream.range(0, x.length).noneMatch(i -> x[i] != y[i]);
     }

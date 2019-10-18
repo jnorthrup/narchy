@@ -418,7 +418,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
      * returns DTERNAL if not found
      */
     default int subTimeFirst(Term x) {
-        final int[] time = new int[] { DTERNAL };
+        final int[] time = { DTERNAL };
         subTimesWhile(x, (w) -> {
             time[0] = w; //got it
             return false; //stop
@@ -431,7 +431,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
      * TODO optimize traversal
      */
     default int subTimeLast(Term x) {
-        final int[] time = new int[] { DTERNAL };
+        final int[] time = { DTERNAL };
         subTimesWhile(x, (w) -> {
             time[0] = Math.max(time[0], w); //got it
             return true; //keep going

@@ -199,7 +199,7 @@ public class FamilyClausesList extends ArrayDeque<ClauseInfo> {
          * A list can be an empty list, or a Struct with name equals to "."
          * and arity equals to 2.
          */
-        return t.isEmptyList() || (t.subs() == 2 && t.name().equals("."));
+        return t.isEmptyList() || (t.subs() == 2 && ".".equals(t.name()));
 
     }
 

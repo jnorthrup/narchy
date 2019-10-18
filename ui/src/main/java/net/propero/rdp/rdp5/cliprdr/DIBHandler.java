@@ -50,7 +50,7 @@ public class DIBHandler extends TypeHandler implements ImageObserver {
 
     @Override
     public boolean mimeTypeValid(String mimeType) {
-        return mimeType.equals("image");
+        return "image".equals(mimeType);
     }
 
     @Override

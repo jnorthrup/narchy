@@ -73,9 +73,7 @@ public class PadSynthetizer {
             fftfreqs.s[i]= fai * Math.sin(fpi);
         }
         FFT.ifft(fftfreqs.c, fftfreqs.s);
-        for (int i=0;i<n2;i++){
-            smp[i] = fftfreqs.c[i];
-        }
+        if (n2 >= 0) System.arraycopy(fftfreqs.c, 0, smp, 0, n2);
         //fft.freqs2smps(fftfreqs,smp);
     }
 

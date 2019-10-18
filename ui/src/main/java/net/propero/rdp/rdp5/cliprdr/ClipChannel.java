@@ -43,6 +43,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class ClipChannel extends VChannel implements ClipInterface,
         ClipboardOwner, FocusListener {
@@ -84,8 +85,7 @@ public class ClipChannel extends VChannel implements ClipInterface,
      * Support methods
      */
     private static void reset_bool(boolean[] x) {
-        for (int i = 0; i < x.length; i++)
-            x[i] = false;
+        Arrays.fill(x, false);
     }
 
     /*

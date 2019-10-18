@@ -286,166 +286,166 @@ public class edict_t {
 
     public boolean setField(String key, String value) {
 
-        if (key.equals("classname")) {
+        if ("classname".equals(key)) {
             classname = GameSpawn.ED_NewString(value);
             return true;
         } 
 
-        if (key.equals("model")) {
+        if ("model".equals(key)) {
             model = GameSpawn.ED_NewString(value);
             return true;
         } 
 
-        if (key.equals("spawnflags")) {
+        if ("spawnflags".equals(key)) {
             spawnflags = Lib.atoi(value);
             return true;
         } 
 
-        if (key.equals("speed")) {
+        if ("speed".equals(key)) {
             speed = Lib.atof(value);
             return true;
         } 
 
-        if (key.equals("accel")) {
+        if ("accel".equals(key)) {
             accel = Lib.atof(value);
             return true;
         } 
 
-        if (key.equals("decel")) {
+        if ("decel".equals(key)) {
             decel = Lib.atof(value);
             return true;
         } 
 
-        if (key.equals("target")) {
+        if ("target".equals(key)) {
             target = GameSpawn.ED_NewString(value);
             return true;
         } 
 
-        if (key.equals("targetname")) {
+        if ("targetname".equals(key)) {
             targetname = GameSpawn.ED_NewString(value);
             return true;
         } 
 
-        if (key.equals("pathtarget")) {
+        if ("pathtarget".equals(key)) {
             pathtarget = GameSpawn.ED_NewString(value);
             return true;
         } 
 
-        if (key.equals("deathtarget")) {
+        if ("deathtarget".equals(key)) {
             deathtarget = GameSpawn.ED_NewString(value);
             return true;
         } 
-        if (key.equals("killtarget")) {
+        if ("killtarget".equals(key)) {
             killtarget = GameSpawn.ED_NewString(value);
             return true;
         } 
 
-        if (key.equals("combattarget")) {
+        if ("combattarget".equals(key)) {
             combattarget = GameSpawn.ED_NewString(value);
             return true;
         } 
 
-        if (key.equals("message")) {
+        if ("message".equals(key)) {
             message = GameSpawn.ED_NewString(value);
             return true;
         } 
 
-        if (key.equals("team")) {
+        if ("team".equals(key)) {
             team = GameSpawn.ED_NewString(value);
             Com.dprintln("Monster Team:" + team);
             return true;
         } 
 
-        if (key.equals("wait")) {
+        if ("wait".equals(key)) {
             wait = Lib.atof(value);
             return true;
         } 
 
-        if (key.equals("delay")) {
+        if ("delay".equals(key)) {
             delay = Lib.atof(value);
             return true;
         } 
 
-        if (key.equals("random")) {
+        if ("random".equals(key)) {
             random = Lib.atof(value);
             return true;
         } 
 
-        if (key.equals("move_origin")) {
+        if ("move_origin".equals(key)) {
             move_origin = Lib.atov(value);
             return true;
         } 
 
-        if (key.equals("move_angles")) {
+        if ("move_angles".equals(key)) {
             move_angles = Lib.atov(value);
             return true;
         } 
 
-        if (key.equals("style")) {
+        if ("style".equals(key)) {
             style = Lib.atoi(value);
             return true;
         } 
 
-        if (key.equals("count")) {
+        if ("count".equals(key)) {
             count = Lib.atoi(value);
             return true;
         } 
 
-        if (key.equals("health")) {
+        if ("health".equals(key)) {
             health = Lib.atoi(value);
             return true;
         } 
 
-        if (key.equals("sounds")) {
+        if ("sounds".equals(key)) {
             sounds = Lib.atoi(value);
             return true;
         } 
 
-        if (key.equals("light")) {
+        if ("light".equals(key)) {
             return true;
         } 
 
-        if (key.equals("dmg")) {
+        if ("dmg".equals(key)) {
             dmg = Lib.atoi(value);
             return true;
         } 
 
-        if (key.equals("mass")) {
+        if ("mass".equals(key)) {
             mass = Lib.atoi(value);
             return true;
         } 
 
-        if (key.equals("volume")) {
+        if ("volume".equals(key)) {
             volume = Lib.atof(value);
             return true;
         } 
 
-        if (key.equals("attenuation")) {
+        if ("attenuation".equals(key)) {
             attenuation = Lib.atof(value);
             return true;
         } 
 
-        if (key.equals("map")) {
+        if ("map".equals(key)) {
             map = GameSpawn.ED_NewString(value);
             return true;
         } 
 
-        if (key.equals("origin")) {
+        if ("origin".equals(key)) {
             s.origin = Lib.atov(value);
             return true;
         } 
 
-        if (key.equals("angles")) {
+        if ("angles".equals(key)) {
             s.angles = Lib.atov(value);
             return true;
         } 
 
-        if (key.equals("angle")) {
+        if ("angle".equals(key)) {
             s.angles = new float[] { 0, Lib.atof(value), 0 };
             return true;
         } 
 
-        if (key.equals("item")) {
+        if ("item".equals(key)) {
             game_import_t.error("ent.set(\"item\") called.");
             return true;
         } 

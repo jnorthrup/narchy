@@ -98,7 +98,7 @@ public class MetafilepictHandler extends TypeHandler {
 
     @Override
     public boolean mimeTypeValid(String mimeType) {
-        return mimeType.equals("image");
+        return "image".equals(mimeType);
     }
 
     @Override

@@ -516,7 +516,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 
 
     /** attached unifier instances */
-    private final Unify[] _u = new Unify[] { unify, uniSubstFunctor.u, beliefMatch};
+    private final Unify[] _u = { unify, uniSubstFunctor.u, beliefMatch};
 
 
 

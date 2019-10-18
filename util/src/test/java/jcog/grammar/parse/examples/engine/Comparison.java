@@ -111,22 +111,22 @@ public class Comparison extends Gateway implements BooleanTerm {
 		double d0 = n0.doubleValue();
 		double d1 = n1.doubleValue();
 
-		if (operator.equals(">")) {
+		if (">".equals(operator)) {
 			return d0 > d1;
 		}
-		if (operator.equals("<")) {
+		if ("<".equals(operator)) {
 			return d0 < d1;
 		}
-		if (operator.equals("=")) {
+		if ("=".equals(operator)) {
 			return d0 == d1;
 		}
-		if (operator.equals(">=")) {
+		if (">=".equals(operator)) {
 			return d0 >= d1;
 		}
-		if (operator.equals("<=")) {
+		if ("<=".equals(operator)) {
 			return d0 <= d1;
 		}
-		if (operator.equals("!=")) {
+		if ("!=".equals(operator)) {
 			return d0 != d1;
 		}
 		return false;
@@ -148,22 +148,22 @@ public class Comparison extends Gateway implements BooleanTerm {
 
 		int comparison = s0.compareTo(s1);
 
-		if (operator.equals(">")) {
+		if (">".equals(operator)) {
 			return comparison > 0;
 		}
-		if (operator.equals("<")) {
+		if ("<".equals(operator)) {
 			return comparison < 0;
 		}
-		if (operator.equals("=")) {
+		if ("=".equals(operator)) {
 			return comparison == 0;
 		}
-		if (operator.equals(">=")) {
+		if (">=".equals(operator)) {
 			return comparison >= 0;
 		}
-		if (operator.equals("<=")) {
+		if ("<=".equals(operator)) {
 			return comparison <= 0;
 		}
-		if (operator.equals("!=")) {
+		if ("!=".equals(operator)) {
 			return comparison != 0;
 		}
 		return false;

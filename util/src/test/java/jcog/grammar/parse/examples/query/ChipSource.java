@@ -157,13 +157,13 @@ public class ChipSource implements AxiomSource {
 	 *            is not part of the chip object model
 	 */
 	public static Structure queryStructure(String className) {
-		if (className.equals("chip")) {
+		if ("chip".equals(className)) {
 			return queryChip();
 		}
-		if (className.equals("customer")) {
+		if ("customer".equals(className)) {
 			return queryCustomer();
 		}
-		if (className.equals("order")) {
+		if ("order".equals(className)) {
 			return queryOrder();
 		}
 		throw new UnrecognizedClassException(className + " is not a recognized class name");

@@ -169,7 +169,7 @@ class TermIOTest {
     @Test
     void testAnonSerialization() throws IOException {
 
-        Term[] anons = new Term[] {
+        Term[] anons = {
                 $.v(VAR_DEP, (byte)1),
                 $.v(VAR_INDEP, (byte)1),
                 $.v(VAR_QUERY, (byte)1),

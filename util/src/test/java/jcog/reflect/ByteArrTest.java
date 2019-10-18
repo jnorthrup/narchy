@@ -36,7 +36,7 @@ public class ByteArrTest {
 
     @Test
     public void test(){
-            byte[] data1 = new byte[]{ 1 };
+            byte[] data1 = { 1 };
             
             ByteArrayConvertor conv = new ByteArrayConvertor();
             String text1 = conv.toString.apply(data1);

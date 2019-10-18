@@ -61,7 +61,7 @@ public class Clausifier  {
      */
     public ArrayList<Formula> separateConjunctions() {
 
-        if (!thisFormula.car().equals("and")) {
+        if (!"and".equals(thisFormula.car())) {
             System.out.println("Error Formula.separateConjunctions(): not a conjunction " + thisFormula);
             return null;
         }

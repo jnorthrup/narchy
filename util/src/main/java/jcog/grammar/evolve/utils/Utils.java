@@ -29,10 +29,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.CharHashSet;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -149,7 +146,7 @@ public class Utils {
         r.forEachKeyValue((n1,f1) -> {
 
             if (r.anySatisfy(f2 -> {
-                if (f1==f2)
+                if (Arrays.equals(f1, f2))
                     return false;
 
                 return Utils.isAParetoDominateByB(f1, f2);

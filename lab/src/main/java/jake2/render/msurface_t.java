@@ -26,6 +26,7 @@ import jake2.Defines;
 import jake2.game.cplane_t;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class msurface_t
 {
@@ -88,15 +89,9 @@ public class msurface_t
 		dlightbits = 0;
 
 		lightmaptexturenum = 0;
-		
-		for (int i = 0; i < styles.length; i++)
-		{
-			styles[i] = 0;
-		}
-		for (int i = 0; i < cached_light.length; i++)
-		{
-			cached_light[i] = 0;
-		}
+
+        Arrays.fill(styles, (byte) 0);
+        Arrays.fill(cached_light, 0);
 		if (samples != null) samples.clear();
 	}
 }

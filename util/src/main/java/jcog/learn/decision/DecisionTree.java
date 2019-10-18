@@ -287,7 +287,7 @@ public class DecisionTree<K, V> {
             DecisionNode.LeafNode<V> result = e.getKey();
             List<String> cond = e.getValue().stream().map(c ->
                 c.getOne().condition(c.getTwo())
-            ).filter(x -> !x.equals("false")).collect(toList());
+            ).filter(x -> !"false".equals(x)).collect(toList());
             if (!cond.isEmpty())
                 map.put(result, cond);
         });

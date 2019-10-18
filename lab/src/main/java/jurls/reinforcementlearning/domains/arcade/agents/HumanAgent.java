@@ -174,19 +174,19 @@ public class HumanAgent extends AbstractAgent {
         
         while (!doneParsing) {
             
-            if (args[argIndex].equals("-nogui")) {
+            if ("-nogui".equals(args[argIndex])) {
                 useGUI = false;
                 argIndex++;
             }
             
             
-            else if (args[argIndex].equals("-named_pipes") && (argIndex + 1) < args.length) {
+            else if ("-named_pipes".equals(args[argIndex]) && (argIndex + 1) < args.length) {
                 namedPipesName = args[argIndex+1];
 
                 argIndex += 2;
             }
             
-            else if (args[argIndex].equals("-export_frames")) {
+            else if ("-export_frames".equals(args[argIndex])) {
                 exportFrames = true;
                 argIndex++;
             }

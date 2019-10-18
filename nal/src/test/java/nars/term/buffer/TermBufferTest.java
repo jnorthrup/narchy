@@ -69,7 +69,7 @@ class TermBufferTest {
 
         @Override
         public Term applyAtomic(Atomic atomic) {
-            return atomic.toString().equals("_1") ? cmp : atomic;
+            return "_1".equals(atomic.toString()) ? cmp : atomic;
         }
     };
 

@@ -39,7 +39,7 @@ public class AVPair implements Comparable, Serializable {
      */
     public int compareTo(Object avp) throws ClassCastException {
 
-        if (!avp.getClass().getName().equalsIgnoreCase("com.articulate.sigma.AVPair"))
+        if (!"com.articulate.sigma.AVPair".equalsIgnoreCase(avp.getClass().getName()))
             throw new ClassCastException("Error in AVPair.compareTo(): "
                                          + "Class cast exception for argument of class: "
                                          + avp.getClass().getName());

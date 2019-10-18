@@ -1070,7 +1070,7 @@ public class KB implements Serializable {
             errors.add(msg);
         }
         String key = null;
-        if (kind.equals("arg"))
+        if ("arg".equals(kind))
             key = kind + '-' + argnum + '-' + term;
         else
             key = kind + '-' + term;
@@ -1916,7 +1916,7 @@ public class KB implements Serializable {
             System.out.println("KB.termDepth(): no such target " + term);
             return 0;
         }
-        if (term.equals("Entity") || StringUtil.isNumeric(term))
+        if ("Entity".equals(term) || StringUtil.isNumeric(term))
             return 0;
         if (!kbCache.subclassOf(term,"Entity") && !kbCache.transInstOf(term,"Entity"))
             return 0;
@@ -2452,7 +2452,7 @@ public class KB implements Serializable {
                 
             }
 
-            if (KBmanager.manager.getPref("cache").equalsIgnoreCase("yes")) {
+            if ("yes".equalsIgnoreCase(KBmanager.manager.getPref("cache"))) {
                 kbCache = new KBcache(this);
                 kbCache.buildCaches();
                 checkArity(); 
@@ -2489,9 +2489,7 @@ public class KB implements Serializable {
         try {
             fr = new FileWriter(fname);
             pr = new PrintWriter(fr);
-            Iterator<String> it = formulaMap.keySet().iterator();
-            while (it.hasNext()) {
-                String s = it.next();
+            for (String s : formulaMap.keySet()) {
                 pr.println(s);
                 pr.println();
             }
@@ -2693,7 +2691,7 @@ public class KB implements Serializable {
         ArrayList<Formula> ans = new ArrayList<>();
         if ((queryLit instanceof List) && !(queryLit.isEmpty())) {
             String pred = queryLit.get(0);
-            if (pred.equals("instance") && isVariable(queryLit.get(1)) && !(isVariable(queryLit.get(2)))) {
+            if ("instance".equals(pred) && isVariable(queryLit.get(1)) && !(isVariable(queryLit.get(2)))) {
                 String className = queryLit.get(2);
                 String inst = null;
                 String fStr = null;
@@ -2707,7 +2705,7 @@ public class KB implements Serializable {
                     ans.add(f);
                 }
             }
-            else if (pred.equals("valence") && isVariable(queryLit.get(1))
+            else if ("valence".equals(pred) && isVariable(queryLit.get(1))
                     && isVariable(queryLit.get(2))) {
                 TreeSet<String> ai = getAllInstances("Relation");
                 Iterator<String> it = ai.iterator();
@@ -2889,7 +2887,7 @@ public class KB implements Serializable {
      */
     public static boolean isQuantifier(String obj) {
 
-        return (StringUtil.isNonEmptyString(obj) && (obj.equals("forall") || obj.equals("exists")));
+        return (StringUtil.isNonEmptyString(obj) && ("forall".equals(obj) || "exists".equals(obj)));
     }
 
     /*****************************************************************
@@ -2902,7 +2900,7 @@ public class KB implements Serializable {
      */
     public static boolean isCommutative(String obj) {
 
-        return (StringUtil.isNonEmptyString(obj) && (obj.equals("and") || obj.equals("or")));
+        return (StringUtil.isNonEmptyString(obj) && ("and".equals(obj) || "or".equals(obj)));
     }
 
     /***************************************************************

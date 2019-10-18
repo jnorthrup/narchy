@@ -532,7 +532,7 @@ public class Rdesktop {
         String os = System.getProperty("os.name");
         String osvers = System.getProperty("os.version");
 
-        if (os.equals("Windows 2000") || os.equals("Windows XP"))
+        if ("Windows 2000".equals(os) || "Windows XP".equals(os))
             Options.built_in_licence = true;
 
         logger.info("Operating System is {} version {}", os, osvers);
@@ -600,7 +600,7 @@ public class Rdesktop {
                 readytosend = false;
                 logger.info("Connecting to {}" + ':' + "{} ...", server[0], Options.port);
 
-                if (server[0].equalsIgnoreCase("localhost"))
+                if ("localhost".equalsIgnoreCase(server[0]))
                     server[0] = "127.0.0.1";
 
                 if (RdpLayer != null) {

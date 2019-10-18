@@ -426,7 +426,7 @@ public class SideScrollMinicraft {
 
         Constants.DEBUG = true;
         for (String arg : argv) {
-            if (arg.equals("-d") || arg.equals("--debug")) {
+            if ("-d".equals(arg) || "--debug".equals(arg)) {
                 Constants.DEBUG = true;
             } else {
                 System.err.println("Unrecognized argument: " + arg);

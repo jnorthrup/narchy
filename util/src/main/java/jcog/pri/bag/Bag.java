@@ -328,7 +328,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
      * priIfy only non-deleted items
      */
     public float priIfyNonDeleted(float initial, FloatFloatToFloatFunction reduce) {
-        float[] x = new float[]{initial};
+        float[] x = {initial};
         forEach(y -> {
             float p = pri(y);
             if (p == p)

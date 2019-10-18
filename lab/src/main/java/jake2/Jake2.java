@@ -72,18 +72,18 @@ public final class Jake2 {
         
         for (int n = 0; n <  args.length; n++)
         {
-            if (args[n].equals("+setAt"))
+            if ("+setAt".equals(args[n]))
             {
                 if (n++ >= args.length)
                     break;
 
-                if (!args[n].equals("dedicated"))
+                if (!"dedicated".equals(args[n]))
                     continue;
 
                 if (n++ >= args.length)
                     break;
 
-                if (args[n].equals("1") || args[n].equals("\"1\""))
+                if ("1".equals(args[n]) || "\"1\"".equals(args[n]))
                 {
                     Com.Printf("Starting in dedicated mode.\n");
                     dedicated = true;

@@ -2117,7 +2117,7 @@ public class PrintfFormat {
 			int nBlanks = 0, n = 0;
 			int i = 0, jFirst = 0;
 			boolean neg = sx.charAt(0) == '-';
-			if (sx.equals("0") && precisionSet && precision == 0)
+			if ("0".equals(sx) && precisionSet && precision == 0)
 				sx = "";
 			if (!neg) {
 				if (precisionSet && sx.length() < precision)
@@ -2451,7 +2451,7 @@ public class PrintfFormat {
 		private String printXFormat(String sx) {
 			int nLeadingZeros = 0;
 			int nBlanks = 0;
-			if (sx.equals("0") && precisionSet && precision == 0)
+			if ("0".equals(sx) && precisionSet && precision == 0)
 				sx = "";
 			if (precisionSet)
 				nLeadingZeros = precision - sx.length();
@@ -2727,7 +2727,7 @@ public class PrintfFormat {
 		private String printOFormat(String sx) {
 			int nLeadingZeros = 0;
 			int nBlanks = 0;
-			if (sx.equals("0") && precisionSet && precision == 0)
+			if ("0".equals(sx) && precisionSet && precision == 0)
 				sx = "";
 			if (precisionSet)
 				nLeadingZeros = precision - sx.length();

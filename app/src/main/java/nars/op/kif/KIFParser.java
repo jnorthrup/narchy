@@ -324,7 +324,7 @@ public class KIFParser {
                         argumentNum = argumentNum + 1;
                 }
                 else if (st.ttype == StreamTokenizer.TT_WORD) { 
-                    if ((st.sval.equals("=>") || st.sval.equals("<=>")) && parenLevel == 1)
+                    if (("=>".equals(st.sval) || "<=>".equals(st.sval)) && parenLevel == 1)
                         inRule = true; 
                     if (parenLevel < 2) 
                         argumentNum = argumentNum + 1;

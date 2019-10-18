@@ -238,7 +238,7 @@ public enum Op {
     public static final byte GOAL = '!';
     public static final byte QUEST = '@';
     public static final byte COMMAND = ';';
-    public static final byte[] Punctuation = new byte[]{BELIEF, QUESTION, GOAL, QUEST, COMMAND};
+    public static final byte[] Punctuation = {BELIEF, QUESTION, GOAL, QUEST, COMMAND};
     //    public static final String TENSE_PAST = ":\\:";
 //    public static final String TENSE_PRESENT = ":|:";
 //    public static final String TENSE_FUTURE = ":/:";
@@ -444,26 +444,26 @@ public enum Op {
 
         this.var = java.util.Set.of("$", "#", "?", "%").contains(str);
 
-        boolean isImpl = str.equals("==>");
-        this.statement = str.equals("-->") || isImpl || str.equals("<->");
-        boolean isConj = str.equals("&&");
+        boolean isImpl = "==>".equals(str);
+        this.statement = "-->".equals(str) || isImpl || "<->".equals(str);
+        boolean isConj = "&&".equals(str);
         this.temporal = isConj || isImpl;
 
 
         this.hasNumeric = temporal;
 
 
-        this.bit = (str.equals("`") || str.equals("‡")) ? 0 : (1 << ordinal()); //fragment and interval have 0 contributing structure
+        this.bit = ("`".equals(str) || "‡".equals(str)) ? 0 : (1 << ordinal()); //fragment and interval have 0 contributing structure
 
         this.atomic = var || java.util.Set.of(".", "+", "B", "/", "‡").contains(str);
 
-        boolean isBool = str.equals("B");
-        boolean isInt = str.equals("+");
-        boolean isNeg = str.equals("--");
-        boolean isImg = str.equals("/");
+        boolean isBool = "B".equals(str);
+        boolean isInt = "+".equals(str);
+        boolean isNeg = "--".equals(str);
+        boolean isImg = "/".equals(str);
         //boolean isSect = str.equals("|") || str.equals("&");
-        boolean isFrag = str.equals("`");
-        boolean isInterval = str.equals("‡");
+        boolean isFrag = "`".equals(str);
+        boolean isInterval = "‡".equals(str);
 
         conceptualizable = !var &&
                         !isBool &&
@@ -484,7 +484,7 @@ public enum Op {
         indepVarParent = isImpl;
         depVarParent = isConj;
 
-        set = str.equals("{") || str.equals("[");
+        set = "{".equals(str) || "[".equals(str);
     }
 
     public static boolean hasAny(int existing, Op o) {
@@ -510,7 +510,7 @@ public enum Op {
 
     public static Object theIfPresent(String s) {
         //HACK TEMPORARY
-        if (s.equals("&")) return CONJ;
+        if ("&".equals(s)) return CONJ;
 
         Op x = stringToOperator.get(s);
         return x != null ? x : s;

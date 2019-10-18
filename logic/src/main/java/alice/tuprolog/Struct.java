@@ -273,7 +273,7 @@ public class Struct extends Term {
      * Check is this struct is clause or directive
      */
     public boolean isClause() {
-        return subs() > 1 && name.equals(":-") && subs[0].term() instanceof Struct;
+        return subs() > 1 && ":-".equals(name) && subs[0].term() instanceof Struct;
 
     }
 
@@ -318,7 +318,7 @@ public class Struct extends Term {
                     return true;
                 } else if (nc == 0) {
                     Term[] bb = ts.subs;
-                    if (this.subs != bb) {
+                    if (!Arrays.equals(this.subs, bb)) {
                         for (int c = 0; c < subs(); c++) {
                             Term a = this.subs[c];
                             Term b = bb[c];
@@ -380,7 +380,7 @@ public class Struct extends Term {
         if (t instanceof Struct) {
             Struct ts = (Struct) t;
             if (subs() == ts.subs() && name.equals(ts.name)) {
-                if (this.subs != ts.subs) {
+                if (!Arrays.equals(this.subs, ts.subs)) {
                     return IntStream.range(0, subs()).allMatch(c -> subs[c].equals(ts.subs[c]));
 
                 }
@@ -560,7 +560,7 @@ public class Struct extends Term {
      */
     @Override
     public boolean isEmptyList() {
-        return name.equals("[]") && isAtomic();
+        return "[]".equals(name) && isAtomic();
     }
 
     /**
@@ -795,14 +795,14 @@ public class Struct extends Term {
     private String toString0_bracket() {
         if (subs() == 0) {
             return "";
-        } else if (subs() == 1 && !((subs[0] instanceof Struct) && ((Struct) subs[0]).name().equals(","))) {
+        } else if (subs() == 1 && !((subs[0] instanceof Struct) && ",".equals(((Struct) subs[0]).name()))) {
             return subs[0].term().toString();
         } else {
 
             Term head = ((Struct) subs[0]).subResolve(0);
             Term tail = ((Struct) subs[0]).subResolve(1);
             StringBuilder buf = new StringBuilder(head.toString());
-            while (tail instanceof Struct && ((Struct) tail).name().equals(",")) {
+            while (tail instanceof Struct && ",".equals(((Struct) tail).name())) {
                 head = ((Struct) tail).subResolve(0);
                 buf.append(',').append(head);
                 tail = ((Struct) tail).subResolve(1);
@@ -830,9 +830,9 @@ public class Struct extends Term {
     @Override
     String toStringAsArg(PrologOperators op, int prio, boolean x) {
 
-        if (name.equals(".") && subs() == 2) {
+        if (".".equals(name) && subs() == 2) {
             return subs[0].isEmptyList() ? "[]" : '[' + toStringAsList(op) + ']';
-        } else if (name.equals("{}")) {
+        } else if ("{}".equals(name)) {
             return ('{' + toString0_bracket() + '}');
         }
 
@@ -855,7 +855,7 @@ public class Struct extends Term {
                                 ((x ? p >= prio : p > prio) ? ")" : ""));
             }
             if ((p = op.opPrio(name, "xfy")) >= PrologOperators.OP_LOW) {
-                return !name.equals(",") ? ((x ? p >= prio : p > prio) ? "(" : "") +
+                return !",".equals(name) ? ((x ? p >= prio : p > prio) ? "(" : "") +
                         subs[0].toStringAsArgX(op, p) +
                         ' ' + name + ' ' +
                         subs[1].toStringAsArgY(op, p) +
@@ -911,7 +911,7 @@ public class Struct extends Term {
 
     @Override
     public Term iteratedGoalTerm() {
-        return ((subs() == 2) && name.equals("^")) ?
+        return ((subs() == 2) && "^".equals(name)) ?
                 subResolve(1).iteratedGoalTerm() : super.iteratedGoalTerm();
     }
 

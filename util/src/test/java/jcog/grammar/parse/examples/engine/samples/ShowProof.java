@@ -15,7 +15,7 @@ public class ShowProof {
 	 */
 	private static Program charges() {
 
-		Fact[] facts = new Fact[] { new Fact("charge", "athens", new Integer(23)), new Fact("charge", "sparta", new Integer(13)), new Fact("charge", "milos", new Integer(17)) };
+		Fact[] facts = { new Fact("charge", "athens", new Integer(23)), new Fact("charge", "sparta", new Integer(13)), new Fact("charge", "milos", new Integer(17)) };
 
 		return new Program(facts);
 	}
@@ -25,7 +25,7 @@ public class ShowProof {
 	 */
 	private static Program customers() {
 
-		Fact[] facts = new Fact[] { new Fact("customer", "Marathon Marble", "sparta"), new Fact("customer", "Acropolis Construction", "athens"), new Fact("customer", "Agora Imports", "sparta") };
+		Fact[] facts = { new Fact("customer", "Marathon Marble", "sparta"), new Fact("customer", "Acropolis Construction", "athens"), new Fact("customer", "Agora Imports", "sparta") };
 
 		return new Program(facts);
 	}

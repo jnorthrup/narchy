@@ -88,19 +88,19 @@ public class ClauseInfo {
         if ((p = op.opPrio(":-xfx")) >= PrologOperators.OP_LOW) {
             String st = indentPredicatesAsArgX(clause.sub(1), op, p);
             String head = clause.sub(0).toStringAsArgX(op, p);
-            return st.equals("true") ? head + ".\n" : head + " :-\n\t" + st + ".\n";
+            return "true".equals(st) ? head + ".\n" : head + " :-\n\t" + st + ".\n";
         }
 
         if ((p = op.opPrio(":-yfx")) >= PrologOperators.OP_LOW) {
             String st = indentPredicatesAsArgX(clause.sub(1), op, p);
             String head = clause.sub(0).toStringAsArgY(op, p);
-            return st.equals("true") ? head + ".\n" : head + " :-\n\t" + st + ".\n";
+            return "true".equals(st) ? head + ".\n" : head + " :-\n\t" + st + ".\n";
         }
 
         if ((p = op.opPrio(":-xfy")) >= PrologOperators.OP_LOW) {
             String st = indentPredicatesAsArgY(clause.sub(1), op, p);
             String head = clause.sub(0).toStringAsArgX(op, p);
-            return st.equals("true") ? head + ".\n" : head + " :-\n\t" + st + ".\n";
+            return "true".equals(st) ? head + ".\n" : head + " :-\n\t" + st + ".\n";
         }
         return (clause.toString());
     }
@@ -152,7 +152,7 @@ public class ClauseInfo {
     private static String indentPredicates(Term t) {
         if (t instanceof Struct) {
             Struct co = (Struct) t;
-            return co.name().equals(",") ? co.sub(0) + ",\n\t" + indentPredicates(co.sub(1)) : t.toString();
+            return ",".equals(co.name()) ? co.sub(0) + ",\n\t" + indentPredicates(co.sub(1)) : t.toString();
         } else {
             return t.toString();
         }
@@ -191,7 +191,7 @@ public class ClauseInfo {
     private static String indentPredicatesAsArgX(Term t, PrologOperators op, int p) {
         if (t instanceof Struct) {
             Struct co = (Struct) t;
-            if (co.name().equals(",")) {
+            if (",".equals(co.name())) {
                 int prio = op.opPrio(",xfy");
                 StringBuilder sb = new StringBuilder(prio >= p ? "(" : "");
                 sb.append(co.sub(0).toStringAsArgX(op, prio));
@@ -212,7 +212,7 @@ public class ClauseInfo {
     private static String indentPredicatesAsArgY(Term t, PrologOperators op, int p) {
         if (t instanceof Struct) {
             Struct co = (Struct) t;
-            if (co.name().equals(",")) {
+            if (",".equals(co.name())) {
                 int prio = op.opPrio(",xfy");
                 StringBuilder sb = new StringBuilder(prio > p ? "(" : "");
                 sb.append(co.sub(0).toStringAsArgX(op, prio));

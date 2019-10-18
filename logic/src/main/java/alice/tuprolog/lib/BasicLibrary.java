@@ -305,7 +305,7 @@ public class BasicLibrary extends PrologLib {
         if (t instanceof ArithmeticException) {
             ArithmeticException cause = (ArithmeticException) t;
 
-            if (cause.getMessage().equals("/ by zero"))
+            if ("/ by zero".equals(cause.getMessage()))
                 throw PrologError.evaluation_error(prolog,
                         arg, "zero_divisor");
         }

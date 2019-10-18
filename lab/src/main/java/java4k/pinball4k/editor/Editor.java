@@ -81,7 +81,7 @@ public class Editor extends JFrame {
 				selectionStr += "" + obj + " ";
 			}
 		}
-		selectionStr = selectionStr.trim().equals("") ? "Nothing selected" : selectionStr;
+		selectionStr = "".equals(selectionStr.trim()) ? "Nothing selected" : selectionStr;
 		JLabel lbl = (JLabel) statusBar.getComponent(0);
 		lbl.setText(selectionStr);
 		

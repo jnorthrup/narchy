@@ -141,7 +141,7 @@ public abstract class NARWeb extends EvalSocket<NAR> {
 
         @Override
         protected @Nullable NAR nar(WebSocketConnection conn, String url) {
-            return url.equals("/") ? nar : null;
+            return "/".equals(url) ? nar : null;
         }
     }
 
@@ -165,7 +165,7 @@ public abstract class NARWeb extends EvalSocket<NAR> {
 
         @Override
         protected NAR nar(WebSocketConnection conn, String url) {
-            if (url.equals("/")) {
+            if ("/".equals(url)) {
                 return null;
             }
 

@@ -576,7 +576,7 @@ public class SLAMTest extends JPanel {
         Se3_F64 view0_to_2 = w_to_0.invert(null).concat(w_to_2, null);
         Se3_F64 view1_to_2 = w_to_1.invert(null).concat(w_to_2, null);
 
-		Se3_F64[] candidates = new Se3_F64[]{view0_to_1, view0_to_2, view1_to_2};
+		Se3_F64[] candidates = {view0_to_1, view0_to_2, view1_to_2};
 
         int best = -1;
         double bestScore = Double.MAX_VALUE;

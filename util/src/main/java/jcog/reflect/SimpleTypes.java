@@ -54,14 +54,14 @@ public class SimpleTypes {
                     cFloat1, cFloat2, cInteger1, cInteger2, cLong1, cLong2, cShort1, cShort2,
                     cVoid1, cVoid2
             };
-    private static final Class[] boolTypes = new Class[]{cBool1, cBool2};
-    private static final Class[] byteTypes = new Class[]{cByte1, cByte2};
-    private static final Class[] charTypes = new Class[]{cChar1, cChar2};
-    private static final Class[] doubleTypes = new Class[]{cDouble1, cDouble2};
-    private static final Class[] floatTypes = new Class[]{cFloat1, cFloat2};
-    private static final Class[] intTypes = new Class[]{cInteger1, cInteger2};
-    private static final Class[] longTypes = new Class[]{cLong1, cLong2};
-    private static final Class[] shortTypes = new Class[]{cShort1, cShort2};
+    private static final Class[] boolTypes = {cBool1, cBool2};
+    private static final Class[] byteTypes = {cByte1, cByte2};
+    private static final Class[] charTypes = {cChar1, cChar2};
+    private static final Class[] doubleTypes = {cDouble1, cDouble2};
+    private static final Class[] floatTypes = {cFloat1, cFloat2};
+    private static final Class[] intTypes = {cInteger1, cInteger2};
+    private static final Class[] longTypes = {cLong1, cLong2};
+    private static final Class[] shortTypes = {cShort1, cShort2};
 
     /**
      * Возвращает простые типы

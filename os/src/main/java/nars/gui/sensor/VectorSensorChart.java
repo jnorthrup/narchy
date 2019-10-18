@@ -382,7 +382,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     @Override
     public int color(int x, int y) {
 
-        float[] rgb = new float[] { 0, 0, 0 };
+        float[] rgb = { 0, 0, 0 };
         for (Layer l : layers) {
             l.blend(l.value(x,w,y), l.opacity.floatValue(), rgb);
         }

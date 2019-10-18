@@ -82,7 +82,7 @@ class TruthProjectionTest {
 
 
     private static AbstractTask t(float freq, float conf, long start, long end) {
-        long[] stamp = new long[] { serial.getAndIncrement() };
+        long[] stamp = { serial.getAndIncrement() };
         return NALTask.the(x, BELIEF, $.t(freq, conf), (long) 0, start, end, stamp);
     }
 

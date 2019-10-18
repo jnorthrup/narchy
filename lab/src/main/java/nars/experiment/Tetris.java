@@ -325,7 +325,7 @@ public class Tetris extends GameX {
             currentX = width / 2 - 1;
             currentY = 0;
             score = 0;
-            for (var i = 0; i < grid.length; i++) grid[i] = 0f;
+            Arrays.fill(grid, 0f);
             currentRotation = 0;
             is_game_over = false;
 

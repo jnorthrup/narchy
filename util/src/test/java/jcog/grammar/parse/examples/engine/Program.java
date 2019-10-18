@@ -86,14 +86,13 @@ public class Program implements AxiomSource {
 	 * @return a string representation of this program.
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		boolean haveShownALine = false;
-		Iterator<Axiom> e = axioms.iterator();
-		while (e.hasNext()) {
+		for (Axiom axiom : axioms) {
 			if (haveShownALine) {
 				buf.append('\n');
 			}
-			buf.append(e.next());
+			buf.append(axiom);
 			buf.append(';');
 			haveShownALine = true;
 		}

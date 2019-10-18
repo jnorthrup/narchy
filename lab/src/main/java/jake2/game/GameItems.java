@@ -197,7 +197,7 @@ public class GameItems {
                           csurface_t surf) {
             boolean taken;
     
-            if (ent.classname.equals("item_breather"))
+            if ("item_breather".equals(ent.classname))
                 taken = false;
     
             if (other.client == null)

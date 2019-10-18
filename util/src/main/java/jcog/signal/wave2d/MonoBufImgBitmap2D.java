@@ -131,7 +131,8 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
                 return raster.getSample(xx, yy, 0)/256f;
             } else {
 
-                int[] rgb = raster.getPixel(xx, yy, alpha ? new int[4] : new int[4 /* HACK */]);
+                /* HACK */
+                int[] rgb = raster.getPixel(xx, yy, new int[4]);
                 float v;
                 if (alpha) {
                     //ARGB

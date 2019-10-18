@@ -133,13 +133,13 @@ public class PrologRepl extends Automaton implements OutputListener, SpyListener
         try {
             while (true){
                 choice = stdin.readLine();
-                if (!choice.equals(";") && !choice.isEmpty())
+                if (!";".equals(choice) && !choice.isEmpty())
                     System.out.println("\nAction ( ';' for more choices, otherwise <return> ) ");
                 else
                     break;
             }
         } catch (IOException ex){}
-        if (!choice.equals(";")) {
+        if (!";".equals(choice)) {
             System.out.println("yes.");
             prolog.solveEnd();
             become("goalRequest");

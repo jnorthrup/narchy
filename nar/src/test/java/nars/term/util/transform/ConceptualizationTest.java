@@ -349,7 +349,7 @@ class ConceptualizationTest {
 
         for (int dt : new int[]{ /*XTERNAL,*/ 0, DTERNAL}) {
             assertEquals("( &&+- ,a,b,c)",
-                    CONJ.the(dt, new Term[]{$$("a"), $$("b"), $$("c")}).concept().toString(), () -> "dt=" + dt);
+                    CONJ.the(dt, $$("a"), $$("b"), $$("c")).concept().toString(), () -> "dt=" + dt);
         }
 
 

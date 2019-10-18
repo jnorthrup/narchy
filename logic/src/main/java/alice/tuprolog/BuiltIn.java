@@ -101,7 +101,7 @@ public final class BuiltIn extends PrologLib {
         if (arg0 instanceof Struct) {
 
             Struct ss = (Struct) arg0;
-            if (ss.name().equals(":-")) {
+            if (":-".equals(ss.name())) {
                 Iterator<Term> ssi = ss.listIterator();
                 while (ssi.hasNext()) {
                     Term argi = ssi.next();
@@ -126,7 +126,7 @@ public final class BuiltIn extends PrologLib {
         Term arg0 = _arg0.term();
         if (arg0 instanceof Struct) {
             Struct ss = (Struct) arg0;
-            if (ss.name().equals(":-")) {
+            if (":-".equals(ss.name())) {
                 Iterator<Term> ssi = ss.listIterator();
                 while (ssi.hasNext()) {
                     Term argi = ssi.next();
@@ -176,7 +176,7 @@ public final class BuiltIn extends PrologLib {
         if (!(arg0 instanceof Struct) || !arg0.isGround())
             throw PrologError.type_error(prolog, 1, "predicate_indicator", arg0);
 
-        if (((Struct) arg0).sub(0).toString().equals("abolish"))
+        if ("abolish".equals(((Struct) arg0).sub(0).toString()))
             throw PrologError.permission_error(prolog, "modify", "static_procedure", arg0, new Struct(""));
 
         return theories.abolish((Struct) arg0);
@@ -382,7 +382,7 @@ public final class BuiltIn extends PrologLib {
         if (t instanceof ArithmeticException) {
             ArithmeticException cause = (ArithmeticException) t;
 
-            if (cause.getMessage().equals("/ by zero"))
+            if ("/ by zero".equals(cause.getMessage()))
                 throw PrologError.evaluation_error(prolog, 2, "zero_divisor");
         }
     }

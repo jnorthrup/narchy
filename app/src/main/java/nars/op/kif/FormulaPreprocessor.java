@@ -664,12 +664,12 @@ public class FormulaPreprocessor {
 
 
                 }
-                if (KBmanager.manager.getPref("holdsPrefix").equals("yes")) {
+                if ("yes".equals(KBmanager.manager.getPref("holdsPrefix"))) {
                     if (!Formula.isLogicalOperator(pred) && !Formula.isQuantifierList(pred, previousPred))
                         prefix = "holds_";
                     if (f.isFunctionalTerm())
                         prefix = "apply_";
-                    if (pred.equals("holds")) {
+                    if ("holds".equals(pred)) {
                         pred = "";
                         argCount--;
                         prefix = prefix + argCount + "__ ";
@@ -826,8 +826,8 @@ public class FormulaPreprocessor {
                     if (f.listP() && !f.empty()) {
                         arg0 = f.car();
                         int start = -1;
-                        if (arg0.equals("subclass")) start = 0;
-                        else if (arg0.equals("instance")) start = 1;
+                        if ("subclass".equals(arg0)) start = 0;
+                        else if ("instance".equals(arg0)) start = 1;
                         if (start > -1) {
                             ArrayList<String> args =
                                 new ArrayList<>(Arrays.asList(f.getArgument(1), f.getArgument(2)));
@@ -837,7 +837,7 @@ public class FormulaPreprocessor {
                             String arg = null;
                             for (int i = start; i < argslen; i++) {
                                 arg = args.get(i);
-                                if (!Formula.isVariable(arg) && !arg.equals("SetOrClass") && Formula.atom(arg)) {
+                                if (!Formula.isVariable(arg) && !"SetOrClass".equals(arg) && Formula.atom(arg)) {
                                     StringBuilder sb = new StringBuilder();
                                     sb.setLength(0);
                                     sb.append("(instance ");
@@ -894,7 +894,7 @@ public class FormulaPreprocessor {
             if (StringUtil.containsNonAsciiChars(f.theFormula))
                 f.theFormula = StringUtil.replaceNonAsciiChars(f.theFormula);
 
-            boolean addHoldsPrefix = mgr.getPref("holdsPrefix").equalsIgnoreCase("yes");
+            boolean addHoldsPrefix = "yes".equalsIgnoreCase(mgr.getPref("holdsPrefix"));
             ArrayList<Formula> variableReplacements = replacePredVarsAndRowVars(form, kb, addHoldsPrefix);
             form.errors.addAll(f.getErrors());
 
@@ -923,7 +923,7 @@ public class FormulaPreprocessor {
 
 
         KBmanager mgr = KBmanager.manager;
-        boolean typePrefix = mgr.getPref("typePrefix").equalsIgnoreCase("yes");
+        boolean typePrefix = "yes".equalsIgnoreCase(mgr.getPref("typePrefix"));
         if (typePrefix && !isQuery) {
             for (Formula f : results) {
                 FormulaPreprocessor fp = new FormulaPreprocessor();

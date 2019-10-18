@@ -48,7 +48,7 @@ public enum DerivationFunctors {
 		NAR nar = d.nar;
 
 
-		Functor[] derivationFunctors = new Functor[]{
+		Functor[] derivationFunctors = {
 			d.uniSubstFunctor,
 			d.substituteFunctor,
 			d.polarizeTask,

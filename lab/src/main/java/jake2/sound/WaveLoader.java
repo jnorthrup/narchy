@@ -261,7 +261,7 @@ public class WaveLoader {
 		
 		FindChunk("RIFF");
 		String s = new String(data_b, data_p + 8, 4);
-		if (!s.equals("WAVE")) {
+		if (!"WAVE".equals(s)) {
 			Com.Printf("Missing RIFF/WAVE chunks\n");
 			return info;
 		}
@@ -299,7 +299,7 @@ public class WaveLoader {
 			if (data_p != 0) {
 				if (data_b.length >= data_p + 32) {
 					s = new String(data_b, data_p + 28, 4);
-					if (s.equals("MARK")) { 
+					if ("MARK".equals(s)) {
 											
 						data_p += 24;
 						i = GetLittleLong(); 

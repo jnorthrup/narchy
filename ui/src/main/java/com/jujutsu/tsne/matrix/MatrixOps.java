@@ -82,7 +82,7 @@ public enum MatrixOps { ;
 
 
 	private static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim, int collim, String sentenceDelimiter) {
-		StringBuffer str = new StringBuffer(m.length * m[0].length);
+		StringBuilder str = new StringBuilder(m.length * m[0].length);
 
 		str.append("Dim:").append(m.length).append(" x ").append(m[0].length).append('\n');
 
@@ -1219,8 +1219,7 @@ public enum MatrixOps { ;
 	public static double[][] fillMatrix(int rows, int cols, double fillvalue) {
 		double[][] matrix = new double[rows][cols];
 		for (int i = 0; i < matrix.length; i++)
-			for (int j = 0; j < matrix[i].length; j++)
-				matrix[i][j] = fillvalue;
+			Arrays.fill(matrix[i], fillvalue);
 		return matrix;
 	}
 

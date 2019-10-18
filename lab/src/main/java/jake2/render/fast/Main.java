@@ -1399,7 +1399,7 @@ public abstract class Main extends Base {
                 gl_drawbuffer.modified = false;
     
                 if (gl_state.camera_separation == 0 || !gl_state.stereo_enabled) {
-                    if (gl_drawbuffer.string.equalsIgnoreCase("GL_FRONT"))
+                    if ("GL_FRONT".equalsIgnoreCase(gl_drawbuffer.string))
                         gl.glDrawBuffer(GL_FRONT);
                     else
                         gl.glDrawBuffer(GL_BACK);

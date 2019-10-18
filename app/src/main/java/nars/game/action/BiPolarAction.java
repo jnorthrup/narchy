@@ -62,7 +62,7 @@ public class BiPolarAction extends AbstractSensor {
         super(PROD.the(pos, neg), n);
 
         CauseChannel<Task> cause = n.newChannel(id);
-        short[] causeArray = new short[]{cause.id};
+        short[] causeArray = {cause.id};
 
 
 
@@ -192,7 +192,7 @@ public class BiPolarAction extends AbstractSensor {
     /** offers a few parameters */
     public static class DefaultPolarization implements Polarization {
 
-        final float[] lastX = new float[] { 0};
+        final float[] lastX = { 0};
 
 
 

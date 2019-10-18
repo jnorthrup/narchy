@@ -42,15 +42,15 @@ public class Main {
         /** check supplied parameters (if any) */
         for (int i = 0; i < args.length; i++) {
             /** if "bomberman" parameter is supplied */
-            if (args[i].equals("Bomberman") || args[i].equals("bomberman"))
+            if ("Bomberman".equals(args[i]) || "bomberman".equals(args[i]))
                 bombermanMode = true;
             /** if look and feel parameter is supplied */
             if (args[i].startsWith("-l")) {
-                if (args[i].substring(2).equals("System")) lookAndFeel = 0;
-                else if (args[i].substring(2).equals("Metal")) lookAndFeel = 1;
-                else if (args[i].substring(2).equals("Windows")) lookAndFeel = 2;
-                else if (args[i].substring(2).equals("Mac")) lookAndFeel = 3;
-                else if (args[i].substring(2).equals("Motif")) lookAndFeel = 4;
+                if ("System".equals(args[i].substring(2))) lookAndFeel = 0;
+                else if ("Metal".equals(args[i].substring(2))) lookAndFeel = 1;
+                else if ("Windows".equals(args[i].substring(2))) lookAndFeel = 2;
+                else if ("Mac".equals(args[i].substring(2))) lookAndFeel = 3;
+                else if ("Motif".equals(args[i].substring(2))) lookAndFeel = 4;
             }
         }
         /** if look and feel isn't default: metal */

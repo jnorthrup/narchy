@@ -970,7 +970,7 @@ public class Getopt  {
                 
                 
                 while ((optind < argv.length) && (argv[optind].isEmpty() ||
-                        (argv[optind].charAt(0) != '-') || argv[optind].equals("-"))) {
+                        (argv[optind].charAt(0) != '-') || "-".equals(argv[optind]))) {
                     optind++;
                 }
 
@@ -981,7 +981,7 @@ public class Getopt  {
             
             
             
-            if ((optind != argv.length) && argv[optind].equals("--")) {
+            if ((optind != argv.length) && "--".equals(argv[optind])) {
                 optind++;
 
                 if ((first_nonopt != last_nonopt) && (last_nonopt != optind))
@@ -1008,7 +1008,7 @@ public class Getopt  {
             
             
             if (argv[optind].isEmpty() || (argv[optind].charAt(0) != '-') ||
-                    argv[optind].equals("-")) {
+                    "-".equals(argv[optind])) {
                 if (ordering == REQUIRE_ORDER)
                     return (-1);
 
@@ -1173,7 +1173,7 @@ public class Getopt  {
                     
                     
                     
-                    if ((posixly_correct) && optarg.equals("--")) {
+                    if ((posixly_correct) && "--".equals(optarg)) {
                         
                         if (optind == argv.length) {
                             if (opterr) {

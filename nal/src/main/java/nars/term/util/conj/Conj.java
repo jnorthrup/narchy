@@ -471,7 +471,7 @@ public enum Conj {
         } else if (iSeq || eSeq) {
 
             ConjList ii = ConjList.events(include);
-            boolean[] removedSomething = new boolean[]{false};
+            boolean[] removedSomething = {false};
             exclude.eventsAND(
                 !pn ?
                     (when, what) -> {

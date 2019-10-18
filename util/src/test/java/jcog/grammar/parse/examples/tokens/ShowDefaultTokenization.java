@@ -29,7 +29,7 @@ public class ShowDefaultTokenization {
 	public static void main(String args[]) throws IOException {
 		ITokenizer t = new Tokenizer(">give 2receive");
 
-		Token manual[] = new Token[] { new Token(Token.TT_SYMBOL, ">", BigDecimal.ZERO), new Token(Token.TT_WORD, "give", BigDecimal.ZERO), new Token(Token.TT_NUMBER, "", new BigDecimal("2.0")), new Token(Token.TT_WORD, "receive", BigDecimal.ZERO) };
+		Token manual[] = { new Token(Token.TT_SYMBOL, ">", BigDecimal.ZERO), new Token(Token.TT_WORD, "give", BigDecimal.ZERO), new Token(Token.TT_NUMBER, "", new BigDecimal("2.0")), new Token(Token.TT_WORD, "receive", BigDecimal.ZERO) };
 
 		for (int i = 0; i < 4; i++) {
 			Token tok = t.nextToken();

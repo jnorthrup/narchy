@@ -104,7 +104,7 @@ public class Rule implements Axiom {
 	 * @return a string representation of this rule.
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < structures.length; i++) {
 			if (i == 1) {
 				buf.append(" :- ");

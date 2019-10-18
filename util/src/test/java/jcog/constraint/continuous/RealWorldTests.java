@@ -336,18 +336,14 @@ class RealWorldTests {
     }*/
 
     static void printNodes(HashMap<String, HashMap<String, DoubleSupplier>> variableHashMap) {
-        Iterator<Map.Entry<String, HashMap<String, DoubleSupplier>>> it = variableHashMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, HashMap<String, DoubleSupplier>> pairs = it.next();
+        for (Map.Entry<String, HashMap<String, DoubleSupplier>> pairs : variableHashMap.entrySet()) {
             System.out.println("node " + pairs.getKey());
             printVariables(pairs.getValue());
         }
     }
 
     private static void printVariables(HashMap<String, DoubleSupplier> variableHashMap) {
-        Iterator<Map.Entry<String, DoubleSupplier>> it = variableHashMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, DoubleSupplier> pairs = it.next();
+        for (Map.Entry<String, DoubleSupplier> pairs : variableHashMap.entrySet()) {
             System.out.println(' ' + pairs.getKey() + " = " + pairs.getValue().getAsDouble() + " (address:" + pairs.getValue().hashCode() + ')');
         }
     }

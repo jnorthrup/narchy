@@ -191,7 +191,7 @@ public class ALEPipes {
         }
 
         
-        if (line.equals("DIE")) {
+        if ("DIE".equals(line)) {
             terminateRequested = true;
             return false;
         }

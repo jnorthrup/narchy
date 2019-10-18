@@ -335,8 +335,7 @@ public final class HttpUtil
              * <code>asctime()</code> format.
              */
             private static final String PATTERN_ASCTIME = "EEE MMM d HH:mm:ss yyyy";
-            private static final String[] DEFAULT_PATTERNS = new String[]
-            {
+            private static final String[] DEFAULT_PATTERNS = {
                     PATTERN_RFC1123,
                     PATTERN_RFC1036,
                     PATTERN_ASCTIME

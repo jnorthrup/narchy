@@ -1237,12 +1237,12 @@ class ConjTest {
         assertEquals(3, c.size());
 
         assertFalse(
-                c.removeIf((when, what) -> when == 1 && what.toString().equals("c"))
+                c.removeIf((when, what) -> when == 1 && "c".equals(what.toString()))
         );
         assertEquals(3, c.size());
 
         assertTrue(
-                c.removeIf((when, what) -> when == 0 && what.toString().equals("c"))
+                c.removeIf((when, what) -> when == 0 && "c".equals(what.toString()))
         );
         assertEquals(2, c.size());
         assertEquals(0, c.when(0));

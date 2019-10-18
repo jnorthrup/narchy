@@ -101,9 +101,7 @@ public class KellyLochbaumFilter /*implements Filter*/ {
         @param array of r radii 
      */
     public void setAllCylinderRadii(double[] r) {
-        for(int k=0;k<nTubeSections;k++) {
-            cylRadius[k]=r[k];
-        }
+        if (nTubeSections >= 0) System.arraycopy(r, 0, cylRadius, 0, nTubeSections);
         computeKCoeff();
     }
 

@@ -39,13 +39,13 @@ public class HiddenLayer {
         if (b == null) this.b = new double[n_out];
         else this.b = b;
 
-        if (activation == null || activation.equals("sigmoid")) {
+        if (activation == null || "sigmoid".equals(activation)) {
             this.activation = utils::sigmoid;
             this.dactivation = utils::dsigmoid;
-        } else if (activation.equals("tanh")) {
+        } else if ("tanh".equals(activation)) {
             this.activation = utils::tanh;
             this.dactivation = utils::dtanh;
-        } else if (activation.equals("ReLU")) {
+        } else if ("ReLU".equals(activation)) {
             this.activation = utils::ReLU;
             this.dactivation = utils::dReLU;
         } else {

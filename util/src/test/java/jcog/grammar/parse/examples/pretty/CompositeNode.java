@@ -64,7 +64,7 @@ public class CompositeNode extends ComponentNode {
 			return "...";
 		}
 		visited.addElement(this);
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		if (label) {
 			buf.append(indent(depth));
 			buf.append(value);

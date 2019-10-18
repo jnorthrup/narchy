@@ -501,10 +501,10 @@ public class IOLibrary extends PrologLib {
     private void readObject(java.io.ObjectInputStream in) throws IOException,
             ClassNotFoundException {
         in.defaultReadObject();
-        if (outputStreamName.equals("user")) {
+        if ("user".equals(outputStreamName)) {
             outputStream = System.out;
         }
-        if (inputStreamName.equals("user")) {
+        if ("user".equals(inputStreamName)) {
             inputStream = System.in;
         }
     }

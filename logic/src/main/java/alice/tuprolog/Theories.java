@@ -142,7 +142,7 @@ public class Theories {
     public /*synchronized*/ boolean abolish(Struct pi) {
         if (pi == null || !pi.isGround() || pi.subs() != 2)
             throw new IllegalArgumentException(pi + " is not a valid Struct");
-        if (!pi.name().equals("/"))
+        if (!"/".equals(pi.name()))
             throw new IllegalArgumentException(pi + " has not the valid predicate name. Espected '/' but was " + pi.name());
 
         String arg0 = Tools.removeApostrophes(pi.sub(0).toString());

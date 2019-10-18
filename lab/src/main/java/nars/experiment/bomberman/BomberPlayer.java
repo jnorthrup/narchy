@@ -186,8 +186,7 @@ public class BomberPlayer extends Thread {
         /** create the key configurations array */
         keys = new int[5];
         /** load the configurations */
-        for (int k = BomberKeyConfig.UP; k <= BomberKeyConfig.BOMB; k++)
-            keys[k] = BomberKeyConfig.keys[playerNo - 1][k];
+        System.arraycopy(BomberKeyConfig.keys[playerNo - 1], BomberKeyConfig.UP, keys, BomberKeyConfig.UP, BomberKeyConfig.BOMB + 1);
         /** HOG THE CPU!!! */
         setPriority(Thread.MAX_PRIORITY);
         /** start looping */

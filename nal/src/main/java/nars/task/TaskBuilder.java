@@ -15,6 +15,7 @@ import nars.truth.Truthed;
 import nars.util.Timed;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -223,7 +224,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 
 	private TaskBuilder setEvidence(@Nullable long... evidentialSet) {
 
-		if (this.evidence != evidentialSet) {
+		if (!Arrays.equals(this.evidence, evidentialSet)) {
 			this.evidence = evidentialSet;
 		}
 		return this;

@@ -818,7 +818,7 @@ public enum Util {
 
 
 	public static boolean equals(float[] a, float[] b, float epsilon) {
-		if (a == b) return true;
+		if (Arrays.equals(a, b)) return true;
 		int l = a.length;
         return IntStream.range(0, l).allMatch(i -> equals(a[i], b[i], epsilon));
 	}
@@ -828,7 +828,7 @@ public enum Util {
 	 * by first testing their lengths
 	 */
 	public static int compare(long[] x, long[] y) {
-		if (x == y) return 0;
+		if (Arrays.equals(x, y)) return 0;
 
 		int xlen = x.length;
 
@@ -1696,18 +1696,18 @@ public enum Util {
 	}
 
 	public static boolean equals(double[] a, double[] b, double epsilon) {
-		if (a == b) return true;
+		if (Arrays.equals(a, b)) return true;
 		int l = a.length;
         return IntStream.range(0, l).allMatch(i -> equals(a[i], b[i], epsilon));
 	}
 
 	public static boolean equals(long[] a, long[] b, int firstN) {
-		if (a == b) return true;
+		if (Arrays.equals(a, b)) return true;
         return IntStream.range(0, firstN).noneMatch(i -> a[i] != b[i]);
 	}
 
 	public static boolean equals(long[] a, long[] b) {
-		if (a == b) return true;
+		if (Arrays.equals(a, b)) return true;
 		int l = a.length;
 		if (b.length != l)
 			return false;
@@ -1715,7 +1715,7 @@ public enum Util {
 	}
 
 	public static boolean equals(short[] a, short[] b) {
-		if (a == b) return true;
+		if (Arrays.equals(a, b)) return true;
 		int l = a.length;
 		if (b.length != l)
 			return false;
@@ -2401,7 +2401,7 @@ public enum Util {
 	}
 
 	public static int compare(byte[] a, byte[] b) {
-		if (a == b) return 0;
+		if (Arrays.equals(a, b)) return 0;
 		int al = a.length;
 		int l = Integer.compare(al, b.length);
 		if (l != 0)

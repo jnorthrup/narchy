@@ -312,7 +312,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 			case "conjParallel":
 			case "conjSequence":
 				if (!negated) is(x, CONJ);
-				match(x, pred.equals("conjSequence") ? TermMatcher.ConjSequence.the : TermMatcher.ConjParallel.the, !negated);
+				match(x, "conjSequence".equals(pred) ? TermMatcher.ConjSequence.the : TermMatcher.ConjParallel.the, !negated);
 				if (negated) negationApplied = true;
 				break;
 
@@ -406,7 +406,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 					}
 				} else {
 					//TEMPORARY
-					if (y.toString().equals("\"||\"")) {
+					if ("\"||\"".equals(y.toString())) {
 						isUnneg(x, CONJ, negated);
 						if (negated) negationApplied = true;
 						break;

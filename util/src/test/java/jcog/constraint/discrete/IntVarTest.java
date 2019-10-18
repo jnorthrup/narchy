@@ -47,7 +47,7 @@ abstract class IntVarTest {
   @Test
   void test1a() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
-    int[] values = new int[]{-10, 0, 10, 100};
+    int[] values = {-10, 0, 10, 100};
     IntVar x = intVar(solver, values);
     assertEquals(x.size(), 4);
     assertTrue(containsAll(x, values));
@@ -360,7 +360,7 @@ abstract class IntVarTest {
   @Test
   void test24() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
-    int[] values = new int[]{10, 11, 15, 16, 17, 20, 21, 25};
+    int[] values = {10, 11, 15, 16, 17, 20, 21, 25};
     IntVar x = intVar(solver, values);
     assertTrue(x.updateMin(12));
     assertEquals(x.size(), 6);
@@ -371,7 +371,7 @@ abstract class IntVarTest {
   @Test
   void test25() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
-    int[] values = new int[]{10, 11, 15, 16, 17, 20, 21, 25};
+    int[] values = {10, 11, 15, 16, 17, 20, 21, 25};
     IntVar x = intVar(solver, values);
     assertTrue(x.updateMin(16));
     assertFalse(x.contains(10));
@@ -383,7 +383,7 @@ abstract class IntVarTest {
   @Test
   void test26() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
-    int[] values = new int[]{10, 11, 15, 16, 17, 20, 21, 25};
+    int[] values = {10, 11, 15, 16, 17, 20, 21, 25};
     IntVar x = intVar(solver, values);
     assertTrue(x.updateMax(19));
     assertEquals(x.size(), 5);
@@ -394,7 +394,7 @@ abstract class IntVarTest {
   @Test
   void test27() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
-    int[] values = new int[]{10, 11, 15, 16, 17, 20, 21, 25};
+    int[] values = {10, 11, 15, 16, 17, 20, 21, 25};
     IntVar x = intVar(solver, values);
     assertTrue(x.updateMax(17));
     assertFalse(x.contains(20));
@@ -406,7 +406,7 @@ abstract class IntVarTest {
   @Test
   void test28() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
-    int[] values1 = new int[]{10, 11, 15, 16, 17, 20, 21, 25};
+    int[] values1 = {10, 11, 15, 16, 17, 20, 21, 25};
     int[] domain1 = new int[values1.length];
     IntVar x = intVar(solver, values1);
     assertTrue(containsAll(x, values1));
@@ -417,7 +417,7 @@ abstract class IntVarTest {
     assertTrue(x.remove(17));
     assertTrue(x.remove(25));
     assertEquals(x.size(), 5);
-    int[] values2 = new int[]{10, 15, 16, 20, 21};
+    int[] values2 = {10, 15, 16, 20, 21};
     int[] domain2 = new int[values2.length];
     assertTrue(containsAll(x, values2));
     assertEquals(x.size(), values2.length);

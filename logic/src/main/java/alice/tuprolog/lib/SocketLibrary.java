@@ -155,7 +155,7 @@ public boolean udp_receive(Term Socket, Term Data, Struct AddressFrom,
 	}
 	LinkedList<Term> list = StructToList(Options);
 	for (Term t : list) { 
-		if (((Struct) t).name().equals("timeout")) { 
+		if ("timeout".equals(((Struct) t).name())) {
 			int time = Integer.parseInt(((Struct) t).sub(0).toString());
 			try {
 				s.setSoTimeout(time);
@@ -164,7 +164,7 @@ public boolean udp_receive(Term Socket, Term Data, Struct AddressFrom,
 				
 			}
 		}
-		if(((Struct) t).name().equals("size")){
+		if("size".equals(((Struct) t).name())){
 			int size=Integer.parseInt(((Struct) t).sub(0).toString());
 			packet.setLength(size);
 		}
@@ -202,7 +202,7 @@ public boolean tcp_socket_server_open_3(Struct Address, Term Socket, Struct Opti
 	LinkedList<Term> list = StructToList(Options); 			
 	int backlog = 0;
 	for (Term t : list) { 									
-		if (((Struct) t).name().equals("backlog")) { 	
+		if ("backlog".equals(((Struct) t).name())) {
 			backlog = Integer.parseInt(((Struct) t).sub(0).toString());
 		}
 	}
@@ -389,7 +389,7 @@ public boolean read_from_socket_3(Term Socket, Term Msg, Struct Options) throws 
 
 		LinkedList<Term> list = StructToList(Options); 
 		for (Term t : list) { 
-			if (((Struct) t).name().equals("timeout")) { 
+			if ("timeout".equals(((Struct) t).name())) {
 				int time = Integer.parseInt(((Struct) t).sub(0).toString());
 				try {
 					sock.setSoTimeout(time); 
@@ -464,7 +464,7 @@ public boolean aread_from_socket_2(Term Socket, Struct Options) throws PrologErr
 
 		LinkedList<Term> list = StructToList(Options); 
 		for (Term t : list) { 
-			if (((Struct) t).name().equals("timeout")) { 
+			if ("timeout".equals(((Struct) t).name())) {
 				int time = Integer.parseInt(((Struct) t).sub(0).toString());
 				try {
 					sock.setSoTimeout(time); 
@@ -475,7 +475,7 @@ public boolean aread_from_socket_2(Term Socket, Struct Options) throws PrologErr
 			}
 			
 			
-			if (((Struct) t).name().equals("assertZ")) {
+			if ("assertZ".equals(((Struct) t).name())) {
 				r.assertZ();
 			}
 		}
@@ -493,7 +493,7 @@ private static LinkedList<Term> StructToList(Struct s) {
 	Term temp = s;
 	LinkedList<Term> list = new LinkedList<>();
 	while (true) {
-		if (((Struct) temp).name().equals(".")) {
+		if (".".equals(((Struct) temp).name())) {
 			list.add(((Struct) temp).sub(0));
 		} else
 			break;

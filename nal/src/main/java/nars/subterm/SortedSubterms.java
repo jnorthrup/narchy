@@ -38,7 +38,7 @@ public class SortedSubterms {
         boolean hadNegs = false;
         for (int j = 0; j < y.length; j++) {
             if (y[j] instanceof Neg) {
-                if (y == x)
+                if (Arrays.equals(y, x))
                     y = x.clone();
                 y[j] = y[j].unneg();
                 hadNegs = true;
@@ -48,7 +48,7 @@ public class SortedSubterms {
         if (dedup)
             y = Terms.commute(y);
         else {
-            if (x == y)
+            if (Arrays.equals(x, y))
                 y = Terms.sort(y);
             else
                 Arrays.sort(y);

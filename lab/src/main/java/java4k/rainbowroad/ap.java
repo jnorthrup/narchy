@@ -28,6 +28,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 public class ap extends GamePanel {
@@ -651,7 +652,7 @@ public class ap extends GamePanel {
 
           
           for(i = 0; i < 8; i++) {
-            if (element != players[i] && players[i][ELEMENT_EXPLODING] == 0
+            if (!Arrays.equals(element, players[i]) && players[i][ELEMENT_EXPLODING] == 0
                 && element[ELEMENT_EXPLODING] == 0) {
               float dx = players[i][ELEMENT_X] - element[ELEMENT_X];
               float dd = players[i][ELEMENT_D] - element[ELEMENT_D];

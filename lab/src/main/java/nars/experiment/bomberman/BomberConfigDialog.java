@@ -44,8 +44,7 @@ public class BomberConfigDialog extends JDialog
         keys = new int[4][5];
         /** set the object's data from the currently configurations */
         for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 5; j++)
-                keys[i][j] = BomberKeyConfig.keys[i][j];
+            System.arraycopy(BomberKeyConfig.keys[i], 0, keys[i], 0, 5);
 
         /** create the panel that holds the config. stuff */
         JPanel centerPanel = new JPanel(new GridLayout(2, 2));
@@ -170,18 +169,17 @@ public class BomberConfigDialog extends JDialog
     @Override
     public void actionPerformed(ActionEvent evt) {
         /** if save configuration button is clicked */
-        if (evt.getActionCommand().equals("Save Configurations")) {
+        if ("Save Configurations".equals(evt.getActionCommand())) {
             /** copy new keys back to glocal variables */
             for (int i = 0; i < 4; i++)
-                for (int j = 0; j < 5; j++)
-                    BomberKeyConfig.keys[i][j] = keys[i][j];
+                System.arraycopy(keys[i], 0, BomberKeyConfig.keys[i], 0, 5);
             /** write the file */
             BomberKeyConfig.writeFile();
             /** destroy this dialog */
             dispose();
         }
         /** if close button is clicked then destroy the dialog */
-        else if (evt.getActionCommand().equals("Close")) dispose();
+        else if ("Close".equals(evt.getActionCommand())) dispose();
         /** if other buttons are clicked */
         else {
             /** find which key setup button is clicked */

@@ -35,7 +35,7 @@ public class ShowEmpty {
 
         Parser list = new Seq().get(new Symbol('[').ok()).get(contents).get(new Symbol(']').ok());
 
-		String test[] = new String[] { "[die_bonder_2, oven_7, wire_bonder_3, mold_1]", "[]", "[mold_1]" };
+		String test[] = { "[die_bonder_2, oven_7, wire_bonder_3, mold_1]", "[]", "[mold_1]" };
 		for (int i = 0; i < test.length; i++) {
 			TokenAssembly a = new TokenAssembly(test[i]);
 			System.out.println(list.completeMatch(a).getStack());

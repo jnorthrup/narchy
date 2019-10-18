@@ -98,7 +98,7 @@ public class Smasher {
             }
         }
 
-        AEdge[][] allEdges = new AEdge[][]{
+        AEdge[][] allEdges = {
                 diagramEdges.toArray(new AEdge[0]),
                 polygonEdges.toArray(new AEdge[0])
         };

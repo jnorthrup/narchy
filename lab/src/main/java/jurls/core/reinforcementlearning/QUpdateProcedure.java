@@ -72,8 +72,6 @@ public class QUpdateProcedure implements UpdateProcedure {
             context.e[i] = gradient[i] - context.e[i] * gamma * lambda;
         }
 
-        for (int i = 0; i < deltas.length; ++i) {
-            context.previousDeltas[i] = deltas[i];
-        }
+        System.arraycopy(deltas, 0, context.previousDeltas, 0, deltas.length);
     }
 }

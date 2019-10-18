@@ -121,7 +121,7 @@ public enum IntifySmoothSort {
 
 
     /** Leonardo numbers */
-	private static final int[] LP = new int[]{
+	private static final int[] LP = {
         1, 1, 3, 5, 9, 15, 25, 41, 67, 109, 177, 287, 465, 753,
         1219, 1973, 3193, 5167, 8361, 13529, 21891, 35421, 57313, 92735,
         150049, 242785, 392835, 635621, 1028457, 1664079, 2692537,

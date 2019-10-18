@@ -349,8 +349,7 @@ public final class QuickLZ {
 				}
 
 
-				for (int i = 0; i < matchlen; i++)
-					out[dst + i] = out[offset2 + i];
+                if (matchlen >= 0) System.arraycopy(out, offset2 + 0, out, dst + 0, matchlen);
 
 				dst += matchlen;
 

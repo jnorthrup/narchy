@@ -55,7 +55,7 @@ public class TextHandler extends TypeHandler {
 
     @Override
     public boolean mimeTypeValid(String mimeType) {
-        return mimeType.equals("text");
+        return "text".equals(mimeType);
     }
 
     @Override

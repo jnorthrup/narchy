@@ -15,11 +15,11 @@ public final class SubGoalTree extends FasterList<SubTree> implements SubTree {
         this();
         while (body instanceof Struct) {
             Struct s = (Struct) body;
-            if (!s.name().equals(","))
+            if (!",".equals(s.name()))
                 break;
 
             Term t = s.sub(0);
-            if (t instanceof Struct && ((Struct) t).name().equals(",")) {
+            if (t instanceof Struct && ",".equals(((Struct) t).name())) {
                 addChild(t);
             } else {
                 add(t);
