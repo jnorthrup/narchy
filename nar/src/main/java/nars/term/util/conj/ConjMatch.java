@@ -80,14 +80,15 @@ public enum ConjMatch { ;
 
         int n = seq.size();
 
-        EventUnifier u = unify ? new EventUnifier(s) : null;
 
         MetalBitSet matches = includeMatched ? null : MetalBitSet.bits(n); //only necessary if they are to be removed
-        s.clear(varBits);
+        s.clear(varBits, false);
+        s.setTTL(ttl);
 
         boolean forward = (includeAfter != includeBefore) ? includeAfter : ThreadLocalRandom.current().nextBoolean();
 
         ConjList ee = ConjList.events(event);
+        EventUnifier u = unify ? new EventUnifier(s) : null;
 
         int[] at = seq.contains(ee, unify ? u : Term::equals, 1, forward, matches, s.dtTolerance);
         if (at.length == 0)

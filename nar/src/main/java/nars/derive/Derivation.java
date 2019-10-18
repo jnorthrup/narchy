@@ -545,7 +545,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         int dtTolerance =
             //n.dtDither(); //FINE
             //Math.round(n.dtDither() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
-            Math.round(dur * uttd); //COARSE
+            Math.max(1, Math.round(dur * uttd)); //COARSE
             //Math.max(n.dtDither(), Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue())); //COARSE
 
         for (Unify u : _u)
@@ -625,6 +625,8 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     }
 
     public final boolean remember(Task t) {
+        if (NAL.TRACE)
+            System.out.println(t.proof());
 
         x.accept(t);
         nar.emotion.deriveTask.increment();

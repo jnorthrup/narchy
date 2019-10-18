@@ -1,12 +1,17 @@
 package nars.derive.rule;
 
+import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.derive.PreDerivation;
 import nars.derive.action.How;
+import nars.derive.util.Forkable;
 import nars.term.ProxyTerm;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.term.control.PREDICATE;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -22,13 +27,34 @@ import java.util.function.Function;
 public class PremiseRule extends ProxyTerm  {
 
     final PREDICATE<PreDerivation>[] condition;
-    final Function<NAR, How> action;
+    final Function<RuleCause, How> action;
 
-    public PremiseRule(Term id, PREDICATE<PreDerivation>[] condition, Function<NAR, How> action) {
+
+    @Nullable
+    public final String tag;
+
+    public PremiseRule(Term id, String tag, PREDICATE<PreDerivation>[] condition, Function<RuleCause, How> action) {
         super(id);
 
+        this.tag = tag;
         this.condition = condition;
         this.action = action;
+    }
+
+    /** instance a list of conditions */
+    FasterList<PREDICATE<PreDerivation>> conditions(short i) {
+        FasterList<PREDICATE<PreDerivation>> pre = new FasterList<>(this.condition.length + 1);
+        pre.addAll(this.condition);
+        pre.add(new Forkable(/* branch ID */  i));
+        return pre;
+    }
+
+    How action(NAR n, Map<String, RuleCause> tags) {
+        return action.apply(tag==null ? cause(n, ref) : tags.computeIfAbsent(tag, t-> cause(n, Atomic.the(t))));
+    }
+
+    private static RuleCause cause(NAR n, Term ref) {
+        return n.newCause(ruleInstanceID -> new RuleCause(ref, ruleInstanceID));
     }
 
 }

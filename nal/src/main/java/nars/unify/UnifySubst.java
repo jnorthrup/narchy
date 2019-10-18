@@ -40,10 +40,7 @@ public abstract class UnifySubst extends Unify {
      */
     public final boolean unify(Term input, Term x, Term y) {
 
-        clear();
-
         assert(ttl > 0);
-        //setTTL(ttl);
 
         this.input = input;
 

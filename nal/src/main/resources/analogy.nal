@@ -7,54 +7,66 @@
 
 ////// similarity-based syllogism ////////////////////////////////////////////////////////////////////////////////////
 
-
+analogy_inh_sim_pred {
       (M --> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Belief:Analogy, Time:Compose)
         (M --> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Goal:DesireWeak, Time:Task)
+       (M <-> S), (M --> P), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Belief:AnalogyX, Time:Compose)
+         (M <-> S), (M --> P), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Goal:DesireWeak, Time:Task)
+}
+analogy_sim_inh_subj {
        (M <-> P), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Belief:AnalogyX, Time:Compose)
         (M <-> P), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Goal:DesireWeak, Time:Task)
       (S --> M), (P <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Belief:Analogy, Time:Compose)
         (S --> M), (P <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Goal:DesireWeak, Time:Task)
-       (M <-> S), (M --> P), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Belief:AnalogyX, Time:Compose)
-         (M <-> S), (M --> P), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Goal:DesireWeak, Time:Task)
-
+}
+analogy_sym_decompose {
       (S <-> P), (P --> S), has(S,"."), has(P,".")   |-   (S --> P), (Belief:Undesire, Time:Compose)
         (S <-> P), (P --> S), has(S,"."), has(P,".")   |-   (S --> P), (Belief:Desire, Time:Task)
             //ReduceConjunction ~= Undesire ~= Divide
-        (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Punctuation:AskAsk, Time:Task)
         (S --> P), (S <-> P), has(S,"."), has(P,".")   |-   (P --> S), (Punctuation:AskAsk, Time:Task)
+}
 
 //        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Goal:Desire, Time:Task)
 //        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (P --> S), (Goal:Undesire, Time:Task)
 
-
+analogy_sym_compose {
       (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Belief:Intersection, Time:Compose)
         (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Goal:Desire, Time:Task)
 
+        (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Punctuation:AskAsk, Time:Task)
+}
+analogy_transitive {
       (M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Resemblance, Time:Compose)
         (M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |-   (S <-> P), (Goal:Desire, Time:Task)
 
       (P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Time:Compose)
-         //(P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Goal:DesireWeak, Time:Task)
+         (P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Goal:DesireWeak, Time:Task)
       (M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Time:Compose)
-         //(M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:DesireWeak, Time:Task)
+         (M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:DesireWeak, Time:Task)
+}
 
-//Structural Analogy
+analogy_structural {
       ((A-->B) <-> (A-->C)), A, neqRCom(B,C), has(B,"."), has(C,".") |- (B <-> C), (Belief:StructuralDeductionWeak)
       ((B-->A) <-> (C-->A)), A, neqRCom(B,C), has(B,"."), has(C,".") |- (B <-> C), (Belief:StructuralDeductionWeak)
-
+}
 
 // the similarity beliefs here act as a sort of transistor switch in determining Desire result truth
 
-Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |-   unisubst(Y, X, Z, "$"), (Punctuation:AskAsk, Time:Task)
-Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |-   unisubst(Y, X, Z, "$"), (Belief:DesireWeakPP, Time:Task)
-//Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- --unisubst(Y, X, Z, "$", novel), (Belief:DesireWeakPN, Time:Task)
+analogy_transform_unify {
+
+    Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |-   unisubst(Y, X, Z, "$"), (Punctuation:AskAsk, Time:Task)
+    Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |-   unisubst(Y, X, Z, "$"), (Belief:DesireWeakPP, Time:Task)
+    //Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- --unisubst(Y, X, Z, "$", novel), (Belief:DesireWeakPN, Time:Task)
+}
 
     //X, (X <-> Y), --isVar(Y)                      |-   Y, (Punctuation:AskAll, Time:Task)
     //  X, (X <-> Y), --isVar(Y)                    |-   Y, (Belief:DesirePP, Goal:DesirePP, Time:Task)
 
- Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, polarizeBelief(Y), novel), (Punctuation:AskAsk, Time:Task)
-//   Z, (X <-> Y), in(Z,X), neq(Z,Y) |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeakPP, Time:Task)
-   //Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, --Y, "$", novel), (Belief:DesireWeakPN, Time:Task)
+analogy_transform_subst {
+     Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, polarizeBelief(Y), novel), (Punctuation:AskAsk, Time:Task)
+    //   Z, (X <-> Y), in(Z,X), neq(Z,Y) |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeakPP, Time:Task)
+       //Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, --Y, "$", novel), (Belief:DesireWeakPN, Time:Task)
+}
 
 //chain:
 //  (&&,  (X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,novel), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskEvent)

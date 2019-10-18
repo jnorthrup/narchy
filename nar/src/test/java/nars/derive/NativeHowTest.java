@@ -1,10 +1,9 @@
-package nars.derive.action;
+package nars.derive;
 
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.derive.Derivation;
-import nars.derive.Deriver;
+import nars.derive.action.NativeHow;
 import nars.derive.rule.PremiseRuleSet;
 import nars.derive.rule.RuleCause;
 import org.junit.jupiter.api.Test;

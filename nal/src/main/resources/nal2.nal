@@ -1,11 +1,15 @@
 //Set Definition Unwrap
+setUnwrapDefinition {
     ({S} <-> {P}), ({S} <-> {P}) |- (S <-> P), (Belief:Identity, Goal:Identity)
     ([S] <-> [P]), ({S} <-> {P}) |- (S <-> P), (Belief:Identity, Goal:Identity)
+}
 
 
 //single element set unwrap
+setUnwrapSingleElement {
     ({E} --> X),  {E}  |- polarizeTask((E --> X)), (Belief:StructuralDeductionDD, Goal:StructuralDeductionDD)
     (X --> [I]),  [I]  |- polarizeTask((X --> I)), (Belief:StructuralDeductionDD, Goal:StructuralDeductionDD)
+}
 
 //Set Composition
 

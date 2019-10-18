@@ -311,7 +311,10 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         return reward(rewardTerm("happy"), 1, rewardfunc);
     }
 
-    public Reward reward(String reward, FloatSupplier rewardFunc) {
+    public SimpleReward reward(String reward, FloatSupplier rewardFunc) {
+        return reward(reward, 1f, rewardFunc);
+    }
+    public SimpleReward reward(Term reward, FloatSupplier rewardFunc) {
         return reward(reward, 1f, rewardFunc);
     }
     public SimpleReward reward(String reward, float freq, FloatSupplier rewardFunc) {

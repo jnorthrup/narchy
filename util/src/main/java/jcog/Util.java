@@ -784,6 +784,7 @@ public enum Util {
 	}
 
 	public static boolean equals(long a, long b, int tolerance) {
+		assert(tolerance > 0);
 		return Math.abs(a - b) < tolerance;
 	}
 

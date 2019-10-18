@@ -526,6 +526,9 @@ public class Occurrify extends TimeGraph {
                     x[1] = taskStart + r;
                     //}
                 }
+                if (x == null) {
+                    //TODO may be solvable directly if no xternal etc
+                }
             }
 
             @Override

@@ -23,7 +23,7 @@ public class TaskResolve extends NativeHow {
 	public static final TaskResolve the = new TaskResolve();
 
 	private TaskResolve() {
-		commands();
+		taskCommand();
 	}
 
 	@Override

@@ -84,29 +84,30 @@ public class PatternHow extends CondHow {
     }
 
 
-    public static HowBuilder parseSafe(String ruleSrc)  {
-        try {
-            return parse(ruleSrc);
-        } catch (Narsese.NarseseException e) {
-            throw new RuntimeException("rule parse failure:\n" + ruleSrc, e);
-        }
+//    public static HowBuilder parseSafe(String ruleSrc)  {
+//        try {
+//            return parse(ruleSrc);
+//        } catch (Narsese.NarseseException e) {
+//            throw new RuntimeException("rule parse failure:\n" + ruleSrc, e);
+//        }
+//    }
+//
+//    public static PatternHow parse(String ruleSrc) throws Narsese.NarseseException {
+//        return parse(ruleSrc, NALTruth.the);
+//    }
+
+    @Deprecated public static PatternHow parse(String ruleSrc) throws Narsese.NarseseException {
+        return parse(ruleSrc, NALTruth.the, null);
     }
 
-    public static PatternHow parse(String ruleSrc) throws Narsese.NarseseException {
-        return parse(ruleSrc, NALTruth.the);
-    }
-
-    public static PatternHow parse(String ruleSrc, TruthModel truthModel) throws Narsese.NarseseException {
+    public static PatternHow parse(String ruleSrc, TruthModel truthModel, @Nullable String tag) throws Narsese.NarseseException {
         PatternHow r = new PatternHow(truthModel);
         r._parse(ruleSrc);
+        r.tag(tag);
         return r;
     }
 
-	public static Term pathTerm(@Nullable byte[] path) {
-		return path == null ? $.the(-1) /* null */ : $.p(path);
-	}
-
-	protected void _parse(String ruleSrc) throws Narsese.NarseseException {
+    protected void _parse(String ruleSrc) throws Narsese.NarseseException {
         this.source = ruleSrc;
         this.id = new MyPremiseRuleNormalization().apply(
             new UppercaseAtomsToPatternVariables().apply(
@@ -320,12 +321,40 @@ public class PatternHow extends CondHow {
         return y != null ? y : x;
     }
 
-    public static Stream<PremiseRule> parse(String... rules) {
-        return parse(Stream.of(rules));
+    @Deprecated public static Stream<PremiseRule> parse(String... rules) {
+        return parse(Stream.of(rules).map(String::trim).filter(x -> !x.isEmpty()), NALTruth.the);
     }
 
-    public static Stream<PremiseRule> parse(Stream<String> rules) {
-        return rules.map(PatternHow::parseSafe).map(HowBuilder::get).distinct();
+    public static Stream<PremiseRule> parse(Stream<String> rules, TruthModel truthModel) {
+        final String[] currentTag = {null};
+        Stream<PremiseRule> s = rules.flatMap((String line)->{
+            if (!line.contains("|-")) {
+                if (line.endsWith("{")) {
+                    //start tag
+                    assert(currentTag[0] ==null);
+                    currentTag[0] = line.substring(0, line.length()-1).trim();
+                    assert(currentTag[0].length() > 0);
+                    return Stream.of();
+                } else if (line.endsWith("}")) {
+                    //close tag
+                    assert(currentTag[0] !=null);
+                    currentTag[0] = null;
+                    return Stream.of();
+                }
+            }
+
+            try {
+                HowBuilder h = PatternHow.parse(line, truthModel, currentTag[0]);
+                return Stream.of(h);
+            } catch (Narsese.NarseseException e) {
+                e.printStackTrace();
+                return Stream.of();
+            }
+        }).map(HowBuilder::get).distinct();
+
+        assert(currentTag[0] == null); //closed
+
+        return s;
     }
 
     private static Subterms parseRuleComponents(String src) throws Narsese.NarseseException {

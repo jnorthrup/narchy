@@ -1,23 +1,27 @@
 //"Free" Conjunction Decompositions (usually structural deduction and/or questions) which require no premise belief task
 
-//free structural Conjunction/Disjunction decomposition
-C, X, eventOfPN(C,X), conjParallel(C), --isVar(X)    |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-//D, X, eventOfPN(D,X), conjParallel(D)    |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+conj_free_structural_decomposition {
+    C, X, eventOfPN(C,X), conjParallel(C), --isVar(X)    |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
+    C, X, conjParallel(C), eventOfPN(C,X)     |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
+    X, C, conjParallel(C), eventOfPN(C,X)   |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
+}
+    //D, X, eventOfPN(D,X), conjParallel(D)    |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
 
-C, X, conjParallel(C), eventOfPN(C,X)     |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
-  X, C, conjParallel(C), eventOfPN(C,X)   |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
 
 //C, X, --isVar(X), hasBelief()                  |- conjWithoutUnify(C,  polarizeBelief(X)), (Punctuation:AskAsk, Time:BeliefEvent)
 //  C, X, --isVar(X), hasBelief()                  |- conjBefore(C,  polarizeBelief(X)), (Punctuation:AskAsk, Time:BeliefEvent)
 //  C, X, --isVar(X), hasBelief(), conjSequence(C) |- conjAfter(C,  polarizeBelief(X)), (Punctuation:AskAsk, Time:BeliefEvent)
 
-    //impl conj subj belief free structural decomposition
+
+impl_conj_subj_belief_free_structural_decomposition {
     (  C ==> A), X, eventOfPN(C,X), --isVar(X)   |-   (  conjWithoutPN(C, X)==>A), (Belief:StructuralDeduction,  Time:Task)
     (  C ==> A), X, eventOfPN(C,X), --isVar(X)   |- --(  conjWithoutPN(C, X)==>A), (Belief:StructuralDeductionN,  Time:Task)
+}
 //    (  C ==> A), X, --is(C,"--"), eventOfPN(C,X), --isVar(X)   |- polarizeTask((  conjWithoutPN(C, X)==>A)), (Belief:StructuralDeductionDD,  Time:Task)
 
-    //impl disj subj belief free structural decomposition
+
+impl_disj_subj_belief_free_structural_decomposition {
     (--D ==> A), X, eventOfNeg(D,X), --isVar(X)      |-     (X==>A), (Belief:StructuralDeduction,  Time:Task)
     (--D ==> A), X, eventOf(D,X), --isVar(X)         |-   (--X==>A), (Belief:StructuralDeduction,  Time:Task)
     (--D ==> A), X, eventOfNeg(D,X), --isVar(X)      |-   --(X==>A), (Belief:StructuralDeductionN,  Time:Task)
@@ -26,19 +30,22 @@ C, X, conjParallel(C), eventOfPN(C,X)     |-   conjWithoutPN(C,X), (Punctuation:
     //(--D ==> A), X, eventOfPN(D,X), --isVar(X)   |- --(--conjWithoutPN(D, X)==>A), (Belief:StructuralDeductionN,  Time:Task)
 //    (--D ==> A), X, eventOfPN(D,X), --isVar(X)   |- (--conjWithoutPN(D, X)==>A), (Belief:StructuralReduction,  Time:Task)
     //(--D ==> A), X, --is(D,"--"), eventOfPN(D,X), --isVar(X)   |- polarizeTask((--conjWithoutPN(D, X)==>A)), (Belief:StructuralDeductionDD,  Time:Task)
+}
 
-    //impl conj/disj pred belief and question free structural decomposition
+impl_conj_disj_pred_belief_and_question_free_structural_decomposition {
     //(A ==> C), X, eventOfPN(C,X), --isVar(X)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDD,  Time:Task)
     (A ==> C), X, eventOfPN(C,X), --isVar(X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction,  Time:Task)
     (A ==> C), X, eventOfPN(C,X), --isVar(X)   |- --(A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeductionN, Time:Task)
 
-         (A ==> C), X,  eventOfPN(C,X), task("?"), --isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question, Time:Task)
+      (A ==> C), X,  eventOfPN(C,X), task("?"), --isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question, Time:Task)
+}
 
+impl_conj_disj_subj_question_decomposition {
+    (    C ==> A), X, eventOfPN(C,X), --isVar(X), task("?")  |- (   conjWithoutPN(C,  X) ==> A), (Punctuation:Question, Time:Task)
 
-        (    C ==> A), X, eventOfPN(C,X), --isVar(X), task("?")  |- (   conjWithoutPN(C,  X) ==> A), (Punctuation:Question, Time:Task)
-
-        (  --D ==> A), X, eventOfNeg(D,X), --isVar(X), task("?")  |- ( X ==> A), (Punctuation:Question, Time:Task)
-        (  --D ==> A), X, eventOf(D,X), --isVar(X), task("?")     |- ( --X ==> A), (Punctuation:Question, Time:Task)
+    (  --D ==> A), X, eventOfNeg(D,X), --isVar(X), task("?")  |- ( X ==> A), (Punctuation:Question, Time:Task)
+    (  --D ==> A), X, eventOf(D,X), --isVar(X), task("?")     |- ( --X ==> A), (Punctuation:Question, Time:Task)
+}
 
           //(  --D ==> A), X, eventOfNeg(D,X) |- (  X ==> A), (Punctuation:AskAll, Time:Task)
           //(  --D ==> A), X, eventOf(D,X)    |- (--X ==> A), (Punctuation:AskAll, Time:Task)

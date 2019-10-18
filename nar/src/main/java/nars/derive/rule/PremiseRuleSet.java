@@ -7,6 +7,7 @@ import jcog.util.ArrayUtil;
 import nars.NAR;
 import nars.derive.action.How;
 import nars.derive.action.PatternHow;
+import nars.truth.func.NALTruth;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,7 +58,7 @@ public class PremiseRuleSet {
             e.printStackTrace();
             bb = ArrayUtil.EMPTY_BYTE_ARRAY;
         }
-        return PatternHow.parse(load(bb)).collect(Collectors.toList());
+        return PatternHow.parse(load(bb), NALTruth.the).collect(Collectors.toList());
 
     }, 64, false);
 
@@ -111,13 +112,8 @@ public class PremiseRuleSet {
         return add(r.get());
     }
 
-    public final PremiseRuleSet add(PremiseRule r) {
+    private final PremiseRuleSet add(PremiseRule r) {
         this.rules.add(r);
-        return this;
-    }
-
-    public final PremiseRuleSet add(Collection<PremiseRule> r) {
-        this.rules.addAll(r);
         return this;
     }
 

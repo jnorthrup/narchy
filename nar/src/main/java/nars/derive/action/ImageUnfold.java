@@ -19,7 +19,7 @@ import static nars.Op.PROD;
 public class ImageUnfold extends NativeHow {
 
 	{
-		single();
+		taskAndBeliefEqual();
 		is(TheTask, INH);
 		hasAny(TheTask, PROD);
 		taskPunc(true,true,true,true);

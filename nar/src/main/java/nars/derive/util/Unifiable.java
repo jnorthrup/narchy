@@ -48,7 +48,7 @@ public enum Unifiable { ;
 
                 boolean strict = a.contains(UniSubst.NOVEL);
 
-                p.constraints.add(new Unifiability((Variable)x, (Variable)y, strict, varBits));
+                p.constrain(new Unifiability((Variable)x, (Variable)y, strict, varBits));
             }
         }
     }
@@ -70,7 +70,7 @@ public enum Unifiable { ;
 
                 if (unifiable) {
                     p.biggerIffConstant((Variable)conj, (Variable)xu /* x */); //TODO
-                    p.constraints.add(new EventUnifiability((Variable) conj, (Variable) xu, x instanceof Neg));
+                    p.constrain(new EventUnifiability((Variable) conj, (Variable) xu, x instanceof Neg));
                 } else {
                     //p.constraints.add(new SubOfConstraint((Variable)conj, (Variable)xu, Event, x instanceof Neg ? -1 : +1));
                 }

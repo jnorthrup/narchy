@@ -27,7 +27,7 @@ public class AdjacentLinks extends TaskAction {
 
 		taskPunc(true,true,true,true);
 
-		constraints.add(new VolumeCompare(TheTask, TheBelief, false, -1).neg()); //belief <= task
+		constrain(new VolumeCompare(TheTask, TheBelief, false, -1).neg()); //belief <= task
 		//bigger(TheTask, TheBelief); //belief < task
 
 		//containsRecursively(TheTask,TheBelief);

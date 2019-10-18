@@ -37,39 +37,33 @@ public enum PremiseRuleCompiler {
         );
     }
 
-    public static DeriverProgram compile(Collection<PremiseRule> rr, PreDeriver preDeriver, NAR nar, Function<How, How> functionTransform) {
+    public static DeriverProgram compile(Collection<PremiseRule> rr, PreDeriver preDeriver, NAR n, Function<How, How> actionTransform) {
 
         /** indexed by local (deriver-specific) id */
-        int n = rr.size();
+        int s = rr.size();
         short i = 0;
-        assert(n > 0);
+        assert(s > 0);
 
-        How[] roots = new How[n];
+        How[] roots = new How[s];
         final TermPerfectTrie<PREDICATE<PreDerivation>, How> paths = new TermPerfectTrie<>();
+
+        Map<String,RuleCause> tags = new HashMap();
 
         for (PremiseRule r : rr) {
 
-            PREDICATE<PreDerivation>[] condition = r.condition;
-
-            FasterList<PREDICATE<PreDerivation>> pre = new FasterList<>(condition.length + 1);
-            pre.addAll(condition);
-
-            How conc = r.action.apply(nar);
-
-            pre.add(new Forkable(/* branch ID */  i));
-
-            How added = paths.put(pre,
-                roots[i] = functionTransform.apply(conc)
+            How added = paths.put(
+                r.conditions(i),
+                roots[i++] = actionTransform.apply(r.action(n, tags))
             );
-            assert (added == null);
 
-            i++;
+            assert (added == null);
         }
 
         assert (!paths.isEmpty());
 
-        return new DeriverProgram(PremiseRuleCompiler.compile(paths), roots, preDeriver, nar);
+        return new DeriverProgram(PremiseRuleCompiler.compile(paths), roots, preDeriver, n);
     }
+
 
 
 

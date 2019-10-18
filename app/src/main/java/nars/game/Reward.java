@@ -109,6 +109,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 //			truth = truth.neg();
 		}
         Task t = NALTask.the(goal, punc, truth, nar().time(), ETERNAL, ETERNAL, stamp);
+		//t.setCyclic(true); //TODO permanent
 
 		synchronized(reinforcement) {
 			reinforcement.add(()->t);
