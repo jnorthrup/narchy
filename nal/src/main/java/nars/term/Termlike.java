@@ -56,8 +56,7 @@ public interface Termlike {
      * recursion height; atomic=1, compound>1
      */
     default int height() {
-        if (subs() == 0) return 1;
-        else return 1 + max(Term::height);
+		return subs() == 0 ? 1 : 1 + max(Term::height);
     }
 
     /**

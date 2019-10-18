@@ -41,11 +41,7 @@ public final class VarIndep extends NormalizedVariable {
                 if (x.op().statement && xx.AND(Termlike::hasVarIndep)) {
                     return validIndepBalance(x, safe); //indep appearing in both, test for balance
                 } else {
-                    if (!xx.hasAny(Op.StatementBits)) {
-                        return Task.fail(xx, "InDep variables must be subterms of statements", safe);
-                    } else {
-                        return xx.AND(s -> validIndep(s, safe));
-                    }
+					return !xx.hasAny(Op.StatementBits) ? Task.fail(xx, "InDep variables must be subterms of statements", safe) : xx.AND(s -> validIndep(s, safe));
                 }
 
         }

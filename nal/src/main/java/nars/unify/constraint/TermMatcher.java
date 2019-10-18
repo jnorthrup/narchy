@@ -316,11 +316,7 @@ public abstract class TermMatcher {
             this.cost = (0.07f + (0.01f * depth)) * (1f / (1 + (Integer.bitCount(struct))));
 
             Atom isParam = Op.the(this.is).strAtom;
-            if (structSubs != 0) {
-                this.param = $.p(isParam, Op.strucTerm(structSubs));
-            } else {
-                this.param = isParam;
-            }
+			this.param = structSubs != 0 ? $.p(isParam, Op.strucTerm(structSubs)) : isParam;
         }
         @Override
         public boolean test(Term term) {

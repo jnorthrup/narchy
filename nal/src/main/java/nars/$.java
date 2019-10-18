@@ -203,10 +203,7 @@ public enum $ { ;
         return PROD.the(t);
     }
     public static Term pOrOnly(Term... t) {
-        if (t.length == 1)
-            return t[0];
-        else
-            return p(t);
+        return t.length == 1 ? t[0] : p(t);
     }
 
     /**
@@ -469,13 +466,11 @@ public enum $ { ;
 
     public static Term[] ints(short... i) {
         int l = i.length;
-        Term[] x = IntStream.range(0, l).mapToObj(j -> the(i[j])).toArray(Term[]::new);
-        return x;
+        return IntStream.range(0, l).mapToObj(j -> the(i[j])).toArray(Term[]::new);
     }
     public static Term[] ints(int... i) {
         int l = i.length;
-        Term[] x = Arrays.stream(i).mapToObj($::the).toArray(Term[]::new);
-        return x;
+        return Arrays.stream(i).mapToObj($::the).toArray(Term[]::new);
     }
 
     /**
@@ -490,12 +485,7 @@ public enum $ { ;
             throw new TODO("NaN");
 
         int rx = (int) Util.round(x, 1);
-        if (Util.equals(rx, x)) {
-            return Int.the(rx);
-        } else {
-            return the(new Fraction(x));
-
-        }
+        return Util.equals(rx, x) ? Int.the(rx) : the(new Fraction(x));
 
         //return quote(Float.toString(v));
     }
@@ -504,11 +494,7 @@ public enum $ { ;
         if (x != x)
             throw new TODO("NaN");
         int rx = (int) Util.round(x, 1);
-        if (Util.equals(rx, x, Double.MIN_NORMAL)) {
-            return Int.the(rx);
-        } else {
-            return the(new Fraction(x));
-        }
+        return Util.equals(rx, x, Double.MIN_NORMAL) ? Int.the(rx) : the(new Fraction(x));
     }
 
     public static double doubleValue(Term x) {
@@ -563,20 +549,12 @@ public enum $ { ;
         } else if (n instanceof Float) {
             float d = n.floatValue();
             int id = (int) d;
-            if (d == d && Util.equals(d, id)) {
-                result = Int.the(id);
-            } else {
-                result = Atomic.the(n.toString());
-            }
+            result = d == d && Util.equals(d, id) ? Int.the(id) : Atomic.the(n.toString());
 
         } else {
             double d = n.doubleValue();
             int id = (int) d;
-            if (d == d && Util.equals(d, id)) {
-                result = Int.the(id);
-            } else {
-                result = Atomic.the(n.toString());
-            }
+            result = d == d && Util.equals(d, id) ? Int.the(id) : Atomic.the(n.toString());
 
         }
         return result;
@@ -620,9 +598,8 @@ public enum $ { ;
 
         int[] xx = radix(x, radix, maxX);
 
-        Term[] tt = Arrays.stream(xx).mapToObj(Int::the).toArray(Term[]::new);
         //$.the(BinTxt.symbols[xx[i]]);
-        return tt;
+        return Arrays.stream(xx).mapToObj(Int::the).toArray(Term[]::new);
     }
 
 
@@ -698,13 +675,11 @@ public enum $ { ;
     }
 
     public static Compound pFast(Subterms x) {
-        if (x.subs() == 0) return Op.EmptyProduct;
-        else return new LightCompound(PROD, x);
+        return x.subs() == 0 ? Op.EmptyProduct : new LightCompound(PROD, x);
     }
 
     public static Compound pFast(Term... x) {
-        if (x.length == 0) return Op.EmptyProduct;
-        else return new LightCompound(Op.PROD, x);
+        return x.length == 0 ? Op.EmptyProduct : new LightCompound(Op.PROD, x);
                     //new LighterCompound(PROD, x);
     }
 
@@ -846,10 +821,7 @@ public enum $ { ;
         else {
             Class<?> c = x.getClass();
             Term idHash = $.intRadix(System.identityHashCode(x), 36);
-            if (!c.isSynthetic())
-                return $.p($.quote(c.getName()), idHash);
-            else
-                return $.p($.quote(c.getSimpleName()), idHash);
+            return !c.isSynthetic() ? $.p($.quote(c.getName()), idHash) : $.p($.quote(c.getSimpleName()), idHash);
         }
 
     }

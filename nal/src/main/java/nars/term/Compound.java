@@ -74,11 +74,10 @@ public interface Compound extends Term, IPair, Subterms {
 
     static boolean equalSubs(Compound a, Compound b) {
 
-        if (a instanceof UnitCompound || b instanceof UnitCompound) {
-            //avoid instantiating dummy subterms instance
-            return a.subs() == 1 && b.subs() == 1 && a.sub(0).equals(b.sub(0));
-        } else
-            return a.subterms().equals(b.subterms());
+        //avoid instantiating dummy subterms instance
+        return a instanceof UnitCompound || b instanceof UnitCompound ?
+            a.subs() == 1 && b.subs() == 1 && a.sub(0).equals(b.sub(0)) :
+            a.subterms().equals(b.subterms());
     }
 
     static String toString(Compound c) {
@@ -297,10 +296,10 @@ public interface Compound extends Term, IPair, Subterms {
         if (!Subterms.possiblyUnifiableAssumingNotEqual(xx, yy, u.varBits))
             return false;
 
-        if (o.commutative /* subs>1 */)
-            return Subterms.unifyCommute(xx, yy, u);
-        else
-            return Subterms.unifyLinear(xx, yy, u);
+        /* subs>1 */
+        return o.commutative ?
+            Subterms.unifyCommute(xx, yy, u) :
+            Subterms.unifyLinear(xx, yy, u);
     }
 
     @Override

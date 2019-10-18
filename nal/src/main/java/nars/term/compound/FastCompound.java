@@ -87,8 +87,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         if (x instanceof FastCompound)
             return ((FastCompound) x);
 
-        FastCompound f = get(x.op(), x.subs(), x.subterms());
-        return f;
+        return get(x.op(), x.subs(), x.subterms());
     }
 
     public static FastCompound get(Op o, List<Term> subterms) {
@@ -136,9 +135,8 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
             a[p.getTwo()] = p.getOne();
         }
         boolean normalized = false;
-        FastCompound y = new FastCompoundInstancedAtoms(a, shadow.toByteArray(), structure, hashCode, volume, normalized);
 
-        return y;
+        return new FastCompoundInstancedAtoms(a, shadow.toByteArray(), structure, hashCode, volume, normalized);
     }
 
     public static void print() {
@@ -270,18 +268,10 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
      */
     public Term term(int offset) {
         Op opAtSub = ov[shadow[offset]];
-        if (opAtSub.atomic) {
+		return opAtSub.atomic ? atom(shadow[offset + 1]) : TermBuilder.newCompound(opAtSub,
+			Op.terms.subterms(new SubtermView(this, offset).toArray(EmptyTermArray))
 
-            return atom(shadow[offset + 1]);
-
-        } else {
-
-
-            return TermBuilder.newCompound(opAtSub,
-                    Op.terms.subterms(new SubtermView(this, offset).toArray(EmptyTermArray))
-
-            );
-        }
+		);
     }
 
     protected abstract Term atom(byte id);
@@ -364,11 +354,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         public int hashCode() {
 
             int h = _hash;
-            if (h == 0) {
-                return _hash = intifyShallow((i, t) -> Util.hashCombine(i, t.hashCode()), 1);
-            } else {
-                return h;
-            }
+			return h == 0 ? (_hash = intifyShallow((i, t) -> Util.hashCombine(i, t.hashCode()), 1)) : h;
         }
 
 
@@ -391,11 +377,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
             int offset = this.offset;
             byte[] s = c.shadow;
             Op op = ov[s[offset]];
-            if (op.atomic) {
-                return 0;
-            } else {
-                return s[offset + 1];
-            }
+			return op.atomic ? 0 : s[offset + 1];
         }
 
         @Override

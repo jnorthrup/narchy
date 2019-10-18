@@ -12,7 +12,8 @@ import static nars.Op.CONJ;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 
-public class ConjUnify {
+public enum ConjUnify {
+    ;
 
     /** conjunction unfiication when # subterms differ */
     public static boolean unifyConj(Term x, Term y, Subterms xx, Subterms yy, Unify u) {
@@ -70,11 +71,7 @@ public class ConjUnify {
                                 });
                                 int xls = xl.size();
                                 if (xls == yl.size()) {
-                                    if (xls > 1) {
-                                        result = Subterms.unifyLinear($.vFast(xl), $.vFast(yl), u);
-                                    } else {
-                                        result = xl.get(0).unify(yl.get(0), u);
-                                    }
+                                    result = xls > 1 ? Subterms.unifyLinear($.vFast(xl), $.vFast(yl), u) : xl.get(0).unify(yl.get(0), u);
                                 }
                             }
                         }

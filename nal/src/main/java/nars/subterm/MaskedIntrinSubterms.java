@@ -16,11 +16,7 @@ public abstract class MaskedIntrinSubterms extends ProxySubterms<IntrinSubterms>
         short x = ref.subRaw(i);
         short ax = x < 0 ? (short) -x : x;
         Term y;
-        if (Intrin.group(ax)== ANOMs) {
-            y = atom((ax & 0xff)-1);
-        } else {
-            y = Intrin._term(ax);
-        }
+		y = Intrin.group(ax) == ANOMs ? atom((ax & 0xff) - 1) : Intrin._term(ax);
         return y.negIf(x < 0);
     }
 

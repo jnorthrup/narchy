@@ -46,7 +46,8 @@ import java.util.function.Consumer;
  * @see: RLP classes: https:
  * TODO use http:
  */
-public class IO {
+public enum IO {
+    ;
 
 
     @Deprecated public static final byte SPECIAL_BYTE = (byte) 0xff;

@@ -258,10 +258,7 @@ public abstract class RelationConstraint<U extends Unify> extends UnifyConstrain
                         return true;
 
                     //TODO check heuristic direction
-                    if (xx.volume() < yy.volume())
-                        return !xx.containsAny(yy);
-                    else
-                        return !yy.containsAny(xx);
+					return xx.volume() < yy.volume() ? !xx.containsAny(yy) : !yy.containsAny(xx);
                 }
             }
             return false;

@@ -31,10 +31,7 @@ public class VariableNormalization extends VariableTransform {
 
     @Override
     public Term applyVariable(Variable atomic) {
-        if (atomic.equals(Op.VarAuto))
-            return newVariableIncreasingCount(atomic);
-        else
-            return map.computeIfAbsent(atomic, this::newVariableIncreasingCount);
+		return atomic.equals(Op.VarAuto) ? newVariableIncreasingCount(atomic) : map.computeIfAbsent(atomic, this::newVariableIncreasingCount);
     }
 
 

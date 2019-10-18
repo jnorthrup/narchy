@@ -173,10 +173,7 @@ public enum NALTruth implements TruthFunction {
     AbductionXOR() {
         @Override
         public Truth apply(Truth T, Truth B, float minConf, NAL n) {
-            if (B.isNegative())
-                return Abduction.apply(T, B.neg(), minConf, n);
-            else
-                return Abduction.apply(T.neg(), B, minConf, n);
+            return B.isNegative() ? Abduction.apply(T, B.neg(), minConf, n) : Abduction.apply(T.neg(), B, minConf, n);
         }
     },
 

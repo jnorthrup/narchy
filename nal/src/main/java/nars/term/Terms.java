@@ -211,11 +211,8 @@ public enum Terms {
 				b = y;
 			}
 		}
-		if (t[0] == a && t[1] == b)
-			return t; //already sorted
-		else {
-			return new Term[]{a, b, c};
-		}
+		//already sorted
+		return t[0] == a && t[1] == b ? t : new Term[]{a, b, c};
 	}
 
 
@@ -388,10 +385,7 @@ public enum Terms {
 	 */
 	public static Term[] commute(Collection<Term> s) {
 		Term[] x = s.toArray(Op.EmptyTermArray);
-		if ((x.length >= 2) && (!(s instanceof SortedSet)))
-			return commute(x);
-		else
-			return x;
+		return (x.length >= 2) && (!(s instanceof SortedSet)) ? commute(x) : x;
 	}
 
 //
@@ -535,11 +529,7 @@ public enum Terms {
 			return container; //no matches
 		} else {
 			Term[] remain = cs.removing(match);
-			if (remain == null)
-				return Null;
-			else {
-				return container.op().the(container.dt(), remain);
-			}
+			return remain == null ? Null : container.op().the(container.dt(), remain);
 		}
 	}
 

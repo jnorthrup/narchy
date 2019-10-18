@@ -67,10 +67,8 @@ public class ProxyTerm implements SameSubtermsCompound {
     }
 
     final Term ifDifferentElseThis(Term u) {
-        if (u == ref)
-            return this; //continue proxying
-        else
-            return u;
+		//continue proxying
+		return u == ref ? this : u;
     }
 
 //

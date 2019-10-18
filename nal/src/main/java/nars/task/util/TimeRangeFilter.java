@@ -41,11 +41,7 @@ public final class TimeRangeFilter extends TimeRange implements LongLongPredicat
         if (mode == Mode.Contains && (start == end))
             throw new RuntimeException("nothing contained in zero length time interval");
 
-        if (start == Tense.ETERNAL) {
-            return TimeRangeFilter.Eternal;
-        } else {
-            return new TimeRangeFilter(start, end, mode);
-        }
+		return start == Tense.ETERNAL ? TimeRangeFilter.Eternal : new TimeRangeFilter(start, end, mode);
     }
 
     private TimeRangeFilter(long start, long end, Mode mode) {

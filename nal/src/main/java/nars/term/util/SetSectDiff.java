@@ -22,7 +22,8 @@ import static nars.time.Tense.DTERNAL;
 /**
  * NAL2/NAL3 setAt, intersection and difference functions
  */
-public class SetSectDiff {
+public enum SetSectDiff {
+    ;
 
     /** high-level intersection/union build procedure.  handles:
      *      decoding op type
@@ -39,11 +40,8 @@ public class SetSectDiff {
 
         boolean productSplice = s.subs() > 2 && s.sub(2).equals(Op.PROD.strAtom);
 
-        if (productSplice && a.unneg().subs()==b.unneg().subs() && a.unneg().op()==PROD && b.unneg().op()==PROD /* && rng? */) {
-            return SetSectDiff.intersectProd(op, union, a, b);
-        } else {
-            return SetSectDiff.intersect(op, union, a, b);
-        }
+        /* && rng? */
+        return productSplice && a.unneg().subs() == b.unneg().subs() && a.unneg().op() == PROD && b.unneg().op() == PROD ? SetSectDiff.intersectProd(op, union, a, b) : SetSectDiff.intersect(op, union, a, b);
     }
 
     public static Term intersectSet(TermBuilder b, Op o, Term... t) {
@@ -131,11 +129,7 @@ public class SetSectDiff {
 //            }
 
                 Term[] yyyy = yyy.arrayKeep();
-                if (o == SETe || o == SETi || !union) {
-                    return B.compound(o, yyyy);
-                } else {
-                    return DISJ(B, yyyy);
-                }
+                return o == SETe || o == SETi || !union ? B.compound(o, yyyy) : DISJ(B, yyyy);
         }
 
 

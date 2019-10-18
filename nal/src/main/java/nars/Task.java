@@ -161,7 +161,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
     static void mergeWhy(Task e, Task i) {
-        if (e instanceof Task)
+        if (e instanceof AbstractTask)
             ((AbstractTask) e).why(i.why());
         //else TODO
     }
@@ -470,10 +470,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * creates negated proxy of a task
      */
     static Task negated(Task t) {
-        if (t instanceof SpecialNegatedTask)
-            return ((SpecialNegatedTask) t).task;
-        else
-            return new SpecialNegatedTask(t);
+        return t instanceof SpecialNegatedTask ? ((SpecialNegatedTask) t).task : new SpecialNegatedTask(t);
     }
 
     //    @Deprecated
@@ -600,7 +597,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         y.pri(yp);
 
 
-        if (y instanceof Task) {
+        if (y instanceof AbstractTask) {
             ((AbstractTask)y).why(Why.why(x, NAL.causeCapacity.intValue()));
         }
 

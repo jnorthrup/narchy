@@ -152,11 +152,7 @@ public class TermBuffer {
      * add an already existent sub
      */
     public TermBuffer append(Term x) {
-        if (x instanceof Atomic) {
-            return appendInterned(x);
-        } else {
-            return append((Compound) x);
-        }
+		return x instanceof Atomic ? appendInterned(x) : append((Compound) x);
     }
 
     private TermBuffer append(Compound x) {

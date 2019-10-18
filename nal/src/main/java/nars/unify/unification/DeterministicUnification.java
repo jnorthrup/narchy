@@ -22,10 +22,7 @@ public abstract class DeterministicUnification implements Unification {
     @Override
     public final boolean equals(Object obj) {
         if (obj == this) return true;
-        if (obj instanceof DeterministicUnification)
-            return equals((DeterministicUnification) obj);
-        else
-            return false;
+        return obj instanceof DeterministicUnification ? equals((DeterministicUnification) obj) : false;
     }
 
     protected abstract boolean equals(DeterministicUnification obj);

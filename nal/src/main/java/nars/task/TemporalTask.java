@@ -1,19 +1,12 @@
 package nars.task;
 
-import jcog.math.LongInterval;
-import nars.NAL;
 import nars.Task;
 import nars.task.util.TaskException;
 import nars.term.Term;
-import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Objects;
-
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 
 
 /** generic NAL Task with stored start,end time */

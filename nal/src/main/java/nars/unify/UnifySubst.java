@@ -51,10 +51,8 @@ public abstract class UnifySubst extends Unify {
     @Override
     public final boolean match() {
         Term aa = apply(input);
-        if (aa instanceof Bool)
-            return true; //try again
-        else
-            return each(aa);
+		//try again
+		return aa instanceof Bool ? true : each(aa);
     }
 
 

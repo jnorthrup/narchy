@@ -59,10 +59,7 @@ public enum Tense {
      * occur at the same time, relative to duration: order = concurrent
      */
     public static boolean simultaneous(long a, long b, float tolerance) {
-        if (a == b || a == ETERNAL || b == ETERNAL)
-            return true;
-        else
-            return Math.abs(a-b) <= tolerance;
+		return a == b || a == ETERNAL || b == ETERNAL ? true : Math.abs(a - b) <= tolerance;
     }
 
 
@@ -111,11 +108,8 @@ public enum Tense {
     static long _dither(long t, boolean relative, int dither) {
         //return Util.round(t, dither);
 
-        if (relative && NAL.DT_DITHER_LOGARITHMICALLY && t > dither*dither)
-            //logarithmic dithering
-            return (long) Util.round(Math.pow(dither, Util.round(Math.log( t )/Math.log(dither), 1f/dither)), dither);
-        else
-            return Util.round(t, dither);
+		//logarithmic dithering
+		return relative && NAL.DT_DITHER_LOGARITHMICALLY && t > dither * dither ? (long) Util.round(Math.pow(dither, Util.round(Math.log(t) / Math.log(dither), 1f / dither)), dither) : Util.round(t, dither);
     }
 
     public static int dither(int dt, NAL n) {
@@ -313,10 +307,7 @@ public enum Tense {
     }
 
     public static String dtStr(int dt) {
-        if (dt == DTERNAL)
-            return "ETE";
-        else
-            return String.valueOf(dt);
+		return dt == DTERNAL ? "ETE" : String.valueOf(dt);
     }
 
     public static String tStr(long t) {

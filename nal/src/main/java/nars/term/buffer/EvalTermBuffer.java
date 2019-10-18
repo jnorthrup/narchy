@@ -44,10 +44,8 @@ public class EvalTermBuffer extends TermBuffer {
 
 
                 Term y = e.eval();
-                if (y instanceof Bool)
-                    return y;
-                else
-                    return apply(y); //recurse
+                //recurse
+                return y instanceof Bool ? y : apply(y);
             } else
                 return super.applyPosCompound(x);
         }

@@ -232,10 +232,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
             Term yi = terms[xo].apply(
                 new Intermed.InternedCompoundByComponentsSubs((Compound)xi));
             if(negate) {
-                if (yi == xi)
-                    return _x; //use original
-                else
-                    return yi.neg();
+				//use original
+				return yi == xi ? _x : yi.neg();
             } else
                 return yi;
 

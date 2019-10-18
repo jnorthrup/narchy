@@ -17,7 +17,8 @@ import static nars.time.Tense.XTERNAL;
  * generally, terms name concepts directly except in temporal cases there is a many to one target to concept mapping
  * effectively using concepts to 'bin' together varieties of related terms
  */
-public class Conceptualization {
+public enum Conceptualization {
+    ;
 
     public static final Retemporalize DirectXternal = new Untemporalization() {
         @Override
@@ -39,10 +40,7 @@ public class Conceptualization {
         @Override
         protected  Term transformConj(Compound y) {
             Subterms yy;
-            if (y instanceof Sequence)
-                yy = ((Sequence)y).events();
-            else
-                yy = y.subterms();
+            yy = y instanceof Sequence ? ((Sequence) y).events() : y.subterms();
 
             if (yy.hasAny(CONJ) && yy.OR(yyy -> yyy/*.unneg()*/.op() == CONJ)) {
                 //collapse any embedded CONJ which will inevitably have dt=XTERNAL
