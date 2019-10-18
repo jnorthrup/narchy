@@ -432,8 +432,8 @@ public abstract class GameX extends Game {
 
         n.causeCapacity.set(16);
         n.termVolMax.set(
-            64
-            //48
+            //64
+            48
             //36
         );
 
@@ -446,7 +446,7 @@ public abstract class GameX extends Game {
         n.questionPriDefault.pri(0.5f);
         n.questPriDefault.pri(0.5f);
 
-        n.beliefConfDefault.set(0.5f);
+        n.beliefConfDefault.set(0.75f);
         n.goalConfDefault.set(0.5f);
 
 

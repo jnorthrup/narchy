@@ -271,7 +271,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * <p>
          * TODO make this a per-sensor implementation decision
          */
-        public static final float SIGNAL_STRETCH_LIMIT_DURS = 64;
+        public static final float SIGNAL_STRETCH_LIMIT_DURS = 8;
         /**
          * maximum time between signal updates to stretch an equivalently-truthed data point across.
          * stretches perception across some amount of lag
