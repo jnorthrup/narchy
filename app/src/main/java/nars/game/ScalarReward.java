@@ -109,8 +109,10 @@ public abstract class ScalarReward extends Reward {
             long[] stampP = newStamp();
 //            long[] stampN = newStamp();
 
-            reinforce(CONJ.the(rTargetP, A), GOAL, RimplAPos, stampP);
-            reinforce(CONJ.the(rTargetP, A.neg()), GOAL, RimplAPos, stampP);
+//            reinforce(CONJ.the(rTargetP, A), GOAL, RimplAPos, stampP);
+//            reinforce(CONJ.the(rTargetP, A.neg()), GOAL, RimplAPos, stampP);
+            reinforce(CONJ.the(rTargetN, A), GOAL, RimplANeg, stampP);
+            reinforce(CONJ.the(rTargetN, A.neg()), GOAL, RimplANeg, stampP);
 
 //            reinforce(CONJ.the(rTargetN, A), GOAL, RimplAPos, stampP);
 //            reinforce(CONJ.the(rTargetN, A.neg()), GOAL, RimplAPos, stampP);

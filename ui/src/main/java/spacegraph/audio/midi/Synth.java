@@ -13,22 +13,28 @@ public class Synth {
     private static JComboBox instrumentControl;
     private static JSlider volumeControl, forceControl;
 
-    public static void main(String[] args) throws MidiUnavailableException, ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
+    public static void main(String[] args) throws MidiUnavailableException, ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException, InvalidMidiDataException {
         //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         JFrame frame = new JFrame("Virtual MIDI Synthesizer");
         frame.setLayout(new BorderLayout());
 
 
         (instrumentControl = new JComboBox()).setFocusable(false);
+
         (synthesizer = MidiSystem.getSynthesizer()).open();
+//        MidiSystem.getTransmitter();
+        var v = MidiSystem.getMidiDevice(MidiSystem.getMidiDeviceInfo()[1]).getReceiver();
+        System.out.println(v);
 
-        Sequencer seq = MidiSystem.getSequencer();
-        seq.open();
-        seq.addMetaEventListener(metaMessage -> System.out.println(metaMessage));
-        seq.addControllerEventListener(metaMessage -> System.out.println(metaMessage), new int[] { 0 });
+//        Sequencer seq = MidiSystem.getSequencer();
+//        seq.open();
 
-        for (var x : MidiSystem.getMidiDeviceInfo())
-            System.out.println(x.getName() + " " + x.getDescription() + " " + x.getVendor());
+//        seq.setSequence(new Sequence(Sequence.PPQ, 96));
+
+//        seq.addControllerEventListener(metaMessage -> System.out.println(metaMessage), new int[] { 0 });
+
+//        for (var x : MidiSystem.getMidiDeviceInfo())
+//            System.out.println(x.getName() + " " + x.getDescription() + " " + x.getVendor());
 
         Soundbank sb = synthesizer.getDefaultSoundbank();
         soundbank = sb.getInstruments();
@@ -39,6 +45,7 @@ public class Synth {
         synthesizer.loadInstrument(soundbank[0]);
 
         channel = synthesizer.getChannels()[0];
+
         instrumentControl.addActionListener(new ChangeInstrumentAction());
 
         KeyboardControl keyboardControl;

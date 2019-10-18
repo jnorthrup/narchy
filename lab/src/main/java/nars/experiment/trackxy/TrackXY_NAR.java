@@ -138,6 +138,7 @@ public class TrackXY_NAR extends GameX {
 		FloatSupplier nearness = () -> Util.sqr(1f - (track.dist() / track.distMax()));
 		reward("near", nearness);
 
+
 //        FloatSupplier notLeft  = () -> ( 1f - Util.max(0,track.tx - track.cx) / track.W );
 //        FloatSupplier notRight = () -> ( 1f - Util.max(0,track.cx - track.tx) / track.W );
 //        reward("notLeft", notLeft).resolution().set(0.1f);
