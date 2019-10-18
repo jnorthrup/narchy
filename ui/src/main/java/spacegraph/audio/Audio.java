@@ -39,7 +39,7 @@ public class Audio implements Runnable {
 
     private final SourceDataLine sdl;
 
-    private final int rate = 44100;
+    private static final int rate = 44100;
 
     /** TODO make dynamically reconfigurable */
     private final int bufferSize = rate /

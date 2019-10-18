@@ -75,8 +75,8 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
     public static class ConceptVis1 implements TermVis<ConceptWidget> {
 
-        final float minSize = 0.1f;
-        final float maxSize = 6f;
+        static final float minSize = 0.1f;
+        static final float maxSize = 6f;
 
 
         @Override

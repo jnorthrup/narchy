@@ -695,7 +695,7 @@ public class G extends Applet implements Runnable
                     for( int j = 0; j < st.length; j++ )
                     {
                         int tj = st[j];
-                        if( i == j || tj == 0 || t >= EXPLODE || tj <= EXPLODE )
+                        if(i == j || t >= EXPLODE || tj <= EXPLODE)
                             continue;
 
                         

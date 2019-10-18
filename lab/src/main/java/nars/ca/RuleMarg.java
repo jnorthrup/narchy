@@ -85,7 +85,7 @@ public class RuleMarg {
 
 		for (int i = 0; i <= 14; i++)
 			sBff = sBff + swapArray[i] + ';';
-		sBff = sBff + swapArray[15];
+		sBff += swapArray[15];
 
 		return sBff;
 	}

@@ -181,13 +181,13 @@ public class SimpleTSne implements TSne {
                 if (Hdiff > 0) {
                     betamin = beta[i];
                     if (Double.isInfinite(betamax))
-                        beta[i] = beta[i] * 2;
+                        beta[i] *= 2;
                     else
                         beta[i] = (beta[i] + betamax) / 2;
                 } else {
                     betamax = beta[i];
                     if (Double.isInfinite(betamin))
-                        beta[i] = beta[i] / 2;
+                        beta[i] /= 2;
                     else
                         beta[i] = (beta[i] + betamin) / 2;
                 }
@@ -196,7 +196,7 @@ public class SimpleTSne implements TSne {
                 H = hbeta.H;
                 thisP = hbeta.P;
                 Hdiff = H - logU;
-                tries = tries + 1;
+                tries += 1;
             }
             assignValuesToRow(P, i, concatenate(range(0, i), range(i + 1, n)), thisP[0]);
         }

@@ -82,7 +82,7 @@ public class MarkovSentence extends MarkovChain<String> {
             if (i == 0) word = word.substring(0, 1).toUpperCase() + word.substring(1);
 
             
-            if (i != sz - 1) word = word + ' ';
+            if (i != sz - 1) word += ' ';
 
             sb.append(word);
         }

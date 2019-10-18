@@ -313,8 +313,8 @@ public class Inventory implements java.io.Serializable {
         x = screenWidth / 2 - panelWidth / 2;
         y = screenHeight / 2 - panelHeight / 2;
         g.setColor(Color.orange);
-        x = x + (inventoryItems.length - tableSizeAvailable - 1) * (tileSize + seperation);
-        y = y + seperation * 2 + tileSize;
+        x += (inventoryItems.length - tableSizeAvailable - 1) * (tileSize + seperation);
+        y += seperation * 2 + tileSize;
 
         g.fillRect(x - 5, y - 5, tileSize + 10, tileSize + 10);
 

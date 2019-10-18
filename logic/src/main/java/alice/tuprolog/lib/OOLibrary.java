@@ -593,7 +593,7 @@ public class OOLibrary extends PrologLib {
 				}
 	        	
 	        	stringURLs = stringURLs.substring(0, stringURLs.length() - 1);
-	        	stringURLs = stringURLs + ']';
+                stringURLs += ']';
         	}
         	else
         		stringURLs = "[]";

@@ -9,10 +9,7 @@ import org.eclipse.collections.api.block.procedure.Procedure2;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
 import java.util.stream.Collectors;
@@ -221,11 +218,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     @Override
     public final X[] apply(X[] current) {
-        if (current != null) {
-            return current;
-        } else {
-            return list.fillArray(arrayBuilder.apply(list.size()), false);
-        }
+        return Objects.requireNonNullElseGet(current, () -> list.fillArray(arrayBuilder.apply(list.size()), false));
     }
 
     //@Override

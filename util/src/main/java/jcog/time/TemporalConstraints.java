@@ -302,8 +302,8 @@ public class TemporalConstraints<E> {
                 
                 
                 short ckiij = collectConstraintsShort(cki, cij);
-                
-                ckj = (short) (ckj & ckiij);
+
+                ckj &= ckiij;
                 
                 if (ckj == 0) {
                     return false;
@@ -340,8 +340,8 @@ public class TemporalConstraints<E> {
                 
                 
                 short cijjk = collectConstraintsShort(cij, cjk);
-                
-                cik = (short) (cik & cijjk);
+
+                cik &= cijjk;
                 
                 if (cik == 0) {
 
@@ -409,8 +409,8 @@ public class TemporalConstraints<E> {
                     if ((short) (c2 & c2select) == c2select) { 
                         
                         short constraints = transitivematrixshort[i][j];
-                        
-                        result = (short) (result | constraints);
+
+                        result |= constraints;
                         if ((result & bin_all) == bin_all) {
                             return result; 
                         }
@@ -434,31 +434,31 @@ public class TemporalConstraints<E> {
         
         short result = 0;
         
-        if ((short) (c & bin_before) == bin_before) result = (short) (result | bin_after);
+        if ((short) (c & bin_before) == bin_before) result |= bin_after;
         
-        if ((short) (c & bin_after) == bin_after) result = (short) (result | bin_before);
+        if ((short) (c & bin_after) == bin_after) result |= bin_before;
         
-        if ((short) (c & bin_during) == bin_during) result = (short) (result | bin_contains);
+        if ((short) (c & bin_during) == bin_during) result |= bin_contains;
         
-        if ((short) (c & bin_contains) == bin_contains) result = (short) (result | bin_during);
+        if ((short) (c & bin_contains) == bin_contains) result |= bin_during;
         
-        if ((short) (c & bin_overlaps) == bin_overlaps) result = (short) (result | bin_overlappedby);
+        if ((short) (c & bin_overlaps) == bin_overlaps) result |= bin_overlappedby;
         
-        if ((short) (c & bin_overlappedby) == bin_overlappedby) result = (short) (result | bin_overlaps);
+        if ((short) (c & bin_overlappedby) == bin_overlappedby) result |= bin_overlaps;
         
-        if ((short) (c & bin_meets) == bin_meets) result = (short) (result | bin_metby);
+        if ((short) (c & bin_meets) == bin_meets) result |= bin_metby;
         
-        if ((short) (c & bin_metby) == bin_metby) result = (short) (result | bin_meets);
+        if ((short) (c & bin_metby) == bin_metby) result |= bin_meets;
         
-        if ((short) (c & bin_starts) == bin_starts) result = (short) (result | bin_startedby);
+        if ((short) (c & bin_starts) == bin_starts) result |= bin_startedby;
         
-        if ((short) (c & bin_startedby) == bin_startedby) result = (short) (result | bin_starts);
+        if ((short) (c & bin_startedby) == bin_startedby) result |= bin_starts;
         
-        if ((short) (c & bin_finishes) == bin_finishes) result = (short) (result | bin_finishedby);
+        if ((short) (c & bin_finishes) == bin_finishes) result |= bin_finishedby;
         
-        if ((short) (c & bin_finishedby) == bin_finishedby) result = (short) (result | bin_finishes);
+        if ((short) (c & bin_finishedby) == bin_finishedby) result |= bin_finishes;
         
-        if ((short) (c & bin_equals) == bin_equals) result = (short) (result | bin_equals);
+        if ((short) (c & bin_equals) == bin_equals) result |= bin_equals;
 
         return result;
     }

@@ -58,7 +58,7 @@ public class BomberConfigDialog extends JDialog
             /** create the key fields array */
             keyFields[i] = new JTextField[5];
             /** create the 4 panels */
-            setupPanel(i, centerPanel, panels[i], keyFields[i]);
+            setupPanel(i, centerPanel, keyFields[i]);
         }
 
         /** create the panel to display the help message */
@@ -106,10 +106,9 @@ public class BomberConfigDialog extends JDialog
      * Creates a panel for each player.
      * @param pn player number
      * @param m master panel
-     * @param p player's panel
      * @param fields key fields
      */
-    private void setupPanel(int pn, JPanel m, JPanel p, JTextField[] fields) {
+    private void setupPanel(int pn, JPanel m, JTextField[] fields) {
         /** create the left and right panels, 5 rows each */
         JPanel left = new JPanel(new GridLayout(5, 1));
         JPanel right = new JPanel(new GridLayout(5, 1));
@@ -151,7 +150,7 @@ public class BomberConfigDialog extends JDialog
         }
 
         /** create the player's panel */
-        p = new JPanel(new GridLayout(1, 2));
+        JPanel p = new JPanel(new GridLayout(1, 2));
         /** set the border */
         p.setBorder(BorderFactory.createTitledBorder(BorderFactory.
                 createEtchedBorder(), "Player " + (pn + 1) + " Keys Configuration"));

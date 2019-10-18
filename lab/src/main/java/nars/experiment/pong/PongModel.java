@@ -38,7 +38,7 @@ public class PongModel extends JPanel implements ActionListener, MouseListener, 
     private boolean mouse_inside;
     private boolean key_up;
     private boolean key_down;
-    private final double minBallYSpeed = 0.1f;
+    private static final double minBallYSpeed = 0.1f;
 
 
     public PongModel(Player player1, Player player2) {
@@ -62,7 +62,7 @@ public class PongModel extends JPanel implements ActionListener, MouseListener, 
         if (player.destination > getHeight() - 10) {
             player.destination -= RADIUS;
             if ((player.destination / (getHeight() - 2 * RADIUS)) % 2 == 0)
-                player.destination = player.destination % (getHeight() - 2 * RADIUS);
+                player.destination %= (getHeight() - 2 * RADIUS);
             else
                 player.destination = getHeight() - 2 * RADIUS - player.destination % (getHeight() - 2 * RADIUS);
             player.destination += RADIUS;
@@ -134,8 +134,8 @@ public class PongModel extends JPanel implements ActionListener, MouseListener, 
         if (acceleration) {
             ball_acceleration_count++;
             if (ball_acceleration_count == ACCELERATION) {
-                ball_x_speed = ball_x_speed + (int) ball_x_speed / Math.hypot((int) ball_x_speed, (int) ball_y_speed) * 2;
-                ball_y_speed = ball_y_speed + (int) ball_y_speed / Math.hypot((int) ball_x_speed, (int) ball_y_speed) * 2;
+                ball_x_speed += (int) ball_x_speed / Math.hypot((int) ball_x_speed, (int) ball_y_speed) * 2;
+                ball_y_speed += (int) ball_y_speed / Math.hypot((int) ball_x_speed, (int) ball_y_speed) * 2;
                 ball_acceleration_count = 0;
             }
         }

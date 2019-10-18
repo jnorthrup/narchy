@@ -120,7 +120,7 @@ public class GjkConvexCast extends ConvexCast {
 
                 float dLambda = dist / (projectedLinearVelocity);
 
-                lambda = lambda - dLambda;
+                lambda -= dLambda;
 
                 if (lambda > 1f) {
                     return false;

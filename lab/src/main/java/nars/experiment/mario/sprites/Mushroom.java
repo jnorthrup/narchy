@@ -15,7 +15,7 @@ public class Mushroom extends Sprite {
     @SuppressWarnings("unused")
     private float yJumpSpeed;
 
-    private final int width = 4;
+    private static final int width = 4;
     int height = 24;
 
     private final LevelScene world;

@@ -45,7 +45,7 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
         protected float minVisibleWidth = 0.01f;
 
         /** minimum displayed temporal width, for tasks less than this duration */
-        protected final double minVisibleTime = 0; //0.5f;
+        protected static final double minVisibleTime = 0; //0.5f;
 
 
         @Override

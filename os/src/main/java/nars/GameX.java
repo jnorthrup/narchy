@@ -709,61 +709,6 @@ public abstract class GameX extends Game {
 
     }
 
-    @Override
-    protected void starting(NAR nar) {
-        super.starting(nar);
-        //if (NAL.DEBUG) {
-//        what().onTask((t) -> {
-//            //if (t instanceof DerivedTask && t.isEternal() && t.isBeliefOrGoal()) {
-//            if (t.isGoal()) {
-//                Term tt = t.term();
-//                for (Reward r : rewards) {
-//                    Term rt = r.term();
-//                    if (tt.equals(rt) || tt.containsRecursively(rt)) {
-//                        nar.proofPrint(t);
-//                        System.out.println();
-//                    }
-//                }
-//            }
-////            if (t.isGoal())
-////                nar.proofPrint(t);
-////            //}
-//        });
-        //}
-
-//        ((TaskLinkWhat) what()).links.pri(new Predicate<TaskLink>() {
-//
-//            //behavior overdrive
-//            ImmutableSet<Term> stimSet = Sets.immutable.ofAll(Streams.concat(
-//                    rewards.stream().flatMap(r -> Streams.stream(r.components())),
-//                    actions().stream().flatMap(x -> Streams.stream(x.components())))
-//                    .map(Termed::term).collect(toSet()));
-//
-//            float drive = 0.5f;
-//            float happiness;
-//
-//            {
-//                happiness = 0.5f; //initial neutral
-//                onFrame((a) -> {
-//                    happiness = happiness();
-////                     System.out.println(happiness);
-//                });
-//            }
-//
-//            @Override
-//            public boolean test(TaskLink tl) {
-//                float d = (1 - happiness) * drive;
-//
-//                if (!stimSet.contains(tl.to())) //&& !stimSet.contains(tl.from()))
-//                    tl.priMult(1 / (1 + d/2));
-////              else
-////                    tl.priMult(1/(1 - d/2));
-//
-//                return true;
-//            }
-//        });
-    }
-
     //    static void inputInjectionQ(NAR n) {
 //        //TODO
 //    }

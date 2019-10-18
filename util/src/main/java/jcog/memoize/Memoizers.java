@@ -24,11 +24,8 @@ public class Memoizers {
 
 
     public static final int DEFAULT_HIJACK_REPROBES = 4;
-    public static final int DEFAULT_MEMOIZE_CAPACITY;
-    static {
-        //1gb -> 64k?
-        DEFAULT_MEMOIZE_CAPACITY = (int) (Runtime.getRuntime().maxMemory()/(8*1024));
-    }
+    //1gb -> 64k?
+    public static final int DEFAULT_MEMOIZE_CAPACITY = (int) (Runtime.getRuntime().maxMemory()/(8*1024));
 
     /** static instance */
     public static final Memoizers the = new Memoizers();

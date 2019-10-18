@@ -210,106 +210,111 @@ public class AABB {
      */
     private boolean raycast(final RayCastOutput output, final RayCastInput input,
                             IWorldPool argPool) {
+        boolean result = true;
         float tmin = -Float.MAX_VALUE;
-        float tmax = Float.MAX_VALUE;
+                                float tmax = Float.MAX_VALUE;
 
-        final v2 p = argPool.popVec2();
-        final v2 d = argPool.popVec2();
-        final v2 absD = argPool.popVec2();
-        final v2 normal = argPool.popVec2();
+                                final v2 p = argPool.popVec2();
+                                final v2 d = argPool.popVec2();
+                                final v2 absD = argPool.popVec2();
+                                final v2 normal = argPool.popVec2();
 
-        p.set(input.p1);
-        d.set(input.p2).subbed(input.p1);
-        v2.absToOut(d, absD);
+                                p.set(input.p1);
+                                d.set(input.p2).subbed(input.p1);
+                                v2.absToOut(d, absD);
 
-        
+
         if (absD.x < Settings.EPSILON) {
-            
+
             if (p.x < lowerBound.x || upperBound.x < p.x) {
-                argPool.pushVec2(4);
-                return false;
+                                        argPool.pushVec2(4);
+                result = false;
             }
-        } else {
-            final float inv_d = 1.0f / d.x;
-            float t1 = (lowerBound.x - p.x) * inv_d;
-            float t2 = (upperBound.x - p.x) * inv_d;
+                                } else {
+                                    final float inv_d = 1.0f / d.x;
+                                    float t1 = (lowerBound.x - p.x) * inv_d;
+                                    float t2 = (upperBound.x - p.x) * inv_d;
 
-            
+
             float s = -1.0f;
 
-            if (t1 > t2) {
-                final float temp = t1;
-                t1 = t2;
-                t2 = temp;
-                s = 1.0f;
-            }
+                                    if (t1 > t2) {
+                                        final float temp = t1;
+                                        t1 = t2;
+                                        t2 = temp;
+                                        s = 1.0f;
+                                    }
 
-            
+
             if (t1 > tmin) {
-                normal.setZero();
-                normal.x = s;
-                tmin = t1;
-            }
+                                        normal.setZero();
+                                        normal.x = s;
+                                        tmin = t1;
+                                    }
 
-            
+
             tmax = MathUtils.min(tmax, t2);
 
-            if (tmin > tmax) {
-                argPool.pushVec2(4);
-                return false;
+                                    if (tmin > tmax) {
+                                        argPool.pushVec2(4);
+                                        result = false;
+                                    }
+                                }
+        if (result) {
+            if (absD.y < Settings.EPSILON) {
+
+                if (p.y < lowerBound.y || upperBound.y < p.y) {
+                    argPool.pushVec2(4);
+                    result = false;
+                }
+            } else {
+                final float inv_d = 1.0f / d.y;
+                float t1 = (lowerBound.y - p.y) * inv_d;
+                float t2 = (upperBound.y - p.y) * inv_d;
+
+
+                float s = -1.0f;
+
+                if (t1 > t2) {
+                    final float temp = t1;
+                    t1 = t2;
+                    t2 = temp;
+                    s = 1.0f;
+                }
+
+
+                if (t1 > tmin) {
+                    normal.setZero();
+                    normal.y = s;
+                    tmin = t1;
+                }
+
+
+                tmax = MathUtils.min(tmax, t2);
+
+                if (tmin > tmax) {
+                    argPool.pushVec2(4);
+                    result = false;
+                }
             }
+            if (result) {
+                if (tmin < 0.0f || input.maxFraction < tmin) {
+                    argPool.pushVec2(4);
+                    result = false;
+                } else {
+                    output.fraction = tmin;
+                    output.normal.x = normal.x;
+                    output.normal.y = normal.y;
+                    argPool.pushVec2(4);
+                }
+
+
+            }
+
+
         }
 
-        if (absD.y < Settings.EPSILON) {
-            
-            if (p.y < lowerBound.y || upperBound.y < p.y) {
-                argPool.pushVec2(4);
-                return false;
-            }
-        } else {
-            final float inv_d = 1.0f / d.y;
-            float t1 = (lowerBound.y - p.y) * inv_d;
-            float t2 = (upperBound.y - p.y) * inv_d;
-
-            
-            float s = -1.0f;
-
-            if (t1 > t2) {
-                final float temp = t1;
-                t1 = t2;
-                t2 = temp;
-                s = 1.0f;
-            }
-
-            
-            if (t1 > tmin) {
-                normal.setZero();
-                normal.y = s;
-                tmin = t1;
-            }
-
-            
-            tmax = MathUtils.min(tmax, t2);
-
-            if (tmin > tmax) {
-                argPool.pushVec2(4);
-                return false;
-            }
-        }
-
-        
-        
-        if (tmin < 0.0f || input.maxFraction < tmin) {
-            argPool.pushVec2(4);
-            return false;
-        }
-
-        
-        output.fraction = tmin;
-        output.normal.x = normal.x;
-        output.normal.y = normal.y;
-        argPool.pushVec2(4);
-        return true;
+        return result;
     }
 
     public static boolean testOverlap(final AABB a, final AABB b) {

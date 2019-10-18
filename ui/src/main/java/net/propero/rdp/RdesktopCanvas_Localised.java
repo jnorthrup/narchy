@@ -72,8 +72,8 @@ public class RdesktopCanvas_Localised extends RdesktopCanvas {
     @Override
     public void movePointer(int x, int y) {
         Point p = this.getLocationOnScreen();
-        x = x + p.x;
-        y = y + p.y;
+        x += p.x;
+        y += p.y;
         robot.mouseMove(x, y);
     }
 

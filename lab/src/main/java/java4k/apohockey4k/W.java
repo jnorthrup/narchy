@@ -141,8 +141,8 @@ public class W extends GamePanel {
 				playerspaddle[1] = p[1] - 30;
 
 				if (playerspaddle[7] > 0) {
-					playerspaddle[3] = playerspaddle[3] + playerspaddle[7] * (float) Math.sin(Math.toRadians(playerspaddle[6]));
-					playerspaddle[4] = playerspaddle[4] - playerspaddle[7] * (float) Math.cos(Math.toRadians(playerspaddle[6]));
+                    playerspaddle[3] += playerspaddle[7] * (float) Math.sin(Math.toRadians(playerspaddle[6]));
+                    playerspaddle[4] -= playerspaddle[7] * (float) Math.cos(Math.toRadians(playerspaddle[6]));
 				}
 				for (int i = 0; i < 5; i += 3) {
 					if (playerspaddle[i] < 18) {
@@ -287,7 +287,7 @@ public class W extends GamePanel {
 					paddleVec[0] = (newX - 15);
 					paddleVec[1] = (newY - 15);
 					float next = 0.000002f * 10;
-					paddleVec[3] = (paddleVec[3] - next);
+                    paddleVec[3] -= next;
 					if (paddleVec[3] < 0) {
 						paddleVec[3] = 0;
 					}
@@ -353,8 +353,8 @@ public class W extends GamePanel {
 									while ((count < 30) && (new Rectangle2D.Float(WALLS[i], WALLS[i + 1], WALLS[i + 2], WALLS[i + 3]).intersects(paddleVec[0], paddleVec[1], 30, 30))) {
 										float radiusOne = 0.5f;
 										count++;
-										paddleVec[0] = (paddleVec[0] - radiusOne * (float) Math.sin(Math.toRadians(paddleVec[2])));
-										paddleVec[1] = (paddleVec[1] + radiusOne * (float) Math.cos(Math.toRadians(paddleVec[2])));
+                                        paddleVec[0] -= radiusOne * (float) Math.sin(Math.toRadians(paddleVec[2]));
+                                        paddleVec[1] += radiusOne * (float) Math.cos(Math.toRadians(paddleVec[2]));
 									}
 
 									paddleVec[2] += 180;

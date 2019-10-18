@@ -88,7 +88,7 @@ public class WaveLoader {
 			stepscale = (float)info.rate / S.getDefaultSampleRate();
 		
 		int len = (int) (info.samples / stepscale);
-		len = len * info.width * info.channels;
+        len *= info.width * info.channels;
 
 		
 		/*
@@ -144,7 +144,7 @@ public class WaveLoader {
         sc.length = outcount;
         
         if (sc.loopstart != -1)
-                sc.loopstart = (int) (sc.loopstart / stepscale);
+            sc.loopstart /= stepscale;
 
         
         if (!DONT_DO_A_RESAMPLING_FOR_JOAL_AND_LWJGL)

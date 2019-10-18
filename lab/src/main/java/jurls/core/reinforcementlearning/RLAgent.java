@@ -41,7 +41,7 @@ public class RLAgent extends LearnerAndActor {
     private double factor2 = 0;
     private double rSum = 0;
     private double epsilon = 0;
-    private final double factor1ComponentDivisor = 1000;
+    private static final double factor1ComponentDivisor = 1000;
 
     public RLAgent(
             ParameterizedFunctionGenerator parameterizedFunctionGenerator,

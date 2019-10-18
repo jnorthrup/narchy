@@ -112,8 +112,8 @@ public class Rule1DTotal {
         int ih = isHist ? iClo : 0;
 		sBff = sBff + ",C" + ih;
 
-		
-		sBff = sBff + (isCentr ? ",M1" : ",M0");
+
+        sBff += (isCentr ? ",M1" : ",M0");
 
 		
 		for (i = 0; i <= MAX_RANGE * 2 + 1; i++)

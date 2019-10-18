@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public final class TextureProvider {
     public static final String DEFAULT_FONT_PATH = "font/CourierPrimeCode.ttf";
-    private final int FONT_SIZE = 64;
+    private static final int FONT_SIZE = 64;
 
     private final LoadingCache<String, BufferedImage> glyphCache = CacheBuilder.newBuilder().maximumSize(2048)
             .build(new CacheLoader<>() {

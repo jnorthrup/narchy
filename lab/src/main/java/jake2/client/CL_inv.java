@@ -62,7 +62,7 @@ public class CL_inv {
 	static String getHighBitString(String s) {
 		byte[] b = Lib.stringToBytes(s);
 		for (int i = 0; i < b.length; i++) {
-			b[i] = (byte) (b[i] | 128);
+            b[i] |= 128;
 		}
 		return Lib.bytesToString(b);
 	}

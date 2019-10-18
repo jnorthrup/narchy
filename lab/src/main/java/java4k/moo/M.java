@@ -208,7 +208,7 @@ public class M extends GamePanel {
 					int def = p_defence[selP] * 3 / 4;
 					if (e_f_pos[victim] == selP) {
 						def += e_ships[victim];
-						e_ships[victim] = e_ships[victim] / 2;
+						e_ships[victim] /= 2;
 						p_owner[selP] = selE;
 						
 						for (int p = 0; p < 24; p++) {

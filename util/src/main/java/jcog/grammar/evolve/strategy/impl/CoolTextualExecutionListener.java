@@ -84,7 +84,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
         if (outputFolder == null)
             outputFolder = Files.createTempDirectory("regexgen").toFile();
 
-        this.header = ((message!=null)? message.concat("\n") : "") + "Output folder: " + outputFolder.getName();
+        this.header = ((message!=null)? message + "\n" : "") + "Output folder: " + outputFolder.getName();
         this.jobTotal = configuration.getJobs();
         this.overallTotal = configuration.getEvolutionParameters().getGenerations() * jobTotal;
         this.results = results;

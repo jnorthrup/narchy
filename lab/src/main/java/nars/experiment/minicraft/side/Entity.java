@@ -69,8 +69,8 @@ public abstract class Entity implements java.io.Serializable {
 
         if (favorVertical) {
             for (int i = 1; i <= pixels && topLeft && topRight && bottomLeft && bottomRight; i++) {
-                top = top + dy * scale;
-                bottom = bottom + dy * scale;
+                top += dy * scale;
+                bottom += dy * scale;
 
                 topLeft = world.passable((int) left, (int) top);
                 topRight = world.passable((int) right, (int) top);
@@ -82,13 +82,13 @@ public abstract class Entity implements java.io.Serializable {
                 if (!(topLeft && topRight && bottomLeft && bottomRight && middleLeft && middleRight)) {
                     hitTop |= !topLeft || !topRight;
                     hitBottom |= !bottomLeft || !bottomRight;
-                    top = top - dy * scale;
-                    bottom = bottom - dy * scale;
+                    top -= dy * scale;
+                    bottom -= dy * scale;
                 }
             }
             for (int i = 1; i <= pixels && topLeft && topRight && bottomLeft && bottomRight; i++) {
-                left = left + dx * scale;
-                right = right + dx * scale;
+                left += dx * scale;
+                right += dx * scale;
 
                 topLeft = world.passable((int) left, (int) top);
                 topRight = world.passable((int) right, (int) top);
@@ -98,14 +98,14 @@ public abstract class Entity implements java.io.Serializable {
                 middleRight = world.passable((int) right, (int) (top + (bottom - top) / 2));
 
                 if (!(topLeft && topRight && bottomLeft && bottomRight && middleLeft && middleRight)) {
-                    left = left - dx * scale;
-                    right = right - dx * scale;
+                    left -= dx * scale;
+                    right -= dx * scale;
                 }
             }
         } else {
             for (int i = 1; i <= pixels && topLeft && topRight && bottomLeft && bottomRight; i++) {
-                left = left + dx * scale;
-                right = right + dx * scale;
+                left += dx * scale;
+                right += dx * scale;
 
                 topLeft = world.passable((int) left, (int) top);
                 topRight = world.passable((int) right, (int) top);
@@ -115,13 +115,13 @@ public abstract class Entity implements java.io.Serializable {
                 middleRight = world.passable((int) right, (int) (top + (bottom - top) / 2));
 
                 if (!(topLeft && topRight && bottomLeft && bottomRight && middleLeft && middleRight)) {
-                    left = left - dx * scale;
-                    right = right - dx * scale;
+                    left -= dx * scale;
+                    right -= dx * scale;
                 }
             }
             for (int i = 1; i <= pixels && topLeft && topRight && bottomLeft && bottomRight; i++) {
-                top = top + dy * scale;
-                bottom = bottom + dy * scale;
+                top += dy * scale;
+                bottom += dy * scale;
 
                 topLeft = world.passable((int) left, (int) top);
                 topRight = world.passable((int) right, (int) top);
@@ -133,8 +133,8 @@ public abstract class Entity implements java.io.Serializable {
                 if (!(topLeft && topRight && bottomLeft && bottomRight && middleLeft && middleRight)) {
                     hitTop |= !topLeft || !topRight;
                     hitBottom |= !bottomLeft || !bottomRight;
-                    top = top - dy * scale;
-                    bottom = bottom - dy * scale;
+                    top -= dy * scale;
+                    bottom -= dy * scale;
                 }
             }
         }

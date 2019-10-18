@@ -746,7 +746,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         if (!(nGroups < 8)) {
             panic();
         }
-        if (!(nSelectors < 32768 && nSelectors <= (2 + (900000 / G_SIZE)))) {
+        if (!(nSelectors <= (2 + (900000 / G_SIZE)))) {
             panic();
         }
 
@@ -919,7 +919,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                 j = i;
                 while (fullGtU(zptr[j - h] + d, v + d)) {
                     zptr[j] = zptr[j - h];
-                    j = j - h;
+                    j -= h;
                     if (j <= (lo + h - 1)) {
                         break;
                     }
@@ -935,7 +935,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                 j = i;
                 while (fullGtU(zptr[j - h] + d, v + d)) {
                     zptr[j] = zptr[j - h];
-                    j = j - h;
+                    j -= h;
                     if (j <= (lo + h - 1)) {
                         break;
                     }
@@ -951,7 +951,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                 j = i;
                 while (fullGtU(zptr[j - h] + d, v + d)) {
                     zptr[j] = zptr[j - h];
-                    j = j - h;
+                    j -= h;
                     if (j <= (lo + h - 1))
                         break;
 
@@ -1206,7 +1206,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                 }
                 while (h <= 256);
                 do {
-                    h = h / 3;
+                    h /= 3;
                     for (i = h; i <= 255; i++) {
                         vv = runningOrder[i];
                         j = i;
@@ -1214,7 +1214,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                                 - ftab[(runningOrder[j - h]) << 8]) >
                                 (ftab[((vv) + 1) << 8] - ftab[(vv) << 8])) {
                             runningOrder[j] = runningOrder[j - h];
-                            j = j - h;
+                            j -= h;
                             if (j <= (h - 1)) {
                                 break;
                             }

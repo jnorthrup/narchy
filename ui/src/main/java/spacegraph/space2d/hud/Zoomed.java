@@ -55,13 +55,13 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     private final NewtKeyboard keyboard;
     private final Deque<Surface> zoomStack = new ArrayDeque();
 
-    private final float wheelZoomRate = 0.6f;
+    private static final float wheelZoomRate = 0.6f;
 
     private final Fingering zoomDrag = new Dragging(ZOOM_BUTTON) {
 
         final v2 start = new v2();
-        final float maxIterationChange = 0.25f;
-        final float rate = 0.4f;
+        static final float maxIterationChange = 0.25f;
+        static final float rate = 0.4f;
 
         @Override
         protected boolean starting(Finger f) {
@@ -87,7 +87,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     };
     private final Fingering contentPan = new FingerMoveWindow(PAN_BUTTON) {
 
-        final float speed = 1f;
+        static final float speed = 1f;
         private v3 camStart;
 
         @Override

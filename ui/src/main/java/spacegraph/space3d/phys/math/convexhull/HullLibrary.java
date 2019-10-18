@@ -738,9 +738,9 @@ public class HullLibrary {
 			float pz = p.z;
 
 			if (scale != null) {
-				px = px * recip[0]; 
-				py = py * recip[1]; 
-				pz = pz * recip[2]; 
+				px *= recip[0];
+				py *= recip[1];
+				pz *= recip[2];
 			}
 
 			

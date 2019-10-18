@@ -14,8 +14,8 @@ import spacegraph.util.RectAnimator;
 public class ScatterPlot2D<X> extends Graph2D<X> {
 
     /** controls camera speed */
-    private final float extentUpdatePeriodS = 0.5f;
-    private final float minVisPct = 0.01f;
+    private static final float extentUpdatePeriodS = 0.5f;
+    private static final float minVisPct = 0.01f;
 
 //    private float marginPctW = 0.01f, marginPctH = 0.1f;
 

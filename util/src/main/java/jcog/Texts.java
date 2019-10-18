@@ -1063,7 +1063,7 @@ public enum Texts {
 				if (decP != 0L) {
 					// Remove trailing zeroes
 					while (decP % 10L == 0L) {
-						decP = decP / 10L;
+						decP /= 10L;
 						scale--;
 					}
 				}
@@ -1129,7 +1129,7 @@ public enum Texts {
 			if (fracPart != 0L) {
 				// Remove trailing zeroes
 				while (fracPart % 10L == 0L) {
-					fracPart = fracPart / 10L;
+					fracPart /= 10L;
 					scale--;
 				}
 			}
@@ -1165,7 +1165,7 @@ public enum Texts {
 			// See Double.doubleToRawLongBits javadoc or IEEE-754 spec
 			// to have this algorithm
 			long exp = Double.doubleToRawLongBits(value) & 0x7ff0000000000000L;
-			exp = exp >> 52;
+			exp >>= 52;
 			return (int) (exp - 1023L);
 		}
 

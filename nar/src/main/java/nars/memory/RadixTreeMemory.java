@@ -62,7 +62,7 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
 
 		float r = rng.nextFloat();
-		r = (r * r);
+        r *= r;
 
 
 		return l.get(Math.round((levels - 1) * (1 - r)));

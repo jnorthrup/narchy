@@ -111,7 +111,7 @@ public class Encoder implements Constants {
                 double innerMultiplier = getFrequency((j * kBitsPerByte) + k)
                         * (1 / kSamplingFrequency) * 2 * Math.PI;
                 for (int l = 0; l < signal.length; l++) {
-                    signal[l] = signal[l] + (kAmplitude * Math.cos(innerMultiplier * l));
+                    signal[l] += (kAmplitude * Math.cos(innerMultiplier * l));
                 }
             }
         }

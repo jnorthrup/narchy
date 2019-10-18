@@ -61,7 +61,7 @@ public class Recog2D extends GameX {
 
 
     int image;
-    final int maxImages = 4;
+    static final int maxImages = 4;
 
     int imagePeriod = 64;
     static final int FPS = 16;

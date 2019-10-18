@@ -11,7 +11,7 @@ public class Shell extends Sprite {
     private float runTime;
     private boolean onGround;
 
-    private final int width = 4;
+    private static final int width = 4;
     int height = 24;
 
     private final LevelScene world;

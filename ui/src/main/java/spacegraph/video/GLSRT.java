@@ -71,7 +71,7 @@ public class GLSRT {
     private ImmModeSink vboCube;
 
 	public void drawCube(GL gl, float extent) {
-		extent = extent * 0.5f;
+        extent *= 0.5f;
 		
         if(vboCube==null) {
 

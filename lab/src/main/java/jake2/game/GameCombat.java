@@ -193,7 +193,7 @@ public class GameCombat {
     
             damagePerCell = 1;
             pa_te_type = Defines.TE_SCREEN_SPARKS;
-            damage = damage / 3;
+            damage /= 3;
         } else {
             damagePerCell = 2;
             pa_te_type = Defines.TE_SHIELD_SPARKS;
@@ -363,7 +363,7 @@ public class GameCombat {
             Math3D.VectorSubtract(inflictor.s.origin, v, v);
             points = damage - 0.5f * Math3D.VectorLength(v);
             if (ent == attacker)
-                points = points * 0.5f;
+                points *= 0.5f;
             if (points > 0) {
                 if (CanDamage(ent, inflictor)) {
                     Math3D.VectorSubtract(ent.s.origin, inflictor.s.origin, dir);
@@ -494,8 +494,8 @@ public class GameCombat {
                 SpawnDamage(Defines.TE_BLOOD, point, normal, take);
             else
                 SpawnDamage(te_sparks, point, normal, take);
-    
-            targ.health = targ.health - take;
+
+            targ.health -= take;
     
             if (targ.health <= 0) {
                 if ((targ.svflags & Defines.SVF_MONSTER) != 0

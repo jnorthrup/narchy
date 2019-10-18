@@ -89,7 +89,7 @@ class Octal {
         } else {
             for (long val = value; idx >= 0 && val > 0; --idx) {
                 buf[offset + idx] = (byte) ( (byte) '0' + (byte) ( val & 7 ) );
-                val = val >> 3;
+                val >>= 3;
             }
         }
 

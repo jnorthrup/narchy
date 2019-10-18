@@ -61,8 +61,7 @@ class ConjClusteringTest {
         float p = the.pri();
         assertTrue(p==p);
         assertEquals("[1, 2, 3]", Arrays.toString(the.stamp()));
-        //assertTrue(p < n.priDefault(BELIEF)); //pri less than its components
-    }
+     }
 
     @Test void DimensionalDistance1() {
         NAR n = NARS.shell();

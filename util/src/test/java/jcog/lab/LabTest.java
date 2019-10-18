@@ -82,7 +82,7 @@ public class LabTest {
         @Range(min=-4, max=+4, step=2f)
         public int tweakInt = 0;
 
-        public final int untweakInt = 0;
+        public static final int untweakInt = 0;
 
         public float score() {
             return (float) (

@@ -530,10 +530,10 @@ public class FZero extends GameX {
         public int rank;
         double rotVel = 0.05;
         float fwdVel = 1.5f;
-        final double VIEWER_X = 159.5;
-        final double VIEWER_Y = 32;
-        final double VIEWER_Z = -128;
-        final double GROUND_Y = 207;
+        static final double VIEWER_X = 159.5;
+        static final double VIEWER_Y = 32;
+        static final double VIEWER_Z = -128;
+        static final double GROUND_Y = 207;
 
         final int[] screenBuffer = new int[320 * 240];
         final int[][][] projectionMap = new int[192][320][2];
@@ -544,7 +544,7 @@ public class FZero extends GameX {
 
         final int[] powerOvalY = new int[2];
         boolean onPowerBar;
-        final boolean playing = true;
+        static final boolean playing = true;
 
         final BufferedImage[] vehicleSprites = new BufferedImage[10];
         final int[] vehicleSpriteData = new int[64 * 32];

@@ -303,9 +303,9 @@ public class PMove {
         }
         newspeed /= speed;
 
-        vel[0] = vel[0] * newspeed;
-        vel[1] = vel[1] * newspeed;
-        vel[2] = vel[2] * newspeed;
+        vel[0] *= newspeed;
+        vel[1] *= newspeed;
+        vel[2] *= newspeed;
     }
 
     /**
@@ -1072,7 +1072,7 @@ public class PMove {
                 Math3D.VectorCopy(pm.viewangles, angles);
                 
                 if (angles[Defines.PITCH] > 180)
-                    angles[Defines.PITCH] = angles[Defines.PITCH] - 360;
+                    angles[Defines.PITCH] -= 360;
                 
                 angles[Defines.PITCH] /= 3;
 

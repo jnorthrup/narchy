@@ -389,10 +389,10 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     }
 
     //shift heuristic condition probabalities TODO refine
-    final float PREMISE_SHIFT_EQUALS_ROOT = 0.02f;
-    final float PREMISE_SHIFT_CONTAINS_RECURSIVELY = 0.05f;
-    final float PREMISE_SHIFT_OTHER = 0.9f;
-    final float PREMISE_SHIFT_RANDOM = 0.5f;
+    static final float PREMISE_SHIFT_EQUALS_ROOT = 0.02f;
+    static final float PREMISE_SHIFT_CONTAINS_RECURSIVELY = 0.05f;
+    static final float PREMISE_SHIFT_OTHER = 0.9f;
+    static final float PREMISE_SHIFT_RANDOM = 0.5f;
 
     /** t = raw task term, b = raw belief term */
     public Term beliefTerm(AnonWithVarShift anon, Term t, Term b) {

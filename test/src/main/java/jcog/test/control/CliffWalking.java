@@ -31,7 +31,7 @@ public class CliffWalking extends AbstractAgentTest {
     //increasing the size of the map increases the complexity
     //final int shapeX = 4, shapeY = 12; //<- original
     //final int shapeX = 3, shapeY = 4; //small
-    final int shapeX = 2, shapeY = 3; //minimum
+    static final int shapeX = 2, shapeY = 3; //minimum
     {
         assert(shapeX > 1);
         assert(shapeY > 2);
@@ -40,7 +40,7 @@ public class CliffWalking extends AbstractAgentTest {
     int cycles = 2000;
 
     final int gx = shapeX-1, gy = shapeY-1;
-    final int sx = shapeX-1, sy = 0;
+    static final int sx = shapeX-1, sy = 0;
 
     int x = sx, y = sy;
 

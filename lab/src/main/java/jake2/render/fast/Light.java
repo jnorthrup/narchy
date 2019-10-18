@@ -701,10 +701,10 @@ public abstract class Light extends Warp {
                     if (max > 255) {
                         float t = 255.0F / max;
 
-                        r = (int) (r * t);
-                        g = (int) (g * t);
-                        b = (int) (b * t);
-                        a = (int) (a * t);
+                        r *= t;
+                        g *= t;
+                        b *= t;
+                        a *= t;
                     }
                     
                     dest.put(destp++, (a << 24) | (b << 16) | (g << 8) | r);
@@ -750,10 +750,10 @@ public abstract class Light extends Warp {
                     if (max > 255) {
                         float t = 255.0F / max;
 
-                        r = (int) (r * t);
-                        g = (int) (g * t);
-                        b = (int) (b * t);
-                        a = (int) (a * t);
+                        r *= t;
+                        g *= t;
+                        b *= t;
+                        a *= t;
                     }
 
                     /*

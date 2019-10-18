@@ -3555,15 +3555,14 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
 
 
+    //try {
+//UNSAFE = getUnsafe();
     //    static final Unsafe UNSAFE;
-    static final long tableBase;
+    static final long tableBase = UNSAFE.arrayBaseOffset(Node[].class);
     static final int tableShift;
 
 
     static {
-        //try {
-        //UNSAFE = getUnsafe();
-        tableBase = UNSAFE.arrayBaseOffset(Node[].class);
         int scale = UNSAFE.arrayIndexScale(Node[].class);
         if ((scale & (scale - 1)) != 0)
             throw new Error("data type scale not a power of two");

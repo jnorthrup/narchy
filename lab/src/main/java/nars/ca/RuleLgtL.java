@@ -134,8 +134,8 @@ public class RuleLgtL {
         int ih = isHist ? iClo : 0;
 		sBff = sBff + ",C" + ih;
 
-		
-		sBff = sBff + (isCentr ? ",M1" : ",M0");
+
+        sBff += (isCentr ? ",M1" : ",M0");
 
 		
 		sBff = sBff + ",S" + iSMin + ".." + iSMax;
@@ -143,8 +143,8 @@ public class RuleLgtL {
 		
 		sBff = sBff + ",B" + iBMin + ".." + iBMax;
 
-		
-		sBff = sBff + (iNgh == MJRules.NGHTYP_NEUM ? ",NN" : ",NM");
+
+        sBff += (iNgh == MJRules.NGHTYP_NEUM ? ",NN" : ",NM");
 
 		return sBff;
 	}
@@ -169,8 +169,8 @@ public class RuleLgtL {
 
         int iMax = isCentr ? 1 : 0;
 		for (i = 1; i <= iRng; i++)
-			
-			iMax = iMax + i * 8;
+
+            iMax += i * 8;
 
 		iSMin = BoundInt(1, iSMin, iMax);
 		iSMax = BoundInt(1, iSMax, iMax);

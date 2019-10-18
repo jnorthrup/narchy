@@ -463,7 +463,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
 
         //modulo
-        h = h % cap;
+        h %= cap;
         if (h < 0)
             h += cap;
 

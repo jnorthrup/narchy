@@ -283,7 +283,7 @@ public class GameWeapon {
                     points = (float) (self.radius_dmg * (1.0 - Math.sqrt(dist
                             / self.dmg_radius)));
                     if (ent == self.owner)
-                        points = points * 0.5f;
+                        points *= 0.5f;
     
                     game_import_t.WriteByte(Defines.svc_temp_entity);
                     game_import_t.WriteByte(Defines.TE_BFG_EXPLOSION);

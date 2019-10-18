@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MatrixOpVsPython {
 			
-	final double epsilon = 0.0000001;
+	static final double epsilon = 0.0000001;
 	
 	static void assertEqualDoubleArrays(double[][] a1, double[][] a2, double tol) {
 		for (int i = 0; i < a2.length; i++) {

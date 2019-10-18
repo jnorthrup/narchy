@@ -284,7 +284,7 @@ public class Checkers {
      * is used in the <code>move</code> function.
      */
     private void advanceTurn() {
-        turn = (char) (turn ^ 0x00FF);
+        turn ^= 0x00FF;
 
 
     }

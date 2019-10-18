@@ -16,7 +16,7 @@ public class Launcher {
 
     static class Experiment implements Runnable {
         final Class<? extends GameX> env;
-        final float fps = 25f;
+        static final float fps = 25f;
 
         Experiment(Class<? extends GameX> env) {
             this.env = env;

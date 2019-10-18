@@ -133,10 +133,10 @@ class GeometryOperations {
 
 			if (_M.x > _M.y) {
 				invert_b_order = true;
-				
-				_M.x = _M.x + _M.y;
+
+                _M.x += _M.y;
 				_M.y = _M.x - _M.y;
-				_M.x = _M.x - _M.y;
+                _M.x -= _M.y;
 			}
 			_M.z = vA1.dot(AD);
 			_M.w = vA2.dot(AD);

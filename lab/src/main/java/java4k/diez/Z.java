@@ -859,9 +859,9 @@ public class Z extends GamePanel {
 					if (dx * dx + dz * dz < ENTITYRADIUS) {
 						m = (int) (DEGREES * entityA[k]);
 
-						
-						dx = dx / ENTITYSCALE;
-						dz = dz / ENTITYSCALE;
+
+                        dx /= ENTITYSCALE;
+                        dz /= ENTITYSCALE;
 
 						
 						ex = (int) (dx * cos[m] - dz * sin[m] + ENTITYCENTRE + 1) - 1;

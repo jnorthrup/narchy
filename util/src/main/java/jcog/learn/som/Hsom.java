@@ -16,7 +16,7 @@ public class Hsom {
     
     final int numInputs;
     final int SomSize;
-    final boolean Leaky = true;
+    static final boolean Leaky = true;
     float gamma;
     float eta = 0.1f;
     float outmul = 1.0f;

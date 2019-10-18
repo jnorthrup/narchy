@@ -29,6 +29,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -348,7 +349,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
 
     public E edge(V s, V p, E ifMissing) {
         @Nullable E existing = edge(s, p);
-        return existing != null ? existing : ifMissing;
+        return Optional.ofNullable(existing).orElse(ifMissing);
     }
 
     public E edge(int s, int p, E ifMissing) {

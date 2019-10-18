@@ -142,7 +142,7 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
             cachePath = cachePath.substring(0, cachePath.lastIndexOf(92) + 1);
         }
 
-        cachePath = cachePath + "..";
+        cachePath += "..";
         return cachePath;
     }
 

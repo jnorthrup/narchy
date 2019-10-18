@@ -193,7 +193,7 @@ public class ConeTwistConstraint extends TypedConstraint {
 			swy = b2Axis1.dot(b1Axis2);
 			swing1 = ScalarUtil.atan2Fast(swy, swx);
 			fact = (swy*swy + swx*swx) * thresh * thresh;
-			fact = fact / (fact + 1f);
+            fact /= (fact + 1f);
 			swing1 *= fact;
 		}
 
@@ -205,7 +205,7 @@ public class ConeTwistConstraint extends TypedConstraint {
 			swy = b2Axis1.dot(b1Axis3);
 			swing2 = ScalarUtil.atan2Fast(swy, swx);
 			fact = (swy*swy + swx*swx) * thresh * thresh;
-			fact = fact / (fact + 1f);
+            fact /= (fact + 1f);
 			swing2 *= fact;
 		}
 

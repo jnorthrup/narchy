@@ -80,7 +80,7 @@ public class MetaFlow {
 
 
 
-    final int digitResolution = 3;
+    static final int digitResolution = 3;
     final float ditherScale = (float) Math.pow(10, digitResolution);
 
     private void value(byte[] cursor, byte quality, float value) {

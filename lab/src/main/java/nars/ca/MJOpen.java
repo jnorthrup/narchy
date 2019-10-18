@@ -317,10 +317,10 @@ public class MJOpen {
                                         iCol + j + iBlkX, iRow105 + iBlkY,
                                         (short) 1));
 							fOk = true;
-							iCol = iCol + iNum;
+                            iCol += iNum;
 						} else 
 						{
-							iCol = iCol + iNum;
+                            iCol += iNum;
 						}
 						iNum = 0;
 					}
@@ -389,8 +389,8 @@ public class MJOpen {
 			if (bff.startsWith("#RULE")) 
 			{
 				sTok = bff.substring(5);
-				
-				m_sRules = m_sRules + sTok.trim(); 
+
+                m_sRules += sTok.trim();
 				fOk = true; 
 			} else if (bff.startsWith("#GAME")) 
 			{
@@ -451,13 +451,13 @@ public class MJOpen {
 							iNumMCL = 1;
 						switch (bff.charAt(i)) {
 						case '$':
-							iRowMCL = iRowMCL + iNumMCL;
+                            iRowMCL += iNumMCL;
 							iColMCL = iIniColMCL;
 							iNumMCL = 0;
 							break;
 
-						case '.': 
-							iColMCL = iColMCL + iNumMCL;
+						case '.':
+                            iColMCL += iNumMCL;
 							iNumMCL = 0;
 							break;
 
@@ -476,7 +476,7 @@ public class MJOpen {
                                                     iRowMCL,
                                                     (short) (bff.charAt(i) - 'A' + 1 + iAdd)));
 								}
-								iColMCL = iColMCL + iNumMCL;
+                                iColMCL += iNumMCL;
 								fOk = true; 
 								iAdd = 0;
 								iNumMCL = 0;
@@ -598,14 +598,14 @@ public class MJOpen {
 									iNum = 1;
 								switch (bff.charAt(i)) {
 								case '$':
-									iRow = iRow + iNum;
+                                    iRow += iNum;
 									iCol = iniCol;
 									break;
 
 								case 'b':
 								case 'B':
 								case '.':
-									iCol = iCol + iNum; 
+                                    iCol += iNum;
 									break;
 
 								case '!': 
@@ -641,7 +641,7 @@ public class MJOpen {
 											m_vCells.add(new CACell(iCol
                                                     + j, iRow, (short) iTmp));
 
-										iCol = iCol + iNum;
+                                        iCol += iNum;
 										fOk = true; 
 									}
 									break;

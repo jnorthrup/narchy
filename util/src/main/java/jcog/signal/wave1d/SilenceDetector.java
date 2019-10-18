@@ -56,7 +56,7 @@ public class SilenceDetector  {
 	 */
 	private static double soundPressureLevel(final float[] buffer) {
 		double value = Math.pow(localEnergy(buffer), 0.5);
-		value = value / buffer.length;
+        value /= buffer.length;
 		return linearToDecibel(value);
 	}
 

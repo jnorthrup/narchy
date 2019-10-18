@@ -2038,8 +2038,8 @@ public enum Util {
 	 */
 	public static float lerp2d(float x, float z, float nw, float ne, float se, float sw) {
 
-		x = x - (int) x;
-		z = z - (int) z;
+		x -= (int) x;
+		z -= (int) z;
 
 
 		if (x > z)

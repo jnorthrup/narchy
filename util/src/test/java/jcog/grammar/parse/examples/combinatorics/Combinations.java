@@ -130,7 +130,7 @@ class Combinations implements Iterator<Object> {
     private void moveIndex() {
 		int i = rightmostIndexBelowMax();
 		if (i >= 0) {
-			index[i] = index[i] + 1;
+			index[i] += 1;
 			for (int j = i + 1; j < m; j++) {
 				index[j] = index[j - 1] + 1;
 			}

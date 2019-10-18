@@ -159,7 +159,7 @@ public class Bitmap {
 
             default:
                 for (int i = (Bpp - 1); i >= 0; i--) {
-                    rv = rv << 8;
+                    rv <<= 8;
                     rv |= data[offset + i] & 0xFF;
                 }
                 break;
@@ -180,7 +180,7 @@ public class Bitmap {
 
         int rOffset = startOffset + (offset * Bpp);
         for (int i = 0; i < Bpp; i++) {
-            rv = rv << 8;
+            rv <<= 8;
             rv |= (input[rOffset + (Bpp - i - 1)]) & 0xFF;
         }
         return rv;

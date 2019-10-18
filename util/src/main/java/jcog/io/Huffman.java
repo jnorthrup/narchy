@@ -428,7 +428,7 @@ public class Huffman {
 
     private static int longHash(long h) {
         //$DELAY$
-        h = h * -7046029254386353131L;
+        h *= -7046029254386353131L;
         h ^= h >> 32;
         return (int) (h ^ h >> 16);
     }

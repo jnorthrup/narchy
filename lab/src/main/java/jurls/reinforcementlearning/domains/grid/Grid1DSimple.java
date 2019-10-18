@@ -64,7 +64,7 @@ public class Grid1DSimple implements World {
         }
         
         
-        if (focusPosition > size) focusPosition = focusPosition - size;
+        if (focusPosition > size) focusPosition -= size;
         if (focusPosition < 0) focusPosition = size + focusPosition;
         
         /*        

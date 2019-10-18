@@ -1466,7 +1466,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * @version .9.1
      */
     static class CustomCoeffCalculator {
-        final float a0 = 1;
+        static final float a0 = 1;
         float a1;
         float a2;
         float b0;

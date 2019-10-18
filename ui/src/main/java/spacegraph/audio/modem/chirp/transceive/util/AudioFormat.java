@@ -1,8 +1,6 @@
 package spacegraph.audio.modem.chirp.transceive.util;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class AudioFormat {
     private final AudioFormat.Encoding encoding;
@@ -74,63 +72,63 @@ public class AudioFormat {
     }
 
     public Object getProperty(String var1) {
-        return this.properties == null ? null : this.properties.get(var1);
+        return Optional.ofNullable(this.properties).map(stringObjectHashMap -> stringObjectHashMap.get(var1)).orElse(null);
     }
 
     public boolean matches(AudioFormat var1) {
-        return var1.getEncoding().equals(this.getEncoding()) && (var1.getSampleRate() == -1.0F || var1.getSampleRate() == this.getSampleRate()) && var1.getSampleSizeInBits() == this.getSampleSizeInBits() && var1.getChannels() == this.getChannels() && var1.getFrameSize() == this.getFrameSize() && (var1.getFrameRate() == -1.0F || var1.getFrameRate() == this.getFrameRate()) && (var1.getSampleSizeInBits() <= 8 || var1.isBigEndian() == this.isBigEndian());
+        return Objects.equals(var1.encoding, this.encoding) && (var1.sampleRate == -1.0F || var1.sampleRate == this.sampleRate) && var1.sampleSizeInBits == this.sampleSizeInBits && var1.channels == this.channels && var1.frameSize == this.frameSize && (var1.frameRate == -1.0F || var1.frameRate == this.frameRate) && (var1.sampleSizeInBits <= 8 || var1.bigEndian == this.bigEndian);
     }
 
     public String toString() {
         String var1 = "";
-        if (this.getEncoding() != null) {
-            var1 = this.getEncoding() + " ";
+        if (this.encoding != null) {
+            var1 = this.encoding + " ";
         }
 
         String var2;
-        if (this.getSampleRate() == -1.0F) {
+        if (this.sampleRate == -1.0F) {
             var2 = "unknown sample rate, ";
         } else {
-            var2 = this.getSampleRate() + " Hz, ";
+            var2 = this.sampleRate + " Hz, ";
         }
 
         String var3;
-        if ((float) this.getSampleSizeInBits() == -1.0F) {
+        if ((float) this.sampleSizeInBits == -1.0F) {
             var3 = "unknown bits per sample, ";
         } else {
-            var3 = this.getSampleSizeInBits() + " bit, ";
+            var3 = this.sampleSizeInBits + " bit, ";
         }
 
         String var4;
-        if (this.getChannels() == 1) {
+        if (this.channels == 1) {
             var4 = "mono, ";
-        } else if (this.getChannels() == 2) {
+        } else if (this.channels == 2) {
             var4 = "stereo, ";
-        } else if (this.getChannels() == -1) {
+        } else if (this.channels == -1) {
             var4 = " unknown number of channels, ";
         } else {
-            var4 = this.getChannels() + " channels, ";
+            var4 = this.channels + " channels, ";
         }
 
         String var5;
-        if ((float) this.getFrameSize() == -1.0F) {
+        if ((float) this.frameSize == -1.0F) {
             var5 = "unknown frame size, ";
         } else {
-            var5 = this.getFrameSize() + " bytes/frame, ";
+            var5 = this.frameSize + " bytes/frame, ";
         }
 
         String var6 = "";
-        if ((double) Math.abs(this.getSampleRate() - this.getFrameRate()) > 1.0E-5D) {
-            if (this.getFrameRate() == -1.0F) {
+        if ((double) Math.abs(this.sampleRate - this.frameRate) > 1.0E-5D) {
+            if (this.frameRate == -1.0F) {
                 var6 = "unknown frame rate, ";
             } else {
-                var6 = this.getFrameRate() + " frames/second, ";
+                var6 = this.frameRate + " frames/second, ";
             }
         }
 
         String var7 = "";
-        if ((this.getEncoding().equals(AudioFormat.Encoding.PCM_SIGNED) || this.getEncoding().equals(AudioFormat.Encoding.PCM_UNSIGNED)) && (this.getSampleSizeInBits() > 8 || this.getSampleSizeInBits() == -1)) {
-            if (this.isBigEndian()) {
+        if ((this.encoding.equals(AudioFormat.Encoding.PCM_SIGNED) || this.encoding.equals(AudioFormat.Encoding.PCM_UNSIGNED)) && (this.sampleSizeInBits > 8 || this.sampleSizeInBits == -1)) {
+            if (this.bigEndian) {
                 var7 = "big-endian";
             } else {
                 var7 = "little-endian";

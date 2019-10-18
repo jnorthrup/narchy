@@ -33,7 +33,7 @@ public class IRCAgent extends IRC {
     private final NAR nar;
 
 
-    final int wordDelayMS = 100;
+    static final int wordDelayMS = 100;
 //    private final MyLeakOut out;
 
     boolean trace;

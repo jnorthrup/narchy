@@ -158,7 +158,7 @@ public class PoleCart extends GameX {
 
 	double pos, posDot, angle, angleDot;
 
-	final float posMin = -2f, posMax = +2f;
+	static final float posMin = -2f, posMax = +2f;
 	float velMax = 10;
 	boolean manualOverride;
 

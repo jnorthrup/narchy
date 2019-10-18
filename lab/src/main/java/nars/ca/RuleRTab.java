@@ -91,9 +91,9 @@ public class RuleRTab {
 		
 		sBff = iNghTyp == MJRules.NGHTYP_NEUM ? "2" : "1";
 
-		sBff = sBff + (fCtrCell ? ",1" : ",0");
+        sBff += (fCtrCell ? ",1" : ",0");
 
-		sBff = sBff + (fAll1Fire ? ",1" : ",0");
+        sBff += (fAll1Fire ? ",1" : ",0");
 
 		int i_Stt, i_Ngh, iTmp;
 		for (i_Stt = 0; i_Stt <= MJBoard.MAX_CLO; i_Stt++) 

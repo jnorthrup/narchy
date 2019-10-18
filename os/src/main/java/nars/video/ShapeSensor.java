@@ -159,7 +159,7 @@ public class ShapeSensor extends NARPart {
         GrayU8 filteredShown = filtered.clone();
         byte[] data = filteredShown.data;
         for (int i = 0, dataLength = data.length; i < dataLength; i++) {
-            data[i] = (byte) (data[i] * 255);
+            data[i] *= 255;
         }
         filteredRGB = filteredTex.set(filteredShown, filteredRGB);
 

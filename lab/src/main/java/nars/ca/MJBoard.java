@@ -40,7 +40,7 @@ class MJBoard extends Panel implements Runnable {
 	private final Panel pnlBotm; 
 	private final Scrollbar hSbar;
     private final Scrollbar vSbar; 
-	private final int sbarWidth = 16; 
+	private static final int sbarWidth = 16;
 	private final Button btnZoomIn = new Button("+");
 	private final Button btnZoomOut = new Button("-");
 	private final Button btnFit = new Button("F");
@@ -1118,9 +1118,9 @@ class MJBoard extends Panel implements Runnable {
 	}
 
 	
-	public final int RAND_ALL = 1;
+	public static final int RAND_ALL = 1;
 
-	public final int RAND_VIEW = 2;
+	public static final int RAND_VIEW = 2;
 
 	
 	

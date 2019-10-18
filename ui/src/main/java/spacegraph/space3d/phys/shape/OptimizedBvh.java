@@ -270,16 +270,16 @@ public class OptimizedBvh implements Serializable {
 			final float MIN_AABB_DIMENSION = 0.002f;
 			final float MIN_AABB_HALF_DIMENSION = 0.001f;
 			if (aabbMax.x - aabbMin.x < MIN_AABB_DIMENSION) {
-				aabbMax.x = (aabbMax.x + MIN_AABB_HALF_DIMENSION);
-				aabbMin.x = (aabbMin.x - MIN_AABB_HALF_DIMENSION);
+                aabbMax.x += MIN_AABB_HALF_DIMENSION;
+                aabbMin.x -= MIN_AABB_HALF_DIMENSION;
 			}
 			if (aabbMax.y - aabbMin.y < MIN_AABB_DIMENSION) {
-				aabbMax.y = (aabbMax.y + MIN_AABB_HALF_DIMENSION);
-				aabbMin.y = (aabbMin.y - MIN_AABB_HALF_DIMENSION);
+                aabbMax.y += MIN_AABB_HALF_DIMENSION;
+                aabbMin.y -= MIN_AABB_HALF_DIMENSION;
 			}
 			if (aabbMax.z - aabbMin.z < MIN_AABB_DIMENSION) {
-				aabbMax.z = (aabbMax.z + MIN_AABB_HALF_DIMENSION);
-				aabbMin.z = (aabbMin.z - MIN_AABB_HALF_DIMENSION);
+                aabbMax.z += MIN_AABB_HALF_DIMENSION;
+                aabbMin.z -= MIN_AABB_HALF_DIMENSION;
 			}
 
 			triangleNodes.setQuantizedAabbMin(nodeId, optimizedTree.quantizeWithClamp(aabbMin));

@@ -310,7 +310,7 @@ public class Classpath {
                 lname = lname.substring(1);
             }
 
-            lname = lname + ".jar";
+            lname += ".jar";
             entry.file = file;
             entry.filename = lname;
             if (isEmpty(file)) {

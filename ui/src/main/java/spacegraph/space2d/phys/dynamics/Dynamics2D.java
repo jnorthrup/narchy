@@ -1308,8 +1308,8 @@ public class Dynamics2D {
 
 
     private static final Integer LIQUID_INT = 1234598372;
-    private final float liquidLength = .12f;
-    private final float averageLinearVel = -1;
+    private static final float liquidLength = .12f;
+    private static final float averageLinearVel = -1;
     private final v2 liquidOffset = new v2();
     private final v2 circCenterMoved = new v2();
     private final Color3f liquidColor = new Color3f(.4f, .4f, 1f);

@@ -81,7 +81,7 @@ public class Decoder implements Constants {
         //normalize to the start signals
         for (int i = 0; i < (kBitsPerByte * kBytesPerDuration); i++) {
             for (int j = 0; j < signal[i].length; j++) {
-                signal[i][j] = signal[i][j] / startSignals[i];
+                signal[i][j] /= startSignals[i];
             }
         }
 
@@ -91,7 +91,7 @@ public class Decoder implements Constants {
                 byte value = 0;
                 for (int j = 0; j < kBitsPerByte; j++) {
                     if (signal[(k * kBitsPerByte) + j][i] > 0.4) { // detection threshold
-                        value = (byte) (value | (1 << j));
+                        value |= (1 << j);
                     } else {
                     }
                 }
@@ -266,8 +266,8 @@ public class Decoder implements Constants {
 
         for (int i = 0; i < signal.length; i++) {
             //System.out.println("signal[" +i +"]: " +signal[i] + "; convert: " + (signal[i])/(float)Constants.kFloatToByteShift);
-            realSum = realSum + (Math.cos(i * u) * (signal[i] / (float) Constants.kFloatToByteShift));
-            imaginarySum = imaginarySum + (Math.sin(i * u) * (signal[i] / (float) Constants.kFloatToByteShift));
+            realSum += (Math.cos(i * u) * (signal[i] / (float) Constants.kFloatToByteShift));
+            imaginarySum += (Math.sin(i * u) * (signal[i] / (float) Constants.kFloatToByteShift));
         }
         //System.out.println("realSum=" + realSum + "; imSum=" + imaginarySum);
         double realAve = realSum / signal.length;

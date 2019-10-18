@@ -138,7 +138,7 @@ public class SubsimplexConvexCast extends ConvexCast {
 					return false;
 				}
 				else {
-					lambda = lambda - VdotW / VdotR;
+                    lambda -= VdotW / VdotR;
 					
 					
 					

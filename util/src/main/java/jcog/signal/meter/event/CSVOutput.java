@@ -23,7 +23,7 @@ public class CSVOutput extends PrintStream {
 
     public CSVOutput(OutputStream out, String... headers) {
         super(out);
-        println(Joiner.on(',').join(StreamSupport.stream(new ArrayIterator<String>(headers).spliterator(), false).map(col -> '"' + col + '"').collect(Collectors.toList())
+        println(Joiner.on(',').join(StreamSupport.stream(new ArrayIterator<>(headers).spliterator(), false).map(col -> '"' + col + '"').collect(Collectors.toList())
         ));
     }
 

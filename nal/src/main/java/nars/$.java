@@ -551,29 +551,35 @@ public enum $ { ;
     }
 
     public static Term the(Number n) {
+        Term result;
         if (n instanceof Integer) {
-            return Int.the((Integer) n);
+            result = Int.the((Integer) n);
         } else if (n instanceof Long) {
-            return Atomic.the(Long.toString((Long) n));
+            result = Atomic.the(Long.toString((Long) n));
         } else if (n instanceof Short) {
-            return Int.the((Short) n);
+            result = Int.the((Short) n);
         } else if (n instanceof Byte) {
-            return Int.the((Byte) n);
+            result = Int.the((Byte) n);
         } else if (n instanceof Float) {
             float d = n.floatValue();
             int id = (int) d;
-            if (d == d && Util.equals(d, id))
-                return Int.the(id);
+            if (d == d && Util.equals(d, id)) {
+                result = Int.the(id);
+            } else {
+                result = Atomic.the(n.toString());
+            }
 
-            return Atomic.the(n.toString());
         } else {
             double d = n.doubleValue();
             int id = (int) d;
-            if (d == d && Util.equals(d, id))
-                return Int.the(id);
+            if (d == d && Util.equals(d, id)) {
+                result = Int.the(id);
+            } else {
+                result = Atomic.the(n.toString());
+            }
 
-            return Atomic.the(n.toString());
         }
+        return result;
     }
 
     public static <X> List<X> newArrayList() {
@@ -593,7 +599,7 @@ public enum $ { ;
 
     public static int[] radix(int x, int radix, int maxValue) {
         assert(x >= 0);
-        x = x % maxValue; //auto-wraparound
+        x %= maxValue; //auto-wraparound
 
         int decimals = (int) Math.ceil(Math.log(maxValue)/Math.log(radix));
         int[] y = new int[decimals];

@@ -867,14 +867,14 @@ public enum OneDHaar {
 
         for (int L = 1; L <= n; L++) {
             if (binary[L] == '0') {
-                s_k = s_k + sample[J];
-                J = J - I;
+                s_k += sample[J];
+                J -= I;
             } else if (binary[L] == '1') {
-                s_k = s_k - sample[J];
-                J = J + I;
+                s_k -= sample[J];
+                J += I;
             }
             if (L < n) {
-                I = I / 2;
+                I /= 2;
             }
         }
         return s_k;

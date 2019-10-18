@@ -29,7 +29,7 @@ public class Vocalization extends NARPart {
     private final Consumer<Term> speak;
     private final float durationsPerWord;
     private float energy;
-    private final float expectationThreshold = 0.5f;
+    private static final float expectationThreshold = 0.5f;
 
     public Vocalization(NAR nar, float durationsPerWord, Consumer<Term> speak) {
         super();

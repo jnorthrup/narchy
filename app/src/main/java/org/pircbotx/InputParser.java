@@ -57,132 +57,129 @@ public class InputParser implements Closeable {
 	 * (251-5), or MOTD (375-6).
 	 */
 	protected static final ImmutableList<String> CONNECT_CODES = ImmutableList.of("001", "002", "003", "004", "005", "251", "252", "253", "254", "255", "375", "376");
-	protected static final ImmutableList<ChannelModeHandler> DEFAULT_CHANNEL_MODE_HANDLERS;
-	static {
-		DEFAULT_CHANNEL_MODE_HANDLERS = ImmutableList.<ChannelModeHandler>builder().add(new OpChannelModeHandler('o', UserLevel.OP){
+	protected static final ImmutableList<ChannelModeHandler> DEFAULT_CHANNEL_MODE_HANDLERS = ImmutableList.<ChannelModeHandler>builder().add(new OpChannelModeHandler('o', UserLevel.OP){
 
 
-			@Override
-			public void dispatchEvent(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, UserHostmask recipientHostmask, User recipientUser, boolean adding) {
-				Utils.dispatchEvent(bot, new OpEvent(bot, channel, sourceHostmask, sourceUser, recipientHostmask, recipientUser, adding));
+		@Override
+		public void dispatchEvent(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, UserHostmask recipientHostmask, User recipientUser, boolean adding) {
+			Utils.dispatchEvent(bot, new OpEvent(bot, channel, sourceHostmask, sourceUser, recipientHostmask, recipientUser, adding));
+		}
+	}).add(new OpChannelModeHandler('v', UserLevel.VOICE){
+
+
+		@Override
+		public void dispatchEvent(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, UserHostmask recipientHostmask, User recipientUser, boolean adding) {
+			Utils.dispatchEvent(bot, new VoiceEvent(bot, channel, sourceHostmask, sourceUser, recipientHostmask, recipientUser, adding));
+		}
+	}).add(new OpChannelModeHandler('h', UserLevel.HALFOP){
+
+
+		@Override
+		public void dispatchEvent(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, UserHostmask recipientHostmask, User recipientUser, boolean adding) {
+			Utils.dispatchEvent(bot, new HalfOpEvent(bot, channel, sourceHostmask, sourceUser, recipientHostmask, recipientUser, adding));
+		}
+	}).add(new OpChannelModeHandler('a', UserLevel.SUPEROP){
+
+
+		@Override
+		public void dispatchEvent(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, UserHostmask recipientHostmask, User recipientUser, boolean adding) {
+			Utils.dispatchEvent(bot, new SuperOpEvent(bot, channel, sourceHostmask, sourceUser, recipientHostmask, recipientUser, adding));
+		}
+	}).add(new OpChannelModeHandler('q', UserLevel.OWNER){
+
+
+		@Override
+		public void dispatchEvent(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, UserHostmask recipientHostmask, User recipientUser, boolean adding) {
+			Utils.dispatchEvent(bot, new OwnerEvent(bot, channel, sourceHostmask, sourceUser, recipientHostmask, recipientUser, adding));
+		}
+	}).add(new ChannelModeHandler('k'){
+
+
+		@Override
+		public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
+			if (adding) {
+				String key = params.next();
+				channel.setChannelKey(key);
+				if (dispatchEvent) Utils.dispatchEvent(bot, new SetChannelKeyEvent(bot, channel, sourceHostmask, sourceUser, key));
+			} else {
+				String key = params.hasNext() ? params.next() : null;
+				channel.setChannelKey(null);
+				if (dispatchEvent) Utils.dispatchEvent(bot, new RemoveChannelKeyEvent(bot, channel, sourceHostmask, sourceUser, key));
 			}
-		}).add(new OpChannelModeHandler('v', UserLevel.VOICE){
+		}
+	}).add(new ChannelModeHandler('l'){
 
 
-			@Override
-			public void dispatchEvent(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, UserHostmask recipientHostmask, User recipientUser, boolean adding) {
-				Utils.dispatchEvent(bot, new VoiceEvent(bot, channel, sourceHostmask, sourceUser, recipientHostmask, recipientUser, adding));
+		@Override
+		public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
+			if (adding) {
+				int limit = Integer.parseInt(params.next());
+				channel.setChannelLimit(limit);
+				if (dispatchEvent) Utils.dispatchEvent(bot, new SetChannelLimitEvent(bot, channel, sourceHostmask, sourceUser, limit));
+			} else {
+				channel.setChannelLimit(-1);
+				if (dispatchEvent) Utils.dispatchEvent(bot, new RemoveChannelLimitEvent(bot, channel, sourceHostmask, sourceUser));
 			}
-		}).add(new OpChannelModeHandler('h', UserLevel.HALFOP){
+		}
+	}).add(new ChannelModeHandler('b'){
 
 
-			@Override
-			public void dispatchEvent(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, UserHostmask recipientHostmask, User recipientUser, boolean adding) {
-				Utils.dispatchEvent(bot, new HalfOpEvent(bot, channel, sourceHostmask, sourceUser, recipientHostmask, recipientUser, adding));
+		@Override
+		public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
+			if (dispatchEvent) {
+				UserHostmask banHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, params.next());
+				if (adding) Utils.dispatchEvent(bot, new SetChannelBanEvent(bot, channel, sourceHostmask, sourceUser, banHostmask)); else Utils.dispatchEvent(bot, new RemoveChannelBanEvent(bot, channel, sourceHostmask, sourceUser, banHostmask));
 			}
-		}).add(new OpChannelModeHandler('a', UserLevel.SUPEROP){
+		}
+	}).add(new ChannelModeHandler('t'){
 
 
-			@Override
-			public void dispatchEvent(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, UserHostmask recipientHostmask, User recipientUser, boolean adding) {
-				Utils.dispatchEvent(bot, new SuperOpEvent(bot, channel, sourceHostmask, sourceUser, recipientHostmask, recipientUser, adding));
-			}
-		}).add(new OpChannelModeHandler('q', UserLevel.OWNER){
+		@Override
+		public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
+			channel.setTopicProtection(adding);
+			if (dispatchEvent) if (adding) Utils.dispatchEvent(bot, new SetTopicProtectionEvent(bot, channel, sourceHostmask, sourceUser)); else Utils.dispatchEvent(bot, new RemoveTopicProtectionEvent(bot, channel, sourceHostmask, sourceUser));
+		}
+	}).add(new ChannelModeHandler('n'){
 
 
-			@Override
-			public void dispatchEvent(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, UserHostmask recipientHostmask, User recipientUser, boolean adding) {
-				Utils.dispatchEvent(bot, new OwnerEvent(bot, channel, sourceHostmask, sourceUser, recipientHostmask, recipientUser, adding));
-			}
-		}).add(new ChannelModeHandler('k'){
+		@Override
+		public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
+			channel.setNoExternalMessages(adding);
+			if (dispatchEvent) if (adding) Utils.dispatchEvent(bot, new SetNoExternalMessagesEvent(bot, channel, sourceHostmask, sourceUser)); else Utils.dispatchEvent(bot, new RemoveNoExternalMessagesEvent(bot, channel, sourceHostmask, sourceUser));
+		}
+	}).add(new ChannelModeHandler('i'){
 
 
-			@Override
-			public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
-				if (adding) {
-					String key = params.next();
-					channel.setChannelKey(key);
-					if (dispatchEvent) Utils.dispatchEvent(bot, new SetChannelKeyEvent(bot, channel, sourceHostmask, sourceUser, key));
-				} else {
-					String key = params.hasNext() ? params.next() : null;
-					channel.setChannelKey(null);
-					if (dispatchEvent) Utils.dispatchEvent(bot, new RemoveChannelKeyEvent(bot, channel, sourceHostmask, sourceUser, key));
-				}
-			}
-		}).add(new ChannelModeHandler('l'){
+		@Override
+		public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
+			channel.setInviteOnly(adding);
+			if (dispatchEvent) if (adding) Utils.dispatchEvent(bot, new SetInviteOnlyEvent(bot, channel, sourceHostmask, sourceUser)); else Utils.dispatchEvent(bot, new RemoveInviteOnlyEvent(bot, channel, sourceHostmask, sourceUser));
+		}
+	}).add(new ChannelModeHandler('m'){
 
 
-			@Override
-			public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
-				if (adding) {
-					int limit = Integer.parseInt(params.next());
-					channel.setChannelLimit(limit);
-					if (dispatchEvent) Utils.dispatchEvent(bot, new SetChannelLimitEvent(bot, channel, sourceHostmask, sourceUser, limit));
-				} else {
-					channel.setChannelLimit(-1);
-					if (dispatchEvent) Utils.dispatchEvent(bot, new RemoveChannelLimitEvent(bot, channel, sourceHostmask, sourceUser));
-				}
-			}
-		}).add(new ChannelModeHandler('b'){
+		@Override
+		public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
+			channel.setModerated(adding);
+			if (dispatchEvent) if (adding) Utils.dispatchEvent(bot, new SetModeratedEvent(bot, channel, sourceHostmask, sourceUser)); else Utils.dispatchEvent(bot, new RemoveModeratedEvent(bot, channel, sourceHostmask, sourceUser));
+		}
+	}).add(new ChannelModeHandler('p'){
 
 
-			@Override
-			public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
-				if (dispatchEvent) {
-					UserHostmask banHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, params.next());
-					if (adding) Utils.dispatchEvent(bot, new SetChannelBanEvent(bot, channel, sourceHostmask, sourceUser, banHostmask)); else Utils.dispatchEvent(bot, new RemoveChannelBanEvent(bot, channel, sourceHostmask, sourceUser, banHostmask));
-				}
-			}
-		}).add(new ChannelModeHandler('t'){
+		@Override
+		public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
+			channel.setChannelPrivate(adding);
+			if (dispatchEvent) if (adding) Utils.dispatchEvent(bot, new SetPrivateEvent(bot, channel, sourceHostmask, sourceUser)); else Utils.dispatchEvent(bot, new RemovePrivateEvent(bot, channel, sourceHostmask, sourceUser));
+		}
+	}).add(new ChannelModeHandler('s'){
 
 
-			@Override
-			public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
-				channel.setTopicProtection(adding);
-				if (dispatchEvent) if (adding) Utils.dispatchEvent(bot, new SetTopicProtectionEvent(bot, channel, sourceHostmask, sourceUser)); else Utils.dispatchEvent(bot, new RemoveTopicProtectionEvent(bot, channel, sourceHostmask, sourceUser));
-			}
-		}).add(new ChannelModeHandler('n'){
-
-
-			@Override
-			public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
-				channel.setNoExternalMessages(adding);
-				if (dispatchEvent) if (adding) Utils.dispatchEvent(bot, new SetNoExternalMessagesEvent(bot, channel, sourceHostmask, sourceUser)); else Utils.dispatchEvent(bot, new RemoveNoExternalMessagesEvent(bot, channel, sourceHostmask, sourceUser));
-			}
-		}).add(new ChannelModeHandler('i'){
-
-
-			@Override
-			public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
-				channel.setInviteOnly(adding);
-				if (dispatchEvent) if (adding) Utils.dispatchEvent(bot, new SetInviteOnlyEvent(bot, channel, sourceHostmask, sourceUser)); else Utils.dispatchEvent(bot, new RemoveInviteOnlyEvent(bot, channel, sourceHostmask, sourceUser));
-			}
-		}).add(new ChannelModeHandler('m'){
-
-
-			@Override
-			public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
-				channel.setModerated(adding);
-				if (dispatchEvent) if (adding) Utils.dispatchEvent(bot, new SetModeratedEvent(bot, channel, sourceHostmask, sourceUser)); else Utils.dispatchEvent(bot, new RemoveModeratedEvent(bot, channel, sourceHostmask, sourceUser));
-			}
-		}).add(new ChannelModeHandler('p'){
-
-
-			@Override
-			public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
-				channel.setChannelPrivate(adding);
-				if (dispatchEvent) if (adding) Utils.dispatchEvent(bot, new SetPrivateEvent(bot, channel, sourceHostmask, sourceUser)); else Utils.dispatchEvent(bot, new RemovePrivateEvent(bot, channel, sourceHostmask, sourceUser));
-			}
-		}).add(new ChannelModeHandler('s'){
-
-
-			@Override
-			public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
-				channel.setSecret(adding);
-				if (dispatchEvent) if (adding) Utils.dispatchEvent(bot, new SetSecretEvent(bot, channel, sourceHostmask, sourceUser)); else Utils.dispatchEvent(bot, new RemoveSecretEvent(bot, channel, sourceHostmask, sourceUser));
-			}
-		}).build();
-	}
+		@Override
+		public void handleMode(PircBotX bot, Channel channel, UserHostmask sourceHostmask, User sourceUser, PeekingIterator<String> params, boolean adding, boolean dispatchEvent) {
+			channel.setSecret(adding);
+			if (dispatchEvent) if (adding) Utils.dispatchEvent(bot, new SetSecretEvent(bot, channel, sourceHostmask, sourceUser)); else Utils.dispatchEvent(bot, new RemoveSecretEvent(bot, channel, sourceHostmask, sourceUser));
+		}
+	}).build();
 	protected final Configuration configuration;
 	protected final PircBotX bot;
 	protected final List<CapHandler> capHandlersFinished = Lists.newArrayList();

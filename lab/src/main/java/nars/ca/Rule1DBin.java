@@ -103,7 +103,7 @@ public class Rule1DBin {
 
 		
 		for (i = 1; i <= 2 * iRng + 1; i++)
-			iCnt = iCnt * 2;
+            iCnt *= 2;
 		sBinStr = LPad(sBinStr, iCnt, '0');
 
 		
@@ -163,52 +163,52 @@ public class Rule1DBin {
 		for (i = 0; i < sHex.length(); i++) {
 			switch (sHex.charAt(i)) {
 				case '0' :
-					sBinBff = sBinBff + "0000";
+                    sBinBff += "0000";
 					break;
 				case '1' :
-					sBinBff = sBinBff + "0001";
+                    sBinBff += "0001";
 					break;
 				case '2' :
-					sBinBff = sBinBff + "0010";
+                    sBinBff += "0010";
 					break;
 				case '3' :
-					sBinBff = sBinBff + "0011";
+                    sBinBff += "0011";
 					break;
 				case '4' :
-					sBinBff = sBinBff + "0100";
+                    sBinBff += "0100";
 					break;
 				case '5' :
-					sBinBff = sBinBff + "0101";
+                    sBinBff += "0101";
 					break;
 				case '6' :
-					sBinBff = sBinBff + "0110";
+                    sBinBff += "0110";
 					break;
 				case '7' :
-					sBinBff = sBinBff + "0111";
+                    sBinBff += "0111";
 					break;
 				case '8' :
-					sBinBff = sBinBff + "1000";
+                    sBinBff += "1000";
 					break;
 				case '9' :
-					sBinBff = sBinBff + "1001";
+                    sBinBff += "1001";
 					break;
 				case 'A' :
-					sBinBff = sBinBff + "1010";
+                    sBinBff += "1010";
 					break;
 				case 'B' :
-					sBinBff = sBinBff + "1011";
+                    sBinBff += "1011";
 					break;
 				case 'C' :
-					sBinBff = sBinBff + "1100";
+                    sBinBff += "1100";
 					break;
 				case 'D' :
-					sBinBff = sBinBff + "1101";
+                    sBinBff += "1101";
 					break;
 				case 'E' :
-					sBinBff = sBinBff + "1110";
+                    sBinBff += "1110";
 					break;
 				case 'F' :
-					sBinBff = sBinBff + "1111";
+                    sBinBff += "1111";
 					break;
 			}
 		}
@@ -260,9 +260,9 @@ public class Rule1DBin {
 			iIdx = 0;
 			for (i = iRng; i >= -iRng; i--) 
 			{
-				if (OneRow[ic + i + ary1DOfs] > 0) 
-					iIdx = iIdx + iPow;
-				iPow = iPow * 2;
+				if (OneRow[ic + i + ary1DOfs] > 0)
+                    iIdx += iPow;
+                iPow *= 2;
 			}
 
 			

@@ -89,10 +89,10 @@ public class CPG {
             dv2 = (yn - v2) / tau_A; //(max(xn, 0.0f) - v2) / tau2;
 
             // update state vars (Euler)
-            xp = xp + dx1 * dt;
-            xn = xn + dx2 * dt;
-            v1 = v1 + dv1 * dt;
-            v2 = v2 + dv2 * dt;
+            xp += dx1 * dt;
+            xn += dx2 * dt;
+            v1 += dv1 * dt;
+            v2 += dv2 * dt;
 
             //  Calc outputs each neuron using new vals
             yp = Util.clamp(xp, -1, +1); //max(xp, 0.0f);
@@ -101,7 +101,7 @@ public class CPG {
             //  and the final output
             y = yp - yn;
 
-            t = t + dt;
+            t += dt;
         }
 
         /*

@@ -2373,7 +2373,7 @@ final class DrawSymbols {
         formula = PrimFormula.getDisplay(formula, true); // true returns variables
         //   as $var:type
 
-        formula = formula + " ";
+        formula += " ";
         int position0 = 0;
         int position = formula.indexOf(' ');
         while (position != -1) {
@@ -2448,7 +2448,7 @@ final class PrimFormula {
             position = start;
             for (i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
                 position = start + subformula.length();
-                subformula = subformula + pformula(formula, position);
+                subformula += pformula(formula, position);
             }
             return subformula;
         }
@@ -2526,7 +2526,7 @@ final class PrimFormula {
             // Collect the arguments in display notation
             for (i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
                 position = start + subformula.length();
-                subformula = subformula + pformula(formula, position);
+                subformula += pformula(formula, position);
                 displayArgs[i] = subGetDisplay(formula, position, raw);
             }
             tmpNotation = MetaMath.connectiveArr[connNum].notation + " ";
@@ -2699,7 +2699,7 @@ class Axiom {
         int i;
         StringBuilder numRPNbuf = new StringBuilder();
 
-        englRPN = englRPN + " ";
+        englRPN += " ";
         numRPNbuf.ensureCapacity(englRPN.length() / 2);
         int position0 = 0;
         int position = englRPN.indexOf(' ');
@@ -2781,7 +2781,7 @@ class State {
             proofInfoState.addHyp();
         }
         // Scan the axiom-list proof
-        proof = proof + " ";
+        proof += " ";
         int position0 = 0;
         int position = proof.indexOf(' ');
         String label;

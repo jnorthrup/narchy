@@ -2151,7 +2151,7 @@ public class KB implements Serializable {
         int i = tal.indexOf(term.intern());
         if (i < 0)
             return "";
-        i = i - num;
+        i -= num;
         if (i < 0)
             i = 0;
         return tal.get(i);
@@ -2173,7 +2173,7 @@ public class KB implements Serializable {
         int i = tal.indexOf(term.intern());
         if (i < 0)
             return "";
-        i = i + num;
+        i += num;
         if (i >= tal.size())
             i = tal.size() - 1;
         return tal.get(i);

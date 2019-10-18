@@ -13,7 +13,7 @@ public abstract class KarplusStrongString {
     public final BoundedQueue<Double> buffer;
     private int status; // 0 = ready to pluck, 1 = need to pluck, -1 = locked, 2 = need to pluck and hold, -2 = locked and held, 3 = held
 //    private final double volumeAdd = .05;
-    private final double volumeMultiply = 1.2;
+    private static final double volumeMultiply = 1.2;
     protected double C;
 
 

@@ -118,7 +118,7 @@ public class PadSynthetizer {
 
             // Conjugate again and divide by data length.
             for ( int i=0; i<dataImag.length; i++ ) {
-                dataReal[i] = dataReal[i]/dataReal.length;
+                dataReal[i] /= dataReal.length;
                 dataImag[i] = -dataImag[i]/dataImag.length;
             }
         }
@@ -219,8 +219,8 @@ public class PadSynthetizer {
                         dataImag[j] = dataImag[i] - tempI;
 
                         // data[i] = data[i] + ws*data[j]
-                        dataReal[i] = dataReal[i] + tempR;
-                        dataImag[i] = dataImag[i] + tempI;
+                        dataReal[i] += tempR;
+                        dataImag[i] += tempI;
                     }
 
                     //w = w*wp + w

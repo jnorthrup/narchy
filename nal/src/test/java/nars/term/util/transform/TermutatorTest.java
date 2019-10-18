@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class TermutatorTest {
 
-    private final int TTL = 256;
+    private static final int TTL = 256;
 
     private final Unify unifier = new Unify(Op.VAR_PATTERN, new XorShift128PlusRandom(1),
             NAL.unify.UNIFICATION_STACK_CAPACITY, TTL) {

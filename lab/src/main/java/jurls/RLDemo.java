@@ -82,7 +82,7 @@ public class RLDemo extends javax.swing.JFrame {
     private LearnerAndActor agent;
     private RLEnvironment rLDomain;
 
-    final int updatePeriodMS = 0;
+    static final int updatePeriodMS = 0;
     private int numIterationsPerLoop = 1;
     private final ApproxParameters approxParameters = new ApproxParameters(0.01, 0.1);
     private final RLParameters rLParameters = new RLParameters(0.01, 0.9, 0.9, 0);

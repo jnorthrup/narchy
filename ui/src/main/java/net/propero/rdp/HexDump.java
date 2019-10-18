@@ -49,25 +49,25 @@ enum HexDump { ;
             index = Integer.toHexString(count);
             switch (index.length()) {
                 case (1):
-                    index = "0000000".concat(index);
+                    index = "0000000" + index;
                     break;
                 case (2):
-                    index = "000000".concat(index);
+                    index = "000000" + index;
                     break;
                 case (3):
-                    index = "00000".concat(index);
+                    index = "00000" + index;
                     break;
                 case (4):
-                    index = "0000".concat(index);
+                    index = "0000" + index;
                     break;
                 case (5):
-                    index = "000".concat(index);
+                    index = "000" + index;
                     break;
                 case (6):
-                    index = "00".concat(index);
+                    index = "00" + index;
                     break;
                 case (7):
-                    index = "0".concat(index);
+                    index = "0" + index;
                     break;
                 case (8):
                     break;
@@ -84,7 +84,7 @@ enum HexDump { ;
                 number = Integer.toHexString((data[count] & 0x000000ff));
                 switch (number.length()) {
                     case (1):
-                        number = "0".concat(number);
+                        number = "0" + number;
                         break;
                     case (2):
                         break;

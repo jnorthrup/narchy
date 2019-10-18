@@ -22,8 +22,8 @@ public abstract class SequenceLearner {
     static final NumberFormat twoDigits = new DecimalFormat("0.00");
     public final NTM machine;
     protected final int vectorSize;
-    protected final int statisticsWindow = 16;
-    final int seed = 1;
+    protected static final int statisticsWindow = 16;
+    static final int seed = 1;
     protected final Random rand = new XorShift128PlusRandom(seed);
     private final BPTTTeacher teacher;
     protected double[] errors = new double[statisticsWindow];

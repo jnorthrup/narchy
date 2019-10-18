@@ -2460,7 +2460,7 @@ public class PrintfFormat {
 			if (fieldWidthSet) {
 				nBlanks = fieldWidth - nLeadingZeros - sx.length();
 				if (alternateForm)
-					nBlanks = nBlanks - 2;
+                    nBlanks -= 2;
 			}
 			if (nBlanks < 0)
 				nBlanks = 0;

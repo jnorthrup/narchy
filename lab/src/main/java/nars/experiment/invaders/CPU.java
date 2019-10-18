@@ -198,12 +198,12 @@ public class CPU {
                     print();
                     break;
                 case "0xa7":
-                    mem.a = mem.a & mem.a;
+                    mem.a &= mem.a;
                     LogicFlags();
                     print();
                     break;
                 case "0xaf":
-                    mem.a = mem.a ^ mem.a;
+                    mem.a ^= mem.a;
                     LogicFlags();
                     print();
                     break;
@@ -227,7 +227,7 @@ public class CPU {
                 case "0xc5":
                     memory[mem.sp - 1] = mem.b;
                     memory[mem.sp - 2] = mem.c;
-                    mem.sp = mem.sp - 2;
+                    mem.sp -= 2;
                     print();
                     break;
                 case "0xc6": {
@@ -250,7 +250,7 @@ public class CPU {
                     int ret = mem.pc + 2;
                     memory[mem.sp - 1] = (ret >> 8) & 0xff;
                     memory[mem.sp - 2] = (ret & 0xff);
-                    mem.sp = mem.sp - 2;
+                    mem.sp -= 2;
                     mem.pc = (memory[mem.pc + 2] << 8) | memory[mem.pc + 1];
                     print();
                     break;
@@ -267,7 +267,7 @@ public class CPU {
                 case "0xd5":
                     memory[mem.sp - 1] = mem.d;
                     memory[mem.sp - 2] = mem.e;
-                    mem.sp = mem.sp - 2;
+                    mem.sp -= 2;
                     print();
                     break;
                 case "0xe1":
@@ -279,11 +279,11 @@ public class CPU {
                 case "0xe5":
                     memory[mem.sp - 1] = mem.h;
                     memory[mem.sp - 2] = mem.l;
-                    mem.sp = mem.sp - 2;
+                    mem.sp -= 2;
                     print();
                     break;
                 case "0xe6":
-                    mem.a = mem.a & memory[mem.pc + 1];
+                    mem.a &= memory[mem.pc + 1];
                     LogicFlags();
                     mem.pc++;
                     print();
@@ -344,12 +344,12 @@ public class CPU {
     public boolean parity(int x, int size) {
         int i;
         int p = 0;
-        x = (x & ((1 << size) - 1));
+        x &= ((1 << size) - 1);
         for (i = 0; i < size; i++) {
             if ((x & 0x1) != 0) {
                 p++;
             }
-            x = x >> 1;
+            x >>= 1;
         }
         return (0 == (p & 0x1));
     }

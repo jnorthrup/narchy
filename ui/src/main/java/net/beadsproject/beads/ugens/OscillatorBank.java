@@ -142,7 +142,7 @@ public class OscillatorBank extends UGen {
 
                 float p = (float) (point[j] + increment[j]);
                 while (p > 1)
-                    p = p - 1;
+                    p -= 1;
                 point[j] = p;
 
                 x += gain.getAt(j) * sampled.getFractInterp(p);

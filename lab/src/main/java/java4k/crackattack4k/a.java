@@ -36,70 +36,70 @@ public class a extends GamePanel {
 	private static final int WIDTH = 440;
 	private static final int HEIGHT = 600;
 
-	final float SPEED_UP_RATE = 0.00016f;
+	static final float SPEED_UP_RATE = 0.00016f;
 
-	final int Z0 = -256;
-	final int Z1 = 0;
-	final int DZ = 4;
+	static final int Z0 = -256;
+	static final int Z1 = 0;
+	static final int DZ = 4;
 
-	final int FALL_DELAY = 16;
-	final int EXPLODE_DELAY = 40;
+	static final int FALL_DELAY = 16;
+	static final int EXPLODE_DELAY = 40;
 
-	final int CHAIN_X = 0;
-	final int CHAIN_Y = 1;
-	final int CHAIN_SIZE = 2;
-	final int CHAIN_WIDTH = 3;
-	final int CHAIN_COUNT = 4;
+	static final int CHAIN_X = 0;
+	static final int CHAIN_Y = 1;
+	static final int CHAIN_SIZE = 2;
+	static final int CHAIN_WIDTH = 3;
+	static final int CHAIN_COUNT = 4;
 
-	final int TILE_EMPTY = -1;
-	final int TILE_RED = 0;
-	final int TILE_YELLOW = 1;
-	final int TILE_GREEN = 2;
-	final int TILE_CYAN = 3;
-	final int TILE_PURPLE = 4;
-	final int TILE_HIDDEN = 5;
+	static final int TILE_EMPTY = -1;
+	static final int TILE_RED = 0;
+	static final int TILE_YELLOW = 1;
+	static final int TILE_GREEN = 2;
+	static final int TILE_CYAN = 3;
+	static final int TILE_PURPLE = 4;
+	static final int TILE_HIDDEN = 5;
 
-	final int SPRITE_FACE_1 = 30;
-	final int SPRITE_FACE_2 = 31;
-	final int SPRITE_FACE_3 = 32;
-	final int SPRITE_FACE_4 = 33;
-	final int SPRITE_FACE_5 = 34;
+	static final int SPRITE_FACE_1 = 30;
+	static final int SPRITE_FACE_2 = 31;
+	static final int SPRITE_FACE_3 = 32;
+	static final int SPRITE_FACE_4 = 33;
+	static final int SPRITE_FACE_5 = 34;
 
-	final int SPRITE_DIGIT_0 = 40;
-	final int SPRITE_DIGIT_1 = 41;
-	final int SPRITE_DIGIT_2 = 42;
-	final int SPRITE_DIGIT_3 = 43;
-	final int SPRITE_DIGIT_4 = 44;
-	final int SPRITE_DIGIT_5 = 45;
-	final int SPRITE_DIGIT_6 = 46;
-	final int SPRITE_DIGIT_7 = 47;
-	final int SPRITE_DIGIT_8 = 48;
-	final int SPRITE_DIGIT_9 = 49;
-	final int SPRITE_HYPHEN = 50;
-	final int SPRITE_CURSOR_1 = 51;
-	final int SPRITE_CURSOR_2 = 52;
-	final int SPRITE_CURSOR_3 = 53;
+	static final int SPRITE_DIGIT_0 = 40;
+	static final int SPRITE_DIGIT_1 = 41;
+	static final int SPRITE_DIGIT_2 = 42;
+	static final int SPRITE_DIGIT_3 = 43;
+	static final int SPRITE_DIGIT_4 = 44;
+	static final int SPRITE_DIGIT_5 = 45;
+	static final int SPRITE_DIGIT_6 = 46;
+	static final int SPRITE_DIGIT_7 = 47;
+	static final int SPRITE_DIGIT_8 = 48;
+	static final int SPRITE_DIGIT_9 = 49;
+	static final int SPRITE_HYPHEN = 50;
+	static final int SPRITE_CURSOR_1 = 51;
+	static final int SPRITE_CURSOR_2 = 52;
+	static final int SPRITE_CURSOR_3 = 53;
 
-	final int SPRITE_UPSIDE_DOWN_DIGIT_0 = 60;
-	final int SPRITE_CURSOR_4 = 71;
-	final int SPRITE_CURSOR_5 = 72;
-	final int SPRITE_CURSOR_6 = 73;
+	static final int SPRITE_UPSIDE_DOWN_DIGIT_0 = 60;
+	static final int SPRITE_CURSOR_4 = 71;
+	static final int SPRITE_CURSOR_5 = 72;
+	static final int SPRITE_CURSOR_6 = 73;
 
-	final int MOUSE_X = 0;
-	final int MOUSE_Y = 1;
-	final int MOUSE_DOWN = 2;
-	final int MOUSE_BUTTON = 3;
+	static final int MOUSE_X = 0;
+	static final int MOUSE_Y = 1;
+	static final int MOUSE_DOWN = 2;
+	static final int MOUSE_BUTTON = 3;
 
-	final int FADE_NONE = 0;
-	final int FADE_OUT = 1;
-	final int FADE_IN = 2;
+	static final int FADE_NONE = 0;
+	static final int FADE_OUT = 1;
+	static final int FADE_IN = 2;
 
-	final int OVER_NONE = 0;
-	final int OVER_UP = 1;
-	final int OVER_DOWN = 2;
-	final int OVER_START = 3;
+	static final int OVER_NONE = 0;
+	static final int OVER_UP = 1;
+	static final int OVER_DOWN = 2;
+	static final int OVER_START = 3;
 
-	final String S = "\u0000\u3000\ufc78\ufcfc\uf0f8\uc0e0\u0080\u0000\u8000\u8080\uc0c0\uf8fc\ue0f0\u70e0\u1030\u0000\u0000\ue000\uf8f0\uf8f8\uf8f8\uf0f8\u00e0\u0000\u0000\u8000\uc080\ue0c0\uf0e0\uf8f0\u00f8\u0000\u0000\u8000\ue0c0\uf8f0\uf0f8\uc0e0\u0080\u0000\u0555\u5554\u16aa\uaab5\u1955\u556d\u1555\u5559\u1555\u5559\u1555\u5559\u1555\u5559\u1555\u5559\u1555\u5559\u1555\u5559\u1555\u5559\u1555\u5559\u1555\u5559\u1955\u5555\u0555\u5554\u0000\u0000\u0000\u0000\u0aa8\u2aaa\uafea\ubf3a\ubcfa\ub3f8\uafc0\uaa00\u0800\u4800\u4800\u2000\u8000\u0000\u8000\ua000\ua000\ua800\uafc0\ubffa\ubcfa\ubff8\uafe0\u2a80\u4a80\u4080\u20a0\u8020\u0028\b\u0000\uaa80\uaaa0\uaaa8\uafe8\ubff8\ubcf8\ubff8\uafe8\uaaa8\u0aa8\u48a8\u4828\u4800\ua000\u0000\u8000\u8000\ua000\ua000\ua800\uafc0\ubff0\ubcf0\ubff0\u8fc0\u22a0\u48a0\u4828\u0808\ua008\u0000\u8000\ua000\ua800\uaa00\uafc0\ubff0\ubcf8\ubffa\uafea\u0aa8\u4aa0\u4a80\u4a00\u2800\ua000\u8000\u0550\u1aa4\u6aa9\u6559\u6559\u6aa9\u1aa4\u0550\u0000\u1010\u6564\u6aa9\u6aa9\u6554\u1000\u0000\u1010\u6464\u6969\u6a59\u6699\u65a9\u6464\u1010\u0400\u1904\u6959\u6599\u65a9\u6aa9\u1a59\u0504\u0500\u1a40\u1a90\u1964\u6aa9\u6aa9\u1954\u0400\u5555\u65a9\u65a9\u6599\u6599\u6a99\u1a55\u0500\u0540\u1a90\u6aa4\u65a9\u6599\u6a99\u1a44\u0500\u0055\u0069\u5569\u6a59\u6a99\u55a9\u0069\u0015\u0510\u1a64\u6aa9\u6599\u6599\u6aa9\u1a64\u0510\u0050\u11a4\u66a9\u6659\u6a59\u1aa9\u06a4\u0150\u0000\u0100\u0640\u0640\u0640\u0640\u0100\u0000\u1550\u6aa4\u6aa9\u55a9\u0069\u0069\u0069\u0054\u0054\u0069\u0069\u0069\u55a9\u6aa9\u6aa4\u1550\u0054\u0069\u0069\u0069\u15a9\u6aa5\u6aa9\u15a9\u0069\u0069\u0069\u0054";
+	static final String S = "\u0000\u3000\ufc78\ufcfc\uf0f8\uc0e0\u0080\u0000\u8000\u8080\uc0c0\uf8fc\ue0f0\u70e0\u1030\u0000\u0000\ue000\uf8f0\uf8f8\uf8f8\uf0f8\u00e0\u0000\u0000\u8000\uc080\ue0c0\uf0e0\uf8f0\u00f8\u0000\u0000\u8000\ue0c0\uf8f0\uf0f8\uc0e0\u0080\u0000\u0555\u5554\u16aa\uaab5\u1955\u556d\u1555\u5559\u1555\u5559\u1555\u5559\u1555\u5559\u1555\u5559\u1555\u5559\u1555\u5559\u1555\u5559\u1555\u5559\u1555\u5559\u1955\u5555\u0555\u5554\u0000\u0000\u0000\u0000\u0aa8\u2aaa\uafea\ubf3a\ubcfa\ub3f8\uafc0\uaa00\u0800\u4800\u4800\u2000\u8000\u0000\u8000\ua000\ua000\ua800\uafc0\ubffa\ubcfa\ubff8\uafe0\u2a80\u4a80\u4080\u20a0\u8020\u0028\b\u0000\uaa80\uaaa0\uaaa8\uafe8\ubff8\ubcf8\ubff8\uafe8\uaaa8\u0aa8\u48a8\u4828\u4800\ua000\u0000\u8000\u8000\ua000\ua000\ua800\uafc0\ubff0\ubcf0\ubff0\u8fc0\u22a0\u48a0\u4828\u0808\ua008\u0000\u8000\ua000\ua800\uaa00\uafc0\ubff0\ubcf8\ubffa\uafea\u0aa8\u4aa0\u4a80\u4a00\u2800\ua000\u8000\u0550\u1aa4\u6aa9\u6559\u6559\u6aa9\u1aa4\u0550\u0000\u1010\u6564\u6aa9\u6aa9\u6554\u1000\u0000\u1010\u6464\u6969\u6a59\u6699\u65a9\u6464\u1010\u0400\u1904\u6959\u6599\u65a9\u6aa9\u1a59\u0504\u0500\u1a40\u1a90\u1964\u6aa9\u6aa9\u1954\u0400\u5555\u65a9\u65a9\u6599\u6599\u6a99\u1a55\u0500\u0540\u1a90\u6aa4\u65a9\u6599\u6a99\u1a44\u0500\u0055\u0069\u5569\u6a59\u6a99\u55a9\u0069\u0015\u0510\u1a64\u6aa9\u6599\u6599\u6aa9\u1a64\u0510\u0050\u11a4\u66a9\u6659\u6a59\u1aa9\u06a4\u0150\u0000\u0100\u0640\u0640\u0640\u0640\u0100\u0000\u1550\u6aa4\u6aa9\u55a9\u0069\u0069\u0069\u0054\u0054\u0069\u0069\u0069\u55a9\u6aa9\u6aa4\u1550\u0054\u0069\u0069\u0069\u15a9\u6aa5\u6aa9\u15a9\u0069\u0069\u0069\u0054";
 
 	final Color borderColor1 = new Color(0xE08800);
 	final Color borderColor2 = new Color(0x703000);

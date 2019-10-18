@@ -95,16 +95,16 @@ public class RuleGene {
 		for (i = 0; i <= 8; i++)
 			
 			if (RulesS[i])
-				sBff = sBff + i;
-		sBff = sBff + '/';
+                sBff += i;
+        sBff += '/';
 
 		for (i = 0; i <= 8; i++)
 			
 			if (RulesB[i])
-				sBff = sBff + i;
-		sBff = sBff + '/';
+                sBff += i;
+        sBff += '/';
 
-		sBff = sBff + iClo;
+        sBff += iClo;
 		return sBff;
 	}
 

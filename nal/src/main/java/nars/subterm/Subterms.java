@@ -221,7 +221,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         int commonStructure = aa.structure() & bb.structure();
         if (excludeVariables)
-            commonStructure = commonStructure & ~(Op.Variable) & AtomicConstant;
+            commonStructure &= ~(Op.Variable) & AtomicConstant;
 
         if (commonStructure == 0)
             return false;

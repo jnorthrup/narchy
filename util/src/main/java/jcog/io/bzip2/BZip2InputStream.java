@@ -572,11 +572,11 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                 int N = 1;
                 do {
                     if (nextSym == RUNA) {
-                        s = s + (0 + 1) * N;
+                        s += (0 + 1) * N;
                     } else if (nextSym == RUNB) {
-                        s = s + (1 + 1) * N;
+                        s += (1 + 1) * N;
                     }
-                    N = N * 2;
+                    N *= 2;
                     {
                         int zj;
                         if (groupPos == 0) {

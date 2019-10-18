@@ -349,7 +349,7 @@ public class Box2DTests extends JComponent implements Runnable {
         }
     }
 
-    final int MAX_POLY_EDGES = 32;
+    static final int MAX_POLY_EDGES = 32;
     private final int x[] = new int[MAX_POLY_EDGES];
     private final int y[] = new int[MAX_POLY_EDGES];
 

@@ -149,7 +149,7 @@ public final class QuickLZ {
 					lits++;
 					hash_counter[hash] = 1;
 					out[dst] = in[src];
-					cword_val = (cword_val >>> 1);
+                    cword_val >>>= 1;
 					src++;
 					dst++;
 					fetch = ((fetch >>> 8) & 0xffff) | ((in[src + 2] & 0xff) << 16);
@@ -214,7 +214,7 @@ public final class QuickLZ {
 					}
 				} else {
 					out[dst] = in[src];
-					cword_val = (cword_val >>> 1);
+                    cword_val >>>= 1;
 					src++;
 					dst++;
 				}
@@ -232,10 +232,10 @@ public final class QuickLZ {
 			out[dst] = in[src];
 			src++;
 			dst++;
-			cword_val = (cword_val >>> 1);
+            cword_val >>>= 1;
 		}
 		while ((cword_val & 1) != 1) {
-			cword_val = (cword_val >>> 1);
+            cword_val >>>= 1;
 		}
 		fast_write(out, cword_ptr, (cword_val >>> 1) | 0x80000000L, CWORD_LEN);
 		write_header(out, level, true, in.length, dst);
@@ -309,7 +309,7 @@ public final class QuickLZ {
 				int matchlen;
 				int offset2;
 
-				cword_val = cword_val >>> 1;
+                cword_val >>>= 1;
 
 				if (level == 1) {
                     offset2 = hashtable[(fetch >>> 4) & 0xfff];
@@ -375,7 +375,7 @@ public final class QuickLZ {
 			} else {
 				if (dst <= last_matchstart) {
 					out[dst++] = in[src++];
-					cword_val = cword_val >>> 1;
+                    cword_val >>>= 1;
 
 					if (level == 1 && (last_hashed < dst-3)) {
                         if (hashtable == null)
@@ -391,7 +391,7 @@ public final class QuickLZ {
 					fetch = fetch >> 8 & 0xffff | (in[src + 2] & 0xff) << 16;
 
 					if (level!=1)
-					    fetch = fetch | (in[src + 3] & 0xff) << 24;
+                        fetch |= (in[src + 3] & 0xff) << 24;
 
 				} else {
 					while (dst <= size - 1) {
@@ -401,7 +401,7 @@ public final class QuickLZ {
 						}
 
 						out[dst++] = in[src++];
-						cword_val = cword_val >>> 1;
+                        cword_val >>>= 1;
 					}
 					return out;
 				}

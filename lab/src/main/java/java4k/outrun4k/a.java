@@ -300,9 +300,9 @@ public class a extends Applet implements Runnable {
         k = 0x67 + (int)((0x83 - 0x67) * mag);
         float scale = y < 128 ? 0.95f : 1f;
         scale -= 0.05f * random.nextFloat();
-        i = (int)(i * scale);
-        j = (int)(j * scale);
-        k = (int)(k * scale);
+        i *= scale;
+        j *= scale;
+        k *= scale;
         pixels[x] = (i << 16) | (j << 8) | k;
       }
       for(i = 0; i < 5; i++) {

@@ -358,7 +358,7 @@ public class SideScrollMinicraft {
             }
         } else if (level == 1) {
             if (tileSize < 128) {
-                tileSize = tileSize * 2;
+                tileSize *= 2;
                 for (Entity entity : entities) {
                     entity.widthPX *= 2;
                     entity.heightPX *= 2;
@@ -370,7 +370,7 @@ public class SideScrollMinicraft {
             }
         } else if (level == -1) {
             if (tileSize > 8) {
-                tileSize = tileSize / 2;
+                tileSize /= 2;
                 for (Entity entity : entities) {
                     entity.widthPX /= 2;
                     entity.heightPX /= 2;

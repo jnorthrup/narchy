@@ -72,7 +72,7 @@ class HijackBagTest {
         assertTrue(Math.abs(b.capacity() - b.size()) <= 2); 
 
         
-        b.setCapacity(cap = cap/2);
+        b.setCapacity(cap /= 2);
         assertEquals(cap, b.capacity());
         assertEquals(cap, b.space());
         assertTrue(cap >= b.size());
@@ -140,16 +140,6 @@ class HijackBagTest {
             int batch = 4;
             int extraSpace = Math.round(cap *0.4f);
             PLinkHijackBag bag = new PLinkHijackBag(plus, cap * extraSpace, rep) {
-
-                @Override
-                public void onRemove(Object value) {
-                    //fail("");
-                }
-
-                @Override
-                public void onReject(Object value) {
-                    //fail("");
-                }
 
 
             };

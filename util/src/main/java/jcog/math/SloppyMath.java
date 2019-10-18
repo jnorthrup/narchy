@@ -550,7 +550,7 @@ public final class SloppyMath {
     int currPow = b;
     do {
       if ((e & 1) == 1) result *= currPow;
-      currPow = currPow * currPow;
+        currPow *= currPow;
       e >>= 1;
     } while (e > 0);
     return result;
@@ -574,7 +574,7 @@ public final class SloppyMath {
     float currPow = b;
     do {
       if ((e & 1) == 1) result *= currPow;
-      currPow = currPow * currPow;
+        currPow *= currPow;
       e >>= 1;
     } while (e > 0);
     return result;
@@ -598,7 +598,7 @@ public final class SloppyMath {
     double currPow = b;
     do {
       if ((e & 1) == 1) result *= currPow;
-      currPow = currPow * currPow;
+        currPow *= currPow;
       e >>= 1;
     } while (e > 0);
     return result;

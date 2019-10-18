@@ -22,7 +22,7 @@ public class TemporalStabilityTests {
         private final @NotNull IntSet whens;
         private final IntToObjectFunction<String> eventer;
         private final int minT, maxT;
-        final int tolerance = 0;
+        static final int tolerance = 0;
 
         T1(IntToObjectFunction<String> eventer, int... whens) {
             this.whens = new IntHashSet(whens).toImmutable();

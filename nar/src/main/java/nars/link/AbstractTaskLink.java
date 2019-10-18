@@ -15,6 +15,7 @@ import nars.term.atom.Bool;
 import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static jcog.Util.assertFinite;
@@ -79,40 +80,40 @@ public abstract class AbstractTaskLink implements TaskLink {
 	}
 
 	@Override
-	public final Term why() {
-        Termed w = why;
-		return w!=null ? w.term() : null;
+	public Term why() {
+		return Optional.ofNullable(why).map(Termed::term).orElse(null);
 	}
 
 	@Override
-	public final @Nullable Term other(Term x, int xHashShort, boolean reverse) {
-		if (isSelf() || xHashShort != (reverse ? toHash() : fromHash()) || !x.equals(reverse ? to : from))
-			return null;
+	public @Nullable Term other(Term x, int xHashShort, boolean reverse) {
+		@Nullable Term result = null;
+		if (!isSelf() && xHashShort == (reverse ? toHash() : fromHash()) && x.equals(reverse ? to : from))
+			result = reverse ? from : to;
 
-		return reverse ? from : to;
+		return result;
 	}
 
 
-	public final int toHash() {
+	public int toHash() {
 		return (hash >>> 16);
 	}
 
-	public final int fromHash() {
+	public int fromHash() {
 		return (hash & 0xffff);
 	}
 
 	@Override
-	public final boolean isSelf() {
+	public boolean isSelf() {
 		return from == to;
 	}
 
 	@Override
-	public final TaskLink id() {
+	public TaskLink id() {
 		return this;
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj instanceof TaskLink && hash == obj.hashCode()) {
 			TaskLink t = (TaskLink) obj;
@@ -122,17 +123,17 @@ public abstract class AbstractTaskLink implements TaskLink {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		return hash;
 	}
 
 	@Override
-	public final Term from() {
+	public Term from() {
 		return from;
 	}
 
 	@Override
-	public final Term to() {
+	public Term to() {
 		return to;
 	}
 
@@ -169,7 +170,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 	}
 
 	@Override
-	public final boolean isDeleted() {
+	public boolean isDeleted() {
 		return false;
 	}
 
@@ -187,7 +188,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 	public abstract String toString();
 
 
-	public final AbstractTaskLink priSet(byte punc, float puncPri) {
+	public AbstractTaskLink priSet(byte punc, float puncPri) {
 		mergeComponent(punc, puncPri, PriMerge.replace, null);
 		return this;
 	}
@@ -225,7 +226,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 //        mergeComponent(punc, pri, merge, PriReturn.Void);
 //    }
 
-	public final float mergeComponent(byte punc, float pri, PriMerge merge, @Nullable PriReturn returning) {
+	public float mergeComponent(byte punc, float pri, PriMerge merge, @Nullable PriReturn returning) {
 		return merge(Task.i(punc), pri, merge, returning);
 	}
 
@@ -288,7 +289,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 //	}
 
 
-	public final @Nullable Term matchReverse(Term from, int fromHash, Term to, int toHash) {
+	public @Nullable Term matchReverse(Term from, int fromHash, Term to, int toHash) {
 		int f = fromHash();
 		if (f != fromHash &&
 			f != toHash &&

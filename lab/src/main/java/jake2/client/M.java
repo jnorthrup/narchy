@@ -168,10 +168,10 @@ public final class M {
         float speed = ent.yaw_speed;
         if (ideal > current) {
             if (move >= 180)
-                move = move - 360;
+                move -= 360;
         } else {
             if (move <= -180)
-                move = move + 360;
+                move += 360;
         }
         if (move > 0) {
             if (move > speed)

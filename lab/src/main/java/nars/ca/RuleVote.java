@@ -77,7 +77,7 @@ public class RuleVote {
 		for (i = 0; i <= 9; i++)
 			
 			if (RulesSB[i])
-				sBff = sBff + i;
+                sBff += i;
 
 		return sBff;
 	}

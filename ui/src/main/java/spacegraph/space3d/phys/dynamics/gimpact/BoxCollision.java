@@ -60,10 +60,10 @@ public class BoxCollision {
 		float pmin = VectorUtil.coord(pointa, i_comp_0) * dir0 + VectorUtil.coord(pointa, i_comp_1) * dir1;
 		float pmax = VectorUtil.coord(pointb, i_comp_0) * dir0 + VectorUtil.coord(pointb, i_comp_1) * dir1;
 		if (pmin > pmax) {
-			
-			pmin = pmin + pmax;
+
+            pmin += pmax;
 			pmax = pmin - pmax;
-			pmin = pmin - pmax;
+            pmin -= pmax;
 		}
 		float abs_dir0 = VectorUtil.coord(absolute_edge, i_dir_0);
 		float abs_dir1 = VectorUtil.coord(absolute_edge, i_dir_1);

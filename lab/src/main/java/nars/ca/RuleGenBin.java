@@ -48,8 +48,7 @@ public class RuleGenBin {
 					iNum = 1;
 				if ((sStr.charAt(i) == 'a') || (sStr.charAt(i) == 'b')) {
 					for (j = 0; j < iNum; j++) {
-						sRetString = sRetString
-								+ ((sStr.charAt(i) == 'a') ? "0" : "1");
+                        sRetString += ((sStr.charAt(i) == 'a') ? "0" : "1");
 					}
 					iNum = 0;
 				}
@@ -142,7 +141,7 @@ public class RuleGenBin {
 			if ((iThis != 0) && (iThis != 1))
 				iThis = 0;
 			if (iThis != iLast) {
-				sResult = sResult + OneToken(iLast, iCnt);
+                sResult += OneToken(iLast, iCnt);
 				iLast = iThis;
 				iCnt = 1;
 			} else
@@ -167,25 +166,25 @@ public class RuleGenBin {
 		
 		if (iNgh == MJRules.NGHTYP_NEUM) 
 		{
-			sBff = sBff + ",NN";
+            sBff += ",NN";
 			maxIdx = 15;
 		} else 
 		{
-			sBff = sBff + ",NM";
+            sBff += ",NM";
 			maxIdx = 255;
 		}
 
 
         String sTmp = "";
 		for (i = 0; i < maxIdx; i++) {
-			sTmp = sTmp + (rulesS[i] ? '1' : '0');
+            sTmp += (rulesS[i] ? '1' : '0');
 		}
 		sBff = sBff + ",S" + CompactIt(sTmp);
 
 		
 		sTmp = "";
 		for (i = 0; i < maxIdx; i++) {
-			sTmp = sTmp + (rulesB[i] ? '1' : '0');
+            sTmp += (rulesB[i] ? '1' : '0');
 		}
 		sBff = sBff + ",B" + CompactIt(sTmp);
 

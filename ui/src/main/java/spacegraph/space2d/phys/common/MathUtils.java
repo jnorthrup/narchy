@@ -256,7 +256,7 @@ public class MathUtils extends PlatformMathUtils {
     public static float reduceAngle(float theta) {
         theta %= TWOPI;
         if (Math.abs(theta) > PI) {
-            theta = theta - TWOPI;
+            theta -= TWOPI;
         }
         if (Math.abs(theta) > HALF_PI) {
             theta = PI - theta;

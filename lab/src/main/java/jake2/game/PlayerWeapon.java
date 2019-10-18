@@ -38,19 +38,15 @@ public class PlayerWeapon {
 
         @Override
         public boolean think(edict_t ent) {
-            if ((ent.client.newweapon != null)
-                    && (ent.client.weaponstate == Defines.WEAPON_READY)) {
+            boolean result = false;
+            if (ent.client.newweapon != null) if (ent.client.weaponstate == Defines.WEAPON_READY) {
                 ChangeWeapon(ent);
-                return true;
-            }
-
-            if (ent.client.weaponstate == Defines.WEAPON_ACTIVATING) {
+                result = true;
+            } else if (ent.client.weaponstate == Defines.WEAPON_ACTIVATING) {
                 ent.client.weaponstate = Defines.WEAPON_READY;
                 ent.client.ps.gunframe = 16;
-                return true;
-            }
-
-            if (ent.client.weaponstate == Defines.WEAPON_READY) {
+                result = true;
+            } else if (ent.client.weaponstate == Defines.WEAPON_READY)
                 if (((ent.client.latched_buttons | ent.client.buttons) & Defines.BUTTON_ATTACK) != 0) {
                     ent.client.latched_buttons &= ~Defines.BUTTON_ATTACK;
                     if (0 != ent.client.pers.inventory[ent.client.ammo_index]) {
@@ -67,71 +63,151 @@ public class PlayerWeapon {
                         }
                         NoAmmoWeaponChange(ent);
                     }
-                    return true;
-                }
-
-                if (IntStream.of(29, 34, 39, 48).anyMatch(i -> (ent.client.ps.gunframe == i))) {
-                    if ((Lib.rand() & 15) != 0)
-                        return true;
-                }
-
-                if (++ent.client.ps.gunframe > 48)
-                    ent.client.ps.gunframe = 16;
-                return true;
-            }
-
-            if (ent.client.weaponstate == Defines.WEAPON_FIRING) {
-                if (ent.client.ps.gunframe == 5)
-                    game_import_t.sound(ent, Defines.CHAN_WEAPON, game_import_t
-                            .soundindex("weapons/hgrena1b.wav"), 1,
-                            Defines.ATTN_NORM, 0);
-
-                if (ent.client.ps.gunframe == 11) {
-                    if (0 == ent.client.grenade_time) {
-                        ent.client.grenade_time = GameBase.level.time
-                                + Defines.GRENADE_TIMER + 0.2f;
-                        ent.client.weapon_sound = game_import_t
-                                .soundindex("weapons/hgrenc1b.wav");
+                    result = true;
+                } else {
+                    if (IntStream.of(29, 34, 39, 48).anyMatch(i -> (ent.client.ps.gunframe == i)))
+                        if ((Lib.rand() & 15) != 0) result = true;
+                    if (!result) {
+                        if (++ent.client.ps.gunframe > 48)
+                            ent.client.ps.gunframe = 16;
+                        result = true;
                     }
+                }
+            else {
+                if (ent.client.weaponstate == Defines.WEAPON_FIRING) {
+                    if (ent.client.ps.gunframe == 5)
+                        game_import_t.sound(ent, Defines.CHAN_WEAPON, game_import_t
+                                        .soundindex("weapons/hgrena1b.wav"), 1,
+                                Defines.ATTN_NORM, 0);
 
-                    
-                    if (!ent.client.grenade_blew_up
-                            && GameBase.level.time >= ent.client.grenade_time) {
-                        ent.client.weapon_sound = 0;
-                        weapon_grenade_fire(ent, true);
-                        ent.client.grenade_blew_up = true;
-                    }
+                    if (ent.client.ps.gunframe == 11) {
+                        if (0 == ent.client.grenade_time) {
+                            ent.client.grenade_time = GameBase.level.time
+                                    + Defines.GRENADE_TIMER + 0.2f;
+                            ent.client.weapon_sound = game_import_t
+                                    .soundindex("weapons/hgrenc1b.wav");
+                        }
 
-                    if ((ent.client.buttons & Defines.BUTTON_ATTACK) != 0)
-                        return true;
 
-                    if (ent.client.grenade_blew_up) {
-                        if (GameBase.level.time >= ent.client.grenade_time) {
+                        if (!ent.client.grenade_blew_up
+                                && GameBase.level.time >= ent.client.grenade_time) {
+                            ent.client.weapon_sound = 0;
+                            weapon_grenade_fire(ent, true);
+                            ent.client.grenade_blew_up = true;
+                        }
+
+                        if ((ent.client.buttons & Defines.BUTTON_ATTACK) != 0) result = true;
+                        else if (ent.client.grenade_blew_up) if (GameBase.level.time >= ent.client.grenade_time) {
                             ent.client.ps.gunframe = 15;
                             ent.client.grenade_blew_up = false;
-                        } else {
-                            return true;
+                        } else result = true;
+
+                    }
+                    if (!result) {
+                        if (ent.client.ps.gunframe == 12) {
+                            ent.client.weapon_sound = 0;
+                            weapon_grenade_fire(ent, false);
                         }
+
+                        if ((ent.client.ps.gunframe == 15)
+                                && (GameBase.level.time < ent.client.grenade_time)) result = true;
+                        else {
+                            ent.client.ps.gunframe++;
+                            if (ent.client.ps.gunframe == 16) {
+                                ent.client.grenade_time = 0;
+                                ent.client.weaponstate = Defines.WEAPON_READY;
+                            }
+                        }
+
+                    }
+
+                }
+                if (!result) result = true;
+            }
+            else if (ent.client.weaponstate == Defines.WEAPON_ACTIVATING) {
+                ent.client.weaponstate = Defines.WEAPON_READY;
+                ent.client.ps.gunframe = 16;
+                result = true;
+            } else if (ent.client.weaponstate == Defines.WEAPON_READY)
+                if (((ent.client.latched_buttons | ent.client.buttons) & Defines.BUTTON_ATTACK) != 0) {
+                    ent.client.latched_buttons &= ~Defines.BUTTON_ATTACK;
+                    if (0 != ent.client.pers.inventory[ent.client.ammo_index]) {
+                        ent.client.ps.gunframe = 1;
+                        ent.client.weaponstate = Defines.WEAPON_FIRING;
+                        ent.client.grenade_time = 0;
+                    } else {
+                        if (GameBase.level.time >= ent.pain_debounce_time) {
+                            game_import_t.sound(ent, Defines.CHAN_VOICE,
+                                    game_import_t
+                                            .soundindex("weapons/noammo.wav"),
+                                    1, Defines.ATTN_NORM, 0);
+                            ent.pain_debounce_time = GameBase.level.time + 1;
+                        }
+                        NoAmmoWeaponChange(ent);
+                    }
+                    result = true;
+                } else {
+                    if (IntStream.of(29, 34, 39, 48).anyMatch(i -> (ent.client.ps.gunframe == i)))
+                        if ((Lib.rand() & 15) != 0) result = true;
+                    if (!result) {
+                        if (++ent.client.ps.gunframe > 48)
+                            ent.client.ps.gunframe = 16;
+                        result = true;
                     }
                 }
+            else {
+                if (ent.client.weaponstate == Defines.WEAPON_FIRING) {
+                    if (ent.client.ps.gunframe == 5)
+                        game_import_t.sound(ent, Defines.CHAN_WEAPON, game_import_t
+                                        .soundindex("weapons/hgrena1b.wav"), 1,
+                                Defines.ATTN_NORM, 0);
 
-                if (ent.client.ps.gunframe == 12) {
-                    ent.client.weapon_sound = 0;
-                    weapon_grenade_fire(ent, false);
+                    if (ent.client.ps.gunframe == 11) {
+                        if (0 == ent.client.grenade_time) {
+                            ent.client.grenade_time = GameBase.level.time
+                                    + Defines.GRENADE_TIMER + 0.2f;
+                            ent.client.weapon_sound = game_import_t
+                                    .soundindex("weapons/hgrenc1b.wav");
+                        }
+
+
+                        if (!ent.client.grenade_blew_up
+                                && GameBase.level.time >= ent.client.grenade_time) {
+                            ent.client.weapon_sound = 0;
+                            weapon_grenade_fire(ent, true);
+                            ent.client.grenade_blew_up = true;
+                        }
+
+                        if ((ent.client.buttons & Defines.BUTTON_ATTACK) != 0) result = true;
+                        else if (ent.client.grenade_blew_up) if (GameBase.level.time >= ent.client.grenade_time) {
+                            ent.client.ps.gunframe = 15;
+                            ent.client.grenade_blew_up = false;
+                        } else result = true;
+
+                    }
+                    if (!result) {
+                        if (ent.client.ps.gunframe == 12) {
+                            ent.client.weapon_sound = 0;
+                            weapon_grenade_fire(ent, false);
+                        }
+
+                        if ((ent.client.ps.gunframe == 15)
+                                && (GameBase.level.time < ent.client.grenade_time)) result = true;
+                        else {
+                            ent.client.ps.gunframe++;
+                            if (ent.client.ps.gunframe == 16) {
+                                ent.client.grenade_time = 0;
+                                ent.client.weaponstate = Defines.WEAPON_READY;
+                            }
+                        }
+
+                    }
+
                 }
-
-                if ((ent.client.ps.gunframe == 15)
-                        && (GameBase.level.time < ent.client.grenade_time))
-                    return true;
-
-                ent.client.ps.gunframe++;
-
-                if (ent.client.ps.gunframe == 16) {
-                    ent.client.grenade_time = 0;
-                    ent.client.weaponstate = Defines.WEAPON_READY;
-                }
+                if (!result) result = true;
             }
-            return true;
+
+            return result;
         }
     };
 
@@ -321,9 +397,8 @@ public class PlayerWeapon {
             ent.client.weapon_sound = game_import_t
                     .soundindex("weapons/hyprbl1a.wav");
 
-            if (0 == (ent.client.buttons & Defines.BUTTON_ATTACK)) {
-                ent.client.ps.gunframe++;
-            } else {
+            if (0 == (ent.client.buttons & Defines.BUTTON_ATTACK)) ent.client.ps.gunframe++;
+            else {
                 if (0 == ent.client.pers.inventory[ent.client.ammo_index]) {
                     if (GameBase.level.time >= ent.pain_debounce_time) {
                         game_import_t.sound(ent, Defines.CHAN_VOICE, game_import_t
@@ -957,21 +1032,16 @@ public class PlayerWeapon {
                 return true;
             } else if ((ent.client.ps.gunframe == 21)
                     && (ent.client.buttons & Defines.BUTTON_ATTACK) != 0
-                    && 0 != ent.client.pers.inventory[ent.client.ammo_index]) {
-                ent.client.ps.gunframe = 15;
-            } else {
-                ent.client.ps.gunframe++;
-            }
+                    && 0 != ent.client.pers.inventory[ent.client.ammo_index]) ent.client.ps.gunframe = 15;
+            else ent.client.ps.gunframe++;
 
             if (ent.client.ps.gunframe == 22) {
                 ent.client.weapon_sound = 0;
                 game_import_t.sound(ent, Defines.CHAN_AUTO, game_import_t
                         .soundindex("weapons/chngnd1a.wav"), 1,
                         Defines.ATTN_IDLE, 0);
-            } else {
-                ent.client.weapon_sound = game_import_t
-                        .soundindex("weapons/chngnl1a.wav");
-            }
+            } else ent.client.weapon_sound = game_import_t
+                    .soundindex("weapons/chngnl1a.wav");
 
             ent.client.anim_priority = Defines.ANIM_ATTACK;
             if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
@@ -986,12 +1056,11 @@ public class PlayerWeapon {
 
             if (ent.client.ps.gunframe <= 9)
                 shots = 1;
-            else if (ent.client.ps.gunframe <= 14) {
-                if ((ent.client.buttons & Defines.BUTTON_ATTACK) != 0)
-                    shots = 2;
-                else
-                    shots = 1;
-            } else
+            else if (ent.client.ps.gunframe <= 14) if ((ent.client.buttons & Defines.BUTTON_ATTACK) != 0)
+                shots = 2;
+            else
+                shots = 1;
+            else
                 shots = 3;
 
             if (ent.client.pers.inventory[ent.client.ammo_index] < shots)
@@ -1063,10 +1132,9 @@ public class PlayerWeapon {
             int index = GameItems.ITEM_INDEX(ent.item);
     
             if ((((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY) != 0 || GameBase.coop.value != 0)
-                    && 0 != other.client.pers.inventory[index]) {
+                    && 0 != other.client.pers.inventory[index])
                 if (0 == (ent.spawnflags & (Defines.DROPPED_ITEM | Defines.DROPPED_PLAYER_ITEM)))
-                    return false; 
-            }
+                    return false;
     
             other.client.pers.inventory[index]++;
     
@@ -1079,12 +1147,11 @@ public class PlayerWeapon {
                     GameItems.Add_Ammo(other, ammo, ammo.quantity);
     
                 if (0 == (ent.spawnflags & Defines.DROPPED_PLAYER_ITEM)) {
-                    if (GameBase.deathmatch.value != 0) {
+                    if (GameBase.deathmatch.value != 0)
                         if (((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY) != 0)
                             ent.flags |= Defines.FL_RESPAWN;
                         else
                             GameItems.SetRespawn(ent, 30);
-                    }
                     if (GameBase.coop.value != 0)
                         ent.flags |= Defines.FL_RESPAWN;
                 }
@@ -1181,46 +1248,36 @@ public class PlayerWeapon {
         if (0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                 .FindItem("slugs"))]
                 && 0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
-                        .FindItem("railgun"))]) {
+                .FindItem("railgun"))]) {
             ent.client.newweapon = GameItems.FindItem("railgun");
-            return;
-        }
-        if (0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
+        } else if (0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                 .FindItem("cells"))]
                 && 0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
-                        .FindItem("hyperblaster"))]) {
+                .FindItem("hyperblaster"))]) {
             ent.client.newweapon = GameItems.FindItem("hyperblaster");
-            return;
-        }
-        if (0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
+        } else if (0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                 .FindItem("bullets"))]
                 && 0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
-                        .FindItem("chaingun"))]) {
+                .FindItem("chaingun"))]) {
             ent.client.newweapon = GameItems.FindItem("chaingun");
-            return;
-        }
-        if (0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
+        } else if (0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                 .FindItem("bullets"))]
                 && 0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
-                        .FindItem("machinegun"))]) {
+                .FindItem("machinegun"))]) {
             ent.client.newweapon = GameItems.FindItem("machinegun");
-            return;
-        }
-        if (ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
+        } else if (ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                 .FindItem("shells"))] > 1
                 && 0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
-                        .FindItem("super shotgun"))]) {
+                .FindItem("super shotgun"))]) {
             ent.client.newweapon = GameItems.FindItem("super shotgun");
-            return;
-        }
-        if (0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
+        } else if (0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                 .FindItem("shells"))]
                 && 0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
-                        .FindItem("shotgun"))]) {
+                .FindItem("shotgun"))]) {
             ent.client.newweapon = GameItems.FindItem("shotgun");
-            return;
+        } else {
+            ent.client.newweapon = GameItems.FindItem("blaster");
         }
-        ent.client.newweapon = GameItems.FindItem("blaster");
     }
 
     /*
@@ -1267,11 +1324,9 @@ public class PlayerWeapon {
 
         int n;
 
-        if (ent.deadflag != 0 || ent.s.modelindex != 255) 
-        
-        {
+        if (ent.deadflag != 0 || ent.s.modelindex != 255)
+
             return;
-        }
 
         if (ent.client.weaponstate == Defines.WEAPON_DROPPING) {
             if (ent.client.ps.gunframe == FRAME_DEACTIVATE_LAST) {
@@ -1322,7 +1377,7 @@ public class PlayerWeapon {
             return;
         }
 
-        if (ent.client.weaponstate == Defines.WEAPON_READY) {
+        if (ent.client.weaponstate == Defines.WEAPON_READY)
             if (((ent.client.latched_buttons | ent.client.buttons) & Defines.BUTTON_ATTACK) != 0) {
                 ent.client.latched_buttons &= ~Defines.BUTTON_ATTACK;
                 if ((0 == ent.client.ammo_index)
@@ -1330,7 +1385,7 @@ public class PlayerWeapon {
                     ent.client.ps.gunframe = FRAME_FIRE_FIRST;
                     ent.client.weaponstate = Defines.WEAPON_FIRING;
 
-                    
+
                     ent.client.anim_priority = Defines.ANIM_ATTACK;
                     if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
                         ent.s.frame = M_Player.FRAME_crattak1 - 1;
@@ -1342,7 +1397,7 @@ public class PlayerWeapon {
                 } else {
                     if (GameBase.level.time >= ent.pain_debounce_time) {
                         game_import_t.sound(ent, Defines.CHAN_VOICE, game_import_t
-                                .soundindex("weapons/noammo.wav"), 1,
+                                        .soundindex("weapons/noammo.wav"), 1,
                                 Defines.ATTN_NORM, 0);
                         ent.pain_debounce_time = GameBase.level.time + 1;
                     }
@@ -1354,32 +1409,25 @@ public class PlayerWeapon {
                     return;
                 }
 
-                if (pause_frames != null) {
-                    for (n = 0; pause_frames[n] != 0; n++) {
-                        if (ent.client.ps.gunframe == pause_frames[n]) {
-                            if ((Lib.rand() & 15) != 0)
-                                return;
-                        }
-                    }
-                }
+                if (pause_frames != null) for (n = 0; pause_frames[n] != 0; n++)
+                    if (ent.client.ps.gunframe == pause_frames[n]) if ((Lib.rand() & 15) != 0)
+                        return;
 
                 ent.client.ps.gunframe++;
                 return;
             }
-        }
 
         if (ent.client.weaponstate == Defines.WEAPON_FIRING) {
-            for (n = 0; fire_frames[n] != 0; n++) {
+            for (n = 0; fire_frames[n] != 0; n++)
                 if (ent.client.ps.gunframe == fire_frames[n]) {
                     if (ent.client.quad_framenum > GameBase.level.framenum)
                         game_import_t.sound(ent, Defines.CHAN_ITEM, game_import_t
-                                .soundindex("items/damage3.wav"), 1,
+                                        .soundindex("items/damage3.wav"), 1,
                                 Defines.ATTN_NORM, 0);
 
                     fire.think(ent);
                     break;
                 }
-            }
 
             if (0 == fire_frames[n])
                 ent.client.ps.gunframe++;
@@ -1422,11 +1470,9 @@ public class PlayerWeapon {
 
         ent.client.grenade_time = GameBase.level.time + 1.0f;
 
-        if (ent.deadflag != 0 || ent.s.modelindex != 255) 
-        
-        {
+        if (ent.deadflag != 0 || ent.s.modelindex != 255)
+
             return;
-        }
 
         if (ent.health <= 0)
             return;
@@ -1495,11 +1541,9 @@ public class PlayerWeapon {
     static void PlayerNoise(edict_t who, float[] where, int type) {
         edict_t noise;
     
-        if (type == Defines.PNOISE_WEAPON) {
-            if (who.client.silencer_shots > 0) {
-                who.client.silencer_shots--;
-                return;
-            }
+        if (type == Defines.PNOISE_WEAPON) if (who.client.silencer_shots > 0) {
+            who.client.silencer_shots--;
+            return;
         }
     
         if (GameBase.deathmatch.value != 0)

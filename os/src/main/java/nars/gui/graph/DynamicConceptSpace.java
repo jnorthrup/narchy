@@ -42,7 +42,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
     protected final Bagregate<Concept> concepts;
 
     private final Flip<List<ConceptWidget>> next = new Flip(FasterList::new);
-    final float bagUpdateRate = 0.25f;
+    static final float bagUpdateRate = 0.25f;
 
 
     static volatile int serial = 0;

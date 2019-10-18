@@ -324,7 +324,7 @@ public abstract class MetaAgent extends Game {
 		/**
 		 * in case it forgets to unpause
 		 */
-		private final long autoResumePeriod = 256;
+		private static final long autoResumePeriod = 256;
 
         public GameMetaAgent(Game g, boolean allowPause) {
 			super($.inh(g.what().id, $$("meta")), g.time.chain(2 /* nyquist */), g.nar);

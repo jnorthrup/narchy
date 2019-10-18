@@ -28,13 +28,13 @@ import java.util.Random;
 public class A extends Applet implements Runnable {
 
 	
-	private final int GAMESTART = -1;
-	private final int GAMEPAUSE = 0;
-	private final int GAMEINIT = 1;
-	private final int GAMERUN = 2;
-    private final int GAMEWIN = 4;
-    private final int _X = 0;
-	private final int _Y = 1;
+	private static final int GAMESTART = -1;
+	private static final int GAMEPAUSE = 0;
+	private static final int GAMEINIT = 1;
+	private static final int GAMERUN = 2;
+    private static final int GAMEWIN = 4;
+    private static final int _X = 0;
+	private static final int _Y = 1;
 
 
     private final String[] text = {"", "Thrusters Upgrade Unlocked!", "", "Double Damage Unlocked!", "",
@@ -42,20 +42,20 @@ public class A extends Applet implements Runnable {
     private final String[] textlvl = {"Please! Don't hurt me captain galaxy!",
             "I love the smell of laser in the morning.", "Do you know Chuck norris? it's my follower!"};
 
-    private final int MAP1T = 3;
+    private static final int MAP1T = 3;
 
-    private final int EXPLODE_FOE = 10;
-	private final int EXPLODE_S = 110;
-	private final int SHIP_HIT = 120;
+    private static final int EXPLODE_FOE = 10;
+	private static final int EXPLODE_S = 110;
+	private static final int SHIP_HIT = 120;
 
-    private final int SHOOT2 = 150;
+    private static final int SHOOT2 = 150;
 
-    private final int SHIP_S = 152;
-	private final int SHIP_E = 159;
-	private final int SHOOT1 = 159;
-	private final int E_SHOOT = 160;
-    private final int CUR = 173;
-	private final int FOE = 174;
+    private static final int SHIP_S = 152;
+	private static final int SHIP_E = 159;
+	private static final int SHOOT1 = 159;
+	private static final int E_SHOOT = 160;
+    private static final int CUR = 173;
+	private static final int FOE = 174;
 
     private final float[] BLUR = { .1f, .1f, .1f, .1f, .21f, .1f, .1f, .1f, .1f };
 	private final Color[][] color = new Color[5][60];
@@ -496,7 +496,7 @@ public class A extends Applet implements Runnable {
 						if (enemy[4][j] != 0) {
 							l = x - enemy[0][j];
 							i = x - (l / 2);
-							l = l * l;
+                            l *= l;
 							if (((l < 4096 && enemy[6][j] == 1) || l < 1024) && enemy[1][j] < y) {
 								
 								enemy[5][j] -= shootdmg / 4;
@@ -610,7 +610,7 @@ public class A extends Applet implements Runnable {
 						break;
 				}
 				if (i == 128) {
-					score = score / 2;
+                    score /= 2;
 					gamestatus = GAMEPAUSE;
 				}
 				break;

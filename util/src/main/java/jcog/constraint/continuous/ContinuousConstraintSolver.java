@@ -8,6 +8,7 @@ import jcog.constraint.continuous.exceptions.UnsatisfiableConstraintException;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by alex on 30/01/15.
@@ -47,7 +48,7 @@ public class ContinuousConstraintSolver {
     public final Map<DoubleVar, Symbol> vars = new LinkedHashMap<>();
     protected final List<Symbol> infeasibleRows = new ArrayList<>();
     protected final Row objective = new Row();
-    private Row artificial;
+    private Row artificial = null;
 
 
     /**
@@ -63,9 +64,9 @@ public class ContinuousConstraintSolver {
             throw new DuplicateConstraintException(constraint);
         }
 
-        Tag tag = new Tag();
-        Row row = createRow(constraint, tag);
-        Symbol subject = chooseSubject(row, tag);
+        var tag = new Tag();
+        var row = createRow(constraint, tag);
+        var subject = chooseSubject(row, tag);
 
         if (subject.type == Symbol.Type.INVALID && allDummies(row)) {
             if (!nearZero(row.getConstant())) {
@@ -81,30 +82,30 @@ public class ContinuousConstraintSolver {
         } else {
             row.solveFor(subject);
             substitute(subject, row);
-            this.rows.put(subject, row);
+            rows.put(subject, row);
         }
 
-        this.cns.put(constraint, tag);
+        cns.put(constraint, tag);
 
         optimize(objective);
     }
 
     public void remove(ContinuousConstraint constraint) throws UnknownConstraintException, InternalSolverError {
-        Tag tag = cns.get(constraint);
+        var tag = cns.get(constraint);
         if (tag == null)
             throw new UnknownConstraintException(constraint);
 
         cns.remove(constraint);
         removeConstraintEffects(constraint, tag);
 
-        Row row = rows.remove(tag.marker);
+        var row = rows.remove(tag.marker);
         if (row == null) {
             row = getMarkerLeavingRow(tag.marker);
             if (row == null)
                 throw new InternalSolverError("internal solver error");
 
             Symbol leaving = null;
-            for (Map.Entry<Symbol, Row> s : rows.entrySet()) {
+            for (var s : rows.entrySet()) {
                 if (s.getValue() == row) {
                     leaving = s.getKey();
                     break;
@@ -129,7 +130,7 @@ public class ContinuousConstraintSolver {
     }
 
     void removeMarkerEffects(Symbol marker, double strength) {
-        Row row = rows.get(marker);
+        var row = rows.get(marker);
         if (row != null) {
             objective.insert(row, -strength);
         } else {
@@ -138,30 +139,30 @@ public class ContinuousConstraintSolver {
     }
 
     Row getMarkerLeavingRow(Symbol marker) {
-        double dmax = Double.MAX_VALUE;
-        double r1 = dmax;
-        double r2 = dmax;
+        var dmax = Double.MAX_VALUE;
+        var r1 = dmax;
+        var r2 = dmax;
 
         Row first = null;
         Row second = null;
         Row third = null;
 
-        for (Map.Entry<Symbol, Row> symbolRowEntry : rows.entrySet()) {
-            Row candidateRow = symbolRowEntry.getValue();
-            double c = candidateRow.coefficientFor(marker);
+        for (var symbolRowEntry : rows.entrySet()) {
+            var candidateRow = symbolRowEntry.getValue();
+            var c = candidateRow.coefficientFor(marker);
             if (c == 0.0) {
                 continue;
             }
             if ((symbolRowEntry.getKey()).type == Symbol.Type.EXTERNAL) {
                 third = candidateRow;
             } else if (c < 0.0) {
-                double r = -candidateRow.getConstant() / c;
+                var r = -candidateRow.getConstant() / c;
                 if (r < r1) {
                     r1 = r;
                     first = candidateRow;
                 }
             } else {
-                double r = candidateRow.getConstant() / c;
+                var r = candidateRow.getConstant() / c;
                 if (r < r2) {
                     r2 = r;
                     second = candidateRow;
@@ -183,7 +184,7 @@ public class ContinuousConstraintSolver {
     public void update() {
 
         vars.forEach((key, value) -> {
-            Row row = this.rows.get(value);
+            var row = rows.get(value);
             if (row!=null)
                 key.value(row.getConstant());
         });
@@ -208,19 +209,19 @@ public class ContinuousConstraintSolver {
      * for tracking the movement of the constraint in the tableau.
      */
     Row createRow(ContinuousConstraint constraint, Tag tag) {
-        Expression expression = constraint.expression;
-        Row row = new Row(expression.getConstant());
+        var expression = constraint.expression;
+        var row = new Row(expression.getConstant());
 
-        List<DoubleTerm> terms = expression.terms;
+        var terms = expression.terms;
         for (int i = 0, termsSize = terms.size(); i < termsSize; i++) {
-            DoubleTerm term = terms.get(i);
-            double coefficient = term.coefficient;
+            var term = terms.get(i);
+            var coefficient = term.coefficient;
             if (!nearZero(coefficient)) {
 
                 if (term.var instanceof DoubleVar) {
-                    Symbol symbol = getVarSymbol(((DoubleVar)term.var));
+                    var symbol = getVarSymbol(((DoubleVar)term.var));
 
-                    Row otherRow = rows.get(symbol);
+                    var otherRow = rows.get(symbol);
 
                     if (otherRow == null) {
                         row.insert(symbol, coefficient);
@@ -231,34 +232,34 @@ public class ContinuousConstraintSolver {
             }
         }
 
-        double str = constraint.strength();
+        var str = constraint.strength();
 
         switch (constraint.op) {
             case LessThanOrEqual:
             case GreaterThanOrEqual:
-                double coeff = constraint.op == ScalarComparison.LessThanOrEqual ? 1.0 : -1.0;
-                Symbol slack = new Symbol(Symbol.Type.SLACK);
+                var coeff = constraint.op == ScalarComparison.LessThanOrEqual ? 1.0 : -1.0;
+                var slack = new Symbol(Symbol.Type.SLACK);
                 tag.marker = slack;
                 row.insert(slack, coeff);
                 if (str < Strength.REQUIRED) {
-                    Symbol error = new Symbol(Symbol.Type.ERROR);
+                    var error = new Symbol(Symbol.Type.ERROR);
                     tag.other = error;
                     row.insert(error, -coeff);
-                    this.objective.insert(error, str);
+                    objective.insert(error, str);
                 }
                 break;
             case Equal:
                 if (str < Strength.REQUIRED) {
-                    Symbol errplus = new Symbol(Symbol.Type.ERROR);
-                    Symbol errminus = new Symbol(Symbol.Type.ERROR);
+                    var errplus = new Symbol(Symbol.Type.ERROR);
+                    var errminus = new Symbol(Symbol.Type.ERROR);
                     tag.marker = errplus;
                     tag.other = errminus;
                     row.insert(errplus, -1.0); 
-                    row.insert(errminus, 1.0); 
-                    this.objective.insert(errplus, str);
-                    this.objective.insert(errminus, str);
+                    row.insert(errminus, 1.0);
+                    objective.insert(errplus, str);
+                    objective.insert(errminus, str);
                 } else {
-                    Symbol dummy = new Symbol(Symbol.Type.DUMMY);
+                    var dummy = new Symbol(Symbol.Type.DUMMY);
                     tag.marker = dummy;
                     row.insert(dummy);
                 }
@@ -286,7 +287,7 @@ public class ContinuousConstraintSolver {
      */
     private static Symbol chooseSubject(Row row, Tag tag) {
 
-        for (Map.Entry<Symbol, Double> cell : row.cells.entrySet()) {
+        for (var cell : row.cells.entrySet()) {
             if (cell.getKey().type == Symbol.Type.EXTERNAL) {
                 return cell.getKey();
             }
@@ -307,58 +308,60 @@ public class ContinuousConstraintSolver {
      * <p/>
      * This will return false if the constraint cannot be satisfied.
      */
-    private boolean addWithArtificialVariable(Row row) {
-        
+    private boolean  addWithArtificialVariable(Row row) {
+        boolean res = false;
+        boolean completed = false;
 
-        
 
-        Symbol art = new Symbol(Symbol.Type.SLACK);
+        var art = new Symbol(Symbol.Type.SLACK);
         rows.put(art, new Row(row));
 
-        this.artificial = new Row(row);
+        boolean success;
+        {
+            artificial = new Row(row);
 
-        
-        
-        optimize(this.artificial);
-        boolean success = nearZero(artificial.getConstant());
-        artificial = null;
 
-        
-        
-
-        Row rowptr = this.rows.get(art);
-
-        if (rowptr != null) {
-
-            /**this looks wrong!!!*/
-            
-
-            LinkedList<Symbol> deleteQueue = rows.entrySet().stream().filter(symbolRowEntry -> symbolRowEntry.getValue() == rowptr).map(Map.Entry::getKey).collect(Collectors.toCollection(LinkedList::new));
-            while (!deleteQueue.isEmpty()) {
-                rows.remove(deleteQueue.pop());
-            }
-
-            if (rowptr.cells.isEmpty()) {
-                return success;
-            }
-
-            deleteQueue.clear();
-
-            Symbol entering = anyPivotableSymbol(rowptr);
-            if (entering.type == Symbol.Type.INVALID) {
-                return false; 
-            }
-            rowptr.solveFor(art, entering);
-            substitute(entering, rowptr);
-            this.rows.put(entering, rowptr);
+            optimize(artificial);
+            success = nearZero(artificial.getConstant());
+            artificial = null;
         }
 
-        
-        rows.values().forEach(r -> r.remove(art));
 
-        objective.remove(art);
+        var rowptr = rows.get(art);
 
-        return success;
+        if (rowptr != null) {
+            var deleteQueue = new ArrayList<>();
+            rows.forEach((key, value) -> {
+                if (value == rowptr) deleteQueue.add(key);
+            });
+            deleteQueue.forEach(symbol -> rows.remove(symbol));
+
+            if (rowptr.cells.isEmpty()) {
+                res = success;
+                completed = true;
+            } else {
+                deleteQueue.clear();
+                var entering = anyPivotableSymbol(rowptr);
+                if (entering.type == Symbol.Type.INVALID) {
+                    completed = true;
+                } else {
+                    rowptr.solveFor(art, entering);
+                    substitute(entering, rowptr);
+                    rows.put(entering, rowptr);
+                }
+            }
+
+        }
+        if (!completed) {
+            rows.values().forEach(r -> r.remove(art));
+
+            objective.remove(art);
+
+            res = success;
+        }
+
+
+        return res;
     }
 
     /**
@@ -368,10 +371,10 @@ public class ContinuousConstraintSolver {
      * in the tableau and the objective function with the given row.
      */
     void substitute(Symbol symbol, Row row) {
-        for (Map.Entry<Symbol, Row> rowEntry : rows.entrySet()) {
-            Row v = rowEntry.getValue();
+        for (var rowEntry : rows.entrySet()) {
+            var v = rowEntry.getValue();
             v.substitute(symbol, row);
-            Symbol k = rowEntry.getKey();
+            var k = rowEntry.getKey();
             if (k.type != Symbol.Type.EXTERNAL && v.getConstant() < 0.0) {
                 infeasibleRows.add(k);
             }
@@ -394,18 +397,18 @@ public class ContinuousConstraintSolver {
      */
     void optimize(Row objective) {
         while (true) {
-            Symbol entering = getEnteringSymbol(objective);
+            var entering = getEnteringSymbol(objective);
             if (entering.type == Symbol.Type.INVALID) {
                 return;
             }
 
-            Row entry = getLeavingRow(entering);
+            var entry = getLeavingRow(entering);
             if (entry == null) {
                 throw new InternalSolverError("The objective is unbounded.");
             }
 
             Symbol leaving = null;
-            for (Map.Entry<Symbol, Row> key : rows.entrySet()) {
+            for (var key : rows.entrySet()) {
                 if (key.getValue() == entry) {
                     leaving = key.getKey();
                 }
@@ -429,9 +432,9 @@ public class ContinuousConstraintSolver {
      */
     private static Symbol getEnteringSymbol(Row objective) {
 
-        for (Map.Entry<Symbol, Double> cell : objective.cells.entrySet()) {
+        for (var cell : objective.cells.entrySet()) {
 
-            Symbol k = cell.getKey();
+            var k = cell.getKey();
             if (k.type != Symbol.Type.DUMMY && cell.getValue() < 0.0) {
                 return k;
             }
@@ -447,7 +450,7 @@ public class ContinuousConstraintSolver {
      * If no such symbol is present, and Invalid symbol will be returned.
      */
     private static Symbol anyPivotableSymbol(Row row) {
-        Symbol symbol =
+        var symbol =
                 row.cells.keySet().stream()
                         .filter(k -> k.type == Symbol.Type.SLACK || k.type == Symbol.Type.ERROR)
                         .findFirst().orElseGet(() -> new Symbol(Symbol.Type.INVALID));
@@ -476,15 +479,15 @@ public class ContinuousConstraintSolver {
      * the objective function is unbounded.
      */
     private Row getLeavingRow(Symbol entering) {
-        double ratio = Double.MAX_VALUE;
+        var ratio = Double.MAX_VALUE;
         Row row = null;
 
-        for (Map.Entry<Symbol, Row> symbolRowEntry : rows.entrySet()) {
+        for (var symbolRowEntry : rows.entrySet()) {
             if ((symbolRowEntry.getKey()).type != Symbol.Type.EXTERNAL) {
-                Row candidateRow = symbolRowEntry.getValue();
-                double temp = candidateRow.coefficientFor(entering);
+                var candidateRow = symbolRowEntry.getValue();
+                var temp = candidateRow.coefficientFor(entering);
                 if (temp < 0) {
-                    double temp_ratio = (-candidateRow.getConstant() / temp);
+                    var temp_ratio = (-candidateRow.getConstant() / temp);
                     if (temp_ratio < ratio) {
                         ratio = temp_ratio;
                         row = candidateRow;

@@ -421,7 +421,7 @@ class MJCellUI extends Frame {
 			String str = "";
 			iLen = 20 - iLen;
 			while (iLen-- > 0)
-				str = str + ' ';
+                str += ' ';
 			lblRule.setText(lblRule.getText() + str);
 		}
 	}

@@ -309,8 +309,8 @@ public class KIFParser {
                     totalLinesForComments += countChar(com, (char) 0X0A);
                     expression.append(com);
                     expression.append('"');
-                    if (parenLevel < 2) 
-                        argumentNum = argumentNum + 1;
+                    if (parenLevel < 2)
+                        argumentNum += 1;
                 }
                 else if ((st.ttype == StreamTokenizer.TT_NUMBER) || 
                         (st.sval != null && (Character.isDigit(st.sval.charAt(0))))) {
@@ -320,14 +320,14 @@ public class KIFParser {
                         expression.append(st.sval);
                     else
                         expression.append(st.nval);
-                    if (parenLevel < 2) 
-                        argumentNum = argumentNum + 1;
+                    if (parenLevel < 2)
+                        argumentNum += 1;
                 }
                 else if (st.ttype == StreamTokenizer.TT_WORD) { 
                     if (("=>".equals(st.sval) || "<=>".equals(st.sval)) && parenLevel == 1)
                         inRule = true; 
-                    if (parenLevel < 2) 
-                        argumentNum = argumentNum + 1;
+                    if (parenLevel < 2)
+                        argumentNum += 1;
                     if (lastVal != 40) 
                         expression.append(' ');
                     expression.append(st.sval);
@@ -404,24 +404,24 @@ public class KIFParser {
         }
         String key = "";
         if (inAntecedent) {
-            key = key.concat("ant-");
-            key = key.concat(sval);
+            key += "ant-";
+            key += sval;
         }
 
         if (inConsequent) {
-            key = key.concat("cons-");
-            key = key.concat(sval);
+            key += "cons-";
+            key += sval;
         }
 
         if (!inAntecedent && !inConsequent && (parenLevel == 1)) {
-            key = key.concat("arg-");
-            key = key.concat(String.valueOf(argumentNum));
-            key = key.concat("-");
-            key = key.concat(sval);
+            key += "arg-";
+            key += String.valueOf(argumentNum);
+            key += "-";
+            key += sval;
         }
         if (!inAntecedent && !inConsequent && (parenLevel > 1)) {
-            key = key.concat("stmt-");
-            key = key.concat(sval);
+            key += "stmt-";
+            key += sval;
         }
         return (key);
     }

@@ -186,8 +186,8 @@ public final class IN extends Globals {
         IN.old_mouse_x = KBD.mx;
         IN.old_mouse_y = KBD.my;
 
-        KBD.mx = (int) (KBD.mx * Globals.sensitivity.value);
-        KBD.my = (int) (KBD.my * Globals.sensitivity.value);
+        KBD.mx *= Globals.sensitivity.value;
+        KBD.my *= Globals.sensitivity.value;
 
         
         if ((CL_input.in_strafe.state & 1) != 0

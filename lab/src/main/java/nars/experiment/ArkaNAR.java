@@ -49,7 +49,7 @@ public class ArkaNAR extends GameX {
 
     //final int visW = 48, visH = 32;
     //final int visW = 24, visH = 16;
-    final int visW = 20, visH = 16;
+    static final int visW = 20, visH = 16;
     Bitmap2DSensor<ScaledBitmap2D> cc;
     //final int visW = 8, visH = 6;
 

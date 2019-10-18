@@ -51,12 +51,8 @@ public class Arithmeticize {
 
     private static final int minInts = 2;
 
-    private static final Function<IntArrayListCached, ArithmeticOp[]> cached;
-
-    static {
-        cached = Memoizers.the.memoize(Arithmeticize.class.getSimpleName() + "_mods",
-            16 * 1024, Arithmeticize::_mods);
-    }
+    private static final Function<IntArrayListCached, ArithmeticOp[]> cached = Memoizers.the.memoize(Arithmeticize.class.getSimpleName() + "_mods",
+        16 * 1024, Arithmeticize::_mods);
 
     private static final Variable A = $.varDep("A_"), B = $.varDep("B_");
     private static final Op Aop = A.op();

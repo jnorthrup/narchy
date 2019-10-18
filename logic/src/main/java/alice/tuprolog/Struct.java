@@ -769,7 +769,7 @@ public class Struct extends Term {
         }
         String s = (Parser.isAtom(name) ? name : '\'' + name + '\'');
         if (subs() > 0) {
-            s = s + '(';
+            s += '(';
             for (int c = 1; c < subs(); c++) {
                 s = s + (!(subs[c - 1] instanceof Var) ? subs[c - 1].toString() : ((Var) subs[c - 1]).toStringFlattened()) + ',';
             }
@@ -902,12 +902,12 @@ public class Struct extends Term {
         if (subs() == 0) {
             return v;
         }
-        v = v + '(';
+        v += '(';
         for (p = 1; p < subs(); p++) {
             v = v + subs[p - 1].toStringAsArgY(op, 0) + ',';
         }
-        v = v + subs[subs() - 1].toStringAsArgY(op, 0);
-        v = v + ')';
+        v += subs[subs() - 1].toStringAsArgY(op, 0);
+        v += ')';
         return v;
     }
 

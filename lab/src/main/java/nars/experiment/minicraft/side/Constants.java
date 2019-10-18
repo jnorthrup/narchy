@@ -53,11 +53,7 @@ public class Constants {
         tileIDs.compact();
     }
 
-    public static final CharObjectHashMap<Item> itemTypes;
-
-    static {
-        itemTypes = ItemLoader.loadItems(16);
-    }
+    public static final CharObjectHashMap<Item> itemTypes = ItemLoader.loadItems(16);
 
     public static final int LIGHT_VALUE_TORCH = 13;
     public static final int LIGHT_VALUE_SUN = 15;

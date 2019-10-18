@@ -1177,7 +1177,7 @@ public enum MatrixOps { ;
 			c = 0;
 			s = 0;
 			for (double[] aV1 : v) s += aV1[j];
-			s = s / m;
+			s /= m;
 			for (double[] aV : v) c += (aV[j] - s) * (aV[j] - s);
 			var[j] = c / degrees;
 		}

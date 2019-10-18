@@ -28,6 +28,8 @@ import jake2.game.monsters.M_Infantry;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import java.util.Objects;
+
 public class GameTurret {
 
     public static void AnglesNormalize(float[] vec) {
@@ -181,10 +183,7 @@ public class GameTurret {
             edict_t attacker;
 
             if (other.takedamage != 0) {
-                if (self.teammaster.owner != null)
-                    attacker = self.teammaster.owner;
-                else
-                    attacker = self.teammaster;
+                attacker = Objects.requireNonNullElseGet(self.teammaster.owner, () -> self.teammaster);
                 GameCombat.T_Damage(other, self, attacker, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin,
                         self.teammaster.dmg, 10, 0, Defines.MOD_CRUSH);

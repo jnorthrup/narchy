@@ -104,15 +104,20 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
     }
 
     public static <E> Iterator<E> iterateNonNullN(E[] e, int size) {
+        Iterator<E> result;
         switch (size) {
             case 0:
-                return Util.emptyIterator;
+                result = Util.emptyIterator;
+                break;
             case 1:
                 E ee = e[0];
-                return ee!=null ? Iterators.singletonIterator(ee) : Util.emptyIterator;
+                result = ee != null ? Iterators.singletonIterator(ee) : Util.emptyIterator;
+                break;
             default:
-                return new ArrayIteratorNonNull<>(e, size);
+                result = new ArrayIteratorNonNull<>(e, size);
+                break;
         }
+        return result;
     }
 
     public static <X> Stream<X> stream(X[] list) {

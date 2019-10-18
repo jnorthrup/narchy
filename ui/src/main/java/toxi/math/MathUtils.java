@@ -570,7 +570,7 @@ public final class MathUtils {
     public static double reduceAngle(double theta) {
         theta %= TWO_PI;
         if (abs(theta) > PI) {
-            theta = theta - TWO_PI;
+            theta -= TWO_PI;
         }
         if (abs(theta) > HALF_PI) {
             theta = PI - theta;
@@ -592,7 +592,7 @@ public final class MathUtils {
     public static float reduceAngle(float theta) {
         theta %= TWO_PI;
         if (abs(theta) > PI) {
-            theta = theta - TWO_PI;
+            theta -= TWO_PI;
         }
         if (abs(theta) > HALF_PI) {
             theta = PI - theta;

@@ -54,8 +54,8 @@ public abstract class Main extends Base {
 
 	public static final int[] d_8to24table = new int[256];
 
-	final int c_visible_lightmaps = 0;
-	final int c_visible_textures = 0;
+	static final int c_visible_lightmaps = 0;
+	static final int c_visible_textures = 0;
 
 	int registration_sequence;
 

@@ -45,6 +45,7 @@ import spacegraph.util.math.Matrix3f;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -93,11 +94,7 @@ public class Dynamics3D<X> extends Collisions<X> {
         super(intersecter, broadphase);
         this.spatials = spatials;
         this.islands = new Islands();
-        if (constrainer == null) {
-            this.constrainer = new SequentialImpulseConstrainer();
-        } else {
-            this.constrainer = constrainer;
-        }
+        this.constrainer = Objects.requireNonNullElseGet(constrainer, SequentialImpulseConstrainer::new);
 
     }
 

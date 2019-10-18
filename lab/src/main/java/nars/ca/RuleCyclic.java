@@ -84,10 +84,10 @@ public class RuleCyclic {
 		sBff = 'R' + String.valueOf(iRng) + "/T" + iThr + "/C"
 				+ iClo;
 
-		sBff = sBff + (iNgh == MJRules.NGHTYP_NEUM ? "/NN" : "/NM");
+        sBff += (iNgh == MJRules.NGHTYP_NEUM ? "/NN" : "/NM");
 
 		if (fGH)
-			sBff = sBff + "/GH"; 
+            sBff += "/GH";
 
 		return sBff;
 	}
@@ -110,8 +110,8 @@ public class RuleCyclic {
 
         int iMax = 0;
 		for (i = 1; i <= iRng; i++)
-			
-			iMax = iMax + i * 8;
+
+            iMax += i * 8;
 
 		if (iThr < 1)
 			iThr = 1;

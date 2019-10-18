@@ -73,7 +73,7 @@ public class ISOLibrary extends PrologLib {
                     
                 } catch (Exception ex) {
                 }
-                st = st.concat(st1);
+                st += st1;
                 list = (Struct) list.subResolve(1);
             }
             return unify(arg0, new Struct(st));

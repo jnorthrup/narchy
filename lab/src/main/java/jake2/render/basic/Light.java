@@ -626,10 +626,10 @@ public abstract class Light extends Warp {
                     if (max > 255) {
                         float t = 255.0F / max;
 
-                        r = (int) (r * t);
-                        g = (int) (g * t);
-                        b = (int) (b * t);
-                        a = (int) (a * t);
+                        r *= t;
+                        g *= t;
+                        b *= t;
+                        a *= t;
                     }
                     r &= 0xFF;
                     g &= 0xFF;
@@ -679,10 +679,10 @@ public abstract class Light extends Warp {
                     if (max > 255) {
                         float t = 255.0F / max;
 
-                        r = (int) (r * t);
-                        g = (int) (g * t);
-                        b = (int) (b * t);
-                        a = (int) (a * t);
+                        r *= t;
+                        g *= t;
+                        b *= t;
+                        a *= t;
                     }
 
                     /*

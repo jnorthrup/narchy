@@ -1895,14 +1895,14 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      */
     public final void normalizeCP() {
         float mag = 1.0f / (float) Math.sqrt(m00 * m00 + m10 * m10 + m20 * m20);
-        m00 = m00 * mag;
-        m10 = m10 * mag;
-        m20 = m20 * mag;
+        m00 *= mag;
+        m10 *= mag;
+        m20 *= mag;
 
         mag = 1.0f / (float) Math.sqrt(m01 * m01 + m11 * m11 + m21 * m21);
-        m01 = m01 * mag;
-        m11 = m11 * mag;
-        m21 = m21 * mag;
+        m01 *= mag;
+        m11 *= mag;
+        m21 *= mag;
 
         m02 = m10 * m21 - m11 * m20;
         m12 = m01 * m20 - m00 * m21;

@@ -116,7 +116,7 @@ public class Screen {
 
         for (int yy = y0; yy < y1; yy++) {
             int yd = yy - y;
-            yd = yd * yd;
+            yd *= yd;
             for (int xx = x0; xx < x1; xx++) {
                 int xd = xx - x;
                 int dist = xd * xd + yd;

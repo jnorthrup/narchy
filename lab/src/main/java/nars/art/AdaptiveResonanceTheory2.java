@@ -139,7 +139,7 @@ public class AdaptiveResonanceTheory2
             if ((score - vigilance) < 0.0001f)
             {
                 tmpv = vigilance;
-                vigilance = vigilance - (0.0001f + 0.0001f * vigilance);
+                vigilance += 0.0001f * vigilance;
             }
             else
             {

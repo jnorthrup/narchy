@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class Follow1DTwoPoint implements RLEnvironment {
 
-    final int numActions = 2;
+    static final int numActions = 2;
 
     
 
@@ -29,10 +29,10 @@ public class Follow1DTwoPoint implements RLEnvironment {
     double targetSpeed = 1;
     double closeThresh = speed * 2; 
 
-    private final int history = 64;
+    private static final int history = 64;
 
 
-    final int historyPoints = 1; 
+    static final int historyPoints = 1;
     
     final int historyInterval = history / (historyPoints+1); 
     
@@ -93,7 +93,7 @@ public class Follow1DTwoPoint implements RLEnvironment {
 
     private final List<Double> positions = Collections.synchronizedList(new ArrayList<>(history));
     private final List<Double> targets = Collections.synchronizedList(new ArrayList<>(history));
-    private final double maxPos = 1.0;
+    private static final double maxPos = 1.0;
     private double myPos = 0.5;
     private double targetPos = 0.5;
     private double targetV = 0;

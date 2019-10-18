@@ -27,12 +27,7 @@ class NativeHowTest {
 						System.out.println("match: " + d);
 					}
 
-					@Override
-					public float pri(Derivation d) {
-						return 1;
-					}
-
-				}
+                }
 			)
 			.add(
 				"(A,B),(A,B) |- B, (Punctuation:Ask)"

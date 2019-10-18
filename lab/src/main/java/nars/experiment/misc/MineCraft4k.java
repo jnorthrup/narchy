@@ -325,7 +325,7 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 														i5 = -1;
 													}
 
-													i5 = i5 << 6 * i18;
+													i5 <<= 6 * i18;
 													f26 = f33;
 												}
 

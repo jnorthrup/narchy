@@ -20,7 +20,7 @@ public class ByteTopic<X> {
     /** last channel is reserved for general catch 'all' sent once in all cases */
     private static final byte ANY = Byte.MAX_VALUE-1;
 
-    private final boolean allowDynamic = false;
+    private static final boolean allowDynamic = false;
 
     private final Topic<X>[] chan = new Topic[Byte.MAX_VALUE /* signed max */];
 

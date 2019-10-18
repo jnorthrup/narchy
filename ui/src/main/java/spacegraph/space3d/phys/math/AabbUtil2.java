@@ -129,19 +129,19 @@ public class AabbUtil2 {
 	 * Conservative test for overlap between triangle and AABB.
 	 */
 	public static boolean testTriangleAgainstAabb2(v3[] vertices, v3 aabbMin, v3 aabbMax) {
+		boolean result = false;
 		v3 p1 = vertices[0];
 		v3 p2 = vertices[1];
 		v3 p3 = vertices[2];
 
-		if (Math.min(Math.min(p1.x, p2.x), p3.x) > aabbMax.x) return false;
-		if (Math.max(Math.max(p1.x, p2.x), p3.x) < aabbMin.x) return false;
+		if (!(Math.min(Math.min(p1.x, p2.x), p3.x) > aabbMax.x))
+			if (!(Math.max(Math.max(p1.x, p2.x), p3.x) < aabbMin.x))
+				if (!(Math.min(Math.min(p1.z, p2.z), p3.z) > aabbMax.z))
+					if (!(Math.max(Math.max(p1.z, p2.z), p3.z) < aabbMin.z))
+						if (!(Math.min(Math.min(p1.y, p2.y), p3.y) > aabbMax.y))
+							if (Math.max(Math.max(p1.y, p2.y), p3.y) >= aabbMin.y) result = true;
 
-		if (Math.min(Math.min(p1.z, p2.z), p3.z) > aabbMax.z) return false;
-		if (Math.max(Math.max(p1.z, p2.z), p3.z) < aabbMin.z) return false;
-
-		if (Math.min(Math.min(p1.y, p2.y), p3.y) > aabbMax.y) return false;
-		return Math.max(Math.max(p1.y, p2.y), p3.y) >= aabbMin.y;
-
+		return result;
 	}
 
 	public static void transformAabb(v3 halfExtents, float margin, Transform t, v3 aabbMinOut, v3 aabbMaxOut) {

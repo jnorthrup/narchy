@@ -588,7 +588,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
 	    		i--;
 	        	c = input.charAt(i);
 	    	}
-	    	out=out.concat(input.substring(tokenOffset));
+            out += input.substring(tokenOffset);
 	    	return out;
     	}
     	catch (Exception e) { return input; }

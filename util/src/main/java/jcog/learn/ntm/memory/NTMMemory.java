@@ -210,7 +210,7 @@ public class NTMMemory {
                 }
                 gradient += ((oldDataValue * (-erase[k])) + add[k]) * data.grad;
             }
-            headSetting.addressingVector.grad[j] = headSetting.addressingVector.grad[j] + gradient;
+            headSetting.addressingVector.grad[j] += gradient;
         }
     }
 

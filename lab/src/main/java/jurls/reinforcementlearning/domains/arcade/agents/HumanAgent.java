@@ -44,7 +44,7 @@ public class HumanAgent extends AbstractAgent {
     /** Variables to enforce 60 frames per second */
     protected long lastFrameTime;
     protected long lastWaitTime;
-    protected final int framesPerSecond = 60;
+    protected static final int framesPerSecond = 60;
     protected long millisFraction = 0;
     protected long timeError = 0;
 
