@@ -23,69 +23,70 @@ import static nars.time.Tense.XTERNAL;
 public enum Intermpolate {;
 
     private static Term intermpolate(/*@NotNull*/ Compound a,  /*@NotNull*/ Compound b, float aProp, float curDepth, NAL nar) {
-        Term result = Null;
-        boolean finished = false;
 
-        if (a.equals(b)) {
-            result = a;
-        } else if (a instanceof Neg) {
-            if (b instanceof Neg) {
-                Term au = a.unneg();
-                if (au instanceof Compound) {
-                    Term bu = b.unneg();
-                    if (bu instanceof Compound) {
-                        result = intermpolate((Compound) au, (Compound) bu, aProp, curDepth, nar).neg();
-                    }
-                }
-            }
-        } else if (a.equalsRoot(b)) {
-            Op ao = a.op();//, bo = b.op();
+        if (a.equals(b))
+            return a;
+
+        if (a instanceof Neg) {
+            if (!(b instanceof Neg)) return Null;
+            Term au = a.unneg();
+            if (!(au instanceof Compound)) return Null;
+            Term bu = b.unneg();
+            if (!(bu instanceof Compound)) return Null;
+            return intermpolate((Compound)au, (Compound)bu, aProp, curDepth, nar).neg();
+        }
+
+        if (!a.equalsRoot(b))
+            return Null;
+
+        Op ao = a.op();//, bo = b.op();
 //        if (ao != bo)         return Null; //checked in equalRoot
-            int len = a.subs();
-            Subterms aa = a.subterms(), bb = b.subterms();
-            boolean subsEqual = aa.equals(bb);
-            if (ao == CONJ && !subsEqual) {
-                result = intermpolateSeq(a, b, aProp, nar);
-            } else if (subsEqual || aa.subs() == bb.subs()) {
-                int dt = ao.temporal ? chooseDT(a, b, aProp, nar) : DTERNAL;
-                if (dt != XTERNAL) {
-                    if (subsEqual) {
-                        result = a.dt(dt);
-                    } else {
 
-                        Term[] ab = new Term[len];
-                        boolean change = false;
-                        for (int i = 0; i < len; i++) {
-                            Term ai = aa.sub(i), bi = bb.sub(i);
-                            if (!ai.equals(bi)) {
-                                if (!(ai instanceof Compound) || !(bi instanceof Compound)) {
-                                    finished = true;
-                                    break;
-                                }
 
-                                Term y = intermpolate((Compound) ai, (Compound) bi, aProp, curDepth / 2f, nar);
-                                if (y == Null) {
-                                    finished = true;
-                                    break;
-                                }
-                                if (!ai.equals(y)) {
-                                    change = true;
-                                    ai = y;
-                                }
-                            }
-                            ab[i] = ai;
-                        }
-                        if (!finished) {
-                            result = !change ? a : Util.maybeEqual(ao.the(dt, ab), a, b);
-                        }
+        int len = a.subs();
 
-                    }
-                }
-            }
+        Subterms aa = a.subterms(), bb = b.subterms();
+
+
+        boolean subsEqual = aa.equals(bb);
+
+        if (ao == CONJ && !subsEqual) {
+            return intermpolateSeq(a, b, aProp, nar);
         }
 
 
-        return result;
+        if (!subsEqual && aa.subs() != bb.subs())
+            return Null;
+
+        int dt = ao.temporal ? chooseDT(a, b, aProp, nar) : DTERNAL;
+        if (dt == XTERNAL)
+            return Null;
+
+        if (subsEqual) {
+            return a.dt(dt);
+        } else {
+
+            Term[] ab = new Term[len];
+            boolean change = false;
+            for (int i = 0; i < len; i++) {
+                Term ai = aa.sub(i), bi = bb.sub(i);
+                if (!ai.equals(bi)) {
+                    if (!(ai instanceof Compound) || !(bi instanceof Compound))
+                        return Null;
+
+                    Term y = intermpolate((Compound) ai, (Compound) bi, aProp, curDepth / 2f, nar);
+                    if (y == Null)
+                        return Null;
+                    if (!ai.equals(y)) {
+                        change = true;
+                        ai = y;
+                    }
+                }
+                ab[i] = ai;
+            }
+
+            return !change ? a : Util.maybeEqual(ao.the(dt, ab), a, b);
+        }
     }
 
     private static float dtDiffSeq(Compound a, Compound b, int depth) {
