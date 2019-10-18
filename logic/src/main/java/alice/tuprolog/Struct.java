@@ -301,6 +301,7 @@ public class Struct extends Term {
 
     /**
      * Test if a term is greater than other
+     * @noinspection ArrayEquality
      */
     @Override
     public boolean isGreater(Term t) {
@@ -318,7 +319,7 @@ public class Struct extends Term {
                     return true;
                 } else if (nc == 0) {
                     Term[] bb = ts.subs;
-                    if (!Arrays.equals(this.subs, bb)) {
+                    if (bb!=this.subs) {
                         for (int c = 0; c < subs(); c++) {
                             Term a = this.subs[c];
                             Term b = bb[c];
@@ -367,6 +368,7 @@ public class Struct extends Term {
 
     /**
      * Test if a term is equal to other
+     * @noinspection ArrayEquality
      */
     @Override
     public boolean isEqual(Term t) {
@@ -380,7 +382,7 @@ public class Struct extends Term {
         if (t instanceof Struct) {
             Struct ts = (Struct) t;
             if (subs() == ts.subs() && name.equals(ts.name)) {
-                if (!Arrays.equals(this.subs, ts.subs)) {
+                if (this.subs!=ts.subs) {
                     return IntStream.range(0, subs()).allMatch(c -> subs[c].equals(ts.subs[c]));
 
                 }

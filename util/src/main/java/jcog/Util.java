@@ -2400,8 +2400,9 @@ public enum Util {
 		return x.getClass() + "@" + System.identityHashCode(x);
 	}
 
+	/** @noinspection ArrayEquality*/
 	public static int compare(byte[] a, byte[] b) {
-		if (Arrays.equals(a, b)) return 0;
+		if (a==b) return 0;
 		int al = a.length;
 		int l = Integer.compare(al, b.length);
 		if (l != 0)

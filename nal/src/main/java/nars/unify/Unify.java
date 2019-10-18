@@ -22,7 +22,6 @@ import nars.unify.unification.OneTermUnification;
 import nars.unify.unification.Termutifcation;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -236,11 +235,12 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
     }
 
 
+    /** @noinspection ArrayEquality*/
     public Unification unification(boolean clear) {
         FasterList<Term> xyPairs = new FasterList(size * 2 /* estimate */);
 
         Termutator[] termutes = commitTermutes(true);
-        if (Arrays.equals(termutes, Termutator.CUT))
+        if (termutes==Termutator.CUT)
             throw new TODO("this means fail");
 
         BiConsumer<Term, Term> eachXY = xyPairs::addAll;
@@ -284,9 +284,10 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
 //        return t!=Termutator.CUT;
 //    }
 
+    /** @noinspection ArrayEquality*/
     protected boolean matches() {
         Termutator[] t = commitTermutes(true);
-        if (Arrays.equals(t, Termutator.CUT))
+        if (t==Termutator.CUT)
             return false;
         else {
             //TODO decide what r supposed to mean

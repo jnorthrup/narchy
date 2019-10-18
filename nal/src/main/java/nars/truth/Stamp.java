@@ -472,21 +472,15 @@ public interface Stamp {
      *
      * @param a evidence stamp in sorted order
      * @param b evidence stamp in sorted order
+     * @noinspection ArrayEquality
      */
     static boolean overlapsAny(long[] a, long[] b) {
-        if (Arrays.equals(a, b))
-            return true;
-
-        int A = a.length;
-        int B = b.length;
-        if (A == 0 || B == 0)
-            return false;
+        if (a==b) return true;
+        int A = a.length; if (A==0) return false;
+        int B = b.length; if (B==0) return false;
 
         if (A == 1 && B == 1)
             return a[0]==b[0];
-
-        if (!LongInterval.intersectsRaw(a[0], a[A -1], b[0], b[B -1]))
-            return false; //intervals are completely disjoint
 
         if (A > B) {
             //swap to get the larger stamp in the inner loop

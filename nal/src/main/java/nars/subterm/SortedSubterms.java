@@ -15,6 +15,7 @@ public class SortedSubterms {
         return the(x, b, false);
     }
 
+    /** @noinspection ArrayEquality*/
     public static Subterms the(final Term[] x, Function<Term[],Subterms> b, boolean dedup) {
 
         switch (x.length) {
@@ -38,7 +39,7 @@ public class SortedSubterms {
         boolean hadNegs = false;
         for (int j = 0; j < y.length; j++) {
             if (y[j] instanceof Neg) {
-                if (Arrays.equals(y, x))
+                if (y==x)
                     y = x.clone();
                 y[j] = y[j].unneg();
                 hadNegs = true;
@@ -48,7 +49,7 @@ public class SortedSubterms {
         if (dedup)
             y = Terms.commute(y);
         else {
-            if (Arrays.equals(x, y))
+            if (y==x)
                 y = Terms.sort(y);
             else
                 Arrays.sort(y);
