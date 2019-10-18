@@ -103,8 +103,8 @@ public class PersistentManifold {
 		}
 
 
-		float res0 = 0f, res1 = 0f, res2 = 0f, res3 = 0f;
-		if (maxPenetrationIndex != 0) {
+		float res0 = 0f;
+        if (maxPenetrationIndex != 0) {
 			v3 a0 = new v3(pt.localPointA);
 			a0.sub(pointCache[1].localPointA);
 
@@ -117,7 +117,8 @@ public class PersistentManifold {
 			res0 = cross.lengthSquared();
 		}
 
-		if (maxPenetrationIndex != 1) {
+        float res1 = 0f;
+        if (maxPenetrationIndex != 1) {
 			v3 a1 = new v3(pt.localPointA);
 			a1.sub(pointCache[0].localPointA);
 
@@ -129,7 +130,8 @@ public class PersistentManifold {
 			res1 = cross.lengthSquared();
 		}
 
-		if (maxPenetrationIndex != 2) {
+        float res2 = 0f;
+        if (maxPenetrationIndex != 2) {
 			v3 a2 = new v3(pt.localPointA);
 			a2.sub(pointCache[0].localPointA);
 
@@ -142,7 +144,8 @@ public class PersistentManifold {
 			res2 = cross.lengthSquared();
 		}
 
-		if (maxPenetrationIndex != 3) {
+        float res3 = 0f;
+        if (maxPenetrationIndex != 3) {
 			v3 a3 = new v3(pt.localPointA);
 			a3.sub(pointCache[0].localPointA);
 
@@ -326,9 +329,8 @@ public class PersistentManifold {
 			manifoldPoint.lifeTime++;
 		}
 
-		
-		float distance2d;
-		v3 projectedDifference = new v3(), projectedPoint = new v3();
+
+        v3 projectedDifference = new v3(), projectedPoint = new v3();
 
 		for (i = numContacts() - 1; i >= 0; i--) {
 
@@ -342,8 +344,8 @@ public class PersistentManifold {
 				tmp.scale(manifoldPoint.distance1, manifoldPoint.normalWorldOnB);
 				projectedPoint.sub(manifoldPoint.positionWorldOnA, tmp);
 				projectedDifference.sub(manifoldPoint.positionWorldOnB, projectedPoint);
-				distance2d = projectedDifference.dot(projectedDifference);
-				if (distance2d > getContactBreakingThreshold() * getContactBreakingThreshold()) {
+                float distance2d = projectedDifference.dot(projectedDifference);
+                if (distance2d > getContactBreakingThreshold() * getContactBreakingThreshold()) {
 					removeContactPoint(i);
 				}
 				else {
@@ -361,8 +363,7 @@ public class PersistentManifold {
 	}
 
 	public void clearManifold() {
-		int i;
-		for (i = 0; i < cachedPoints; i++) {
+        for (int i = 0; i < cachedPoints; i++) {
 			clearUserCache(pointCache[i]);
 		}
 		cachedPoints = 0;

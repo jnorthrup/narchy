@@ -189,26 +189,15 @@ public class World implements java.io.Serializable {
         }
         TileID currentName = tiles[x][y].type.name;
 
-        TileID[] breakType = null;
-        for (TileID element : breakWood) {
-            if (element == currentName) {
-                breakType = breakWood;
-            }
+        TileID[] breakType = Arrays.stream(breakWood).anyMatch(element -> element == currentName) ? breakWood : null;
+        if (Arrays.stream(breakStone).anyMatch(element -> element == currentName)) {
+            breakType = breakStone;
         }
-        for (TileID element : breakStone) {
-            if (element == currentName) {
-                breakType = breakStone;
-            }
+        if (Arrays.stream(breakMetal).anyMatch(element -> element == currentName)) {
+            breakType = breakMetal;
         }
-        for (TileID element : breakMetal) {
-            if (element == currentName) {
-                breakType = breakMetal;
-            }
-        }
-        for (TileID element : breakDiamond) {
-            if (element == currentName) {
-                breakType = breakDiamond;
-            }
+        if (Arrays.stream(breakDiamond).anyMatch(element -> element == currentName)) {
+            breakType = breakDiamond;
         }
         if (item == null || item.getClass() != Tool.class) {
             return handResult(breakType);

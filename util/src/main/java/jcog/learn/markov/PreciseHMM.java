@@ -85,17 +85,16 @@ public class PreciseHMM {
 	 *
 	 */
 	private void reset() {
-		int jumplimit = 2;
-		
-		
-		pi[0] = 1.0;
+
+
+        pi[0] = 1.0;
 		for(int i=1; i<numStates; i++) {
 			pi[i] = 0;
 		}
-		
-		
-		
-		for(int i=0; i<numStates; i++) {
+
+
+        int jumplimit = 2;
+        for(int i = 0; i<numStates; i++) {
 			for(int j=0; j<numStates; j++) {
 				if(i==numStates-1 && j==numStates-1) { 
 					a[i][j] = 1.0;
@@ -215,11 +214,11 @@ public class PreciseHMM {
 		for(int i=0; i<help.length; i++) {
 			help[i][0] = fwd[i][0];
 		}
-		
-		
-		double sum0 = Arrays.stream(help).mapToDouble(doubles -> doubles[0]).sum();
 
-        for(int i=0; i<scaled.length; i++) {
+
+        double sum0 = Arrays.stream(help).mapToDouble(doubles -> doubles[0]).sum();
+
+		for(int i=0; i<scaled.length; i++) {
 			scaled[i][0] = help[i][0] / sum0;
 		}
 		
@@ -344,8 +343,19 @@ public class PreciseHMM {
 				phi[j][t] = max + Math.log(this.b[j][o[t]]);
 			}
 		}
-		
-		double lp = IntStream.range(0, this.numStates).mapToDouble(i -> phi[i][o.length - 1]).filter(i -> i >= Double.NEGATIVE_INFINITY).max().orElse(Double.NEGATIVE_INFINITY);
+
+        boolean seen = false;
+        double best = 0;
+        for (int i = 0; i < this.numStates; i++) {
+            double v = phi[i][o.length - 1];
+            if (v >= Double.NEGATIVE_INFINITY) {
+                if (!seen || Double.compare(v, best) > 0) {
+                    seen = true;
+                    best = v;
+                }
+            }
+        }
+        double lp = seen ? best : Double.NEGATIVE_INFINITY;
 
 
         System.out.println("prob = "+Math.exp(lp));

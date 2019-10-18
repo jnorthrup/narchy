@@ -122,10 +122,10 @@ public class Simulation {
         action = np.zeros((world.num_actions,1))
         */
 
-        int time = 0;
         lastCycleTime = System.nanoTime();
         int cycles = 0;
-        
+
+        int time = 0;
         while (world.isActive()) {
             /*    
             # Repeat the loop through the duration of the existence of the world 

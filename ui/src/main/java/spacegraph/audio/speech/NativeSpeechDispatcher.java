@@ -18,14 +18,14 @@ public class NativeSpeechDispatcher {
     public NativeSpeechDispatcher() {
     }
 
-    private String[] command(String s) {
+    private static String[] command(String s) {
         return new String[]{
             
             "/usr/bin/espeak-ng", '"' + s + '"' 
         };
     }
 
-    private String stringify(Object x) {
+    private static String stringify(Object x) {
         if (x instanceof Object[]) {
             return Joiner.on(" ").join((Object[])x);
         } else {
@@ -33,12 +33,12 @@ public class NativeSpeechDispatcher {
         }
     }
 
-    public void speak(Object x) {
+    public static void speak(Object x) {
         String s = stringify(x);
         speak(s);
     }
 
-    public void speak(String s) {
+    public static void speak(String s) {
         try {
 
 

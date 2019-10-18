@@ -10,6 +10,6 @@ public abstract class AgentSupervised {
 
 	public abstract void clear();
 	public abstract double[] learn(double[] input, double[] target_output, float learningRate) ;
-	public abstract double[] learnBatch(List<NonResetInteraction> interactions, final boolean requireOutput) ;
+	public abstract double[] learnBatch(List<NonResetInteraction> interactions, boolean requireOutput) ;
 	public abstract double[] predict(double[] input) ;
 }

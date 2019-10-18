@@ -49,7 +49,8 @@ public class LivePredictor {
         /**
          * temporary buffers, re-used
          */
-        private double[] pastVector, present;
+        private double[] pastVector;
+        private double[] present;
 
         public DenseShiftFramer(LongToFloatFunction[] ins, int past, int sampleDur, LongToFloatFunction[] outs) {
             this.ins = ins;

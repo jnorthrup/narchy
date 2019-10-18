@@ -76,7 +76,6 @@ public class PlayerTrail {
     }
 
     static void Add(float[] spot) {
-        float[] temp = { 0, 0, 0 };
 
         if (!trail_active)
             return;
@@ -85,6 +84,7 @@ public class PlayerTrail {
 
         PlayerTrail.trail[trail_head].timestamp = GameBase.level.time;
 
+        float[] temp = {0, 0, 0};
         Math3D.VectorSubtract(spot,
                 PlayerTrail.trail[PREV(trail_head)].s.origin, temp);
         PlayerTrail.trail[trail_head].s.angles[1] = Math3D.vectoyaw(temp);
@@ -126,12 +126,12 @@ public class PlayerTrail {
     }
 
     static edict_t PickNext(edict_t self) {
-        int marker;
-        int n;
 
         if (!trail_active)
             return null;
 
+        int n;
+        int marker;
         for (marker = trail_head, n = PlayerTrail.TRAIL_LENGTH; n > 0; n--) {
             if (PlayerTrail.trail[marker].timestamp <= self.monsterinfo.trail_time)
                 marker = NEXT(marker);

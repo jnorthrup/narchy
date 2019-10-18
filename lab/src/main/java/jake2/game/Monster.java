@@ -195,8 +195,6 @@ public class Monster {
 
     public static void monster_start_go(edict_t self) {
 
-        float[] v = { 0, 0, 0 };
-
         if (self.health <= 0)
             return;
 
@@ -269,6 +267,7 @@ public class Monster {
                 self.monsterinfo.pausetime = 100000000;
                 self.monsterinfo.stand.think(self);
             } else if (Lib.strcmp(self.movetarget.classname, "path_corner") == 0) {
+                float[] v = {0, 0, 0};
                 Math3D.VectorSubtract(self.goalentity.s.origin, self.s.origin,
                         v);
                 self.ideal_yaw = self.s.angles[Defines.YAW] = Math3D

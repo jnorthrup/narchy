@@ -52,26 +52,23 @@ public class RS implements Settings {
         compute_genpoly(Settings.kParityBytes, genPoly);
     }
 
-    void zero_fill_from(byte[] buf, int from, int to) {
-        int i;
-        for (i = from; i < to; i++)
+    static void zero_fill_from(byte[] buf, int from, int to) {
+        for (int i = from; i < to; i++)
             buf[i] = 0;
     }
 
     /* debugging routines */
     void print_parity() {
-        int i;
         System.out.print("Parity Bytes: ");
-        for (i = 0; i < Settings.kParityBytes; i++)
+        for (int i = 0; i < Settings.kParityBytes; i++)
             System.out.print("[" + i + "]: 0x" + Integer.toHexString(pBytes[i])
                     + ", ");
         System.out.println();
     }
 
     void print_syndrome() {
-        int i;
         System.out.print("Syndrome Bytes: ");
-        for (i = 0; i < Settings.kParityBytes; i++)
+        for (int i = 0; i < Settings.kParityBytes; i++)
             System.out.print("[" + i + "]: 0x" + Integer.toHexString(synBytes[i])
                     + ", ");
         System.out.println();
@@ -97,10 +94,9 @@ public class RS implements Settings {
      */
 
     public void decode(byte[] codeword, int nbytes) {
-        int i, j, sum;
-        for (j = 0; j < Settings.kParityBytes; j++) {
-            sum = 0;
-            for (i = 0; i < nbytes; i++) {
+        for (int j = 0; j < Settings.kParityBytes; j++) {
+            int sum = 0;
+            for (int i = 0; i < nbytes; i++) {
                 // !!!: byte-ify
                 sum = (0xFF & (int) codeword[i]) ^ Galois.gmult(Galois.gexp[j + 1], sum);
             }
@@ -110,8 +106,8 @@ public class RS implements Settings {
 
     /* Check if the syndrome is zero */
     int check_syndrome() {
-        int i, nz = 0;
-        for (i = 0; i < Settings.kParityBytes; i++) {
+        int nz = 0;
+        for (int i = 0; i < Settings.kParityBytes; i++) {
             if (synBytes[i] != 0) {
                 nz = 1;
                 break;
@@ -121,9 +117,8 @@ public class RS implements Settings {
     }
 
     void debug_check_syndrome() {
-        int i;
 
-        for (i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             System.out.println(" inv log S["
                     + i
                     + "]/S["
@@ -141,8 +136,6 @@ public class RS implements Settings {
      */
 
     static void compute_genpoly(int nbytes, int[] genpoly) {
-        int i;
-        int[] tp = new int[256];
         int[] tp1 = new int[256];
 
         /* multiply (x + a^n) for n = 1 to nbytes */
@@ -150,7 +143,8 @@ public class RS implements Settings {
         Berlekamp.zero_poly(tp1);
         tp1[0] = 1;
 
-        for (i = 1; i <= nbytes; i++) {
+        int[] tp = new int[256];
+        for (int i = 1; i <= nbytes; i++) {
             Berlekamp.zero_poly(tp);
             tp[0] = Galois.gexp[i]; /* set up x+a^n */
             tp[1] = 1;
@@ -171,16 +165,14 @@ public class RS implements Settings {
     public void encode(byte[] msg, int nbytes, byte[] codeword) {
         int i;
         int[] LFSR = new int[Settings.kParityBytes + 1];
-        int dbyte;
-        int j;
 
         for (i = 0; i < Settings.kParityBytes + 1; i++)
             LFSR[i] = 0;
 
         for (i = 0; i < nbytes; i++) {
             // !!!: byte-ify
-            dbyte = ((msg[i] ^ LFSR[Settings.kParityBytes - 1]) & 0xFF);
-            for (j = Settings.kParityBytes - 1; j > 0; j--) {
+            int dbyte = ((msg[i] ^ LFSR[Settings.kParityBytes - 1]) & 0xFF);
+            for (int j = Settings.kParityBytes - 1; j > 0; j--) {
                 LFSR[j] = LFSR[j - 1] ^ Galois.gmult(genPoly[j], dbyte);
             }
             LFSR[0] = Galois.gmult(genPoly[0], dbyte);

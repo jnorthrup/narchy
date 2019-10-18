@@ -10,13 +10,13 @@ public abstract class Forgetting {
 
 
     public static @Nullable <Y> Consumer<Y> forget(Bag<?,Y> b, float temperature) {
-        float depressurizationRate = 1f;
 
         if (temperature > Float.MIN_NORMAL) {
             int size = b.size();
             if (size > 0) {
                 int cap = b.capacity();
                 if (cap > 0) {
+                    float depressurizationRate = 1f;
                     float pressure = b.depressurizePct(depressurizationRate);
 
                     float mass = b.mass(); assert(mass == mass);

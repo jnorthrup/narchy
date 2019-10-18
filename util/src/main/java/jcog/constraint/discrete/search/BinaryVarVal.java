@@ -54,11 +54,11 @@ public class BinaryVarVal implements BooleanFunction<List<BooleanSupplier>> {
     }
 
     private int selectVar() {
-        int minId = -1;
-        int minCost = Integer.MAX_VALUE;
         int nUnassigned = nUnassignedT.getValue();
         if (nUnassigned == 1)
             return unassigned[0];
+        int minCost = Integer.MAX_VALUE;
+        int minId = -1;
         for (int i = nUnassigned - 1; i >= 0; i--) {
             int varId = unassigned[i];
             if (variables[varId].isAssigned()) {

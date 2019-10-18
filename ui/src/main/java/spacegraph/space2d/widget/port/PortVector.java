@@ -14,9 +14,9 @@ public class PortVector extends Gridding {
 
     public PortVector(int size, Function<Port, Surface> portRenderer) {
         super();
-        Surface[] outs = new Surface[size];
 
         out = new Port[size];
+        Surface[] outs = new Surface[size];
         for (int i = 0; i < size; i++) {
             out[i] = new Port();
             outs[i] = portRenderer.apply(out[i]);

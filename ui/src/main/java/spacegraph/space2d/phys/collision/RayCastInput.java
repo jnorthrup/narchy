@@ -31,7 +31,8 @@ import jcog.math.v2;
  * Ray-cast input data. The ray extends from p1 to p1 + maxFraction * (p2 - p1).
  */
 public class RayCastInput {
-    public final v2 p1, p2;
+    public final v2 p1;
+    public final v2 p2;
     public float maxFraction;
 
     public RayCastInput() {
@@ -40,7 +41,7 @@ public class RayCastInput {
         maxFraction = 0;
     }
 
-    public void set(final RayCastInput rci) {
+    public void set(RayCastInput rci) {
         p1.set(rci.p1);
         p2.set(rci.p2);
         maxFraction = rci.maxFraction;

@@ -73,7 +73,7 @@ public abstract class TermMetadata implements Termlike {
 
         //depth first traversal, determine if variables encountered are monotonically increasing
 
-        final ByteArrayList types = new ByteArrayList(vars);
+        ByteArrayList types = new ByteArrayList(vars);
         return x.recurseTermsOrdered(Term::hasVars, v -> {
             if (!(v instanceof Variable))
                 return true;

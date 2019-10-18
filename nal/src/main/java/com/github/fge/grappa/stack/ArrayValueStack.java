@@ -31,7 +31,7 @@ public final class ArrayValueStack<V>
     }
 
     @VisibleForTesting
-    ArrayValueStack(final V[] values) {
+    ArrayValueStack(V[] values) {
         System.arraycopy(values, 0, array, 0, values.length);
         arraySize = values.length;
     }
@@ -42,7 +42,7 @@ public final class ArrayValueStack<V>
     }
 
     @Override
-    protected void doPush(final int down, final V value) {
+    protected void doPush(int down, V value) {
         ensureCapacity();
         System.arraycopy(array, down, array, down + 1, arraySize - down);
         array[down] = value;
@@ -50,8 +50,8 @@ public final class ArrayValueStack<V>
     }
 
     @Override
-    protected V doPop(final int down) {
-        final V ret = array[down];
+    protected V doPop(int down) {
+        V ret = array[down];
         arraySize--;
         System.arraycopy(array, down + 1, array, down, arraySize - down);
         array[arraySize] = null;
@@ -60,12 +60,12 @@ public final class ArrayValueStack<V>
     }
 
     @Override
-    protected V doPeek(final int down) {
+    protected V doPeek(int down) {
         return array[down];
     }
 
     @Override
-    protected void doPoke(final int down, final V value) {
+    protected void doPoke(int down, V value) {
         array[down] = value;
     }
 
@@ -77,13 +77,12 @@ public final class ArrayValueStack<V>
     }
 
     @Override
-    protected void doSwap(final int n) {
-        V tmp;
+    protected void doSwap(int n) {
 
-        final int swapIndex = n / 2; // this also works for odd numbers
+        int swapIndex = n / 2; // this also works for odd numbers
 
         for (int index = 0; index < swapIndex; index++) {
-            tmp = array[index];
+            V tmp = array[index];
             array[index] = array[n - index - 1];
             array[n - index - 1] = tmp;
         }
@@ -102,13 +101,13 @@ public final class ArrayValueStack<V>
 
     @Override
     public Object takeSnapshot() {
-        final V[] copy = array.length > 0  ? Arrays.copyOf(array, array.length) : (V[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
+        V[] copy = array.length > 0  ? Arrays.copyOf(array, array.length) : (V[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
         return new ArrayWithSize<>(copy, arraySize);
     }
 
     @Override
-    public void restoreSnapshot(final Object snapshot) {
-        final ArrayWithSize<V> s = (ArrayWithSize<V>) snapshot;
+    public void restoreSnapshot(Object snapshot) {
+        ArrayWithSize<V> s = (ArrayWithSize<V>) snapshot;
         array = s.array;
         arraySize = s.arraySize;
     }
@@ -138,7 +137,7 @@ public final class ArrayValueStack<V>
         private final T[] array;
         private final int arraySize;
 
-        private ArrayWithSize(final T[] array, final int size)
+        private ArrayWithSize(T[] array, int size)
         {
             this.array = array;
             arraySize = size;
@@ -153,7 +152,7 @@ public final class ArrayValueStack<V>
 
         private int index = 0;
 
-        private ArrayIterator(final T[] array, final int size)
+        private ArrayIterator(T[] array, int size)
         {
             this.array = array;
             arraySize = size;

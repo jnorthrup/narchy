@@ -105,7 +105,7 @@ public abstract class TermBuilder implements TermConstructor {
         return conj(DTERNAL, u);
     }
 
-    public Term conj(final int dt, Term... u) {
+    public Term conj(int dt, Term... u) {
         return conj(false, dt, u);
     }
 
@@ -151,7 +151,7 @@ public abstract class TermBuilder implements TermConstructor {
         int aRange = a.eventRange(), bRange = b.eventRange();
 
         if (dt == 0 && aRange == 0 && bRange == 0)
-            return conj(dt, a, b);
+            return conj(0, a, b);
         else
             return (dt >= 0) ?
                     ConjSeq.sequence(a, 0, b, +dt + aRange, this) :
@@ -166,7 +166,7 @@ public abstract class TermBuilder implements TermConstructor {
         int aRange = a.eventRange(), bRange = b.eventRange();
 
         if (dt == 0 && aRange == 0 && bRange == 0)
-            return conj(dt, a, b);
+            return conj(0, a, b);
         else
             return ConjSeq.sequence(a, 0, b, dt, this);
     }
@@ -175,7 +175,7 @@ public abstract class TermBuilder implements TermConstructor {
         return !x.hasAny(Op.Temporal) ? x : _root(x);
     }
 
-    protected Term _root(Compound x) {
+    protected static Term _root(Compound x) {
         return NAL.conceptualization.apply(x);
     }
 
@@ -228,7 +228,7 @@ public abstract class TermBuilder implements TermConstructor {
 
     }
 
-    public Term neg(Term u) {
+    public static Term neg(Term u) {
 
         if (u instanceof Neg || u instanceof Bool)
             return u.neg();

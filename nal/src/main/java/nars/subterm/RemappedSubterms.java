@@ -28,7 +28,7 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
         int hash = 1;
         for (int i = 0, xLength = x.length; i < xLength; i++) {
-            final Term xx = x[i];
+            Term xx = x[i];
             hash = Util.hashCombine(hash, xx);
 
             boolean neg = (xx instanceof Neg);
@@ -371,8 +371,9 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
     }
 
     protected int negs() {
-        int n, s = subs();
-        n = (int) IntStream.range(0, s).filter(i -> subMap(i) < 0).count();
+        int s = subs();
+        long count = IntStream.range(0, s).filter(i -> subMap(i) < 0).count();
+        int n = (int) count;
         return n;
     }
 

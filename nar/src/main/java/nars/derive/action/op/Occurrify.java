@@ -22,6 +22,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -70,7 +71,8 @@ public class Occurrify extends TimeGraph {
     //    int novelPoints = 1;
 //    int sameAsPatternRootPoints = 1;
     private transient boolean decomposeEvents;
-    private transient int patternVolumeMin, patternVolumeMax;
+    private transient int patternVolumeMin;
+    private transient int patternVolumeMax;
 
 
 
@@ -105,14 +107,14 @@ public class Occurrify extends TimeGraph {
 
     private static long[] rangeCombine(Derivation d, OccMerge mode) {
 
-        final long taskEnd = d.taskEnd;
-        final long taskStart = d.taskStart;
-        final long beliefStart = d.beliefStart;
+        long taskEnd = d.taskEnd;
+        long taskStart = d.taskStart;
+        long beliefStart = d.beliefStart;
 
         if (/*d.single ||*/ beliefStart == TIMELESS ||  beliefStart == ETERNAL)
             return new long[] { taskStart, taskEnd};
         else {
-            final long beliefEnd = d.beliefEnd;
+            long beliefEnd = d.beliefEnd;
             if (taskStart == ETERNAL) {
     //            assert(d.beliefStart!=TIMELESS);
                 return new long[]{ beliefStart, beliefEnd};
@@ -281,7 +283,7 @@ public class Occurrify extends TimeGraph {
 
 
 
-        final Term taskTerm = d.retransform(d.taskTerm);
+        Term taskTerm = d.retransform(d.taskTerm);
         Term beliefTerm = d.beliefTerm.equals(d.taskTerm) ? taskTerm : d.retransform(d.beliefTerm);
 
         Event taskEvent = (taskStart != TIMELESS) ?
@@ -300,7 +302,8 @@ public class Occurrify extends TimeGraph {
                 imageNormalize(beliefEvent);
         }
 
-        autoneg = (Stream.of(taskTerm, beliefTerm, pattern).anyMatch(term -> term.hasAny(NEG)));
+        boolean b = Stream.of(taskTerm, beliefTerm, pattern).anyMatch(term -> term.hasAny(NEG));
+        autoneg = (b);
 
 
         //compact(); //TODO compaction removes self-loops which is bad, not sure if it does anything else either
@@ -771,7 +774,7 @@ public class Occurrify extends TimeGraph {
     static boolean nonTemporal(Term x) {
         return !x.hasAny(Op.Temporal) ||
                 (!x.hasXternal() && x.hasAny(INH.bit | SIM.bit) &&
-                x.recurseTerms(term->term.hasAny(Op.Temporal), (Term term, Compound suuper)->{
+                x.recurseTerms(term->term.hasAny(Op.Temporal), (term, suuper) ->{
                     if (term.op().temporal) {
                         if (suuper==null)
                             return false;

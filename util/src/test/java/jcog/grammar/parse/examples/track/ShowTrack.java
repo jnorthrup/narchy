@@ -43,10 +43,9 @@ public class ShowTrack {
 
 		Parser list = list();
 
-		String test[] = { "()", "(pilfer)", "(pilfer, pinch)", "(pilfer, pinch, purloin)", "(pilfer, pinch,, purloin)", "(", "(pilfer", "(pilfer, ", "(, pinch, purloin)", "pilfer, pinch" };
-
-		System.out.println("Using parser: " + list);
-		for (int i = 0; i < test.length; i++) {
+        System.out.println("Using parser: " + list);
+        String[] test = {"()", "(pilfer)", "(pilfer, pinch)", "(pilfer, pinch, purloin)", "(pilfer, pinch,, purloin)", "(", "(pilfer", "(pilfer, ", "(, pinch, purloin)", "pilfer, pinch"};
+        for (int i = 0; i < test.length; i++) {
 			System.out.println("---\ntesting: " + test[i]);
 			TokenAssembly a = new TokenAssembly(test[i]);
 			try {

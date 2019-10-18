@@ -16,7 +16,8 @@ public class Checkers {
     private final ArrayList<int[]> movementHistory = new ArrayList<>();
     private final Piece[][] pieces;
     private char turn = TURN_DARK;
-    private int remainingJumpX = -1, remainingJumpY = -1;
+    private int remainingJumpX = -1;
+    private int remainingJumpY = -1;
 
     public Checkers() {
         this(8, 8);
@@ -284,7 +285,7 @@ public class Checkers {
      * is used in the <code>move</code> function.
      */
     private void advanceTurn() {
-        turn = (char) (turn ^ 0x00FF);
+        turn ^= 0x00FF;
 
 
     }

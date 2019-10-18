@@ -105,7 +105,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 
 					} else if (!xRel && !yRel) {
 						//uni constraint
-						if (!x.remainAmong(y))
+						if (!UnifyConstraint.remainAmong(y))
 							return false;
 					}
 
@@ -115,7 +115,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 		return true;
 	}
 
-	protected boolean remainAmong(UnifyConstraint y) {
+	protected static boolean remainAmong(UnifyConstraint y) {
 		return true;
 	}
 
@@ -178,7 +178,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 			Arrays.sort(d, PREDICATE.sortByCostIncreasing);
 
 			if (NAL.test.DEBUG_EXTRA) {
-				final Term target = d[0].x;
+				Term target = d[0].x;
 				for (int i = 1; i < d.length; i++)
 					assert (d[i].x.equals(target));
 			}
@@ -194,7 +194,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 		@Override
 		public boolean invalid(Term x, U f) {
 
-            return Arrays.stream(subConstraint).anyMatch(c -> c.invalid(x, f));
+			return Arrays.stream(subConstraint).anyMatch(c -> c.invalid(x, f));
 		}
 
 

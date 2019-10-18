@@ -85,7 +85,7 @@ public class RegularParser {
 	 * character and push a SpecificChar parser in its 
 	 * place.
 	 */
-    private Parser letterOrDigit() {
+    private static Parser letterOrDigit() {
 		Alternation a = new Alternation();
 		a.get(new Letter());
 		a.get(new Digit());

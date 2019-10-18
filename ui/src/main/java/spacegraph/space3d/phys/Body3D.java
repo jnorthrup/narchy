@@ -120,14 +120,12 @@ public class Body3D<X> extends Collidable<X> {
 		totalTorque.set(0f, 0f, 0f);
 
 
-		float linearSleepingThreshold = 0.8f;
-		float angularSleepingThreshold = 1.0f;
-
-
-		linearDamping = 0f;
+        linearDamping = 0f;
 		angularDamping = 0.5f;
-		this.linearSleepingThreshold = linearSleepingThreshold;
-		this.angularSleepingThreshold = angularSleepingThreshold;
+        float linearSleepingThreshold = 0.8f;
+        this.linearSleepingThreshold = linearSleepingThreshold;
+        float angularSleepingThreshold = 1.0f;
+        this.angularSleepingThreshold = angularSleepingThreshold;
 		
 		contactSolverType = 0;
 		frictionSolverType = 0;
@@ -641,7 +639,7 @@ public class Body3D<X> extends Collidable<X> {
 			return true;
 		}
 
-        return constraintRefs.stream().noneMatch(c -> c.getRigidBodyA() == otherRb || c.getRigidBodyB() == otherRb);
+		return constraintRefs.stream().noneMatch(c -> c.getRigidBodyA() == otherRb || c.getRigidBodyB() == otherRb);
 	}
 
 	public void addConstraintRef(TypedConstraint c) {

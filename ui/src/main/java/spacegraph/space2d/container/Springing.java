@@ -19,7 +19,8 @@ import java.util.function.Predicate;
 public class Springing extends ContainerSurface {
 
     // The last set size
-    float _ow, _oh;
+    float _ow;
+    float _oh;
     
     // The SpringInfos for children
     Map <Object,SpringInfo> _sinfos = new HashMap();
@@ -175,7 +176,12 @@ protected void layoutChild(Surface aChild, float newPW, float newPH)
 public static class SpringInfo {
     
     // The bounds and original parent width/height
-    float x, y, width, height, pwidth, pheight;
+    float x;
+    float y;
+    float width;
+    float height;
+    float pwidth;
+    float pheight;
     
     /** Creates a SpringInfo. */
     public SpringInfo(float aX, float aY, float aW, float aH, float aPW, float aPH) {

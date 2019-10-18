@@ -41,7 +41,7 @@ public abstract class Introduction extends TaskTransformAction {
             taskify(t, x, y, w) : null;
     }
 
-    private Task taskify(Task xt, Term x, Term y1, What w) {
+    private static Task taskify(Task xt, Term x, Term y1, What w) {
         Task yy = Task.tryTask(y1, xt.punc(), xt.truth(),
                 (c, t) -> {
                     if (c.equals(x)) //HACK normalization might cause this to become true although it is seemingly checked before Task.clone()
@@ -61,7 +61,7 @@ public abstract class Introduction extends TaskTransformAction {
     }
 
     /** return true to produce Unevaluated tasks, which can prevent circular processing */
-    protected boolean tasksUnevaluated() {
+    protected static boolean tasksUnevaluated() {
         return true;
     }
 

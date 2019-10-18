@@ -84,7 +84,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         //////            1 - (float) Math.exp(-(((double) dt) / n.dur()) / memoryDuration.floatValue());
         float DECAY_PERIOD = 2; //TODO use exponential decay formula
         double decayRate = Math.exp(-(((double) r.dtS()) / DECAY_PERIOD));
-        pri = (float) (pri * decayRate);
+        pri *= decayRate;
         //float PRI_DECAY = 0.97f; //TODO use exponential decay formula
         //pri = Util.clamp(pri * PRI_DECAY, 0, 1f);
 
@@ -101,9 +101,9 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
                 if (focused) {
                     float p = this.pri;
                     //float th = Math.min(b.w, b.h) * (0.1f + 0.1f * t);
-                    float th = 3 + p;
                     gl.glColor4f(0.5f + 0.5f * p, 0.55f, 0.35f, 0.75f);
                     //Draw.rectFrame(b, th, gl);
+                    float th = 3 + p;
                     Draw.rectStroke(bounds, th, gl);
                 }
             });
@@ -161,7 +161,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         }
     }
 
-    public boolean tangible() {
+    public static boolean tangible() {
 
         return true;
     }

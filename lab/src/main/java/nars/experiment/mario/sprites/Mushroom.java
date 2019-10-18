@@ -15,7 +15,7 @@ public class Mushroom extends Sprite {
     @SuppressWarnings("unused")
     private float yJumpSpeed;
 
-    private final int width = 4;
+    private static final int width = 4;
     int height = 24;
 
     private final LevelScene world;
@@ -61,7 +61,6 @@ public class Mushroom extends Sprite {
             life++;
             return;
         }
-        float sideWaysSpeed = 1.75f;
         layer = 1;
 
 
@@ -72,6 +71,7 @@ public class Mushroom extends Sprite {
             facing = -1;
         }
 
+        float sideWaysSpeed = 1.75f;
         xa = facing * sideWaysSpeed;
 
         boolean mayJump = (onGround);

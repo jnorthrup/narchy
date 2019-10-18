@@ -74,9 +74,7 @@ public class Classpath {
     public static Collection<URL> listCurrentClasspath(URL[] uu) {
         Set<URL> result = new ConcurrentFastIteratingHashSet<>(ArrayUtil.EMPTY_URL_ARRAY);
 
-        Stream.of(uu).parallel().forEach(u -> {
-            addEntriesFromManifest(result, u);
-        });
+        Stream.of(uu).parallel().forEach(u -> addEntriesFromManifest(result, u));
 
 //        for (int i = 0; i < uu.length; ++i)
 //
@@ -148,9 +146,9 @@ public class Classpath {
     }
 
     public static Classpath.ClasspathEntry getLocalEntry(String path) throws IOException {
-        URL url = (new File(path)).toURI().toURL();
         synchronized (Classpath.class) {
             try {
+                URL url = (new File(path)).toURI().toURL();
                 WeakReference<Classpath.ClasspathEntry> wr = CUSTOM_ENTRIES.get(url);
                 Classpath.ClasspathEntry entry;
                 if (wr != null) {
@@ -310,7 +308,7 @@ public class Classpath {
                 lname = lname.substring(1);
             }
 
-            lname = lname + ".jar";
+            lname += ".jar";
             entry.file = file;
             entry.filename = lname;
             if (isEmpty(file)) {
@@ -341,9 +339,9 @@ public class Classpath {
             if (uri.getAuthority() == null) {
                 return new File(uri);
             } else {
-                String path = "file:////" + uri.getAuthority() + '/' + uri.getPath();
 
                 try {
+                    String path = "file:////" + uri.getAuthority() + '/' + uri.getPath();
                     return new File(new URI(path));
                 } catch (URISyntaxException var3) {
                     return new File(uri);

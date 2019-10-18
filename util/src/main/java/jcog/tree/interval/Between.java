@@ -3,7 +3,8 @@ package jcog.tree.interval;
 /** defines an interval between two comparable values */
 public class Between<K extends Comparable<? super K>> implements Comparable<Between<K>> {
 	
-	 public final K low, high;
+	 public final K low;
+    public final K high;
 	
 	public Between( K low,  K high){
         this.low = low;

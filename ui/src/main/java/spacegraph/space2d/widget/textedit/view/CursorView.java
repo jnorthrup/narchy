@@ -13,7 +13,7 @@ public class CursorView extends TextEditRenderable {
     this.cursor = cursor;
   }
 
-  public float getWidth() {
+  public static float getWidth() {
     return 1;
   }
 

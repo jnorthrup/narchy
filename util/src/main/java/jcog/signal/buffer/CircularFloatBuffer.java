@@ -71,8 +71,6 @@ public class CircularFloatBuffer extends CircularBuffer {
     public int write(float[] data, int offset, int length, boolean blocking) {
         if (length <= 0) return 0;
 
-        int len = length;
-
         lock.lock();
         try {
 
@@ -90,13 +88,13 @@ public class CircularFloatBuffer extends CircularBuffer {
                 return 0;
 
 
+            int len = length;
             if (len > available)
                 len = available;
 
             int tmpIdx = bufEnd + len;
-            int tmpLen;
             if (tmpIdx > capacity) {
-                tmpLen = capacity - bufEnd;
+                int tmpLen = capacity - bufEnd;
                 System.arraycopy(data, offset, this.data, bufEnd, tmpLen);
                 bufEnd = (tmpIdx) % capacity;
                 System.arraycopy(data, tmpLen + offset, this.data, 0, bufEnd);
@@ -179,9 +177,8 @@ public class CircularFloatBuffer extends CircularBuffer {
 
             int start = Math.max(0, this.viewPtr - len);
             int tmpIdx = start + len;
-            int tmpLen;
             if (tmpIdx > this.data.length) {
-                tmpLen = this.data.length - start;
+                int tmpLen = this.data.length - start;
                 System.arraycopy(this.data, start, data, 0, tmpLen);
                 start = (tmpIdx) % this.data.length;
                 System.arraycopy(this.data, 0, data, tmpLen, start);
@@ -200,17 +197,16 @@ public class CircularFloatBuffer extends CircularBuffer {
      * this manipulates some cursor position variables, TODO make that optional and combine with peekLast API to select any part of the buffer
      */
     public int peek(float[] data, int length) {
-        int len = length;
         lock.lock();
         try {
             int remSize = writeAt.get() - readAt.get();
             if (length > 0 && remSize > 0) {
+                int len = length;
                 if (len > remSize)
                     len = remSize;
                 int tmpIdx = viewPtr + len;
-                int tmpLen;
                 if (tmpIdx > this.data.length) {
-                    tmpLen = this.data.length - viewPtr;
+                    int tmpLen = this.data.length - viewPtr;
                     System.arraycopy(this.data, viewPtr, data, 0, tmpLen);
                     viewPtr = (tmpIdx) % this.data.length;
                     System.arraycopy(this.data, 0, data, tmpLen, viewPtr);
@@ -254,7 +250,6 @@ public class CircularFloatBuffer extends CircularBuffer {
     }
 
     public int read(float[] data, int offset, int length, boolean blocking) {
-        int len = length;
         lock.lock();
         try {
             wasMarked = false;
@@ -269,6 +264,7 @@ public class CircularFloatBuffer extends CircularBuffer {
                 }
                 int minSize = Math.max(this.minSize, 0);
                 if (bs > 0) {
+                    int len = length;
                     if (len > bs - minSize)
                         len = bs - minSize;
                     int tmpLen;

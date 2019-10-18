@@ -10,7 +10,8 @@ public class Mob extends Entity {
     protected int walkDist;
     public int dir;
     public int hurtTime;
-    protected int xKnockback, yKnockback;
+    protected int xKnockback;
+    protected int yKnockback;
     public int maxHealth = 10;
     public int health = maxHealth;
     public int swimTimer;

@@ -56,7 +56,8 @@ public class EdgeShape extends Shape {
      * optional adjacent vertex 2. Used for smooth collision
      */
     public final v2 m_vertex3 = new v2();
-    public boolean m_hasVertex0 = false, m_hasVertex3 = false;
+    public boolean m_hasVertex0 = false;
+    public boolean m_hasVertex3 = false;
 
 
     public EdgeShape() {
@@ -128,32 +129,28 @@ public class EdgeShape extends Shape {
     @Override
     public boolean raycast(RayCastOutput output, RayCastInput input, Transform xf, int childIndex) {
 
-        final v2 v1 = m_vertex1;
-        final v2 v2 = m_vertex2;
-        final Rot xfq = xf;
-        final jcog.math.v2 xfp = xf.pos;
+        v2 v1 = m_vertex1;
+        v2 v2 = m_vertex2;
+        Rot xfq = xf;
+        jcog.math.v2 xfp = xf.pos;
 
 
         float tempx = input.p1.x - xfp.x;
         float tempy = input.p1.y - xfp.y;
-        final float p1x = xfq.c * tempx + xfq.s * tempy;
-        final float p1y = -xfq.s * tempx + xfq.c * tempy;
+        float p1x = xfq.c * tempx + xfq.s * tempy;
+        float p1y = -xfq.s * tempx + xfq.c * tempy;
 
         tempx = input.p2.x - xfp.x;
         tempy = input.p2.y - xfp.y;
-        final float p2x = xfq.c * tempx + xfq.s * tempy;
-        final float p2y = -xfq.s * tempx + xfq.c * tempy;
+        float p2x = xfq.c * tempx + xfq.s * tempy;
+        float p2y = -xfq.s * tempx + xfq.c * tempy;
 
-        final float dx = p2x - p1x;
-        final float dy = p2y - p1y;
 
-        
-        
         normal.x = v2.y - v1.y;
         normal.y = v1.x - v2.x;
         normal.normalize();
-        final float normalx = normal.x;
-        final float normaly = normal.y;
+        float normalx = normal.x;
+        float normaly = normal.y;
 
         
         
@@ -161,6 +158,8 @@ public class EdgeShape extends Shape {
         tempx = v1.x - p1x;
         tempy = v1.y - p1y;
         float numerator = normalx * tempx + normaly * tempy;
+        float dy = p2y - p1y;
+        float dx = p2x - p1x;
         float denominator = normalx * dx + normaly * dy;
 
         if (denominator == 0.0f) {
@@ -172,20 +171,16 @@ public class EdgeShape extends Shape {
             return false;
         }
 
-        
-        final float qx = p1x + t * dx;
-        final float qy = p1y + t * dy;
 
-        
-        
-        
-        final float rx = v2.x - v1.x;
-        final float ry = v2.y - v1.y;
-        final float rr = rx * rx + ry * ry;
+        float rx = v2.x - v1.x;
+        float ry = v2.y - v1.y;
+        float rr = rx * rx + ry * ry;
         if (rr == 0.0f) {
             return false;
         }
+        float qx = p1x + t * dx;
         tempx = qx - v1.x;
+        float qy = p1y + t * dy;
         tempy = qy - v1.y;
         
         float s = (tempx * rx + tempy * ry) / rr;
@@ -208,14 +203,14 @@ public class EdgeShape extends Shape {
 
     @Override
     public void computeAABB(AABB aabb, Transform xf, int childIndex) {
-        final v2 lowerBound = aabb.lowerBound;
-        final v2 upperBound = aabb.upperBound;
-        final Rot xfq = xf;
+        v2 lowerBound = aabb.lowerBound;
+        v2 upperBound = aabb.upperBound;
+        Rot xfq = xf;
 
-        final float v1x = (xfq.c * m_vertex1.x - xfq.s * m_vertex1.y) + xf.pos.x;
-        final float v1y = (xfq.s * m_vertex1.x + xfq.c * m_vertex1.y) + xf.pos.y;
-        final float v2x = (xfq.c * m_vertex2.x - xfq.s * m_vertex2.y) + xf.pos.x;
-        final float v2y = (xfq.s * m_vertex2.x + xfq.c * m_vertex2.y) + xf.pos.y;
+        float v1x = (xfq.c * m_vertex1.x - xfq.s * m_vertex1.y) + xf.pos.x;
+        float v1y = (xfq.s * m_vertex1.x + xfq.c * m_vertex1.y) + xf.pos.y;
+        float v2x = (xfq.c * m_vertex2.x - xfq.s * m_vertex2.y) + xf.pos.x;
+        float v2y = (xfq.s * m_vertex2.x + xfq.c * m_vertex2.y) + xf.pos.y;
 
         lowerBound.x = v1x < v2x ? v1x : v2x;
         lowerBound.y = v1y < v2y ? v1y : v2y;

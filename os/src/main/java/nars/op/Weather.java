@@ -33,7 +33,9 @@ public class Weather extends NARPart {
     public final v2 lonLat;
 
     /** current day daylight param */
-    transient Date sunrise, sunset, noon;
+    transient Date sunrise;
+    transient Date sunset;
+    transient Date noon;
 
     /**
      * updated with the latest events
@@ -60,13 +62,17 @@ public class Weather extends NARPart {
     protected void update() {
 
         synchronized (events) {
-            events.forEach(ScalarValue::delete);
+            for (Task event : events) {
+                event.delete();
+            }
             events.clear();
 
             updateSunRiseSetTime();
             updateWeatherGov();
 
-            events.forEach(x -> x.pri(nar));
+            for (Task x : events) {
+                x.pri(nar);
+            }
 
             nar.input(events);
         }

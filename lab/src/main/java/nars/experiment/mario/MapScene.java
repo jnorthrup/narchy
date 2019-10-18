@@ -19,8 +19,10 @@ public class MapScene extends Scene {
     private int[][] level;
     private int[][] data;
 
-    private int xMario, yMario;
-    private int xMarioA, yMarioA;
+    private int xMario;
+    private int yMario;
+    private int xMarioA;
+    private int yMarioA;
 
     private int tick;
     private final Image staticBg;
@@ -73,7 +75,7 @@ public class MapScene extends Scene {
         renderStatic(staticGr);
     }
 
-    public void startMusic() {
+    public static void startMusic() {
         Art.startMusic(0);
     }
 
@@ -369,12 +371,12 @@ public class MapScene extends Scene {
     }
 
 
-    private void drawStringDropShadow(Graphics g, String text, int x, int y, int c) {
+    private static void drawStringDropShadow(Graphics g, String text, int x, int y, int c) {
         drawString(g, text, x * 8 + 5, y * 8 + 5, 0);
         drawString(g, text, x * 8 + 4, y * 8 + 4, c);
     }
 
-    private void drawString(Graphics g, String text, int x, int y, int c) {
+    private static void drawString(Graphics g, String text, int x, int y, int c) {
         char[] ch = text.toCharArray();
         for (int i = 0; i < ch.length; i++) {
             g.drawImage(Art.font[ch[i] - 32][c], x + i * 8, y, null);

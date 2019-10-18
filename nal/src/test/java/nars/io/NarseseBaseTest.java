@@ -251,7 +251,7 @@ class NarseseBaseTest extends NarseseTest {
     }
 
 
-    private void testOperationStructure(@NotNull Compound t) {
+    private static void testOperationStructure(@NotNull Compound t) {
         
         Term[] aa = ((Compound) t.sub(0)).arrayClone();
         assertEquals(2, aa.length);
@@ -338,7 +338,8 @@ class NarseseBaseTest extends NarseseTest {
         assertEquals(abcd, ABCD, () -> abcd + " != " + ABCD);
     }
 
-    private @NotNull Variable testVar(char prefix) throws Narsese.NarseseException {
+    private @NotNull
+    static Variable testVar(char prefix) throws Narsese.NarseseException {
         Term x = term(prefix + "x");
         assertNotNull(x);
         assertTrue(x instanceof Variable);

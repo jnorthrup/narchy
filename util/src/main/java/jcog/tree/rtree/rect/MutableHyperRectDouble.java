@@ -24,7 +24,7 @@ public class MutableHyperRectDouble extends HyperRectDouble {
         return this;
     }
 
-    public HyperRectDouble mbrSelf(final double[] b) {
+    public HyperRectDouble mbrSelf(double[] b) {
         double[] minA = min.coord;
         int dim = minA.length;
         if (b.length!=dim)
@@ -39,7 +39,7 @@ public class MutableHyperRectDouble extends HyperRectDouble {
         return this;
     }
 
-    public HyperRectDouble mbrSelf(final HyperRectDouble x) {
+    public HyperRectDouble mbrSelf(HyperRectDouble x) {
 
 
         double[] minA = min.coord;

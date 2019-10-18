@@ -59,7 +59,7 @@ public class NAgentOptimize {
 //                .var("beliefPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.beliefPriDefault.setAt(f))
                 .var("questionPriDefault", 0, 1f, 0.1f,
-                        (NAR n, float f) -> {
+                        (n, f) -> {
                             n.questionPriDefault.pri(f);
                             n.questPriDefault.pri(f);
                         })
@@ -94,7 +94,7 @@ public class NAgentOptimize {
 
         Optilive<NAR, Game> o = l.optilive(n->agent.apply(n.get()),
                 jcog.lab.Optimize.repeat((Game t) -> {
-                    final double[] rewardSum = {0}, dexSum = { 0 };
+                    double[] rewardSum = {0}, dexSum = { 0 };
                     t.onFrame(()-> {
                         rewardSum[0] += t.happiness();
                         dexSum[0] += t.dexterity();

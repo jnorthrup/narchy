@@ -42,9 +42,11 @@ public class Piece {
      * @param g the associated Graphics instance
      */
     public void draw(Graphics g) {
-        int x = 30, y = 30, radius = 20;
 
         g.setColor(color);
+        int radius = 20;
+        int y = 30;
+        int x = 30;
         g.fillOval(x - radius, y - radius, radius * 2, radius * 2);
     }
 

@@ -42,11 +42,13 @@ public class Sweep implements Serializable {
     /**
      * Center world positions
      */
-    public final v2 c0, c;
+    public final v2 c0;
+    public final v2 c;
     /**
      * World angles
      */
-    public float a0, a;
+    public float a0;
+    public float a;
 
     /**
      * Fraction of the current time step in the range [0,1] c0 and a0 are the positions at alpha0.
@@ -89,7 +91,7 @@ public class Sweep implements Serializable {
      * @param xf the result is placed here - must not be null
      * @param t  the normalized time in [0,1].
      */
-    public final void getTransform(final Transform xf, final float beta) {
+    public final void getTransform(Transform xf, float beta) {
         assert (xf != null);
         
         
@@ -101,7 +103,7 @@ public class Sweep implements Serializable {
 
         
         
-        final Rot q = xf;
+        Rot q = xf;
         xf.pos.x -= q.c * localCenter.x - q.s * localCenter.y;
         xf.pos.y -= q.s * localCenter.x + q.c * localCenter.y;
     }
@@ -111,7 +113,7 @@ public class Sweep implements Serializable {
      *
      * @param alpha the new initial time.
      */
-    public final void advance(final float alpha) {
+    public final void advance(float alpha) {
         assert (alpha0 < 1.0f);
         
         

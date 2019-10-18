@@ -18,8 +18,10 @@ import java.util.stream.Stream;
 
 public class TaskConcept extends NodeConcept  {
 
-    private final BeliefTable beliefs, goals;
-    private final QuestionTable quests, questions;
+    private final BeliefTable beliefs;
+    private final BeliefTable goals;
+    private final QuestionTable quests;
+    private final QuestionTable questions;
 
     public TaskConcept(Term term, @Nullable BeliefTable beliefs, @Nullable BeliefTable goals, ConceptBuilder b) {
         this(term,

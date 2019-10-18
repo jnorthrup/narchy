@@ -69,8 +69,8 @@ public class TextHandler extends TypeHandler {
     }
 
     public static byte[] fromTransferable(Transferable in) {
-        String s;
         if (in != null) {
+            String s;
             try {
                 s = (String) (in.getTransferData(DataFlavor.stringFlavor));
             } catch (Exception e) {
@@ -113,8 +113,8 @@ public class TextHandler extends TypeHandler {
      */
     @Override
     public void send_data(Transferable in, ClipInterface c) {
-        String s;
         if (in != null) {
+            String s;
             try {
                 s = (String) (in.getTransferData(DataFlavor.stringFlavor));
             } catch (Exception e) {

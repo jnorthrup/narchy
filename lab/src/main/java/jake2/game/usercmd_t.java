@@ -27,7 +27,9 @@ public class usercmd_t implements Cloneable {
 	public byte msec;
 	public byte buttons;
 	public final short[] angles= new short[3];
-	public short forwardmove, sidemove, upmove;
+	public short forwardmove;
+    public short sidemove;
+    public short upmove;
 	public byte impulse; 
 	public byte lightlevel; 
 

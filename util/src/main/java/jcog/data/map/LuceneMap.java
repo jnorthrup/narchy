@@ -20,7 +20,6 @@ import org.apache.lucene.store.SimpleFSDirectory;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * Persistent Map implementation based on Lucene
@@ -61,7 +60,6 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
         IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         writerConfig.setCommitOnClose(true);
         writerConfig.setOpenMode(OpenMode.CREATE_OR_APPEND);
-        int numDocs;
 
         try {
             Directory directory;
@@ -76,7 +74,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
                 directory = new SimpleFSDirectory(folder.toPath());
             }
             writer = new IndexWriter(directory, writerConfig);
-            numDocs = writer.getDocStats().numDocs;
+            int numDocs = writer.getDocStats().numDocs;
             searcherManager = new SearcherManager(writer, true, true, null);
             log.info("Map loaded, size: " + numDocs);
 
@@ -101,7 +99,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
     /**
      * Read the object from Base64 string.
      */
-    private Object fromString(String s) throws IOException, ClassNotFoundException {
+    private static Object fromString(String s) throws IOException, ClassNotFoundException {
         byte[] data = Base64.getDecoder().decode(s);
         ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
         Object o = ois.readObject();
@@ -112,7 +110,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
     /**
      * Write the object to a Base64 string.
      */
-    private String toString(Serializable o) throws IOException {
+    private static String toString(Serializable o) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(o);
@@ -125,7 +123,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
         K k = (K) key;
         try {
             Optional<V> result = Optional.empty();
-            Optional<Document> doc = document(this.toString(k), refresh);
+            Optional<Document> doc = document(LuceneMap.toString(k), refresh);
             if (doc.isPresent()) {
                 result = Optional.of((V) fromString(doc.get().get(VALUE_FIELD)));
             }
@@ -170,8 +168,8 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
 
         try {
             Document doc = new Document();
-            String valueString = this.toString(val);
-            String keyString = this.toString(key);
+            String valueString = LuceneMap.toString(val);
+            String keyString = LuceneMap.toString(key);
             StringField valueField = new StringField(VALUE_FIELD, valueString, Store.YES);
             StringField keyField = new StringField(KEY_FIELD, keyString, Store.YES);
             doc.add(keyField);
@@ -218,7 +216,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
         try {
             Builder builder = new BooleanQuery.Builder();
             V v = (V) o;
-            builder.add(new TermQuery(new Term(VALUE_FIELD, this.toString(v))), Occur.MUST);
+            builder.add(new TermQuery(new Term(VALUE_FIELD, LuceneMap.toString(v))), Occur.MUST);
             return loadDoc(builder.build(), true).isPresent();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -247,7 +245,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
         Object old = this.get(o);
         try {
             K k = (K) o;
-            writer.deleteDocuments(new Term(KEY_FIELD, this.toString(k)));
+            writer.deleteDocuments(new Term(KEY_FIELD, LuceneMap.toString(k)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -290,8 +288,8 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
                 IndexReader reader = searcher.getIndexReader();
                 for (int i = 0; i < reader.maxDoc(); i++) {
                     Document doc = reader.document(i);
-                    V v = (V) this.fromString(doc.get(VALUE_FIELD));
-                    K k = (K) this.fromString(doc.get(KEY_FIELD));
+                    V v = (V) LuceneMap.fromString(doc.get(VALUE_FIELD));
+                    K k = (K) LuceneMap.fromString(doc.get(KEY_FIELD));
                     entries.add(new Entry<>() {
                         @Override
                         public K getKey() {

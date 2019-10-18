@@ -16,10 +16,7 @@ public class NARSpeakTest {
     public void testVocalization1() {
         NAR n = NARS.tmp();
         StringBuilder b = new StringBuilder();
-        Vocalization s = new Vocalization(n, 1f, (w) -> {
-            
-            b.append(n.time() + ":" + w + ' ');
-        });
+        Vocalization s = new Vocalization(n, 1f, (w) -> b.append(n.time() + ":" + w + ' '));
 
         n.synch(); 
 

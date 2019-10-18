@@ -77,7 +77,8 @@ class LinearSplitTest {
 
         RBranch<RectDouble> root = (RBranch<RectDouble>) rTree.root();
         RNode<RectDouble>[] children = root.data;
-        int childCount = (int) Arrays.stream(children).filter(Objects::nonNull).count();
+        long count = Arrays.stream(children).filter(Objects::nonNull).count();
+        int childCount = (int) count;
         assertEquals(2, childCount, "Expected different number of children after split");
 
         RNode<RectDouble> child1 = children[0];
@@ -100,7 +101,7 @@ class LinearSplitTest {
     @Test
     void overlappingEntryTest() {
 
-        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(TYPE);
+        RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(TYPE);
         rTree.add(new RectDouble(0, 0, 1, 1));
         rTree.add(new RectDouble(0, 0, 2, 2));
         rTree.add(new RectDouble(0, 0, 2.1, 2));
@@ -125,7 +126,7 @@ class LinearSplitTest {
         
         final int expectedEntryCount = 17;
 
-        final Stats stats = rTree.stats();
+        Stats stats = rTree.stats();
         assertEquals(expectedEntryCount, stats.size(), () -> "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + expectedEntryCount + " actual: " + stats.size());
     }
 
@@ -137,17 +138,17 @@ class LinearSplitTest {
      */
     @Test
     void causeLinearSplitOverflow() {
-        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(8, TYPE);
-        final Random rand = new Random(13);
+        RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(8, TYPE);
+        Random rand = new Random(13);
         for (int i = 0; i < 500; i++) {
-            final int x1 = rand.nextInt(10);
-            final int y1 = rand.nextInt(10);
-            final int x2 = x1 + rand.nextInt(200);
-            final int y2 = y1 + rand.nextInt(200);
+            int x1 = rand.nextInt(10);
+            int y1 = rand.nextInt(10);
+            int x2 = x1 + rand.nextInt(200);
+            int y2 = y1 + rand.nextInt(200);
 
             rTree.add(new RectDouble(x1, y1, x2, y2));
         }
-        final Stats stats = rTree.stats();
+        Stats stats = rTree.stats();
         stats.print(System.out);
     }
 
@@ -155,17 +156,17 @@ class LinearSplitTest {
     @Test
     void causeLinearSplitNiceDist() {
 
-        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(8, TYPE);
-        final Random rand = new Random(13);
+        RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(8, TYPE);
+        Random rand = new Random(13);
         for (int i = 0; i < 500; i++) {
-            final int x1 = rand.nextInt(250);
-            final int y1 = rand.nextInt(250);
-            final int x2 = x1 + rand.nextInt(10);
-            final int y2 = y1 + rand.nextInt(10);
+            int x1 = rand.nextInt(250);
+            int y1 = rand.nextInt(250);
+            int x2 = x1 + rand.nextInt(10);
+            int y2 = y1 + rand.nextInt(10);
 
             rTree.add(new RectDouble(x1, y1, x2, y2));
         }
-        final Stats stats = rTree.stats();
+        Stats stats = rTree.stats();
         stats.print(System.out);
     }
 

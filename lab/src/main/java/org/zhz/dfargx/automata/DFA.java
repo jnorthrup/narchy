@@ -97,7 +97,9 @@ public class DFA {
 
     private static void dfsClosure(NFAState state, Set<NFAState> closure) {
         closure.add(state);
-        state.directTable.forEach(next -> dfsClosure(next, closure));
+        for (NFAState next : state.directTable) {
+            dfsClosure(next, closure);
+        }
     }
 
     private static Set<NFAState> traceReachable(Set<NFAState> closure, char ch, Map<NFAState, Set<NFAState>> closureMap) {
@@ -115,8 +117,6 @@ public class DFA {
     }
 
     private int[][] minimize(Map<Set<NFAState>, CharObjectHashMap<Set<NFAState>>> oriDFATransitionMap, Set<NFAState> initClosure, NFAState finalNFAState) {
-        Map<Integer, int[]> renamedDFATransitionTable = new HashMap<>();
-        Map<Integer, Boolean> finalFlags = new HashMap<>();
         Map<Set<NFAState>, Integer> stateRenamingMap = new HashMap<>();
         int initStateAfterRenaming = -1;
         int renamingStateID = 1;
@@ -129,7 +129,9 @@ public class DFA {
             stateRenamingMap.put(nfaState, renamingStateID++);
         }
 
-        renamedDFATransitionTable.put(0, newRejectState()); 
+        Map<Integer, int[]> renamedDFATransitionTable = new HashMap<>();
+        renamedDFATransitionTable.put(0, newRejectState());
+        Map<Integer, Boolean> finalFlags = new HashMap<>();
         finalFlags.put(0, false);
 
         

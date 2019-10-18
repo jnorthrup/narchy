@@ -42,16 +42,15 @@ public class RuleWLife {
 	
 	public void InitFromString(String sStr) {
 
-        String sTok;
-		int i;
-		ResetToDefaults();
+        ResetToDefaults();
 
         StringTokenizer st = new StringTokenizer(sStr, " ,", true);
 		while (st.hasMoreTokens()) {
-			sTok = st.nextToken().toUpperCase();
-			
-			
-			if (sTok.startsWith("NW"))
+            String sTok = st.nextToken().toUpperCase();
+
+
+            int i;
+            if (sTok.startsWith("NW"))
 				wgtAry[1] = Integer.valueOf(sTok.substring(2));
 			else if (sTok.startsWith("NN"))
 				wgtAry[2] = Integer.valueOf(sTok.substring(2));
@@ -98,7 +97,6 @@ public class RuleWLife {
 	
 	
 	public String GetAsString() {
-        int i;
 
 
         Validate();
@@ -110,7 +108,8 @@ public class RuleWLife {
                 + wgtAry[7] + ",SS" + wgtAry[8] + ",SE" + wgtAry[9] + ",HI"
                 + ih;
 
-		for (i = 0; i < IMAXWLIFERUL; i++)
+        int i;
+        for (i = 0; i < IMAXWLIFERUL; i++)
 			if (rulesS[i])
 				sBff = sBff + ",RS" + i;
 
@@ -135,24 +134,22 @@ public class RuleWLife {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
-		short bOldVal, bNewVal;
-		int modCnt = 0;
-		int i, j, iCnt;
-		int[] lurd = new int[4]; 
+        int modCnt = 0;
+        int[] lurd = new int[4];
 
-		for (i = 0; i < sizX; ++i) {
+		for (int i = 0; i < sizX; ++i) {
 			
 			lurd[0] = (i > 0) ? i - 1 : (isWrap) ? sizX - 1 : sizX;
 			lurd[2] = (i < sizX - 1) ? i + 1 : (isWrap) ? 0 : sizX;
-			for (j = 0; j < sizY; ++j) {
+			for (int j = 0; j < sizY; ++j) {
 				
 				lurd[1] = (j > 0) ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
-				bOldVal = crrState[i][j];
-				bNewVal = bOldVal; 
+                short bOldVal = crrState[i][j];
+                short bNewVal = bOldVal;
 
-				iCnt = 0; 
-				if (isHist) 
+                int iCnt = 0;
+                if (isHist)
 				{
 					if (bOldVal <= 1) 
 					{

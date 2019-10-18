@@ -15,7 +15,9 @@ import nars.term.control.PREDICATE;
 import nars.term.control.SWITCH;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -46,7 +48,7 @@ public class DeriverProgram {
 
         this.branch = actions; assert (actions.length > 0);
 
-        this.cause = Stream.of(actions).flatMap(b -> Stream.of(b.why)).toArray(Cause[]::new);
+        this.cause = Arrays.stream(actions).flatMap(b -> Stream.of(b.why)).toArray(Cause[]::new);
 
         this.pre = pre;
     }

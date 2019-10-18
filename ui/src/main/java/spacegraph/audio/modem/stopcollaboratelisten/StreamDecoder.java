@@ -76,20 +76,17 @@ public abstract class StreamDecoder implements Runnable {
         }
 
 
-        int durationsToRead = Constants.kDurationsPerHail;
-        int skipped = 0;
-
-        double[] startSignals = new double[Constants.kBitsPerByte * Constants.kBytesPerDuration];
-        boolean notEnoughSamples;
-        byte[] samples = null;
-
         hasKey = false;
 
+        byte[] samples = null;
+        double[] startSignals = new double[Constants.kBitsPerByte * Constants.kBytesPerDuration];
+        int skipped = 0;
+        int durationsToRead = Constants.kDurationsPerHail;
         while (running) {
 
             //System.out.println(status());
 
-            notEnoughSamples = true;
+            boolean notEnoughSamples = true;
             while (notEnoughSamples) {
                 samples = buffer.read(Constants.kSamplesPerDuration * durationsToRead, 0.9f);
                 if (samples != null)

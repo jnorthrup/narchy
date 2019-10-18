@@ -8,6 +8,8 @@ package jcog.grammar.parse.examples.engine;
  * including the implied warranty of merchantability.
  */
 
+import java.util.stream.IntStream;
+
 /**
  * A Rule represents a logic statement that a structure is true if a following
  * series of other structures are true.
@@ -75,18 +77,16 @@ public class Rule implements Axiom {
 	 *         structures
 	 */
 	public boolean equals(Object o) {
-		if (!(o instanceof Rule))
-			return false;
-		Rule r = (Rule) o;
-		if (!(structures.length == r.structures.length)) {
-			return false;
+		boolean result = false;
+		if (o instanceof Rule) {
+			Rule r = (Rule) o;
+			if (structures.length == r.structures.length) {
+				int bound = structures.length;
+				boolean b = IntStream.range(0, bound).allMatch(i -> structures[i].equals(r.structures[i]));
+				result = b;
+            }
 		}
-		for (int i = 0; i < structures.length; i++) {
-			if (!(structures[i].equals(r.structures[i]))) {
-				return false;
-			}
-		}
-		return true;
+		return result;
 	}
 
 	/**

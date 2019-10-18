@@ -111,7 +111,7 @@ public class Windo extends MutableUnitContainer {
     /**
      * alllows filtering of certain finger modes
      */
-    boolean fingerable(DragEdit d) {
+    static boolean fingerable(DragEdit d) {
         return d != null; //HACK
     }
 
@@ -121,9 +121,10 @@ public class Windo extends MutableUnitContainer {
         if (p != null && _posGlobal != null) {
 
             float pmx = _posGlobal.x, pmy = _posGlobal.y;
-            float W = 0.5f, H = 0.5f;
             gl.glPushMatrix();
 
+            float H = 0.5f;
+            float W = 0.5f;
             float resizeBorder = Math.max(W, H) * Windo.resizeBorder;
             switch (p) {
                 case RESIZE_N:

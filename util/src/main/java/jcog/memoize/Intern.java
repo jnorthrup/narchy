@@ -260,7 +260,7 @@ public final class Intern {
             if (da1.length != da2.length) {
                 return false;
             }
-            return IntStream.range(0, da1.length).allMatch(i -> (da1[i] == da2[i]) || (Double.isNaN(da1[i]) && Double.isNaN(da2[i])));
+            return IntStream.range(0, da1.length).noneMatch(i -> (da1[i] != da2[i]) && (!Double.isNaN(da1[i]) || !Double.isNaN(da2[i])));
         }
 
         @Override
@@ -335,99 +335,68 @@ public final class Intern {
     }
 
     private static final WeakHasherMap</*@Interned*/ Integer, WeakReference</*@Interned*/ Integer>>
-            internedIntegers;
-    private static final WeakHasherMap</*@Interned*/ Long, WeakReference</*@Interned*/ Long>> internedLongs;
+            internedIntegers = new WeakHasherMap</*@Interned*/ Integer, WeakReference</*@Interned*/ Integer>>(
+                    new IntegerHasher());
+    private static final WeakHasherMap</*@Interned*/ Long, WeakReference</*@Interned*/ Long>> internedLongs = new WeakHasherMap</*@Interned*/ Long, WeakReference</*@Interned*/ Long>>(new LongHasher());
     private static final WeakHasherMap<int /*@Interned*/[], WeakReference<int /*@Interned*/[]>>
-            internedIntArrays;
+            internedIntArrays = new WeakHasherMap<int /*@Interned*/[], WeakReference<int /*@Interned*/[]>>(
+                    new IntArrayHasher());
     private static final WeakHasherMap<long /*@Interned*/[], WeakReference<long /*@Interned*/[]>>
-            internedLongArrays;
+            internedLongArrays = new WeakHasherMap<long /*@Interned*/[], WeakReference<long /*@Interned*/[]>>(
+                    new LongArrayHasher());
     private static final WeakHasherMap</*@Interned*/ Double, WeakReference</*@Interned*/ Double>>
-            internedDoubles;
-    private static final /*@Interned*/ Double internedDoubleNaN;
-    private static final /*@Interned*/ Double internedDoubleZero;
+            internedDoubles = new WeakHasherMap</*@Interned*/ Double, WeakReference</*@Interned*/ Double>>(
+                    new DoubleHasher());
+    private static final /*@Interned*/ Double internedDoubleNaN = Double.NaN;
+    private static final /*@Interned*/ Double internedDoubleZero = 0.0;
     private static final WeakHasherMap<double /*@Interned*/[], WeakReference<double /*@Interned*/[]>>
-            internedDoubleArrays;
+            internedDoubleArrays = new WeakHasherMap<double /*@Interned*/[], WeakReference<double /*@Interned*/[]>>(
+                    new DoubleArrayHasher());
     private static final WeakHasherMap<
             /*@Nullable*/ /*@Interned*/ String /*@Interned*/[],
             WeakReference</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>>
-            internedStringArrays;
+            internedStringArrays = new WeakHasherMap<
+                    /*@Nullable*/ /*@Interned*/ String /*@Interned*/[],
+                    WeakReference</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>>(
+                    new StringArrayHasher());
     private static final WeakHasherMap<
             /*@Nullable*/ /*@Interned*/ Object /*@Interned*/[],
             WeakReference</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>>
-            internedObjectArrays;
+            internedObjectArrays = new WeakHasherMap<
+                    /*@Nullable*/ /*@Interned*/ Object /*@Interned*/[],
+                    WeakReference</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>>(
+                    new ObjectArrayHasher());
     private static final WeakHasherMap<
             SequenceAndIndices<int /*@Interned*/[]>, WeakReference<int /*@Interned*/[]>>
-            internedIntSequenceAndIndices;
+            internedIntSequenceAndIndices = new WeakHasherMap<
+                    SequenceAndIndices<int /*@Interned*/[]>, WeakReference<int /*@Interned*/[]>>(
+                    new SequenceAndIndicesHasher<int /*@Interned*/[]>());
     private static final WeakHasherMap<
             SequenceAndIndices<long /*@Interned*/[]>, WeakReference<long /*@Interned*/[]>>
-            internedLongSequenceAndIndices;
+            internedLongSequenceAndIndices = new WeakHasherMap<
+                    SequenceAndIndices<long /*@Interned*/[]>, WeakReference<long /*@Interned*/[]>>(
+                    new SequenceAndIndicesHasher<long /*@Interned*/[]>());
     private static final WeakHasherMap<
             SequenceAndIndices<double /*@Interned*/[]>, WeakReference<double /*@Interned*/[]>>
-            internedDoubleSequenceAndIndices;
+            internedDoubleSequenceAndIndices = new WeakHasherMap<
+                    SequenceAndIndices<double /*@Interned*/[]>, WeakReference<double /*@Interned*/[]>>(
+                    new SequenceAndIndicesHasher<double /*@Interned*/[]>());
     private static final WeakHasherMap<
             SequenceAndIndices</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>,
             WeakReference</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>>
-            internedObjectSequenceAndIndices;
+            internedObjectSequenceAndIndices = new WeakHasherMap<
+                    SequenceAndIndices</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>,
+                    WeakReference</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>>(
+                    new SequenceAndIndicesHasher</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>());
     private static final WeakHasherMap<
             SequenceAndIndices</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>,
             WeakReference</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>>
-            internedStringSequenceAndIndices;
+            internedStringSequenceAndIndices = new WeakHasherMap<
+                    SequenceAndIndices</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>,
+                    WeakReference</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>>(
+                    new SequenceAndIndicesHasher</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>());
 
-    static {
-        internedIntegers =
-                new WeakHasherMap</*@Interned*/ Integer, WeakReference</*@Interned*/ Integer>>(
-                        new IntegerHasher());
-        internedLongs =
-                new WeakHasherMap</*@Interned*/ Long, WeakReference</*@Interned*/ Long>>(new LongHasher());
-        internedIntArrays =
-                new WeakHasherMap<int /*@Interned*/[], WeakReference<int /*@Interned*/[]>>(
-                        new IntArrayHasher());
-        internedLongArrays =
-                new WeakHasherMap<long /*@Interned*/[], WeakReference<long /*@Interned*/[]>>(
-                        new LongArrayHasher());
-        internedDoubles =
-                new WeakHasherMap</*@Interned*/ Double, WeakReference</*@Interned*/ Double>>(
-                        new DoubleHasher());
-        internedDoubleNaN = Double.NaN;
-        internedDoubleZero = 0.0;
-        internedDoubleArrays =
-                new WeakHasherMap<double /*@Interned*/[], WeakReference<double /*@Interned*/[]>>(
-                        new DoubleArrayHasher());
-        internedStringArrays =
-                new WeakHasherMap<
-                        /*@Nullable*/ /*@Interned*/ String /*@Interned*/[],
-                        WeakReference</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>>(
-                        new StringArrayHasher());
-        internedObjectArrays =
-                new WeakHasherMap<
-                        /*@Nullable*/ /*@Interned*/ Object /*@Interned*/[],
-                        WeakReference</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>>(
-                        new ObjectArrayHasher());
-        internedIntSequenceAndIndices =
-                new WeakHasherMap<
-                        SequenceAndIndices<int /*@Interned*/[]>, WeakReference<int /*@Interned*/[]>>(
-                        new SequenceAndIndicesHasher<int /*@Interned*/[]>());
-        internedLongSequenceAndIndices =
-                new WeakHasherMap<
-                        SequenceAndIndices<long /*@Interned*/[]>, WeakReference<long /*@Interned*/[]>>(
-                        new SequenceAndIndicesHasher<long /*@Interned*/[]>());
-        internedDoubleSequenceAndIndices =
-                new WeakHasherMap<
-                        SequenceAndIndices<double /*@Interned*/[]>, WeakReference<double /*@Interned*/[]>>(
-                        new SequenceAndIndicesHasher<double /*@Interned*/[]>());
-        internedObjectSequenceAndIndices =
-                new WeakHasherMap<
-                        SequenceAndIndices</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>,
-                        WeakReference</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>>(
-                        new SequenceAndIndicesHasher</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>());
-        internedStringSequenceAndIndices =
-                new WeakHasherMap<
-                        SequenceAndIndices</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>,
-                        WeakReference</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>>(
-                        new SequenceAndIndicesHasher</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>());
-    }
 
-    
     public static int numIntegers() {
         return internedIntegers.size();
     }

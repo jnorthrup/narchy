@@ -164,9 +164,9 @@ public class AffinityExecutor implements Executor {
     }
 
     private String dumpThreadInfo() {
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
-        final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 
         for (Thread t : threads) {
             ThreadInfo threadInfo = threadMXBean.getThreadInfo(t.getId());

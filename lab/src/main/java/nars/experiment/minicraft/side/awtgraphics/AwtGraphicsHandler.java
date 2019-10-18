@@ -23,7 +23,7 @@ public class AwtGraphicsHandler extends GraphicsHandler {
     public BufferedImage buffer;
 
     @Override
-    public void init(final SideScrollMinicraft game) {
+    public void init(SideScrollMinicraft game) {
 
 
         container = new JFrame("Minicraft");

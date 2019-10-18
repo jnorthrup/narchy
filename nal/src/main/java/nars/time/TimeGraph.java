@@ -707,10 +707,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 								} else {
 									//chain the events together relatively.  chain to the parent event if it's absolute
-									final Event[] prev =
+									Event[] prev =
 										//{ eventStart!=ETERNAL && eventStart!=TIMELESS ? event : null };
 										{event};
-									final long[] prevTime = {0};
+									long[] prevTime = {0};
 									eventTerm.eventsAND((w, y) -> {
 //                                        if (y.equals(eventTerm))
 //                                            return true;
@@ -870,7 +870,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	private int solveAbsolutes(Subterms xx, List<Absolute>[] subEvents) {
 		int abs = 0;
 		int s = subEvents.length;
-		final FasterList<Absolute> f = new FasterList<>();
+		FasterList<Absolute> f = new FasterList<>();
 		Predicate<Absolute> adder = (se) -> {
 			f.add(se);
 			//return false; //one should be enough
@@ -910,10 +910,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 			nextPermute:
 			while (ci.hasNext()) {
-				long start = Long.MAX_VALUE, range = 0;
 
 				Absolute[] ss = ci.next();
 				cc.clear();
+				long range = 0;
+				long start = Long.MAX_VALUE;
 				for (int i = 0; i < abs; i++) {
 					Absolute e = ss[i];
 //                    if (!ii.isEmpty()) {
@@ -946,7 +947,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		} else {
 
 			int w = IntStream.range(0, s).filter(i -> subEvents[i] != null && !subEvents[i].isEmpty()).findFirst().orElse(-1);
-            //found
+			//found
             List<Absolute> ss = subEvents[w];
 			for (Absolute e : ss) {
 				if (e == null) continue;
@@ -1088,7 +1089,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 				solveOcc(b, false, bx -> {
 					if ((bx instanceof Absolute) && ae.add(bx)) {
-                        return Arrays.stream(aa).allMatch(ax -> solveDTAbsolutePair(x, ax, bx, each));
+						return Arrays.stream(aa).allMatch(ax -> solveDTAbsolutePair(x, ax, bx, each));
 					}
 					return true;
 				});
@@ -1108,8 +1109,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		Op o = x.op();
 
-		int dt;
-
 		if (o == CONJ) {
 			//swap to correct sequence order
 			if (a.start() > b.start()) {
@@ -1121,6 +1120,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //        assert (!a.equals(b));
 
 		long aWhen = a.start(), bWhen = b.start();
+		int dt;
 		if (aWhen == ETERNAL || bWhen == ETERNAL)
 			dt = 0;
 		else {
@@ -1271,7 +1271,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		Collection<Event> ee = events(f.id);
 		if (ee != null) {
-            return ee.stream().noneMatch(e -> e instanceof Absolute && !each.test((Absolute) e));
+			return ee.stream().noneMatch(e -> e instanceof Absolute && !each.test((Absolute) e));
 		}
 
 		return true;
@@ -1430,13 +1430,15 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 				break;
 			default:
 				List<Pair<Compound, Term[]>> substs = new FasterList();
-				final int[] permutations = {1};
-				subSolved.forEach((h, w) -> {
+				int[] permutations = {1};
+				for (Map.Entry<Compound, java.util.Set<Term>> entry : subSolved.entrySet()) {
+					Compound h = entry.getKey();
+					java.util.Set<Term> w = entry.getValue();
 					Term[] ww = w.toArray(EmptyTermArray);
 					assert (ww.length > 0);
 					permutations[0] *= ww.length;
 					substs.add(pair(h, ww));
-				});
+				}
 				int ns = substs.size();
 				assert (ns > 0);
 				Random rng = random();
@@ -1575,8 +1577,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		if (!solutions.isEmpty()) {
 			Term t = x.id;
 			/** clone the list because modifying solutions while iterating will cause infinite loop */
-			return new FasterList<>(solutions.list.stream().filter(s ->
-					(s instanceof Absolute && (s.start() != ETERNAL) && s.id.equals(t) && !s.equals(x))).collect(Collectors.toList())
+			List<Event> list = solutions.list.stream().filter(event -> (event instanceof Absolute && (event.start() != ETERNAL) && event.id.equals(t) && !event.equals(x))).collect(Collectors.toList());
+			return new FasterList<>(list
 			).allSatisfy(s -> {
 
 				Collection<Event> eee = events(t);
@@ -1917,7 +1919,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		/**
 		 * enabled layers
 		 */
-		final boolean existing, tangent, tangentNeg;
+		final boolean existing;
+        final boolean tangent;
+        final boolean tangentNeg;
 
 		protected CrossTimeSolver(boolean existing, boolean tangent, boolean tangentNeg) {
 
@@ -2035,8 +2039,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 				return true; //not the target destination
 			}
 
-			long start;
-
 			long[] pt = pathTime(path);
 			if (pt == null)
 				return true;
@@ -2046,6 +2048,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 			if (dt == ETERNAL)
 				dt = 0; //HACK
 
+			long start;
 			if (!(ss instanceof Absolute) && !(ee instanceof Absolute)) {
 				start = TIMELESS;
 			} else {

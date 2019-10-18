@@ -89,7 +89,6 @@ public final class Cbuf {
      */
     static boolean AddLateCommands() {
         int i;
-        int j;
 
 
         int s = 0;
@@ -113,6 +112,7 @@ public final class Cbuf {
             if (text.charAt(i) == '+') {
                 i++;
 
+                int j;
                 for (j = i; j < text.length() && (text.charAt(j) != '+') && (text.charAt(j) != '-'); j++);
 
                 build += text.substring(i, j);
@@ -150,10 +150,9 @@ public final class Cbuf {
      */
     public static void Execute() {
 
+        Globals.alias_count = 0;
+
         byte[] text = null;
-
-        Globals.alias_count = 0; 
-
         while (Globals.cmd_text.cursize != 0) {
             
             text = Globals.cmd_text.data;

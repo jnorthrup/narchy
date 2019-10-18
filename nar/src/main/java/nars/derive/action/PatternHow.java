@@ -64,7 +64,8 @@ public class PatternHow extends CondHow {
     private final TruthModel truthModel;
 
     protected Occurrify.OccurrenceSolver time;
-    protected Term beliefTruth, goalTruth;
+    protected Term beliefTruth;
+    protected Term goalTruth;
     Truthify truthify;
     public Termify termify;
 
@@ -75,7 +76,13 @@ public class PatternHow extends CondHow {
     @Deprecated protected ByteToByteFunction concPunc = null;
 
     @Deprecated
-    private transient boolean concBelief = false, concQuestion = false, concGoal = false, concQuest = false;
+    private transient boolean concBelief = false;
+    @Deprecated
+    private transient boolean concQuestion = false;
+    @Deprecated
+    private transient boolean concGoal = false;
+    @Deprecated
+    private transient boolean concQuest = false;
 
 
 
@@ -326,8 +333,8 @@ public class PatternHow extends CondHow {
     }
 
     public static Stream<PremiseRule> parse(Stream<String> rules, TruthModel truthModel) {
-        final String[] currentTag = {null};
-        Stream<PremiseRule> s = rules.flatMap((String line)->{
+        String[] currentTag = {null};
+        Stream<PremiseRule> s = rules.flatMap(line ->{
             if (!line.contains("|-")) {
                 if (line.endsWith("{")) {
                     //start tag
@@ -471,9 +478,10 @@ public class PatternHow extends CondHow {
         boolean atMostOneTemporal = !(taskTemporal && beliefTemporal);
 
         //decide when inline "paste" (macro substitution) of the premise task or belief terms is allowed.
-        boolean taskPastable = false, beliefPastable = false;
+        boolean taskPastable = false;
         if (!taskObviouslyNotPastable && ((atMostOneTemporal || !y.hasAny(Op.Temporal))))
             taskPastable = true;
+        boolean beliefPastable = false;
         if (!beliefObviouslyNotPastable && ((atMostOneTemporal || !y.hasAny(Op.Temporal))))
             beliefPastable = true;
 
@@ -562,7 +570,7 @@ public class PatternHow extends CondHow {
 
         /** infer necessary double premise for derived belief  */
 
-        boolean doubleBelief = false, doubleGoal = false;
+        boolean doubleBelief = false;
         if (beliefTruthOp != null) {
             assert (concPunc.valueOf(BELIEF) == BELIEF || concPunc.valueOf(GOAL) == BELIEF || concPunc.valueOf(QUESTION) == BELIEF || concPunc.valueOf(QUEST) == BELIEF);
             if (!beliefTruthOp.single()) {
@@ -570,6 +578,7 @@ public class PatternHow extends CondHow {
             }
         }
         /** infer necessary double premise for derived goal  */
+        boolean doubleGoal = false;
         if (goalTruthOp != null) {
             assert (concPunc.valueOf(BELIEF) == GOAL || concPunc.valueOf(GOAL) == GOAL || concPunc.valueOf(QUESTION) == GOAL || concPunc.valueOf(QUEST) == GOAL);
             if (!goalTruthOp.single()) {

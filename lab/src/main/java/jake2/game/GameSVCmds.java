@@ -91,12 +91,11 @@ public class GameSVCmds {
      */
     static boolean StringToFilter(String s, GameSVCmds.ipfilter_t f) {
 
-        byte[] b = {0, 0, 0, 0};
-        byte[] m = {0, 0, 0, 0};
-
         try {
             StringTokenizer tk = new StringTokenizer(s, ". ");
 
+            byte[] m = {0, 0, 0, 0};
+            byte[] b = {0, 0, 0, 0};
             for (int n = 0; n < 4; n++) {
                 b[n] = (byte) Lib.atoi(tk.nextToken());
                 if (b[n] != 0)
@@ -121,14 +120,13 @@ public class GameSVCmds {
         int[] m = {0, 0, 0, 0};
 
         int p = 0;
-        char c;
 
         int i = 0;
 
         while (p < from.length() && i < 4) {
             m[i] = 0;
 
-            c = from.charAt(p);
+            char c = from.charAt(p);
             while (c >= '0' && c <= '9') {
                 m[i] = m[i] * 10 + (c - '0');
                 c = from.charAt(p++);
@@ -154,7 +152,6 @@ public class GameSVCmds {
      * SV_AddIP_f.
      */
     static void SVCmd_AddIP_f() {
-        int i;
 
         if (game_import_t.argc() < 3) {
             game_import_t.cprintf(null, Defines.PRINT_HIGH,
@@ -162,6 +159,7 @@ public class GameSVCmds {
             return;
         }
 
+        int i;
         for (i = 0; i < numipfilters; i++)
             if (ipfilters[i].compare == 0xffffffff)
                 break; 
@@ -183,7 +181,6 @@ public class GameSVCmds {
      */
     static void SVCmd_RemoveIP_f() {
         GameSVCmds.ipfilter_t f = new GameSVCmds.ipfilter_t();
-        int i, j;
 
         if (game_import_t.argc() < 3) {
             game_import_t.cprintf(null, Defines.PRINT_HIGH,
@@ -194,10 +191,10 @@ public class GameSVCmds {
         if (!StringToFilter(game_import_t.argv(2), f))
             return;
 
-        for (i = 0; i < numipfilters; i++)
+        for (int i = 0; i < numipfilters; i++)
             if (ipfilters[i].mask == f.mask
                     && ipfilters[i].compare == f.compare) {
-                for (j = i + 1; j < numipfilters; j++)
+                for (int j = i + 1; j < numipfilters; j++)
                     ipfilters[j - 1] = ipfilters[j];
                 numipfilters--;
                 game_import_t.cprintf(null, Defines.PRINT_HIGH, "Removed.\n");
@@ -211,12 +208,10 @@ public class GameSVCmds {
      * SV_ListIP_f.
      */
     static void SVCmd_ListIP_f() {
-        int i;
-        byte[] b;
 
         game_import_t.cprintf(null, Defines.PRINT_HIGH, "Filter list:\n");
-        for (i = 0; i < numipfilters; i++) {
-            b = Lib.getIntBytes(ipfilters[i].compare);
+        for (int i = 0; i < numipfilters; i++) {
+            byte[] b = Lib.getIntBytes(ipfilters[i].compare);
             game_import_t
                     .cprintf(null, Defines.PRINT_HIGH, (b[0] & 0xff) + "."
                             + (b[1] & 0xff) + '.' + (b[2] & 0xff) + '.'
@@ -230,9 +225,6 @@ public class GameSVCmds {
     static void SVCmd_WriteIP_f() {
 
         String name;
-        byte[] b;
-
-        int i;
 
         cvar_t game = game_import_t.cvar("game", "", 0);
 
@@ -254,8 +246,8 @@ public class GameSVCmds {
             f.writeChars("setAt filterban " + (int) GameBase.filterban.value
                     + '\n');
 
-            for (i = 0; i < numipfilters; i++) {
-                b = Lib.getIntBytes(ipfilters[i].compare);
+            for (int i = 0; i < numipfilters; i++) {
+                byte[] b = Lib.getIntBytes(ipfilters[i].compare);
                 f.writeChars("sv addip " + (b[0] & 0xff) + '.' + (b[1] & 0xff)
                         + '.' + (b[2] & 0xff) + '.' + (b[3] & 0xff) + '\n');
             }

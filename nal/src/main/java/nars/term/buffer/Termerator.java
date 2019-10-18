@@ -187,7 +187,7 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
     }
 
     public void canBePairs(List<Term> y) {
-        canBe((Termerator e) -> {
+        canBe(e -> {
             int n = y.size();
             for (int i = 0; i < n; ) {
                 if (!e.is(y.get(i++), y.get(i++)))

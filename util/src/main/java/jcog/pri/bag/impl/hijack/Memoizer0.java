@@ -37,7 +37,7 @@ final class Memoizer0 implements InvocationHandler {
      * @return proxied object
      * @see #memoize(Object, int, long)
      */
-    public static Object memoize(final Object origin) 
+    public static Object memoize(Object origin)
     {
         return memoize(origin, DEFAULT_CACHE_MAX_ELEMENTS, DEFAULT_CACHE_EXPIRE_MILLIS);
     }
@@ -50,22 +50,22 @@ final class Memoizer0 implements InvocationHandler {
      * @param expireMillis expiration time in millis
      * @return proxied object
      */
-    public static Object memoize(final Object origin, 
-                                 final int maxElements, final long expireMillis) 
+    public static Object memoize(Object origin,
+                                 int maxElements, long expireMillis)
     {
-        final Class<?> clazz = origin.getClass();
-        final Memoizer0 memoizer = new Memoizer0(origin, maxElements, expireMillis);
+        Class<?> clazz = origin.getClass();
+        Memoizer0 memoizer = new Memoizer0(origin, maxElements, expireMillis);
         return Proxy.newProxyInstance(clazz.getClassLoader(), 
                 clazz.getInterfaces(), memoizer);
     }
 
-    private Memoizer0(final Object object, final int size, final long expireMillis) {
+    private Memoizer0(Object object, int size, long expireMillis) {
         this.object = object;
         this.expireMillis = expireMillis;
         this.cache = allocCache(size);
     }
 
-    private static Map<CacheKey, CacheValue> allocCache(final int maxSize) {
+    private static Map<CacheKey, CacheValue> allocCache(int maxSize) {
         return Collections.synchronizedMap(new LinkedHashMap<>() {
             private static final long serialVersionUID = 42L;
 
@@ -80,28 +80,28 @@ final class Memoizer0 implements InvocationHandler {
      * Internal method
      */
     @Override
-    public Object invoke(final Object proxy, 
-                         final Method method, 
-                         final Object[] args) throws Throwable {
+    public Object invoke(Object proxy,
+                         Method method,
+                         Object[] args) throws Throwable {
         if (method.getReturnType() == Void.TYPE) {
             
             return invoke(method, args);
         } else {
-            final CacheKey key = new CacheKey(method, Arrays.asList(args));
+            CacheKey key = new CacheKey(method, Arrays.asList(args));
             CacheValue cacheValue = cache.get(key);
             if (cacheValue != null) {
-                final Object ret = cacheValue.getValueIfNotExpired();
+                Object ret = cacheValue.getValueIfNotExpired();
                 if (ret != CacheValue.EXPIRED) {
                     return ret;
                 }
             }
-            final Object ret = invoke(method, args);
+            Object ret = invoke(method, args);
             cache.put(key, new CacheValue(ret, expireMillis));
             return ret;
         }
     }
 
-    private Object invoke(final Method method, final Object[] args) 
+    private Object invoke(Method method, Object[] args)
             throws Throwable {
         try {
             return method.invoke(object, args);
@@ -114,7 +114,7 @@ final class Memoizer0 implements InvocationHandler {
         private final Method method;
         private final List<Object> params;
 
-        public CacheKey(final Method method, final List<Object> params) {
+        public CacheKey(Method method, List<Object> params) {
             this.method = method;
             this.params = params;
         }
@@ -125,9 +125,9 @@ final class Memoizer0 implements InvocationHandler {
         }
 
         @Override
-        public boolean equals(final Object obj) {
+        public boolean equals(Object obj) {
             if (obj instanceof CacheKey) {
-                final CacheKey o = (CacheKey) obj;
+                CacheKey o = (CacheKey) obj;
                 return o.method.equals(this.method) && 
                         o.params.equals(this.params);
             }
@@ -140,7 +140,7 @@ final class Memoizer0 implements InvocationHandler {
         private final Object value;
         private final long expire;
 
-        public CacheValue(final Object value, final long expire) {
+        public CacheValue(Object value, long expire) {
             this.value = value;
             this.expire = System.currentTimeMillis() + expire;
         }
@@ -162,7 +162,7 @@ final class Memoizer0 implements InvocationHandler {
          */
         @FunctionalInterface
         public interface SampleInterface {
-            String hash(final String in) throws NoSuchAlgorithmException;
+            String hash(String in) throws NoSuchAlgorithmException;
         }
 
         /**
@@ -172,17 +172,17 @@ final class Memoizer0 implements InvocationHandler {
             private static final Charset UTF8 = StandardCharsets.UTF_8;
 
             @Override
-            public String hash(final String in) throws NoSuchAlgorithmException {
-                final MessageDigest md = MessageDigest.getInstance("SHA-512");
-                final byte[] buf = md.digest(in.getBytes(UTF8));
+            public String hash(String in) throws NoSuchAlgorithmException {
+                MessageDigest md = MessageDigest.getInstance("SHA-512");
+                byte[] buf = md.digest(in.getBytes(UTF8));
                 return Base64.getEncoder().encodeToString(buf);
             }
         }
 
-        private static String getHeader(final Class<?> b1,
-                                        final Class<?> b2) {
-            final String s1 = b1.getSimpleName();
-            final String s2 = b2.getSimpleName();
+        private static String getHeader(Class<?> b1,
+                                        Class<?> b2) {
+            String s1 = b1.getSimpleName();
+            String s2 = b2.getSimpleName();
             if (s1.equals(s2))
                 return s1 + ":direct";
             return s1 + ":memoizeByte";
@@ -191,20 +191,20 @@ final class Memoizer0 implements InvocationHandler {
         /**
          * Simple Test / Benchmark
          */
-        public static void main(final String[] args) throws NoSuchAlgorithmException {
+        public static void main(String[] args) throws NoSuchAlgorithmException {
             final int TOTAL = (int) 1.0e6;
             final String TEST_TEXT = "hello world";
             final int cacheElements = 1024;
             final long cacheMillis = 1000; 
-            final SampleInterface[] samples = {
+            SampleInterface[] samples = {
                     new SampleSlowImpl(), 
                     (SampleInterface) Memoizer0.memoize(new SampleSlowImpl(), cacheElements, cacheMillis)
             };
             
             for (int k = 0; k < samples.length; k++) {
-                final SampleInterface base = samples[k & ~1];
-                final SampleInterface test = samples[k];
-                final String hdr = getHeader(base.getClass(), test.getClass());
+                SampleInterface base = samples[k & ~1];
+                SampleInterface test = samples[k];
+                String hdr = getHeader(base.getClass(), test.getClass());
                 long ts = System.currentTimeMillis();
                 for (int i = 0; i < TOTAL; i++) {
                     test.hash(TEST_TEXT);

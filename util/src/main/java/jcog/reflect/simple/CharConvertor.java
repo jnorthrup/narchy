@@ -36,7 +36,7 @@ public class CharConvertor implements ToValueConvertor {
     /* (non-javadoc)
      * @see org.gocha.text.simpletypes.ToStringConvertor#convertToString
      */
-    public static final Function<Object,String> toString = (Object srcData) -> {
+    public static final Function<Object,String> toString = srcData -> {
         if (srcData == null) {
             throw new IllegalArgumentException("srcData == null");
         }

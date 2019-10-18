@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class Follow1DTwoPoint implements RLEnvironment {
 
-    final int numActions = 2;
+    static final int numActions = 2;
 
     
 
@@ -29,12 +29,12 @@ public class Follow1DTwoPoint implements RLEnvironment {
     double targetSpeed = 1;
     double closeThresh = speed * 2; 
 
-    private final int history = 64;
+    private static final int history = 64;
 
 
-    final int historyPoints = 1; 
+    static final int historyPoints = 1;
     
-    final int historyInterval = history / (historyPoints+1); 
+    static final int historyInterval = history / (historyPoints+1);
     
     @Override
     public int numActions() {
@@ -59,13 +59,11 @@ public class Follow1DTwoPoint implements RLEnvironment {
             g.fillRect(
                     0, 0, getWidth(), getHeight());
 
-            final int margin = 10;
-
-            int prevX = 0;
-            int prevY = 0;
-            int i = 0;
-
             g.setColor(Color.green);
+            int i = 0;
+            int prevY = 0;
+            int prevX = 0;
+            final int margin = 10;
             for (double _y : _targets) {
                 int x = i * getWidth() / history;
                 int y = (int) (_y * (getHeight()-margin) / maxPos) + margin/2;
@@ -93,7 +91,7 @@ public class Follow1DTwoPoint implements RLEnvironment {
 
     private final List<Double> positions = Collections.synchronizedList(new ArrayList<>(history));
     private final List<Double> targets = Collections.synchronizedList(new ArrayList<>(history));
-    private final double maxPos = 1.0;
+    private static final double maxPos = 1.0;
     private double myPos = 0.5;
     private double targetPos = 0.5;
     private double targetV = 0;
@@ -106,10 +104,11 @@ public class Follow1DTwoPoint implements RLEnvironment {
         if (observation == null) {
             observation = new double[historyPoints*2];
         }
-        
-        double my = 0, target = 0;
+
         if (positions.isEmpty()) return observation;
 
+        double target = 0;
+        double my = 0;
         for (int i = 0; i < historyPoints;) {
             int j = positions.size() - 1 - (i * historyInterval);
             my = positions.get(j);
@@ -176,10 +175,10 @@ public class Follow1DTwoPoint implements RLEnvironment {
     }
 
             
-    public void updateTargetRandom(int cycle) {        
-        final double targetAcceleration = 0.002;
+    public void updateTargetRandom(int cycle) {
         targetPos += targetV * speed;
-        targetV += (Math.random() - 0.5) * targetAcceleration;        
+        final double targetAcceleration = 0.002;
+        targetV += (Math.random() - 0.5) * targetAcceleration;
     }
     public void updateTargetXOR(int cycle) {        
         int complexity = 10;

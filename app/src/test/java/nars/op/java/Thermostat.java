@@ -5,12 +5,14 @@ import jcog.Util;
 import java.util.function.Consumer;
 
 public class Thermostat {
-    int current, target;
+    int current;
+    int target;
 
     /**
      * limits
      */
-    static final int cold = 0, hot = 3;
+    static final int cold = 0;
+    static final int hot = 3;
 
     public int is() {
         return current;

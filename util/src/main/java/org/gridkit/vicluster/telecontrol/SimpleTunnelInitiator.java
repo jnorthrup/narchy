@@ -61,14 +61,14 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
         }
 
         String jarpath = console.cacheFile(Classpath.createBinaryEntry("tunneller.jar", bootJar));
-        String cachePath = this.detectCachePath(jarpath);
-        final FutureBox<TunnellerConnection> tc = new FutureBox();
+        String cachePath = SimpleTunnelInitiator.detectCachePath(jarpath);
+        FutureBox<TunnellerConnection> tc = new FutureBox();
         ProcessHandler th = new ProcessHandler() {
             Link diag;
 
-            public void started(final OutputStream stdIn, final InputStream stdOut, InputStream stdErr) {
+            public void started(OutputStream stdIn, InputStream stdOut, InputStream stdErr) {
                 LineLoggerOutputStream log = new LineLoggerOutputStream("", SimpleTunnelInitiator.this.logger.getLogger("console").warn());
-                final LineLoggerOutputStream dlog = new LineLoggerOutputStream("", SimpleTunnelInitiator.this.logger.getLogger("tunneller").info());
+                LineLoggerOutputStream dlog = new LineLoggerOutputStream("", SimpleTunnelInitiator.this.logger.getLogger("tunneller").info());
                 this.diag = SimpleTunnelInitiator.this.streamCopyService.link(stdErr, log, true);
                 Thread thread = new Thread(() -> {
                     try {
@@ -112,7 +112,7 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
 //        }
 //    }
 
-    private int toInt(String n) {
+    private static int toInt(String n) {
         try {
             return Integer.parseInt(n);
         } catch (NumberFormatException var3) {
@@ -132,7 +132,7 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
         return cmd.toArray(ArrayUtil.EMPTY_STRING_ARRAY);
     }
 
-    private String detectCachePath(String jarpath) {
+    private static String detectCachePath(String jarpath) {
         String cachePath = jarpath;
         if (jarpath.indexOf(47) >= 0) {
             cachePath = jarpath.substring(0, jarpath.lastIndexOf(47) + 1);
@@ -142,7 +142,7 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
             cachePath = cachePath.substring(0, cachePath.lastIndexOf(92) + 1);
         }
 
-        cachePath = cachePath + "..";
+        cachePath += "..";
         return cachePath;
     }
 
@@ -165,9 +165,9 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
     private String getJavaVersion(HostControlConsole console) {
 
         try {
-            final FutureBox<Void> done = new FutureBox();
-            final ByteArrayOutputStream stdOut = new ByteArrayOutputStream(8*1024);
-            final ByteArrayOutputStream stdErr = new ByteArrayOutputStream(8*1024);
+            FutureBox<Void> done = new FutureBox();
+            ByteArrayOutputStream stdOut = new ByteArrayOutputStream(8*1024);
+            ByteArrayOutputStream stdErr = new ByteArrayOutputStream(8*1024);
             ProcessHandler handler = new ProcessHandler() {
                 Link lout;
                 Link lerr;

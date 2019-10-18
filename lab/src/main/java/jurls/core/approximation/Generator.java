@@ -19,7 +19,7 @@ public class Generator {
     public static DiffableFunctionGenerator generateWavelets(
             int numFeatures
     ) {
-        return (int numInputs) -> {
+        return numInputs -> {
             GeneratorContext gc = new GeneratorContext(numInputs);
             List<DiffableFunctionSource> xs = new ArrayList<>();
 
@@ -59,7 +59,7 @@ public class Generator {
             ActivationFunctionFactory outputLayer,
             int numFeatures
     ) {
-        return (int numInputs) -> {
+        return numInputs -> {
             GeneratorContext gc = new GeneratorContext(numInputs);
             List<DiffableFunctionSource> xs = new ArrayList<>();
 
@@ -98,7 +98,7 @@ public class Generator {
     public static DiffableFunctionGenerator generateFourierBasis(
             int numFeatures
     ) {
-        return (int numInputs) -> {
+        return numInputs -> {
             GeneratorContext gc = new GeneratorContext(numInputs);
             List<DiffableFunctionSource> xs = new ArrayList<>();
 
@@ -144,19 +144,17 @@ public class Generator {
     public static ParameterizedFunctionGenerator generateGradientFourierBasis(
             ApproxParameters approxParameters,
             int numFeatures) {
-        return (int numInputVectorElements) -> {
-            return new OutputNormalizer(
-                    new InputNormalizer(
-                            new GradientFitter(
-                                    approxParameters,
-                                    new DiffableFunctionMarshaller(
-                                            Generator.generateFourierBasis(numFeatures),
-                                            numInputVectorElements
-                                    )
-                            )
-                    )
-            );
-        };
+        return numInputVectorElements -> new OutputNormalizer(
+                new InputNormalizer(
+                        new GradientFitter(
+                                approxParameters,
+                                new DiffableFunctionMarshaller(
+                                        Generator.generateFourierBasis(numFeatures),
+                                        numInputVectorElements
+                                )
+                        )
+                )
+        );
     }
 
     public static ParameterizedFunctionGenerator generateGradientFFNN(
@@ -164,39 +162,35 @@ public class Generator {
             ActivationFunctionFactory outputLayer,
             ApproxParameters approxParameters,
             int numFeatures) {
-        return (int numInputVectorElements) -> {
-            return new OutputNormalizer(
-                    new InputNormalizer(
-                            new GradientFitter(
-                                    approxParameters,
-                                    new DiffableFunctionMarshaller(
-                                            Generator.generateFFNN(
-                                                    hiddenLayer,
-                                                    outputLayer,
-                                                    numFeatures
-                                            ),
-                                            numInputVectorElements
-                                    )
-                            )
-                    )
-            );
-        };
+        return numInputVectorElements -> new OutputNormalizer(
+                new InputNormalizer(
+                        new GradientFitter(
+                                approxParameters,
+                                new DiffableFunctionMarshaller(
+                                        Generator.generateFFNN(
+                                                hiddenLayer,
+                                                outputLayer,
+                                                numFeatures
+                                        ),
+                                        numInputVectorElements
+                                )
+                        )
+                )
+        );
     }
 
     public static ParameterizedFunctionGenerator generateCNFFunction(
             int numInputBits,
             int numOutputBits
     ) {
-        return (int numInputVectorElements) -> {
-            return new OutputNormalizer(
-                    new InputNormalizer(
-                            new CNFBooleanFunction(
-                                    numInputBits,
-                                    numOutputBits,
-                                    numInputVectorElements
-                            )
-                    )
-            );
-        };
+        return numInputVectorElements -> new OutputNormalizer(
+                new InputNormalizer(
+                        new CNFBooleanFunction(
+                                numInputBits,
+                                numOutputBits,
+                                numInputVectorElements
+                        )
+                )
+        );
     }
 }

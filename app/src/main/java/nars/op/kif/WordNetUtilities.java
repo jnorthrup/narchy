@@ -66,7 +66,8 @@ public class WordNetUtilities {
     public static  List convertTermList(String termList) {
 
         String[] list = termList.split(" ");
-        return Arrays.stream(list).map(WordNetUtilities::getBareSUMOTerm).collect(Collectors.toList());
+        List<String> result = Arrays.stream(list).map(WordNetUtilities::getBareSUMOTerm).collect(Collectors.toList());
+        return result;
     }
 
     /**
@@ -485,16 +486,16 @@ public class WordNetUtilities {
                 if (lr.getLineNumber() % 1000 == 0) {
                     System.out.print('.');
                 }
-                Pattern p = Pattern.compile(pattern);
                 line = line.trim();
+                Pattern p = Pattern.compile(pattern);
                 Matcher m = p.matcher(line);
                 if (m.matches()) {
                     String oldTerm = m.group(4);
                     String bareOldTerm = getBareSUMOTerm(oldTerm);
-                    String mapType = oldTerm.substring(oldTerm.length() - 1);
                     String synset = posNum + m.group(1);
                     String newTerm = hm.get(synset);
                     if (!bareOldTerm.contains("&%") && newTerm != null && !newTerm.isEmpty() && !newTerm.equals(bareOldTerm) && kb.childOf(newTerm, bareOldTerm)) {
+                        String mapType = oldTerm.substring(oldTerm.length() - 1);
                         pw.println(m.group(1) + m.group(2) + "| " + m.group(3) + " &%" + newTerm + mapType);
                         System.out.println("INFO in WordNet.processMergers(): synset, oldTerm, newterm: "
                                 + synset + ' ' + oldTerm + ' ' + newTerm);
@@ -619,8 +620,8 @@ public class WordNetUtilities {
                 if (lr.getLineNumber() % 1000 == 0) {
                     System.out.print('.');
                 }
-                Pattern p = Pattern.compile(pattern);
                 line = line.trim();
+                Pattern p = Pattern.compile(pattern);
                 Matcher m = p.matcher(line);
                 if (line.contains("&%")) {
                     pw.println(line.trim());
@@ -704,15 +705,15 @@ public class WordNetUtilities {
                 if (lr.getLineNumber() % 1000 == 0) {
                     System.out.print('.');
                 }
-                Pattern p = Pattern.compile(pattern);
                 line = line.trim();
+                Pattern p = Pattern.compile(pattern);
                 Matcher m = p.matcher(line);
                 if (m.matches()) {
                     String newsynset = posNum + m.group(1);
                     String oldsynset = mappings.get(newsynset);
                     if (oldsynset != null && !oldsynset.isEmpty()) {
-                        String term = "";
                         oldsynset = oldsynset.substring(1);
+                        String term = "";
                         switch (posNum.charAt(0)) {
                             case '1':
                                 term = (String) WordNet.wn.nounSUMOHash.get(oldsynset);
@@ -769,8 +770,8 @@ public class WordNetUtilities {
                 if (lr.getLineNumber() % 1000 == 0) {
                     System.out.print('.');
                 }
-                Pattern p = Pattern.compile(pattern);
                 line = line.trim();
+                Pattern p = Pattern.compile(pattern);
                 Matcher m = p.matcher(line);
                 if (m.matches()) {
                     String newsynset = posNum + m.group(1);

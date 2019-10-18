@@ -7,8 +7,10 @@ import java.util.List;
 
 public class Spark extends Entity {
     private final int lifeTime;
-    public double xa, ya;
-    public double xx, yy;
+    public double xa;
+    public double ya;
+    public double xx;
+    public double yy;
     private int time;
     private final AirWizard owner;
 

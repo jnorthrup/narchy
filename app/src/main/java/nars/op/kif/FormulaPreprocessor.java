@@ -142,17 +142,21 @@ public class FormulaPreprocessor {
         HashMap<String, HashSet<String>> varExplicitTypes = findExplicitTypesClassesInAntecedent(kb, form);
 
 
-        Map<String, Set<String>> varmap = new HashMap<>();
+        var varmap = new HashMap<>();
         for (Map.Entry<String, HashSet<String>> entry : varDomainTypes.entrySet()) {
             String var = entry.getKey();
             if (!varExplicitTypes.containsKey(var)) {
 
                 varmap.put(var, entry.getValue());
             } else {
-                 Set<String> domainTypes = entry.getValue();
-                 Set<String> explicitTypes = varExplicitTypes.get(var);
-                 var types = domainTypes.stream().filter(dt -> dt.endsWith("+")).collect (Collectors.toSet());
-                explicitTypes.stream().filter(et -> et.endsWith("+")).forEach(types::add);
+                 var domainTypes = entry.getValue();
+                 var explicitTypes = varExplicitTypes.get(var);
+                 var  types = domainTypes.stream().filter(dt -> dt.endsWith("+")).collect(Collectors.toCollection(HashSet::new));
+                for (String et : explicitTypes) {
+                    if (et.endsWith("+")) {
+                        types.add(et);
+                    }
+                }
                 varmap.put(var, types);
             }
         }
@@ -165,7 +169,7 @@ public class FormulaPreprocessor {
         StringBuffer sb = new StringBuffer();
         boolean begin = true;
         for (String unquantifiedV : unquantifiedVariables) {
-            Set<String> types = varmap.get(unquantifiedV);
+            var  types = (Set<String>) varmap.get(unquantifiedV);
             if (types != null && !types.isEmpty()) {
                 for (String t : types) {
                     if (begin) {
@@ -238,7 +242,7 @@ public class FormulaPreprocessor {
                         varmap.remove(v);
                 }
 
-                boolean addSortals = quantifiedVariables.stream().map(varmap::get).anyMatch(types -> types != null && !types.isEmpty());
+                boolean addSortals = quantifiedVariables.stream().map(varmap::get).anyMatch(strings -> strings != null && !strings.isEmpty());
                 if (addSortals) {
                     if (carstr.equals(Formula.EQUANT)) sb.append("(and ");
                     else if (carstr.equals(Formula.UQUANT)) sb.append("(=> (and ");
@@ -886,9 +890,6 @@ public class FormulaPreprocessor {
                 form.errors.add(errStr);
                 return results;
             }
-            boolean ignoreStrings = false;
-            boolean translateIneq = true;
-            boolean translateMath = true;
             Formula f = new Formula();
             f.read(form.theFormula);
             if (StringUtil.containsNonAsciiChars(f.theFormula))
@@ -906,6 +907,9 @@ public class FormulaPreprocessor {
             if (!accumulator.isEmpty()) {
                 Formula fnew = null;
                 String theNewFormula = null;
+                boolean translateMath = true;
+                boolean translateIneq = true;
+                boolean ignoreStrings = false;
                 for (Formula formula : accumulator) {
                     fnew = formula;
                     theNewFormula = FormulaPreprocessor.preProcessRecurse(fnew, "", ignoreStrings, translateIneq, translateMath, kb);

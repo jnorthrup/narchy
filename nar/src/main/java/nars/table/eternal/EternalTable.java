@@ -52,12 +52,18 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public final void forEachTask(Consumer<? super Task> x) {
-        forEach(x);
+        for (Task task : this) {
+            x.accept(task);
+        }
     }
 
     @Override
     public void forEach(Consumer<? super Task> x) {
-        lock.read(()->super.forEach(x));
+        lock.read(()-> {
+            for (Task task : this) {
+                x.accept(task);
+            }
+        });
     }
 
 
@@ -124,8 +130,11 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             lock.unlockWrite(r);
         }
 
-        if (trash != null)
-            trash.forEach(Task::delete);
+        if (trash != null) {
+            for (Task task : trash) {
+                task.delete();
+            }
+        }
     }
 
 
@@ -272,7 +281,8 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
                 //scan list for existing equal task
                 Object[] list = this.items;
-                existing = Arrays.stream(list).takeWhile(Objects::nonNull).map(aList -> (Task) aList).filter(x -> x.equals(input)).findFirst().orElse(null);
+                Task found = Arrays.stream(list).takeWhile(Objects::nonNull).map(aList -> (Task) aList).filter(x -> x.equals(input)).findFirst().orElse(null);
+                existing = found;
             }
 
             if (existing == null) {
@@ -301,7 +311,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         Term newTerm = null;
         Term inputTerm = input.term();
         float aProp = Float.NaN;
-        final double ie = input.evi();
+        double ie = input.evi();
 
         NAR nar = r.nar;
         long[] inputStamp = input.stamp();
@@ -312,7 +322,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
             Truth yt = null;
 
-            Term nt;
             Truth xt = x.truth();
 
             if (Stamp.overlapsAny(inputStamp, x.stamp())) {
@@ -334,6 +343,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             if (yt != null) {
 
                 float _aProp = (float) (ie / (ie + x.evi()));
+                Term nt;
                 if (inputTerm instanceof Compound) {
                     nt =
                             Intermpolate.intermpolate(

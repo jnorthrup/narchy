@@ -798,24 +798,13 @@ public class a extends GamePanel {
         + "igaaagaggagbbggi";    
     
     final int TILES = 34;
-    final int TILE_BRICK = 0;            
-    final int TILE_RED_BRICK = 1;        
-    final int TILE_GREEN_BRICK = 2;      
-    final int TILE_BLUE_BRICK = 3;       
-    final int TILE_RIGHT_BRICK = 4;      
-    final int TILE_LEFT_BRICK = 5;       
-    
-    final int TILE_EMPTY = 6;            
-    final int TILE_DIAMOND = 7;          
-    final int TILE_SPIKES = 8;           
-    final int TILE_RED_KEY = 9;          
-    final int TILE_GREEN_KEY = 10;       
-    final int TILE_BLUE_KEY = 11;        
-    final int TILE_ANTIGRAVITY = 12;     
-    final int TILE_APPEARING_BLOCK = 13; 
-    
-    final int TILE_RED_ENEMY_0 = 14;         
-    final int TILE_RED_ENEMY_1 = 15;
+      final int TILE_GREEN_BRICK = 2;
+    final int TILE_BLUE_BRICK = 3;
+
+      final int TILE_EMPTY = 6;
+      final int TILE_GREEN_KEY = 10;
+
+      final int TILE_RED_ENEMY_1 = 15;
     final int TILE_GREEN_ENEMY_0 = 16;       
     final int TILE_GREEN_ENEMY_1 = 17;
     final int TILE_BLUE_ENEMY_0 = 18;        
@@ -829,106 +818,40 @@ public class a extends GamePanel {
     final int TILE_ORANGE_ENEMY_0 = 26;      
     final int TILE_ORANGE_ENEMY_1 = 27; 
     final int TILE_MAGENETA_ENEMY_0 = 28;    
-    final int TILE_MAGENETA_ENEMY_1 = 29;    
-    final int TILE_PLAYER_0 = 30;            
-    final int TILE_PLAYER_1 = 31; 
+    final int TILE_MAGENETA_ENEMY_1 = 29;
+      final int TILE_PLAYER_1 = 31;
     final int TILE_PLAYER_2 = 32;    
-    final int TILE_PLAYER_3 = 33;    
-        
-    final char CHAR_EMPTY = 'g';
-    final char CHAR_DIAMOND = 'h';
-    final char CHAR_SPIKES = 'i'; 
-    final char CHAR_ANTIGRAVITY = 'm';
-    final char CHAR_APPEARING_BLOCK = 'n';
-    final char CHAR_PLAYER = 'z';
-    final char CHAR_RED_ENEMY = 'q';
-    final char CHAR_GREEN_ENEMY = 'r';
+    final int TILE_PLAYER_3 = 33;
+
+      final char CHAR_SPIKES = 'i';
+      final char CHAR_APPEARING_BLOCK = 'n';
+      final char CHAR_GREEN_ENEMY = 'r';
     final char CHAR_BLUE_ENEMY = 's';
     final char CHAR_SPIKES_ENEMY = 't';
     final char CHAR_YELLOW_ENEMY = 'u';
     final char CHAR_FLIPPED_RED_ENEMY = 'v';
-    final char CHAR_ORANGE_ENEMY = 'w';
-    final char CHAR_MAGENETA_ENEMY = 'x';
-    
-    final int KEY_LEFT = 1006;
-    final int KEY_RIGHT = 1007;
-    final int KEY_N = 110;
-    final int KEY_P = 112;
-    final int KEY_R = 114; 
-    final int KEY_X = 120;    
-    
-    final int SCREEN_WIDTH = 800;
-    final int SCREEN_HEIGHT = 600;
-    final int FRAME_WIDTH = 160;
+
+      final int FRAME_WIDTH = 160;
     final int FRAME_HEIGHT = 120;
-    
-    final int ENEMY_X = 0;
-    final int ENEMY_Y = 1;  
-    final int ENEMY_V = 2;
-    final int ENEMY_TYPE = 3;
-    final int ENEMY_CX = 4;
-    final int ENEMY_CY = 5;  
-    final int ENEMY_RADIUS = 6;
-    
-    final int ENEMY_TYPE_RED = 0;
-    final int ENEMY_TYPE_GREEN = 1;
-    final int ENEMY_TYPE_BLUE = 2;
-    final int ENEMY_TYPE_SPIKES = 3;
-    final int ENEMY_TYPE_YELLOW = 4;
-    final int ENEMY_TYPE_FLIPPED_RED = 5;
-    final int ENEMY_TYPE_ORANGE = 6;
-    final int ENEMY_TYPE_MAGENETA = 7;
-    
-    final int LEVELS = 56;
-    final int MAP_WIDTH = 16;
+
+      final int ENEMY_TYPE_RED = 0;
+
+      final int MAP_WIDTH = 16;
     final int MAP_HEIGHT = 12;
-    
-    final float GRAVITY = 0.05f;    
-    final float JUMP_VY = -1.6f;
-    final float MAX_VY = 3f;
-    final int ADVANCE_LEVEL_DELAY = 25;
-    final int APPEARING_BLOCK_DELAY = 50;
-    final int YELLOW_RADIUS = 10;
-    
-    final Color BACKGROUND_COLOR = new Color(0x7F92FF);
-    
-    final ArrayList<int[]> enemies = new ArrayList<>();
-       
-    final int[][] blocks = new int[10][2];
-    final int[][] map = new int[MAP_HEIGHT][MAP_WIDTH];
-    final BufferedImage[] tiles = new BufferedImage[TILES];
-    final BufferedImage imageBuffer = new BufferedImage(
+
+      BufferedImage[] tiles = new BufferedImage[TILES];
+    BufferedImage imageBuffer = new BufferedImage(
         FRAME_WIDTH, FRAME_HEIGHT, BufferedImage.TYPE_INT_RGB);
-    final Graphics2D g = imageBuffer.createGraphics();
-    Graphics2D g2 = null;
-            
-    boolean keysReleased = false;
-    boolean blockClear = false;
-    int[] enemy;    
-    int advanceLevel = 0;
-    int diamonds = 0;
-    int appearingBlocks = 0;
-    int blockIndex = 0;
-    int blockDelay = 0;
-    int resetDelay = 1;
-    int level = 0;
-    int i = 0;
+    Graphics2D g = imageBuffer.createGraphics();
+
+      int i = 0;
     int j = 0;
     int k = 0;
     int x = 0;
     int y;
-    int z;
-    int p;
-    int q;
-    int counter = 0;
-    int playerSpriteOffset = 0;
-    int playerX = 0;
-    int arrowTime = 0;
-    float playerY = 0;
-    float playerVy = 0;
-    
-    
-    for(; i < TILES; i++) {
+
+
+      for(; i < TILES; i++) {
       tiles[i] = new BufferedImage(10, 10, BufferedImage.TYPE_4BYTE_ABGR_PRE);
       if (i != TILE_EMPTY) {
         for(y = 0; y < 10; y++) {
@@ -969,15 +892,83 @@ public class a extends GamePanel {
     }
     
     long nextFrameStartTime = 0;
-    while(true) {
+      float playerVy = 0;
+      float playerY = 0;
+      int arrowTime = 0;
+      int playerX = 0;
+      int playerSpriteOffset = 0;
+      int counter = 0;
+      int level = 0;
+      int resetDelay = 1;
+      int blockDelay = 0;
+      int blockIndex = 0;
+      int appearingBlocks = 0;
+      int diamonds = 0;
+      int advanceLevel = 0;
+      boolean blockClear = false;
+      boolean keysReleased = false;
+      Graphics2D g2 = null;
+      int[][] map = new int[MAP_HEIGHT][MAP_WIDTH];
+      int[][] blocks = new int[10][2];
+      ArrayList<int[]> enemies = new ArrayList<>();
+      Color BACKGROUND_COLOR = new Color(0x7F92FF);
+      final int YELLOW_RADIUS = 10;
+      final int APPEARING_BLOCK_DELAY = 50;
+      final int ADVANCE_LEVEL_DELAY = 25;
+      final float MAX_VY = 3f;
+      final float JUMP_VY = -1.6f;
+      final float GRAVITY = 0.05f;
+      final int LEVELS = 56;
+      final int ENEMY_TYPE_MAGENETA = 7;
+      final int ENEMY_TYPE_ORANGE = 6;
+      final int ENEMY_TYPE_FLIPPED_RED = 5;
+      final int ENEMY_TYPE_YELLOW = 4;
+      final int ENEMY_TYPE_SPIKES = 3;
+      final int ENEMY_TYPE_BLUE = 2;
+      final int ENEMY_TYPE_GREEN = 1;
+      final int ENEMY_RADIUS = 6;
+      final int ENEMY_CY = 5;
+      final int ENEMY_CX = 4;
+      final int ENEMY_TYPE = 3;
+      final int ENEMY_V = 2;
+      final int ENEMY_Y = 1;
+      final int ENEMY_X = 0;
+      final int SCREEN_HEIGHT = 600;
+      final int SCREEN_WIDTH = 800;
+      final int KEY_X = 120;
+      final int KEY_R = 114;
+      final int KEY_P = 112;
+      final int KEY_N = 110;
+      final int KEY_RIGHT = 1007;
+      final int KEY_LEFT = 1006;
+      final char CHAR_MAGENETA_ENEMY = 'x';
+      final char CHAR_ORANGE_ENEMY = 'w';
+      final char CHAR_RED_ENEMY = 'q';
+      final char CHAR_PLAYER = 'z';
+      final char CHAR_ANTIGRAVITY = 'm';
+      final char CHAR_DIAMOND = 'h';
+      final char CHAR_EMPTY = 'g';
+      final int TILE_PLAYER_0 = 30;
+      final int TILE_RED_ENEMY_0 = 14;
+      final int TILE_APPEARING_BLOCK = 13;
+      final int TILE_ANTIGRAVITY = 12;
+      final int TILE_BLUE_KEY = 11;
+      final int TILE_RED_KEY = 9;
+      final int TILE_SPIKES = 8;
+      final int TILE_DIAMOND = 7;
+      final int TILE_LEFT_BRICK = 5;
+      final int TILE_RIGHT_BRICK = 4;
+      final int TILE_RED_BRICK = 1;
+      final int TILE_BRICK = 0;
+      while(true) {
 
-      do {
-        nextFrameStartTime += 10000000; 
+          int[] enemy;
+          do {
+        nextFrameStartTime += 10000000;
 
-        
-        
-        
-        if (resetDelay > 0) {
+
+              int p;
+              if (resetDelay > 0) {
           if (--resetDelay == 0) {
             playerVy = 0;
             level = (level + advanceLevel + LEVELS) % LEVELS;
@@ -1059,7 +1050,8 @@ public class a extends GamePanel {
         
         int px = playerX;
         int py = (int)playerY;
-        if (IntStream.of(KEY_X, KEY_R, KEY_N, KEY_P).noneMatch(v -> a[v])) {
+        boolean b = IntStream.of(KEY_X, KEY_R, KEY_N, KEY_P).noneMatch(v -> a[v]);
+        if (b) {
           keysReleased = true;
         }
         if (keysReleased && a[KEY_R]) {
@@ -1115,7 +1107,9 @@ public class a extends GamePanel {
         }
         
         int remainderVy = 0;
-        for(k = 0; k < 2 || remainderVy != 0; k++) {
+              int q;
+              int z;
+              for(k = 0; k < 2 || remainderVy != 0; k++) {
           x = playerX;
           float Y = playerY;
           if (k == 0) {
@@ -1394,10 +1388,16 @@ public class a extends GamePanel {
     final int KEY_RIGHT = 1007;
     final int KEY_N = 110;
     final int KEY_P = 112;
-    final int KEY_R = 114; 
-    final int KEY_X = 120;
-        
-    return a[IntStream.of(KEY_LEFT, KEY_RIGHT, KEY_N, KEY_P, KEY_R).allMatch(i -> e.key != i) ? KEY_X : e.key]
+    final int KEY_R = 114;
+
+      for (int i : new int[]{KEY_LEFT, KEY_RIGHT, KEY_N, KEY_P, KEY_R}) {
+      if (e.key == i) {
+        return a[e.key]
+                = e.id == 401 || e.id == 403;
+      }
+    }
+      final int KEY_X = 120;
+      return a[KEY_X]
             = e.id == 401 || e.id == 403;
   }  
 

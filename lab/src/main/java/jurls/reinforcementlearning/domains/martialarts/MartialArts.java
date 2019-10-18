@@ -39,12 +39,12 @@ public class MartialArts implements RLEnvironment {
     private PseudoAIState pseudoAIState = PseudoAIState.START;
 
     public MartialArts() {
-        final JFrame f = new JFrame();
+        JFrame f = new JFrame();
         f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         f.setSize(200, 100);
         f.setLayout(new GridLayout(0, 1));
-        final JLabel l = new JLabel();
-        final JProgressBar pb = new JProgressBar();
+        JLabel l = new JLabel();
+        JProgressBar pb = new JProgressBar();
         f.add(l);
         f.add(pb);
         f.setVisible(true);
@@ -73,7 +73,7 @@ public class MartialArts implements RLEnvironment {
         }
     }
 
-    private void computePlayer(Player player) {
+    private static void computePlayer(Player player) {
         int[] pixel = new int[1];
         int w = 0;
         int h = 0;
@@ -185,7 +185,7 @@ public class MartialArts implements RLEnvironment {
         return true;
     }
 
-    private void takeAction(int action, Player player) {
+    private static void takeAction(int action, Player player) {
         if (player.moveIndex < 0) {
             player.moveIndex = action;
             player.moveImageIndex = 0;

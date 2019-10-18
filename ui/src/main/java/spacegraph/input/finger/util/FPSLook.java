@@ -14,7 +14,8 @@ import static jcog.math.v3.v;
 public class FPSLook extends SpaceMouse {
 
     private boolean dragging;
-    private int prevX, prevY;
+    private int prevX;
+    private int prevY;
     private float h = (float) Math.PI;
     private float v;
 

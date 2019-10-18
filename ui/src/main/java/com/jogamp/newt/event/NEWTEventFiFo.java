@@ -10,7 +10,7 @@ public class NEWTEventFiFo
     private final MetalConcurrentQueue<NEWTEvent> events = new MetalConcurrentQueue<>(CAPACITY)/*<NEWTEvent>*/;
 
     /** Add NEWTEvent to tail */
-    public void put(final NEWTEvent event) {
+    public void put(NEWTEvent event) {
         events.add(event);
 
         //notifyAll();

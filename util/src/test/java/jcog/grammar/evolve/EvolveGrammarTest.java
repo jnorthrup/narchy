@@ -54,7 +54,7 @@ class EvolveGrammarTest {
 
 
 
-    private void run(DataSet d) throws Exception {
+    private static void run(DataSet d) throws Exception {
         Results r = EvolveGrammar.run(new SimpleConfig(
                 d, 400, 100)
                 .buildConfiguration()

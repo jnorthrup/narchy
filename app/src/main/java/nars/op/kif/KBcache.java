@@ -509,7 +509,6 @@ public class KBcache implements Serializable {
     public String getCommonParent(String t1, String t2) {
 
         HashSet<String> p1 = new HashSet<>();
-        Collection<String> p2 = new HashSet<>();
         if (kb.isInstance(t1)) {
             HashSet<String> temp = getParentClassesOfInstance(t1);
             if (temp != null)
@@ -520,6 +519,7 @@ public class KBcache implements Serializable {
             if (temp != null)
                 p1.addAll(temp);
         }
+        Collection<String> p2 = new HashSet<>();
         if (kb.isInstance(t2)) {
             HashSet<String> temp = getParentClassesOfInstance(t2);
             if (temp != null)
@@ -580,9 +580,9 @@ public class KBcache implements Serializable {
      */
     public HashSet<String> getChildInstances(String cl) {
 
-        HashSet<String> result = new HashSet<>();
         HashMap<String,HashSet<String>> ps = children.get("subclass");
         if (ps != null && ps.values() != null) {
+            HashSet<String> result = new HashSet<>();
             for (String cc : ps.get(cl)) {
                 HashSet<String> insts = getInstancesForType(cc);
                 if (insts != null)
@@ -631,7 +631,7 @@ public class KBcache implements Serializable {
      * Get the HashSet of the given arguments from an ArrayList of Formulas.
      */
     public static HashSet<String> collectArgFromFormulas(int arg, ArrayList<Formula> forms) {
-        
+
         HashSet<String> subs = forms.stream().map(f -> f.getArgument(arg)).collect(Collectors.toCollection(HashSet::new));
         return subs;
     }
@@ -739,10 +739,10 @@ public class KBcache implements Serializable {
             System.out.println("Error in KBcache.breadthFirstBuildParents(): no relation " + rel);
             return;
         }
-        int threshold = 10;      
-        HashMap<String, Integer> appearanceCount = new HashMap<>();  
         ArrayDeque<String> Q = new ArrayDeque<>();
         Q.add(root);
+        HashMap<String, Integer> appearanceCount = new HashMap<>();
+        int threshold = 10;
         while (!Q.isEmpty()) {
             String t = Q.remove();
             
@@ -783,8 +783,8 @@ public class KBcache implements Serializable {
         }
         if (debug) System.out.println("INFO in KBcache.breadthFirst(): trying relation " + rel);
         ArrayDeque<String> Q = new ArrayDeque<>();
-        Set<String> V = new HashSet<>();
         Q.add(root);
+        Set<String> V = new HashSet<>();
         V.add(root);
         while (!Q.isEmpty()) {
             String t = Q.remove();
@@ -883,9 +883,9 @@ public class KBcache implements Serializable {
 
         for (String rel : relations) {
             String[] domainArray = new String[Formula.MAX_PREDICATE_ARITY];
-            int maxIndex = 0;
             domainArray[0] = "";
             ArrayList<Formula> forms = kb.askWithRestriction(0, "domain", 1, rel);
+            int maxIndex = 0;
             if (forms != null) {
                 for (Formula form : forms) {
                     int arg = Integer.parseInt(form.getArgument(2));
@@ -940,17 +940,17 @@ public class KBcache implements Serializable {
      * that are the same or more specific than their parent relations.
      */
     private void breadthFirstInheritDomains(String root) {
-        
-        String rel = "subrelation";
+
         HashMap<String,HashSet<String>> relParents = parents.get("subrelation");
         if (relParents == null) {
             System.out.println("Error in KBcache.breadthFirstInheritDomains(): no relation subrelation");
             return;
         }
         ArrayDeque<String> Q = new ArrayDeque<>();
-        Set<String> V = new HashSet<>();
         Q.add(root);
+        Set<String> V = new HashSet<>();
         V.add(root);
+        String rel = "subrelation";
         while (!Q.isEmpty()) {
             String t = Q.remove();
             ArrayList<String> tdomains = signatures.get(t);
@@ -996,8 +996,7 @@ public class KBcache implements Serializable {
             File f = new File(dir, (kb.name + _cacheFileSuffix));
             System.out.println("INFO in KBcache.writeCacheFile(): " + f.getName());
             if (f.exists()) 
-                f.delete();                                           
-            String filename = f.getCanonicalPath();
+                f.delete();
             fw = new FileWriter(f, true);
             Iterator<String> it = parents.keySet().iterator();
             while (it.hasNext()) {
@@ -1030,6 +1029,7 @@ public class KBcache implements Serializable {
                 fw.close();
                 fw = null;
             }
+            String filename = f.getCanonicalPath();
             kb.constituents.remove(filename);
             kb.addConstituent(filename);
             
@@ -1068,12 +1068,12 @@ public class KBcache implements Serializable {
     public void buildInstTransRels() {
 
         for (String rel : transRels) {
-            boolean instrel;
             ArrayList<String> sig = signatures.get(rel);
             if (sig == null) {
                 System.out.println("Error in KBcache.buildInstTransRels(): Error " + rel + " not found.");
             } else {
-                instrel = sig.stream().noneMatch(s -> s.endsWith("+"));
+                boolean b = sig.stream().noneMatch(s -> s.endsWith("+"));
+                boolean instrel = b;
                 if (instrel)
                     instTransRels.add(rel);
             }

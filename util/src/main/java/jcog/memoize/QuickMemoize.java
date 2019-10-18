@@ -5,6 +5,7 @@ import jcog.util.HashCachedPair;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -17,7 +18,8 @@ import java.util.stream.Stream;
 public class QuickMemoize<X, Y> {
 
     protected Pair<X,Y>[] data;
-    protected int mask, shift;
+    protected int mask;
+    protected int shift;
     protected boolean toggle = false;
 
 
@@ -31,14 +33,16 @@ public class QuickMemoize<X, Y> {
             return; //same size
 
         int nextShift = intLog2(capacity);
-        int nextMask = capacity - 1;
-        Pair[] nextData = new Pair[capacity];
 
         if (this.data!=null) {
             throw new TODO("copy to the new instance and replace the fields here");
         }
 
-        this.shift = nextShift; this.mask = nextMask; this.data = nextData;
+        this.shift = nextShift;
+        int nextMask = capacity - 1;
+        this.mask = nextMask;
+        Pair[] nextData = new Pair[capacity];
+        this.data = nextData;
     }
 
     public final @Nullable Y apply(@Nullable X X, Function<X, Y> calc) {
@@ -46,7 +50,7 @@ public class QuickMemoize<X, Y> {
     }
 
     public @Nullable <P> Y apply(@Nullable X x, P p, BiFunction<X, P, Y> calc) {
-        Pair<X, Y> s1, s2;
+        Pair<X, Y> s1;
 
         Pair<X,Y>[] data = this.data;
 
@@ -57,6 +61,7 @@ public class QuickMemoize<X, Y> {
 
 
         int h2 = (hash >> shift) & mask;
+        Pair<X, Y> s2;
         if ((s2 = data[h2]) != null && x.equals(s2.getOne()))
             return s2.getTwo();
 
@@ -82,7 +87,8 @@ public class QuickMemoize<X, Y> {
     }
 
     public int valueCount() {
-        return (int) Stream.of(data).filter(Objects::nonNull).count();
+        long count = Arrays.stream(data).filter(Objects::nonNull).count();
+        return (int) count;
     }
 
 

@@ -34,7 +34,9 @@ public class EmacsKeyListener implements TextEditKeys {
     public void setup() throws IOException {
         URL url = Resources.getResource("spacegraph/space2d/widget/textedit/emacs.setting");
         List<String> lines = Resources.readLines(url, Charsets.UTF_8);
-        lines.forEach(this::parseSetting);
+        for (String line : lines) {
+            parseSetting(line);
+        }
     }
     static {
         // alpha num
@@ -152,7 +154,9 @@ public class EmacsKeyListener implements TextEditKeys {
         String action = split[split.length - 1];
 
         List<Stroke> strokes = new FasterList<>(keys.length);
-        Arrays.stream(keys).forEach((key) -> strokes.add(getStroke(key)));
+        for (String key : keys) {
+            strokes.add(getStroke(key));
+        }
         keybinds.put(strokes, action);
     }
 

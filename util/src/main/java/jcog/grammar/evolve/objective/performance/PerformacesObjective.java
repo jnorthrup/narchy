@@ -121,14 +121,14 @@ public class PerformacesObjective implements Objective {
         double charPrecision = statsCharsOverall.precision(); 
         double charRecall = statsCharsOverall.recall(); 
         double precision = statsOverall.precision(); 
-        double recall = statsOverall.recall(dataSetView.getNumberMatches()); 
-        double fmeasure = 2 * (precision * recall) / (precision + recall);
+        double recall = statsOverall.recall(dataSetView.getNumberMatches());
 
         fitness[0] = precision;
         fitness[1] = recall;
         fitness[2] = charPrecision;
         fitness[3] = charRecall;
         fitness[4] = charAccuracy;
+        double fmeasure = 2 * (precision * recall) / (precision + recall);
         fitness[5] = fmeasure;
         
         fitness[6] = statsOverallFlagging.accuracy();
@@ -150,15 +150,18 @@ public class PerformacesObjective implements Objective {
             int extractedEnd = extractedBounds.end;
             int extractedStart = extractedBounds.start;
 
-            overallNumChars += expectedRanges.stream().mapToInt(expectedBounds -> Math.min(extractedEnd, expectedBounds.end) -
+            int sum = expectedRanges.stream().mapToInt(expectedBounds -> Math.min(extractedEnd, expectedBounds.end) -
                     Math.max(extractedStart, expectedBounds.start)).map(numChars -> Math.max(0, numChars)).sum();
+            overallNumChars += sum;
         }
         return overallNumChars;
     }
 
     
     private static int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
-        int identicalRanges = (int) Arrays.stream(rangesA).filter(boundsA -> rangesB.stream().anyMatch(boundsA::equals)).count();
+        int identicalRanges = (int) Arrays.stream(rangesA).filter(boundsA -> {
+            return rangesB.stream().anyMatch(boundsA::equals);
+        }).count();
 
         return identicalRanges;
     }

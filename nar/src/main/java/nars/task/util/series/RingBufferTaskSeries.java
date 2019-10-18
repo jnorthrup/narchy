@@ -205,8 +205,8 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
             boolean increase = true, decrease = true;
             do {
 
-                T u = null, v = null;
-                long um = TIMELESS, vm = TIMELESS;
+                T v = null;
+                long vm = TIMELESS;
 
                 if (increase) {
                     v = q.peek(head, center + r, len);
@@ -223,6 +223,8 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 
                 r++;
 
+                long um = TIMELESS;
+                T u = null;
                 if (decrease) {
                     u = q.peek(head, center - r, len);
 

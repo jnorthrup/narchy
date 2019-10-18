@@ -79,8 +79,6 @@ class Sftp implements Runnable {
         try {
             java.util.Vector cmds = new java.util.Vector();
             byte[] buf = new byte[1024];
-            int i;
-            String str;
             String lhome = c.lpwd();
 
             StringBuilder sb = new StringBuilder();
@@ -91,6 +89,7 @@ class Sftp implements Runnable {
 
                 sb.setLength(0);
 
+                int i;
                 loop:
                 while (true) {
                     i = in.read(buf, 0, 1024);
@@ -244,9 +243,8 @@ class Sftp implements Runnable {
                     int foo = 0;
                     if ("chmod".equals(cmd)) {
                         byte[] bar = ((String) cmds.elementAt(1)).getBytes();
-                        int k;
                         for (byte aBar : bar) {
-                            k = aBar;
+                            int k = aBar;
                             if (k < '0' || k > '7') {
                                 foo = -1;
                                 break;
@@ -284,7 +282,7 @@ class Sftp implements Runnable {
                     continue;
                 }
                 if ("pwd".equals(cmd) || "lpwd".equals(cmd)) {
-                    str = ("pwd".equals(cmd) ? "Remote" : "Local");
+                    String str = ("pwd".equals(cmd) ? "Remote" : "Local");
                     str += " working directory: ";
                     if ("pwd".equals(cmd))
                         str += c.pwd();

@@ -205,7 +205,7 @@ public class User {
 
     public <X> void get(String id, Consumer<X> yy) {
         logger.debug("get {}", id);
-        final Document[] D = new Document[1];
+        Document[] D = new Document[1];
         search((iis) -> {
             try {
                 TopDocs y = iis.search(
@@ -222,7 +222,7 @@ public class User {
         }
     }
 
-    public void run(Runnable r) {
+    public static void run(Runnable r) {
         Exe.executor().execute(r);
     }
 
@@ -314,7 +314,7 @@ public class User {
 
     public <X> void get(String id, Supplier<X> ifAbsent, Consumer<X> with) {
         logger.debug("get {}", id);
-        final Document[] D = new Document[1];
+        Document[] D = new Document[1];
         search((is) -> {
 
             try {
@@ -408,7 +408,7 @@ public class User {
         return d;
     }
 
-    private String codec(Object input) {
+    private static String codec(Object input) {
 
         String c;
         switch (input.getClass().getSimpleName()) {

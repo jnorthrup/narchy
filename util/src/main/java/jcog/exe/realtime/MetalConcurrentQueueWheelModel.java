@@ -26,7 +26,7 @@ public class MetalConcurrentQueueWheelModel extends HashedWheelTimer.WheelModel 
     public int run(int c, HashedWheelTimer timer) {
         MetalConcurrentQueue<TimedFuture> q = this.q[c];
 
-        final int n = q.size();
+        int n = q.size();
         if (n == 0)
             return 0;
         else if (n==1) {

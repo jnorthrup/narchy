@@ -189,7 +189,6 @@ public class MCS {
     private static int berParseHeader(RdpPacket_Localised data, int tagval)
             throws RdesktopException {
         int tag = 0;
-        int length = 0;
 
         if (tagval > 0x000000ff) {
             tag = data.getBigEndian16();
@@ -204,6 +203,7 @@ public class MCS {
 
         int len = data.get8();
 
+        int length = 0;
         if ((len & 0x00000080) != 0) {
             len &= ~0x00000080; 
             length = 0;
@@ -302,10 +302,9 @@ public class MCS {
      */
     public void send_to_channel(RdpPacket_Localised buffer, int channel)
             throws RdesktopException, IOException {
-        int length = 0;
         buffer.setPosition(buffer.getHeader(RdpPacket.MCS_HEADER));
 
-        length = buffer.getEnd() - buffer.getHeader(RdpPacket.MCS_HEADER) - 8;
+        int length = buffer.getEnd() - buffer.getHeader(RdpPacket.MCS_HEADER) - 8;
         length |= 0x8000;
 
         buffer.set8((SDRQ << 2));
@@ -446,22 +445,19 @@ public class MCS {
 
         logger.debug("MCS.receiveConnectResponse");
 
-        String[] connect_results = {"Successful", "Domain Merging",
-                "Domain not Hierarchical", "No Such Channel", "No Such Domain",
-                "No Such User", "Not Admitted", "Other User ID",
-                "Parameters Unacceptable", "Token Not Available",
-                "Token Not Possessed", "Too Many Channels", "Too Many Tokens",
-                "Too Many Users", "Unspecified Failure", "User Rejected"};
-
-        int length = 0;
-
         RdpPacket_Localised buffer = IsoLayer.receive();
         logger.debug("Received buffer");
-        length = berParseHeader(buffer, CONNECT_RESPONSE);
+        int length = berParseHeader(buffer, CONNECT_RESPONSE);
         length = berParseHeader(buffer, BER_TAG_RESULT);
 
         int result = buffer.get8();
         if (result != 0) {
+            String[] connect_results = {"Successful", "Domain Merging",
+                    "Domain not Hierarchical", "No Such Channel", "No Such Domain",
+                    "No Such User", "Not Admitted", "Other User ID",
+                    "Parameters Unacceptable", "Token Not Available",
+                    "Token Not Possessed", "Too Many Channels", "Too Many Tokens",
+                    "Too Many Users", "Unspecified Failure", "User Rejected"};
             throw new RdesktopException("MCS Connect failed: "
                     + connect_results[result]);
         }
@@ -588,7 +584,6 @@ public class MCS {
     private int receive_aucf() throws IOException, RdesktopException,
             OrderException, CryptoException {
         logger.debug("receive_aucf");
-        int UserID = 0;
         RdpPacket_Localised buffer = IsoLayer.receive();
 
         int opcode = buffer.get8();
@@ -601,6 +596,7 @@ public class MCS {
             throw new RdesktopException("Expected AURQ got " + result);
         }
 
+        int UserID = 0;
         if ((opcode & 2) != 0) {
             UserID = buffer.getBigEndian16();
         }

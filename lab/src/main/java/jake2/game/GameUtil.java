@@ -56,11 +56,11 @@ public class GameUtil {
      */
 
     public static void G_UseTargets(edict_t ent, edict_t activator) {
-        edict_t t;
 
         checkClassname(ent);
 
-        
+
+        edict_t t;
         if (ent.delay != 0) {
             
             t = G_Spawn();
@@ -208,10 +208,9 @@ public class GameUtil {
      */
 
     public static boolean KillBox(edict_t ent) {
-        trace_t tr;
 
         while (true) {
-            tr = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs,
+            trace_t tr = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs,
                     ent.s.origin, null, Defines.MASK_PLAYERSOLID);
             if (tr.ent == null || tr.ent == GameBase.g_edicts[0])
                 break;
@@ -300,10 +299,10 @@ public class GameUtil {
      * Returns true if the entity is in front (in sight) of self
      */
     public static boolean infront(edict_t self, edict_t other) {
-        float[] vec = { 0, 0, 0 };
         float[] forward = { 0, 0, 0 };
 
         Math3D.AngleVectors(self.s.angles, forward, null, null);
+        float[] vec = {0, 0, 0};
         Math3D.VectorSubtract(other.s.origin, self.s.origin, vec);
         Math3D.VectorNormalize(vec);
         float dot = Math3D.DotProduct(vec, forward);
@@ -316,10 +315,10 @@ public class GameUtil {
      */
     public static boolean visible(edict_t self, edict_t other) {
         float[] spot1 = { 0, 0, 0 };
-        float[] spot2 = { 0, 0, 0 };
 
         Math3D.VectorCopy(self.s.origin, spot1);
         spot1[2] += self.viewheight;
+        float[] spot2 = {0, 0, 0};
         Math3D.VectorCopy(other.s.origin, spot2);
         spot2[2] += other.viewheight;
         trace_t trace = game_import_t.trace(spot1, Globals.vec3_origin,
@@ -344,8 +343,6 @@ public class GameUtil {
      * slower noticing monsters.
      */
     static boolean FindTarget(edict_t self) {
-        edict_t client;
-        int r;
 
         if ((self.monsterinfo.aiflags & Defines.AI_GOOD_GUY) != 0) {
             if (self.goalentity != null && self.goalentity.inuse
@@ -364,6 +361,7 @@ public class GameUtil {
 
 
         boolean heardit = false;
+        edict_t client;
         if ((GameBase.level.sight_entity_framenum >= (GameBase.level.framenum - 1))
                 && 0 == (self.spawnflags & 1)) {
             client = GameBase.level.sight_entity;           
@@ -402,7 +400,7 @@ public class GameUtil {
             return false;
 
         if (!heardit) {
-            r = range(self, client);
+            int r = range(self, client);
 
             if (r == Defines.RANGE_FAR)
                 return false;
@@ -443,8 +441,6 @@ public class GameUtil {
                 }
             }
         } else {
-            
-            float[] temp = { 0, 0, 0 };
 
             if ((self.spawnflags & 1) != 0) {
                 if (!visible(self, client))
@@ -454,6 +450,7 @@ public class GameUtil {
                     return false;
             }
 
+            float[] temp = {0, 0, 0};
             Math3D.VectorSubtract(client.s.origin, self.s.origin, temp);
 
             if (Math3D.VectorLength(temp) > 1000) 
@@ -577,26 +574,23 @@ public class GameUtil {
 
         @Override
         public boolean think(edict_t self) {
-            float[] spot1 = { 0, 0, 0 };
-
-            float[] spot2 = { 0, 0, 0 };
-            float chance;
-            trace_t tr;
 
             if (self.enemy.health > 0) {
-                
+
+                float[] spot1 = {0, 0, 0};
                 Math3D.VectorCopy(self.s.origin, spot1);
                 spot1[2] += self.viewheight;
+                float[] spot2 = {0, 0, 0};
                 Math3D.VectorCopy(self.enemy.s.origin, spot2);
                 spot2[2] += self.enemy.viewheight;
 
-                tr = game_import_t.trace(spot1, null, null, spot2, self,
+                trace_t tr = game_import_t.trace(spot1, null, null, spot2, self,
                         Defines.CONTENTS_SOLID | Defines.CONTENTS_MONSTER
                                 | Defines.CONTENTS_SLIME
                                 | Defines.CONTENTS_LAVA
                                 | Defines.CONTENTS_WINDOW);
 
-                
+
                 if (tr.ent != self.enemy)
                     return false;
             }
@@ -623,6 +617,7 @@ public class GameUtil {
             if (GameAI.enemy_range == Defines.RANGE_FAR)
                 return false;
 
+            float chance;
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0) {
                 chance = 0.4f;
             } else if (GameAI.enemy_range == Defines.RANGE_MELEE) {

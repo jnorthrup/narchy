@@ -13,6 +13,7 @@ import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
 import nars.game.Reward;
 import nars.game.action.AbstractGoalActionConcept;
+import nars.game.action.ActionSignal;
 import nars.game.action.BiPolarAction;
 import nars.game.action.GoalActionConcept;
 import nars.game.sensor.DigitizedScalar;
@@ -78,7 +79,9 @@ public class NARio extends GameX {
 		cc.addActions(id, this, false, false, true);
 		//addCamera(new Bitmap2DSensor(id, cc, nar));
 
-		cc.actions.forEach(a -> a.resolution(0.5f));
+		for (ActionSignal a : cc.actions) {
+			a.resolution(0.5f);
+		}
 
 
 //        Bitmap2DSensor ccb;
@@ -96,9 +99,7 @@ public class NARio extends GameX {
 
 
 		int nx = 4;
-		AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p(id,"cam"), cc, nx, nx, (subX, subY) -> {
-			return new float[]{/*cc.X, cc.Y, */cc.Z};
-		}, 12, this);
+		AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p(id,"cam"), cc, nx, nx, (subX, subY) -> new float[]{/*cc.X, cc.Y, */cc.Z}, 12, this);
 		camAE.confResolution.set(0.1f);
 		camAE.resolution(0.1f);
 		camAE.alpha(0.03f);
@@ -229,7 +230,7 @@ public class NARio extends GameX {
 	public static void main(String[] args) {
 
 
-		runRT((NAR n) -> {
+		runRT(n -> {
 
 
             NARio x = new NARio(n);
@@ -291,14 +292,14 @@ public class NARio extends GameX {
 		actionPushButtonMutex(
 			$.inh(id, $$("L")),
 			$.inh(id, $$("R")),
-			(boolean n) -> {
+				n -> {
 				Scene s = game.scene;
-				boolean was = s != null && s.key(Mario.KEY_LEFT, n);
+				boolean was = s != null && Scene.key(Mario.KEY_LEFT, n);
 				return n;
 			},
-			(boolean n) -> {
+				n -> {
 				Scene s = game.scene;
-				boolean was = s != null && s.key(Mario.KEY_RIGHT, n);
+				boolean was = s != null && Scene.key(Mario.KEY_RIGHT, n);
 				return n;
 			});
 
@@ -332,7 +333,7 @@ public class NARio extends GameX {
 //                    }
 				Scene s = game.scene;
 				if (s != null)
-					s.key(Mario.KEY_JUMP, n);
+					Scene.key(Mario.KEY_JUMP, n);
 				return n;
 			});
 
@@ -346,7 +347,7 @@ public class NARio extends GameX {
 			n -> {
 				Scene s = game.scene;
 				if (s != null)
-					s.key(Mario.KEY_SPEED, n);
+					Scene.key(Mario.KEY_SPEED, n);
 				return n;
 			});
 		//s.actionDur(1);
@@ -375,8 +376,8 @@ public class NARio extends GameX {
 				default:
 					throw new RuntimeException();
 			}
-			game.scene.key(Mario.KEY_LEFT, n);
-			game.scene.key(Mario.KEY_RIGHT, p);
+			Scene.key(Mario.KEY_LEFT, n);
+			Scene.key(Mario.KEY_RIGHT, p);
 			return true;
 		});
 		actionTriState($.inh($.the("y"), id), i -> {
@@ -397,9 +398,9 @@ public class NARio extends GameX {
 				default:
 					throw new RuntimeException();
 			}
-			game.scene.key(Mario.KEY_DOWN, n);
+			Scene.key(Mario.KEY_DOWN, n);
 
-			game.scene.key(Mario.KEY_JUMP, p);
+			Scene.key(Mario.KEY_JUMP, p);
 			return true;
 		});
 
@@ -415,21 +416,21 @@ public class NARio extends GameX {
 
 			float boostThresh = 0.75f;
 			if (x <= -thresh) {
-				game.scene.key(Mario.KEY_LEFT, true);
-				game.scene.key(Mario.KEY_RIGHT, false);
-				game.scene.key(Mario.KEY_SPEED, x <= -boostThresh);
+				Scene.key(Mario.KEY_LEFT, true);
+				Scene.key(Mario.KEY_RIGHT, false);
+				Scene.key(Mario.KEY_SPEED, x <= -boostThresh);
 
 				return x <= -boostThresh ? -1 : -boostThresh;
 			} else if (x >= +thresh) {
-				game.scene.key(Mario.KEY_RIGHT, true);
-				game.scene.key(Mario.KEY_LEFT, false);
-				game.scene.key(Mario.KEY_SPEED, x >= +boostThresh);
+				Scene.key(Mario.KEY_RIGHT, true);
+				Scene.key(Mario.KEY_LEFT, false);
+				Scene.key(Mario.KEY_SPEED, x >= +boostThresh);
 
 				return x >= +boostThresh ? +1 : +boostThresh;
 			} else {
-				game.scene.key(Mario.KEY_LEFT, false);
-				game.scene.key(Mario.KEY_RIGHT, false);
-				game.scene.key(Mario.KEY_SPEED, false);
+				Scene.key(Mario.KEY_LEFT, false);
+				Scene.key(Mario.KEY_RIGHT, false);
+				Scene.key(Mario.KEY_SPEED, false);
 
 
 				return 0f;
@@ -440,18 +441,18 @@ public class NARio extends GameX {
 			if (game == null || game.scene == null) return Float.NaN; //HACK
 
 			if (y <= -thresh) {
-				game.scene.key(Mario.KEY_DOWN, true);
-				game.scene.key(Mario.KEY_JUMP, false);
+				Scene.key(Mario.KEY_DOWN, true);
+				Scene.key(Mario.KEY_JUMP, false);
 				return -1f;
 
 			} else if (y >= +thresh) {
-				game.scene.key(Mario.KEY_JUMP, true);
-				game.scene.key(Mario.KEY_DOWN, false);
+				Scene.key(Mario.KEY_JUMP, true);
+				Scene.key(Mario.KEY_DOWN, false);
 				return +1f;
 
 			} else {
-				game.scene.key(Mario.KEY_JUMP, false);
-				game.scene.key(Mario.KEY_DOWN, false);
+				Scene.key(Mario.KEY_JUMP, false);
+				Scene.key(Mario.KEY_DOWN, false);
 
 				return 0f;
 

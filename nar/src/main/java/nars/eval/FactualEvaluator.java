@@ -245,20 +245,18 @@ public class FactualEvaluator extends Evaluator {
         /*List<Predicate<VersionMap<Term, Term>>> l = */
         Unify u = new UnifyAny();
         u.commonVariables = false;
-        factResolver.apply(x.normalize()).forEach(y -> {
-
-            boolean neg = y instanceof Neg;
-            if (neg) y = y.unneg();
-
-            //TODO neg, temporal
-            if (y.op() == IMPL) {
+        //TODO neg, temporal
+        factResolver.apply(x.normalize()).forEach(y1 -> {
+            boolean neg = y1 instanceof Neg;
+            if (neg) y1 = y1.unneg();
+            if (y1.op() == IMPL) {
 
 
-                Term pre = y.sub(1);
+                Term pre = y1.sub(1);
                 if (pre.unify(x, u.clear())) {
 
                     //ifs.get(k).forEach(v->{
-                    Term z = u.apply(y.sub(0));
+                    Term z = u.apply(y1.sub(0));
                     if (z.op().conceptualizable) {
 //                                //facts.addAt($.func("ifThen", vv, k));
 //                                //facts.put(vv, True);
@@ -282,7 +280,7 @@ public class FactualEvaluator extends Evaluator {
 //                        } else {
 //                            nx.add(y);
 //                        }
-                if (x.unify(y, u.clear())) {
+                if (x.unify(y1, u.clear())) {
                     Term z = u.apply(x);
                     if (z.op().conceptualizable) {
                         if (!z.equals(x)) {

@@ -24,9 +24,7 @@ import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static nars.Op.*;
@@ -271,7 +269,7 @@ public class Builtin {
             ),
 
 
-            Functor.f2("subterm", (Term x, Term index) -> {
+            Functor.f2("subterm", (x, index) -> {
                 try {
                     if (index instanceof Int && index.op() == INT) {
                         return x.sub($.intValue(index));
@@ -305,7 +303,7 @@ public class Builtin {
         nar.add(SetFunc.sort(nar));
 
         /** dynamic target builder - useful for NAR specific contexts like clock etc.. */
-        nar.add(Functor.f(termDynamic, (Subterms s) -> {
+        nar.add(Functor.f(termDynamic, s -> {
             Op o = Op.stringToOperator.get($.unquote(s.sub(0)));
             Term[] args = s.sub(1).subterms().arrayShared();
             if (args.length == 2) {
@@ -334,7 +332,7 @@ public class Builtin {
         }));
 
         /** subterm, but specifically inside an ellipsis. otherwise pass through */
-        nar.add(Functor.f("esubterm", (Subterms c) -> {
+        nar.add(Functor.f("esubterm", c -> {
 
 
             Term x = c.sub(0, null);

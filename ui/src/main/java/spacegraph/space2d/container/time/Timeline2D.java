@@ -18,6 +18,8 @@ import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.video.Draw;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -29,8 +31,10 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
     /**
      * viewable range
      */
-    public long start, end;
-    public long startNext, endNext;
+    public long start;
+    public long end;
+    public long startNext;
+    public long endNext;
 
 
     public interface TimeRangeAware {
@@ -228,7 +232,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         }
     }
 
-    private void setLayerTime(Surface x, long s, long e) {
+    private static void setLayerTime(Surface x, long s, long e) {
         if (x instanceof TimeRangeAware)
             ((TimeRangeAware) x).setTime(s, e);
     }
@@ -371,7 +375,8 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         @Override
         public Iterable<E> events(long start, long end) {
 
-            return this.stream().filter(x -> intersects(x, start, end)).collect(Collectors.toList());
+            List<E> list = this.stream().filter(x -> intersects(x, start, end)).collect(Collectors.toList());
+            return list;
         }
 
         @Override
@@ -391,7 +396,8 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         int THICKNESS = 2;
         //int DIVISIONS = 10; //TODO
 
-        long start, end;
+        long start;
+        long end;
         private BiConsumer<GL2, ReSurface> paintGrid;
 
         @Override

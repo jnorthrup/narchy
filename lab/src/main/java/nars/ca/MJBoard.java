@@ -30,7 +30,8 @@ class MJBoard extends Panel implements Runnable {
 	public int Population; 
 	public final int[] Populations = new int[MAX_CLO + 1]; 
 	
-	private int lastX, lastY; 
+	private int lastX;
+    private int lastY;
 	public boolean IsRunning; 
 	public boolean DrawGrid = true; 
 	public int ColoringMethod = 1; 
@@ -40,7 +41,7 @@ class MJBoard extends Panel implements Runnable {
 	private final Panel pnlBotm; 
 	private final Scrollbar hSbar;
     private final Scrollbar vSbar; 
-	private final int sbarWidth = 16; 
+	private static final int sbarWidth = 16;
 	private final Button btnZoomIn = new Button("+");
 	private final Button btnZoomOut = new Button("-");
 	private final Button btnFit = new Button("F");
@@ -164,12 +165,10 @@ class MJBoard extends Panel implements Runnable {
 	
 	@Override
 	public void run() {
-		int iDelay; 
-		boolean doRedraw;
 		Thread thisThread = Thread.currentThread();
 		while (thisThread == caThread) {
-			
-			doRedraw = false;
+
+			boolean doRedraw = false;
 			if (OneCycle() > 0) 
 			{
 				switch (RefreshStep) {
@@ -198,13 +197,9 @@ class MJBoard extends Panel implements Runnable {
 			mjUI.UpdateUI(); 
 			if (doRedraw) {
 				RedrawBoard(false);
-				
-				
-				
-				
-				
-				
-				iDelay = AnimDelay;
+
+
+				int iDelay = AnimDelay;
 				try {
 					Thread.sleep(iDelay);
 				} catch (InterruptedException e) {
@@ -219,7 +214,7 @@ class MJBoard extends Panel implements Runnable {
 	
 	
 	public void SingleStep() {
-		int i, iCnt;
+		int iCnt;
 		if (RefreshStep > 0) {
 			iCnt = RefreshStep;
 		} else 
@@ -230,7 +225,7 @@ class MJBoard extends Panel implements Runnable {
 		}
 
 		stop();
-		for (i = 1; i <= iCnt; i++) {
+		for (int i = 1; i <= iCnt; i++) {
 			if (OneCycle() == 0) 
 				break;
 		}
@@ -242,7 +237,6 @@ class MJBoard extends Panel implements Runnable {
 	
 	
 	int OneCycle() {
-		int i, j;
 		int modCnt = 0;
 
 		try {
@@ -317,11 +311,12 @@ class MJBoard extends Panel implements Runnable {
 				break;
 			}
 
-			
-			if (GameType == MJRules.GAMTYP_2D) 
+
+			int i;
+			if (GameType == MJRules.GAMTYP_2D)
 			{
 				for (i = 0; i < UnivSize.x; i++) {
-					for (j = 0; j < UnivSize.y; j++) {
+					for (int j = 0; j < UnivSize.y; j++) {
 						SetCell(i, j, tmpState[i][j]);
 					}
 				}
@@ -396,7 +391,6 @@ class MJBoard extends Panel implements Runnable {
 	
 	public void InitBoard(int sizX, int sizY, int cellSiz) {
 		boolean fOldRun = caThread != null;
-		boolean fNewSize = false;
 
 		if (sizX > MAX_X)
 			sizX = MAX_X;
@@ -413,12 +407,14 @@ class MJBoard extends Panel implements Runnable {
 		} catch (InterruptedException e) {
 		}
 
+		boolean fNewSize = false;
 		if ((sizX != UnivSize.x) || (sizY != UnivSize.y)) {
-			int i, j;
 			UnivSize.x = sizX;
 			UnivSize.y = sizY;
 
-			
+
+			int j;
+			int i;
 			for (i = UnivSize.x; i <= MAX_X; i++)
 				for (j = 0; j <= MAX_Y; j++)
 					crrState[i][j] = 0;
@@ -469,8 +465,7 @@ class MJBoard extends Panel implements Runnable {
 	
 	
 	public boolean RecalcLayout() {
-		boolean retVal = true;
-        int wdt = getSize().width;
+		int wdt = getSize().width;
         int hgt = getSize().height;
 		LastPanelSize.x = wdt;
 		LastPanelSize.y = hgt;
@@ -487,6 +482,7 @@ class MJBoard extends Panel implements Runnable {
 		
 		wdt -= sbarWidth;
 		hgt -= sbarWidth;
+		boolean retVal = true;
 		if ((wdt > CellSize) && (hgt > CellSize)) {
 			if (wdt >= UnivSize.x * CellSize) 
 			{
@@ -547,17 +543,15 @@ class MJBoard extends Panel implements Runnable {
 	
 	
 	private void UpdatePopulation() {
-		int i, iCol, iRow;
-		short bVal;
 
-		
+
 		Population = 0;
-		for (i = 0; i <= MAX_CLO; i++)
+		for (int i = 0; i <= MAX_CLO; i++)
 			Populations[i] = 0;
 		
-		for (iCol = 0; iCol < UnivSize.x; iCol++) {
-			for (iRow = 0; iRow < UnivSize.y; iRow++) {
-				bVal = GetCell(iCol, iRow);
+		for (int iCol = 0; iCol < UnivSize.x; iCol++) {
+			for (int iRow = 0; iRow < UnivSize.y; iRow++) {
+				short bVal = GetCell(iCol, iRow);
 				Populations[bVal]++;
 				if (bVal != 0) {
 					Population++;
@@ -612,10 +606,9 @@ class MJBoard extends Panel implements Runnable {
 	
 	public Rectangle CalcPatternRect() {
 		Rectangle rct = new Rectangle(MAX_X, MAX_Y, 0, 0);
-		int iCol, iRow;
 
-		for (iCol = 0; iCol < UnivSize.x; iCol++)
-			for (iRow = 0; iRow < UnivSize.y; iRow++)
+		for (int iCol = 0; iCol < UnivSize.x; iCol++)
+			for (int iRow = 0; iRow < UnivSize.y; iRow++)
 				if (GetCell(iCol, iRow) != 0) {
 					if (rct.x > iCol)
 						rct.x = iCol;
@@ -656,20 +649,18 @@ class MJBoard extends Panel implements Runnable {
 	
 	public void Fit(boolean fRedraw) {
 		Rectangle rct = new Rectangle();
-		int iCtrX, iCtrY, iFac;
-		double fac, facX, facY;
 
 		rct = CalcPatternRect();
 
 		if (rct.width >= 0) 
 		{
-			facX = LastPanelSize.x / rct.width;
-			facY = LastPanelSize.y / rct.height;
+			double facX = LastPanelSize.x / rct.width;
+			double facY = LastPanelSize.y / rct.height;
 
-			fac = facX < facY ? facX : facY;
+			double fac = facX < facY ? facX : facY;
 
-			
-			
+
+			int iFac;
 			if (fac >= 12)
 				iFac = 11;
 			else if (fac >= 10)
@@ -689,9 +680,9 @@ class MJBoard extends Panel implements Runnable {
 
 			CellSize = iFac;
 
-			
-			iCtrX = rct.x + rct.width / 2;
-			iCtrY = rct.y + rct.height / 2;
+
+			int iCtrX = rct.x + rct.width / 2;
+			int iCtrY = rct.y + rct.height / 2;
 			CenterPoint(iCtrX, iCtrY, fRedraw); 
 		} else 
 		{
@@ -815,9 +806,7 @@ class MJBoard extends Panel implements Runnable {
 	
 	
 	public void RedrawBoard(boolean fDrawAll) {
-		int i, j, ic, jc, newClo, iTmpCol;
 		int dx = CellSize * CellsInView.x;
-		int ixCellSize;
 		boolean fDrawGrid = (DrawGrid && (CellSize > 4));
 		int iMinY, iMaxY; 
 
@@ -830,14 +819,15 @@ class MJBoard extends Panel implements Runnable {
 		}
 
 		try {
-			for (i = 0; i < CellsInView.x; i++) {
-				ixCellSize = i * CellSize; 
-				for (j = iMinY; j < iMaxY; j++) {
-					newClo = mjPal.Palette[crrState[ViewOrg.x + i][ViewOrg.y
+			for (int i = 0; i < CellsInView.x; i++) {
+				int ixCellSize = i * CellSize;
+				for (int j = iMinY; j < iMaxY; j++) {
+					int newClo = mjPal.Palette[crrState[ViewOrg.x + i][ViewOrg.y
 							+ j]];
-					
+
 					if ((fDrawAll)
 							|| (screen[(j * CellSize) * dx + i * CellSize] != newClo)) {
+						int iTmpCol;
 						switch (CellSize) {
 						case 1:
 							screen[j * dx + ixCellSize] = newClo;
@@ -851,9 +841,9 @@ class MJBoard extends Panel implements Runnable {
 							screen[++iTmpCol] = newClo;
 							break;
 						default:
-							for (ic = 0; ic < CellSize; ic++) {
+							for (int ic = 0; ic < CellSize; ic++) {
 								iTmpCol = (j * CellSize + ic) * dx + ixCellSize;
-								for (jc = 0; jc < CellSize; jc++) {
+								for (int jc = 0; jc < CellSize; jc++) {
 									if (fDrawGrid
 											&& ((ic == CellSize - 1) || (jc == CellSize - 1))) {
 										screen[iTmpCol++] = mjPal.GridColor[ic == CellSize - 1 && (ViewOrg.y + j) % 5 == 0
@@ -1049,11 +1039,9 @@ class MJBoard extends Panel implements Runnable {
 	
 	public void DrawLine(int x1, int y1, int x2, int y2) {
 		int shortDiff, longDiff;
-        int x, y;
-		boolean across; 
-		int i;
+		boolean across;
 
-        int xDiff = Math.abs(x2 - x1);
+		int xDiff = Math.abs(x2 - x1);
         int yDiff = Math.abs(y2 - y1);
 
 		if (xDiff > yDiff) {
@@ -1072,7 +1060,9 @@ class MJBoard extends Panel implements Runnable {
         int j = 0;
         int wrap = 0;
 
-		for (i = 0; i < longDiff; i++) {
+		for (int i = 0; i < longDiff; i++) {
+			int y;
+			int x;
 			if (across) {
 				x = x1 + (i * xRight);
 				y = y1 + (j * yDown);
@@ -1094,7 +1084,6 @@ class MJBoard extends Panel implements Runnable {
 	
 	
 	public void RandomizeOneCell(int x, int y, double maxVal) {
-		short newStt;
 
 		if (mjUI.chkMon.getState()) 
 		{
@@ -1102,7 +1091,8 @@ class MJBoard extends Panel implements Runnable {
 				SetCell(x, y, (short) CrrState); 
 		} else 
 		{
-			if (mjUI.chkUni.getState()) 
+			short newStt;
+			if (mjUI.chkUni.getState())
 			{
 				newStt = (short) (Math.ceil(Math.random() * StatesCount) - 1);
 				SetCell(x, y, newStt); 
@@ -1118,21 +1108,24 @@ class MJBoard extends Panel implements Runnable {
 	}
 
 	
-	public final int RAND_ALL = 1;
+	public static final int RAND_ALL = 1;
 
-	public final int RAND_VIEW = 2;
+	public static final int RAND_VIEW = 2;
 
 	
 	
 	public void Randomize(String sHow, int what) {
-		int j, minX, maxX, minY, maxY;
-        boolean fOldRun = (caThread != null);
+		boolean fOldRun = (caThread != null);
 		stop();
 		try {
 			Thread.sleep(300);
 		} catch (InterruptedException e) {
 		}
 
+		int maxY;
+		int minY;
+		int maxX;
+		int minX;
 		switch (what) {
 		case RAND_VIEW:
 			minX = ViewOrg.x;
@@ -1158,7 +1151,7 @@ class MJBoard extends Panel implements Runnable {
 
 		if (GameType == MJRules.GAMTYP_2D) {
 			for (i = minX; i <= maxX; i++)
-				for (j = minY; j <= maxY; j++)
+				for (int j = minY; j <= maxY; j++)
 					RandomizeOneCell(i, j, maxVal);
 		} else 
 		{
@@ -1176,8 +1169,7 @@ class MJBoard extends Panel implements Runnable {
 	
 	
 	public void Seed(String sHow) {
-		int i, j;
-        boolean fOldRun = caThread != null;
+		boolean fOldRun = caThread != null;
 		stop();
 		try {
 			Thread.sleep(300);
@@ -1191,7 +1183,9 @@ class MJBoard extends Panel implements Runnable {
 
         int ctrX = UnivSize.x / 2;
         int ctrY = UnivSize.y / 2;
-		if (sHow.startsWith("BLK")) 
+		int j;
+		int i;
+		if (sHow.startsWith("BLK"))
 		{
 			sHow = sHow.substring(3).trim();
 			int iPos = sHow.indexOf('x');
@@ -1256,14 +1250,14 @@ class MJBoard extends Panel implements Runnable {
 	
 	
 	public void Clear(boolean fRedraw) {
-		int i, j;
 		stop();
 		try {
 			Thread.sleep(300);
 		} catch (InterruptedException e) {
 		}
+		int i;
 		for (i = 0; i <= MAX_X; ++i)
-			for (j = 0; j <= MAX_Y; ++j)
+			for (int j = 0; j <= MAX_Y; ++j)
 				SetCell(i, j, (short) 0);
 
 		

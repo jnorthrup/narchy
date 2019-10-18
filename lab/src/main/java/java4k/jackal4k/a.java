@@ -91,24 +91,14 @@ public class a extends GamePanel {
 
   @Override
   public void run() {
-    
-    int[][][] stages = new int[6][80][16];
-    ArrayList<float[]> queue = new ArrayList<>();
-    int x = 0;
+
+      int x = 0;
     int y = 0;
     int value = 0;
     int i = 0;
     int j = 0;
-    int cameraY = 0;
-    int spawnY = 0;
-    int stageIndex = 0;
-    int[][] stage = null;
-    Random random = new Random();
-    int playerDead = 1;
-    float[] player = null;
-    boolean fireworks = false;
-    int bossSpawn = 0;
-    int color0 = 0;
+      Random random = new Random();
+      int color0 = 0;
     int color1 = 0;
 
     
@@ -176,10 +166,10 @@ public class a extends GamePanel {
       }
       sprites[i].setRGB(0, 0, width, i == 2 ? 32 : height, pixels, 0, width);
     }
-    
 
-    
-    for(i = 0, j = 159; i < 6; i++) {
+
+      int[][][] stages = new int[6][80][16];
+      for(i = 0, j = 159; i < 6; i++) {
       int[][] map = stages[i];
       for(y = 0; y < 40; y++) {
         value = s.charAt(j++);
@@ -204,8 +194,17 @@ public class a extends GamePanel {
     Graphics2D g2 = null;
     AffineTransform defaultTransform = g.getTransform();
     
-    long nextFrameStartTime = System.nanoTime();    
-    while(true) {
+    long nextFrameStartTime = System.nanoTime();
+      int bossSpawn = 0;
+      boolean fireworks = false;
+      float[] player = null;
+      int playerDead = 1;
+      int[][] stage = null;
+      int stageIndex = 0;
+      int spawnY = 0;
+      int cameraY = 0;
+      ArrayList<float[]> queue = new ArrayList<>();
+      while(true) {
 
       do {
         nextFrameStartTime += 16666667;
@@ -552,9 +551,9 @@ public class a extends GamePanel {
             case 9: {
               float vx = player[3] - object[3];
               float vy = player[4] - object[4];
-              float mag = vx * vx + vy * vy;
-              if (object[11] == 0) {
-                if (mag < 8192) {
+                if (object[11] == 0) {
+                    float mag = vx * vx + vy * vy;
+                    if (mag < 8192) {
                   object[9] = 128;
                   object[11] = 128;
                   mag = (float)Math.sqrt(mag);
@@ -576,10 +575,10 @@ public class a extends GamePanel {
             case 11: 
                 float vx = player[3] - object[3];
                 float vy = player[4] - object[4];
-                float mag = vx * vx + vy * vy;
                 if (object[11]-- == 0) {
                   object[11] = 2;
-                  object[2] = mag > 8192 ? -1 : object[2] == 11 ? 12 : 11;
+                    float mag = vx * vx + vy * vy;
+                    object[2] = mag > 8192 ? -1 : object[2] == 11 ? 12 : 11;
                 }
                 break;
           }

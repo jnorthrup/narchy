@@ -126,7 +126,7 @@ public abstract class Parser {
 	 */
 	static Set<Assembly> elementClone(Set<Assembly> v) {
 		Set<Assembly> copy = v.stream().map(Assembly::clone).collect(Collectors.toSet());
-        return copy;
+		return copy;
 	}
 
 	/**

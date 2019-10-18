@@ -91,7 +91,9 @@ public abstract class MetalPool<X> implements Pool<X> {
 
 
     public void putAll(Collection<X> c) {
-        c.forEach(this::put);
+        for (X x : c) {
+            put(x);
+        }
     }
 
     public void steal(Collection<X> c) {

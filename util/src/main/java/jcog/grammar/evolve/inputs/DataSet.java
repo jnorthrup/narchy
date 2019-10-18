@@ -240,8 +240,7 @@ public class DataSet implements Serializable {
      * @return
     */
     protected static List<Example> stripeExample(Example example, double marginSize){
-        List<Example> slicesExampleList = new ArrayList<>();
-        
+
 
         List<Bounds> mm = example.getMatch();
         List<Bounds> savedBounds = new ArrayList<>(mm.size());
@@ -257,8 +256,9 @@ public class DataSet implements Serializable {
         
         
         savedBounds = Bounds.mergeBounds(savedBounds);
-        
-        
+
+
+        List<Example> slicesExampleList = new ArrayList<>();
         for(Bounds slice : savedBounds){
             Example sliceExample = new Example();
             sliceExample.setString(example.getString().substring(slice.start, slice.end));
@@ -374,15 +374,15 @@ public class DataSet implements Serializable {
         DataSet reducedDataset = new DataSet(this.name, "Reduction: "+individualRegex, this.regexTarget);
         for(Example example : this.examples){
             if(!isFlagging){
-                reducedDataset.getExamples().add(this.reduceSeparateAndConquerExample(example, individualRegexMatcher, convertToUnmatch));
+                reducedDataset.getExamples().add(DataSet.reduceSeparateAndConquerExample(example, individualRegexMatcher, convertToUnmatch));
             } else {
-                reducedDataset.getExamples().add(this.reduceSeparateAndConquerFlaggingExample(example, individualRegexMatcher));
+                reducedDataset.getExamples().add(DataSet.reduceSeparateAndConquerFlaggingExample(example, individualRegexMatcher));
             }
         }        
         return reducedDataset;
     }
     
-    private boolean isTruePositiveFlaggingExample(Example example, Matcher individualRegexMatcher){
+    private static boolean isTruePositiveFlaggingExample(Example example, Matcher individualRegexMatcher){
         try {
             Matcher m = individualRegexMatcher.reset(example.getString());
             return (m.find() && !example.match.isEmpty());
@@ -398,7 +398,7 @@ public class DataSet implements Serializable {
     }
     
     
-    private Example reduceSeparateAndConquerFlaggingExample(Example example, Matcher individualRegexMatcher){
+    private static Example reduceSeparateAndConquerFlaggingExample(Example example, Matcher individualRegexMatcher){
         
         if(!isTruePositiveFlaggingExample(example, individualRegexMatcher)){
             return new Example(example);
@@ -408,15 +408,15 @@ public class DataSet implements Serializable {
         return unannotatedExample;
     }
     
-    private Example reduceSeparateAndConquerExample(Example example, Matcher individualRegexMatcher, boolean convertToUnmatch){
-        return this.manipulateSeparateAndConquerExample(example, individualRegexMatcher, convertToUnmatch);
+    private static Example reduceSeparateAndConquerExample(Example example, Matcher individualRegexMatcher, boolean convertToUnmatch){
+        return DataSet.manipulateSeparateAndConquerExample(example, individualRegexMatcher, convertToUnmatch);
     }
     
     
     
     
     
-    private Example manipulateSeparateAndConquerExample(Example example, Matcher individualRegexMatcher, boolean convertToUnmatch){
+    private static Example manipulateSeparateAndConquerExample(Example example, Matcher individualRegexMatcher, boolean convertToUnmatch){
         Example exampleClone = new Example(example);
         List<Bounds> extractions = new ArrayList<>();
         try {
@@ -576,7 +576,7 @@ public class DataSet implements Serializable {
             return string.length();
         }
         
-        private int getNumberCharsInsideIntervals(List<Bounds> textIntervals){
+        private static int getNumberCharsInsideIntervals(List<Bounds> textIntervals){
             int countChars = textIntervals.stream().mapToInt(interval -> (interval.end - interval.start)).sum();
             return countChars;
         }
@@ -650,7 +650,7 @@ public class DataSet implements Serializable {
          * @return a list of all annotated strings
          */
         public List<String> getAnnotatedStrings(){
-            List<String> annotatedStrings = this.getMatch().stream().map(bounds -> this.getString().substring(bounds.start, bounds.end)).collect(Collectors.toList());
+            List<String> annotatedStrings = this.getMatch().stream().map(bounds1 -> this.getString().substring(bounds1.start, bounds1.end)).collect(Collectors.toList());
             for(Bounds bounds : this.getUnmatch()){
                 annotatedStrings.add(this.getString().substring(bounds.start, bounds.end));
             }
@@ -666,7 +666,7 @@ public class DataSet implements Serializable {
         public List<String> getOrderedAnnotatedStrings(){
             List<Bounds> boundsList = new ArrayList<>(this.getMatch());
             boundsList.addAll(this.getUnmatch());
-            Collections.sort(boundsList);  
+            Collections.sort(boundsList);
             List<String> annotatedStrings = boundsList.stream().map(bounds -> this.getString().substring(bounds.start, bounds.end)).collect(Collectors.toCollection(() -> new ArrayList<>(boundsList.size())));
             return annotatedStrings;
         }
@@ -702,7 +702,7 @@ public class DataSet implements Serializable {
         @Override
         public boolean equals(Object obj) {
             if (!(obj instanceof Bounds)) return false;
-            final Bounds other = (Bounds) obj;
+            Bounds other = (Bounds) obj;
             return ((this.end == other.end)&&(this.start == other.start));
         }
         
@@ -784,7 +784,9 @@ public class DataSet implements Serializable {
             Collections.sort(zoneRanges);
              
             
-            int overallEOAA = (int) Arrays.stream(ranges).filter(extractedBounds -> zoneRanges.stream().takeWhile(expectedBounds -> expectedBounds.start < extractedBounds.end).anyMatch(extractedBounds::overlaps)).count();
+            int overallEOAA = (int) Arrays.stream(ranges).filter(extractedBounds -> {
+                return zoneRanges.stream().takeWhile(expectedBounds -> expectedBounds.start < extractedBounds.end).anyMatch(extractedBounds::overlaps);
+            }).count();
             return overallEOAA;
         }
 

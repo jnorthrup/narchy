@@ -29,7 +29,9 @@ public class PriReferenceArrayBag<X,Y extends PriReference<X>> extends ArrayBag<
 
     @Deprecated public List<Y> listCopy() {
         FasterList<Y> l = new FasterList<>(size());
-        forEach(l::addFast);
+        for (Y y : this) {
+            l.addFast(y);
+        }
         return l;
     }
 

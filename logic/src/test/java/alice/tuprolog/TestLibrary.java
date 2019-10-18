@@ -28,7 +28,7 @@ public class TestLibrary extends StringLibrary {
 		return "TestLibraryName";
 	}
 
-	public Term sum_2(NumberTerm arg0, NumberTerm arg1){
+	public static Term sum_2(NumberTerm arg0, NumberTerm arg1){
 		int a0 = arg0.intValue();
 		int a1 = arg1.intValue();
 		return new NumberTerm.Int(a0+a1);

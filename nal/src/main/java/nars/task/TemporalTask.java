@@ -12,7 +12,8 @@ import java.util.Objects;
 /** generic NAL Task with stored start,end time */
 public class TemporalTask extends ActualNALTask {
 
-    private final long start, end;
+    private final long start;
+    private final long end;
 
     public TemporalTask(Term term, byte punc, @Nullable Truth truth, long creation, long start, long end, long[] stamp) throws TaskException {
         super(term, punc, truth, creation, start, end, stamp);

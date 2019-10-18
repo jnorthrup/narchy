@@ -219,14 +219,13 @@ public class KBmanager implements Serializable {
     public void setDefaultAttributes() {
 
         try {
-            String sep = File.separator;
             String base = System.getenv("SIGMA_HOME");
-            String tptpHome = System.getenv("TPTP_HOME");
-            String systemsHome = System.getenv("SYSTEMS_HOME");
             if (StringUtil.emptyString(base))
                 base = System.getProperty("user.dir");
+            String tptpHome = System.getenv("TPTP_HOME");
             if (StringUtil.emptyString(tptpHome))
                 tptpHome = System.getProperty("user.dir");
+            String systemsHome = System.getenv("SYSTEMS_HOME");
             if (StringUtil.emptyString(systemsHome))
                 systemsHome = System.getProperty("user.dir");
             String tomcatRoot = System.getenv("CATALINA_HOME");
@@ -237,20 +236,19 @@ public class KBmanager implements Serializable {
             File tptpHomeDir = new File(tptpHome);
             File systemsDir = new File(systemsHome);
             File kbDir = new File(baseDir, "KBs");
-            File inferenceTestDir = new File(kbDir, "tests");
             File logDir = new File(baseDir, "logs");
             logDir.mkdirs();
 
-            
-            
-            
-            File testOutputDir = new File(tomcatRootDir,
-                    (String.join(sep, "webapps", "sigma", "tests")));
+
             preferences.put("baseDir",baseDir.getCanonicalPath());
             preferences.put("tptpHomeDir",tptpHomeDir.getCanonicalPath());
             preferences.put("systemsDir",systemsDir.getCanonicalPath());
             preferences.put("kbDir",kbDir.getCanonicalPath());
+            File inferenceTestDir = new File(kbDir, "tests");
             preferences.put("inferenceTestDir",inferenceTestDir.getCanonicalPath());
+            String sep = File.separator;
+            File testOutputDir = new File(tomcatRootDir,
+                    (String.join(sep, "webapps", "sigma", "tests")));
             preferences.put("testOutputDir",testOutputDir.getCanonicalPath());
 
             File graphVizDir = new File("/usr/bin");

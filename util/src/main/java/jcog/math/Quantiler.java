@@ -35,11 +35,13 @@ public class Quantiler {
     private float[] qileNext;
     private final int nbuf;
     private final int nq;
-    int nt,  nd;
+    int nt;
+    int nd;
     private final float[] pval;
     private final float[] dbuf;
     private float[] qile;
-    private float q0,  qm;
+    private float q0;
+    private float qm;
 
 
     /**
@@ -92,16 +94,19 @@ public class Quantiler {
      * Batch update. This method is called by addAt() or quantile().
      */
     private void update() {
-        int jd = 0, jq = 1, iq;
-        float target, told = 0f, tnew = 0f, qold, qnew;
         float[] newqile = qileNext;
         Arrays.sort(dbuf, 0, nd);
-        qold = qnew = qile[0] = newqile[0] = q0;
+        float qnew;
+        float qold = qnew = qile[0] = newqile[0] = q0;
         qile[nq - 1] = newqile[nq - 1] = qm;
         pval[0] = Math.min(0.5f / (nt + nd), 0.5f * pval[1]);
         pval[nq - 1] = Math.max(1f- 0.5f / (nt + nd), 0.5f * (1f + pval[nq - 2]));
-        for (iq = 1; iq < nq - 1; iq++) {
-            target = (nt + nd) * pval[iq];
+        float tnew = 0f;
+        float told = 0f;
+        int jq = 1;
+        int jd = 0;
+        for (int iq = 1; iq < nq - 1; iq++) {
+            float target = (nt + nd) * pval[iq];
             if (tnew < target) {
                 for (;;) {
                     if (jq < nq && (jd >= nd || qile[jq] < dbuf[jd])) {

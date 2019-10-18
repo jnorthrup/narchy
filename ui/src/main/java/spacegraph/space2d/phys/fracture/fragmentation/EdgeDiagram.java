@@ -16,5 +16,6 @@ class EdgeDiagram extends AEdge {
     /**
      * Fragmenty, ktore ohranicuje dana hrana.
      */
-    public Fragment d1, d2;
+    public Fragment d1;
+    public Fragment d2;
 }

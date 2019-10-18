@@ -64,7 +64,7 @@ public class Grid1DSimple implements World {
         }
         
         
-        if (focusPosition > size) focusPosition = focusPosition - size;
+        if (focusPosition > size) focusPosition -= size;
         if (focusPosition < 0) focusPosition = size + focusPosition;
         
         /*        
@@ -99,7 +99,7 @@ public class Grid1DSimple implements World {
             if (sensor[i] < 0)
                 sensor[i] = 0;
             if (i == 0) {
-                min = max = sensor[i];
+                min = max = sensor[0];
             }
             else {
                 if (sensor[i] < min) min = sensor[i];

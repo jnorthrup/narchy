@@ -18,7 +18,10 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
     static final float updateDurs = 1;
 
     /** cache of punctuation priorities */
-    private transient float beliefPri, goalPri, questionPri, questPri;
+    private transient float beliefPri;
+    private transient float goalPri;
+    private transient float questionPri;
+    private transient float questPri;
 
     public DefaultPuncWeightedDerivePri() {
     }

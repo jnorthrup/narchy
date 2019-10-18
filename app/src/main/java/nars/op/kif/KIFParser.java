@@ -164,12 +164,9 @@ public class KIFParser {
 
         int mode = this.getParseMode();
         StringBuilder expression = new StringBuilder();
-        int lastVal;
         Formula f = new Formula();
         String filename = "";
-        String errStart = "Parsing error in " + filename;
         String errStr = null;
-        int duplicateCount = 0;
 
         if (r == null) {
             errStr = "No Input Reader Specified";
@@ -177,6 +174,7 @@ public class KIFParser {
             System.err.println("Error in KIF.parse(): " + errStr);
             return warningSet;
         }
+        int duplicateCount = 0;
         try {
             count++;
             StreamTokenizer_s st = new StreamTokenizer_s(r);
@@ -189,8 +187,9 @@ public class KIFParser {
             HashSet<String> keySet = new HashSet<>();
             
             boolean isEOL = false;
+            String errStart = "Parsing error in " + filename;
             do {
-                lastVal = st.ttype;
+                int lastVal = st.ttype;
                 st.nextToken();
                 
                 
@@ -309,8 +308,8 @@ public class KIFParser {
                     totalLinesForComments += countChar(com, (char) 0X0A);
                     expression.append(com);
                     expression.append('"');
-                    if (parenLevel < 2) 
-                        argumentNum = argumentNum + 1;
+                    if (parenLevel < 2)
+                        argumentNum += 1;
                 }
                 else if ((st.ttype == StreamTokenizer.TT_NUMBER) || 
                         (st.sval != null && (Character.isDigit(st.sval.charAt(0))))) {
@@ -320,14 +319,14 @@ public class KIFParser {
                         expression.append(st.sval);
                     else
                         expression.append(st.nval);
-                    if (parenLevel < 2) 
-                        argumentNum = argumentNum + 1;
+                    if (parenLevel < 2)
+                        argumentNum += 1;
                 }
                 else if (st.ttype == StreamTokenizer.TT_WORD) { 
                     if (("=>".equals(st.sval) || "<=>".equals(st.sval)) && parenLevel == 1)
                         inRule = true; 
-                    if (parenLevel < 2) 
-                        argumentNum = argumentNum + 1;
+                    if (parenLevel < 2)
+                        argumentNum += 1;
                     if (lastVal != 40) 
                         expression.append(' ');
                     expression.append(st.sval);
@@ -404,24 +403,24 @@ public class KIFParser {
         }
         String key = "";
         if (inAntecedent) {
-            key = key.concat("ant-");
-            key = key.concat(sval);
+            key += "ant-";
+            key += sval;
         }
 
         if (inConsequent) {
-            key = key.concat("cons-");
-            key = key.concat(sval);
+            key += "cons-";
+            key += sval;
         }
 
         if (!inAntecedent && !inConsequent && (parenLevel == 1)) {
-            key = key.concat("arg-");
-            key = key.concat(String.valueOf(argumentNum));
-            key = key.concat("-");
-            key = key.concat(sval);
+            key += "arg-";
+            key += String.valueOf(argumentNum);
+            key += "-";
+            key += sval;
         }
         if (!inAntecedent && !inConsequent && (parenLevel > 1)) {
-            key = key.concat("stmt-");
-            key = key.concat(sval);
+            key += "stmt-";
+            key += sval;
         }
         return (key);
     }
@@ -486,9 +485,8 @@ public class KIFParser {
     public String parseStatement(String formula) {
 
         StringReader r = new StringReader(formula);
-        boolean isError = false;
         try {
-            isError = !parse(r).isEmpty();
+            boolean isError = !parse(r).isEmpty();
             if (isError) {
                 String msg = "Error parsing " + formula;
                 return msg;

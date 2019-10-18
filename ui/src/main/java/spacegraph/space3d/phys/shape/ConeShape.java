@@ -137,10 +137,10 @@ public class ConeShape extends ConvexInternalShape {
 		float x2 = lx * lx;
 		float y2 = ly * ly;
 		float z2 = lz * lz;
-		float scaledmass = mass * 0.08333333f;
 
-		inertia.set(y2 + z2, x2 + z2, x2 + y2);
-		inertia.scaled(scaledmass);
+        inertia.set(y2 + z2, x2 + z2, x2 + y2);
+        float scaledmass = mass * 0.08333333f;
+        inertia.scaled(scaledmass);
 
 		
 		

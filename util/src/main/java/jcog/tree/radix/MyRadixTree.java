@@ -570,7 +570,9 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                 }
 
 
-                reinsertions.forEach(this::put);
+                for (X reinsertion : reinsertions) {
+                    put(reinsertion);
+                }
 
                 return true;
             default:
@@ -761,7 +763,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         }
     }
 
-    Object putInternal(CharSequence key, Object value, boolean overwrite) {
+    static Object putInternal(CharSequence key, Object value, boolean overwrite) {
         throw new UnsupportedOperationException();
     }
 
@@ -773,7 +775,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         return random(subRoot, root, null, descendProb, rng);
     }
 
-    public SearchResult random(SearchResult at, float descendProb, Random rng) {
+    public static SearchResult random(SearchResult at, float descendProb, Random rng) {
 
         Node current = at.found;
         Node parent = at.parentNode;
@@ -781,7 +783,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         return random(current, parent, parentParent, descendProb, rng);
     }
 
-    public SearchResult random(Node current, Node parent, Node parentParent, float descendProb, Random rng) {
+    public static SearchResult random(Node current, Node parent, Node parentParent, float descendProb, Random rng) {
 
 
         while (true) {
@@ -960,7 +962,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
      * because equals() and hashCode() are not specified by the CharSequence API contract.
      */
     @SuppressWarnings("JavaDoc")
-    private Iterable<AbstractBytes> getDescendantKeys(final AbstractBytes startKey, final Node startNode) {
+    private Iterable<AbstractBytes> getDescendantKeys(AbstractBytes startKey, Node startNode) {
         return new DescendantKeys(startKey, startNode);
     }
 
@@ -969,7 +971,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
      * the given key is a prefix.
      */
     @SuppressWarnings("JavaDoc")
-    private <O> Iterable<O> getDescendantValues(final AbstractBytes startKey, final Node startNode) {
+    private static <O> Iterable<O> getDescendantValues(AbstractBytes startKey, Node startNode) {
         return () -> new LazyIterator<>() {
 
             Iterator<NodeKeyPair> descendantNodes = null;
@@ -1002,7 +1004,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
      * because equals() and hashCode() are not specified by the CharSequence API contract.
      */
     @SuppressWarnings("JavaDoc")
-    private <O> Iterable<Pair<AbstractBytes, O>> getDescendantKeyValuePairs(final AbstractBytes startKey, final Node startNode) {
+    private static <O> Iterable<Pair<AbstractBytes, O>> getDescendantKeyValuePairs(AbstractBytes startKey, Node startNode) {
         return () -> new LazyIterator<>() {
             Iterator<NodeKeyPair> descendantNodes = null;
 
@@ -1042,8 +1044,8 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
      * @return An iterator which when iterated traverses the tree using depth-first, preordered traversal,
      * starting at the given start node
      */
-    private Iterable<NodeKeyPair> lazyTraverseDescendants(final AbstractBytes startKey, final Node startNode) {
-        final Deque<NodeKeyPair> stack = new ArrayDeque();
+    private static Iterable<NodeKeyPair> lazyTraverseDescendants(AbstractBytes startKey, Node startNode) {
+        Deque<NodeKeyPair> stack = new ArrayDeque();
         stack.push(new NodeKeyPair(startNode, startKey));
         return () -> new LazyIterator<>() {
 
@@ -1082,7 +1084,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
      * @param rawKey The raw key as stored in the tree
      * @return A transformed version of the key
      */
-    private AbstractBytes transformKeyForResult(AbstractBytes rawKey) {
+    private static AbstractBytes transformKeyForResult(AbstractBytes rawKey) {
         return rawKey;
     }
 
@@ -1147,7 +1149,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         Node currentNode = root;
         int charsMatched = 0, charsMatchedInNodeFound = 0;
 
-        final int keyLength = key.length();
+        int keyLength = key.length();
         outer_loop:
         while (charsMatched < keyLength) {
             Node nextNode = currentNode.getOutgoingEdge(key.at(charsMatched));

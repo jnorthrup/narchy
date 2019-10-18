@@ -79,7 +79,10 @@ public class SingletonVD {
     private final Edge[] edges = new Edge[0x10000]; 
     private final int[] boundaries = new int[0x200];
     private int boundariesCount = 0;
-    private float maxX, minX, minY, maxY;
+    private float maxX;
+    private float minX;
+    private float minY;
+    private float maxY;
     private final double[] comparer = new double[0x302]; 
     private final boolean[] validCorners = new boolean[4]; 
     private int[] polygon; 
@@ -110,7 +113,7 @@ public class SingletonVD {
      * @param a
      * @param b
      */
-    public void calculateVoronoi(v2[] focee, final v2 a, final v2 b) {
+    public void calculateVoronoi(v2[] focee, v2 a, v2 b) {
         pCount = 0;
 
         maxX = Math.max(a.x, b.x);
@@ -242,7 +245,7 @@ public class SingletonVD {
         }
     }
 
-    private void quicksortPoly(final int low, final int high) {
+    private void quicksortPoly(int low, int high) {
         int i = low, j = high;
         double pivot = comparer[low + ((high - low) >> 1)]; 
         while (i <= j) {
@@ -276,7 +279,7 @@ public class SingletonVD {
      * @param low
      * @param high
      */
-    private void quicksort(final int low, final int high) {
+    private void quicksort(int low, int high) {
         int i = low, j = high;
         double pivot = comparer[low + ((high - low) >> 1)]; 
         while (i <= j) {
@@ -413,12 +416,12 @@ public class SingletonVD {
      * @param v
      */
     private void addTriangle(
-            final Edge leftEdge,
-            final Edge rightEdge,
-            final Edge centerEdge,
-            final int l,
-            final int r,
-            final int v
+            Edge leftEdge,
+            Edge rightEdge,
+            Edge centerEdge,
+            int l,
+            int r,
+            int v
     ) {
         Triangle triangle = centerEdge.get();
         if (triangle == null || !triangle.inside(ar[v])) {
@@ -461,7 +464,7 @@ public class SingletonVD {
      * @param v Bod, u ktoreho sa rozhoduje, na ktorej strane priamky sa nachadza
      * @return -1 ak je v nalavo od priamky a -> b, 1 ak napravo, 0 ak na nej
      */
-    private static int site(final v2 a, final v2 b, final v2 v) {
+    private static int site(v2 a, v2 b, v2 v) {
         if (a == b) return 0;
         double ax = a.x;
         double ay = a.y;
@@ -518,7 +521,7 @@ public class SingletonVD {
      * @param b
      * @return Vrati vzdialenost ^ 2 bodov
      */
-    private static double distSq(double x, double y, final v2 b) {
+    private static double distSq(double x, double y, v2 b) {
         x -= b.x;
         y -= b.y;
         return x * x + y * y;

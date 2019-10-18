@@ -105,7 +105,7 @@ public class BomberBomb extends Thread {
         BomberGame.players[owner].bombGrid
                 [x >> BomberMain.shiftCount][y >> BomberMain.shiftCount] = false;
         map.removeBomb(x, y);
-        BomberMain.sndEffectPlayer.playSound("Explosion");
+        BomberSndEffect.playSound("Explosion");
         /** create the fire */
         map.createFire(x, y, owner, BomberMap.FIRE_CENTER);
     }

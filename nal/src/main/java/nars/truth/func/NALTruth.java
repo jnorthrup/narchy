@@ -53,34 +53,34 @@ public enum NALTruth implements TruthFunction {
      */
     @AllowOverlap @SinglePremise StructuralReduction() {
         @Override
-        public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth Bignored, float minConf, NAL n) {
             float c = confCompose(T, NALTruth.confDefault(n));
             return c >= minConf ? $.tt(T.freq(), c) : null;
         }
     },
     @AllowOverlap @SinglePremise StructuralReductionWeak() {
         @Override
-        public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth Bignored, float minConf, NAL n) {
             float c = confCompose(T, NALTruth.confDefault(n));
             return c >= minConf ? weak($.tt(T.freq(), c),minConf) : null;
         }
     },
     @AllowOverlap @SinglePremise StructuralDeduction() {
         @Override
-        public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth Bignored, float minConf, NAL n) {
             return T != null ? Deduction.apply(T, $.tt(1f, confDefault(n)), minConf, n) : null;
         }
     },
     @AllowOverlap @SinglePremise StructuralDeductionWeak() {
         @Override
-        public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth Bignored, float minConf, NAL n) {
             return T != null ? weak(Deduction.apply(T, $.tt(1f, confDefault(n)), minConf, n), minConf) : null;
         }
     },
 
     BeliefStructuralIntersection() {
         @Override
-        public Truth apply(final Truth Tignored, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth Tignored, Truth B, float minConf, NAL n) {
             return Intersection.apply(B, $.tt(1f, confDefault(n)), minConf, n);
         }
     },
@@ -131,14 +131,14 @@ public enum NALTruth implements TruthFunction {
 
     Induction() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.induction(T, B, minConf);
         }
     },
 
 	@Skill("Sherlock_Holmes#Holmesian_deduction") Abduction() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return Induction.apply(B, T, minConf, n);
         }
     },
@@ -162,7 +162,7 @@ public enum NALTruth implements TruthFunction {
      */
     AbductionPB() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return InductionPB.apply(B, T, minConf, n);
 //            if (B.isNegative())
 //                return Abduction.apply(T.neg(), B.neg(), minConf, n);
@@ -172,7 +172,7 @@ public enum NALTruth implements TruthFunction {
     },
     AbductionXOR() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             if (B.isNegative())
                 return Abduction.apply(T, B.neg(), minConf, n);
             else
@@ -182,26 +182,26 @@ public enum NALTruth implements TruthFunction {
 
     Comparison() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.comparison(T, B, minConf);
         }
     },
     ComparisonSymmetric() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions2.comparisonSymmetric(T, B, minConf);
         }
     },
 
     Conversion() {
         @Override
-        public Truth apply(final @Nullable Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(@Nullable Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.conversion(B, minConf);
         }
     },
     Resemblance() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.resemblance(T, B, minConf);
         }
     },
@@ -209,7 +209,7 @@ public enum NALTruth implements TruthFunction {
     @SinglePremise
     Contraposition() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions2.contraposition(T, minConf);
         }
     },
@@ -217,7 +217,7 @@ public enum NALTruth implements TruthFunction {
 
     Intersection() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.intersection(T, B, minConf);
 
         }
@@ -225,7 +225,7 @@ public enum NALTruth implements TruthFunction {
 
     Union() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.union(T, B, minConf);
             //return TruthFunctions2.union(T, B, minConf);
         }
@@ -233,7 +233,7 @@ public enum NALTruth implements TruthFunction {
 
     IntersectionSym() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return B.isNegative() ?
                     Intersection.apply(T.neg(), B.neg(), minConf, n)
                     :
@@ -242,31 +242,31 @@ public enum NALTruth implements TruthFunction {
     },
     @AllowOverlap Pre() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions2.pre(T, B, false, minConf);
         }
     },
     @AllowOverlap PreWeak() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions2.pre(T, B, true, minConf);
         }
     },
     @AllowOverlap Post() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions2.post(T, B, true, minConf);
         }
     },
     @AllowOverlap PostWeak() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions2.post(T, B, false, minConf);
         }
     },
     @Deprecated IntersectionPB() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return B.isNegative() ?
                     negIfNonNull(Intersection.apply(T.neg(), B.neg(), minConf, n))
                     :
@@ -275,7 +275,7 @@ public enum NALTruth implements TruthFunction {
     },
     @Deprecated UnionPB() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return B.isNegative() ?
                     negIfNonNull(Union.apply(T.neg(), B.neg(), minConf, n))
                     :
@@ -300,28 +300,28 @@ public enum NALTruth implements TruthFunction {
 
     Difference() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return Intersection.apply(T, B.neg(), minConf, n);
         }
     },
 
     DifferenceReverse() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return NALTruth.Difference.apply(B, T, minConf, n);
         }
     },
 
     Analogy() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.analogy(T, B.freq(), B.confDouble(), minConf);
         }
     },
 
     ReduceConjunction() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.reduceConjunction(T, B, minConf);
         }
     },
@@ -329,14 +329,14 @@ public enum NALTruth implements TruthFunction {
 
     AnonymousAnalogy() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.anonymousAnalogy(T, B, minConf);
         }
     },
 
     Exemplification() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.exemplification(T, B, minConf);
         }
     },
@@ -350,7 +350,7 @@ public enum NALTruth implements TruthFunction {
 
     Divide() {
         @Override
-        public Truth apply(final Truth XY, final Truth X, float minConf, NAL n) {
+        public Truth apply(Truth XY, Truth X, float minConf, NAL n) {
             return TruthFunctions2.divide(XY, X, minConf);
         }
     },
@@ -358,7 +358,7 @@ public enum NALTruth implements TruthFunction {
     @SinglePremise
     Identity() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunction.identity(T, minConf);
         }
     },
@@ -366,7 +366,7 @@ public enum NALTruth implements TruthFunction {
 
     BeliefIdentity() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunction.identity(B, minConf);
         }
     },
@@ -376,14 +376,14 @@ public enum NALTruth implements TruthFunction {
      */
     BeliefStructuralReduction() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             if (B == null) return null;
             return StructuralReduction.apply(B, null, minConf, n);
         }
     },
     BeliefStructuralDeduction() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             if (B == null) return null;
             return StructuralDeduction.apply(B, null, minConf, n);
         }
@@ -391,7 +391,7 @@ public enum NALTruth implements TruthFunction {
 
     BeliefStructuralDifference() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             if (B == null) return null;
             Truth res = BeliefStructuralDeduction.apply(T, B, minConf, n);
             return (res != null) ? res.neg() : null;
@@ -401,21 +401,21 @@ public enum NALTruth implements TruthFunction {
     @SinglePremise
     StructuralAbduction() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return Abduction.apply($.tt(1f, confDefault(n)), T, minConf, n);
         }
     },
 
     BeliefStructuralAbduction() {
         @Override
-        public Truth apply(final @Nullable Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(@Nullable Truth T, Truth B, float minConf, NAL n) {
             return Abduction.apply($.tt(1f, confDefault(n)), B, minConf, n);
         }
     },
 
     Desire() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions2.desire(T, B, minConf, false,true);
             //return TruthFunctions.desire(T, B, minConf, true);
             //return TruthFunctions2.desireSemiBipolar(T, B, minConf, true);
@@ -433,7 +433,7 @@ public enum NALTruth implements TruthFunction {
 
     DesireWeak() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions2.desire(T, B, minConf, false,false);
             //return TruthFunctions.desire(T, B, minConf, false);
             //return TruthFunctions2.desireSemiBipolar(T, B, minConf, false);
@@ -463,7 +463,8 @@ public enum NALTruth implements TruthFunction {
 
 
 
-    private final boolean single, overlap;
+    private final boolean single;
+    private final boolean overlap;
 
     NALTruth() {
         Field f = Reflect.on(getClass()).field(name()).get();

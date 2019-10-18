@@ -128,22 +128,17 @@ public class SV_MAIN {
      * Builds the string that is sent as heartbeats and status replies.
      */
     public static String SV_StatusString() {
-        String player;
-        int i;
-        client_t cl;
-        int statusLength;
-        int playerLength;
 
         String status = Cvar.Serverinfo() + '\n';
 
-        for (i = 0; i < SV_MAIN.maxclients.value; i++) {
-            cl = SV_INIT.svs.clients[i];
+        for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+            client_t cl = SV_INIT.svs.clients[i];
             if (cl.state == Defines.cs_connected
                     || cl.state == Defines.cs_spawned) {
-                player = String.valueOf(cl.edict.client.ps.stats[Defines.STAT_FRAGS]) + ' ' + cl.ping + '"' + cl.name + "\"\n";
+                String player = String.valueOf(cl.edict.client.ps.stats[Defines.STAT_FRAGS]) + ' ' + cl.ping + '"' + cl.name + "\"\n";
 
-                playerLength = player.length();
-                statusLength = status.length();
+                int playerLength = player.length();
+                int statusLength = status.length();
 
                 if (statusLength + playerLength >= 1024)
                     break; 
@@ -176,19 +171,18 @@ public class SV_MAIN {
      * be the current protocol version number.
      */
     public static void SVC_Info() {
-        String string;
-        int i, count;
 
         if (SV_MAIN.maxclients.value == 1)
             return;
 
         int version = Lib.atoi(Cmd.Argv(1));
 
+        String string;
         if (version != Defines.PROTOCOL_VERSION)
             string = SV_MAIN.hostname.string + ": wrong version\n";
         else {
-            count = 0;
-            for (i = 0; i < SV_MAIN.maxclients.value; i++)
+            int count = 0;
+            for (int i = 0; i < SV_MAIN.maxclients.value; i++)
                 if (SV_INIT.svs.clients[i].state >= Defines.cs_connected)
                     count++;
 
@@ -247,9 +241,6 @@ public class SV_MAIN {
      * A connection request that did not come from the master.
      */
     public static void SVC_DirectConnect() {
-        String userinfo;
-        int i;
-        client_t cl;
 
         netadr_t adr = Globals.net_from;
 
@@ -265,9 +256,9 @@ public class SV_MAIN {
 
         int qport = Lib.atoi(Cmd.Argv(2));
         int challenge = Lib.atoi(Cmd.Argv(3));
-        userinfo = Cmd.Argv(4);
+        String userinfo = Cmd.Argv(4);
 
-        
+
         userinfo = Info.Info_SetValueForKey(userinfo, "ip", NET.AdrToString(Globals.net_from));
 
         
@@ -280,7 +271,8 @@ public class SV_MAIN {
             }
         }
 
-        
+
+        int i;
         if (!NET.IsLocalAddress(adr)) {
             for (i = 0; i < Defines.MAX_CHALLENGES; i++) {
                 if (NET.CompareBaseAdr(Globals.net_from,
@@ -299,7 +291,8 @@ public class SV_MAIN {
             }
         }
 
-        
+
+        client_t cl;
         for (i = 0; i < SV_MAIN.maxclients.value; i++) {
             cl = SV_INIT.svs.clients[i];
 
@@ -414,7 +407,6 @@ public class SV_MAIN {
      * all printfs fromt hte server to the client.
      */
     public static void SVC_RemoteCommand() {
-        String remaining;
 
         int i = Rcon_Validate();
 
@@ -438,7 +430,7 @@ public class SV_MAIN {
         if (0 == Rcon_Validate()) {
             Com.Printf("Bad rcon_password.\n");
         } else {
-            remaining = "";
+            String remaining = "";
 
             for (i = 2; i < Cmd.Argc(); i++) {
                 remaining += Cmd.Argv(i);
@@ -497,18 +489,15 @@ public class SV_MAIN {
      * Updates the cl.ping variables.
      */
     public static void SV_CalcPings() {
-        int i, j;
-        client_t cl;
-        int total, count;
 
-        for (i = 0; i < SV_MAIN.maxclients.value; i++) {
-            cl = SV_INIT.svs.clients[i];
+        for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+            client_t cl = SV_INIT.svs.clients[i];
             if (cl.state != Defines.cs_spawned)
                 continue;
 
-            total = 0;
-            count = 0;
-            for (j = 0; j < Defines.LATENCY_COUNTS; j++) {
+            int total = 0;
+            int count = 0;
+            for (int j = 0; j < Defines.LATENCY_COUNTS; j++) {
                 if (cl.frame_latency[j] > 0) {
                     count++;
                     total += cl.frame_latency[j];
@@ -529,14 +518,12 @@ public class SV_MAIN {
      * their command moves. If they exceed it, assume cheating.
      */
     public static void SV_GiveMsec() {
-        int i;
-        client_t cl;
 
         if ((SV_INIT.sv.framenum & 15) != 0)
             return;
 
-        for (i = 0; i < SV_MAIN.maxclients.value; i++) {
-            cl = SV_INIT.svs.clients[i];
+        for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+            client_t cl = SV_INIT.svs.clients[i];
             if (cl.state == Defines.cs_free)
                 continue;
 
@@ -548,15 +535,14 @@ public class SV_MAIN {
      * Reads packets from the network or loopback.
      */
     public static void SV_ReadPackets() {
-        int i;
-        client_t cl;
         int qport = 0;
 
         while (NET.GetPacket(Defines.NS_SERVER, Globals.net_from,
                 Globals.net_message)) {
 
-            
-            if (IntStream.of(0, 1, 2, 3).allMatch(v -> (Globals.net_message.data[v] == -1))) {
+
+            boolean b = IntStream.of(0, 1, 2, 3).noneMatch(v -> (Globals.net_message.data[v] != -1));
+            if (b) {
                 SV_ConnectionlessPacket();
                 continue;
             }
@@ -568,9 +554,10 @@ public class SV_MAIN {
             MSG.ReadLong(Globals.net_message); 
             qport = MSG.ReadShort(Globals.net_message) & 0xffff;
 
-            
+
+            int i;
             for (i = 0; i < SV_MAIN.maxclients.value; i++) {
-                cl = SV_INIT.svs.clients[i];
+                client_t cl = SV_INIT.svs.clients[i];
                 if (cl.state == Defines.cs_free)
                     continue;
                 if (!NET.CompareBaseAdr(Globals.net_from,
@@ -608,15 +595,13 @@ public class SV_MAIN {
      * necessary.
      */
     public static void SV_CheckTimeouts() {
-        int i;
-        client_t cl;
 
         int droppoint = (int) (SV_INIT.svs.realtime - 1000 * SV_MAIN.timeout.value);
         int zombiepoint = (int) (SV_INIT.svs.realtime - 1000 * SV_MAIN.zombietime.value);
 
-        for (i = 0; i < SV_MAIN.maxclients.value; i++) {
-            cl = SV_INIT.svs.clients[i];
-            
+        for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+            client_t cl = SV_INIT.svs.clients[i];
+
             if (cl.lastmessage > SV_INIT.svs.realtime)
                 cl.lastmessage = SV_INIT.svs.realtime;
 
@@ -641,12 +626,10 @@ public class SV_MAIN {
      * happens outside RunWorldFrame.
      */
     public static void SV_PrepWorldFrame() {
-        edict_t ent;
-        int i;
 
-        for (i = 0; i < GameBase.num_edicts; i++) {
-            ent = GameBase.g_edicts[i];
-            
+        for (int i = 0; i < GameBase.num_edicts; i++) {
+            edict_t ent = GameBase.g_edicts[i];
+
             ent.s.event = 0;
         }
 
@@ -744,9 +727,8 @@ public class SV_MAIN {
     }
 
     public static void Master_Heartbeat() {
-        int i;
 
-        
+
         if (Globals.dedicated == null || 0 == Globals.dedicated.value)
             return; 
 
@@ -767,7 +749,7 @@ public class SV_MAIN {
         String string = SV_StatusString();
 
         
-        for (i = 0; i < Defines.MAX_MASTERS; i++)
+        for (int i = 0; i < Defines.MAX_MASTERS; i++)
             if (SV_MAIN.master_adr[i].port != 0) {
                 Com.Printf("Sending heartbeat to "
                         + NET.AdrToString(SV_MAIN.master_adr[i]) + '\n');
@@ -781,9 +763,8 @@ public class SV_MAIN {
      * Master_Shutdown, Informs all masters that this server is going down.
      */
     public static void Master_Shutdown() {
-        int i;
 
-        
+
         if (null == Globals.dedicated || 0 == Globals.dedicated.value)
             return; 
 
@@ -792,7 +773,7 @@ public class SV_MAIN {
             return; 
 
         
-        for (i = 0; i < Defines.MAX_MASTERS; i++)
+        for (int i = 0; i < Defines.MAX_MASTERS; i++)
             if (SV_MAIN.master_adr[i].port != 0) {
                 if (i > 0)
                     Com.Printf("Sending heartbeat to "
@@ -808,9 +789,8 @@ public class SV_MAIN {
      * freindly form.
      */
     public static void SV_UserinfoChanged(client_t cl) {
-        int i;
 
-        
+
         PlayerClient.ClientUserinfoChanged(cl.edict, cl.userinfo);
 
         
@@ -819,7 +799,7 @@ public class SV_MAIN {
 
         String val = Info.Info_ValueForKey(cl.userinfo, "rate");
         if (val.length() > 0) {
-            i = Lib.atoi(val);
+            int i = Lib.atoi(val);
             cl.rate = i;
             if (cl.rate < 100)
                 cl.rate = 100;
@@ -894,8 +874,6 @@ public class SV_MAIN {
      * totally exit after returning from this function.
      */
     public static void SV_FinalMessage(String message, boolean reconnect) {
-        int i;
-        client_t cl;
 
         SZ.Clear(Globals.net_message);
         MSG.WriteByte(Globals.net_message, Defines.svc_print);
@@ -907,9 +885,9 @@ public class SV_MAIN {
         else
             MSG.WriteByte(Globals.net_message, Defines.svc_disconnect);
 
-        
-        
 
+        client_t cl;
+        int i;
         for (i = 0; i < SV_INIT.svs.clients.length; i++) {
             cl = SV_INIT.svs.clients[i];
             if (cl.state >= Defines.cs_connected)

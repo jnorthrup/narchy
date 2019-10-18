@@ -1,7 +1,8 @@
 package jcog.signal.wave2d;
 
 public class ImageFlip extends ProxyBitmap2D {
-    final boolean flipX, flipY;
+    final boolean flipX;
+    final boolean flipY;
 
     public ImageFlip(boolean flipX, boolean flipY, Bitmap2D src) {
         super(src);

@@ -23,7 +23,7 @@ class LongIntervalTest {
         Longerval t = assertNearTests(ETERNAL, ETERNAL);
     }
 
-    private Longerval assertNearTests(long sta, long end) {
+    private static Longerval assertNearTests(long sta, long end) {
 
         Longerval t = new Longerval(sta, end);
         long mid = t.mid();

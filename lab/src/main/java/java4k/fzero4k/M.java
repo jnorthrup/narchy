@@ -32,53 +32,14 @@ public class M extends JFrame {
 
   public M() {
 
-    final double VIEWER_X = 159.5;
-    final double VIEWER_Y = 32;
-    final double VIEWER_Z = -128;    
-    final double GROUND_Y = 207;    
 
-    final int[] screenBuffer = new int[320*240];
-    final int[][][] projectionMap = new int[192][320][2];
-    final int[][][] wiresBitmap = new int[32][256][256];
-    final int[][][] bitmaps = new int[6][32][32];
-    final byte[][] raceTrack = new byte[512][512]; 
-      
-      
-      
-      
-      
-      
-      
-    double playerAngle = 0;
-    final double[][] vehicleMetrics = new double[10][9]; 
-      
-      
-      
-      
-      
-    final int[] powerOvalY = new int[2];
-    boolean onPowerBar = false;
-    boolean playing = false;
+      int[] powerOvalY = new int[2];
 
-    final BufferedImage[] vehicleSprites = new BufferedImage[10];
-    final int[] vehicleSpriteData = new int[64*32];
-    double power = 0;
-    final Color powerColor = new Color(0xFABEF1);
-    final Color darkColor = new Color(0xA7000000, true);
-    int wiresBitmapIndex = 0;
-    double cos = 0;
-    double sin = 0;
-    int hitWallCount = 0;
-    int rank = 0;
-    int paused = 1;
-    
-    powerOvalY[0] = -96;
-    
-    
-    
+      powerOvalY[0] = -96;
 
-    
-    for(int i = 0; i < 32; i++) {
+
+      int[][][] wiresBitmap = new int[32][256][256];
+      for(int i = 0; i < 32; i++) {
       for(double t = 0; t < 2.0 * Math.PI; t += 0.001) {
         int X = 128 + (int)((256 + 64 * Math.cos(t * 3.0)) * Math.sin(t));
         int Y = 128 + (int)((256 + 64 * Math.sin(t * 3.0)) * Math.cos(t));
@@ -90,12 +51,11 @@ public class M extends JFrame {
         }
       }
     }
-    
-
-    
 
 
-    for(int spriteIndex = 0; spriteIndex < 10; spriteIndex++) {
+      int[] vehicleSpriteData = new int[64 * 32];
+      BufferedImage[] vehicleSprites = new BufferedImage[10];
+      for(int spriteIndex = 0; spriteIndex < 10; spriteIndex++) {
       vehicleSprites[spriteIndex] = new BufferedImage(
           64, 32, BufferedImage.TYPE_INT_ARGB_PRE);
       for(int y = 0, k = 0; y < 32; y++) {
@@ -156,12 +116,10 @@ public class M extends JFrame {
       vehicleSprites[spriteIndex].setRGB(
           0, 0, 64, 32, vehicleSpriteData, 0, 64);
     }
-    
 
 
-
-
-    for(int y = 0; y < 512; y++) {
+      byte[][] raceTrack = new byte[512][512];
+      for(int y = 0; y < 512; y++) {
       for(int x = 0; x < 512; x++) {
         raceTrack[y][x] = -1;
       }
@@ -194,28 +152,27 @@ public class M extends JFrame {
             for(int j = -1; j < 2; j++) {
               if (raceTrack[0x1FF & (i + y)][0x1FF & (j + x)] == -1) {
                 raceTrack[y][x] = 1;
+                break;
               }
             }
           }
         }
       }
     }
-    
 
 
-
-
-    for(int y = 0; y < 32; y++) {
+      int[][][] bitmaps = new int[6][32][32];
+      for(int y = 0; y < 32; y++) {
       for(int x = 0; x < 32; x++) {
         double dx = 15.5 - x;
         double dy = 15.5 - y;
-        double dist = Math.sqrt(dx * dx + dy * dy);
-        bitmaps[0][y][x] = 0xFF98A8A8;
+          bitmaps[0][y][x] = 0xFF98A8A8;
         bitmaps[4][y][x] = 0xFF90A0A0;
         bitmaps[5][y][x] 
             = (((x >> 3) + (y >> 3)) & 1) == 0 ? 0xFF000000 : 0xFFFFFFFF;
         bitmaps[2][y][x] = C(4.5, Math.abs(dy) / 16, 1);
-        if (dist < 16) {
+          double dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 16) {
           bitmaps[3][y][x] = 0xFFFFFFFF;
           bitmaps[1][y][x] = C(5.3, dist / 16, 1 + dist / 256);
         } else {
@@ -225,10 +182,12 @@ public class M extends JFrame {
     }
 
 
-
-
-
-    for(int y = 0; y < 192; y++) {
+      int[][][] projectionMap = new int[192][320][2];
+      final double GROUND_Y = 207;
+      final double VIEWER_Z = -128;
+      final double VIEWER_Y = 32;
+      final double VIEWER_X = 159.5;
+      for(int y = 0; y < 192; y++) {
       for(int x = 0; x < 320; x++) {
         double k = (GROUND_Y - VIEWER_Y) / (48 + y - VIEWER_Y);
         projectionMap[y][x][0] = (int)(k * (x - VIEWER_X) + VIEWER_X);
@@ -253,7 +212,21 @@ public class M extends JFrame {
     Font largeFont = getFont().deriveFont(100f);
     
     long nextFrameStart = System.nanoTime();
-    while(true) {
+      int paused = 1;
+      int rank = 0;
+      int hitWallCount = 0;
+      double sin = 0;
+      double cos = 0;
+      int wiresBitmapIndex = 0;
+      Color darkColor = new Color(0xA7000000, true);
+      Color powerColor = new Color(0xFABEF1);
+      double power = 0;
+      boolean playing = false;
+      boolean onPowerBar = false;
+      double[][] vehicleMetrics = new double[10][9];
+      double playerAngle = 0;
+      int[] screenBuffer = new int[320 * 240];
+      while(true) {
       do {
 
 
@@ -288,7 +261,8 @@ public class M extends JFrame {
         
           
           rank = 1;
-            rank += IntStream.range(1, 4).filter(i -> vehicleMetrics[0][1] < vehicleMetrics[i][1]).count();
+          long count = IntStream.range(1, 4).filter(i1 -> vehicleMetrics[0][1] < vehicleMetrics[i1][1]).count();
+          rank += count;
 
           
           if (hitWallCount > 0) {
@@ -328,13 +302,13 @@ public class M extends JFrame {
                 vehicleMetrics[i][6] += 0.2 + i * 0.2;
               }
               double targetZ = 11 + vehicleMetrics[i][1];
-              double tz = (targetZ / 32) % 512;
-              double targetX = 7984 + (i & 0x03) * 80;
+                double targetX = 7984 + (i & 0x03) * 80;
               if (i >= 4) {
                 targetX += 32;
               }
 
-              if (tz >= 128) {
+                double tz = (targetZ / 32) % 512;
+                if (tz >= 128) {
                 double angle = tz * Math.PI / 64;
                 targetX += ((8 * Math.cos(angle) + 24) * Math.sin(angle)) * 32;
               }
@@ -548,13 +522,13 @@ public class M extends JFrame {
             
       
       if (power <= 0 || (vehicleMetrics[0][1] >= 81984 && rank > 3)) {
-        
-        String failString = "FAIL";
-        imageGraphics.setFont(largeFont);
-        int width = imageGraphics.getFontMetrics().stringWidth(failString);
-        int x = (320 - width) / 2;
-        imageGraphics.setColor(darkColor);
-        imageGraphics.fillRect(x, 65, width + 5, 90);
+
+          imageGraphics.setFont(largeFont);
+          String failString = "FAIL";
+          int width = imageGraphics.getFontMetrics().stringWidth(failString);
+          imageGraphics.setColor(darkColor);
+          int x = (320 - width) / 2;
+          imageGraphics.fillRect(x, 65, width + 5, 90);
         imageGraphics.setColor(Color.RED);
         imageGraphics.drawString(failString, x, 145);
       } else if (vehicleMetrics[0][1] >= 81984) {
@@ -562,9 +536,9 @@ public class M extends JFrame {
         String rankString = Integer.toString(rank);
         imageGraphics.setFont(largeFont);
         int width = imageGraphics.getFontMetrics().stringWidth(rankString);
-        int x = (320 - width) / 2;
-        imageGraphics.setColor(darkColor);
-        imageGraphics.fillRect(x - 5, 65, width + 15, 90);
+          imageGraphics.setColor(darkColor);
+          int x = (320 - width) / 2;
+          imageGraphics.fillRect(x - 5, 65, width + 15, 90);
         imageGraphics.setColor((wiresBitmapIndex & 4) == 0 
             ? Color.WHITE : Color.GREEN);
         imageGraphics.drawString(rankString, x, 145);
@@ -592,13 +566,13 @@ public class M extends JFrame {
     }
   }
 
-  public int C(double angle, double light, double dark) {
+  public static int C(double angle, double light, double dark) {
     return (D(angle, light, dark) << 16)
         | (D(angle + 2 * Math.PI / 3, light, dark) << 8)
         | (D(angle - 2 * Math.PI / 3, light, dark));
   }
 
-  public int D(double angle, double light, double dark) {
+  public static int D(double angle, double light, double dark) {
     return (int)(255 * Math.pow((Math.cos(angle) + 1) / 2, light) / dark);
   }
 

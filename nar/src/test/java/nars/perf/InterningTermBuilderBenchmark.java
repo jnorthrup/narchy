@@ -47,7 +47,7 @@ public class InterningTermBuilderBenchmark {
     @Threads(1)
     @Warmup(iterations = 1)
     @Measurement(iterations = 4)
-    public void testInterning() {
+    public static void testInterning() {
 
         runTests(true, NARS::tmp,
                 NAL1Test.class,

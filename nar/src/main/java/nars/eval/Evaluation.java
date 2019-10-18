@@ -73,7 +73,7 @@ public class Evaluation extends Termerator {
 		}
 	}
 
-	protected Random random() {
+	protected static Random random() {
 		return ThreadLocalRandom.current();
 	}
 
@@ -92,7 +92,7 @@ public class Evaluation extends Termerator {
 		while (ci.hasNext()) {
 			boolean appliedAll = Arrays.stream(ci.next()).allMatch(cc -> cc.test(this));
 
-            if (appliedAll) {
+			if (appliedAll) {
 				if (tried == null) tried = new UnifiedSet<>(0);
 				if (!recurse(e, y, tried))
 					return false;
@@ -120,7 +120,7 @@ public class Evaluation extends Termerator {
 		return true;
 	}
 
-	private Iterable<Predicate<Termerator>> shuffle(Iterable<Predicate<Termerator>> t) {
+	private static Iterable<Predicate<Termerator>> shuffle(Iterable<Predicate<Termerator>> t) {
 		return ShuffledPermutations.shuffle(t, random());
 	}
 
@@ -130,7 +130,7 @@ public class Evaluation extends Termerator {
 	}
 
 
-	public boolean eval(Evaluator e, final Term x) {
+	public boolean eval(Evaluator e, Term x) {
 		return eval(e, x, x instanceof Compound ? e.clauses((Compound) x, this) : null);
 	}
 
@@ -149,7 +149,7 @@ public class Evaluation extends Termerator {
 		return eval(e, x, c);
 	}
 
-	private boolean eval(Evaluator e, final Term x, @Nullable ArrayHashSet<Term> clauses) {
+	private boolean eval(Evaluator e, Term x, @Nullable ArrayHashSet<Term> clauses) {
 
 		Term y = x;
 
@@ -176,7 +176,7 @@ public class Evaluation extends Termerator {
                         }
                     }
 
-                    final int vStart = now();
+                    int vStart = now();
 
 					Term b = ((Functor) a.sub(1)).apply(this, a.sub(0).subterms());
 

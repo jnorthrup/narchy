@@ -4,6 +4,7 @@ import jcog.Util;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -99,8 +100,8 @@ public enum OneDHaar {
                 float sampleAtKGAPSIZE = sample[KGAPSIZE];
                 float sampleAtKGAPSIZEPlusI = sample[KGAPSIZE + I];
                 float a = (sampleAtKGAPSIZE + sampleAtKGAPSIZEPlusI) / 2;
-                float c = (sampleAtKGAPSIZE - sampleAtKGAPSIZEPlusI) / 2;
                 sample[KGAPSIZE] = a;
+                float c = (sampleAtKGAPSIZE - sampleAtKGAPSIZEPlusI) / 2;
                 sample[KGAPSIZE + I] = c;
             }
             I = GAP_SIZE;
@@ -129,8 +130,8 @@ public enum OneDHaar {
                 double sampleAtKGAPSIZE = sample[KGAPSIZE];
                 double sampleAtKGAPSIZEPlusI = sample[KGAPSIZE + I];
                 double a = (sampleAtKGAPSIZE + sampleAtKGAPSIZEPlusI) / 2;
-                double c = (sampleAtKGAPSIZE - sampleAtKGAPSIZEPlusI) / 2;
                 sample[KGAPSIZE] = a;
+                double c = (sampleAtKGAPSIZE - sampleAtKGAPSIZEPlusI) / 2;
                 sample[KGAPSIZE + I] = c;
             }
             I = GAP_SIZE;
@@ -151,11 +152,9 @@ public enum OneDHaar {
             return;
         }
         NUM_SAMPLE_VALS /= (int) (Math.pow(2.0, sweep_number));
-        double c;
-        double a;
         for (int K = 0; K < NUM_SAMPLE_VALS; K++) {
-            a = (sample[GAP_SIZE * K] + sample[GAP_SIZE * K + I]) / 2;
-            c = (sample[GAP_SIZE * K] - sample[GAP_SIZE * K + I]) / 2;
+            double a = (sample[GAP_SIZE * K] + sample[GAP_SIZE * K + I]) / 2;
+            double c = (sample[GAP_SIZE * K] - sample[GAP_SIZE * K + I]) / 2;
             sample[GAP_SIZE * K] = a;
             sample[GAP_SIZE * K + I] = c;
         }
@@ -525,7 +524,14 @@ public enum OneDHaar {
     
     private static void thresholdSignal(double[] signal, double thresh) {
         int n = signal.length;
-        double[] thresholdedSignal = IntStream.range(0, n).mapToDouble(t -> Math.abs(signal[t]) > thresh ? signal[t] : 0).toArray();
+        double[] thresholdedSignal = new double[10];
+        int count = 0;
+        for (int t = 0; t < n; t++) {
+            double v = Math.abs(signal[t]) > thresh ? signal[t] : 0;
+            if (thresholdedSignal.length == count) thresholdedSignal = Arrays.copyOf(thresholdedSignal, count * 2);
+            thresholdedSignal[count++] = v;
+        }
+        thresholdedSignal = Arrays.copyOfRange(thresholdedSignal, 0, count);
 
         arraycopy(thresholdedSignal, 0, signal, 0, n);
         double[] o = null;
@@ -571,8 +577,8 @@ public enum OneDHaar {
                 
                 
                 double a0 = s + d / 2;
-                double a1 = s - d / 2;
                 restored_vals[2 * i] = a0;
+                double a1 = s - d / 2;
                 restored_vals[2 * i + 1] = a1;
             }
             
@@ -608,8 +614,8 @@ public enum OneDHaar {
                 
                 
                 double a0 = s + d / 2;
-                double a1 = s - d / 2;
                 restored_vals[2 * i] = a0;
+                double a1 = s - d / 2;
                 restored_vals[2 * i + 1] = a1;
             }
             
@@ -867,14 +873,14 @@ public enum OneDHaar {
 
         for (int L = 1; L <= n; L++) {
             if (binary[L] == '0') {
-                s_k = s_k + sample[J];
-                J = J - I;
+                s_k += sample[J];
+                J -= I;
             } else if (binary[L] == '1') {
-                s_k = s_k - sample[J];
-                J = J + I;
+                s_k -= sample[J];
+                J += I;
             }
             if (L < n) {
-                I = I / 2;
+                I /= 2;
             }
         }
         return s_k;

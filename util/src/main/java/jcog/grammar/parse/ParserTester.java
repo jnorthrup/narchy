@@ -71,7 +71,8 @@ public abstract class ParserTester {
 	 */
 	private static Set<Assembly> completeMatches(Set<Assembly> in ) {
 		Set<Assembly> out =null==in? new HashSet<>() :in;
-		return out.stream().filter(ParserTester::test).collect(Collectors.toSet());
+		Set<Assembly> set = out.stream().filter(ParserTester::test).collect(Collectors.toSet());
+		return set;
 	}
 
 	/*

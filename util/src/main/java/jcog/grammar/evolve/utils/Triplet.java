@@ -55,7 +55,7 @@ public class Triplet<F, S, T> {
         if (getClass() != obj.getClass())
             return false;
 
-        final Triplet<F, S, T> other = (Triplet<F, S, T>) obj;
+        Triplet<F, S, T> other = (Triplet<F, S, T>) obj;
         return Objects.equals(first, other.first) && Objects.equals(second, other.second) && Objects.equals(third, other.third);
     }
 

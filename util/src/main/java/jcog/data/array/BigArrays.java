@@ -356,9 +356,11 @@ public enum BigArrays {
 			}
 			m = med3( l, m, n, comp ); 
 		}
-		
 
-		long a = from, b = a, c = to - 1, d = c;
+
+        long c = to - 1;
+        long a = from;
+        long b = a, d = c;
 		
 		while ( true ) {
 			int comparison;
@@ -385,10 +387,10 @@ public enum BigArrays {
 		}
 
 
-        long n = from + len;
         long s = Math.min(a - from, b - a);
 		vecSwap( swapper, from, b - s, s );
-		s = Math.min( d - c, n - d - 1 );
+        long n = from + len;
+        s = Math.min( d - c, n - d - 1 );
 		vecSwap( swapper, b, n - s, s );
 
 		

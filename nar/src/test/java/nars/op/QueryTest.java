@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class QueryTest {
 
     @Test void FactPos() throws Narsese.NarseseException {
-        final NAR n = NARS.shell();
+        NAR n = NARS.shell();
         n.believe("f(x)");
 
         Set<Term> e = FactualEvaluator.queryAll($$("f(?what)"), n);
@@ -23,7 +23,7 @@ public class QueryTest {
     }
 
     @Test void FactsPos() throws Narsese.NarseseException {
-        final NAR n = NARS.shell();
+        NAR n = NARS.shell();
         n.believe("f(x)");
         n.believe("f(y)");
 
@@ -32,7 +32,7 @@ public class QueryTest {
     }
 
     @Test void FactNeg() throws Narsese.NarseseException {
-        final NAR n = NARS.shell();
+        NAR n = NARS.shell();
         n.believe("--f(x)");
 
         Set<Term> e = FactualEvaluator.queryAll($$("f(?what)"), n);
@@ -40,7 +40,7 @@ public class QueryTest {
     }
 
     @Test void FactImpliedByFact() throws Narsese.NarseseException {
-        final NAR n = NARS.shell();
+        NAR n = NARS.shell();
         n.believe("(f(x) ==> g(x))");
         n.believe("f(x)");
 
@@ -49,7 +49,7 @@ public class QueryTest {
     }
 
     @Test void FactImpliedByConj() throws Narsese.NarseseException {
-        final NAR n = NARS.shell();
+        NAR n = NARS.shell();
         n.believe("((f(#1) && f(#2)) ==> g(#1,#2))");
         n.believe("f(x)");
         n.believe("f(y)");

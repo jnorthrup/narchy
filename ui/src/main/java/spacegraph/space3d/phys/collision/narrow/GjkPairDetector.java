@@ -71,8 +71,7 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
     public void getClosestPoints(ClosestPointInput input, Result output, boolean swapResults) {
 		v3 tmp = new v3();
 
-		float distance = 0f;
-		v3 normalInB = new v3();
+        v3 normalInB = new v3();
 		normalInB.set(0f, 0f, 0f);
 		v3 pointOnA = new v3(), pointOnB = new v3();
 		Transform localTransA = new Transform(input.transformA);
@@ -94,19 +93,9 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
 			marginB = 0f;
 		}
 
-        int curIter = 0;
-		int gGjkMaxIter = 1000; 
-		cachedSeparatingAxis.set(0f, 1f, 0f);
+        cachedSeparatingAxis.set(0f, 1f, 0f);
 
-		boolean isValid = false;
-		boolean checkSimplex = false;
-		boolean checkPenetration = true;
-        int degenerateSimplex = 0;
-
-		lastUsedMethod = -1;
-
-        float squaredDistance = BulletGlobals.SIMD_INFINITY;
-        float delta = 0f;
+        lastUsedMethod = -1;
 
         float margin = marginA + marginB;
 
@@ -125,7 +114,13 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
         v3 tmpPointOnA = new v3(), tmpPointOnB = new v3();
         v3 tmpNormalInB = new v3();
 
-        for (;;) 
+        float squaredDistance = BulletGlobals.SIMD_INFINITY;
+        int degenerateSimplex = 0;
+        boolean checkPenetration = true;
+        boolean checkSimplex = false;
+        int gGjkMaxIter = 1000;
+        int curIter = 0;
+        for (float delta = 0f; ;)
         {
             seperatingAxisInA.negated(cachedSeparatingAxis);
             MatrixUtil.transposeTransform(seperatingAxisInA, seperatingAxisInA, input.transformA.basis);
@@ -225,6 +220,8 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
             }
         }
 
+        boolean isValid = false;
+        float distance = 0f;
         if (checkSimplex) {
             simplexSolver.compute_points(pointOnA, pointOnB);
             normalInB.sub(pointOnA, pointOnB);

@@ -46,7 +46,6 @@ class HttpResponse {
 
     public void prepare(HttpConnection con) {
         assert this.headers == null;
-        long fileLength = 0;
 
         StringBuilder headerString = new StringBuilder();
 
@@ -91,6 +90,7 @@ class HttpResponse {
             }
         }
 
+        long fileLength = 0;
         if (sendFile) {
             sendFile = false;
 

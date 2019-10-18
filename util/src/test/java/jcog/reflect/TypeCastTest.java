@@ -45,7 +45,9 @@ public class TypeCastTest {
         ExtendedCastGraph t = new ExtendedCastGraph();
 
         List<Function<String, Byte>> convertors = t.applicable(String.class, byte.class);
-        convertors.forEach(System.out::println);
+        for (Function<String, Byte> convertor : convertors) {
+            System.out.println(convertor);
+        }
 
         assertEquals((byte)9, (Object)convertors.get(0).apply("9"));
     }

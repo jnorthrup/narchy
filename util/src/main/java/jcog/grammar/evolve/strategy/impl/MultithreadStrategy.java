@@ -40,7 +40,7 @@ public class MultithreadStrategy extends AbstractExecutionStrategy {
     private volatile Thread workingThread = null;
     private volatile boolean terminated = false;
 
-    private int countThreads(Map<String, String> parameters) {
+    private static int countThreads(Map<String, String> parameters) {
         String paramValue = parameters.get(THREADS_KEY);
         int threads;
         try {

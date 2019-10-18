@@ -37,7 +37,7 @@ public class Anomalysis {
     }
 
     /** trainer provided meta-classification of the classification, for interactive or online training purposes */
-    public void feedback(double accuracy, double utility /* .... */) {
+    public static void feedback(double accuracy, double utility /* .... */) {
         throw new TODO();
     }
 
@@ -45,7 +45,10 @@ public class Anomalysis {
      * Weak and strong thresholds to support both one- and two-tailed tests.
      */
     public static class AnomalyThresholds {
-        private final double upperStrong, upperWeak, lowerStrong, lowerWeak;
+        private final double upperStrong;
+        private final double upperWeak;
+        private final double lowerStrong;
+        private final double lowerWeak;
 
         public AnomalyThresholds(double upperStrong, double upperWeak, double lowerStrong, double lowerWeak) {
             this.upperStrong = upperStrong;

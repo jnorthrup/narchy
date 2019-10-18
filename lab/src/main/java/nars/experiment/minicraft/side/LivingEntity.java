@@ -23,7 +23,7 @@ public abstract class LivingEntity extends Entity {
 
     protected static final float walkSpeed = .5f;
     protected static final float swimSpeed = .08f;
-    protected final float armLength = 4.5f;
+    protected static final float armLength = 4.5f;
     protected float moveDirection;
     protected long ticksAlive;
     protected int ticksUnderwater;

@@ -11,7 +11,8 @@ public class Buffer {
 
     final String bufferName;
 
-    private CursorPosition currentCursor = new CursorPosition(0, 0), mark = new CursorPosition(0, 0);
+    private CursorPosition currentCursor = new CursorPosition(0, 0);
+    private CursorPosition mark = new CursorPosition(0, 0);
 
     public final FastCoWList<BufferLine> lines = new FastCoWList<>(BufferLine[]::new);
 
@@ -32,7 +33,9 @@ public class Buffer {
 
             int l = lines.size();
             if (l > 0) {
-                lines.forEach(observer::removeLine);
+                for (BufferLine line : lines) {
+                    observer.removeLine(line);
+                }
                 lines.clear();
             }
 
@@ -54,7 +57,10 @@ public class Buffer {
     }
 
     @Deprecated private void update() {
-        IntStream.range(0, lines.size()).forEach(i -> lines.get(i).updatePosition(i));
+        int bound = lines.size();
+        for (int i = 0; i < bound; i++) {
+            lines.get(i).updatePosition(i);
+        }
         observer.update(this);
     }
 
@@ -130,13 +136,12 @@ public class Buffer {
 
 
             //List<BufferChar> nlc = nextLine.getChars();
-            final int[] k = {0};
-            nextLineChars.forEach(c -> {
-                //nlc.add(c);
-                //observer.moveChar(currentLine, nextLine, c);
+            int[] k = {0};
+            //nlc.add(c);
+            //observer.moveChar(currentLine, nextLine, c);
+            for (BufferChar c : nextLineChars) {
                 nextLine.insertChar(k[0]++, c);
-
-            });
+            }
 
             nextLine.update();
 
@@ -229,11 +234,11 @@ public class Buffer {
                         BufferLine currentLine = currentLine();
                         BufferLine removedLine = lines.remove(currentCursor.getRow() + 1);
                         currentLine.join(removedLine);
-                        removedLine.getChars().forEach(c -> {
-                            //TODO fix where characters are appended here. to not use moveChar() then remove that method
-                            //see splitReturn() for similarity
+                        //TODO fix where characters are appended here. to not use moveChar() then remove that method
+                        //see splitReturn() for similarity
+                        for (BufferChar c : removedLine.getChars()) {
                             observer.moveChar(removedLine, currentLine, c);
-                        });
+                        }
                         observer.removeLine(removedLine);
                     }
                 }

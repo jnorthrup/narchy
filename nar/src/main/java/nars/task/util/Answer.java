@@ -39,7 +39,8 @@ public final class Answer implements Timed, Predicate<Task> {
 
     public final RankedN<Task> tasks;
 
-    public long start = ETERNAL, end = ETERNAL;
+    public long start = ETERNAL;
+    public long end = ETERNAL;
 
     public final Predicate<Task> filter;
 
@@ -324,7 +325,7 @@ public final class Answer implements Timed, Predicate<Task> {
 //        } else {
 //            s = e = TIMELESS;
 //        }
-        return nar.newProjection(
+        return NAL.newProjection(
             s,e
             //start, end
             //TIMELESS, TIMELESS //auto

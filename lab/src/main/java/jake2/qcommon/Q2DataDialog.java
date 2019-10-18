@@ -115,7 +115,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         choosePanel.add(cancelButton, gridBagConstraints);
 
         exitButton.setText("Exit");
-        exitButton.addActionListener(this::exitButtonActionPerformed);
+        exitButton.addActionListener(Q2DataDialog::exitButtonActionPerformed);
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 1;
@@ -159,7 +159,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         showNotFoundPanel();
     }
 
-    private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private static void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {
         System.exit(1);
     }
 
@@ -193,7 +193,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
 
     }
 
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {
+    private static void formWindowClosing(java.awt.event.WindowEvent evt) {
 
         System.exit(1);
 
@@ -379,10 +379,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.fill = GridBagConstraints.NONE;
             constraints.anchor = GridBagConstraints.SOUTHWEST;
             JButton exit = new JButton("Exit");
-            exit.addActionListener(e -> {
-                
-                System.exit(0);
-            });
+            exit.addActionListener(e -> System.exit(0));
 
 
 
@@ -620,10 +617,6 @@ public class Q2DataDialog extends javax.swing.JDialog {
                 running = true;
             }
 
-            InputStream in = null;
-            OutputStream out = null;
-            File outFile = null;
-
             label.setText("downloading...");
 
             File dir = null;
@@ -642,6 +635,9 @@ public class Q2DataDialog extends javax.swing.JDialog {
                 return;
             }
 
+            File outFile = null;
+            OutputStream out = null;
+            InputStream in = null;
             try {
                 URL url = new URL(mirror);
                 URLConnection conn = url.openConnection();

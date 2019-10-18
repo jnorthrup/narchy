@@ -38,10 +38,7 @@ import org.roaringbitmap.RoaringBitmap;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
@@ -336,7 +333,7 @@ public enum $ { ;
     }
 
     public static <X> Term[] terms(X[] map, Function<X, Term> toTerm) {
-        return Stream.of(map).map(toTerm).toArray(Term[]::new);
+        return Arrays.stream(map).map(toTerm::apply).toArray(Term[]::new);
     }
 
     private static Term[] array(Collection<? extends Term> t) {
@@ -551,29 +548,35 @@ public enum $ { ;
     }
 
     public static Term the(Number n) {
+        Term result;
         if (n instanceof Integer) {
-            return Int.the((Integer) n);
+            result = Int.the((Integer) n);
         } else if (n instanceof Long) {
-            return Atomic.the(Long.toString((Long) n));
+            result = Atomic.the(Long.toString((Long) n));
         } else if (n instanceof Short) {
-            return Int.the((Short) n);
+            result = Int.the((Short) n);
         } else if (n instanceof Byte) {
-            return Int.the((Byte) n);
+            result = Int.the((Byte) n);
         } else if (n instanceof Float) {
             float d = n.floatValue();
             int id = (int) d;
-            if (d == d && Util.equals(d, id))
-                return Int.the(id);
+            if (d == d && Util.equals(d, id)) {
+                result = Int.the(id);
+            } else {
+                result = Atomic.the(n.toString());
+            }
 
-            return Atomic.the(n.toString());
         } else {
             double d = n.doubleValue();
             int id = (int) d;
-            if (d == d && Util.equals(d, id))
-                return Int.the(id);
+            if (d == d && Util.equals(d, id)) {
+                result = Int.the(id);
+            } else {
+                result = Atomic.the(n.toString());
+            }
 
-            return Atomic.the(n.toString());
         }
+        return result;
     }
 
     public static <X> List<X> newArrayList() {
@@ -593,7 +596,7 @@ public enum $ { ;
 
     public static int[] radix(int x, int radix, int maxValue) {
         assert(x >= 0);
-        x = x % maxValue; //auto-wraparound
+        x %= maxValue; //auto-wraparound
 
         int decimals = (int) Math.ceil(Math.log(maxValue)/Math.log(radix));
         int[] y = new int[decimals];
@@ -760,7 +763,8 @@ public enum $ { ;
             }
             case 3: {
                 Term a = t[0], b = t[1], c = t[2];
-                if (Stream.of(a, b, c).allMatch(term -> Intrin.intrin(term.unneg())))
+                boolean result = Stream.of(a, b, c).allMatch(term -> Intrin.intrin(term.unneg()));
+                if (result)
                     return new IntrinSubterms(a, b, c);
                 break;
             }
@@ -778,12 +782,14 @@ public enum $ { ;
 
 
     public static Term[] $(String[] s) {
-        return Util.map((String x) -> {
+        return Util.map(x -> {
+            Term result;
             try {
-                return $.$(x);
+                result = $.$(x);
             } catch (Narsese.NarseseException e) {
                 throw new RuntimeException(e);
             }
+            return result;
         }, Term[]::new, s);
     }
 

@@ -58,13 +58,13 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
 
         bag.commit(bag.forget(this.forgetRate.floatValue()));
 
-        src.forEach(xx -> {
+        for (X xx : src) {
             if (include(xx)) {
                 float pri = pri(xx);
-                if (pri==pri)
-                    bag.putAsync(new PLink<>(xx, pri*preAmp ));
+                if (pri == pri)
+                    bag.putAsync(new PLink<>(xx, pri * preAmp));
             }
-        });
+        }
 
         return true;
     }
@@ -87,7 +87,9 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
 
     @Override
     public final void forEach(Consumer<? super PriReference<X>> action) {
-            bag.forEach(action);
+        for (PriReference<X> xPriReference : bag) {
+            action.accept(xPriReference);
+        }
     }
 
     public void clear() {

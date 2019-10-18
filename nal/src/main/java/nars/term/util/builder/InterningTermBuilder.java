@@ -54,7 +54,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private final boolean deep;
     protected final int volInternedMax;
 
-    final Function<InternedSubterms, Subterms> subterms, anonSubterms;
+    final Function<InternedSubterms, Subterms> subterms;
+    final Function<InternedSubterms, Subterms> anonSubterms;
     final Function<InternedCompoundByComponents, Term>[] terms = new Function[ops.length];
 
     private final String id;
@@ -92,8 +93,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
             Op o = ops[i];
             if (o.atomic || (/*!internNegs && */o == NEG) || (o == FRAG)) continue;
 
-            int s = cacheSizePerOp;
-
             //TODO use multiple PROD slices to decrease contention
 
             Function<Intermed.InternedCompoundByComponents, Term> c;
@@ -103,6 +102,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             } else if (o.statement) {
                 c = statements;
             } else {
+                int s = cacheSizePerOp;
                 c = newOpCache(o.str,
                         x -> newCompound(ops[x.op], x.dt, x.subs(), x.key), s);
             }

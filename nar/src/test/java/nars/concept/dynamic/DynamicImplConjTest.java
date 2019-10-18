@@ -49,7 +49,7 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
                             XA = YA = outer;
                         }
                     } else if (outer == DTERNAL) {
-                        todo.add(inner + " " + outer); //throw new TODO();
+                        todo.add(inner + " " + DTERNAL); //throw new TODO();
                         continue;
                         //                        XA = XY = inner;
                         //                        YA = DTERNAL;
@@ -107,7 +107,9 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
         }
 
         System.err.println("TODO:");
-        todo.forEach(System.err::println);
+        for (String s : todo) {
+            System.err.println(s);
+        }
 
         //assert (todo.isEmpty());
 

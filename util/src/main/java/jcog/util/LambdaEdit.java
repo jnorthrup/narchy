@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  */
 public class LambdaEdit {
     static SerializedLambda getSerializedLambda(Serializable lambda) throws Exception {
-        final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
+        Method method = lambda.getClass().getDeclaredMethod("writeReplace");
         method.setAccessible(true);
         return (SerializedLambda) method.invoke(lambda);
     }
@@ -29,13 +29,13 @@ public class LambdaEdit {
     }
 
     static byte[] classByteCode(String n) {
-        String name =  "./jcog/util/" + n.replace('.', '/') + ".class";
         try {
             File[] l = new File(LambdaEdit.class.getResource(".").toURI()).listFiles();
             System.out.println(Arrays.toString(l));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+        String name = "./jcog/util/" + n.replace('.', '/') + ".class";
         try (InputStream input = LambdaEdit.class.getResourceAsStream(name)) {
             if (input == null)
                 return null;
@@ -59,9 +59,8 @@ public class LambdaEdit {
     final Supplier<Integer> MY_LAMBDA = (Supplier<Integer>&Serializable)() -> 1;
 
     {
-        SerializedLambda sl = null;
         try {
-            sl = getSerializedLambda((Serializable) MY_LAMBDA);
+            SerializedLambda sl = getSerializedLambda((Serializable) MY_LAMBDA);
             byte[] bc1 = classByteCode(sl.getImplMethodName());
             byte[] bc2 = classByteCode(sl.getImplClass());
 

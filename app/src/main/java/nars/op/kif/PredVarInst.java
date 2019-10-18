@@ -38,12 +38,12 @@ public class PredVarInst {
      * @return add explicit type condition into types
      */
     private static HashMap<String,HashSet<String>> addExplicitTypes(KB kb, Formula input, HashMap<String,HashSet<String>> types) {
-        
-        HashMap<String,HashSet<String>> result = new HashMap<>();
+
         FormulaPreprocessor fp = new FormulaPreprocessor();
     	HashMap<String,HashSet<String>> explicit = FormulaPreprocessor.findExplicitTypesInAntecedent(kb,input);
         if (explicit == null || explicit.keySet() == null || explicit.keySet().isEmpty())
             return types;
+        HashMap<String, HashSet<String>> result = new HashMap<>();
         for (String var : explicit.keySet()) {
             HashSet<String> hs = new HashSet<>();
             if (types.containsKey(var))
@@ -64,11 +64,11 @@ public class PredVarInst {
      *         return a list of instantiated formulas if the predicate variables are instantiated;
      */
     public static Set<Formula> instantiatePredVars(Formula input, KB kb) {
-        
-        Set<Formula> result = new HashSet<>();
+
         HashSet<String> predVars = gatherPredVars(kb,input);
         if (predVars == null )
             return null;
+        Set<Formula> result = new HashSet<>();
         if (predVars.isEmpty())
             return result;
         
@@ -109,8 +109,7 @@ public class PredVarInst {
             return null;
         String rel = f.getArgument(0);
         ArrayList<String> l = f.complexArgumentsToArrayList(1);
-        int val = 0;
-        
+
         if (Formula.listP(rel)) {
             Formula p = new Formula();
             p.read(rel);
@@ -126,6 +125,7 @@ public class PredVarInst {
             Integer intval = null;
             if (kb.kbCache != null && kb.kbCache.valences != null)
                 intval= kb.kbCache.valences.get(rel);
+            int val = 0;
             if (intval != null)
                 val = intval;
             else {
@@ -428,7 +428,7 @@ public class PredVarInst {
         HashSet<String> predVars = gatherPredVars(kb,f);
         FormulaPreprocessor fp = new FormulaPreprocessor();
         HashMap<String,HashSet<String>> typeMap = FormulaPreprocessor.computeVariableTypes(f, kb);
-        HashMap<String,HashSet<String>> result = predVars.stream().filter(typeMap::containsKey).collect(Collectors.toMap(var -> var, typeMap::get, (a, b) -> b, HashMap::new));
+        HashMap<String, HashSet<String>> result = predVars.stream().filter(typeMap::containsKey).collect(Collectors.toMap(var -> var, typeMap::get, (a, b) -> b, HashMap::new));
         return result;
     }
     

@@ -88,9 +88,6 @@ public class Orders {
     }
 
     private static int inPresent(RdpPacket_Localised data, int flags, int size) {
-        int present = 0;
-        int bits = 0;
-        int i = 0;
 
         if ((flags & RDP_ORDER_SMALL) != 0) {
             size--;
@@ -105,6 +102,9 @@ public class Orders {
             }
         }
 
+        int i = 0;
+        int bits = 0;
+        int present = 0;
         for (i = 0; i < size; i++) {
             bits = data.get8();
             present |= (bits << (i * 8));
@@ -133,12 +133,12 @@ public class Orders {
         int width = data.get8();
         int height = data.get8();
         int bpp = data.get8();
-        int Bpp = (bpp + 7) / 8;
         int bufsize = data.getLittleEndian16();
         int cache_idx = data.getLittleEndian16();
         int pdata = data.getPosition();
         data.incrementPosition(bufsize);
 
+        int Bpp = (bpp + 7) / 8;
         byte[] inverted = new byte[width * height * Bpp];
         int pinverted = (height - 1) * (width * Bpp);
         for (int y = 0; y < height; y++) {
@@ -162,18 +162,17 @@ public class Orders {
     private static void processColorCache(RdpPacket_Localised data)
             throws RdesktopException {
 
-        int j = 0;
-
         int cache_id = data.get8();
         int n_colors = data.getLittleEndian16();
 
 
         byte[] palette = new byte[n_colors * 4];
-        byte[] red = new byte[n_colors];
-        byte[] green = new byte[n_colors];
-        byte[] blue = new byte[n_colors];
         data.copyToByteArray(palette, 0, data.getPosition(), palette.length);
         data.incrementPosition(palette.length);
+        byte[] blue = new byte[n_colors];
+        byte[] green = new byte[n_colors];
+        byte[] red = new byte[n_colors];
+        int j = 0;
         for (int i = 0; i < n_colors; i++) {
             blue[i] = palette[j];
             green[i] = palette[j + 1];
@@ -194,17 +193,16 @@ public class Orders {
      */
     private static void processBitmapCache(RdpPacket_Localised data)
             throws RdesktopException {
-        int bufsize, pad2, row_size, final_size, size;
+        int pad2, row_size, final_size, size;
 
-        bufsize = pad2 = row_size = final_size = size = 0;
+        int bufsize = pad2 = row_size = final_size = size = 0;
 
         int cache_id = data.get8();
         int pad1 = data.get8();
         int width = data.get8();
         int height = data.get8();
         int bpp = data.get8();
-        int Bpp = (bpp + 7) / 8;
-        bufsize = data.getLittleEndian16(); 
+        bufsize = data.getLittleEndian16();
         int cache_idx = data.getLittleEndian16();
 
         /*
@@ -235,11 +233,8 @@ public class Orders {
             
         }
 
-        
-        
-        
-        
 
+        int Bpp = (bpp + 7) / 8;
         if (Bpp == 1) {
             byte[] pixel = Bitmap.decompress(width, height, size, data, 1);
             cache.putBitmap(cache_id, cache_idx, new Bitmap(Bitmap
@@ -263,20 +258,18 @@ public class Orders {
      */
     private static void process_bmpcache2(RdpPacket_Localised data, int flags,
                                           boolean compressed) throws RdesktopException, IOException {
-        Bitmap bitmap;
-        int y;
-        int cache_idx_low, width, height, Bpp;
-        int bufsize;
 
-        byte[] bitmap_id = new byte[8]; /* prevent compiler warning */
-        int cache_id = flags & ID_MASK;
-        Bpp = ((flags & MODE_MASK) >> MODE_SHIFT) - 2;
+        int Bpp = ((flags & MODE_MASK) >> MODE_SHIFT) - 2;
         Bpp = Options.Bpp;
+        /* prevent compiler warning */
+        byte[] bitmap_id = new byte[8];
         if ((flags & PERSIST) != 0) {
             bitmap_id = new byte[8];
             data.copyToByteArray(bitmap_id, 0, data.getPosition(), 8);
         }
 
+        int height;
+        int width;
         if ((flags & SQUARE) != 0) {
             width = data.get8(); 
             height = width;
@@ -285,22 +278,23 @@ public class Orders {
             height = data.get8(); 
         }
 
-        bufsize = data.getBigEndian16(); 
+        int bufsize = data.getBigEndian16();
         bufsize &= BUFSIZE_MASK;
         int cache_idx = data.get8();
 
         if ((cache_idx & LONG_FORMAT) != 0) {
-            cache_idx_low = data.get8(); 
+            int cache_idx_low = data.get8();
             cache_idx = ((cache_idx ^ LONG_FORMAT) << 8) + cache_idx_low;
         }
 
-        
 
+        int cache_id = flags & ID_MASK;
         logger.info("BMPCACHE2(compr={},flags={},cx={},cy={},id={},idx={},Bpp={},bs={}" + ')', compressed, flags, width, height, cache_id, cache_idx, Bpp, bufsize);
 
         byte[] bmpdata = new byte[width * height * Bpp];
         int[] bmpdataInt = new int[width * height];
 
+        Bitmap bitmap;
         if (compressed) {
             if (Bpp == 1)
                 bmpdataInt = Bitmap.convertImage(Bitmap.decompress(width,
@@ -311,7 +305,7 @@ public class Orders {
 
             bitmap = new Bitmap(bmpdataInt, width, height, 0, 0);
         } else {
-            for (y = 0; y < height; y++)
+            for (int y = 0; y < height; y++)
                 data.copyToByteArray(bmpdata, y * (width * Bpp),
                         (height - y - 1) * (width * Bpp), width * Bpp); 
             
@@ -455,10 +449,9 @@ public class Orders {
      */
     private static int setCoordinate(RdpPacket_Localised data, int coordinate,
                                      boolean delta) {
-        byte change = 0;
 
         if (delta) {
-            change = (byte) data.get8();
+            byte change = (byte) data.get8();
             coordinate += change;
             return coordinate;
         } else {
@@ -549,7 +542,6 @@ public class Orders {
         
         int order_flags = 0, order_type = 0;
         int size = 0, processed = 0;
-        boolean delta;
 
         while (processed < n_orders) {
 
@@ -594,7 +586,7 @@ public class Orders {
                     surface.setClip(os.getBounds());
                 }
 
-                delta = ((order_flags & RDP_ORDER_DELTA) != 0);
+                boolean delta = ((order_flags & RDP_ORDER_DELTA) != 0);
 
                 switch (os.getOrderType()) {
                     case RDP_ORDER_DESTBLT:

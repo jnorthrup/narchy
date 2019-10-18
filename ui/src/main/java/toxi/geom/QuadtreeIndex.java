@@ -54,7 +54,10 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
     }
 
     private final QuadtreeIndex parent;
-    private QuadtreeIndex nw, ne, sw, se;
+    private QuadtreeIndex nw;
+    private QuadtreeIndex ne;
+    private QuadtreeIndex sw;
+    private QuadtreeIndex se;
 
     private Type type;
 
@@ -238,7 +241,11 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
             if (type == Type.LEAF) {
                 if (values!=null) {
                     float rsquare = radius * radius;
-                    values.stream().filter(value -> value.distanceToSquared(p) < rsquare).forEach(results);
+                    for (V value : values) {
+                        if (value.distanceToSquared(p) < rsquare) {
+                            results.accept(value);
+                        }
+                    }
                 }
             } else if (type == Type.BRANCH) {
                 if (nw !=null) nw.itemsWithinRadius(p, radius, results);
@@ -336,7 +343,9 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
 //                        throw new WTF();
 //                }
 //            });
-            oldPoints.forEach(this::index);
+            for (V oldPoint : oldPoints) {
+                index(oldPoint);
+            }
         }
 
         if (nw!=null) nw.forEach(this::index);
@@ -346,8 +355,11 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
     }
 
     public void forEach(Consumer<V> v) {
-        if (values!=null)
-            values.forEach(v);
+        if (values!=null) {
+            for (V value : values) {
+                v.accept(value);
+            }
+        }
         if (nw !=null)
             nw.forEach(v);
         if (ne !=null)

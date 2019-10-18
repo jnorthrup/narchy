@@ -122,7 +122,8 @@ public class Tetris extends GameX {
         if (TETRIS_USE_DENSITY) {
             reward("density", 1, () -> {
 
-                int filled = (int) Arrays.stream(state.grid).filter(s -> s > 0).count();
+                long count = Arrays.stream(state.grid).filter(s -> s > 0).count();
+                int filled = (int) count;
 
                 int r = state.rowsFilled;
                 return r > 0 ? ((float) filled) / (r * state.width) : 0;
@@ -137,7 +138,7 @@ public class Tetris extends GameX {
         });
 
 
-        final int[] lastRowsFilled = {0};
+        int[] lastRowsFilled = {0};
         SimpleReward lower = reward("lower", 1, () -> {
             int rowsFilled = state.rowsFilled;
             int deltaRows = rowsFilled - lastRowsFilled[0];
@@ -247,7 +248,8 @@ public class Tetris extends GameX {
     }
 
     private float density() {
-        var filled = (int) Arrays.stream(state.grid).filter(s -> s > 0).count();
+        long count = Arrays.stream(state.grid).filter(s -> s > 0).count();
+        var filled = (int) count;
 
         var r = state.rowsFilled;
         return r > 0 ? (float) filled / (r * state.width) : 0;
@@ -533,11 +535,11 @@ public class Tetris extends GameX {
          */
         private boolean inBounds(int checkX, int checkY, int checkOrientation) {
             boolean result = false;
-            boolean finished = false;
             try {
                 var thePiece = possibleBlocks.get(currentBlockId).thePiece[checkOrientation];
 
-                for (var y = 0;!finished&& y < thePiece[0].length; ++y) {
+                boolean finished = false;
+                for (var y = 0; !finished&& y < thePiece[0].length; ++y) {
                     int i1 = checkY + y;
                     boolean b = i1 >= 0 && i1 < height;
                     for (var x = 0; !finished&&x < thePiece.length; ++x) {
@@ -668,7 +670,8 @@ public class Tetris extends GameX {
          * @return
          */
         public boolean isRow(int y, boolean filledOrClear) {
-            return IntStream.range(0, width).mapToDouble(x -> grid[i(x, y)]).noneMatch(s -> filledOrClear ? s == 0 : s != 0);
+            int bound = width;
+            return IntStream.range(0, bound).mapToDouble(x -> grid[i(x, y)]).noneMatch(s -> filledOrClear ? s == 0 : s != 0);
         }
 
         /**

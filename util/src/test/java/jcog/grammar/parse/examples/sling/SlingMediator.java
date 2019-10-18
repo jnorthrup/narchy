@@ -110,7 +110,7 @@ public class SlingMediator implements ActionListener, ChangeListener, Runnable {
 	 * This method returns a composite command that it composes by popping
 	 * individual commands from an assembly.
 	 */
-    private CommandSequence command(Assembly out) {
+    private static CommandSequence command(Assembly out) {
 		Vector statements = new Vector();
 		while (!out.getStack().isEmpty()) {
 			statements.addElement(out.pop());

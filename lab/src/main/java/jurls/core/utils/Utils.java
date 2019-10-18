@@ -23,7 +23,8 @@ public class Utils {
     }
 
     public static String makeIndent(int n) {
-        String sb = IntStream.range(0, n).mapToObj(i -> " ").collect(Collectors.joining());
+        String result = IntStream.range(0, n).mapToObj(i -> " ").collect(Collectors.joining());
+        String sb = result;
         return sb;
     }
 

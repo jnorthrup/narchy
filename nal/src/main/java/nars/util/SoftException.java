@@ -41,8 +41,11 @@ public class SoftException extends RuntimeException {
 
     @Override
     public void printStackTrace() {
-        if (stack!=null)
-            Stream.of(stack).forEach(System.err::println);
+        if (stack!=null) {
+            for (StackWalker.StackFrame stackFrame : stack) {
+                System.err.println(stackFrame);
+            }
+        }
         super.printStackTrace();
     }
 }

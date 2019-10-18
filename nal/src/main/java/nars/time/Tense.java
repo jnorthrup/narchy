@@ -301,7 +301,7 @@ public enum Tense {
 
     public static void assertDithered(Term t, int d) {
         if (d > 1 && t.hasAny(Op.Temporal)) {
-            t.recurseTerms((Term z) -> z.hasAny(Op.Temporal), xx -> {
+            t.recurseTerms(z -> z.hasAny(Op.Temporal), xx -> {
                 int zdt = xx.dt();
                 if (!Tense.dtSpecial(zdt)) {
                     if (zdt != Tense.dither(zdt, d))

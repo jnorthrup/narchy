@@ -22,12 +22,14 @@ class GraphVertex {
     /**
      * Mnohosteny, ktorych je dana hrana sucastou.
      */
-    public Polygon first, second;
+    public Polygon first;
+    public Polygon second;
 
     /**
      * Susedny vrchol cesty ohranicenia.
      */
-    public GraphVertex next, prev;
+    public GraphVertex next;
+    public GraphVertex prev;
 
     /**
      * Pomocna premenna sluziaca na vypocet.

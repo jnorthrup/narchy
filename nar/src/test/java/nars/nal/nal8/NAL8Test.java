@@ -771,7 +771,6 @@ public class NAL8Test extends NALTest {
 
     private void testDecomposeGoalPredicateImplSubjPred(int dt, String sj) {
 
-        int start = 1;
         int when = 6;
 
         int goalAt = //Math.max(when,
@@ -780,6 +779,7 @@ public class NAL8Test extends NALTest {
         String[] subjPred = sj.split("\\/");
         assertEquals(2, subjPred.length);
 
+        int start = 1;
         test
                 .inputAt(start, '(' + subjPred[0] + " ==>" + ((dt >= 0 ? "+" : "-") + Math.abs(dt)) + ' ' + subjPred[1] + "). |")
                 .inputAt(when, "b! |")
@@ -1032,9 +1032,9 @@ public class NAL8Test extends NALTest {
                         (a == 0 && b == 10)
                 )
                 .mustNotOutput(cycles, "y", GOAL, 0f, 1, 0f, 1f,
-                        (long s, long e) -> (s == e))
+                        (s, e) -> (s == e))
                 .mustNotOutput(cycles, "x", GOAL, (t) -> true /* shouldnt drop first event */)
-                .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0f, 1f, (long s, long e) -> (e - s != 10))
+                .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0f, 1f, (s, e) -> (e - s != 10))
         ;
 
 

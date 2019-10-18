@@ -56,7 +56,7 @@ public class CachedPriorityQueue<X> extends AbstractQueue<X> {
 		switch (queue.size()) {
 			case 0: return Util.emptyIterator;
 			case 1: return Iterators.singletonIterator(queue.peek().id);
-			default: return Iterators.transform(queue.iterator(), (NLink<X> x)-> x.id);
+			default: return Iterators.transform(queue.iterator(), x -> x.id);
 		}
 	}
 

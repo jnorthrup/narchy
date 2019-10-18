@@ -8,6 +8,8 @@ import javax.sound.sampled.SourceDataLine;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class P extends GamePanel {
@@ -171,22 +173,20 @@ public class P extends GamePanel {
 				
 				
 				
-				final AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, SAMPLE_RATE, 16, 1, 2, SAMPLE_RATE, false);
-				final SourceDataLine line = AudioSystem.getSourceDataLine(format);
+				AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, SAMPLE_RATE, 16, 1, 2, SAMPLE_RATE, false);
+				SourceDataLine line = AudioSystem.getSourceDataLine(format);
 				line.open(format, BUFFER_SIZE);
 				line.start();
 
-				final byte[] out = new byte[BUFFER_SIZE];
-				final int[][] delay = new int[NUM_TRACKS][DELAY_SIZE];
-				int index;
+                 int index;
 				int sequence = 0;
 
 				
 				
 				
-				final int[][] song = new int[16][32];
+				int[][] song = new int[16][32];
 				for (index = 0; index < song_data.length(); index++) {
-					final int j = (2 * index) & 0x1f;
+					int j = (2 * index) & 0x1f;
 					song[index >> 4][j + 0] = (byte) (song_data.charAt(index) >> 8);
 					song[index >> 4][j + 1] = (byte) (song_data.charAt(index) & 0xff);
 				}
@@ -194,7 +194,7 @@ public class P extends GamePanel {
 
 
 				
-				final int[][] wave = new int[3][WAVE_BUFFER];
+				int[][] wave = new int[3][WAVE_BUFFER];
 				for (index = 0; index < WAVE_BUFFER; index++) {
 					
 					wave[0][index] = (int) (FP_S1 * (float) Math.sin(index * (2f * PI / WAVE_BUFFER)));
@@ -202,7 +202,9 @@ public class P extends GamePanel {
 					wave[2][index] = (int) (FP_U1 * (float) Math.random()) - FP_S1;
 					
 				}
-				new Thread(new Runnable() {
+                 int[][] delay = new int[NUM_TRACKS][DELAY_SIZE];
+                 byte[] out = new byte[BUFFER_SIZE];
+                 new Thread(new Runnable() {
 					int sequence;
 
 					@Override
@@ -210,12 +212,12 @@ public class P extends GamePanel {
 
 						while(true) {
 							for (int track = 0; track < NUM_TRACKS; track++) {
-								final int[] ins = song[INSTRUMENT_OFFSET + track];
+								int[] ins = song[INSTRUMENT_OFFSET + track];
 								ins[ENV_LEVEL + 1] = FP_U1;
 
 								
-								final int pattern = song[SEQUENCE_OFFSET + (track >> 1)][((track & 1) * SEQ_LENGTH) + (sequence >> 5)];
-								final int note = song[PATTERN_OFFSET + pattern][sequence & 0x1f];
+								int pattern = song[SEQUENCE_OFFSET + (track >> 1)][((track & 1) * SEQ_LENGTH) + (sequence >> 5)];
+								int note = song[PATTERN_OFFSET + pattern][sequence & 0x1f];
 
 								if (note == 1 && ins[ENV_STAGE] < (2 << FP)) {
 									ins[ENV_STAGE] = (2 << FP);
@@ -231,14 +233,14 @@ public class P extends GamePanel {
 										out[offset + 1] = 0;
 									}
 									
-									final int stage = ins[ENV_STAGE] >> FP;
+									int stage = ins[ENV_STAGE] >> FP;
 									ins[ENV_STAGE] += ins[ENV_RATE + stage];
 
 									
 									ins[OSC1_PHASE] += ins[OSC1_RATE];
 
 									int value = wave[ins[OSC_TYPE]][ins[OSC1_PHASE] & WAVE_BUFFER_MASK];
-									final int env = ins[ENV_LEVEL + stage] + (int) ((long) (ins[ENV_LEVEL + stage + 1] - ins[ENV_LEVEL + stage]) * (ins[ENV_STAGE] & FP_U1) >> FP);
+									int env = ins[ENV_LEVEL + stage] + (int) ((long) (ins[ENV_LEVEL + stage + 1] - ins[ENV_LEVEL + stage]) * (ins[ENV_STAGE] & FP_U1) >> FP);
 									value = (((value * env) >> (FP + 2)) * ins[VOLUME]) >> 6;
 
 									
@@ -263,49 +265,44 @@ public class P extends GamePanel {
 			}
 
 			
-			final BufferedImage screen = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-			final Graphics g = screen.getGraphics();
-			final Graphics appletGraphics = getGraphics();
+			BufferedImage screen = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+			Graphics g = screen.getGraphics();
+			Graphics appletGraphics = getGraphics();
 
-			final Font smallFont = g.getFont();
-			final Font bigFont = smallFont.deriveFont(0, 50);
+			Font smallFont = g.getFont();
 
-			
-			final float[] player = new float[9];
-			final float[] intersect = new float[32];
 
-			final int[] faceX = new int[32];
-			final int[] faceY = new int[32];
+            int bound = str_colors.length() >> 1;
+			Color[] color = IntStream.range(0, bound).mapToObj(i1 -> new Color((str_colors.charAt(2 * i1 + 0) << 16) + str_colors.charAt(2 * i1 + 1))).toArray(Color[]::new);
 
-			float[][] solids = null;
-			float[] level = null;
-			
-
-			int portals = 0; 
-			int levelCount = 0;
-			int gameState = 0;
-			int animation = 0;
-
-			
-			final Color[] color = IntStream.range(0, str_colors.length() >> 1).mapToObj(i -> new Color((str_colors.charAt(2 * i + 0) << 16) + str_colors.charAt(2 * i + 1))).toArray(Color[]::new);
-
-            int i, k;
-			int j = data.length();
-			final int[] level_data = new int[j * 2];
+            int i;
+            int j = data.length();
+			int[] level_data = new int[j * 2];
 			for (i = 0; i < j; i++) {
 				level_data[2 * i + 0] = (data.charAt(i) >> 8);
 				level_data[2 * i + 1] = (data.charAt(i)) & 0xff;
 			}
-			final int num_levels = level_data[1] >> 1;
+			int num_levels = level_data[1] >> 1;
 
 			
-			float dt, lastTime = System.nanoTime() / NANOTIME;
+			float lastTime = System.nanoTime() / NANOTIME;
 
-			
-			mainLoop: while (true) {
-				final float time = System.nanoTime() / NANOTIME;
-				dt = time - lastTime;
-				dt = dt > 0.05f ? 0.05f : dt;
+
+            int animation = 0;
+            int gameState = 0;
+            int levelCount = 0;
+            int portals = 0;
+            float[] level = null;
+            float[][] solids = null;
+            int[] faceY = new int[32];
+            int[] faceX = new int[32];
+            float[] intersect = new float[32];
+            float[] player = new float[9];
+            Font bigFont = smallFont.deriveFont(0, 50);
+            mainLoop: while (true) {
+				float time = System.nanoTime() / NANOTIME;
+                float dt = time - lastTime;
+                dt = dt > 0.05f ? 0.05f : dt;
 				dt = dt < 0.01f ? 0.01f : dt;
 				lastTime = time;
 
@@ -326,8 +323,9 @@ public class P extends GamePanel {
 					level = null;
 				}
 
-				
-				if (level == null) {
+
+                int k;
+                if (level == null) {
 					player[X] = ENTRY_X + DOOR_WIDTH / 2;
 					player[Y] = HEIGHT - BORDER - PLAYER_WALL_BOUNDING;
 					player[AIMX] = player[X] + 10;
@@ -341,8 +339,8 @@ public class P extends GamePanel {
 
 					
 					int offset = (level_data[2 * levelCount + 0] << 8) + (level_data[2 * levelCount + 1]);
-					final int length = level_data[offset++]; 
-					final int shapes = level_data[offset++];
+					int length = level_data[offset++];
+					int shapes = level_data[offset++];
 
 					int index = LEVEL_DATA;
 					level = new float[length * COMPONENTS + index];
@@ -356,7 +354,7 @@ public class P extends GamePanel {
 					k = 12;
 					int point = offset + shapes; 
 					for (i = 0; i < shapes; i++, k = 0) {
-						final int linesInShape = level_data[offset + i];
+						int linesInShape = level_data[offset + i];
 						int last = point + 2 * linesInShape - 2;
 						solids[i] = new float[2 * linesInShape + k];
 
@@ -371,9 +369,9 @@ public class P extends GamePanel {
 							solids[i][2 * j + X] = level[index + X];
 							solids[i][2 * j + Y] = level[index + Y];
 
-							final float dx = level[index + X2] - level[index + X];
-							final float dy = level[index + Y2] - level[index + Y];
-							final float len = (float) Math.sqrt(dx * dx + dy * dy);
+							float dx = level[index + X2] - level[index + X];
+							float dy = level[index + Y2] - level[index + Y];
+							float len = (float) Math.sqrt(dx * dx + dy * dy);
 							level[index + LENGTH] = len;
 							level[index + DX] = dx / len;
 							level[index + DY] = dy / len;
@@ -381,7 +379,7 @@ public class P extends GamePanel {
 						if (i == 0) {
 							j = 2 * linesInShape;
 							solids[0][j + X] = solids[0][X];
-							solids[i][j + Y] = solids[i][Y];
+							solids[0][j + Y] = solids[i][Y];
 							
 							
 							j += 4;
@@ -427,19 +425,18 @@ public class P extends GamePanel {
 					
 					
 					
-					final float x = level[i + X];
-					final float y = level[i + Y];
-					final float length = level[i + LENGTH];
-					final float lx = level[i + DX];
-					final float ly = level[i + DY];
-					final float position = ((player[X] - x) * lx + (player[Y] - y) * ly);
+					float x = level[i + X];
+					float y = level[i + Y];
+					float length = level[i + LENGTH];
+					float lx = level[i + DX];
+					float ly = level[i + DY];
+					float position = ((player[X] - x) * lx + (player[Y] - y) * ly);
 
-					final float ax = x + position * lx;
-					final float ay = y + position * ly;
-
-					if (0 < position && position <= length) {
-						final float dx = ax - player[X];
-						final float dy = ay - player[Y];
+                    if (0 < position && position <= length) {
+                        float ax = x + position * lx;
+                        float dx = ax - player[X];
+                        float ay = y + position * ly;
+                        float dy = ay - player[Y];
 
 						if (dx * dx + dy * dy <= PLAYER_WALL_BOUNDING_2) {
 							if (i <= PORTAL2) {
@@ -448,20 +445,20 @@ public class P extends GamePanel {
 									continue;
 								}
 								
-								final int direction = i / COMPONENTS;
-								final int dstPortal = (1 - direction) * COMPONENTS;
+								int direction = i / COMPONENTS;
 
-								player[BLOCKTIME] = time + PORTAL_BLOCK_TIME;
+                                player[BLOCKTIME] = time + PORTAL_BLOCK_TIME;
 
-								final float ddx = level[dstPortal + DX];
-								final float ddy = level[dstPortal + DY];
+                                int dstPortal = (1 - direction) * COMPONENTS;
+                                float ddx = level[dstPortal + DX];
+								float ddy = level[dstPortal + DY];
 								player[X] = level[dstPortal + X] + ddx * HALF_PORTAL_WIDTH - ddy * (PLAYER_WALL_BOUNDING + 2);
 								player[Y] = level[dstPortal + Y] + ddy * HALF_PORTAL_WIDTH + ddx * (PLAYER_WALL_BOUNDING + 2);
 
-								final float cosR = (float) Math.cos(2 * PI * direction - player[ROTATION]);
-								final float sinR = (float) Math.sin(2 * PI * direction - player[ROTATION]);
+								float cosR = (float) Math.cos(2 * PI * direction - player[ROTATION]);
+								float sinR = (float) Math.sin(2 * PI * direction - player[ROTATION]);
 
-								final float vx = player[VX] * cosR - player[VY] * sinR;
+								float vx = player[VX] * cosR - player[VY] * sinR;
 								player[VY] = player[VX] * sinR + player[VY] * cosR;
 								player[VX] = vx;
 								break;
@@ -472,8 +469,8 @@ public class P extends GamePanel {
 									continue mainLoop;
 								}
 
-								final float nx = -ly; 
-								final float ny = lx;
+								float nx = -ly;
+								float ny = lx;
 
 								
 								if (ny > 0) {
@@ -535,10 +532,10 @@ public class P extends GamePanel {
 					player[AIMX] = key[MOUSE_X];
 					player[AIMY] = key[MOUSE_Y];
 
-					final float x3 = player[X];
-					final float y3 = player[Y];
-					final float x4 = player[X2];
-					final float y4 = player[Y2];
+					float x3 = player[X];
+					float y3 = player[Y];
+					float x4 = player[X2];
+					float y4 = player[Y2];
 
 					intersect[X] = 0;
 					intersect[Y] = 0;
@@ -546,16 +543,16 @@ public class P extends GamePanel {
 					float closest = 0x1000;
 
 					for (i = LEVEL_DATA; i < level.length; i += COMPONENTS) {
-						final float x1 = level[i + X];
-						final float y1 = level[i + Y];
-						final float x2 = level[i + X2];
-						final float y2 = level[i + Y2];
+						float x1 = level[i + X];
+						float y1 = level[i + Y];
+						float x2 = level[i + X2];
+						float y2 = level[i + Y2];
 
-						final float denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+						float denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
 						if (denom != 0) {
-							final float t0 = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
+							float t0 = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
 							if (0 <= t0 && t0 <= 1) {
-								final float t1 = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
+								float t1 = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
 								if (t1 >= 0 && t1 < closest) {
 									closest = t1;
 									intersect[X] = x1 + t0 * (x2 - x1);
@@ -574,10 +571,10 @@ public class P extends GamePanel {
 						
 						
 
-						final int line = (int) intersect[LINE_INDEX];
+						int line = (int) intersect[LINE_INDEX];
 						if ((int) level[line + DEAD] + (int) level[line + DIE] == 0) {
-                            final float dx = level[line + DX] * HALF_PORTAL_WIDTH;
-							final float dy = level[line + DY] * HALF_PORTAL_WIDTH;
+                            float dx = level[line + DX] * HALF_PORTAL_WIDTH;
+							float dy = level[line + DY] * HALF_PORTAL_WIDTH;
 
                             float x1 = intersect[X] - dx;
                             float y1 = intersect[Y] - dy;
@@ -597,14 +594,14 @@ public class P extends GamePanel {
 								y1 = y2 - dy * 2;
 							}
 
-							final int index = COMPONENTS * (key[MOUSE_BUTTON] - 1);
-							final int other = PORTAL2 - index;
-							boolean apply = true;
+							int index = COMPONENTS * (key[MOUSE_BUTTON] - 1);
 
-							portals |= 1 << (key[MOUSE_BUTTON] - 1);
-							if (portals == 3 && level[other + INDEX] == line) {
-								final float Dx = x1 - level[other + X];
-								final float Dy = y1 - level[other + Y];
+                            portals |= 1 << (key[MOUSE_BUTTON] - 1);
+                            boolean apply = true;
+                            int other = PORTAL2 - index;
+                            if (portals == 3 && level[other + INDEX] == line) {
+								float Dx = x1 - level[other + X];
+								float Dy = y1 - level[other + Y];
 								apply = (Dx * Dx + Dy * Dy >= PORTAL_WIDTH_2);
 							}
 							if (apply) {
@@ -634,8 +631,8 @@ public class P extends GamePanel {
 				g.setColor(color[COLOR_BACKGROUND]);
 				g.fillRect(0, 0, WIDTH, HEIGHT);
 
-				final float px = player[X] / 2 + WIDTH / 4;
-				final float py = player[Y] / 2 + HEIGHT / 4 - 30;
+				float px = player[X] / 2 + WIDTH / 4;
+				float py = player[Y] / 2 + HEIGHT / 4 - 30;
 
 				
 				
@@ -662,7 +659,7 @@ public class P extends GamePanel {
 					
 					g.setColor(color[COLOR_WALL + (int) (level[i + DEAD] + 2 * level[i + DIE])]);
 
-					final float dot = level[i + DX] * (faceY[3] - faceY[0]) - level[i + DY] * (faceX[3] - faceX[0]);
+					float dot = level[i + DX] * (faceY[3] - faceY[0]) - level[i + DY] * (faceX[3] - faceX[0]);
 					if (dot >= 0) {
 						g.fillPolygon(faceX, faceY, 4);
 						g.setColor(color[COLOR_WALL_BORDER]);
@@ -686,7 +683,7 @@ public class P extends GamePanel {
 				
 				k = 6;
 				for (i = 0; i < solids.length; i++, k = 0) {
-					final int length = solids[i].length >> 1;
+					int length = solids[i].length >> 1;
 					for (j = 0; j < length; j++) {
 						faceX[j] = (int) ((px * zNear - px + solids[i][2 * j + X]) / zNear);
 						faceY[j] = (int) ((py * zNear - py + solids[i][2 * j + Y]) / zNear);
@@ -717,9 +714,9 @@ public class P extends GamePanel {
 				g.drawLine((int) player[X], (int) player[Y], (int) player[X] - animation * 4, (int) player[Y] + PLAYER_H);
 
 				
-				final float aimx = player[AIMX] - player[X];
-				final float aimy = player[AIMY] - player[Y];
-				final float aimLength = (float) Math.sqrt(aimx * aimx + aimy * aimy);
+				float aimx = player[AIMX] - player[X];
+				float aimy = player[AIMY] - player[Y];
+				float aimLength = (float) Math.sqrt(aimx * aimx + aimy * aimy);
 				
 				
 				
@@ -745,12 +742,12 @@ public class P extends GamePanel {
 
 				Thread.sleep(10);
 			}
-		} catch (final Exception exc) {
+		} catch (Exception exc) {
 			exc.printStackTrace();
 		}
 	}
 
-	private static void project(final int[] faceX, final int[] faceY, final float[] level, final int index, final float px, final float py) {
+	private static void project(int[] faceX, int[] faceY, float[] level, int index, float px, float py) {
 		faceX[0] = (int) ((px * zNear - px + level[index + X]) / zNear);
 		faceY[0] = (int) ((py * zNear - py + level[index + Y]) / zNear);
 		faceX[1] = (int) ((px * zNear - px + level[index + X2]) / zNear);
@@ -763,7 +760,7 @@ public class P extends GamePanel {
 	}
 
 	@Override
-	public boolean handleEvent(final Event e) {
+	public boolean handleEvent(Event e) {
 		switch (e.id) {
 		case Event.KEY_PRESS:
 			

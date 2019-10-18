@@ -22,7 +22,8 @@ public abstract class SpaceMouse extends MouseAdapter {
     private final VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
     public Body3D pickedBody;
 
-    public final v3 target = new v3(), origin = new v3();
+    public final v3 target = new v3();
+    public final v3 origin = new v3();
 
     protected SpaceMouse(SpaceGraph3D g) {
         this.space = g;
@@ -30,7 +31,7 @@ public abstract class SpaceMouse extends MouseAdapter {
 
 
 
-    public Spatial pickSpatial(float x, float y) {
+    public static Spatial pickSpatial(float x, float y) {
         throw new TODO();
     }
 

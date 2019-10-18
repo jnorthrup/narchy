@@ -28,6 +28,7 @@ import tech.tablesaw.columns.numbers.NumberColumnFormatter;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
@@ -166,7 +167,8 @@ public class SelfTest {
     private static class MyTestExecutionListener implements TestExecutionListener {
 
         private final DataTable out;
-        transient long startNS, endNS;
+        transient long startNS;
+        transient long endNS;
         private long startUnixTime;
 //        transient private TestMetrics m;
 
@@ -252,7 +254,7 @@ public class SelfTest {
 
     void run(int repeats, int threads) {
 
-        final DataTable all = newTable();
+        DataTable all = newTable();
 
         Runtime.getRuntime().addShutdownHook(new Thread(()->{
             try {
@@ -305,7 +307,7 @@ public class SelfTest {
 
     private static final Logger logger = LoggerFactory.getLogger(SelfTest.class);
 
-    private void save(DataTable d, String filename) throws IOException {
+    private static void save(DataTable d, String filename) throws IOException {
         synchronized (d) {
             FileOutputStream fos = new FileOutputStream(filename, true);
             GZIPOutputStream os = new GZIPOutputStream(new BufferedOutputStream(fos, 64 * 1024));
@@ -322,7 +324,7 @@ public class SelfTest {
 
     private void report(DataTable all) {
 
-        String[] testID = all.columns(0, 1, 2 ).stream().map(Column::name).toArray(String[]::new);
+        String[] testID = all.columns(0, 1, 2).stream().map(Column::name).toArray(String[]::new);
 
         //https://jtablesaw.github.io/tablesaw/userguide/reducing
         try {

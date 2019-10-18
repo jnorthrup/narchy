@@ -33,7 +33,7 @@ public class BeliefContradictionDetector extends NARPart implements Consumer<Tas
         }
     }
 
-    protected void detectContradiction(Concept concept,  byte punc) {
+    protected static void detectContradiction(Concept concept, byte punc) {
         if (concept.term().hasAny(Op.Temporal)) {
             return; //TODO
         }
@@ -48,7 +48,7 @@ public class BeliefContradictionDetector extends NARPart implements Consumer<Tas
         }
     }
 
-    private void print(TaskTable table) {
+    private static void print(TaskTable table) {
         table.forEachTask(t -> System.out.println(t.proof()));
     }
 

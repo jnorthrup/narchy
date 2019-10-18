@@ -33,7 +33,7 @@ public class IRCAgent extends IRC {
     private final NAR nar;
 
 
-    final int wordDelayMS = 100;
+    static final int wordDelayMS = 100;
 //    private final MyLeakOut out;
 
     boolean trace;
@@ -238,9 +238,7 @@ public class IRCAgent extends IRC {
         new Thread(()-> {
             try {
                 bot.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (IrcException e) {
+            } catch (IOException | IrcException e) {
                 e.printStackTrace();
             }
         }).start();

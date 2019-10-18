@@ -164,19 +164,19 @@ public class MotorJoint extends Joint {
         m_invIA = A.m_invI;
         m_invIB = B.m_invI;
 
-        final v2 cA = data.positions[m_indexA];
+        v2 cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
-        final v2 vA = data.velocities[m_indexA];
+        v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
 
-        final v2 cB = data.positions[m_indexB];
+        v2 cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
-        final v2 vB = data.velocities[m_indexB];
+        v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
-        final Rot qA = pool.popRot();
-        final Rot qB = pool.popRot();
-        final v2 temp = new v2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 temp = new v2();
         Mat22 K = pool.popMat22();
 
         qA.set(aA);
@@ -225,7 +225,7 @@ public class MotorJoint extends Joint {
             m_linearImpulse.y *= data.step.dtRatio;
             m_angularImpulse *= data.step.dtRatio;
 
-            final v2 P = m_linearImpulse;
+            v2 P = m_linearImpulse;
             vA.x -= mA * P.x;
             vA.y -= mA * P.y;
             wA -= iA * (m_rA.x * P.y - m_rA.y * P.x + m_angularImpulse);
@@ -248,9 +248,9 @@ public class MotorJoint extends Joint {
 
     @Override
     public void solveVelocityConstraints(SolverData data) {
-        final v2 vA = data.velocities[m_indexA];
+        v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
-        final v2 vB = data.velocities[m_indexB];
+        v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         float mA = m_invMassA, mB = m_invMassB;
@@ -259,7 +259,7 @@ public class MotorJoint extends Joint {
         float h = data.step.dt;
         float inv_h = data.step.inv_dt;
 
-        final v2 temp = new v2();
+        v2 temp = new v2();
 
         
         {
@@ -275,7 +275,7 @@ public class MotorJoint extends Joint {
             wB += iB * impulse;
         }
 
-        final v2 Cdot = new v2();
+        v2 Cdot = new v2();
 
         
         {
@@ -286,10 +286,10 @@ public class MotorJoint extends Joint {
             Cdot.y =
                     vB.y + wB * m_rB.x - vA.y - wA * m_rA.x + inv_h * m_correctionFactor * m_linearError.y;
 
-            final v2 impulse = temp;
+            v2 impulse = temp;
             Mat22.mulToOutUnsafe(m_linearMass, Cdot, impulse);
             impulse.negated();
-            final v2 oldImpulse = new v2();
+            v2 oldImpulse = new v2();
             oldImpulse.set(m_linearImpulse);
             m_linearImpulse.added(impulse);
 

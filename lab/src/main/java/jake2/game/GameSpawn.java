@@ -377,24 +377,21 @@ public class GameSpawn {
 
     static void ED_ParseEdict(Com.ParseHelp ph, edict_t ent) {
 
-        String keyname;
-        String com_token;
-        boolean init = false;
-
         GameBase.st = new spawn_temp_t();
+        boolean init = false;
         while (true) {
 
-            
-            com_token = Com.Parse(ph);
+
+            String com_token = Com.Parse(ph);
             if ("}".equals(com_token))
                 break;
 
             if (ph.isEof())
                 game_import_t.error("ED_ParseEntity: EOF without closing brace");
 
-            keyname = com_token;
+            String keyname = com_token;
 
-            
+
             com_token = Com.Parse(ph);
 
             if (ph.isEof())
@@ -429,12 +426,10 @@ public class GameSpawn {
      */
 
     static void G_FindTeams() {
-        edict_t e, e2, chain;
-        int i, j;
         int c = 0;
         int c2 = 0;
-        for (i = 1; i < GameBase.num_edicts; i++) {
-            e = GameBase.g_edicts[i];
+        for (int i = 1; i < GameBase.num_edicts; i++) {
+            edict_t e = GameBase.g_edicts[i];
 
             if (!e.inuse)
                 continue;
@@ -442,13 +437,13 @@ public class GameSpawn {
                 continue;
             if ((e.flags & Defines.FL_TEAMSLAVE) != 0)
                 continue;
-            chain = e;
+            edict_t chain = e;
             e.teammaster = e;
             c++;
             c2++;
             
-            for (j = i + 1; j < GameBase.num_edicts; j++) {
-                e2 = GameBase.g_edicts[j];
+            for (int j = i + 1; j < GameBase.num_edicts; j++) {
+                edict_t e2 = GameBase.g_edicts[j];
                 if (!e2.inuse)
                     continue;
                 if (null == e2.team)
@@ -478,8 +473,6 @@ public class GameSpawn {
             String spawnpoint) {
         
         Com.dprintln("SpawnEntities(), mapname=" + mapname);
-        String com_token;
-        int i;
 
         float skill_level = (float) Math.floor(GameBase.skill.value);
 
@@ -500,7 +493,8 @@ public class GameSpawn {
         GameBase.level.mapname = mapname;
         GameBase.game.spawnpoint = spawnpoint;
 
-        
+
+        int i;
         for (i = 0; i < GameBase.game.maxclients; i++)
             GameBase.g_edicts[i + 1].client = GameBase.game.clients[i];
 
@@ -509,9 +503,9 @@ public class GameSpawn {
 
         Com.ParseHelp ph = new Com.ParseHelp(entities);
 
-        while (true) { 
+        while (true) {
 
-            com_token = Com.Parse(ph);
+            String com_token = Com.Parse(ph);
             if (ph.isEof())
                 break;
             if (!com_token.startsWith("{"))
@@ -1339,16 +1333,14 @@ public class GameSpawn {
      */
     public static void ED_CallSpawn(edict_t ent) {
 
-        spawn_t s;
-        gitem_t item;
-        int i;
         if (null == ent.classname) {
             game_import_t.dprintf("ED_CallSpawn: null classname\n");
             return;
-        } 
+        }
+        int i;
         for (i = 1; i < GameBase.game.num_items; i++) {
 
-            item = GameItemList.itemlist[i];
+            gitem_t item = GameItemList.itemlist[i];
 
             if (item == null)
                 game_import_t.error("ED_CallSpawn: null item in pos " + i);
@@ -1359,8 +1351,9 @@ public class GameSpawn {
                 GameItems.SpawnItem(ent, item);
                 return;
             }
-        } 
+        }
 
+        spawn_t s;
         for (i = 0; (s = spawns[i]) != null && s.name != null; i++) {
             if (s.name.equalsIgnoreCase(ent.classname)) { 
 

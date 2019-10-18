@@ -43,7 +43,7 @@ public interface Space<X> extends Nodelike<X> {
      * @param told - Entry to update
      * @param tnew - Entry to update it to
      */
-    boolean replace(final X told, final X tnew);
+    boolean replace(X told, X tnew);
 
     /**
      * Get the number of entries in the tree
@@ -121,7 +121,7 @@ public interface Space<X> extends Nodelike<X> {
      * @return Number of results found
      */
     @Deprecated
-    int containedToArray(final HyperRegion rect, final X[] t);
+    int containedToArray(HyperRegion rect, X[] t);
 
 
     Stats stats();
@@ -140,11 +140,11 @@ public interface Space<X> extends Nodelike<X> {
      * @param x Data entry to be added
      * @return whether the item was added, or false if it wasn't (ex: duplicate or some other prohibition)
      */
-    default /* final */ boolean add(final X x) {
+    default /* final */ boolean add(X x) {
         return insert(x).added();
     }
 
-    RInsertion<X> insert(/*@NotNull*/ final X x);
+    RInsertion<X> insert(/*@NotNull*/ X x);
 
     /**
      * adds, deferred if necessary until un-busy
@@ -159,7 +159,7 @@ public interface Space<X> extends Nodelike<X> {
      * @param x Data entry to be removed
      * @return whether the item was added, or false if it wasn't (ex: duplicate or some other prohibition)
      */
-    boolean remove(/*@NotNull*/ final X x);
+    boolean remove(/*@NotNull*/ X x);
 
 
     /**

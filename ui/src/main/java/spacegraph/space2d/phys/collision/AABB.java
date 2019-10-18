@@ -65,7 +65,7 @@ public class AABB {
      * @param lowerVertex the bottom left vertex of the bounding box
      * @param maxVertex   the top right vertex of the bounding box
      */
-    public AABB(final v2 lowerVertex, final v2 upperVertex, boolean clone) {
+    public AABB(v2 lowerVertex, v2 upperVertex, boolean clone) {
         if (clone) {
             this.lowerBound = new v2(lowerVertex);
             this.upperBound = new v2(upperVertex);
@@ -80,7 +80,7 @@ public class AABB {
      *
      * @param aabb the object to copy from
      */
-    public final void set(final AABB aabb) {
+    public final void set(AABB aabb) {
         v2 v = aabb.lowerBound;
         lowerBound.x = v.x;
         lowerBound.y = v.y;
@@ -93,11 +93,11 @@ public class AABB {
      * Verify that the bounds are sorted
      */
     public final boolean isValid() {
-        final float dx = upperBound.x - lowerBound.x;
+        float dx = upperBound.x - lowerBound.x;
         if (dx < 0f) {
             return false;
         }
-        final float dy = upperBound.y - lowerBound.y;
+        float dy = upperBound.y - lowerBound.y;
         if (dy < 0) {
             return false;
         }
@@ -112,7 +112,7 @@ public class AABB {
     public final v2 center() {
         return new v2(0.5f * (upperBound.x + lowerBound.x), 0.5f * (upperBound.y + lowerBound.y));
     }
-    public final void centerToOut(final v2 out) {
+    public final void centerToOut(v2 out) {
         out.x = (lowerBound.x + upperBound.x) * .5f;
         out.y = (lowerBound.y + upperBound.y) * .5f;
     }
@@ -126,7 +126,7 @@ public class AABB {
         return new v2(0.5f * (upperBound.x - lowerBound.x), 0.5f * (upperBound.y - lowerBound.y));
     }
 
-    public final void extentsToOut(final v2 out) {
+    public final void extentsToOut(v2 out) {
         out.x = (upperBound.x - lowerBound.x) * .5f;
         out.y = (upperBound.y - lowerBound.y) * .5f; 
     }
@@ -146,7 +146,7 @@ public class AABB {
      * @param aabb1
      * @param aab
      */
-    public final void combine(final AABB aabb1, final AABB aab) {
+    public final void combine(AABB aabb1, AABB aab) {
         lowerBound.x = aabb1.lowerBound.x < aab.lowerBound.x ? aabb1.lowerBound.x : aab.lowerBound.x;
         lowerBound.y = aabb1.lowerBound.y < aab.lowerBound.y ? aabb1.lowerBound.y : aab.lowerBound.y;
         upperBound.x = aabb1.upperBound.x > aab.upperBound.x ? aabb1.upperBound.x : aab.upperBound.x;
@@ -167,7 +167,7 @@ public class AABB {
      *
      * @param aabb
      */
-    public final void combine(final AABB aabb) {
+    public final void combine(AABB aabb) {
         lowerBound.x = lowerBound.x < aabb.lowerBound.x ? lowerBound.x : aabb.lowerBound.x;
         lowerBound.y = lowerBound.y < aabb.lowerBound.y ? lowerBound.y : aabb.lowerBound.y;
         upperBound.x = upperBound.x > aabb.upperBound.x ? upperBound.x : aabb.upperBound.x;
@@ -179,7 +179,7 @@ public class AABB {
      *
      * @return
      */
-    public final boolean contains(final AABB aabb) {
+    public final boolean contains(AABB aabb) {
         /*
          * boolean result = true; result = result && lowerBound.x <= aabb.lowerBound.x; result = result
          * && lowerBound.y <= aabb.lowerBound.y; result = result && aabb.upperBound.x <= upperBound.x;
@@ -198,7 +198,7 @@ public class AABB {
      * @deprecated please use {@link #raycast(RayCastOutput, RayCastInput, IWorldPool)} for better
      * performance
      */
-    public final boolean raycast(final RayCastOutput output, final RayCastInput input) {
+    public final boolean raycast(RayCastOutput output, RayCastInput input) {
         return raycast(output, input, new DefaultWorldPool(4, 4));
     }
 
@@ -208,111 +208,116 @@ public class AABB {
      * @param output
      * @param input
      */
-    private boolean raycast(final RayCastOutput output, final RayCastInput input,
+    private boolean raycast(RayCastOutput output, RayCastInput input,
                             IWorldPool argPool) {
-        float tmin = -Float.MAX_VALUE;
+
+        v2 p = argPool.popVec2();
+                                v2 d = argPool.popVec2();
+                                v2 absD = argPool.popVec2();
+                                v2 normal = argPool.popVec2();
+
+                                p.set(input.p1);
+                                d.set(input.p2).subbed(input.p1);
+                                v2.absToOut(d, absD);
+
+
         float tmax = Float.MAX_VALUE;
-
-        final v2 p = argPool.popVec2();
-        final v2 d = argPool.popVec2();
-        final v2 absD = argPool.popVec2();
-        final v2 normal = argPool.popVec2();
-
-        p.set(input.p1);
-        d.set(input.p2).subbed(input.p1);
-        v2.absToOut(d, absD);
-
-        
+        float tmin = -Float.MAX_VALUE;
+        boolean result = true;
         if (absD.x < Settings.EPSILON) {
-            
+
             if (p.x < lowerBound.x || upperBound.x < p.x) {
-                argPool.pushVec2(4);
-                return false;
+                                        argPool.pushVec2(4);
+                result = false;
             }
-        } else {
-            final float inv_d = 1.0f / d.x;
-            float t1 = (lowerBound.x - p.x) * inv_d;
-            float t2 = (upperBound.x - p.x) * inv_d;
+                                } else {
+                                    float inv_d = 1.0f / d.x;
+                                    float t1 = (lowerBound.x - p.x) * inv_d;
+                                    float t2 = (upperBound.x - p.x) * inv_d;
 
-            
+
             float s = -1.0f;
 
-            if (t1 > t2) {
-                final float temp = t1;
-                t1 = t2;
-                t2 = temp;
-                s = 1.0f;
-            }
+                                    if (t1 > t2) {
+                                        float temp = t1;
+                                        t1 = t2;
+                                        t2 = temp;
+                                        s = 1.0f;
+                                    }
 
-            
+
             if (t1 > tmin) {
-                normal.setZero();
-                normal.x = s;
-                tmin = t1;
-            }
+                                        normal.setZero();
+                                        normal.x = s;
+                                        tmin = t1;
+                                    }
 
-            
+
             tmax = MathUtils.min(tmax, t2);
 
-            if (tmin > tmax) {
-                argPool.pushVec2(4);
-                return false;
+                                    if (tmin > tmax) {
+                                        argPool.pushVec2(4);
+                                        result = false;
+                                    }
+                                }
+        if (result) {
+            if (absD.y < Settings.EPSILON) {
+
+                if (p.y < lowerBound.y || upperBound.y < p.y) {
+                    argPool.pushVec2(4);
+                    result = false;
+                }
+            } else {
+                float inv_d = 1.0f / d.y;
+                float t1 = (lowerBound.y - p.y) * inv_d;
+                float t2 = (upperBound.y - p.y) * inv_d;
+
+
+                float s = -1.0f;
+
+                if (t1 > t2) {
+                    float temp = t1;
+                    t1 = t2;
+                    t2 = temp;
+                    s = 1.0f;
+                }
+
+
+                if (t1 > tmin) {
+                    normal.setZero();
+                    normal.y = s;
+                    tmin = t1;
+                }
+
+
+                tmax = MathUtils.min(tmax, t2);
+
+                if (tmin > tmax) {
+                    argPool.pushVec2(4);
+                    result = false;
+                }
             }
+            if (result) {
+                if (tmin < 0.0f || input.maxFraction < tmin) {
+                    argPool.pushVec2(4);
+                    result = false;
+                } else {
+                    output.fraction = tmin;
+                    output.normal.x = normal.x;
+                    output.normal.y = normal.y;
+                    argPool.pushVec2(4);
+                }
+
+
+            }
+
+
         }
 
-        if (absD.y < Settings.EPSILON) {
-            
-            if (p.y < lowerBound.y || upperBound.y < p.y) {
-                argPool.pushVec2(4);
-                return false;
-            }
-        } else {
-            final float inv_d = 1.0f / d.y;
-            float t1 = (lowerBound.y - p.y) * inv_d;
-            float t2 = (upperBound.y - p.y) * inv_d;
-
-            
-            float s = -1.0f;
-
-            if (t1 > t2) {
-                final float temp = t1;
-                t1 = t2;
-                t2 = temp;
-                s = 1.0f;
-            }
-
-            
-            if (t1 > tmin) {
-                normal.setZero();
-                normal.y = s;
-                tmin = t1;
-            }
-
-            
-            tmax = MathUtils.min(tmax, t2);
-
-            if (tmin > tmax) {
-                argPool.pushVec2(4);
-                return false;
-            }
-        }
-
-        
-        
-        if (tmin < 0.0f || input.maxFraction < tmin) {
-            argPool.pushVec2(4);
-            return false;
-        }
-
-        
-        output.fraction = tmin;
-        output.normal.x = normal.x;
-        output.normal.y = normal.y;
-        argPool.pushVec2(4);
-        return true;
+        return result;
     }
 
-    public static boolean testOverlap(final AABB a, final AABB b) {
+    public static boolean testOverlap(AABB a, AABB b) {
         if (b.lowerBound.x - a.upperBound.x > 0.0f || b.lowerBound.y - a.upperBound.y > 0.0f) {
             return false;
         }

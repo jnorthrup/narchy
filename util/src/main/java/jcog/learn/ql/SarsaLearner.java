@@ -211,7 +211,7 @@ public class SarsaLearner {
      * @param traces
      * @param factor
      */
-    protected void decayTraces(double[] traces, double factor) {
+    protected static void decayTraces(double[] traces, double factor) {
         for (int f = 0; f < traces.length; f++)
             traces[f] *= factor;
     }
@@ -222,7 +222,7 @@ public class SarsaLearner {
      * @param factor
      * @param state
      */
-    protected void replaceTraces(double[] traces, double factor, double[] state) {
+    protected static void replaceTraces(double[] traces, double factor, double[] state) {
         for (int f = 0; f < traces.length; f++) {
             
             if (state[f] == 0)
@@ -240,19 +240,17 @@ public class SarsaLearner {
     public int selectAction(double[] pState) {
         double[] values = new double[numActions];
 
-        double bestValue = Double.NEGATIVE_INFINITY;
-        double worstValue = Double.POSITIVE_INFINITY;
 
-        int bestAction = -1;
-        ArrayList<Integer> ties = new ArrayList<>();
-
-        
         if (Math.random() < epsilon) {
             int r = (int)(Math.random() * numActions);
             return r;
         }
 
-        
+
+        ArrayList<Integer> ties = new ArrayList<>();
+        int bestAction = -1;
+        double worstValue = Double.POSITIVE_INFINITY;
+        double bestValue = Double.NEGATIVE_INFINITY;
         for (int a = 0; a < numActions; a++) {
             double v = valueFunction[a].predict(pState);
 

@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class QuestionTest {
 
-    private final int cycles = 412;
+    private static final int cycles = 412;
 
     @Test
     void whQuestionUnifyQueryVar() throws Narsese.NarseseException {
@@ -50,7 +50,7 @@ class QuestionTest {
     /**
      * question to answer matching
      */
-    private void testQuestionAnswer(int cycles, String belief, String question, String expectedSolution) throws Narsese.NarseseException {
+    private static void testQuestionAnswer(int cycles, String belief, String question, String expectedSolution) throws Narsese.NarseseException {
         AtomicInteger ok = new AtomicInteger(0);
 
 
@@ -84,7 +84,7 @@ class QuestionTest {
     @Test
     void questionDrivesInference() {
 
-        final int[] dims = {3, 2};
+        int[] dims = {3, 2};
         final int timelimit = 2400;
 
 //        TaskStatistics withTasks = new TaskStatistics();

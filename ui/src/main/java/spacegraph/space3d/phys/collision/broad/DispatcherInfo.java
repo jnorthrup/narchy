@@ -39,7 +39,7 @@ public class DispatcherInfo {
 	public boolean enableSatConvex;
 	public boolean enableSPU = true;
 	public boolean useEpa = true;
-	public final float allowedCcdPenetration = 0.04f;
+	public static final float allowedCcdPenetration = 0.04f;
 	
 
 	public DispatcherInfo() {

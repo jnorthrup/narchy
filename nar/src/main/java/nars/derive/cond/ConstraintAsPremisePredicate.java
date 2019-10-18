@@ -30,7 +30,7 @@ public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Der
 
         int costPath = 0;
 
-        final BiFunction<Term, Term, Term> extractX;
+        BiFunction<Term, Term, Term> extractX;
         Term extractXterm;
         if (xInTask != null) { // && (xInBelief == null || xInTask.length < xInBelief.length)) {
             assert(xInBelief==null);
@@ -46,7 +46,7 @@ public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Der
 
         float cost = m.cost();
         if (m instanceof RelationConstraint) {
-            final BiFunction<Term, Term, Term> extractY;
+            BiFunction<Term, Term, Term> extractY;
             Term extractYterm;
             if (yInTask != null && (yInBelief == null || yInTask.length < yInBelief.length)) {
                 extractY = yInTask.length == 0 ? TASK : (t, b) -> t.subPath(yInTask);

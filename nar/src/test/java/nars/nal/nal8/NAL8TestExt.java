@@ -14,7 +14,7 @@ import static nars.time.Tense.ETERNAL;
 @Disabled
 class NAL8TestExt extends NALTest {
 
-        private final int cycles = 96;
+        private static final int cycles = 96;
 
 
 

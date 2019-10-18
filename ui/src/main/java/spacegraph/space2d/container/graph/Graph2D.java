@@ -21,6 +21,7 @@ import spacegraph.video.Draw;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -276,11 +277,15 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
     private void updateNodes(Iterable<X> nodes, boolean addOrReplace) {
         if (!addOrReplace) {
-            cells.map.forEach((k, v) -> wontRemain.add(k));
+            for (Map.Entry<X, CellMap.CacheCell<X, NodeVis<X>>> entry : cells.map.entrySet()) {
+                X k = entry.getKey();
+                CellMap.CacheCell<X, NodeVis<X>> v = entry.getValue();
+                wontRemain.add(k);
+            }
         }
 
 
-        nodes.forEach(x -> {
+        for (X x : nodes) {
             CellMap.CacheCell<X, NodeVis<X>> xxx =
                     compute(x, xx -> xx == null ? materialize(x) : rematerialize(xx));
 
@@ -289,7 +294,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
                 cv.start(this);
 
             cv.show();
-        });
+        }
 
         if (!wontRemain.isEmpty()) {
             cells.removeAll(wontRemain);
@@ -327,7 +332,9 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
     }
 
     private void render() {
-        renderers.forEach(layer -> layer.nodes(cells,edit));
+        for (Graph2DRenderer<X> layer : renderers) {
+            layer.nodes(cells, edit);
+        }
     }
 
 

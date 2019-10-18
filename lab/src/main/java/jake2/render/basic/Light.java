@@ -60,8 +60,6 @@ public abstract class Light extends Warp {
      */
 
     void R_RenderDlight(dlight_t light) {
-        int i, j;
-        float a;
         float[] v = { 0, 0, 0 };
 
         float rad = light.intensity * 0.35f;
@@ -71,13 +69,14 @@ public abstract class Light extends Warp {
         gl.glBegin(GL_TRIANGLE_FAN);
         gl.glColor3f(light.color[0] * 0.2f, light.color[1] * 0.2f,
                 light.color[2] * 0.2f);
+        int i;
         for (i = 0; i < 3; i++)
             v[i] = light.origin[i] - vpn[i] * rad;
         gl.glVertex3f(v[0], v[1], v[2]);
         gl.glColor3f(0, 0, 0);
         for (i = 16; i >= 0; i--) {
-            a = (float) (i / 16.0f * Math.PI * 2);
-            for (j = 0; j < 3; j++)
+            float a = (float) (i / 16.0f * Math.PI * 2);
+            for (int j = 0; j < 3; j++)
                 v[j] = (float) (light.origin[j] + vright[j] * Math.cos(a) * rad + vup[j]
                         * Math.sin(a) * rad);
             gl.glVertex3f(v[0], v[1], v[2]);
@@ -90,8 +89,6 @@ public abstract class Light extends Warp {
      */
     @Override
     void R_RenderDlights() {
-        int i;
-        dlight_t l;
 
         if (gl_flashblend.value == 0)
             return;
@@ -104,8 +101,8 @@ public abstract class Light extends Warp {
         gl.glEnable(GL_BLEND);
         gl.glBlendFunc(GL_ONE, GL_ONE);
 
-        for (i = 0; i < r_newrefdef.num_dlights; i++) {
-            l = r_newrefdef.dlights[i];
+        for (int i = 0; i < r_newrefdef.num_dlights; i++) {
+            dlight_t l = r_newrefdef.dlights[i];
             R_RenderDlight(l);
         }
 
@@ -129,9 +126,6 @@ public abstract class Light extends Warp {
      */
     @Override
     void R_MarkLights(dlight_t light, int bit, mnode_t node) {
-        msurface_t surf;
-        int i;
-        int sidebit;
 
         if (node.contents != -1)
             return;
@@ -150,16 +144,16 @@ public abstract class Light extends Warp {
         }
 
         
-        for (i = 0; i < node.numsurfaces; i++) {
+        for (int i = 0; i < node.numsurfaces; i++) {
 
-            surf = r_worldmodel.surfaces[node.firstsurface + i];
+            msurface_t surf = r_worldmodel.surfaces[node.firstsurface + i];
 
             /*
              * cwei bugfix for dlight behind the walls
              */
             dist = Math3D.DotProduct(light.origin, surf.plane.normal)
                     - surf.plane.dist;
-            sidebit = (dist >= 0) ? 0 : Defines.SURF_PLANEBACK;
+            int sidebit = (dist >= 0) ? 0 : Defines.SURF_PLANEBACK;
             if ((surf.flags & Defines.SURF_PLANEBACK) != sidebit)
                 continue;
             /*
@@ -182,16 +176,14 @@ public abstract class Light extends Warp {
      */
     @Override
     void R_PushDlights() {
-        int i;
-        dlight_t l;
 
         if (gl_flashblend.value != 0)
             return;
 
         r_dlightframecount = r_framecount + 1; 
         
-        for (i = 0; i < r_newrefdef.num_dlights; i++) {
-            l = r_newrefdef.dlights[i];
+        for (int i = 0; i < r_newrefdef.num_dlights; i++) {
+            dlight_t l = r_newrefdef.dlights[i];
             R_MarkLights(l, 1 << i, r_worldmodel.nodes[0]);
         }
     }
@@ -213,19 +205,9 @@ public abstract class Light extends Warp {
     int RecursiveLightPoint(mnode_t node, float[] start, float[] end) {
         while (true) {
             if (node.contents != -1)
-                return -1; 
+                return -1;
 
-            msurface_t surf;
-            int s, t, ds, dt;
-            int i;
-            mtexinfo_t tex;
-            ByteBuffer lightmap;
-            int maps;
-            float[] mid = {0, 0, 0};
 
-            
-
-            
             cplane_t plane = node.plane;
             float front = Math3D.DotProduct(start, plane.normal) - plane.dist;
             float back = Math3D.DotProduct(end, plane.normal) - plane.dist;
@@ -238,6 +220,7 @@ public abstract class Light extends Warp {
             }
 
             float frac = front / (front - back);
+            float[] mid = {0, 0, 0};
             mid[0] = start[0] + (end[0] - start[0]) * frac;
             mid[1] = start[1] + (end[1] - start[1]) * frac;
             mid[2] = start[2] + (end[2] - start[2]) * frac;
@@ -256,22 +239,22 @@ public abstract class Light extends Warp {
 
             int surfIndex = node.firstsurface;
             float[] scale = {0, 0, 0};
-            for (i = 0; i < node.numsurfaces; i++, surfIndex++) {
-                surf = r_worldmodel.surfaces[surfIndex];
+            for (int i = 0; i < node.numsurfaces; i++, surfIndex++) {
+                msurface_t surf = r_worldmodel.surfaces[surfIndex];
 
                 if ((surf.flags & (Defines.SURF_DRAWTURB | Defines.SURF_DRAWSKY)) != 0)
-                    continue; 
+                    continue;
 
-                tex = surf.texinfo;
+                mtexinfo_t tex = surf.texinfo;
 
-                s = (int) (Math3D.DotProduct(mid, tex.vecs[0]) + tex.vecs[0][3]);
-                t = (int) (Math3D.DotProduct(mid, tex.vecs[1]) + tex.vecs[1][3]);
+                int s = (int) (Math3D.DotProduct(mid, tex.vecs[0]) + tex.vecs[0][3]);
+                int t = (int) (Math3D.DotProduct(mid, tex.vecs[1]) + tex.vecs[1][3]);
 
                 if (s < surf.texturemins[0] || t < surf.texturemins[1])
                     continue;
 
-                ds = s - surf.texturemins[0];
-                dt = t - surf.texturemins[1];
+                int ds = s - surf.texturemins[0];
+                int dt = t - surf.texturemins[1];
 
                 if (ds > surf.extents[0] || dt > surf.extents[1])
                     continue;
@@ -282,18 +265,17 @@ public abstract class Light extends Warp {
                 ds >>= 4;
                 dt >>= 4;
 
-                lightmap = surf.samples;
-                int lightmapIndex = 0;
+                ByteBuffer lightmap = surf.samples;
 
                 Math3D.VectorCopy(Globals.vec3_origin, pointcolor);
                 if (lightmap != null) {
-                    
-                    float[] rgb;
+
+                    int lightmapIndex = 0;
                     lightmapIndex += 3 * (dt * ((surf.extents[0] >> 4) + 1) + ds);
 
-                    for (maps = 0; maps < Defines.MAXLIGHTMAPS
+                    for (int maps = 0; maps < Defines.MAXLIGHTMAPS
                             && surf.styles[maps] != (byte) 255; maps++) {
-                        rgb = r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb;
+                        float[] rgb = r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb;
                         scale[0] = gl_modulate.value * rgb[0];
                         scale[1] = gl_modulate.value * rgb[1];
                         scale[2] = gl_modulate.value * rgb[2];
@@ -325,15 +307,12 @@ public abstract class Light extends Warp {
         assert (p.length == 3) : "vec3_t bug";
         assert (color.length == 3) : "rgb bug";
 
-        float[] end = { 0, 0, 0 };
-        dlight_t dl;
-        float add;
-
         if (r_worldmodel.lightdata == null) {
             color[0] = color[1] = color[2] = 1.0f;
             return;
         }
 
+        float[] end = {0, 0, 0};
         end[0] = p[0];
         end[1] = p[1];
         end[2] = p[2] - 2048;
@@ -350,10 +329,10 @@ public abstract class Light extends Warp {
         
         
         for (int lnum = 0; lnum < r_newrefdef.num_dlights; lnum++) {
-            dl = r_newrefdef.dlights[lnum];
+            dlight_t dl = r_newrefdef.dlights[lnum];
 
             Math3D.VectorSubtract(currententity.origin, dl.origin, end);
-            add = dl.intensity - Math3D.VectorLength(end);
+            float add = dl.intensity - Math3D.VectorLength(end);
             add *= (1.0f / 256);
             if (add > 0) {
                 Math3D.VectorMA(color, add, dl.color, color);
@@ -371,38 +350,30 @@ public abstract class Light extends Warp {
      * =============== R_AddDynamicLights ===============
      */
     void R_AddDynamicLights(msurface_t surf) {
-        int lnum;
-        int sd, td;
-        float fdist, frad, fminlight;
         float[] impact = { 0, 0, 0 };
         float[] local = { 0, 0, 0 };
-        int s, t;
-        int i;
-        dlight_t dl;
-        float[] pfBL;
-        float fsacc, ftacc;
 
         int smax = (surf.extents[0] >> 4) + 1;
         int tmax = (surf.extents[1] >> 4) + 1;
         mtexinfo_t tex = surf.texinfo;
 
-        for (lnum = 0; lnum < r_newrefdef.num_dlights; lnum++) {
+        for (int lnum = 0; lnum < r_newrefdef.num_dlights; lnum++) {
             if ((surf.dlightbits & (1 << lnum)) == 0)
-                continue; 
+                continue;
 
-            dl = r_newrefdef.dlights[lnum];
-            frad = dl.intensity;
-            fdist = Math3D.DotProduct(dl.origin, surf.plane.normal)
+            dlight_t dl = r_newrefdef.dlights[lnum];
+            float frad = dl.intensity;
+            float fdist = Math3D.DotProduct(dl.origin, surf.plane.normal)
                     - surf.plane.dist;
             frad -= Math.abs(fdist);
-            
 
-            fminlight = DLIGHT_CUTOFF; 
+
+            float fminlight = DLIGHT_CUTOFF;
             if (frad < fminlight)
                 continue;
             fminlight = frad - fminlight;
 
-            for (i = 0; i < 3; i++) {
+            for (int i = 0; i < 3; i++) {
                 impact[i] = dl.origin[i] - surf.plane.normal[i] * fdist;
             }
 
@@ -411,15 +382,19 @@ public abstract class Light extends Warp {
             local[1] = Math3D.DotProduct(impact, tex.vecs[1]) + tex.vecs[1][3]
                     - surf.texturemins[1];
 
-            pfBL = s_blocklights;
+            float[] pfBL = s_blocklights;
             int pfBLindex = 0;
+            float ftacc;
+            int t;
             for (t = 0, ftacc = 0; t < tmax; t++, ftacc += 16) {
-                td = (int) (local[1] - ftacc);
+                int td = (int) (local[1] - ftacc);
                 if (td < 0)
                     td = -td;
 
+                float fsacc;
+                int s;
                 for (s = 0, fsacc = 0; s < smax; s++, fsacc += 16, pfBLindex += 3) {
-                    sd = (int) (local[0] - fsacc);
+                    int sd = (int) (local[0] - fsacc);
 
                     if (sd < 0)
                         sd = -sd;
@@ -444,9 +419,8 @@ public abstract class Light extends Warp {
      */
     @Override
     void R_SetCacheState(msurface_t surf) {
-        int maps;
 
-        for (maps = 0; maps < Defines.MAXLIGHTMAPS
+        for (int maps = 0; maps < Defines.MAXLIGHTMAPS
                 && surf.styles[maps] != (byte) 255; maps++) {
             surf.cached_light[maps] = r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].white;
         }
@@ -460,12 +434,6 @@ public abstract class Light extends Warp {
      */
     @Override
     void R_BuildLightMap(msurface_t surf, IntBuffer dest, int stride) {
-        int r, g, b, a, max;
-        int i, j;
-        ByteBuffer lightmap;
-        float[] scale = { 0, 0, 0, 0 };
-        int nummaps;
-        float[] bl;
 
         if ((surf.texinfo.flags & (Defines.SURF_SKY | Defines.SURF_TRANS33
                 | Defines.SURF_TRANS66 | Defines.SURF_WARP)) != 0)
@@ -478,43 +446,46 @@ public abstract class Light extends Warp {
         if (size > ((s_blocklights.length * Defines.SIZE_OF_FLOAT) >> 4))
             Com.Error(Defines.ERR_DROP, "Bad s_blocklights size");
 
+        float[] bl;
+        int i;
         try {
             
             if (surf.samples == null) {
-                int maps;
 
                 for (i = 0; i < size * 3; i++)
                     s_blocklights[i] = 255;
 
-                for (maps = 0; maps < Defines.MAXLIGHTMAPS
+                for (int maps = 0; maps < Defines.MAXLIGHTMAPS
                         && surf.styles[maps] != (byte) 255; maps++) {
                 }
                 
                 throw new longjmpException();
             }
 
-            
+
+            int nummaps;
             for (nummaps = 0; nummaps < Defines.MAXLIGHTMAPS
                     && surf.styles[nummaps] != (byte) 255; nummaps++)
                 ;
 
-            lightmap = surf.samples;
+            ByteBuffer lightmap = surf.samples;
             int lightmapIndex = 0;
 
-            
-            if (nummaps == 1) {
-                int maps;
 
-                for (maps = 0; maps < Defines.MAXLIGHTMAPS
+            float[] scale = {0, 0, 0, 0};
+            if (nummaps == 1) {
+
+                for (int maps = 0; maps < Defines.MAXLIGHTMAPS
                         && surf.styles[maps] != (byte) 255; maps++) {
                     bl = s_blocklights;
-                    int blp = 0;
 
                     for (i = 0; i < 3; i++)
                         scale[i] = gl_modulate.value
                                 * r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[i];
 
-                    if (IntStream.of(0, 1, 2).allMatch(v -> scale[v] == 1.0F)) {
+                    boolean result = IntStream.of(0, 1, 2).noneMatch(v -> scale[v] != 1.0F);
+                    int blp = 0;
+                    if (result) {
                         for (i = 0; i < size; i++) {
                             bl[blp++] = lightmap.get(lightmapIndex++) & 0xFF;
                             bl[blp++] = lightmap.get(lightmapIndex++) & 0xFF;
@@ -533,23 +504,21 @@ public abstract class Light extends Warp {
                     
                 }
             } else {
-                int maps;
 
-                
-                
 
                 Arrays.fill(s_blocklights, 0, size * 3, 0.0f);
 
-                for (maps = 0; maps < Defines.MAXLIGHTMAPS
+                for (int maps = 0; maps < Defines.MAXLIGHTMAPS
                         && surf.styles[maps] != (byte) 255; maps++) {
                     bl = s_blocklights;
-                    int blp = 0;
 
                     for (i = 0; i < 3; i++)
                         scale[i] = gl_modulate.value
                                 * r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[i];
 
-                    if (IntStream.of(0, 1, 2).allMatch(v -> scale[v] == 1.0F)) {
+                    boolean result = IntStream.of(0, 1, 2).noneMatch(v -> scale[v] != 1.0F);
+                    int blp = 0;
+                    if (result) {
                         for (i = 0; i < size; i++) {
                             bl[blp++] += lightmap.get(lightmapIndex++) & 0xFF;
                             bl[blp++] += lightmap.get(lightmapIndex++) & 0xFF;
@@ -586,6 +555,12 @@ public abstract class Light extends Warp {
 
         int destp = 0;
 
+        int j;
+        int max;
+        int a;
+        int b;
+        int g;
+        int r;
         if (monolightmap == '0') {
             for (i = 0; i < tmax; i++, destp += stride) {
                 for (j = 0; j < smax; j++) {
@@ -626,10 +601,10 @@ public abstract class Light extends Warp {
                     if (max > 255) {
                         float t = 255.0F / max;
 
-                        r = (int) (r * t);
-                        g = (int) (g * t);
-                        b = (int) (b * t);
-                        a = (int) (a * t);
+                        r *= t;
+                        g *= t;
+                        b *= t;
+                        a *= t;
                     }
                     r &= 0xFF;
                     g &= 0xFF;
@@ -679,10 +654,10 @@ public abstract class Light extends Warp {
                     if (max > 255) {
                         float t = 255.0F / max;
 
-                        r = (int) (r * t);
-                        g = (int) (g * t);
-                        b = (int) (b * t);
-                        a = (int) (a * t);
+                        r *= t;
+                        g *= t;
+                        b *= t;
+                        a *= t;
                     }
 
                     /*

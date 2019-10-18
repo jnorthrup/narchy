@@ -433,8 +433,9 @@ public class Parser {
             return v;             
         }
 		/**/
-		
-		if (IntStream.of(Tokenizer.ATOM, Tokenizer.SQ_SEQUENCE, Tokenizer.DQ_SEQUENCE).anyMatch(t1::isType)) {
+
+		boolean result = IntStream.of(Tokenizer.ATOM, Tokenizer.SQ_SEQUENCE, Tokenizer.DQ_SEQUENCE).anyMatch(t1::isType);
+		if (result) {
 			if (!t1.isFunctor())
 			/*Castagna 06/2011*/
 			{

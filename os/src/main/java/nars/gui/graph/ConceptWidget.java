@@ -75,16 +75,18 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
     public static class ConceptVis1 implements TermVis<ConceptWidget> {
 
-        final float minSize = 0.1f;
-        final float maxSize = 6f;
+        static final float minSize = 0.1f;
+        static final float maxSize = 6f;
 
 
         @Override
         public void accept(List<ConceptWidget> pending) {
-            pending.forEach(this::each);
+            for (ConceptWidget conceptWidget : pending) {
+                each(conceptWidget);
+            }
         }
 
-        public void each(ConceptWidget cw) {
+        public static void each(ConceptWidget cw) {
             float p = cw.pri;
             p = (p == p) ? p : 0;
 
@@ -126,7 +128,8 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
     public static class ConceptEdge extends EDraw<ConceptWidget> {
 
-        float termlinkPri, tasklinkPri;
+        float termlinkPri;
+        float tasklinkPri;
         boolean inactive;
         static final float priTHRESH = ScalarValue.EPSILON;
 

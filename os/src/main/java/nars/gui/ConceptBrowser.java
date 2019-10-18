@@ -19,9 +19,7 @@ public class ConceptBrowser extends Bordering {
         super();
 
         this.nar = nar;
-        TextEdit edit = new TextEdit(16, 2).onChange((te) -> {
-            update(te.text());
-        });
+        TextEdit edit = new TextEdit(16, 2).onChange((te) -> update(te.text()));
 
         north(edit.focus());
 

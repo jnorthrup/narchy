@@ -2,6 +2,7 @@ package asanf.FOM;
 
 
 import asanf.FOM.Util.DTMatrix;
+import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -129,14 +130,17 @@ public class TermFrequencies<E> extends DTMatrix<E> implements Iterable<E> {
 			return false;
 
 		List<E> toRemove = new ArrayList();
-		terms.forEachKeyValue((E term, int i) -> {
+		terms.forEachKeyValue((term, i) -> {
 			double f = values[i][i]; 
 			if((f < lower || f > upper)){
 				
 				toRemove.add(term);
 			}
 		});
-		toRemove.forEach(terms::remove);
+		ObjectIntHashMap<E> eObjectIntHashMap = terms;
+		for (E e : toRemove) {
+			eObjectIntHashMap.remove(e);
+		}
 		terms.compact();
 
 		return true;

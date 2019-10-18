@@ -79,15 +79,15 @@ public class PlayerHud {
     }
 
     public static void BeginIntermission(edict_t targ) {
-        int i, n;
-        edict_t client;
 
         if (GameBase.level.intermissiontime != 0)
             return; 
 
         GameBase.game.autosaved = false;
 
-        
+
+        edict_t client;
+        int i;
         for (i = 0; i < GameBase.maxclients.value; i++) {
             client = GameBase.g_edicts[1 + i];
             if (!client.inuse)
@@ -106,7 +106,7 @@ public class PlayerHud {
                     if (!client.inuse)
                         continue;
                     
-                    for (n = 1; n < GameItemList.itemlist.length; n++) {
+                    for (int n = 1; n < GameItemList.itemlist.length; n++) {
                         
                         if (GameItemList.itemlist[n] != null)
                             if ((GameItemList.itemlist[n].flags & Defines.IT_KEY) != 0)
@@ -169,15 +169,10 @@ public class PlayerHud {
         StringBuilder string = new StringBuilder(1400);
 
         int stringlength;
-        int i, j, k;
+        int i;
         int[] sorted = new int[Defines.MAX_CLIENTS];
         int[] sortedscores = new int[Defines.MAX_CLIENTS];
-        int score;
-        int picnum;
-        int x, y;
-        gclient_t cl;
         edict_t cl_ent;
-        String tag;
 
 
         int total = 0;
@@ -185,12 +180,13 @@ public class PlayerHud {
             cl_ent = GameBase.g_edicts[1 + i];
             if (!cl_ent.inuse || GameBase.game.clients[i].resp.spectator)
                 continue;
-            score = GameBase.game.clients[i].resp.score;
+            int score = GameBase.game.clients[i].resp.score;
+            int j;
             for (j = 0; j < total; j++) {
                 if (score > sortedscores[j])
                     break;
             }
-            for (k = total; k > j; k--) {
+            for (int k = total; k > j; k--) {
                 sorted[k] = sorted[k - 1];
                 sortedscores[k] = sortedscores[k - 1];
             }
@@ -206,14 +202,15 @@ public class PlayerHud {
             total = 12;
         
         for (i = 0; i < total; i++) {
-            cl = GameBase.game.clients[sorted[i]];
+            gclient_t cl = GameBase.game.clients[sorted[i]];
             cl_ent = GameBase.g_edicts[1 + sorted[i]];
 
-            picnum = game_import_t.imageindex("i_fixme");
-            x = (i >= 6) ? 160 : 0;
-            y = 32 + 32 * (i % 6);
+            int picnum = game_import_t.imageindex("i_fixme");
+            int x = (i >= 6) ? 160 : 0;
+            int y = 32 + 32 * (i % 6);
 
-            
+
+            String tag;
             if (cl_ent == ent)
                 tag = "tag1";
             else if (cl_ent == killer)
@@ -291,8 +288,6 @@ public class PlayerHud {
      * ===============
      */
     public static void G_SetStats(edict_t ent) {
-        gitem_t item;
-        int cells = 0;
 
 
         gclient_t C = ent.client;
@@ -301,9 +296,8 @@ public class PlayerHud {
         S[Defines.STAT_HEALTH_ICON] = (short) GameBase.level.pic_health;
         S[Defines.STAT_HEALTH] = (short) ent.health;
 
-        
-        
-        
+
+        gitem_t item;
         if (0 == C.ammo_index /*
                                         * ||
                                         * !ent.client.pers.inventory[ent.client.ammo_index]
@@ -320,6 +314,7 @@ public class PlayerHud {
 
 
         int power_armor_type = GameItems.PowerArmorType(ent);
+        int cells = 0;
         if (power_armor_type != 0) {
             cells = C.pers.inventory[GameItems.ITEM_INDEX(GameItems.FindItem("cells"))];
             if (cells == 0) { 
@@ -446,11 +441,9 @@ public class PlayerHud {
      * ===============
      */
     public static void G_CheckChaseStats(edict_t ent) {
-        int i;
-        gclient_t cl;
 
-        for (i = 1; i <= GameBase.maxclients.value; i++) {
-            cl = GameBase.g_edicts[i].client;
+        for (int i = 1; i <= GameBase.maxclients.value; i++) {
+            gclient_t cl = GameBase.g_edicts[i].client;
             if (!GameBase.g_edicts[i].inuse || cl.chase_target != ent)
                 continue;
             

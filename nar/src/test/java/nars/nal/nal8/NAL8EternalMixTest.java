@@ -22,7 +22,7 @@ import static nars.time.Tense.ETERNAL;
 class NAL8EternalMixTest extends NALTest {
 
     private static final LongPredicate ZERO = t -> t >= 0;
-    private final int cycles = 200;
+    private static final int cycles = 200;
 
     @BeforeEach
     void setTolerance() {
@@ -367,8 +367,8 @@ class NAL8EternalMixTest extends NALTest {
         test.termVolMax(13);
         TestNAR tester = test;
 
-        int when = 2;
         tester.input("( ( hold:t2 &&+1 (att1 &&+1 open:t1)) ==>+1 opened:t1).");
+        int when = 2;
         tester.inputAt(when, "hold:t2. :|:");
 
         String result = "((att1 &&+1 open:t1) ==>+1 opened:t1)";

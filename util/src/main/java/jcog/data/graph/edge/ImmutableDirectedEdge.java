@@ -11,7 +11,8 @@ import java.util.Objects;
  */
 public class ImmutableDirectedEdge<N, E> implements FromTo<Node<N,E>, E> {
 
-    public final Node<N,E> from, to;
+    public final Node<N,E> from;
+    public final Node<N,E> to;
     private final @Nullable E id;
     private final int hash;
 

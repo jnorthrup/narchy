@@ -82,7 +82,7 @@ public class RLDemo extends javax.swing.JFrame {
     private LearnerAndActor agent;
     private RLEnvironment rLDomain;
 
-    final int updatePeriodMS = 0;
+    static final int updatePeriodMS = 0;
     private int numIterationsPerLoop = 1;
     private final ApproxParameters approxParameters = new ApproxParameters(0.01, 0.1);
     private final RLParameters rLParameters = new RLParameters(0.01, 0.9, 0.9, 0);
@@ -122,7 +122,7 @@ public class RLDemo extends javax.swing.JFrame {
                 debugLabel.setText("@" + numPhysicsIterations);
 
                 if (visualize) {
-                    final double r = rLDomain.getReward();
+                    double r = rLDomain.getReward();
 
 
 
@@ -135,8 +135,8 @@ public class RLDemo extends javax.swing.JFrame {
                     if (agent instanceof RLAgent) {
                         double[] d = ((RLAgent)agent).getStateNormalized();
                         int numParam = d.length;
-                        final int cw = (int) Math.ceil(Math.sqrt(numParam));
-                        final int ch = numParam / cw;
+                        int cw = (int) Math.ceil(Math.sqrt(numParam));
+                        int ch = numParam / cw;
 
                         parameterChart.draw(agent.getFunction());
                         
@@ -204,9 +204,7 @@ public class RLDemo extends javax.swing.JFrame {
         domainMenu.addActionListener(menuAction);
         jMenuBar1.add(iterationsMenu);
 
-        iterationsMenu.addActionListener((ActionEvent e) -> {
-            numIterationsPerLoop = (int) iterationsMenu.getObject();
-        });
+        iterationsMenu.addActionListener(e -> numIterationsPerLoop = (int) iterationsMenu.getObject());
         iterationsMenu.notifyListeners();
 
         updateParameters();

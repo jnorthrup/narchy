@@ -16,6 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 /**
@@ -68,7 +69,7 @@ public class ApproximationDemo1D extends javax.swing.JFrame {
         jMenuBar1.add(approximatorMenu);
         jMenuBar1.add(iterationsMenu);
 
-        approximatorMenu.addActionListener((ActionEvent e) -> {
+        approximatorMenu.addActionListener(e -> {
             renderParameterizedFunction.setParameterizedFunction(
                     approximatorMenu.getFunctionGenerator(
                             approxParameters
@@ -78,12 +79,18 @@ public class ApproximationDemo1D extends javax.swing.JFrame {
         });
         approximatorMenu.notifyListeners();
 
-        iterationsMenu.addActionListener((ActionEvent e) -> {
-            numIterationsPerLoop = (int) iterationsMenu.getObject();
-        });
+        iterationsMenu.addActionListener(e -> numIterationsPerLoop = (int) iterationsMenu.getObject());
         iterationsMenu.notifyListeners();
 
-        double[] ys = IntStream.range(0, components).mapToDouble(i -> 2f * (Math.random() - 0.5)).toArray();
+        double[] ys = new double[10];
+        int count = 0;
+        int bound = components;
+        for (int i = 0; i < bound; i++) {
+            if (ys.length == count) ys = Arrays.copyOf(ys, count * 2);
+            double v = 2f * (Math.random() - 0.5);
+            ys[count++] = v;
+        }
+        ys = Arrays.copyOfRange(ys, 0, count);
         f = new RenderArrayFunction1D(Color.blue, ys);
 
         functionRenderer1.renderFunctions.add(f);

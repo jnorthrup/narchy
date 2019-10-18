@@ -94,12 +94,12 @@ public class TrackerTest extends VideoSurface {
 
     @Override
     public Surface finger(Finger finger) {
-        float cw = 0.15f;
-        float ch = 0.15f;
         boolean reset ;
         if ((reset=finger.pressedNow(2)) || finger.pressedNow(0)) {
             v2 p = finger.posRelative(innerBounds());
             p.scaled(frame.width,frame.height);
+            float ch = 0.15f;
+            float cw = 0.15f;
             float x = p.x, y = p.y, w = frame.width*cw, h = frame.height*ch;
             Quadrilateral_F64 location = new Quadrilateral_F64();
             location.setA(new Point2D_F64(x-w/2, y-h/2));

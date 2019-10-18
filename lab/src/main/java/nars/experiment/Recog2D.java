@@ -29,6 +29,7 @@ import spacegraph.video.Draw;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.IntFunction;
@@ -61,7 +62,7 @@ public class Recog2D extends GameX {
 
 
     int image;
-    final int maxImages = 4;
+    static final int maxImages = 4;
 
     int imagePeriod = 64;
     static final int FPS = 16;
@@ -71,7 +72,6 @@ public class Recog2D extends GameX {
 
 
         w = 12; h = 14;
-        int sw = 7, sh = 9;
 
         canvas = new BufferedImage(w, h, BufferedImage.TYPE_INT_BGR);
         g = ((Graphics2D) canvas.getGraphics());
@@ -81,6 +81,8 @@ public class Recog2D extends GameX {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 
+        int sh = 9;
+        int sw = 7;
         sp = senseCamera(
                 $.p(id,$.the("x"))
 
@@ -131,6 +133,7 @@ public class Recog2D extends GameX {
 
 //        int history = 256;
 
+        int bound = tv.concepts.length;
         Gridding g = new Gridding(
 
 //                p = new Plot2D(history, Plot2D.Line).addAt("Reward", () ->
@@ -143,17 +146,17 @@ public class Recog2D extends GameX {
 
                 new Gridding(beliefTableCharts(nar, List.of(tv.concepts), 16)),
 
-                new Gridding(IntStream.range(0, tv.concepts.length).mapToObj(i -> new VectorLabel(String.valueOf(i)) {
+                new Gridding(IntStream.range(0, bound).mapToObj(i -> new VectorLabel(String.valueOf(i)) {
                     @Override
                     protected void paintIt(GL2 gl, ReSurface r) {
                         Concept c = tv.concepts[i];
                         BeliefVector.Neuron nn = tv.neurons[i];
 
-                        float freq, conf;
+                        float freq;
 
                         Truth t = nar.beliefTruth(c, nar.time());
                         if (t != null) {
-                            conf = t.conf();
+                            float conf = t.conf();
                             freq = t.freq();
                         } else {
 //                            conf = nar.confMin.floatValue();
@@ -189,7 +192,7 @@ public class Recog2D extends GameX {
                     }
                 }).toArray(Surface[]::new)));
 
-        final int[] frames = {0};
+        int[] frames = {0};
         onFrame(() -> {
 
             if (frames[0]++ % imagePeriod == 0) {
@@ -221,7 +224,8 @@ public class Recog2D extends GameX {
             btRange[0] = now - window;
             btRange[1] = now + window;
         });
-        return terms.stream().map(c -> new BeliefTableChart(c, nar)).collect(toList());
+        List<Surface> list = terms.stream().map(c -> new BeliefTableChart(c, nar)).collect(toList());
+        return list;
     }
 
     protected int nextImage() {
@@ -343,7 +347,8 @@ public class Recog2D extends GameX {
 
         class Neuron {
 
-            public float predictedFreq = 0.5f, predictedConf = 0;
+            public float predictedFreq = 0.5f;
+            public float predictedConf = 0;
 
             public float expectedFreq;
 
@@ -413,7 +418,7 @@ public class Recog2D extends GameX {
 
             this.states = maxStates;
             this.neurons = new Neuron[maxStates];
-            this.concepts = IntStream.range(0, maxStates).mapToObj((int i) -> {
+            this.concepts = IntStream.range(0, maxStates).mapToObj(i -> {
                         Term tt = namer.apply(i);
 
                         Neuron n = neurons[i] = new Neuron();

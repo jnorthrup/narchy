@@ -11,10 +11,14 @@ import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
+import nars.term.buffer.Termerator;
 import nars.term.functor.BinaryBidiFunctor;
 import nars.term.functor.UnaryBidiFunctor;
 import nars.term.util.conj.Conj;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
@@ -84,11 +88,10 @@ public enum ListFunc {
             } else {
                 Subterms xys = xy.subterms();
 
-                e.canBe( IntStream.range(-1, l).mapToObj(finalI ->
-                        Evaluation.assign(
-                                x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
-                                y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))
-                ).collect(toList()) );
+                List<Predicate<Termerator>> list = IntStream.range(-1, l).mapToObj(finalI -> Evaluation.assign(
+                        x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
+                        y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))).collect(toList());
+                e.canBe(list);
 
                 return null;
             }
@@ -162,7 +165,7 @@ public enum ListFunc {
     public static final Functor sub = Functor.f2("sub",
             (x, n) -> n.op() == INT ? x.sub(((Int) n).i, Bool.Null) : null);
 
-    public static final Functor subs = Functor.f2Or3("subs", (Subterms args) -> {
+    public static final Functor subs = Functor.f2Or3("subs", args -> {
         if (args.subs() == 2) {
             Term n = args.sub(1);
             if (n.op() == INT) {

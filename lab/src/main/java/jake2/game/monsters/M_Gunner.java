@@ -800,14 +800,14 @@ public class M_Gunner {
         @Override
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
-            int n;
 
-            
+
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
                                 .soundindex("misc/udeath.wav"), 1,
                                 Defines.ATTN_NORM, 0);
+                int n;
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
                             damage, Defines.GIB_ORGANIC);
@@ -924,24 +924,24 @@ public class M_Gunner {
         public String getID() { return "GunnerFire"; }
         @Override
         public boolean think(edict_t self) {
-            float[] start = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-            float[] target = { 0, 0, 0 };
-            float[] aim = { 0, 0, 0 };
 
             int flash_number = Defines.MZ2_GUNNER_MACHINEGUN_1
                     + (self.s.frame - FRAME_attak216);
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[flash_number], forward, right,
                     start);
 
-            
+
+            float[] target = {0, 0, 0};
             Math3D.VectorCopy(self.enemy.s.origin, target);
             Math3D.VectorMA(target, -0.2f, self.enemy.velocity, target);
             target[2] += self.enemy.viewheight;
 
+            float[] aim = {0, 0, 0};
             Math3D.VectorSubtract(target, start, aim);
             Math3D.VectorNormalize(aim);
             Monster.monster_fire_bullet(self, start, aim, 3, 4,
@@ -957,9 +957,6 @@ public class M_Gunner {
         public String getID() { return "GunnerGrenade"; }
         @Override
         public boolean think(edict_t self) {
-            float[] start = { 0, 0, 0 };
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-            float[] aim = { 0, 0, 0 };
             int flash_number;
 
             if (self.s.frame == FRAME_attak105)
@@ -972,12 +969,16 @@ public class M_Gunner {
                 
                 flash_number = Defines.MZ2_GUNNER_GRENADE_4;
 
+            float[] right = {0, 0, 0};
+            float[] forward = {0, 0, 0};
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[flash_number], forward, right,
                     start);
 
-            
+
+            float[] aim = {0, 0, 0};
             Math3D.VectorCopy(forward, aim);
 
             Monster.monster_fire_grenade(self, start, aim, 50, 600,

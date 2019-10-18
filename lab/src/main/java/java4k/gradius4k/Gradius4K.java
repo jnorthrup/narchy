@@ -112,10 +112,6 @@ public class Gradius4K extends GamePanel {
     public void run() {
 
 
-        int playerShootDelay = 0;
-        int fireworks = 0;
-        int level = 1;
-        int playerGun = 2;
         int i = 0;
         int j = 0;
         int k = 0;
@@ -124,25 +120,15 @@ public class Gradius4K extends GamePanel {
         int z = 0;
         int s = 0;
         int v = 0;
-        int counter = 0;
 
         float dx = 0;
         float dy = 0;
-        float mag = 0;
-
-        float cameraVx = 0;
-
-        boolean bossMode = false;
-
-        Graphics2D g2 = null;
-        int[][] levelMap = null;
 
         BufferedImage[] sprites = new BufferedImage[14 * 4096];
         Graphics2D g = (Graphics2D) image.getGraphics();
 
         AffineTransform defaultTransform = g.getTransform();
         Random random = new Random(7);
-        ArrayList<float[]> queue = new ArrayList<>();
 
         final String S = "\uff00\u0000\u0100\u0000\u0000\u0100\u0000\u0000\u0100\u0000\u0100\u0000\u0000\u0100\u0000\u0000\u0100\u01ff\uf000\u0c00\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u00f0\u001c\u00f0\uf000\ufc00\u0000\uf000\ue000\u0000\u0000\u0000\u0000\u0000\u0000\u0300\u00ff\u003c\u0fc0\u00ff\u003c\u3ff0\u0100\u8000\u8000\u0100\u8000\u8000\u0100\u8000\u0080\u8001\u0080\u0080\u8001\u0080\u8080\u8001\u0080\u8080\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u00fe\u0000\u0000\u008c\u0000\u00e0\u0000\u0000\u00f8\u0000\u003f\u00fe\u00fc\u803f\u00ff\u00fe\ue03f\u00ff\u000f\u00ff\uf000\u0003\u003c\uc000\u0000\u0000\u00ff\u0000\u0000\u00ff\u0003\u003c\uc000\u000f\u00ff\uf000\uc3c3\u00c3\u7c00\u8181\u0081\u3000\u0000\u0000\u0000\u0000\u0000\u001f\u8181\u0081\u301f\uc3c3\u00c3\u7c1f\u0d01\u0205\uba1b\ub6b7\u1776\u0a1a\u0202\u0101\u130e\u2322\u9062\u8689\u4464\u4952\u087e\u0304\u3f08\u8050\u888f\u22f7\uf722\u8f88\u5585\u0a3f\u807f\u4443\u142b\u2b28\u2c2b\u2b17\u4344\u7f80\u150e\u6412\u8c84\uc9fa\u8889\u244f\u1514\u0f0c\u0a07\u3912\u603c\u9292\uc2a2\u1122\u2010\u3f40\u1b06\u5b2a\uc7a2\u54be\ube54\ua2c7\u2a5b\u061b\u1807\u403e\u807e\ufe81\u7142\ua2cb\u4e92\u1e2e\u0407\u4538\u5458\u5762\ucacc\u9ce9\u93ba\u2b55\u990f\uf191\u322e\u4120\u4442\u526d\ud52d\ua4a6\u1c07\u6330\ucf47\u9c9e\u9e9c\u47cf\u3063\u0718\u0505\u790f\u8949\u9191\u84e5\ud584\ubfb5\u2191\u0101\u8202\uee92\uaae9\u8a8c\u8acb\ua1a5\u0820";
 
@@ -243,15 +229,14 @@ public class Gradius4K extends GamePanel {
                 float A = e * e + 4096;
                 float t = (8192 + (float) Math.sqrt(67108864 + 49152 * A)) / (2 * A);
                 float hx = d * t;
-                float hy = e * t;
-                float hz = 64 - 64 * t;
                 halfPipe[y][x][0] = ((int) (512 + hx)) & 0xFF;
+                float hz = 64 - 64 * t;
+                float hy = e * t;
                 halfPipe[y][x][1] = ((int) (512 + Math.atan2(hy, hz) * 128)) & 0xFF;
             }
         }
-        float halfPipeOffset = 0;
 
-        
+
         int[] backgroundImage = new int[65536];
         for (k = 0; k < 4096; k++) {
             i = random.nextInt(512) & 0xFF;
@@ -269,6 +254,18 @@ public class Gradius4K extends GamePanel {
         tileImage.setRGB(0, 0, 32, 32, background, 0, 32);
 
 
+        float halfPipeOffset = 0;
+        ArrayList<float[]> queue = new ArrayList<>();
+        int[][] levelMap = null;
+        Graphics2D g2 = null;
+        boolean bossMode = false;
+        float cameraVx = 0;
+        float mag = 0;
+        int counter = 0;
+        int playerGun = 2;
+        int level = 1;
+        int fireworks = 0;
+        int playerShootDelay = 0;
         while (true) {
 
             if (paused) {
@@ -924,27 +921,27 @@ public class Gradius4K extends GamePanel {
 
     @Override
     public void processKeyEvent(KeyEvent keyEvent) {
-        final int VK_LEFT = 0x25;
-        final int VK_RIGHT = 0x27;
-        final int VK_UP = 0x26;
-        final int VK_DOWN = 0x28;
-        final int VK_SHOOT = 0x42;
-        final int VK_W = 0x57;
-        final int VK_S = 0x53;
-        final int VK_A = 0x41;
-        final int VK_D = 0x44;
 
         int k = keyEvent.getKeyCode();
         if (k > 0) {
+            final int VK_D = 0x44;
+            final int VK_A = 0x41;
+            final int VK_S = 0x53;
+            final int VK_W = 0x57;
+            final int VK_DOWN = 0x28;
+            final int VK_LEFT = 0x25;
             if (k == VK_W) {
+                final int VK_UP = 0x26;
                 k = VK_UP;
             } else if (k == VK_D) {
+                final int VK_RIGHT = 0x27;
                 k = VK_RIGHT;
             } else if (k == VK_A) {
                 k = VK_LEFT;
             } else if (k == VK_S) {
                 k = VK_DOWN;
             }
+            final int VK_SHOOT = 0x42;
             keys[(k >= VK_LEFT && k <= VK_DOWN) ? k : VK_SHOOT] = keyEvent.getID() != 402;
         }
     }

@@ -46,7 +46,8 @@ public class Sample {
     private String simpleName;
     private String filename;
     private float[][] theSampleData; 
-    private float[] current, next;   
+    private float[] current;
+    private float[] next;
 
     
     private Class<? extends AudioFileReader> audioFileReaderClass;
@@ -226,13 +227,13 @@ public class Sample {
         double frame = msToSamples(posInMS);
         int frame_floor = (int) Math.floor(frame);
         if (frame_floor > 0 && frame_floor < nFrames) {
-            double frame_frac = frame - frame_floor;
             if (frame_floor == nFrames - 1) {
                 getFrame(frame_floor, result);
             } else 
             {
                 getFrame(frame_floor, current);
                 getFrame(frame_floor + 1, next);
+                double frame_frac = frame - frame_floor;
                 for (int i = 0; i < nChannels; i++) {
                     result[i] = (float) ((1 - frame_frac) * current[i] + frame_frac * next[i]);
                 }
@@ -253,14 +254,13 @@ public class Sample {
      */
     public void getFrameCubic(double posInMS, float[] result) {
         double frame = msToSamples(posInMS);
-        float a0, a1, a2, a3, mu2;
-        float ym1, y0, y1, y2;
         for (int i = 0; i < nChannels; i++) {
             int realCurrentSample = (int) Math.floor(frame);
             float fractionOffset = (float) (frame - realCurrentSample);
 
             if (realCurrentSample >= 0 && realCurrentSample < (nFrames - 1)) {
                 realCurrentSample--;
+                float ym1;
                 if (realCurrentSample < 0) {
                     getFrame(0, current);
                     ym1 = current[i];
@@ -270,24 +270,24 @@ public class Sample {
                     ym1 = current[i];
                 }
                 getFrame(realCurrentSample++, current);
-                y0 = current[i];
+                float y0 = current[i];
                 if (realCurrentSample >= nFrames) {
                     getFrame((int) nFrames - 1, current);
                 } else {
                     getFrame(realCurrentSample++, current);
                 }
-                y1 = current[i];
+                float y1 = current[i];
                 if (realCurrentSample >= nFrames) {
                     getFrame((int) nFrames - 1, current);
                 } else {
                     getFrame(realCurrentSample++, current);
                 }
-                y2 = current[i];
-                mu2 = fractionOffset * fractionOffset;
-                a0 = y2 - y1 - ym1 + y0;
-                a1 = ym1 - y0 - a0;
-                a2 = y1 - ym1;
-                a3 = y0;
+                float y2 = current[i];
+                float mu2 = fractionOffset * fractionOffset;
+                float a0 = y2 - y1 - ym1 + y0;
+                float a1 = ym1 - y0 - a0;
+                float a2 = y1 - ym1;
+                float a3 = y0;
                 result[i] = a0 * fractionOffset * mu2 + a1 * mu2 + a2
                         * fractionOffset + a3;
             } else {

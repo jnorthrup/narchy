@@ -100,7 +100,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
         return !t.hasAny(Op.VAR_QUERY.bit | Op.VAR_INDEP.bit);
     }
 
-    private static @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> dynamicImpl(final Compound t) {
+    private static @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> dynamicImpl(Compound t) {
 
         //TODO allow indep var if they are involved in (contained within) either but not both subj and pred
         if (t.hasAny(Op.VAR_INDEP.bit | Op.VAR_QUERY.bit))
@@ -108,7 +108,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
         if (!t.hasAny(AtomicConstant))
             return null;
 
-        final Subterms tt = t.subterms();
+        Subterms tt = t.subterms();
 
         AbstractDynamicTruth c = null;
         if (tt.hasAny(Op.CONJ)) {
@@ -226,7 +226,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
     public abstract TemporalBeliefTable newTemporalTable(Term c, boolean beliefOrGoal);
 
-    private Concept taskConcept(final Term t) {
+    private Concept taskConcept(Term t) {
 
         BeliefTable B, G;
         ObjectBooleanToObjectFunction<Term, BeliefTable[]> dmt = t instanceof Compound ?
@@ -263,7 +263,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
         );
     }
 
-    protected abstract Concept nodeConcept(final Term t);
+    protected abstract Concept nodeConcept(Term t);
 
     @Override
     public final Concept apply(Term x, Concept prev) {

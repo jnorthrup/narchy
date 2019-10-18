@@ -263,7 +263,8 @@ public class Struct extends Term {
     public boolean isGround() {
         if (!isAtomic()) {
             Term[] a = this.subs;
-            return IntStream.range(0, subs()).allMatch(i -> a[i].isGround());
+            int bound = subs();
+            return IntStream.range(0, bound).allMatch(i -> a[i].isGround());
         }
 
         return true;
@@ -295,7 +296,8 @@ public class Struct extends Term {
                 }
             }
         }
-        return IntStream.range(0, subs()).filter(i -> subs[i] instanceof Struct).mapToObj(i -> (Struct) subs[i]).map(s -> s.sub(name)).filter(Objects::nonNull).findFirst().orElse(null);
+        int bound = subs();
+        return IntStream.range(0, bound).filter(i -> subs[i] instanceof Struct).mapToObj(i -> (Struct) subs[i]).map(s -> s.sub(name)).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
 
@@ -383,7 +385,8 @@ public class Struct extends Term {
             Struct ts = (Struct) t;
             if (subs() == ts.subs() && name.equals(ts.name)) {
                 if (this.subs!=ts.subs) {
-                    return IntStream.range(0, subs()).allMatch(c -> subs[c].equals(ts.subs[c]));
+                    int bound = subs();
+                    return IntStream.range(0, bound).allMatch(c -> subs[c].equals(ts.subs[c]));
 
                 }
                 return true;
@@ -419,7 +422,7 @@ public class Struct extends Term {
         if (!(vMap instanceof IdentityHashMap) && isConstant())
             return this;
 
-        final int arity = this.subs();
+        int arity = this.subs();
         Term[] xx = this.subs, yy = null;
 
         for (int c = 0; c < arity; c++) {
@@ -462,7 +465,7 @@ public class Struct extends Term {
         t.primitive = null;
         Term[] thatArg = t.subs;
         Term[] thisArg = this.subs;
-        final int arity = this.subs();
+        int arity = this.subs();
 
         for (int c = 0; c < arity; c++) {
             Term xc = thisArg[c];
@@ -515,7 +518,7 @@ public class Struct extends Term {
      * @param count start timestamp for variables of this term
      * @return next timestamp for other terms
      */
-    private void resolveTerm(Map<String, Var> vl, final long count) {
+    private void resolveTerm(Map<String, Var> vl, long count) {
 
         if (resolved)
             return;
@@ -712,12 +715,13 @@ public class Struct extends Term {
             if (resolved && yy.resolved && equals(y))
                 return true;
 
-            final int arity = this.subs();
+            int arity = this.subs();
             if (arity == yy.subs() && name.equals(yy.name)) {
                 Term[] xarg = this.subs;
                 Term[] yarg = yy.subs;
                 //repeat term, skip
-                return IntStream.range(0, arity).filter(c -> c <= 0 || xarg[c] != xarg[c - 1] || yarg[c] != yarg[c - 1]).allMatch(c -> xarg[c].unify(vl1, vl2, yarg[c]));
+                int bound = arity;
+                return IntStream.range(0, bound).filter(c -> c <= 0 || xarg[c] != xarg[c - 1] || yarg[c] != yarg[c - 1]).allMatch(c -> xarg[c].unify(vl1, vl2, yarg[c]));
             }
         } else if (y instanceof Var) {
             return y.unify(vl2, vl1, this);
@@ -769,7 +773,7 @@ public class Struct extends Term {
         }
         String s = (Parser.isAtom(name) ? name : '\'' + name + '\'');
         if (subs() > 0) {
-            s = s + '(';
+            s += '(';
             for (int c = 1; c < subs(); c++) {
                 s = s + (!(subs[c - 1] instanceof Var) ? subs[c - 1].toString() : ((Var) subs[c - 1]).toStringFlattened()) + ',';
             }
@@ -902,12 +906,12 @@ public class Struct extends Term {
         if (subs() == 0) {
             return v;
         }
-        v = v + '(';
+        v += '(';
         for (p = 1; p < subs(); p++) {
             v = v + subs[p - 1].toStringAsArgY(op, 0) + ',';
         }
-        v = v + subs[subs() - 1].toStringAsArgY(op, 0);
-        v = v + ')';
+        v += subs[subs() - 1].toStringAsArgY(op, 0);
+        v += ')';
         return v;
     }
 

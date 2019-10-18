@@ -88,17 +88,15 @@ public class SV_SEND {
 	*/
 	public static void SV_BroadcastPrintf(int level, String s) {
 
-		client_t cl;
 
-		
-		if (Globals.dedicated.value != 0) {
+        if (Globals.dedicated.value != 0) {
 
 			Com.Printf(s);
 		}
 
 		for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
-			cl = SV_INIT.svs.clients[i];
-			if (level < cl.messagelevel)
+            client_t cl = SV_INIT.svs.clients[i];
+            if (level < cl.messagelevel)
 				continue;
 			if (cl.state != Defines.cs_spawned)
 				continue;
@@ -136,15 +134,10 @@ public class SV_SEND {
 	=================
 	*/
 	public static void SV_Multicast(float[] origin, int to) {
-		client_t client;
-        byte[] mask;
-		int leafnum, cluster;
-		int j;
-        int area1, area2;
+        int leafnum;
+        int area1;
 
-        boolean reliable = false;
-
-		if (to != Defines.MULTICAST_ALL_R && to != Defines.MULTICAST_ALL) {
+        if (to != Defines.MULTICAST_ALL_R && to != Defines.MULTICAST_ALL) {
 			leafnum = CM.CM_PointLeafnum(origin);
 			area1 = CM.CM_LeafArea(leafnum);
 		}
@@ -157,7 +150,10 @@ public class SV_SEND {
 		if (SV_INIT.svs.demofile != null)
 			SZ.Write(SV_INIT.svs.demo_multicast, SV_INIT.sv.multicast.data, SV_INIT.sv.multicast.cursize);
 
-		switch (to) {
+        boolean reliable = false;
+        int cluster;
+        byte[] mask;
+        switch (to) {
 			case Defines.MULTICAST_ALL_R :
 				reliable = true; 
 			case Defines.MULTICAST_ALL :
@@ -187,10 +183,10 @@ public class SV_SEND {
 		}
 
 		
-		for (j = 0; j < SV_MAIN.maxclients.value; j++) {
-			client = SV_INIT.svs.clients[j];
+		for (int j = 0; j < SV_MAIN.maxclients.value; j++) {
+            client_t client = SV_INIT.svs.clients[j];
 
-			if (client.state == Defines.cs_free || client.state == Defines.cs_zombie)
+            if (client.state == Defines.cs_free || client.state == Defines.cs_zombie)
 				continue;
 			if (client.state != Defines.cs_spawned && !reliable)
 				continue;
@@ -198,8 +194,8 @@ public class SV_SEND {
 			if (mask != null) {
 				leafnum = CM.CM_PointLeafnum(client.edict.s.origin);
 				cluster = CM.CM_LeafCluster(leafnum);
-				area2 = CM.CM_LeafArea(leafnum);
-				if (!CM.CM_AreasConnected(area1, area2))
+                int area2 = CM.CM_LeafArea(leafnum);
+                if (!CM.CM_AreasConnected(area1, area2))
 					continue;
 
 				
@@ -253,10 +249,8 @@ public class SV_SEND {
 		float volume,
 		float attenuation,
 		float timeofs) {
-        int i;
-        boolean use_phs;
 
-		if (volume < 0 || volume > 1.0)
+        if (volume < 0 || volume > 1.0)
 			Com.Error(Defines.ERR_FATAL, "SV_StartSound: volume = " + volume);
 
 		if (attenuation < 0 || attenuation > 4)
@@ -270,8 +264,9 @@ public class SV_SEND {
 
         int ent = entity.index;
 
-		
-		if ((channel & 8) != 0) {
+
+        boolean use_phs;
+        if ((channel & 8) != 0) {
 			use_phs = false;
 			channel &= 7;
 		}
@@ -301,7 +296,7 @@ public class SV_SEND {
 		if (origin == null) {
 			origin = origin_v;
 			if (entity.solid == Defines.SOLID_BSP) {
-				for (i = 0; i < 3; i++)
+				for (int i = 0; i < 3; i++)
 					origin_v[i] = entity.s.origin[i] + 0.5f * (entity.mins[i] + entity.maxs[i]);
 			}
 			else {
@@ -419,15 +414,14 @@ public class SV_SEND {
 	=======================
 	*/
 	public static boolean SV_RateDrop(client_t c) {
-        int i;
 
-		
-		if (c.netchan.remote_address.type == Defines.NA_LOOPBACK)
+
+        if (c.netchan.remote_address.type == Defines.NA_LOOPBACK)
 			return false;
 
         int total = 0;
 
-		for (i = 0; i < Defines.RATE_MESSAGES; i++) {
+		for (int i = 0; i < Defines.RATE_MESSAGES; i++) {
 			total += c.message_size[i];
 		}
 
@@ -448,9 +442,6 @@ public class SV_SEND {
 	=======================
 	*/
 	public static void SV_SendClientMessages() {
-		int i;
-		client_t c;
-        int r;
 
         int msglen = 0;
 
@@ -477,9 +468,9 @@ public class SV_SEND {
 				if (msglen > Defines.MAX_MSGLEN)
 					Com.Error(Defines.ERR_DROP, "SV_SendClientMessages: msglen > MAX_MSGLEN");
 
-				
-				r = 0;
-				try {
+
+                int r = 0;
+                try {
 					r = SV_INIT.sv.demofile.read(msgbuf, 0, msglen);
 				}
 				catch (IOException e1) {
@@ -493,10 +484,10 @@ public class SV_SEND {
 		}
 
 		
-		for (i = 0; i < SV_MAIN.maxclients.value; i++) {
-			c = SV_INIT.svs.clients[i];
+		for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+            client_t c = SV_INIT.svs.clients[i];
 
-			if (c.state == 0)
+            if (c.state == 0)
 				continue;
 			
 			
@@ -507,7 +498,8 @@ public class SV_SEND {
 				SV_MAIN.SV_DropClient(c);
 			}
 
-			if (IntStream.of(Defines.ss_cinematic, Defines.ss_demo, Defines.ss_pic).anyMatch(v -> SV_INIT.sv.state == v))
+			boolean b = IntStream.of(Defines.ss_cinematic, Defines.ss_demo, Defines.ss_pic).anyMatch(v -> SV_INIT.sv.state == v);
+			if (b)
 				Netchan.Transmit(c.netchan, msglen, msgbuf);
 			else if (c.state == Defines.cs_spawned) {
 				

@@ -19,7 +19,8 @@ import static nars.derive.util.DerivationFunctors.Task;
 
 public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
 
-    private final byte[] ellipsisPath, contentPath;
+    private final byte[] ellipsisPath;
+    private final byte[] contentPath;
     private final boolean ellipsisInTaskOrBelief;
 
     private static final Atom id = Atomic.atom("ellipsisCommutativeConstant");
@@ -40,7 +41,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
 
         if (commutiveContainer instanceof Compound /* && concPattern.hasAny(Op.commutative)*/) {
             //target.pathsTo((Term t)->true, (Term t)->true, (ByteList ss, Term x)-> {
-            commutiveContainer.recurseTerms(t -> true, (Term x) -> {
+            commutiveContainer.recurseTerms(t -> true, x -> {
 
                 if (x!=commutiveContainer && x.op().commutative) {
                 //if (x instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsisCommutive) {

@@ -49,17 +49,17 @@ public final class WeakValueCache<K, V> {
      * @param key the key
      * @return the value or null if none exists
      */
-    public V get(final K key) {
+    public V get(K key) {
         
         for (;;) {
-            final KeyValueReference<?, ?> ref = (KeyValueReference) refQueue.poll();
+            KeyValueReference<?, ?> ref = (KeyValueReference) refQueue.poll();
             if (ref == null) {
                 break;
             }
             map.remove(ref.key, ref);
         }
 
-        final KeyValueReference<K, V> ref = map.get(key);
+        KeyValueReference<K, V> ref = map.get(key);
         if (ref != null) {
             return ref.get();
         }
@@ -74,7 +74,7 @@ public final class WeakValueCache<K, V> {
      * @param creator function to create a new value
      * @return the existing value, or a new one if none existed
      */
-    public V getOrCreate(final K key, final Function<? super K, ? extends V> creator) {
+    public V getOrCreate(K key, Function<? super K, ? extends V> creator) {
         V value = get(key);
 
         if (value == null) {
@@ -89,7 +89,7 @@ public final class WeakValueCache<K, V> {
     private static class KeyValueReference<K, V> extends WeakReference<V> {
         final K key;
 
-        KeyValueReference(final K key, final V value) {
+        KeyValueReference(K key, V value) {
             super(value);
             this.key = key;
         }

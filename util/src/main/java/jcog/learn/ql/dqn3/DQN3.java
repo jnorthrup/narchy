@@ -44,11 +44,11 @@ public class DQN3 extends Agent {
     final Random rng = new XoRoShiRo128PlusRandom();
     final Deciding actionDecider = new DecideEpsilonGreedy(0.1f, rng);
 
-    public DQN3(final int inputs, final int numActions) {
+    public DQN3(int inputs, int numActions) {
         this(inputs, numActions, Map.of( /* empty */));
     }
 
-    public DQN3(final int inputs, final int numActions, final Map<Option, Double> config) {
+    public DQN3(int inputs, int numActions, Map<Option, Double> config) {
         super(inputs, numActions);
 
         this.gamma = config.getOrDefault(Option.GAMMA, 0.9);
@@ -100,17 +100,17 @@ public class DQN3 extends Agent {
         return act(Util.toDouble(input));
     }
 
-    private static Mat matRandom(Random rand, final int n, final int d, float range) {
-        final Mat mat = new Mat(n, d);
+    private static Mat matRandom(Random rand, int n, int d, float range) {
+        Mat mat = new Mat(n, d);
         Arrays.setAll(mat.w, i -> rand.nextGaussian() * range);
         return mat;
     }
 
-    private Mat calcQ(final Mat s) {
+    private Mat calcQ(Mat s) {
         return calcQ(s, null);
     }
 
-    private Mat calcQ(final Mat s, @Nullable MatrixTransform g) {
+    private Mat calcQ(Mat s, @Nullable MatrixTransform g) {
 
         if(g==null) g = new MatrixTransform(false);
 
@@ -122,11 +122,11 @@ public class DQN3 extends Agent {
         return m;
     }
 
-    public int act(final double[] stateArr) {
+    public int act(double[] stateArr) {
         this.input = stateArr;
-        final Mat state = new Mat(this.inputs, 1, stateArr);
+        Mat state = new Mat(this.inputs, 1, stateArr);
 
-        final int action = decide(state);
+        int action = decide(state);
 
         this.lastState = this.currentState;
 //        this.lastAction = this.currentAction;
@@ -140,7 +140,7 @@ public class DQN3 extends Agent {
         return actionDecider.applyAsInt(qq);
     }
 
-    public double learn(float[] actionFeedback, final double reward) {
+    public double learn(float[] actionFeedback, double reward) {
         if (isFirstRun() || lastState==null) {
             this.lastReward = reward;
             return reward;
@@ -181,15 +181,15 @@ public class DQN3 extends Agent {
     }
 
     /** returns total error */
-    private double learn(final Experience exp) {
+    private double learn(Experience exp) {
 
-        final Mat next = this.calcQ(exp.currentState);
+        Mat next = this.calcQ(exp.currentState);
 
 
         //final double qMax = exp.lastReward + this.gamma * next.w[Util.argmax(next.w)];
 
         MatrixTransform g = new MatrixTransform(true);
-        final Mat pred = this.calcQ(exp.lastState, g);
+        Mat pred = this.calcQ(exp.lastState, g);
 
         float actionNorm = 1; //assume already normalized
 //        float actionNorm = Util.sum(exp.lastAction);
@@ -199,7 +199,7 @@ public class DQN3 extends Agent {
         double errTotal = 0;
         for (int i = 0; i < exp.lastAction.length; i++) {
             //var qmax = r0 + this.gamma * tmat.w[R.maxi(tmat.w)];
-            final double qMax = exp.lastReward + this.gamma * next.w[i];
+            double qMax = exp.lastReward + this.gamma * next.w[i];
 
             double err = (pred.w[i] - qMax) * exp.lastAction[i]/actionNorm;
             double tdError = Util.clamp(err, -tdErrorClamp, tdErrorClamp);
@@ -231,7 +231,7 @@ public class DQN3 extends Agent {
         public final double lastReward;
         public final Mat currentState;
 
-        Experience(final Mat lastState, float[] lastAction, final double lastReward, final Mat currentState) {
+        Experience(Mat lastState, float[] lastAction, double lastReward, Mat currentState) {
             this.lastState = lastState;
             this.lastAction = lastAction;
             this.lastReward = lastReward;

@@ -10,7 +10,10 @@ import static nars.Op.*;
 public final class SubtermMetadataCollector {
     public int structure = 0;
     public short vol = 1;
-    public short varPattern = 0, varQuery = 0, varDep = 0, varIndep = 0;
+    public short varPattern = 0;
+    public short varQuery = 0;
+    public short varDep = 0;
+    public short varIndep = 0;
     public int hash = 1;
 
     public SubtermMetadataCollector() {

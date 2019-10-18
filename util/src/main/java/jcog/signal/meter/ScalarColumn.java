@@ -14,7 +14,8 @@ public class ScalarColumn implements Comparable<ScalarColumn> {
     public final String id;
     public String unit;
 
-    private double min, max;
+    private double min;
+    private double max;
 
 
     public ScalarColumn(String id) {

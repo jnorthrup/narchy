@@ -55,6 +55,9 @@ class JsonTermTest {
         * https://eonet.sci.gsfc.nasa.gov/api/v2.1/events?limit=5&days=20&source=InciWeb&status=open
         * https://worldview.earthdata.nasa.gov/config/wv.json
         * */
+        NAR d = NARS.shell();
+        d.termVolMax.set(25);
+        d.log();
         String j = "{ \"id\": \"EONET_2797\",\n" +
                 "   \"title\": \"Snake Ridge Fire, ARIZONA\",\n" +
                 "   \"description\": \"\",\n" +
@@ -65,9 +68,6 @@ class JsonTermTest {
                 "     \"title\": \"Wildfires\"\n" +
                 "    }\n" +
                 "   ] }";
-        NAR d = NARS.shell();
-        d.termVolMax.set(25);
-        d.log();
         d.believe($.inh($.fromJSON(j), "x"));
         d.run(16);
     }

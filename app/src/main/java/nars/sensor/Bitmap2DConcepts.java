@@ -28,7 +28,9 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
 
     /** [y][x] */
     public final ComponentSignal[][] matrix;
-    public final int width, height, area;
+    public final int width;
+    public final int height;
+    public final int area;
     public final P src;
 
     public final Array2DIterable<ComponentSignal> iter;
@@ -134,7 +136,8 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
 
     class PixelSignal extends ComponentSignal {
 
-        public final int x, y;
+        public final int x;
+        public final int y;
 
         PixelSignal(Term sid, int x, int y, Bitmap2DSensor s) {
             super(sid, s);

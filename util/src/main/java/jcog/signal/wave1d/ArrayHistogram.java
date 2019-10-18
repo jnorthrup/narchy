@@ -15,7 +15,8 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
     private WritableTensor data = AtomicFloatVector.Empty;
 
-    private volatile float lo, hi;
+    private volatile float lo;
+    private volatile float hi;
     private volatile int mass = AtomicFloatFieldUpdater.iZero;
 
     private static final AtomicFloatFieldUpdater<ArrayHistogram> MASS =
@@ -144,7 +145,6 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         //boolean direction = (Integer.bitCount(Float.floatToRawIntBits(u) ) & 1) != 0; //one RNG call
         //boolean direction = rng.nextBoolean();
 
-        float B = Float.MAX_VALUE;
         boolean direction;
 
         if (u <= 0.5f) {
@@ -156,6 +156,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         float m = u * mass;
 
         WritableTensor data = this.data;
+        float B = Float.MAX_VALUE;
         for (int b = 0; b < bins;) {
             float db = data.getAt(direction ? b : (bins - 1 - b));
             if (db > m) {

@@ -76,7 +76,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
     }
 
 
-    private void initialize() {
+    private static void initialize() {
         throw new RuntimeException("share the impl from DiversityElitismStrategy");
 
 
@@ -101,13 +101,13 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
         try {
             listener.evolutionStarted(this);
             initialize();
-            Set<Node> bests = new UnifiedSet<>();
-            
+
             context.setSeparateAndConquerEnabled(true);
 
             int terminationCriteriaGenerationsCounter = 0;
             String oldGenerationBestValue = null;
             int generation;
+            Set<Node> bests = new UnifiedSet<>();
             for (generation = 0; generation < param.getGenerations(); generation++) {
                 context.setStripedPhase(context.getDataSetContainer().isDataSetStriped() && ((generation % context.getDataSetContainer().getProposedNormalDatasetInterval()) != 0));
 

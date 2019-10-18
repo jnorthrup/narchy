@@ -163,20 +163,20 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
     /**
      * completely dereferences a target (usually a variable)
      */
-    public Term resolveVar(final Variable x) {
+    public Term resolveVar(Variable x) {
         int s = this.size;
 
         if (s == 0) return x; //nothing assigned
 
 
-        Term /*Variable*/ z = x, y;
+        Term /*Variable*/ z = x;
 
         int safety = NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT;
             //Math.min(s, NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) + 1;
 
         do {
 
-            y = xy.get(z);
+            Term y = xy.get(z);
 
             if (y==null)
                 return z; //done
@@ -433,7 +433,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
 //    }
 
     private static Consumer<Versioned<Term>> versionedToBiConsumer(BiConsumer<Term, Term> each) {
-        return (Versioned<Term> v)->{
+        return v ->{
             if (v instanceof KeyMultiVersioned) {
                 each.accept(((KeyMultiVersioned<Term,Term>)v).key, v.get());
             } else if (v instanceof KeyUniVersioned) {
@@ -446,7 +446,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
      * returns true if the assignment was allowed, false otherwise
      * args should be non-null. the annotations are removed for perf reasons
      */
-    public final boolean putXY(final Variable x, Term y) {
+    public final boolean putXY(Variable x, Term y) {
 
 
 //        Term Y = y;
@@ -534,7 +534,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
     }
 
     /** to be overridden */
-    public Term applyAtomicConstant(Atomic x) {
+    public static Term applyAtomicConstant(Atomic x) {
         return x;
     }
 

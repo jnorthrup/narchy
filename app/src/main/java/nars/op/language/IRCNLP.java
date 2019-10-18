@@ -131,11 +131,7 @@ public class IRCNLP extends IRC {
 
     void hear(String text, String src) {
 
-        NARHear.hearIfNotNarsese(nar, text, src, (t) -> {
-            return new NARHear(nar, NARHear.tokenize(t.toLowerCase()), src, 200);
-
-
-        });
+        NARHear.hearIfNotNarsese(nar, text, src, (t) -> new NARHear(nar, NARHear.tokenize(t.toLowerCase()), src, 200));
     }
 
     @Override
@@ -216,9 +212,7 @@ public class IRCNLP extends IRC {
         new Thread(()-> {
             try {
                 bot.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (IrcException e) {
+            } catch (IOException | IrcException e) {
                 e.printStackTrace();
             }
         }).start();
@@ -284,8 +278,8 @@ public class IRCNLP extends IRC {
         Runnable r = null;
         synchronized (channels) {
             String w = $.unquote(o);
-            boolean punctuation = List.of(".", "!", "?").contains(w);
             this.s += w;
+            boolean punctuation = List.of(".", "!", "?").contains(w);
             if (!punctuation)
                 s += " ";
             if ((!s.isEmpty() && punctuation) || this.s.length() >= minSendLength) {

@@ -21,8 +21,9 @@ public class TemporalStabilityTests {
 
         private final @NotNull IntSet whens;
         private final IntToObjectFunction<String> eventer;
-        private final int minT, maxT;
-        final int tolerance = 0;
+        private final int minT;
+        private final int maxT;
+        static final int tolerance = 0;
 
         T1(IntToObjectFunction<String> eventer, int... whens) {
             this.whens = new IntHashSet(whens).toImmutable();
@@ -170,13 +171,13 @@ public class TemporalStabilityTests {
 
         @NotNull NAR n = NARS.tmp();
 
-        int time = CYCLES;
         T1 a = new T1(linkedimpl, 1, 2, 5, 10);
         T1 b = new T1(linkedinh, 1, 2, 5, 10);
 
         a.test(-1, n);
         b.test(-1, n);
 
+        int time = CYCLES;
         n.run(time);
 
 

@@ -1,6 +1,7 @@
 package nars.gui;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Streams;
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.TODO;
 import jcog.Util;
@@ -31,6 +32,7 @@ import nars.op.stm.ConjClustering;
 import nars.task.util.PriBuffer;
 import nars.term.Termed;
 import nars.time.part.DurLoop;
+import nars.truth.Truth;
 import nars.util.MemorySnapshot;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
@@ -71,13 +73,11 @@ import spacegraph.video.Draw;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static com.jogamp.newt.event.KeyEvent.VK_ENTER;
@@ -266,22 +266,20 @@ public class NARui {
                 path,
                 new Gridding(
                         mode,
-                        new PushButton("save").clicked(() -> {
-                            Exe.runLater(() -> {
-                                try {
-                                    nar.output(new File(path.text()), false);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+                        new PushButton("save").clicked(() -> Exe.runLater(() -> {
+                            try {
+                                nar.output(new File(path.text()), false);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
 
-                            });
-                        })
+                        }))
                 ));
     }
 
     public static Surface taskView(NAR n) {
         List<Predicate<Task>> filter = new CopyOnWriteArrayList<>();
-        Consumer<Task> printer = (Task t) -> {
+        Consumer<Task> printer = t -> {
             if (Util.and(t, (Iterable) filter))
                 System.out.println(t);
         };
@@ -444,20 +442,6 @@ public class NARui {
                 "actions", () -> NARui.beliefCharts(a.nar(), actions)
         ));
         return LabeledPane.the(a.id.toString(), aa);
-//            .on(Bitmap2DSensor.class, (Bitmap2DSensor b) ->
-//                new PushButton(b.id.toString()).click(()-> {
-//                    window(new AspectAlign(
-//                        new CameraSensorView(b, a.nar()).withControls(),
-//                        AspectAlign.Align.Center, b.width, b.height), 500, 500);
-//                }))
-//            .on(x -> x instanceof Concept,
-//                    (Concept x) -> new MetaFrame(new BeliefTableChart(x.target(), a.nar())))
-//            .on(x -> x instanceof LinkedHashMap, (LinkedHashMap x)->{
-//                return new AutoSurface<>(x.keySet());
-//            })
-
-        //.on(Loop.class, LoopPanel::new),
-
     }
 
     public static Gridding beliefIcons(NAR nar, List<? extends Termed> c) {
@@ -476,8 +460,8 @@ public class NARui {
             }
             color.set(0.5f, 0.5f, 0.5f);
         };
-        var d = c.stream().map(x -> new ConceptColorIcon(x.term(), nar, colorize)).collect(toList());
-        return grid(d);
+        var d = c.stream().map(x -> new ConceptColorIcon(x.term(), nar, colorize)).collect(Collectors.toCollection(ArrayList::new));
+        return grid( (Iterable<ConceptColorIcon>) d.iterator() );
     }
 
     public static TextEdit newNarseseInput(NAR n, Consumer<Task> onTask, Consumer<Exception> onException) {
@@ -488,7 +472,9 @@ public class NARui {
                 input.text("");
                 try {
                     var t = n.input(s);
-                    t.forEach(onTask);
+                    for (Task task : t) {
+                        onTask.accept(task);
+                    }
                 } catch (Narsese.NarseseException e) {
                     onException.accept(e);
                 }
@@ -603,15 +589,15 @@ public class NARui {
 
 
         Map<String,Supplier<Surface>> attentions = new HashMap();
-        n.what.forEach((v)->{
-           attentions.put(v.id.toString(), ()->attentionUI(v));
-        });
+        for (What v : n.what) {
+            attentions.put(v.id.toString(), () -> attentionUI(v));
+        }
         var atMenu = new TabMenu(attentions);
         return new Splitting(new TabMenu(global), 0.25f, atMenu).horizontal(true).resizeable();
     }
 
     public static Surface attentionUI(What w) {
-        final var m = new Bordering();
+        var m = new Bordering();
         var n = w.nar;
         var attn = ((TaskLinkWhat)w).links;
         m.center(new TabMenu(Map.of(
@@ -654,7 +640,9 @@ public class NARui {
                 snapshot.clearFast();
                 var c = active.capacity();
                 snapshot.ensureCapacity(c);
-                active.forEach(snapshot::addFast);
+                for (TaskLink taskLink : active) {
+                    snapshot.addFast(taskLink);
+                }
                 s.next(color);
             }
 
@@ -934,8 +922,7 @@ public class NARui {
         var s = new Graph2D<X>().render((node, g) -> {
             var c = node.id;
 
-                    final var epsilon = 0.01f;
-                    //float p = Math.max(Math.max(epsilon, c.pri()), epsilon);
+            //float p = Math.max(Math.max(epsilon, c.pri()), epsilon);
             var p = pri.floatValueOf(c);
             var v = p; //TODO support separate color fucntion
                     node.color(p, v, 0.25f);
@@ -945,7 +932,8 @@ public class NARui {
 //                float parentRadius = node.parent(Graph2D.class).radius(); //TODO cache ref
 //                float r = (float) ((parentRadius * 0.5f) * (sqrt(p) + 0.1f));
 
-                    node.pri = Math.max(epsilon, p);
+            final var epsilon = 0.01f;
+            node.pri = Math.max(epsilon, p);
                 })
                 //.layout(fd)
                 .update(new TreeMap2D<>())

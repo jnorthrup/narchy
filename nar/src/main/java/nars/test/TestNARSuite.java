@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -31,11 +32,16 @@ import java.util.stream.Stream;
 
     @SafeVarargs
     public static Stream<Method> tests(Class<? extends NALTest>... c) {
-        return Stream.of(c)
-                .flatMap(cc -> Stream.of(cc.getDeclaredMethods())
-                        .filter(x -> x.getAnnotation(Test.class) != null))
-                        .peek(AccessibleObject::trySetAccessible)
-                        .collect(Collectors.toList()).stream();
+        List<Method> list = new ArrayList<>();
+        for (Class<? extends NALTest> cc : c) {
+            for (Method x : cc.getDeclaredMethods()) {
+                if (x.getAnnotation(Test.class) != null) {
+                    x.trySetAccessible();
+                    list.add(x);
+                }
+            }
+        }
+        return list.stream();
     }
 
     public void run(boolean parallel) {
@@ -103,6 +109,7 @@ import java.util.stream.Stream;
     }
 
     public double score(/* scoring mode */) {
-        return stream().mapToDouble(x -> x.score).sum();
+        double sum = this.stream().mapToDouble(x -> x.score).sum();
+        return sum;
     }
 }

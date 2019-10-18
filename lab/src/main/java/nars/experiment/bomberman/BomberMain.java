@@ -27,15 +27,11 @@ public class BomberMain extends JFrame {
     private BomberGame game;
 
     /** sound effect player */
-    public static BomberSndEffect sndEffectPlayer;
+    public static BomberSndEffect sndEffectPlayer = new BomberSndEffect();
     /** this is used to calculate the dimension of the game */
     public static final int shiftCount = 4;
     /** this is the size of each square in the game */
     public static final int size = 1 << shiftCount;
-
-    static {
-        sndEffectPlayer = new BomberSndEffect();
-    }
 
     /**
      * Constructs the main frame.

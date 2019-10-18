@@ -43,14 +43,14 @@ public class LinearSplit<X> implements Split<X> {
         final int MAX = 1;
         final int NRANGE = 2;
         X[] data = leaf.data;
-        final int nD = m.bounds(data[0]).dim();
-        final int[][][] r = new int[nD][NRANGE][NRANGE];
+        int nD = m.bounds(data[0]).dim();
+        int[][][] r = new int[nD][NRANGE][NRANGE];
 
-        final double[] separation = new double[nD];
+        double[] separation = new double[nD];
 
         short size = leaf.size;
         for (int d = 0; d < nD; d++) {
-            final int[][] rd = r[d];
+            int[][] rd = r[d];
             int[] iiMin = rd[MIN];
             double daa = m.bounds(data[iiMin[MIN]]).coord(d, false);
             double dba = m.bounds(data[iiMin[MAX]]).coord(d, false);
@@ -72,7 +72,7 @@ public class LinearSplit<X> implements Split<X> {
             }
 
 
-            final double width = Math.abs(
+            double width = Math.abs(
                     m.bounds(data[rd[MAX][MAX]]).coord(d, true) -
                     m.bounds(data[rd[MIN][MIN]]).coord(d, false)
             );

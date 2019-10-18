@@ -20,9 +20,8 @@ public class ShowDangle {
 	 * is ambiguous.
 	 */
 	public static void main(String[] args) {
-		String s;
-		s = "if (overdueDays > 90)    \n";
-		s += "    if (balance >= 1000) \n";
+        String s = "if (overdueDays > 90)    \n";
+        s += "    if (balance >= 1000) \n";
 		s += "        callCustomer();  \n";
 		s += "else sendBill();";
 

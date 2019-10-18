@@ -67,7 +67,7 @@ public final class EwmaAnomalyzer {
         double weakDelta = params.weakSigmas * stdDev;
         double strongDelta = params.strongSigmas * stdDev;
 
-        final Anomalysis.AnomalyThresholds thresholds = new Anomalysis.AnomalyThresholds(
+        Anomalysis.AnomalyThresholds thresholds = new Anomalysis.AnomalyThresholds(
                 this.mean + strongDelta,
                 this.mean + weakDelta,
                 this.mean - weakDelta,
@@ -102,22 +102,22 @@ public final class EwmaAnomalyzer {
          * Smoothing param. Somewhat misnamed because higher values lead to less smoothing, but it's called the
          * smoothing parameter in the literature.
          */
-        private final double alpha = 0.15;
+        private static final double alpha = 0.15;
 
         /**
          * Weak threshold sigmas.
          */
-        private final double weakSigmas = 3.0;
+        private static final double weakSigmas = 3.0;
 
         /**
          * Strong threshold sigmas.
          */
-        private final double strongSigmas = 4.0;
+        private static final double strongSigmas = 4.0;
 
         /**
          * Initial mean estimate.
          */
-        private final double initMeanEstimate = 0.0;
+        private static final double initMeanEstimate = 0.0;
 
 //        public void validate() {
 //            assert(0.0 <= alpha && alpha <= 1.0): "Required: alpha in the range [0, 1]";

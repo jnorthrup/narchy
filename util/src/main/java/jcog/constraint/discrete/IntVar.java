@@ -20,6 +20,7 @@ import jcog.constraint.discrete.propagation.Propagator;
 import jcog.constraint.discrete.trail.Trail;
 
 import java.util.Arrays;
+import java.util.StringJoiner;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -52,7 +53,14 @@ public abstract class IntVar {
     public static final int MAX_VALUE = 1000000000;
 
     public static int[] makeInt(int n, IntUnaryOperator f) {
-        int[] array = IntStream.range(0, n).map(f).toArray();
+        int[] array = new int[10];
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            int i1 = f.applyAsInt(i);
+            if (array.length == count) array = Arrays.copyOf(array, count * 2);
+            array[count++] = i1;
+        }
+        array = Arrays.copyOfRange(array, 0, count);
         return array;
     }
 
@@ -270,7 +278,13 @@ public abstract class IntVar {
         int[] domain = new int[size()];
         copyDomain(domain);
         Arrays.sort(domain);
-        String bf = IntStream.range(0, domain.length - 1).mapToObj(i -> domain[i] + ", ").collect(Collectors.joining("", "{", domain[domain.length - 1] + "}"));
+        StringJoiner joiner = new StringJoiner("", "{", domain[domain.length - 1] + "}");
+        int bound = domain.length - 1;
+        for (int i = 0; i < bound; i++) {
+            String s = domain[i] + ", ";
+            joiner.add(s);
+        }
+        String bf = joiner.toString();
         return bf;
     }
 }

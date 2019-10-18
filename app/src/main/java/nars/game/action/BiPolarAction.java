@@ -44,7 +44,8 @@ public class BiPolarAction extends AbstractSensor {
         float update(Truth pos, Truth neg, long prev, long now);
     }
 
-    public final AbstractGoalActionConcept pos, neg;
+    public final AbstractGoalActionConcept pos;
+    public final AbstractGoalActionConcept neg;
 
 //    public BiPolarAction(Term id, Polarization model, FloatToFloatFunction motor, NAR nar) {
 //        this(posOrNeg ->
@@ -282,14 +283,14 @@ public class BiPolarAction extends AbstractSensor {
         /** calculates the effective output motor value returned by the model.
          * input and output to this function are in the domain/range of -1..+1
          * a default linear response is implemented here. */
-        public float motorization(float input) {
+        public static float motorization(float input) {
             return input;
         }
 
         /** confidence/evidence strength.  could be truth conf or evidence, zero if null. used in determining coherence
          *  TODO return double
          * */
-        public double c(Truth t) {
+        public static double c(Truth t) {
             //return t != null ? t.evi() : 0;
             return t != null ? t.conf() : 0;
         }

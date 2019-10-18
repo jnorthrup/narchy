@@ -8,7 +8,9 @@ package jcog.grammar.parse.examples.engine;
  * including the implied warranty of merchantability.
  */
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -156,7 +158,8 @@ public class Not extends Structure {
 		if (!functorAndArityEquals(n)) {
 			return false;
 		}
-        return IntStream.range(0, terms.length).allMatch(i -> terms[i].equals(n.terms[i]));
+		int bound = terms.length;
+		return IntStream.range(0, bound).allMatch(i -> terms[i].equals(n.terms[i]));
 	}
 
 	/**

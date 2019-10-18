@@ -163,13 +163,33 @@ public class EstimatedHistogram {
      * @return a long[] containing the current histogram buckets
      */
     long[] getBuckets(boolean reset) {
-        final int len = buckets.length();
+        int len = buckets.length();
         long[] rv;
 
-        if (reset)
-            rv = IntStream.range(0, len).mapToLong(i -> buckets.getAndSet(i, 0L)).toArray();
-        else
-            rv = IntStream.range(0, len).mapToLong(buckets::get).toArray();
+        if (reset) {
+            long[] arr = new long[10];
+            int count = 0;
+            int bound = len;
+            for (int i = 0; i < bound; i++) {
+                long andSet = buckets.getAndSet(i, 0L);
+                if (arr.length == count) arr = Arrays.copyOf(arr, count * 2);
+                arr[count++] = andSet;
+            }
+            arr = Arrays.copyOfRange(arr, 0, count);
+            rv = arr;
+        }
+        else {
+            long[] arr = new long[10];
+            int count = 0;
+            int bound = len;
+            for (int i = 0; i < bound; i++) {
+                long l = buckets.get(i);
+                if (arr.length == count) arr = Arrays.copyOf(arr, count * 2);
+                arr[count++] = l;
+            }
+            arr = Arrays.copyOfRange(arr, 0, count);
+            rv = arr;
+        }
 
         return rv;
     }
@@ -257,7 +277,8 @@ public class EstimatedHistogram {
      * @return the total number of non-zero values
      */
     public long count() {
-        long sum = IntStream.range(0, buckets.length()).mapToLong(buckets::get).sum();
+        int bound = buckets.length();
+        long sum = IntStream.range(0, bound).mapToLong(buckets::get).sum();
         return sum;
     }
 

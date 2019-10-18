@@ -49,7 +49,8 @@ public class ArkaNAR extends GameX {
 
     //final int visW = 48, visH = 32;
     //final int visW = 24, visH = 16;
-    final int visW = 20, visH = 16;
+    static final int visW = 20;
+    static final int visH = 16;
     Bitmap2DSensor<ScaledBitmap2D> cc;
     //final int visW = 8, visH = 6;
 
@@ -107,7 +108,7 @@ public class ArkaNAR extends GameX {
     public static class MultiArkaNAR {
         public static void main(String[] args) {
 
-            NAR n = runRT((NAR nn) -> {
+            NAR n = runRT(nn -> {
 
                 ArkaNAR a = new ArkaNAR($$("(noid,a)"), nn, cam, numeric);
                 a.ballSpeed.set( 0.7f * a.ballSpeed.floatValue() );
@@ -126,7 +127,7 @@ public class ArkaNAR extends GameX {
 
     public static void main(String[] args) {
 
-        runRT((NAR n) -> {
+        runRT(n -> {
 
             ArkaNAR a = new ArkaNAR(n, cam, numeric);
             n.add(a);
@@ -156,9 +157,6 @@ public class ArkaNAR extends GameX {
         //initBipolarRelative();
         //initPushButton();
 
-        float resX = 0.02f;
-        float resY = 0.02f;
-
         if (cam) {
 
             cc = senseCamera((x, y) -> $.inh(id, $.p(x, y)), new ScaledBitmap2D(
@@ -171,12 +169,14 @@ public class ArkaNAR extends GameX {
 
         if (numeric) {
             float numRes = 0.2f;
+            float resX = 0.02f;
             AbstractSensor px = senseNumberBi($.inh(id,"px"), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
             px.resolution(numRes);
             AbstractSensor dx = senseNumberBi($.inh(id, "dx"), (() -> 0.5f + 0.5f * (noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
             dx.resolution(numRes);
             AbstractSensor cx = senseNumberBi($.inh(id, $.p("b", "x")), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
             cx.resolution(numRes);
+            float resY = 0.02f;
             AbstractSensor cy = senseNumberBi($.inh(id ,$.p("b", "y")), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
             cy.resolution(numRes);
 //            window(NARui.beliefCharts(dx.components(), nar), 500, 500);
@@ -192,15 +192,11 @@ public class ArkaNAR extends GameX {
 
         onFrame(noid::next);
 
-        SimpleReward dontDie = (SimpleReward) reward("die", 0, () -> {
-            return Math.min(1, noid.die - noid.prevDie);
-        });
+        SimpleReward dontDie = (SimpleReward) reward("die", 0, () -> Math.min(1, noid.die - noid.prevDie));
         //dontDie.addGuard(true,false);
 
 
-        reward("score",  () -> {
-            return Math.min(1, noid.score - noid.prevScore);
-        });
+        reward("score",  () -> Math.min(1, noid.score - noid.prevScore));
         //s.setDefault($.t(0.5f, 0.9f));
 
         /*actionTriState*/
@@ -269,8 +265,10 @@ public class ArkaNAR extends GameX {
      */
     public class Arkanoid extends Canvas implements KeyListener {
 
-        private int prevScore = 0, prevDie = 0;
-        int score = 0, die = 0;
+        private int prevScore = 0;
+        private int prevDie = 0;
+        int score = 0;
+        int die = 0;
 
 
         public static final int SCREEN_WIDTH = 250;
@@ -349,7 +347,8 @@ public class ArkaNAR extends GameX {
 
         class Rectangle extends GameObject {
 
-            public float x, y;
+            public float x;
+            public float y;
             public float sizeX;
             public float sizeY;
 
@@ -467,7 +466,8 @@ public class ArkaNAR extends GameX {
 
         class Ball extends GameObject {
 
-            public float x, y;
+            public float x;
+            public float y;
             float radius = BALL_RADIUS;
 
 

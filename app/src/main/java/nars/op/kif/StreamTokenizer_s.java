@@ -601,8 +601,8 @@ public class StreamTokenizer_s {
                 }
                 peekc = c;
                 if (decexp != 0) {
-                    double denom = 10;
                     decexp--;
+                    double denom = 10;
                     while (decexp > 0) {
                         denom *= 10;
                         decexp--;

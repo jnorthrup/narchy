@@ -55,13 +55,13 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     private final NewtKeyboard keyboard;
     private final Deque<Surface> zoomStack = new ArrayDeque();
 
-    private final float wheelZoomRate = 0.6f;
+    private static final float wheelZoomRate = 0.6f;
 
     private final Fingering zoomDrag = new Dragging(ZOOM_BUTTON) {
 
         final v2 start = new v2();
-        final float maxIterationChange = 0.25f;
-        final float rate = 0.4f;
+        static final float maxIterationChange = 0.25f;
+        static final float rate = 0.4f;
 
         @Override
         protected boolean starting(Finger f) {
@@ -87,7 +87,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     };
     private final Fingering contentPan = new FingerMoveWindow(PAN_BUTTON) {
 
-        final float speed = 1f;
+        static final float speed = 1f;
         private v3 camStart;
 
         @Override
@@ -114,8 +114,10 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     };
 
 //    float CORNER_RADIUS = 4;
-    private float camXmin = -1, camXmax = +1;
-    private float camYmin = -1, camYmax = +1;
+    private float camXmin = -1;
+    private float camXmax = +1;
+    private float camYmin = -1;
+    private float camYmax = +1;
 
     public Zoomed(JoglDisplay space, NewtKeyboard keyboard, S content) {
         super(content);
@@ -304,7 +306,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     /**
      * choose best zoom radius for the target rectangle according to current view aspect ratio
      */
-    private float targetDepth(float w, float h, float margin) {
+    private static float targetDepth(float w, float h, float margin) {
         float d = Math.max(w, h);
 //        if (((((float) pw()) / ph()) >= 1) == ((w / h) >= 1))
 //            d = h; //limit by height
@@ -315,7 +317,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     }
 
 
-    private float targetDepth(float viewDiameter) {
+    private static float targetDepth(float viewDiameter) {
         return (float) ((viewDiameter * sin(Math.PI / 2 - focusAngle / 2)) / sin(focusAngle / 2));
     }
 
@@ -333,7 +335,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
 
 
-    public boolean autosize() {
+    public static boolean autosize() {
         return true;
     }
 

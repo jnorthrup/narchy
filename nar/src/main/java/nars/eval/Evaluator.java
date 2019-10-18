@@ -60,7 +60,7 @@ public class Evaluator extends HeapTermTransform {
 
                 compoundBuilder.volRemain = Integer.MAX_VALUE; //HACK
                 TermBuffer y = compoundBuilder.append(X);
-                final int[] functors = {0};
+                int[] functors = {0};
                 y.updateMap(g -> {
                     if (g instanceof Functor)
                         functors[0]++;
@@ -143,7 +143,8 @@ public class Evaluator extends HeapTermTransform {
     }
 
     private static final class EvaluationTrueFalseFiltered extends Evaluation {
-        private final boolean includeTrues, includeFalses;
+        private final boolean includeTrues;
+        private final boolean includeFalses;
 
         EvaluationTrueFalseFiltered(Predicate<Term> each, boolean includeTrues, boolean includeFalses) {
             super(each);

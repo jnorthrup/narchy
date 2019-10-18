@@ -281,7 +281,7 @@ public class AWTSurface extends Widget implements KeyPressed {
 
     }
 
-    private void handle(AWTEvent e) {
+    private static void handle(AWTEvent e) {
 
 
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(e);

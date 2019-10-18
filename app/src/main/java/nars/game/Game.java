@@ -64,7 +64,9 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     private final AtomicBoolean busy = new AtomicBoolean(false);
     public final AtomicBoolean trace = new AtomicBoolean(false);
 
-    private static final Atom ACTION = Atomic.atom("action"), SENSOR = Atomic.atom("sensor"), REWARD = Atomic.atom("reward");
+    private static final Atom ACTION = Atomic.atom("action");
+    private static final Atom SENSOR = Atomic.atom("sensor");
+    private static final Atom REWARD = Atomic.atom("reward");
 
     public final FastCoWList<GameLoop> sensors = new FastCoWList<>(GameLoop[]::new);
     public final FastCoWList<ActionSignal> actions = new FastCoWList<>(ActionSignal[]::new);
@@ -72,7 +74,9 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     public final AtomicInteger iteration = new AtomicInteger(0);
 
-    public PriSource rewardPri, actionPri, sensorPri;
+    public PriSource rewardPri;
+    public PriSource actionPri;
+    public PriSource sensorPri;
 
     /** the context representing the experience of the game */
     @Deprecated private What what;
@@ -82,7 +86,8 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     public volatile long now = ETERNAL;
 
-    public final When<What> nowPercept = new When(), nowLoop = new When();
+    public final When<What> nowPercept = new When();
+    public final When<What> nowLoop = new When();
 
     private final NAgentCycle cycle =
             //Cycles.Biphasic;
@@ -161,11 +166,11 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     }
 
     /** happiness metric applied to all sensor concepts */
-    @Paper public final float happinessSensorsMean() {
+    @Paper public static float happinessSensorsMean() {
         throw new TODO();
     }
     /** happiness metric applied to all action concepts */
-    @Paper public final float happinessActionsMean() {
+    @Paper public static float happinessActionsMean() {
         throw new TODO();
     }
 
@@ -279,9 +284,15 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         nar.control.add(rewardPri = new PriSource($.inh(id,REWARD),
             Util.or(nar.beliefPriDefault.pri(),nar.goalPriDefault.pri())));
 
-        sensors.forEach(s -> init(sensorPri, s));
-        actions.forEach(a -> init(actionPri, a));
-        rewards.forEach(r -> init(rewardPri, r));
+        for (GameLoop s : sensors) {
+            init(sensorPri, s);
+        }
+        for (ActionSignal a : actions) {
+            init(actionPri, a);
+        }
+        for (Reward r : rewards) {
+            init(rewardPri, r);
+        }
     }
 
     /** subclasses can safely add sensors, actions, rewards by implementing this.  NAR and What will be initialized prior */
@@ -360,7 +371,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         return reward(reward, freq, normalize(rewardFunc, min, max));
     }
 
-    public FloatSupplier normalize(FloatSupplier rewardFunc, float min, float max) {
+    public static FloatSupplier normalize(FloatSupplier rewardFunc, float min, float max) {
         return new FloatClamped(new FloatNormalized(rewardFunc, min, max, false), 0, 1);
     }
 
@@ -543,7 +554,8 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     }
 
 
-    private transient float _freqRes = Float.NaN, _confRes = Float.NaN;
+    private transient float _freqRes = Float.NaN;
+    private transient float _confRes = Float.NaN;
 
     protected void sense() {
 
@@ -551,8 +563,12 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         _confRes = nar.confResolution.floatValue();
 
         //TODO fork here
-        sensors.forEach(this::update);
-        rewards.forEach(this::update);
+        for (GameLoop sensor : sensors) {
+            update(sensor);
+        }
+        for (Reward reward : rewards) {
+            update(reward);
+        }
     }
 
     private void update(GameLoop s) {

@@ -62,12 +62,12 @@ public abstract class AbstractTimedCallable<X> extends AbstractTimedFuture<X> {
     }
 
     public static  <X> X poll(Future<X> f, long timeout, TimeUnit unit) {
-        X r;
 
         long deadline = System.nanoTime() + unit.toNanos(timeout);
 
         do {
 
+            X r;
             try {
                 r = f.get();
             } catch (InterruptedException e) {

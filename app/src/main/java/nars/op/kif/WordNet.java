@@ -455,7 +455,6 @@ public class WordNet {
                     if ("00".equals(wordNum)) {
                         key = synset.substring(1);
                     } else {
-                        int num = Integer.parseInt(wordNum);
                         ArrayList al = (ArrayList) synsetsToWords.get(synset);
                         if (al == null) {
                             System.out.println("Error in WordNet.processPointers(): "
@@ -464,6 +463,7 @@ public class WordNet {
                                     + pointers
                                     + '"');
                         }
+                        int num = Integer.parseInt(wordNum);
                         String word = (String) al.get(num - 1);
                         key = synset.substring(1) + '-' + word;
                     }
@@ -543,8 +543,7 @@ public class WordNet {
 
         try {
 
-            
-            String line;
+
             File nounFile = getWnFile("noun_mappings");
             if (nounFile == null) {
                 System.out.println("INFO in WordNet.readNouns(): "
@@ -555,6 +554,7 @@ public class WordNet {
             FileReader r = new FileReader(nounFile);
             
             LineNumberReader lr = new LineNumberReader(r);
+            String line;
             while ((line = lr.readLine()) != null) {
                 if (lr.getLineNumber() % 1000 == 0) {
                     System.out.print('.');
@@ -562,8 +562,8 @@ public class WordNet {
                 line = line.trim();
                 
                 m = regexPatterns[6].matcher(line);
-                boolean anyAreNull = false;
                 if (m.matches()) {
+                    boolean anyAreNull = false;
                     for (int i = 1; i < 5; i++) {
                         anyAreNull = (m.group(i) == null);
                         if (anyAreNull) {
@@ -651,7 +651,6 @@ public class WordNet {
         System.out.println("INFO in WordNet.readVerbs(): Reading WordNet verb files");
 
         try {
-            String line;
             File verbFile = getWnFile("verb_mappings");
             if (verbFile == null) {
                 System.out.println("INFO in WordNet.readVerbs(): "
@@ -661,6 +660,7 @@ public class WordNet {
             long t1 = System.currentTimeMillis();
             FileReader r = new FileReader(verbFile);
             LineNumberReader lr = new LineNumberReader(r);
+            String line;
             while ((line = lr.readLine()) != null) {
                 if (lr.getLineNumber() % 1000 == 0) {
                     System.out.print('.');
@@ -740,7 +740,6 @@ public class WordNet {
         System.out.println("INFO in WordNet.readAdjectives(): Reading WordNet adjective files");
 
         try {
-            String line;
             File adjFile = getWnFile("adj_mappings");
             if (adjFile == null) {
                 System.out.println("INFO in WordNet.readAdjectives(): "
@@ -750,6 +749,7 @@ public class WordNet {
             long t1 = System.currentTimeMillis();
             FileReader r = new FileReader(adjFile);
             LineNumberReader lr = new LineNumberReader(r);
+            String line;
             while ((line = lr.readLine()) != null) {
                 if (lr.getLineNumber() % 1000 == 0) {
                     System.out.print('.');
@@ -801,7 +801,6 @@ public class WordNet {
         System.out.println("INFO in WordNet.readAdverbs(): Reading WordNet adverb files");
 
         try {
-            String line;
             File advFile = getWnFile("adv_mappings");
             if (advFile == null) {
                 System.out.println("INFO in WordNet.readAdverbs(): "
@@ -811,6 +810,7 @@ public class WordNet {
             long t1 = System.currentTimeMillis();
             FileReader r = new FileReader(advFile);
             LineNumberReader lr = new LineNumberReader(r);
+            String line;
             while ((line = lr.readLine()) != null) {
                 if (lr.getLineNumber() % 1000 == 0) {
                     System.out.print('.');
@@ -861,11 +861,9 @@ public class WordNet {
 
         System.out.println("INFO in WordNet.readWordFrequencies(): Reading WordNet word frequencies");
 
-        int counter = 0;
-        File wfFile;
         String canonicalPath = "";
         try {
-            wfFile = getWnFile("word_frequencies");
+            File wfFile = getWnFile("word_frequencies");
             if (wfFile == null) {
                 System.out.println("INFO in WordNet.readWordFrequencies(): "
                         + "The word frequencies file does not exist");
@@ -875,23 +873,17 @@ public class WordNet {
             long t1 = System.currentTimeMillis();
             FileReader r = new FileReader(wfFile);
             LineNumberReader lr = new LineNumberReader(r);
-            Matcher m;
-            String key;
-            String values;
-            String[] words;
-            HashMap frequencies;
-            String word;
-            String freq;
             String line;
+            int counter = 0;
             while ((line = lr.readLine()) != null) {
                 line = line.trim();
-                
-                m = regexPatterns[17].matcher(line);
+
+                Matcher m = regexPatterns[17].matcher(line);
                 if (m.matches()) {
-                    key = m.group(1);
-                    values = m.group(2);
-                    words = values.split(" ");
-                    frequencies = new HashMap();
+                    String key = m.group(1);
+                    String values = m.group(2);
+                    String[] words = values.split(" ");
+                    HashMap frequencies = new HashMap();
                     for (int i = 0; i < words.length - 3; i++) {
                         if ("SUMOterm:".equals(words[i])) {
                             i = words.length;
@@ -900,8 +892,8 @@ public class WordNet {
                                 
                                 
                             } else {
-                                word = words[i].substring(0, words[i].indexOf('_'));
-                                freq = words[i].substring(words[i].lastIndexOf('_') + 1);
+                                String word = words[i].substring(0, words[i].indexOf('_'));
+                                String freq = words[i].substring(words[i].lastIndexOf('_') + 1);
                                 frequencies.put(word.intern(), Integer.decode(freq));
                             }
                         }
@@ -935,10 +927,9 @@ public class WordNet {
     public void readStopWords() {
 
         System.out.println("INFO in WordNet.readStopWords(): Reading stop words");
-        File swFile;
         String canonicalPath = "";
         try {
-            swFile = getWnFile("stopwords");
+            File swFile = getWnFile("stopwords");
             if (swFile == null) {
                 System.out.println("INFO in WordNet.readStopWords(): "
                         + "The stopwords file does not exist");
@@ -972,11 +963,9 @@ public class WordNet {
 
         System.out.println("INFO in WordNet.readSenseIndex(): Reading WordNet sense index");
 
-        int counter = 0;
-        File siFile;
         String canonicalPath = "";
         try {
-            siFile = getWnFile("sense_indexes");
+            File siFile = getWnFile("sense_indexes");
             if (siFile == null) {
                 System.out.println("INFO in WordNet.readSenseIndex(): "
                         + "The sense indexes file does not exist");
@@ -986,28 +975,21 @@ public class WordNet {
             long t1 = System.currentTimeMillis();
             FileReader r = new FileReader(siFile);
             LineNumberReader lr = new LineNumberReader(r);
-            
-            Matcher m;
-            String word;
-            String pos;
-            String synset;
-            String sensenum;
-            String posString;
-            String key;
-            ArrayList al;
+
             String line;
+            int counter = 0;
             while ((line = lr.readLine()) != null) {
-                
-                m = regexPatterns[18].matcher(line);
+
+                Matcher m = regexPatterns[18].matcher(line);
                 if (m.matches()) {
-                    word = m.group(1);
-                    pos = m.group(2);
-                    synset = m.group(3);
-                    sensenum = m.group(4);
-                    posString = WordNetUtilities.posNumberToLetters(pos);
-                    key = word + '_' + posString + '_' + sensenum;
+                    String word = m.group(1);
+                    String pos = m.group(2);
+                    String synset = m.group(3);
+                    String sensenum = m.group(4);
+                    String posString = WordNetUtilities.posNumberToLetters(pos);
+                    String key = word + '_' + posString + '_' + sensenum;
                     word = word.intern();
-                    al = (ArrayList) wordsToSenses.get(word);
+                    ArrayList al = (ArrayList) wordsToSenses.get(word);
                     if (al == null) {
                         al = new ArrayList();
                         wordsToSenses.put(word, al);
@@ -1047,9 +1029,7 @@ public class WordNet {
      */
     private ArrayList findSUMOWordSenseArray(String word, Iterable words, int POS) {
 
-        String SUMOterm = null;
 
-        
         ArrayList senses = (ArrayList) wordsToSenses.get(word.intern());
         if (senses == null) {
             
@@ -1094,7 +1074,8 @@ public class WordNet {
         String senseValue = (String) senses.get(bestSense);
         
         String synset = (String) senseIndex.get(senseValue.intern());
-        
+
+        String SUMOterm = null;
         switch (POS) {
             case NOUN:
                 SUMOterm = (String) nounSUMOHash.get(synset.intern());
@@ -1294,12 +1275,11 @@ public class WordNet {
      */
     public String collectSUMOWordSenses(String sentence) {
 
-        String result = "";
-        
         String newSentence = removePunctuation(sentence);
         newSentence = removeStopWords(newSentence);
         
         ArrayList al = splitToArrayList(newSentence);
+        String result = "";
         for (int i = 0; i < al.size(); i++) {
             String word = (String) al.get(i);
             String SUMO = findSUMOWordSense(word, al);
@@ -1378,17 +1358,16 @@ public class WordNet {
     private String sumoDisplay(String synsetBlock, String word, String type, String sumokbname, String synsetNum) {
 
         StringBuilder result = new StringBuilder();
-        String synset;
-        String documentation = "";
-        String sumoEquivalent = "";
         String[] synsetList = splitSynsets(synsetBlock);
 
         int listLength = synsetList != null ? synsetList.length : 0;
         result.append("<i>According to WordNet, the ").append(type).append('"').append(word).append("\" has ");
         result.append(listLength).append(" sense(s).</i><P>\n\n");
 
-        for (int i = 0; i < listLength; i++) {         
-            synset = synsetList[i];
+        String sumoEquivalent = "";
+        String documentation = "";
+        for (int i = 0; i < listLength; i++) {
+            String synset = synsetList[i];
             synset = synset.trim();
             if (synset.equals(synsetNum)) {
                 result.append("<b>");
@@ -1499,11 +1478,9 @@ public class WordNet {
      */
     private String processNoun(String sumokbname, String mixedCase, String input, String synset) {
 
-        String synsetBlock;
-
         String regular = nounRootForm(mixedCase, input);
         if (regular != null) {
-            synsetBlock = (String) nounSynsetHash.get(regular);
+            String synsetBlock = (String) nounSynsetHash.get(regular);
             return sumoDisplay(synsetBlock, mixedCase, "noun", sumokbname, synset);
         } else {
             return "<P>There are no associated SUMO terms for the noun \"" + mixedCase + "\".<P>\n";
@@ -1576,11 +1553,9 @@ public class WordNet {
      */
     private String processVerb(String sumokbname, String mixedCase, String input, String synset) {
 
-        String synsetBlock;
-
         String regular = verbRootForm(mixedCase, input);
         if (regular != null) {
-            synsetBlock = (String) verbSynsetHash.get(regular);
+            String synsetBlock = (String) verbSynsetHash.get(regular);
             return sumoDisplay(synsetBlock, mixedCase, "verb", sumokbname, synset);
         } else {
             return "<P>There are no associated SUMO terms for the verb \"" + mixedCase + "\".<P>\n";
@@ -1676,12 +1651,12 @@ public class WordNet {
      */
     public TreeMap getWordsFromTerm(String SUMOterm) {
 
-        TreeMap result = new TreeMap();
         Iterable synsets = (ArrayList) SUMOHash.get(SUMOterm);
         if (synsets == null) {
             System.out.println("INFO in WordNet.getWordsFromTerm(): No synsets for target : " + SUMOterm);
             return null;
         }
+        TreeMap result = new TreeMap();
         for (Object synset1 : synsets) {
             String synset = (String) synset1;
             Iterable words = (ArrayList) synsetsToWords.get(synset);
@@ -1723,7 +1698,6 @@ public class WordNet {
         }
 
         int listLength;
-        String synset;
         String[] synsetList = null;
         if (synsetBlock != null) {
             synsetList = synsetBlock.split("\\s+");
@@ -1731,7 +1705,7 @@ public class WordNet {
         String term = null;
 
         if (synsetList != null) {
-            synset = synsetList[0];   
+            String synset = synsetList[0];
             synset = synset.trim();
             if (pos == NOUN) {
                 term = (String) nounSUMOHash.get(synset);
@@ -1917,12 +1891,7 @@ public class WordNet {
      */
     private String getTransitivity(String synset, String word) {
 
-        
-        int[] intrans = {1, 2, 3, 4, 7, 23, 35};
-        int[] ditrans = {15, 16, 17, 18, 19};
-        String intransitive = "no";
-        String transitive = "no";
-        String ditransitive = "no";
+
         List frames = new ArrayList();
         ArrayList res = (ArrayList) verbFrames.get(synset);
         if (res != null) {
@@ -1932,6 +1901,11 @@ public class WordNet {
         if (res != null) {
             frames.addAll(res);
         }
+        String ditransitive = "no";
+        String transitive = "no";
+        String intransitive = "no";
+        int[] ditrans = {15, 16, 17, 18, 19};
+        int[] intrans = {1, 2, 3, 4, 7, 23, 35};
         for (Object frame : frames) {
             int value = Integer.parseInt((String) frame);
             if (arrayContains(intrans, value)) {
@@ -2034,9 +2008,8 @@ public class WordNet {
 
         for (Object o : adjectiveSynsetHash.keySet()) {
             String word = (String) o;
-            String compound = "simple";
             if (word.indexOf('_') > -1) {
-                compound = "compound";
+                String compound = "compound";
             }
 
             String stringSynsets = (String) adjectiveSynsetHash.get(word);
@@ -2073,9 +2046,8 @@ public class WordNet {
 
         for (Object o : verbSynsetHash.keySet()) {
             String word = (String) o;
-            String compound = "simple";
             if (word.indexOf('_') > -1) {
-                compound = "compound";
+                String compound = "compound";
             }
 
             String stringSynsets = (String) verbSynsetHash.get(word);
@@ -2430,10 +2402,9 @@ public class WordNet {
 
         System.out.println("INFO in WordNet.computeSentenceTerms(): computing terms");
 
-        File msgFile;
         String canonicalPath = "";
         try {
-            msgFile = getWnFile("messages");
+            File msgFile = getWnFile("messages");
             if (msgFile == null) {
                 System.out.println("INFO in WordNet.computeSentenceTerms(): "
                         + "The messages file does not exist");

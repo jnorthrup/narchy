@@ -19,7 +19,8 @@ public class Longerval implements LongInterval, Comparable<Longerval> {
 
     private static final Longerval Eternal = new Longerval(ETERNAL, ETERNAL);
 
-    public final long start, end;
+    public final long start;
+    public final long end;
 
     public Longerval(long start) {
         this(start, start);

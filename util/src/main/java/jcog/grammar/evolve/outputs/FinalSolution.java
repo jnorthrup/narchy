@@ -38,7 +38,7 @@ public class FinalSolution extends Solution{
         this.solutionJS = getDescriptionJavascript(individual.getNode());
     }
    
-    private String getDescriptionJavascript(Node node){
+    private static String getDescriptionJavascript(Node node){
         StringBuilder sb = new StringBuilder();
         node.describe(sb, new DescriptionContext(), Node.RegexFlavour.JS);
         return sb.toString();

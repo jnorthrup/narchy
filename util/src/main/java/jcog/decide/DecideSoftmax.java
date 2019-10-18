@@ -27,7 +27,8 @@ public class DecideSoftmax implements Deciding {
     /**
      * normalized motivation
      */
-    private float[] mot, motProb;
+    private float[] mot;
+    private float[] motProb;
     private float decisiveness;
 
     public DecideSoftmax(float constantTemp, Random random) {

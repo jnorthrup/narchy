@@ -59,7 +59,10 @@ public class DeductiveMeshTest {
             }
         }
 
-        edges.forEach(n.nar::believe);
+        NAR nar = n.nar;
+        for (Term edge : edges) {
+            nar.believe(edge);
+        }
 
         Term term = q = edge(0, 0, dims[0] - 1, dims[1] - 1);
         ask(n, term);
@@ -77,11 +80,12 @@ public class DeductiveMeshTest {
 //        });
     }
 
-    private @Nullable Term edge(int x1, int y1, int x2, int y2) {
+    private @Nullable
+    static Term edge(int x1, int y1, int x2, int y2) {
         return $.sim(vertex(x1, y1), vertex(x2, y2));
     }
 
-    private Term vertex(int x1, int y1) {
+    private static Term vertex(int x1, int y1) {
         return $.p($.the(x1), $.the(y1));
     }
 

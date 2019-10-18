@@ -292,14 +292,14 @@ public class VerletPhysics2D {
 
     private void index(boolean force) {
         if (index != null) {
-            particles.forEach(p -> {
-                assert(p!=null);
+            for (VerletParticle2D p : particles) {
+                assert (p != null);
                 if (force || p.changed(epsilon)) {
                     index.reindex(p, VerletParticle2D::commit);
                 } else {
                     p.commitInactive();
                 }
-            });
+            }
         } else {
             for (VerletParticle2D p : particles)
                 p.commit();
@@ -320,7 +320,7 @@ public class VerletPhysics2D {
 
     protected void postUpdate() {
         boolean hasGlobalConstraints = !constraints.isEmpty();
-        particles.forEach(p -> {
+        for (VerletParticle2D p : particles) {
             p.postUpdate(drag);
 
             if (hasGlobalConstraints) {
@@ -332,7 +332,7 @@ public class VerletPhysics2D {
             if (bounds != null) {
                 p.constrain(bounds);
             }
-        });
+        }
     }
 
     /**

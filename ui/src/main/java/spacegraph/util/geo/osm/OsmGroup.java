@@ -22,13 +22,13 @@ public abstract class OsmGroup extends OsmElement {
     }
 
     protected void validate() {
-        HyperRegion bounds;
         int n;
         if (children == null)
             n = 0;
         else
             n = children.size();
 
+        HyperRegion bounds;
         switch (n) {
             case 0:
                 bounds = HyperRectFloat.unbounded3;

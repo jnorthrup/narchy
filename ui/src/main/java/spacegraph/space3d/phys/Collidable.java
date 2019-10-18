@@ -63,7 +63,8 @@ public class Collidable<X> {
 
 	private CollisionShape collisionShape;
 
-	public short mask, group;
+	public short mask;
+    public short group;
 
 	
 	

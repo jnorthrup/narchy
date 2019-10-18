@@ -11,7 +11,7 @@ public class ErrorPanel extends TextEdit {
 
     public ErrorPanel(Throwable t) {
         super(t.toString());
-        StackWalker.getInstance().forEach((StackWalker.StackFrame f)-> insert(f.toString()));
+        StackWalker.getInstance().forEach(f -> insert(f.toString()));
     }
 
     public ErrorPanel(Throwable t, Object cause) {

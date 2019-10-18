@@ -15,12 +15,9 @@ public class MJTools {
 
 	
 	
-	public boolean LoadTextFile(String sPath, Vector vLines) {
-		boolean fRetVal = false;
-		URL theUrl;
-		DataInputStream theFile;
-		String sBff;
-		try {
+	public static boolean LoadTextFile(String sPath, Vector vLines) {
+        URL theUrl;
+        try {
 			theUrl = new URL(sPath);
 		} catch (MalformedURLException mue) {
 			System.out.println("Malformed URL: " + sPath);
@@ -30,15 +27,17 @@ public class MJTools {
 			return false;
 		}
 
-		try {
+        boolean fRetVal = false;
+        try {
 			vLines.removeAllElements();
 
-			theFile = new DataInputStream(theUrl.openStream());
-			BufferedReader br = new BufferedReader(new InputStreamReader(
+            DataInputStream theFile = new DataInputStream(theUrl.openStream());
+            BufferedReader br = new BufferedReader(new InputStreamReader(
 					theFile));
 
-			
-			while ((sBff = br.readLine()) != null) {
+
+            String sBff;
+            while ((sBff = br.readLine()) != null) {
 				if (!sBff.isEmpty()) {
 					vLines.addElement(sBff.trim());
 				}
@@ -55,18 +54,18 @@ public class MJTools {
 	
 	
 	
-	public boolean LoadResTextFile(String sPath, Vector vLines) {
+	public static boolean LoadResTextFile(String sPath, Vector vLines) {
 		boolean fRetVal = false;
-		String sBff;
 
-		try {
+        try {
 			InputStream in = MJCell.class.getResourceAsStream(sPath);
 			if (in != null) {
 				BufferedReader br = new BufferedReader(
 						new InputStreamReader(in));
 
-				
-				while ((sBff = br.readLine()) != null) {
+
+                String sBff;
+                while ((sBff = br.readLine()) != null) {
 					if (!sBff.isEmpty()) {
 						vLines.addElement(sBff.trim());
 					}

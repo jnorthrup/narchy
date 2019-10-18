@@ -30,15 +30,14 @@ public class Rule1DBin {
 	
 	public void InitFromString(String sStr) {
 
-        String sTok;
-		int iTmp;
+        int iTmp;
 		ResetToDefaults();
 
         StringTokenizer st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
-			sTok = st.nextToken().toUpperCase();
-			
-			if (sTok.length() > 0 && sTok.charAt(0) == 'R') 
+            String sTok = st.nextToken().toUpperCase();
+
+            if (sTok.length() > 0 && sTok.charAt(0) == 'R')
 			{
 				iRng = Integer.valueOf(sTok.substring(1));
 			} else if (sTok.length() > 0 && sTok.charAt(0) == 'W') 
@@ -63,16 +62,15 @@ public class Rule1DBin {
 	
 	
 	public String GetAsString() {
-		String sBff;
-		int i, ih;
+        int i, ih;
 
 		
 		Validate();
-		
-		sBff = 'R' + String.valueOf(iRng);
 
-		
-		sBff = sBff + ",R" + sHex;
+        String sBff = 'R' + String.valueOf(iRng);
+
+
+        sBff = sBff + ",R" + sHex;
 
 		return sBff;
 	}
@@ -94,16 +92,16 @@ public class Rule1DBin {
 	
 	
 	private void SetArray() {
-        int i;
 
         Validate();
 
         String sBinStr = CvtHexStr2BinStr(sHex);
         int iCnt = 1;
 
-		
-		for (i = 1; i <= 2 * iRng + 1; i++)
-			iCnt = iCnt * 2;
+
+        int i;
+        for (i = 1; i <= 2 * iRng + 1; i++)
+            iCnt *= 2;
 		sBinStr = LPad(sBinStr, iCnt, '0');
 
 		
@@ -113,11 +111,10 @@ public class Rule1DBin {
 
 	
 	
-	private String LPad(String sStr, int num, char chPad) {
-		int i;
+	private static String LPad(String sStr, int num, char chPad) {
         int iLen = sStr.length();
 		if (iLen < num) {
-			for (i = 1; i <= num - iLen; i++)
+			for (int i = 1; i <= num - iLen; i++)
 				sStr = chPad + sStr;
 		}
 		return sStr;
@@ -125,9 +122,7 @@ public class Rule1DBin {
 
 	
 	
-	private String CvtBinStr2HexStr(String sBin) {
-		int iVal;
-		String sTok;
+	private static String CvtBinStr2HexStr(String sBin) {
 
         int i = sBin.length();
 		if ((i % 4) != 0)
@@ -135,10 +130,10 @@ public class Rule1DBin {
 
         String sHexStr = "";
 		for (i = 1; i <= (sBin.length() / 4); i++) {
-			sTok = sBin.substring(sBin.length() - i * 4, sBin.length() - i * 4
-					+ 3);
-			iVal = 0;
-			if (sTok.charAt(1) == '1')
+            String sTok = sBin.substring(sBin.length() - i * 4, sBin.length() - i * 4
+                    + 3);
+            int iVal = 0;
+            if (sTok.charAt(1) == '1')
 				iVal += 8;
 			if (sTok.charAt(2) == '1')
 				iVal += 4;
@@ -155,60 +150,59 @@ public class Rule1DBin {
 
 	
 	
-	private String CvtHexStr2BinStr(String sHex) {
-        int i;
+	private static String CvtHexStr2BinStr(String sHex) {
 
+        sHex.toUpperCase();
         String sBinBff = "";
-		sHex.toUpperCase();
-		for (i = 0; i < sHex.length(); i++) {
+        for (int i = 0; i < sHex.length(); i++) {
 			switch (sHex.charAt(i)) {
 				case '0' :
-					sBinBff = sBinBff + "0000";
+                    sBinBff += "0000";
 					break;
 				case '1' :
-					sBinBff = sBinBff + "0001";
+                    sBinBff += "0001";
 					break;
 				case '2' :
-					sBinBff = sBinBff + "0010";
+                    sBinBff += "0010";
 					break;
 				case '3' :
-					sBinBff = sBinBff + "0011";
+                    sBinBff += "0011";
 					break;
 				case '4' :
-					sBinBff = sBinBff + "0100";
+                    sBinBff += "0100";
 					break;
 				case '5' :
-					sBinBff = sBinBff + "0101";
+                    sBinBff += "0101";
 					break;
 				case '6' :
-					sBinBff = sBinBff + "0110";
+                    sBinBff += "0110";
 					break;
 				case '7' :
-					sBinBff = sBinBff + "0111";
+                    sBinBff += "0111";
 					break;
 				case '8' :
-					sBinBff = sBinBff + "1000";
+                    sBinBff += "1000";
 					break;
 				case '9' :
-					sBinBff = sBinBff + "1001";
+                    sBinBff += "1001";
 					break;
 				case 'A' :
-					sBinBff = sBinBff + "1010";
+                    sBinBff += "1010";
 					break;
 				case 'B' :
-					sBinBff = sBinBff + "1011";
+                    sBinBff += "1011";
 					break;
 				case 'C' :
-					sBinBff = sBinBff + "1100";
+                    sBinBff += "1100";
 					break;
 				case 'D' :
-					sBinBff = sBinBff + "1101";
+                    sBinBff += "1101";
 					break;
 				case 'E' :
-					sBinBff = sBinBff + "1110";
+                    sBinBff += "1110";
 					break;
 				case 'F' :
-					sBinBff = sBinBff + "1111";
+                    sBinBff += "1111";
 					break;
 			}
 		}
@@ -218,7 +212,7 @@ public class Rule1DBin {
 
 	
 	
-	private String DelLedChr(String sStr, char cChar) {
+	private static String DelLedChr(String sStr, char cChar) {
 		while ((!sStr.isEmpty()) && (sStr.charAt(0) == cChar))
 			sStr = sStr.substring(1);
 
@@ -229,20 +223,18 @@ public class Rule1DBin {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
-		short bOldVal, bNewVal;
-        int i;
-        int ic, iPow, iIdx;
-		int iClo = mjb.StatesCount;
+        int iClo = mjb.StatesCount;
 
         int ary1DOfs = iRng;
-        short[] OneRow = new short[sizX + 1 + 2 * ary1DOfs];
         int[] xVector = new int[21];
 
         int i1DNextRow = mjb.i1DLastRow + 1;
 		if (i1DNextRow >= sizY)
 			i1DNextRow = 0;
 
-		for (ic = 0; ic < sizX; ic++)
+        short[] OneRow = new short[sizX + 1 + 2 * ary1DOfs];
+        int ic;
+        for (ic = 0; ic < sizX; ic++)
 			OneRow[ic + ary1DOfs] = crrState[ic][mjb.i1DLastRow]; 
 																	
 		if (isWrap) {
@@ -254,29 +246,29 @@ public class Rule1DBin {
 
 		for (ic = 0; ic < sizX; ic++) 
 		{
-			bOldVal = OneRow[ic + ary1DOfs];
+            short bOldVal = OneRow[ic + ary1DOfs];
 
-			iPow = 1;
-			iIdx = 0;
-			for (i = iRng; i >= -iRng; i--) 
+            int iPow = 1;
+            int iIdx = 0;
+            for (int i = iRng; i >= -iRng; i--)
 			{
-				if (OneRow[ic + i + ary1DOfs] > 0) 
-					iIdx = iIdx + iPow;
-				iPow = iPow * 2;
+				if (OneRow[ic + i + ary1DOfs] > 0)
+                    iIdx += iPow;
+                iPow *= 2;
 			}
 
-			
-			bNewVal = iAry[iIdx]; 
-			if (bNewVal > 0)
+
+            short bNewVal = iAry[iIdx];
+            if (bNewVal > 0)
 				if (ColoringMethod == 2) 
 					bNewVal = (short) (mjb.Cycle % (iClo - 1) + 1); 
 
 			tmpState[ic][i1DNextRow] = bNewVal;
 		}
 
-        int modCnt = 1;
-		mjb.i1DLastRow = i1DNextRow; 
+        mjb.i1DLastRow = i1DNextRow;
 
-		return modCnt;
+        int modCnt = 1;
+        return modCnt;
 	}
 }

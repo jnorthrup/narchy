@@ -40,11 +40,9 @@ public class ConfigurationRepositoryFS implements ConfigurationRepository {
         Configuration conf = new Configuration();
         conf.name = name;
 
-        java.util.Properties prop = new java.util.Properties();
-        InputStream in = null;
-
         try {
-            in = new FileInputStream(jcterm_prop);
+            InputStream in = new FileInputStream(jcterm_prop);
+            java.util.Properties prop = new java.util.Properties();
             prop.load(in);
 
             String key = "jcterm." + name + ".font_size";
@@ -82,9 +80,8 @@ public class ConfigurationRepositoryFS implements ConfigurationRepository {
 
     public void save(Configuration conf) {
         java.util.Properties prop = new java.util.Properties();
-        InputStream in = null;
         try {
-            in = new FileInputStream(jcterm_prop);
+            InputStream in = new FileInputStream(jcterm_prop);
             prop.load(in);
             in.close();
         } catch (IOException e) {

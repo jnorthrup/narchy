@@ -704,7 +704,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     default Term eventFirst() {
         if (Conj.isSeq(this)) {
-            final Term[] first = new Term[1];
+            Term[] first = new Term[1];
             eventsAND((when, what) -> {
                 first[0] = what;
                 return false; //done got first
@@ -719,7 +719,7 @@ public interface Compound extends Term, IPair, Subterms {
      */
     default Term eventLast() {
         if (Conj.isSeq(this)) {
-            final Term[] last = new Term[1];
+            Term[] last = new Term[1];
             eventsAND((when, what) -> {
                 last[0] = what;
                 return true; //HACK keep going to end

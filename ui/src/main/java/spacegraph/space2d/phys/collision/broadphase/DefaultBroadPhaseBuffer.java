@@ -75,7 +75,7 @@ public class DefaultBroadPhaseBuffer implements TreeCallback, BroadPhase {
     }
 
     @Override
-    public final int createProxy(final AABB aabb, Object userData) {
+    public final int createProxy(AABB aabb, Object userData) {
         int proxyId = m_tree.createProxy(aabb, userData);
         ++m_proxyCount;
         bufferMove(proxyId);
@@ -90,7 +90,7 @@ public class DefaultBroadPhaseBuffer implements TreeCallback, BroadPhase {
     }
 
     @Override
-    public final void moveProxy(int proxyId, final AABB aabb, final v2 displacement) {
+    public final void moveProxy(int proxyId, AABB aabb, v2 displacement) {
         boolean buffer = m_tree.moveProxy(proxyId, aabb, displacement);
         if (buffer) {
             bufferMove(proxyId);
@@ -116,8 +116,8 @@ public class DefaultBroadPhaseBuffer implements TreeCallback, BroadPhase {
     public boolean testOverlap(int proxyIdA, int proxyIdB) {
         
         
-        final AABB a = m_tree.getFatAABB(proxyIdA);
-        final AABB b = m_tree.getFatAABB(proxyIdB);
+        AABB a = m_tree.getFatAABB(proxyIdA);
+        AABB b = m_tree.getFatAABB(proxyIdB);
         if (b.lowerBound.x - a.upperBound.x > 0.0f || b.lowerBound.y - a.upperBound.y > 0.0f) {
             return false;
         }
@@ -149,7 +149,7 @@ public class DefaultBroadPhaseBuffer implements TreeCallback, BroadPhase {
 
             
             
-            final AABB fatAABB = m_tree.getFatAABB(m_queryProxyId);
+            AABB fatAABB = m_tree.getFatAABB(m_queryProxyId);
 
             
             
@@ -186,12 +186,12 @@ public class DefaultBroadPhaseBuffer implements TreeCallback, BroadPhase {
     }
 
     @Override
-    public final void query(final TreeCallback callback, final AABB aabb) {
+    public final void query(TreeCallback callback, AABB aabb) {
         m_tree.query(callback, aabb);
     }
 
     @Override
-    public final void raycast(final TreeRayCastCallback callback, final RayCastInput input) {
+    public final void raycast(TreeRayCastCallback callback, RayCastInput input) {
         m_tree.raycast(callback, input);
     }
 

@@ -12,7 +12,7 @@ import java.util.Random;
 abstract class VarIntroduction {
 
     /** returns null if not applicable */
-    @Nullable Term apply(final Compound x, Random rng, @Nullable Map<Term,Term> retransform) {
+    @Nullable Term apply(Compound x, Random rng, @Nullable Map<Term,Term> retransform) {
 
         if (x.complexity() < 2)
             return null;

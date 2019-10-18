@@ -102,9 +102,9 @@ class CountMinSketchTest {
         assertEquals(actualFreq[50], cms3.count(50), 0.01);
         assertEquals(actualFreq[60], cms3.count(60), 0.01);
 
-        int[] actualFreq2 = new int[100];
         rand = new Random(321);
         CountMinSketch cms4 = new CountMinSketch();
+        int[] actualFreq2 = new int[100];
         for (int i = 0; i < 10000; i++) {
             int idx = rand.nextInt(actualFreq2.length);
             cms4.add(idx);

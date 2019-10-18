@@ -42,7 +42,7 @@ public abstract class HowBuilder {
 
 	public final PremiseRule get() {
 
-		final PREDICATE[] PRE = conditions(); //HACK must be called first because this initializes the variables used after it
+		PREDICATE[] PRE = conditions(); //HACK must be called first because this initializes the variables used after it
 
 		return new PremiseRule(this.id, this.tag, PRE, this::action);
 	}

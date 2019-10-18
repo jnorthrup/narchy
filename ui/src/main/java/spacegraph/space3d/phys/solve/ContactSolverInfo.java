@@ -39,11 +39,11 @@ public class ContactSolverInfo {
 	private float maxErrorReduction = 20f;
 	private float sor = 1.3f;
 	public float erp = 0.2f; 
-	public final float erp2 = 0.1f; 
+	public static final float erp2 = 0.1f;
 	public boolean splitImpulse;
-	public final float splitImpulsePenetrationThreshold = -0.02f;
+	public static final float splitImpulsePenetrationThreshold = -0.02f;
 	public float linearSlop;
-	public final float warmstartingFactor = 0.85f;
+	public static final float warmstartingFactor = 0.85f;
 	
 	public final int solverMode = SolverMode.SOLVER_RANDMIZE_ORDER | SolverMode.SOLVER_CACHE_FRIENDLY | SolverMode.SOLVER_USE_WARMSTARTING;
 

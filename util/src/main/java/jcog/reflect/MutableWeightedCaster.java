@@ -112,8 +112,8 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
     @Deprecated public CloseHandler addWeightChangeListener(WeightChangeListener listener) {
         if (listener == null) return new CloseHandler() {
         };
-        final WeightChangeListener fl = listener;
-        final MutableWeightedCaster self = this;
+        WeightChangeListener fl = listener;
+        MutableWeightedCaster self = this;
         CloseHandler ch = new CloseHandler() {
 
         };
@@ -128,8 +128,8 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
             public void closeHandler() {
             }
         };
-        final WeightChangeListener fl = listener;
-        final MutableWeightedCaster self = this;
+        WeightChangeListener fl = listener;
+        MutableWeightedCaster self = this;
         CloseHandler ch = new CloseHandler() {
             WeightChangeListener l = fl;
             MutableWeightedCaster slf = self;

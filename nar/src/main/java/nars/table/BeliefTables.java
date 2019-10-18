@@ -19,7 +19,9 @@ import java.util.stream.Stream;
  */
 public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable {
 
-    static final int ORDERED = 0, SHUFFLE_FIRST_COME_FIRST_SERVE = 1, SHUFFLE_ROUND_ROBIN = 2;
+    static final int ORDERED = 0;
+    static final int SHUFFLE_FIRST_COME_FIRST_SERVE = 1;
+    static final int SHUFFLE_ROUND_ROBIN = 2;
 
     protected int matchMode = 2;
 
@@ -84,9 +86,9 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
                                 (int)Math.ceil(((float)ttlStart) / N)
                                 //ttlStart
                             );
-                            int ttlUsed = 0;
                             int[] ne = nonEmpty.toIntArray();
                             ArrayUtil.shuffle(ne, a.random());
+                            int ttlUsed = 0;
                             for (int i = 0; i < N; i++) {
                                 a.ttl = ttlFair;
                                 items[ne[i]].match(a);
@@ -226,7 +228,12 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
     /** gets first matching table of the provided type */
     public @Nullable <X extends TaskTable> X tableFirst(Class<? extends X> t) {
-        return (X) this.stream().filter(t::isInstance).findFirst().orElse(null);
+        for (BeliefTable beliefTable : this) {
+            if (t.isInstance(beliefTable)) {
+                return (X) beliefTable;
+            }
+        }
+        return (X) null;
     }
 
     @Override

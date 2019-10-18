@@ -22,7 +22,10 @@ public class LevelScene extends Scene implements SpriteContext {
 
     public Level level;
     public final Mario mario;
-    public float xCam, yCam, xCamO, yCamO;
+    public float xCam;
+    public float yCam;
+    public float xCamO;
+    public float yCamO;
     private int tick;
 
     public LevelRenderer layer;
@@ -353,19 +356,19 @@ public class LevelScene extends Scene implements SpriteContext {
         }
     }
 
-    private void drawStringDropShadow(Graphics g, String text, int x, int y, int c) {
+    private static void drawStringDropShadow(Graphics g, String text, int x, int y, int c) {
         drawString(g, text, x * 8 + 5, y * 8 + 5, 0);
         drawString(g, text, x * 8 + 4, y * 8 + 4, c);
     }
 
-    private void drawString(Graphics g, String text, int x, int y, int c) {
+    private static void drawString(Graphics g, String text, int x, int y, int c) {
         char[] ch = text.toCharArray();
         for (int i = 0; i < ch.length; i++) {
             g.drawImage(Art.font[ch[i] - 32][c], x + i * 8, y, null);
         }
     }
 
-    private void renderBlackout(Graphics g, int x, int y, int radius) {
+    private static void renderBlackout(Graphics g, int x, int y, int radius) {
         if (radius > 320) return;
 
         int[] xp = new int[20];

@@ -35,7 +35,10 @@ public enum Befunge {
      * Created by didrik on 30.12.2014.
      */
     static class Pointer {
-        private int x, y, dx, dy;
+        private int x;
+        private int y;
+        private int dx;
+        private int dy;
         private final Board board;
 
 
@@ -93,10 +96,10 @@ public enum Befunge {
 
             map.put('?', () -> {
                 int[] xarray = {-1, 1, 0, 0};
-                int[] yarray = {0, 0, -1, 1};
                 Random r = new Random();
                 int t = r.nextInt(3);
                 dx = xarray[t];
+                int[] yarray = {0, 0, -1, 1};
                 dy = yarray[t];
             });
 

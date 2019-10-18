@@ -38,7 +38,7 @@ public class Q2DataTool {
     void dispose() {
     }
     
-    void setStatus(String text) {
+    static void setStatus(String text) {
         System.err.println(text);
         System.err.println();
     }
@@ -72,12 +72,9 @@ public class Q2DataTool {
     }
 
     void install(int mirrorIdx) {
-        final String mirrorName = mirrorNames.get(mirrorIdx);
-        final String mirror = mirrorLinks.get(mirrorIdx);
-        InputStream in = null;
-        OutputStream out = null;
-        File outFile = null;
-        
+        String mirrorName = mirrorNames.get(mirrorIdx);
+        String mirror = mirrorLinks.get(mirrorIdx);
+
         setStatus("downloading from "+mirrorName+": <"+mirror+ '>');
 
         File dir = null;
@@ -97,6 +94,9 @@ public class Q2DataTool {
             return;
         }
 
+        File outFile = null;
+        OutputStream out = null;
+        InputStream in = null;
         try {
             URL url = new URL(mirror);
             URLConnection conn = url.openConnection();

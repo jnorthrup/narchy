@@ -5,7 +5,8 @@ import nars.term.Termlike;
 
 public abstract class MappedSubterms<S extends Termlike> extends ProxySubterms<S> {
 
-    private boolean normalizedKnown = false, normalized = false;
+    private boolean normalizedKnown = false;
+    private boolean normalized = false;
 
     MappedSubterms(S ref) {
         super(ref);

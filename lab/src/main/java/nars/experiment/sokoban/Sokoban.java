@@ -324,13 +324,24 @@ public class Sokoban extends Applet {
 
 
     char[] level;
-    int currlevel, w, h, push, move;
-    int lastcount, pos1, pos2, pos3;
+    int currlevel;
+    int w;
+    int h;
+    int push;
+    int move;
+    int lastcount;
+    int pos1;
+    int pos2;
+    int pos3;
     Rectangle lastrect;
     boolean uc;
 
     char[] savelevel;
-    int savecurrlevel, savew, saveh, savepush, savemove;
+    int savecurrlevel;
+    int savew;
+    int saveh;
+    int savepush;
+    int savemove;
     boolean gamesaved;
 
     Font font = new Font("Helvetica", Font.PLAIN, 12);
@@ -493,8 +504,8 @@ public class Sokoban extends Applet {
     }
 
     public int moveone(int pos, int x, int y, int dx, int dy) {
-        int i;
         if (dx != 0) return pos + dx;
+        int i;
         if (dy == -1) for (i = pos - x - 2; level[i] != cr; i--) ;
         else for (i = pos + 1; level[i] != cr; i++) ;
         return i + x + 1;
@@ -538,7 +549,11 @@ public class Sokoban extends Applet {
                         (Math.abs(xo - x) + 1) * 16, (Math.abs(yo - y) + 1) * 16);
                 drawMove();
                 boolean b = true;
-                for (char aLevel : level) if (aLevel == dollar) b = false;
+                for (char aLevel : level)
+                    if (aLevel == dollar) {
+                        b = false;
+                        break;
+                    }
                 if (b) {
 
                     try {

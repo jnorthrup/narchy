@@ -30,10 +30,12 @@ public class moveclip_t
 {
 	final float [] boxmins={0,0,0};
 	final float [] boxmaxs={0,0,0};
-	float [] mins, maxs;	
+	float [] mins;
+    float [] maxs;
 	final float [] mins2={0,0,0};
 	final float [] maxs2={0,0,0};	
-	float [] start, end;
+	float [] start;
+    float [] end;
 	
 	trace_t	trace	= new trace_t();
 	edict_t	passedict;

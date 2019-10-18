@@ -22,7 +22,8 @@ public class TsneModel implements Graph2D.Graph2DUpdater<DataTable.Instance> {
     public final FloatRange perplexity = s.perplexity;
     public final FloatRange momentum = s.momentum;
 
-    final int firstCol, lastCol;
+    final int firstCol;
+    final int lastCol;
 
     // = i.id.data.size()
     public TsneModel(int firstCol, int lastCol) {

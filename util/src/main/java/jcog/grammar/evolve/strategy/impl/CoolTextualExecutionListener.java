@@ -84,7 +84,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
         if (outputFolder == null)
             outputFolder = Files.createTempDirectory("regexgen").toFile();
 
-        this.header = ((message!=null)? message.concat("\n") : "") + "Output folder: " + outputFolder.getName();
+        this.header = ((message!=null)? message + "\n" : "") + "Output folder: " + outputFolder.getName();
         this.jobTotal = configuration.getJobs();
         this.overallTotal = configuration.getEvolutionParameters().getGenerations() * jobTotal;
         this.results = results;
@@ -124,9 +124,9 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
     @Override
     public void evolutionStarted(RunStrategy strategy) {
         int jobId = strategy.getConfiguration().getJobId();
-        String print = "[                     ] 0% Gen --> 0 job: " + jobId;
 
         synchronized (screen) {
+            String print = "[                     ] 0% Gen --> 0 job: " + jobId;
             screen.put(jobId, print);
         }
 
@@ -236,7 +236,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
         }
     }
 
-    private String progress(int done) {
+    private static String progress(int done) {
         StringBuilder builder = new StringBuilder();
 
         builder.append("=".repeat(Math.max(0, done)));
@@ -259,15 +259,20 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
         return this;
     }
 
-    private String printRegex(String regex) {
+    private static String printRegex(String regex) {
         if (regex.length() > 65) {
             return regex.substring(0, 64) + " [..]";
         }
         return regex;
     }
 
-    private String printArray(double[] fitness) {
-        String sb = Arrays.stream(fitness).mapToObj(v -> String.valueOf(Math.round(v * 100) / 100f)).collect(Collectors.joining(",", "[", "]"));
+    private static String printArray(double[] fitness) {
+        StringJoiner joiner = new StringJoiner(",", "[", "]");
+        for (double v : fitness) {
+            String s = String.valueOf(Math.round(v * 100) / 100f);
+            joiner.add(s);
+        }
+        String sb = joiner.toString();
         return sb;
     }
 

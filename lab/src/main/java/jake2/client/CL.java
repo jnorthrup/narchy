@@ -129,10 +129,7 @@ public final class CL {
         @Override
         public void execute() {
             try {
-                byte[] buf_data = new byte[Defines.MAX_MSGLEN];
                 sizebuf_t buf = new sizebuf_t();
-                int i;
-                entity_state_t ent;
 
                 if (Cmd.Argc() != 2) {
                     Com.Printf("record <demoname>\n");
@@ -165,9 +162,8 @@ public final class CL {
                 
                 Globals.cls.demowaiting = true;
 
-                
-                
-                
+
+                byte[] buf_data = new byte[Defines.MAX_MSGLEN];
                 SZ.Init(buf, buf_data, Defines.MAX_MSGLEN);
 
                 
@@ -180,7 +176,8 @@ public final class CL {
 
                 MSG.WriteString(buf, Globals.cl.configstrings[Defines.CS_NAME]);
 
-                
+
+                int i;
                 for (i = 0; i < Defines.MAX_CONFIGSTRINGS; i++) {
                     if (Globals.cl.configstrings[i].length() > 0) {
                         if (buf.cursize + Globals.cl.configstrings[i].length()
@@ -202,7 +199,7 @@ public final class CL {
                 
                 nullstate.clear();
                 for (i = 0; i < Defines.MAX_EDICTS; i++) {
-                    ent = Globals.cl_entities[i].baseline;
+                    entity_state_t ent = Globals.cl_entities[i].baseline;
                     if (ent.modelindex == 0)
                         continue;
 
@@ -437,13 +434,9 @@ public final class CL {
     static final xcommand_t PingServers_f = new xcommand_t() {
         @Override
         public void execute() {
-            int i;
             netadr_t adr = new netadr_t();
-            
-            String name;
-            String adrstring;
 
-            NET.Config(true); 
+            NET.Config(true);
 
             
             Com.Printf("pinging broadcast...\n");
@@ -468,10 +461,10 @@ public final class CL {
             }
 
             
-            for (i = 0; i < 16; i++) {
-                
-                name = "adr" + i;
-                adrstring = Cvar.VariableString(name);
+            for (int i = 0; i < 16; i++) {
+
+                String name = "adr" + i;
+                String adrstring = Cvar.VariableString(name);
                 if (adrstring == null || adrstring.length() == 0)
                     continue;
 
@@ -497,9 +490,8 @@ public final class CL {
     static final xcommand_t Skins_f = new xcommand_t() {
         @Override
         public void execute() {
-            int i;
 
-            for (i = 0; i < Defines.MAX_CLIENTS; i++) {
+            for (int i = 0; i < Defines.MAX_CLIENTS; i++) {
                 if (Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i] == null)
                     continue;
                 Com.Printf("client " + i + ": "
@@ -843,10 +835,9 @@ public final class CL {
         while (NET.GetPacket(Defines.NS_CLIENT, Globals.net_from,
                 Globals.net_message)) {
 
-            
-            
-            
-            if (IntStream.of(0, 1, 2, 3).allMatch(i -> Globals.net_message.data[i] == -1)) {
+
+            boolean b = IntStream.of(0, 1, 2, 3).noneMatch(i -> Globals.net_message.data[i] != -1);
+            if (b) {
                 
                 ConnectionlessPacket();
                 continue;
@@ -897,8 +888,6 @@ public final class CL {
      */
     static void FixUpGender() {
 
-        String sk;
-
         if (Globals.gender_auto.value != 0.0f) {
 
             if (Globals.gender.modified) {
@@ -907,7 +896,7 @@ public final class CL {
                 return;
             }
 
-            sk = Globals.skin.string;
+            String sk = Globals.skin.string;
             if (sk.startsWith("male") || sk.startsWith("cyborg"))
                 Cvar.Set("gender", "male");
             else if (sk.startsWith("female") || sk.startsWith("crackhor"))
@@ -919,11 +908,6 @@ public final class CL {
     }
 
     public static void RequestNextDownload() {
-        int map_checksum = 0; 
-        
-        String fn;
-
-        qfiles.dmdl_t pheader;
 
         if (Globals.cls.state != Defines.ca_connected)
             return;
@@ -960,7 +944,8 @@ public final class CL {
                         CL.precache_model_skin = 1;
                     }
 
-                    
+
+                    qfiles.dmdl_t pheader;
                     if (CL.precache_model == null) {
 
                         CL.precache_model = FS
@@ -1024,6 +1009,7 @@ public final class CL {
             }
             CL.precache_check = Defines.CS_SOUNDS;
         }
+        String fn;
         if (CL.precache_check >= Defines.CS_SOUNDS
                 && CL.precache_check < Defines.CS_SOUNDS + Defines.MAX_SOUNDS) {
             if (SV_MAIN.allow_download_sounds.value != 0) {
@@ -1159,6 +1145,7 @@ public final class CL {
         if (CL.precache_check == ENV_CNT) {
             CL.precache_check = ENV_CNT + 1;
 
+            int map_checksum = 0;
             int[] iw = {map_checksum};
 
             CM.CM_LoadMap(Globals.cl.configstrings[Defines.CS_MODELS + 1],
@@ -1415,8 +1402,6 @@ public final class CL {
      * FixCvarCheats
      */
     public static void FixCvarCheats() {
-        int i;
-        CL.cheatvar_t var;
 
         if ("1".equals(Globals.cl.configstrings[Defines.CS_MAXCLIENTS])
                 || 0 == Globals.cl.configstrings[Defines.CS_MAXCLIENTS]
@@ -1434,8 +1419,8 @@ public final class CL {
         }
 
         
-        for (i = 0; i < CL.numcheatvars; i++) {
-            var = CL.cheatvars[i];
+        for (int i = 0; i < CL.numcheatvars; i++) {
+            cheatvar_t var = CL.cheatvars[i];
             if (!var.var.string.equals(var.value)) {
                 Cvar.Set(var.name, var.value);
             }

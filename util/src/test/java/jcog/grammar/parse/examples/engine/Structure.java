@@ -8,7 +8,10 @@ package jcog.grammar.parse.examples.engine;
  * including the implied warranty of merchantability.
  */
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -149,7 +152,8 @@ public class Structure implements Term {
 		if (!functorAndArityEquals(s)) {
 			return false;
 		}
-        return IntStream.range(0, terms.length).allMatch(i -> terms[i].equals(s.terms[i]));
+		int bound = terms.length;
+		return IntStream.range(0, bound).allMatch(i -> terms[i].equals(s.terms[i]));
 	}
 
 	/**
@@ -317,7 +321,12 @@ public class Structure implements Term {
 		}
 		String buf = "";
 		if (terms.length > 0) {
-            buf = Arrays.stream(terms).map(String::valueOf).collect(Collectors.joining(", ", functor.toString() + '(', ")"));
+			StringJoiner joiner = new StringJoiner(", ", functor.toString() + '(', ")");
+			for (Term term : terms) {
+				String s = String.valueOf(term);
+				joiner.add(s);
+			}
+			buf = joiner.toString();
         }
 		return buf;
 	}

@@ -331,8 +331,6 @@ public class LevelGenerator {
         if (floor < 1) return;
 
 
-        boolean rocks = true;
-
         addEnemyLine(x0 + 1, x1 - 1, floor - 1);
 
         int s = random.nextInt(4);
@@ -349,6 +347,7 @@ public class LevelGenerator {
         s = random.nextInt(4);
         e = random.nextInt(4);
 
+        boolean rocks = true;
         if (floor - 4 > 0) {
             if ((x1 - 1 - e) - (x0 + 1 + s) > 2) {
                 for (int x = x0 + 1 + s; x < x1 - 1 - e; x++) {

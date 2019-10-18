@@ -53,7 +53,9 @@ public class FasterList<X> extends FastList<X> {
 
     public FasterList(Iterable<X> copy, int sizeEstimate) {
         super(sizeEstimate);
-        copy.forEach(this::add);
+        for (X x : copy) {
+            add(x);
+        }
     }
 
     public FasterList(Collection<X> copy) {
@@ -271,7 +273,7 @@ public class FasterList<X> extends FastList<X> {
     public int indexOf(int atOrAfter, IntPredicate p) {
         int s = size;
         if (s > 0) {
-            return IntStream.range(Math.max(0, atOrAfter), s).filter(p).findFirst().orElse(-1);
+            return IntStream.range(Math.max(0, atOrAfter), s).filter(p::test).findFirst().orElse(-1);
         }
         return -1;
     }

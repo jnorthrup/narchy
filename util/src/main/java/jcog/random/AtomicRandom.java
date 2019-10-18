@@ -59,5 +59,5 @@ public abstract class AtomicRandom extends Random {
 
     protected abstract long _nextLong();
 
-    protected abstract void _setSeed(final long seed);
+    protected abstract void _setSeed(long seed);
 }

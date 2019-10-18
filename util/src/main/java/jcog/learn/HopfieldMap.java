@@ -8,7 +8,9 @@ import jcog.data.graph.AdjGraph;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -64,7 +66,8 @@ public class HopfieldMap<X> {
 
     @Override
     public String toString() {
-        String sb = Arrays.stream(x).map(xx -> Texts.n4(in.floatValueOf(xx)) + ',').collect(Collectors.joining());
+        String result = Arrays.stream(x).map(xx -> Texts.n4(in.floatValueOf(xx)) + ',').collect(Collectors.joining());
+        String sb = result;
         return sb;
     }
 
@@ -75,7 +78,7 @@ public class HopfieldMap<X> {
         return this;
     }
 
-    public float alpha() {
+    public static float alpha() {
         return 0.2f;
     }
 
@@ -91,7 +94,7 @@ public class HopfieldMap<X> {
 
             X a = x[p];
 
-            final float[] aOut = {0};
+            float[] aOut = {0};
             weight.neighborEdges(a, (b, w) -> {
                 float bIn = in.floatValueOf(b);
 
@@ -108,7 +111,7 @@ public class HopfieldMap<X> {
 
     public HopfieldMap<X> get() {
         for (int i = 0; i < x.length; i++) {
-            final float[] aOut = {0};
+            float[] aOut = {0};
 
             X a = x[i];
 
@@ -123,7 +126,7 @@ public class HopfieldMap<X> {
         return this;
     }
 
-    protected float out(float v) {
+    protected static float out(float v) {
         
         return v >= 0 ? 1 : -1;
         
@@ -138,10 +141,10 @@ public class HopfieldMap<X> {
 
     public static void main(String[] args) {
         int n = 8;
-        NumberX[] m = IntStream.range(0, n).mapToObj(i -> new MutableFloat()).toArray(NumberX[]::new);
+        NumberX[] m = IntStream.range(0, n).mapToObj(i1 -> new MutableFloat()).toArray(NumberX[]::new);
 
         HopfieldMap<NumberX> h = new HopfieldMap<>(NumberX::floatValue,
-                (float v, NumberX x) -> x.set(v), m);
+                (v, x) -> x.set(v), m);
         h.randomWeights(0.9f);
         for (int i = 0; i < 16; i++) {
             h.set(+1, +1, +1, +1, -1, -1, -1, -1).learn(1);

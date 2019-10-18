@@ -60,7 +60,8 @@ class IntervalTreeTest {
             assertFalse(t.searchOverlapping(20.0,40.0).isEmpty());
         }
 
-        private @NotNull IntervalTree<Integer, String> makeIntervalTree(){
+        private @NotNull
+        static IntervalTree<Integer, String> makeIntervalTree(){
             IntervalTree<Integer,String> t = new IntervalTree<>();
             t.put(0, 10, "0-10");
             t.put(5, 15, "5-15");

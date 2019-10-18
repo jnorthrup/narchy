@@ -102,7 +102,7 @@ public class RevoluteJoint extends Joint {
     }
 
     @Override
-    public void initVelocityConstraints(final SolverData data) {
+    public void initVelocityConstraints(SolverData data) {
         m_indexA = A.island;
         m_indexB = B.island;
         m_localCenterA.set(A.sweep.localCenter);
@@ -121,9 +121,9 @@ public class RevoluteJoint extends Joint {
         float aB = data.positions[m_indexB].a;
         v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
-        final Rot qA = pool.popRot();
-        final Rot qB = pool.popRot();
-        final v2 temp = new v2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 temp = new v2();
 
         qA.set(aA);
         qB.set(aB);
@@ -144,8 +144,6 @@ public class RevoluteJoint extends Joint {
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
 
-        boolean fixedRotation = (iA + iB == 0.0f);
-
         m_mass.ex.x = mA + mB + m_rA.y * m_rA.y * iA + m_rB.y * m_rB.y * iB;
         m_mass.ey.x = -m_rA.y * m_rA.x * iA - m_rB.y * m_rB.x * iB;
         m_mass.ez.x = -m_rA.y * iA - m_rB.y * iB;
@@ -161,6 +159,7 @@ public class RevoluteJoint extends Joint {
             m_motorMass = 1.0f / m_motorMass;
         }
 
+        boolean fixedRotation = (iA + iB == 0.0f);
         if (!m_enableMotor || fixedRotation) {
             m_motorImpulse = 0.0f;
         }
@@ -188,7 +187,7 @@ public class RevoluteJoint extends Joint {
         }
 
         if (data.step.warmStarting) {
-            final v2 P = new v2();
+            v2 P = new v2();
             
             m_impulse.x *= data.step.dtRatio;
             m_impulse.y *= data.step.dtRatio;
@@ -218,7 +217,7 @@ public class RevoluteJoint extends Joint {
     }
 
     @Override
-    public void solveVelocityConstraints(final SolverData data) {
+    public void solveVelocityConstraints(SolverData data) {
         v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
         v2 vB = data.velocities[m_indexB];
@@ -241,13 +240,13 @@ public class RevoluteJoint extends Joint {
             wA -= iA * impulse;
             wB += iB * impulse;
         }
-        final v2 temp = new v2();
+        v2 temp = new v2();
 
         
         if (m_enableLimit && m_limitState != LimitState.INACTIVE && !fixedRotation) {
 
-            final v2 Cdot1 = new v2();
-            final v3 Cdot = new Vec3();
+            v2 Cdot1 = new v2();
+            v3 Cdot = new Vec3();
 
             
             v2.crossToOutUnsafe(wA, m_rA, temp);
@@ -267,7 +266,7 @@ public class RevoluteJoint extends Joint {
                 case AT_LOWER: {
                     float newImpulse = m_impulse.z + impulse.z;
                     if (newImpulse < 0.0f) {
-                        final v2 rhs = new v2();
+                        v2 rhs = new v2();
                         rhs.set(m_mass.ez.x, m_mass.ez.y).scaled(m_impulse.z).subbed(Cdot1);
                         m_mass.solve22ToOut(rhs, temp);
                         impulse.x = temp.x;
@@ -284,7 +283,7 @@ public class RevoluteJoint extends Joint {
                 case AT_UPPER: {
                     float newImpulse = m_impulse.z + impulse.z;
                     if (newImpulse > 0.0f) {
-                        final v2 rhs = new v2();
+                        v2 rhs = new v2();
                         rhs.set(m_mass.ez.x, m_mass.ez.y).scaled(m_impulse.z).subbed(Cdot1);
                         m_mass.solve22ToOut(rhs, temp);
                         impulse.x = temp.x;
@@ -299,7 +298,7 @@ public class RevoluteJoint extends Joint {
                     break;
                 }
             }
-            final v2 P = new v2();
+            v2 P = new v2();
 
             P.set(impulse.x, impulse.y);
 
@@ -344,9 +343,9 @@ public class RevoluteJoint extends Joint {
     }
 
     @Override
-    public boolean solvePositionConstraints(final SolverData data) {
-        final Rot qA = pool.popRot();
-        final Rot qB = pool.popRot();
+    public boolean solvePositionConstraints(SolverData data) {
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
         v2 cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
         v2 cB = data.positions[m_indexB];
@@ -356,7 +355,6 @@ public class RevoluteJoint extends Joint {
         qB.set(aB);
 
         float angularError = 0.0f;
-        float positionError = 0.0f;
 
         boolean fixedRotation = (m_invIA + m_invIB == 0.0f);
 
@@ -398,15 +396,16 @@ public class RevoluteJoint extends Joint {
             aA -= m_invIA * limitImpulse;
             aB += m_invIB * limitImpulse;
         }
-        
+
+        float positionError = 0.0f;
         {
             qA.set(aA);
             qB.set(aB);
 
-            final v2 rA = new v2();
-            final v2 rB = new v2();
-            final v2 C = new v2();
-            final v2 impulse = new v2();
+            v2 rA = new v2();
+            v2 rB = new v2();
+            v2 C = new v2();
+            v2 impulse = new v2();
 
             Rot.mulToOutUnsafe(qA, C.set(localAnchorA).subbed(m_localCenterA), rA);
             Rot.mulToOutUnsafe(qB, C.set(localAnchorB).subbed(m_localCenterB), rB);
@@ -417,7 +416,7 @@ public class RevoluteJoint extends Joint {
             float mA = m_invMassA, mB = m_invMassB;
             float iA = m_invIA, iB = m_invIB;
 
-            final Mat22 K = pool.popMat22();
+            Mat22 K = pool.popMat22();
             K.ex.x = mA + mB + iA * rA.y * rA.y + iB * rB.y * rB.y;
             K.ex.y = -iA * rA.x * rA.y - iB * rB.x * rB.y;
             K.ey.x = K.ex.y;
@@ -478,14 +477,14 @@ public class RevoluteJoint extends Joint {
     }
 
     public float getJointAngle() {
-        final Body2D b1 = A;
-        final Body2D b2 = B;
+        Body2D b1 = A;
+        Body2D b2 = B;
         return b2.sweep.a - b1.sweep.a - m_referenceAngle;
     }
 
     public float getJointSpeed() {
-        final Body2D b1 = A;
-        final Body2D b2 = B;
+        Body2D b1 = A;
+        Body2D b2 = B;
         return b2.velAngular - b1.velAngular;
     }
 
@@ -503,13 +502,13 @@ public class RevoluteJoint extends Joint {
         return m_motorImpulse * inv_dt;
     }
 
-    public void setMotorSpeed(final float speed) {
+    public void setMotorSpeed(float speed) {
         A.setAwake(true);
         B.setAwake(true);
         m_motorSpeed = speed;
     }
 
-    public void setMaxMotorTorque(final float torque) {
+    public void setMaxMotorTorque(float torque) {
         A.setAwake(true);
         B.setAwake(true);
         m_maxMotorTorque = torque;
@@ -527,7 +526,7 @@ public class RevoluteJoint extends Joint {
         return m_enableLimit;
     }
 
-    public void enableLimit(final boolean flag) {
+    public void enableLimit(boolean flag) {
         if (flag != m_enableLimit) {
             A.setAwake(true);
             B.setAwake(true);
@@ -544,7 +543,7 @@ public class RevoluteJoint extends Joint {
         return m_upperAngle;
     }
 
-    public void setLimits(final float lower, final float upper) {
+    public void setLimits(float lower, float upper) {
         assert (lower <= upper);
         if (lower != m_lowerAngle || upper != m_upperAngle) {
             A.setAwake(true);

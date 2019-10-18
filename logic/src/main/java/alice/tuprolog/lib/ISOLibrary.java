@@ -19,6 +19,8 @@ package alice.tuprolog.lib;
 
 import alice.tuprolog.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -73,7 +75,7 @@ public class ISOLibrary extends PrologLib {
                     
                 } catch (Exception ex) {
                 }
-                st = st.concat(st1);
+                st += st1;
                 list = (Struct) list.subResolve(1);
             }
             return unify(arg0, new Struct(st));
@@ -83,7 +85,8 @@ public class ISOLibrary extends PrologLib {
                         "atom", arg0);
             }
             String st = ((Struct) arg0).name();
-            Term[] tlist = IntStream.range(0, st.length()).mapToObj(i -> new Struct(new String(new char[]{st.charAt(i)}))).toArray(Term[]::new);
+            int bound = st.length();
+            Term[] tlist = IntStream.range(0, bound).mapToObj(i -> new Struct(new String(new char[]{st.charAt(i)}))).toArray(Term[]::new);
             Struct list = new Struct(tlist);
             /*
              * for (int i=0; i<st.length(); i++){ Struct ch=new Struct(new

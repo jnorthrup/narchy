@@ -155,7 +155,7 @@ public class RevisionTest {
 
     }
 
-    private Task merge(Task t01, Task t45, NAR n) {
+    private static Task merge(Task t01, Task t45, NAR n) {
         return Revision.merge(n, false, 2, 2, new Task[]{t01, t45}).getOne();
     }
 
@@ -324,13 +324,11 @@ public class RevisionTest {
         testConfidenceAccumulation(3, 1f, 0.9f);
     }
 
-    private void testConfidenceAccumulation(int repeats, float freq, float inConf) {
+    private static void testConfidenceAccumulation(int repeats, float freq, float inConf) {
         int maxBeliefs = repeats * 4;
 
         NAR n = newNAR(maxBeliefs);
 
-
-        long at = 5;
 
         float outConf = w2c(c2w(inConf) * repeats);
 
@@ -340,6 +338,7 @@ public class RevisionTest {
         } catch (Narsese.NarseseException e) {
             fail(e);
         }
+        long at = 5;
         for (int i = 0; i < repeats; i++) {
             b.believe(0.5f, freq, inConf, at);
         }
@@ -415,7 +414,9 @@ public class RevisionTest {
                 misses++;
         }
 
-        outcomes.forEach(System.out::println);
+        for (Term outcome : outcomes) {
+            System.out.println(outcome);
+        }
         assertTrue(!outcomes.isEmpty());
     }
 
@@ -430,9 +431,7 @@ public class RevisionTest {
 
 
         StringBuilder out = new StringBuilder();
-        n.onTask(t -> {
-            out.append(t).append('\n');
-        });
+        n.onTask(t -> out.append(t).append('\n'));
 
         Task at = n.believe(a, Tense.Present, 1f);
         n.believe(b, Tense.Present);
@@ -474,7 +473,7 @@ public class RevisionTest {
         testRevision(32, false);
     }
 
-    private void testRevision(int delay1, boolean beliefOrGoal) {
+    private static void testRevision(int delay1, boolean beliefOrGoal) {
 
 
         NAR n = newNAR(6);
@@ -506,8 +505,6 @@ public class RevisionTest {
         NAR n = NARS.shell();
 
 
-        int offCycles = 2;
-
         BeliefAnalysis b = new BeliefAnalysis(n, x);
 
 
@@ -528,6 +525,7 @@ public class RevisionTest {
         b.print();
         assertEquals(2, b.size(true));
 
+        int offCycles = 2;
         b.believe(1.0f, 0.9f, Tense.Present).run(offCycles)
                 .believe(0.0f, 0.9f, Tense.Present);
 

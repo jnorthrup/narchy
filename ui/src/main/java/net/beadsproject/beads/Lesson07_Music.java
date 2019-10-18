@@ -12,7 +12,7 @@ class Lesson07_Music {
     public static class Music1 {
         public static void main(String[] args) {
 
-            final AudioContext ac = new AudioContext();
+            AudioContext ac = new AudioContext();
             /*
              * In this example a Clock is used to trigger events. We do this by
              * adding a listener to the Clock (which is of type Bead).

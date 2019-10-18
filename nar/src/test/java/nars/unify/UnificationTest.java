@@ -43,7 +43,9 @@ class UnificationTest {
     static void assertSubst(String expecteds, Unification u, String x) {
         TreeSet ts = new TreeSet();
         Term X = $$(x);
-        u.apply(X).forEach(ts::add);
+        for (Term term : u.apply(X)) {
+            ts.add(term);
+        }
         assertEquals(expecteds, ts.toString());
     }
 

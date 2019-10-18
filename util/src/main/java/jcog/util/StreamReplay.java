@@ -17,7 +17,7 @@ public class StreamReplay {
     }
 
     public static <T> Supplier<Stream<T>> replay(Supplier<Stream<T>> dataSrc) {
-        final Recorder<T> rec = new Recorder<>(dataSrc);
+        Recorder<T> rec = new Recorder<>(dataSrc);
         return () -> {
             // MemoizeIter starts on index 0 and reads data from srcIter or
             // from an internal mem replay Recorder.
@@ -53,7 +53,7 @@ public class StreamReplay {
         }
 
         public synchronized boolean getOrAdvance(
-                final int index,
+                int index,
                 Consumer<? super T> cons) {
             if (index < mem.size()) {
                 // If it is in mem then just get if from the corresponding index.

@@ -72,8 +72,7 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
         
         NodeFactory nodeFactory = configuration.getNodeFactory(); 
         Set<Leaf> terminalSet = new HashSet<>(nodeFactory.getTerminalSet());
-        
-        Map<String, Long> ngrams = new HashMap<>();
+
         List<Example> examples = dataset.getExamples();
         List<Example> positiveExamples = new ArrayList<>();
         List<Example> negativeExamples = new ArrayList<>();
@@ -89,7 +88,8 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
          * Uses postive examples n-grams and gives a score 
          * +1 for each positive example which contains it
          */
-        for (Example example : positiveExamples) {           
+        Map<String, Long> ngrams = new HashMap<>();
+        for (Example example : positiveExamples) {
             
             for (char c : example.getString().toCharArray()) {
                     charset.add(c);
@@ -160,8 +160,8 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
      * @param map
      * @return Restituisce una TreeMap
      */
-    static <K, V extends Comparable<V>> Map<K, V> sortByValues(final Map<K, V> map) {
-        final Comparator<K> valueComparator = (k1, k2) -> {
+    static <K, V extends Comparable<V>> Map<K, V> sortByValues(Map<K, V> map) {
+        Comparator<K> valueComparator = (k1, k2) -> {
             int compare = map.get(k2).compareTo(map.get(k1));
             if (compare == 0) {
                 String s1 = (String) k1;

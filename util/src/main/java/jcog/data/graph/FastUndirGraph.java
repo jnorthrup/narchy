@@ -52,7 +52,7 @@ public class FastUndirGraph extends ConstUndirGraph {
 
     @Override
     protected void initGraph() {
-        final int max = g.size();
+        int max = g.size();
         triangle = new BitSet[max];
         for (int i = 0; i < max; ++i) {
             in[i] = new IntArrayList();

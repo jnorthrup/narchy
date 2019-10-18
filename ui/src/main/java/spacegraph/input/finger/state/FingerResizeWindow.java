@@ -65,13 +65,13 @@ public class FingerResizeWindow extends FingerResize {
         if (h < MIN_HEIGHT)
             return;
 
-        int xi = Math.round(x1);
-        int yi = Math.round(y1);
         RectFloat nextSize = RectFloat.XYXY(x1, y1, x2, y2);
         if (!nextSize.equals(size, 1f /* 1 pixel */ )) {
             size = nextSize;
             //Exe.invokeLater(() -> {
-                space.video.setPosition(xi, yi); space.video.setSize(w, h);
+            int yi = Math.round(y1);
+            int xi = Math.round(x1);
+            space.video.setPosition(xi, yi); space.video.setSize(w, h);
             //});
         }
     }

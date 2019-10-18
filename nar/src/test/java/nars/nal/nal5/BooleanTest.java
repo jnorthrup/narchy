@@ -45,8 +45,6 @@ class BooleanTest {
 
     private static void testSAT2Individual(int i, int j) throws Narsese.NarseseException {
 
-        final float confThresh = 0.7f;
-
 
         NAR d = NARS.tmp(6);
         d.freqResolution.set(0.05f);
@@ -76,6 +74,7 @@ class BooleanTest {
         d.run(512);
 
         //System.out.println(i + " " + j + ' ');
+        final float confThresh = 0.7f;
         for (int k = 0, outcomesLength = outcomes.length; k < outcomesLength; k++) {
             String s = outcomes[k];
             Concept dc = d.conceptualize(s);
@@ -219,9 +218,6 @@ class BooleanTest {
     static void testSATRandom(boolean beliefOrGoal, boolean temporalOrEternal) {
 
 
-        int s = 4, c = 500, cRemoveInputs = c*3/4;
-
-
         IntFunction<Term> termizer =
                 //(i)->$$("x" + i);
                 (i)->$.inh($.the(i),$.the("x"));
@@ -231,9 +227,9 @@ class BooleanTest {
         n.termVolMax.set(9);
 
         Set<Task> inputs = new LinkedHashSet();
+        int s = 4;
         boolean[] b = new boolean[s];
         Term[] t = new Term[s];
-        Truth[] r = new Truth[s];
         for (int i = 0; i < s; i++) {
             b[i] = n.random().nextBoolean();
             Term what = (t[i] = termizer.apply(i)).negIf(!b[i]);
@@ -245,6 +241,9 @@ class BooleanTest {
             if (temporalOrEternal)
                 n.run(1); //stagger input temporally
         }
+        Truth[] r = new Truth[s];
+        int c = 500;
+        int cRemoveInputs = c * 3 / 4;
         for (int i = 0; i < c; i++) {
 
             n.run();
@@ -253,10 +252,10 @@ class BooleanTest {
                 float bConf = n.confDefault(BELIEF);
                 //get all structural transformed inputs (ex: images)
                 n.tasks().filter(z -> (beliefOrGoal ? z.isBelief() : z.isGoal()) && z.conf() >= bConf).forEach(inputs::add);
-                inputs.forEach(z -> {
+                for (Task z : inputs) {
                     n.concept(z).remove(z);
                     z.delete();
-                });
+                }
             }
 
             if (i >= cRemoveInputs) {

@@ -36,7 +36,13 @@ public class FormulaUtil {
      */
     public static List<int[]> getPermutations(int size, BiPredicate<Integer, Integer> validateFn) {
 
-        int[] array = IntStream.range(0, size).toArray();
+        int[] array = new int[10];
+        int count = 0;
+        for (int i = 0; i < size; i++) {
+            if (array.length == count) array = Arrays.copyOf(array, count * 2);
+            array[count++] = i;
+        }
+        array = Arrays.copyOfRange(array, 0, count);
         List<int[]> result = new LinkedList<>();
         permutation(new int[0], array, result, validateFn);
         return result;

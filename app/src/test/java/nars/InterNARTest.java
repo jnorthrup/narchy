@@ -45,15 +45,10 @@ public class InterNARTest {
 
     static void testAB(BiConsumer<NAR, NAR> beforeConnect, BiConsumer<NAR, NAR> afterConnect) {
 
-        final int MAX_CONNECT_INTERVALS = 100;
-        final int CONNECT_INTERVAL_MS = 30;
-
         final float NET_FPS = 20f;
         final float NAR_FPS = NET_FPS * 2;
 
         int preCycles = 1;
-        int duringCycles = 128;
-        int postCycles = 128;
 
         NAR a = NARS.realtime(NAR_FPS).withNAL(1, 1).get();
         NAR b = NARS.realtime(NAR_FPS).withNAL(1, 1).get();
@@ -85,6 +80,8 @@ public class InterNARTest {
         ai.peer.ping(bi.peer);
 
         boolean connected = false;
+        final int CONNECT_INTERVAL_MS = 30;
+        final int MAX_CONNECT_INTERVALS = 100;
         for (int i = 0; !connected && i < MAX_CONNECT_INTERVALS; i++) {
             Util.sleepMS(CONNECT_INTERVAL_MS);
             connected = ai.peer.connected() && bi.peer.connected();
@@ -97,6 +94,7 @@ public class InterNARTest {
         afterConnect.accept(a, b);
 
         /* init */
+        int duringCycles = 128;
         for (int i = 0; i < duringCycles; i++) {
             a.run(1);
             b.run(1);
@@ -105,6 +103,7 @@ public class InterNARTest {
         System.out.println("disconnecting..");
 
         /* init */
+        int postCycles = 128;
         for (int i = 0; i < postCycles; i++) {
             a.run(1);
             b.run(1);

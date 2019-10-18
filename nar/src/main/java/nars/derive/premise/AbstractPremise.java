@@ -20,7 +20,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class AbstractPremise implements Premise {
 
-	public final Termed task, belief;
+	public final Termed task;
+    public final Termed belief;
 
 	private Termed why;
 

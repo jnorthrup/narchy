@@ -10,7 +10,12 @@ package jurls.reinforcementlearning.domains;
  * @author thorsten
  */
 public class Point {
-    public double x,y,vx,vy,decayx,decayy;
+    public double x;
+    public double y;
+    public double vx;
+    public double vy;
+    public double decayx;
+    public double decayy;
 
     public Point(double x, double y, double vx, double vy, double decayx, double decayy) {
         this.x = x;

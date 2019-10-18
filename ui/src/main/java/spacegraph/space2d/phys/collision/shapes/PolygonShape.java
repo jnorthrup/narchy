@@ -119,7 +119,7 @@ public class PolygonShape extends Shape {
      * @warning the points may be re-ordered, even if they form a convex polygon.
      * @warning collinear points are removed.
      */
-    public final PolygonShape set(final v2[] verts, final int num) {
+    public final PolygonShape set(v2[] verts, int num) {
         assert (3 <= num && num <= Settings.maxPolygonVertices);
 
         v2 pool1 = new v2(), pool2 = new v2();
@@ -180,8 +180,8 @@ public class PolygonShape extends Shape {
 
         v2 edge = pool1;
         for (int i = 0; i < vertices; ++i) {
-            final int i1 = i;
-            final int i2 = i + 1 < vertices ? i + 1 : 0;
+            int i1 = i;
+            int i2 = i + 1 < vertices ? i + 1 : 0;
             edge.set(vertex[i2]).subbed(vertex[i1]);
 
             //assert (edge.lengthSquared() > Settings.EPSILONsqr);
@@ -195,7 +195,7 @@ public class PolygonShape extends Shape {
         return this;
     }
 
-    public static PolygonShape box(final float hx, final float hy) {
+    public static PolygonShape box(float hx, float hy) {
 
         return new PolygonShape(4).setAsBox(hx, hy);
     }
@@ -210,7 +210,7 @@ public class PolygonShape extends Shape {
      * @param hx the half-width.
      * @param hy the half-height.
      */
-    public final spacegraph.space2d.phys.collision.shapes.PolygonShape setAsBox(final float hx, final float hy) {
+    public final spacegraph.space2d.phys.collision.shapes.PolygonShape setAsBox(float hx, float hy) {
         vertices = 4;
         vertex[0].set(-hx, -hy);
         vertex[1].set(hx, -hy);
@@ -245,7 +245,7 @@ public class PolygonShape extends Shape {
      * @param center the center of the box in local coordinates.
      * @param angle  the rotation of the box in local coordinates.
      */
-    public final PolygonShape setAsBox(final float hx, final float hy, final v2 center, final float angle) {
+    public final PolygonShape setAsBox(float hx, float hy, v2 center, float angle) {
         vertices = 4;
         vertex[0].set(-hx, -hy);
         vertex[1].set(hx, -hy);
@@ -257,7 +257,7 @@ public class PolygonShape extends Shape {
         normals[3].set(-1.0f, 0.0f);
         centroid.set(center);
 
-        final Transform xf = poolt1;
+        Transform xf = poolt1;
         xf.pos.set(center);
         xf.set(angle);
 
@@ -283,7 +283,7 @@ public class PolygonShape extends Shape {
         v2 center = new v2((x1 + x2) / 2, (y1 + y2) / 2);
         centroid.set(center);
 
-        final Transform xf = poolt1;
+        Transform xf = poolt1;
         xf.pos.set(center);
         xf.set(0);
 
@@ -300,13 +300,13 @@ public class PolygonShape extends Shape {
     }
 
     @Override
-    public final boolean testPoint(final Transform xf, final v2 p) {
-        final Rot xfq = xf;
+    public final boolean testPoint(Transform xf, v2 p) {
+        Rot xfq = xf;
 
         float tempx = p.x - xf.pos.x;
         float tempy = p.y - xf.pos.y;
-        final float pLocalx = xfq.c * tempx + xfq.s * tempy;
-        final float pLocaly = -xfq.s * tempx + xfq.c * tempy;
+        float pLocalx = xfq.c * tempx + xfq.s * tempy;
+        float pLocaly = -xfq.s * tempx + xfq.c * tempy;
 
         if (m_debug) {
             System.out.println("--testPoint debug--");
@@ -322,7 +322,7 @@ public class PolygonShape extends Shape {
             v2 normal = normals[i];
             tempx = pLocalx - vertex.x;
             tempy = pLocaly - vertex.y;
-            final float dot = normal.x * tempx + normal.y * tempy;
+            float dot = normal.x * tempx + normal.y * tempy;
             if (dot > 0.0f) {
                 return false;
             }
@@ -332,14 +332,14 @@ public class PolygonShape extends Shape {
     }
 
     @Override
-    public final void computeAABB(final AABB aabb, final Transform xf, int childIndex) {
-        final v2 lower = aabb.lowerBound;
-        final v2 upper = aabb.upperBound;
-        final v2 v1 = vertex[0];
-        final float xfqc = xf.c;
-        final float xfqs = xf.s;
-        final float xfpx = xf.pos.x;
-        final float xfpy = xf.pos.y;
+    public final void computeAABB(AABB aabb, Transform xf, int childIndex) {
+        v2 lower = aabb.lowerBound;
+        v2 upper = aabb.upperBound;
+        v2 v1 = vertex[0];
+        float xfqc = xf.c;
+        float xfqs = xf.s;
+        float xfpx = xf.pos.x;
+        float xfpy = xf.pos.y;
         lower.x = (xfqc * v1.x - xfqs * v1.y) + xfpx;
         lower.y = (xfqs * v1.x + xfqc * v1.y) + xfpy;
         upper.x = lower.x;
@@ -377,7 +377,7 @@ public class PolygonShape extends Shape {
      * @param index
      * @return
      */
-    public final v2 getVertex(final int index) {
+    public final v2 getVertex(int index) {
         assert (0 <= index && index < vertices);
         return vertex[index];
     }
@@ -440,23 +440,23 @@ public class PolygonShape extends Shape {
     @Override
     public final boolean raycast(RayCastOutput output, RayCastInput input, Transform xf,
                                  int childIndex) {
-        final float xfqc = xf.c;
-        final float xfqs = xf.s;
-        final v2 xfp = xf.pos;
+        float xfqc = xf.c;
+        float xfqs = xf.s;
+        v2 xfp = xf.pos;
 
 
         float tempx = input.p1.x - xfp.x;
         float tempy = input.p1.y - xfp.y;
-        final float p1x = xfqc * tempx + xfqs * tempy;
-        final float p1y = -xfqs * tempx + xfqc * tempy;
+        float p1x = xfqc * tempx + xfqs * tempy;
+        float p1y = -xfqs * tempx + xfqc * tempy;
 
         tempx = input.p2.x - xfp.x;
         tempy = input.p2.y - xfp.y;
-        final float p2x = xfqc * tempx + xfqs * tempy;
-        final float p2y = -xfqs * tempx + xfqc * tempy;
+        float p2x = xfqc * tempx + xfqs * tempy;
+        float p2y = -xfqs * tempx + xfqc * tempy;
 
-        final float dx = p2x - p1x;
-        final float dy = p2y - p1y;
+        float dx = p2x - p1x;
+        float dy = p2y - p1y;
 
         float lower = 0, upper = input.maxFraction;
 
@@ -469,8 +469,8 @@ public class PolygonShape extends Shape {
 
             float tempxn = vertex.x - p1x;
             float tempyn = vertex.y - p1y;
-            final float numerator = normal.x * tempxn + normal.y * tempyn;
-            final float denominator = normal.x * dx + normal.y * dy;
+            float numerator = normal.x * tempxn + normal.y * tempyn;
+            float denominator = normal.x * dx + normal.y * dy;
 
             if (denominator == 0.0f) {
                 if (numerator < 0.0f) {
@@ -510,34 +510,34 @@ public class PolygonShape extends Shape {
         return false;
     }
 
-    private void computeCentroidToOut(final v2[] vs, final int count, final v2 out) {
+    private static void computeCentroidToOut(v2[] vs, int count, v2 out) {
         assert (count >= 3);
 
         out.set(0.0f, 0.0f);
-        float area = 0.0f;
 
         v2 pool1 = new v2(), pool2 = new v2(), pool3 = new v2();
 
-        final v2 pRef = pool1;
+        v2 pRef = pool1;
         pRef.setZero();
 
-        final v2 e1 = pool2;
-        final v2 e2 = pool3;
+        v2 e1 = pool2;
+        v2 e2 = pool3;
 
         final float inv3 = 1.0f / 3.0f;
 
+        float area = 0.0f;
         for (int i = 0; i < count; ++i) {
 
-            final v2 p1 = pRef;
-            final v2 p2 = vs[i];
-            final v2 p3 = i + 1 < count ? vs[i + 1] : vs[0];
+            v2 p1 = pRef;
+            v2 p2 = vs[i];
+            v2 p3 = i + 1 < count ? vs[i + 1] : vs[0];
 
             e1.set(p2).subbed(p1);
             e2.set(p3).subbed(p1);
 
-            final float D = v2.cross(e1, e2);
+            float D = v2.cross(e1, e2);
 
-            final float triangleArea = 0.5f * D;
+            float triangleArea = 0.5f * D;
             area += triangleArea;
 
 
@@ -550,19 +550,17 @@ public class PolygonShape extends Shape {
         out.scaled(1.0f / area);
     }
 
-    public void computeMass(final MassData massData, float density) {
+    public void computeMass(MassData massData, float density) {
 
         v2 pool1 = new v2(), pool2 = new v2(), pool3 = new v2(), pool4 = new v2();
 
         assert (vertices >= 3);
 
-        final v2 center = pool1;
+        v2 center = pool1;
         center.setZero();
-        float area = 0.0f;
-        float I = 0.0f;
 
 
-        final v2 s = pool2;
+        v2 s = pool2;
         s.setZero();
 
         for (int i = 0; i < vertices; ++i) {
@@ -572,25 +570,27 @@ public class PolygonShape extends Shape {
 
         final float k_inv3 = 1.0f / 3.0f;
 
-        final v2 e1 = pool3;
-        final v2 e2 = pool4;
+        v2 e1 = pool3;
+        v2 e2 = pool4;
 
+        float I = 0.0f;
+        float area = 0.0f;
         for (int i = 0; i < vertices; ++i) {
 
             e1.set(vertex[i]).subbed(s);
             e2.set(s).negated().added(i + 1 < vertices ? vertex[i + 1] : vertex[0]);
 
-            final float D = v2.cross(e1, e2);
+            float D = v2.cross(e1, e2);
 
-            final float triangleArea = 0.5f * D;
+            float triangleArea = 0.5f * D;
             area += triangleArea;
 
 
             center.x += triangleArea * k_inv3 * (e1.x + e2.x);
             center.y += triangleArea * k_inv3 * (e1.y + e2.y);
 
-            final float ex1 = e1.x, ey1 = e1.y;
-            final float ex2 = e2.x, ey2 = e2.y;
+            float ex1 = e1.x, ey1 = e1.y;
+            float ex2 = e2.x, ey2 = e2.y;
 
             float intx2 = ex1 * ex1 + ex2 * ex1 + ex2 * ex2;
             float inty2 = ey1 * ey1 + ey2 * ey1 + ey2 * ey2;
@@ -626,7 +626,8 @@ public class PolygonShape extends Shape {
 
             v2 e = pool1.set(vertex[i2]).subbed(p);
 
-            if (IntStream.range(0, vertices).filter(j -> j != i1 && j != i2).anyMatch(j -> v2.cross(e, pool2.set(vertex[j]).subbed(p)) < 0.0f)) {
+            int bound = vertices;
+            if (IntStream.range(0, bound).filter(j -> j != i1 && j != i2).anyMatch(j -> v2.cross(e, pool2.set(vertex[j]).subbed(p)) < 0.0f)) {
                 return false;
             }
         }
@@ -637,14 +638,14 @@ public class PolygonShape extends Shape {
     /**
      * Get the centroid and apply the supplied transform.
      */
-    public v2 centroid(final Transform xf) {
+    public v2 centroid(Transform xf) {
         return Transform.mul(xf, centroid);
     }
 
     /**
      * Get the centroid and apply the supplied transform.
      */
-    public v2 centroidToOut(final Transform xf, final v2 out) {
+    public v2 centroidToOut(Transform xf, v2 out) {
         Transform.mulToOutUnsafe(xf, centroid, out);
         return out;
     }

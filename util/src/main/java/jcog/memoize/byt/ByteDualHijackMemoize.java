@@ -9,7 +9,8 @@ public class ByteDualHijackMemoize<X extends ByteKeyExternal,Y> extends ByteMult
 
     private final int reprobes;
     private final int lengthThesh;
-    private final int cap0, cap1;
+    private final int cap0;
+    private final int cap1;
 
     public ByteDualHijackMemoize(Function<X, Y> f, int capacity, int reprobes, boolean soft, int lengthThesh, float ratio) {
         super(f, capacity, soft, 2);

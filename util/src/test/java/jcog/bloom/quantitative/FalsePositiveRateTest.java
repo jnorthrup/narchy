@@ -4,6 +4,7 @@ import jcog.bloom.BloomFilterBuilder;
 import jcog.bloom.LeakySet;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -26,14 +27,12 @@ class FalsePositiveRateTest {
             List<String> containedStrings = randomStrings("a", batchSize);
             List<String> nonContainedStrings = randomStrings("b", batchSize);
 
-            containedStrings.forEach(filter::add);
+            for (String s : containedStrings) {
+                filter.add(s);
+            }
 
-            long truePositives = containedStrings.stream()
-                    .filter(filter::contains)
-                    .count();
-            long trueNegatives = nonContainedStrings.stream()
-                    .filter(string -> !filter.contains(string))
-                    .count();
+            long truePositives = containedStrings.stream().filter(filter::contains).count();
+            long trueNegatives = nonContainedStrings.stream().filter(string -> !filter.contains(string)).count();
             double falsePositiveRate = 100.0 * (batchSize - trueNegatives) / batchSize;
             double falseNegativeRate = 100.0 * (batchSize - truePositives) / batchSize;
             double accuracy = 100.0 * (truePositives + trueNegatives) / (2 * batchSize);

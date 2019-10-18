@@ -252,7 +252,8 @@ public enum Twokenize {
     public static class Span implements Comparable<Span> {
         public final String content;
         public final String pattern;
-        public final int start, stop;
+        public final int start;
+        public final int stop;
         public final int length;
 
         public Span(String content, String pattern, int start, int stop) {

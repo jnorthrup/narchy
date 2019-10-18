@@ -29,7 +29,7 @@ public class Vocalization extends NARPart {
     private final Consumer<Term> speak;
     private final float durationsPerWord;
     private float energy;
-    private final float expectationThreshold = 0.5f;
+    private static final float expectationThreshold = 0.5f;
 
     public Vocalization(NAR nar, float durationsPerWord, Consumer<Term> speak) {
         super();
@@ -101,16 +101,18 @@ public class Vocalization extends NARPart {
 
             if (!tt.isEmpty()) {
                 LongArrayList ll = new LongArrayList(tt.size());
-                tt.forEach(ll::add);
+                for (Long aLong : tt) {
+                    ll.add(aLong);
+                }
 
                 ll.forEach(t -> {
                     Set<Map.Entry<Term, TruthAccumulator>> entries = vocalize.row(t).entrySet();
                     if (t >= startOfNow) {
-                        entries.forEach(e -> {
+                        for (Map.Entry<Term, TruthAccumulator> e : entries) {
                             Truth x = e.getValue().commitSum();
                             if (x.expectation() > expectationThreshold)
                                 pending.add(Tuples.pair(e.getKey(), x));
-                        });
+                        }
                     }
                     entries.clear();
                 });
@@ -131,12 +133,13 @@ public class Vocalization extends NARPart {
     /**
      * default greedy decider by truth expectation
      */
-    private @Nullable Term decide(FasterList<Pair<Term, Truth>> pending) {
+    private @Nullable
+    static Term decide(FasterList<Pair<Term, Truth>> pending) {
         return pending.max((a, b) -> {
             float ta = a.getTwo().expectation();
             float tb = b.getTwo().expectation();
-            int tab = Float.compare(ta, tb);
             if (ta > tb) {
+                int tab = Float.compare(ta, tb);
                 return tab;
             } else {
                 return a.getOne().compareTo(b.getOne());

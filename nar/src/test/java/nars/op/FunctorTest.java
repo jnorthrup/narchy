@@ -27,7 +27,7 @@ class FunctorTest {
 
         Term y = $$("[a,b]");
 
-        final boolean[] got = {false};
+        boolean[] got = {false};
         n.onTask(t -> {
             if (t.isBelief() && t.term().equals(y))
                 got[0] = true;

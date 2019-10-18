@@ -18,7 +18,7 @@ public class MJPalette {
 
 	
 	
-	private int MakeRGB(int r, int g, int b) {
+	private static int MakeRGB(int r, int g, int b) {
 		return b + (g << 8) + (r << 16) + (0xff << 24);
 	}
 
@@ -188,7 +188,6 @@ public class MJPalette {
 		int r;
 		int g;
 		int b;
-		int i;
         int r1 = c1.getRed();
         int r2 = c2.getRed();
         int g1 = c1.getGreen();
@@ -200,7 +199,7 @@ public class MJPalette {
 		int db = (b2 - b1) / (iSttCnt - 1);
 
 		
-		for (i = 1; i < iSttCnt; i++) {
+		for (int i = 1; i < iSttCnt; i++) {
 			Palette[i] = (i == iSttCnt - 1) && (iSttCnt > 2) ? MakeRGB(r2, g2,
 					b2) : MakeRGB(r1 + (i - 1) * dr, g1 + (i - 1) * dg, b1
 					+ (i - 1) * db);

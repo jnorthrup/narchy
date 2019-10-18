@@ -172,8 +172,8 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
                 continue;
             }
             int highBit = e.mHash & oldCapacity;
-            SimpleHashSetEntry<T> broken = null;
             newTable[j | highBit] = e;
+            SimpleHashSetEntry<T> broken = null;
             for (SimpleHashSetEntry<T> n = e.mNext; n != null; e = n, n = n.mNext) {
                 int nextHighBit = n.mHash & oldCapacity;
                 if (nextHighBit != highBit) {

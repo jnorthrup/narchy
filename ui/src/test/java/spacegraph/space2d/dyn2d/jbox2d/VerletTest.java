@@ -81,7 +81,7 @@ public class VerletTest implements Consumer<Dynamics2D> {
 
     }
 
-    public void spring(Dynamics2D w, Body2D p, Body2D q, float STRENGTH, float REST_LENGTH) {
+    public static void spring(Dynamics2D w, Body2D p, Body2D q, float STRENGTH, float REST_LENGTH) {
 
 
 

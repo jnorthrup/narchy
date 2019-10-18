@@ -84,14 +84,6 @@ class BeliefTableTest {
     @Test
     void testPolation0() {
 
-        int spacing = 4;
-        float conf = 0.9f;
-        float[] freqPattern =
-
-                {0, 0.5f, 1f};
-        long[] timing =
-                {0, 2, 4};
-
         int dur = 1;
 
         NAR n = NARS.shell();
@@ -99,8 +91,11 @@ class BeliefTableTest {
 
         BeliefAnalysis b = new BeliefAnalysis(n, x);
 
+        long[] timing = {0, 2, 4};
+        float[] freqPattern = {0, 0.5f, 1f};
         assertEquals(timing.length, freqPattern.length);
         int k = 0;
+        float conf = 0.9f;
         for (float f : freqPattern) {
 
             b.believe(0.5f, freqPattern[k], conf, timing[k]);
@@ -112,6 +107,7 @@ class BeliefTableTest {
         @NotNull BeliefTable table = b.concept().beliefs();
 
         b.print();
+        int spacing = 4;
         int margin = spacing * (c / 2);
         for (int i = -margin; i < spacing * c + margin; i++)
             System.out.println(i + "\t" + table.truth(i,    /* relative to zero */  n));
@@ -187,8 +183,8 @@ class BeliefTableTest {
 
         n.time.dur(2);
         int a = 1;
-        int b = 2;
         n.inputAt(a, "a:x. |");
+        int b = 2;
         n.inputAt(b, "a:y. |");
         n.run(b + 1);
 

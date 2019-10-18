@@ -179,7 +179,6 @@ public class GO extends JPanel implements MouseListener {
             for (int r = 0; r < boardHist.get(turn).length; r++) {
                 System.arraycopy(boardHist.get(turn)[r], 0, board[r], 0, boardHist.get(turn).length);
             }
-            boolean matches = true;
 
             if (x >= 0 && x < DIM - 1 && y >= 0 && y < DIM - 1 && board[x][y] == 0) {
                 board[x][y] = 1 + turn % 2;
@@ -224,7 +223,7 @@ public class GO extends JPanel implements MouseListener {
                     kamikaze = true;
                 }
 
-                matches = true;
+                boolean matches = true;
                 for (int i = 0; i < DIM; i++) {
                     if (turn >= 3) {
                         if (!Arrays.toString(boardHist.get(turn - 1)[i]).equals(Arrays.toString(board[i]))) {

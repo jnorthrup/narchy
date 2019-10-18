@@ -82,7 +82,9 @@ public class RowVars {
                 String simpleFS = f.theFormula.substring(start, end + 1);
                 Formula simpleF = new Formula();
                 simpleF.read(simpleFS);
-                int nonRowVar = (int) IntStream.range(0, simpleF.listLength()).filter(i -> simpleF.getArgument(i).startsWith(Formula.V_PREF)).count();
+                int bound = simpleF.listLength();
+                long count = IntStream.range(0, bound).filter(i -> simpleF.getArgument(i).startsWith(Formula.V_PREF)).count();
+                int nonRowVar = (int) count;
 
                 if (kb.kbCache != null && kb.kbCache.valences != null &&
                     kb.kbCache.valences.get(pred) != null) {
@@ -241,8 +243,7 @@ public class RowVars {
      * @return an ArrayList of Formulas, or an empty ArrayList.
      */
     public static ArrayList<Formula> expandRowVars(KB kb, Formula f) {
-        
-        Set<String> result = new TreeSet<>();
+
         ArrayList<Formula> formresult = new ArrayList<>();
         if (!f.theFormula.contains("@")) {
             
@@ -253,17 +254,18 @@ public class RowVars {
             System.out.println("Info in RowVars.expandRowVars(): f: " +f);
         HashMap<String,HashSet<String>> rels = getRowVarRelations(f);   
         HashMap<String,Integer> rowVarMaxArities = getRowVarMaxAritiesWithOtherArgs(rels, kb, f);
+        Set<String> result = new TreeSet<>();
         result.add(f.theFormula);
         HashSet<String> rowvars = findRowVars(f);
         for (String var : rowvars) {
             if (DEBUG)
                 System.out.println("Info in RowVars.expandRowVars(): var: " + var);
-            String replaceVar = var.replace('@', '?');
-            Set<String> newresult = new TreeSet<>();
             StringBuilder replaceString = new StringBuilder();
             int maxArity = 7;
             if (rowVarMaxArities.containsKey(var) && maxArity > rowVarMaxArities.get(var))
                 maxArity = rowVarMaxArities.get(var);
+            Set<String> newresult = new TreeSet<>();
+            String replaceVar = var.replace('@', '?');
             for (int j = 0; j < maxArity; j++) {
                 if (j > 0)
                     replaceString.append(' ');
@@ -280,7 +282,8 @@ public class RowVars {
             result = newresult;
         }
 
-        formresult = result.stream().map(Formula::new).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<Formula> formulas = result.stream().map(Formula::new).collect(Collectors.toCollection(ArrayList::new));
+        formresult = formulas;
         if (DEBUG)
             System.out.println("Info in RowVars.expandRowVars(): exiting with: " + formresult);
         return formresult;

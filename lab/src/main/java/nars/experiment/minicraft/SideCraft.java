@@ -116,7 +116,7 @@ public class SideCraft extends GameX {
 
 
     float prevScore;
-    final int gameFramesPerCycle = 1;
+    static final int gameFramesPerCycle = 1;
 
 
 }

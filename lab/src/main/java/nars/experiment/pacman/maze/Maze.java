@@ -40,7 +40,8 @@ public class Maze {
     }
 
     public Fruit fruit = Fruit.none;
-    public int width, height;
+    public int width;
+    public int height;
     public byte[][] tiles;
     GenCursor[] cursors;
     public boolean[][] dots;
@@ -145,8 +146,6 @@ public class Maze {
 
         cursors = new GenCursor[]{new GenCursor(this, 1, 1), new GenCursor(this, 1, 1)};
 
-        int finished = 0;
-
         for (GenCursor c : cursors) {
 
             c.area = area;
@@ -155,6 +154,7 @@ public class Maze {
 
         }
 
+        int finished = 0;
         while (finished < this.cursors.length) {
 
             for (GenCursor c : this.cursors) {

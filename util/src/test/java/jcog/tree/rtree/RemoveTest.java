@@ -12,7 +12,7 @@ public class RemoveTest {
         final int LEAF_CAP = 3;
         RTree<RectDouble> r = RTree2DTest.createRect2DTree(Spatialization.DefaultSplits.AXIAL, LEAF_CAP);
 
-        final RectDouble[] rects = RTree2DTest.generateRandomRects(6);
+        RectDouble[] rects = RTree2DTest.generateRandomRects(6);
 
         for (RectDouble x : rects)
             r.add(x);

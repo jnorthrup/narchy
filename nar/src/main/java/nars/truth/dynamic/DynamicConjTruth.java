@@ -68,10 +68,6 @@ public class DynamicConjTruth {
         @Override
         public Term reconstruct(Compound superterm, long seqStart, long seqEnd, DynTaskify d) {
 
-            ConjBuilder c =
-                //new ConjTree();
-                new ConjList();
-
 
             long end;
             boolean aligned = true;
@@ -107,6 +103,8 @@ public class DynamicConjTruth {
                 }
             }
 
+            //new ConjTree();
+            ConjBuilder c = new ConjList();
             boolean result = aligned ?
                 reconstructSequence(seqStart, end, d, c) :
                 reconstructInterval(d, c);

@@ -16,7 +16,7 @@ public class BomberSndEffect extends Thread {
         start();
     }
 
-    public void playSound(String str) {
+    public static void playSound(String str) {
         /** if Java 2 is available */
         if (Main.J2) {
             SoundPlayer sound = null;

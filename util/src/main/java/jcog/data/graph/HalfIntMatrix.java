@@ -31,7 +31,8 @@ class HalfIntMatrix {
 	/** the array holding the complete triangle matrix */
 	private final int[] matrix;
 
-	private final int size, initialValue;
+	private final int size;
+	private final int initialValue;
 
 	/**
 	 * Creates a new HalfIntMatrix that is an exact copy of the given template
@@ -39,7 +40,7 @@ class HalfIntMatrix {
 	 * @param template
 	 *            a HalfIntMatrix that should be copied
 	 */
-	public HalfIntMatrix(final HalfIntMatrix template) {
+	public HalfIntMatrix(HalfIntMatrix template) {
 		this(template, 0);
 	}
 
@@ -52,7 +53,7 @@ class HalfIntMatrix {
 	 *            the number of new nodes for which space should be reserved or
 	 *            removed
 	 */
-    private HalfIntMatrix(final HalfIntMatrix template, final int reserveNewNodes) {
+    private HalfIntMatrix(HalfIntMatrix template, int reserveNewNodes) {
 		this.size = (template.size + reserveNewNodes);
 		this.initialValue = template.initialValue;
 		this.matrix = new int[((size * size + size) / 2)];
@@ -71,7 +72,7 @@ class HalfIntMatrix {
 	 * @param initialValue
 	 *            the initial value of each matrix element
 	 */
-	public HalfIntMatrix(final int initialSize, final int initialValue) {
+	public HalfIntMatrix(int initialSize, int initialValue) {
 		this.size = initialSize;
 		this.initialValue = initialValue;
 		this.matrix = new int[((size * size + size) / 2)];
@@ -88,7 +89,7 @@ class HalfIntMatrix {
 			return;
 		}
 		if (rowA > rowB) {
-			final int t = rowA;
+			int t = rowA;
 			rowA = rowB;
 			rowB = t;
 		}
@@ -111,13 +112,13 @@ class HalfIntMatrix {
 	 * 
 	 * @see de.parsemis.utils.IntMatrix#get(int, int)
 	 */
-	public int get(final int row, final int col) {
+	public int get(int row, int col) {
 
 
 		return matrix[idx(row, col)];
 	}
 
-	private static int idx(final int row, final int col) {
+	private static int idx(int row, int col) {
         return row < col ?
                 col * (col + 1) / 2 + row
                 :
@@ -129,7 +130,7 @@ class HalfIntMatrix {
 	 * 
 	 * @see de.parsemis.utils.IntMatrix#setAt(int, int, int)
 	 */
-	public void set(final int row, final int col, final int value) {
+	public void set(int row, int col, int value) {
 		assert row >= 0 && col >= 0 && row < size && col < size : "row/col out of bounds: "
 				+ row + '/' + col + " size: " + size;
 		matrix[idx(row, col)] = value;
@@ -144,7 +145,7 @@ class HalfIntMatrix {
 		return size;
 	}
 
-	private void swap(final int r1, final int c1, final int r2, final int c2) {
+	private void swap(int r1, int c1, int r2, int c2) {
 	    ArrayUtil.swapInt(matrix,  idx(r1, c1), idx(r2, c2));
 	}
 }

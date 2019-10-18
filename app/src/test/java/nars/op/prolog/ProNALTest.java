@@ -33,7 +33,6 @@ public class ProNALTest {
 		n.questPriDefault.pri(1f);
 		n.beliefPriDefault.pri(0.5f);
 
-		Set<String> answers = new TreeSet();
         for (nars.term.Term xx : PrologToNAL.N(t)) {
             if (Functor.isFunc(xx)) {
 
@@ -56,6 +55,7 @@ public class ProNALTest {
         n.run(2500);
 
 
+        Set<String> answers = new TreeSet();
         assertTrue(answers.contains("(colour(wood,brown)&&made_of(your_chair,wood))"));
 
 

@@ -46,9 +46,9 @@ public class PIDFitter implements ParameterizedFunction {
     @Override
     public void learn(double[] xs, double y) {
         double q = parameterizedFunction.value(xs);
-        double e = y - q;
         parameterGradient(gradient, xs);
 
+        double e = y - q;
         for (int i = 0; i < pids.length; ++i) {
             gradient[i] = 0.00001 * pids[i].compute(Math.signum(gradient[i]) * e);
         }

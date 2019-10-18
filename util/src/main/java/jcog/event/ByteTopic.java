@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.data.bit.MetalBitSet;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,7 +21,7 @@ public class ByteTopic<X> {
     /** last channel is reserved for general catch 'all' sent once in all cases */
     private static final byte ANY = Byte.MAX_VALUE-1;
 
-    private final boolean allowDynamic = false;
+    private static final boolean allowDynamic = false;
 
     private final Topic<X>[] chan = new Topic[Byte.MAX_VALUE /* signed max */];
 
@@ -39,7 +40,14 @@ public class ByteTopic<X> {
 
     @Override
     public String toString() {
-        return Stream.of(chan).filter(Objects::nonNull).map(Object::toString).collect(Collectors.joining(","));
+        StringJoiner joiner = new StringJoiner(",");
+        for (Topic<X> consumers : chan) {
+            if (consumers != null) {
+                String toString = consumers.toString();
+                joiner.add(toString);
+            }
+        }
+        return joiner.toString();
     }
 
     protected Topic<X> newTopic(byte c) {

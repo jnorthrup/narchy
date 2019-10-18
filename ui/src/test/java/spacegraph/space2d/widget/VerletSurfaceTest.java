@@ -27,7 +27,7 @@ class VerletSurfaceTest {
 
     public static class AttractTest2D extends PaintSurface implements Animated {
 
-        final int W = 800;
+        static final int W = 800;
 
         private Off update;
 

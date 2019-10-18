@@ -8,6 +8,8 @@ import spacegraph.space2d.widget.OsmSurface;
 import spacegraph.util.geo.IRL;
 import spacegraph.util.geo.osm.Osm;
 import spacegraph.util.geo.osm.OsmElement;
+import spacegraph.util.geo.osm.OsmNode;
+import spacegraph.util.geo.osm.OsmWay;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -25,15 +27,23 @@ public class OSMTest {
                 if (x.tags != null && !x.tags.isEmpty())
                     i.index.add(x);
             };
-            o.nodes.values().forEach(index);
-            o.ways.values().forEach(index);
+            for (OsmNode osmNode : o.nodes.values()) {
+                index.accept(osmNode);
+            }
+            for (OsmWay osmWay : o.ways.values()) {
+                index.accept(osmWay);
+            }
 //            o.relations.values().forEach(i.index::addAt);
 //            System.out.println(o.nodes.size() + " nodes");
             o.ready = true;
 
             System.out.println(o);
 
-            o.nodes.values().stream().filter(n -> n.tags != null).forEach(System.out::println);
+            for (OsmNode n : o.nodes.values()) {
+                if (n.tags != null) {
+                    System.out.println(n);
+                }
+            }
 
             SpaceGraph.window(new OsmSurface(i).go(o).widget(), 800, 800);
 

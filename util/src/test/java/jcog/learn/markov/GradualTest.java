@@ -24,9 +24,9 @@ public class GradualTest {
 
         MarkovSampler<String> longChainSampler = longChain.sample();
         MarkovSampler<String> shortChainSampler = shortChain.sample();
-        String shorty, longy;
+        String longy;
         while ((longy = longChainSampler.next()) != null) {
-            shorty = shortChainSampler.nextLoop();
+            String shorty = shortChainSampler.nextLoop();
             System.out.printf("%s (%s)\n", longy, shorty);
         }
 

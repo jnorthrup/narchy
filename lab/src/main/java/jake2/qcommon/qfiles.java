@@ -661,7 +661,7 @@ public class qfiles {
 	public static class dvis_t {
 
 		public dvis_t(ByteBuffer bb) {
-			final int numclusters = this.numclusters = bb.getInt();
+			int numclusters = this.numclusters = bb.getInt();
 			bitofs = new int[numclusters][2];
 
 			int[][] b = this.bitofs;

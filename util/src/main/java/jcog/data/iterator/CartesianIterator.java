@@ -56,7 +56,7 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 	public boolean hasNext() {
 		if (values==null) return false;
 		int size = iterables.length;
-        return IntStream.range(0, size).anyMatch(i -> iterators[i].hasNext());
+		return IntStream.range(0, size).anyMatch(i -> iterators[i].hasNext());
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 	}
 
 	/** if true, the value returned by next() will be cloned.  otherwise it is re-used in next iteration */
-	protected boolean cloneNext() {
+	protected static boolean cloneNext() {
 		return false;
 	}
 

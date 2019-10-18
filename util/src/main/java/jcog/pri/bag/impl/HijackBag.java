@@ -68,7 +68,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     private final int id;
 
     private volatile int size;
-    private volatile float min, max;
+    private volatile float min;
+    private volatile float max;
 
     /**
      * TODO make non-public
@@ -134,7 +135,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     protected void resize(int newSpace) {
-        final MetalAtomicReferenceArray<V>[] prev = new MetalAtomicReferenceArray[1];
+        MetalAtomicReferenceArray<V>[] prev = new MetalAtomicReferenceArray[1];
 
         MetalAtomicReferenceArray<V> next = newSpace != 0 ? new MetalAtomicReferenceArray<>(newSpace) : EMPTY_ARRAY;
         if (next == MAP.updateAndGet(this, (x) -> {
@@ -206,7 +207,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     public float density() {
         MetalAtomicReferenceArray<V> m = map;
         int mm = m.length();
-        int filled = (int) IntStream.range(0, mm).filter(i -> m.getFast(i) != null).count();
+        long count = IntStream.range(0, mm).filter(i -> m.getFast(i) != null).count();
+        int filled = (int) count;
         return ((float) filled) / mm;
     }
 
@@ -227,7 +229,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
             return null;
 
         int kHash = hash(k);
-        final int start = index(kHash, c);
+        int start = index(kHash, c);
 
         float incomingPri;
         if (mode == PUT) {
@@ -238,7 +240,6 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
             incomingPri = Float.POSITIVE_INFINITY; /* shouldnt be used */
         }
 
-        V toAdd = null, toRemove = null, toReturn = null;
         int mutexTicket = -1;
 
         boolean locking = (mode != GET) && !unsafe();
@@ -259,6 +260,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
             mutexTicket = mutex.start(id, start);
         }
 
+        V toReturn = null;
+        V toRemove = null;
+        V toAdd = null;
         try {
 
             switch (mode) {
@@ -410,10 +414,10 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         return null; //not found
     }
 
-    protected boolean optimisticPut() {
+    protected static boolean optimisticPut() {
         return false;
     }
-    protected boolean optimisticRemove() {
+    protected static boolean optimisticRemove() {
         return false;
     }
 
@@ -449,11 +453,11 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     /** default impl = x.hashCode() */
-    protected int hash(Object x) {
+    protected static int hash(Object x) {
         return x.hashCode();
     }
 
-    private int index(int h, int cap) {
+    private static int index(int h, int cap) {
 
 
         //mix for additional mix
@@ -463,7 +467,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
 
         //modulo
-        h = h % cap;
+        h %= cap;
         if (h < 0)
             h += cap;
 
@@ -520,14 +524,14 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         return update(k, null, REMOVE, null);
     }
 
-    public Random random() {
+    public static Random random() {
         return ThreadLocalRandom.current();
     }
 
     /**
      * roulette fair
      */
-    private boolean hijackFair(float newPri, float oldPri) {
+    private static boolean hijackFair(float newPri, float oldPri) {
         return random().nextFloat() < newPri / (newPri + oldPri);
 
 //        float priEpsilon = ScalarValue.EPSILON;
@@ -591,7 +595,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
         restart:
         while ((s = size()) > 0) {
-            final MetalAtomicReferenceArray<V> map = this.map;
+            MetalAtomicReferenceArray<V> map = this.map;
             int c = map.length();
             if (c == 0)
                 break;
@@ -601,14 +605,14 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
             boolean direction = random.nextBoolean();
 
-            final int windowCap = Math.min(s,
+            int windowCap = Math.min(s,
 
                     //(1 + reprobes)
                     Math.min(s, 2 * reprobes)
             );
 
-            final float[] wPri = new float[windowCap];
-            final Object[] wVal = new Object[windowCap];
+            float[] wPri = new float[windowCap];
+            Object[] wVal = new Object[windowCap];
 
             /** emergency null counter, in case map becomes totally null avoids infinite loop*/
             int mapNullSeen = 0;
@@ -680,9 +684,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
                 //shift window
 
-                V v0;
-                float p = Float.NaN;
                 mapNullSeen = 0;
+                float p = Float.NaN;
+                V v0;
                 do {
                     v0 = map.getFast(i = Util.next(i, direction, c));
                     if (v0 == null) {
@@ -754,7 +758,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
     @Override
     public Stream<V> stream() {
-        final MetalAtomicReferenceArray<V> map = this.map;
+        MetalAtomicReferenceArray<V> map = this.map;
         return IntStream.range(0, map.length())
                 .mapToObj(map::getFast).filter(Objects::nonNull);
     }
@@ -764,7 +768,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
      * encountered or null if totally empty
      */
     public V next(int offset, Predicate<V> each) {
-        final MetalAtomicReferenceArray<V> map = this.map;
+        MetalAtomicReferenceArray<V> map = this.map;
         int n = map.length();
         V xx = null;
         for (int i = offset; i < n; i++) {
@@ -876,7 +880,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     public static <X> List<X> list(AtomicReferenceArray<X> a) {
-        return IntStream.range(0, a.length()).mapToObj(a::get).filter(Objects::nonNull).collect(Collectors.toList());
+        int bound = a.length();
+        List<X> list = IntStream.range(0, bound).mapToObj(a::get).filter(Objects::nonNull).collect(Collectors.toList());
+        return list;
     }
 
 

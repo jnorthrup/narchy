@@ -176,7 +176,7 @@ public class Variation {
                 && root.getParent() != null;
     }
 
-    private void replaceNode(Node oldChild, Node newChild) {
+    private static void replaceNode(Node oldChild, Node newChild) {
 
         ParentNode parent = oldChild.getParent();
         List<Node> childs = parent.children();
@@ -208,7 +208,12 @@ public class Variation {
             return true;
         }
 
-        boolean ret = root.children().stream().map(child -> checkMaxDepth(child, depth + 1)).reduce(true, (a, b) -> a && b);
+        Boolean acc = true;
+        for (Node child : root.children()) {
+            Boolean checkMaxDepth = checkMaxDepth(child, depth + 1);
+            acc = acc && checkMaxDepth;
+        }
+        boolean ret = acc;
 
         return ret;
     }

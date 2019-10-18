@@ -122,9 +122,6 @@ public class Enemy extends Sprite {
         }
 
 
-        float sideWaysSpeed = 1.75f;
-
-
         if (xa > 2) {
             facing = 1;
         }
@@ -132,6 +129,7 @@ public class Enemy extends Sprite {
             facing = -1;
         }
 
+        float sideWaysSpeed = 1.75f;
         xa = facing * sideWaysSpeed;
 
         boolean mayJump = (onGround);

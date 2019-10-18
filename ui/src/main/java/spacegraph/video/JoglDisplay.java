@@ -37,13 +37,19 @@ public abstract class JoglDisplay extends SpaceGraph {
      */
     public final JoglWindow video;
 
-    public final v3Anim camPos, camFwd, camUp;
+    public final v3Anim camPos;
+    public final v3Anim camFwd;
+    public final v3Anim camUp;
 
 
-    public float zNear = 0.5f, zFar = 1000;
+    public float zNear = 0.5f;
+    public float zFar = 1000;
 
     protected int debug;
-    public double top, bottom, left, right;
+    public double top;
+    public double bottom;
+    public double left;
+    public double right;
 
     public JoglDisplay() {
         video = new MyJoglWindow();
@@ -59,7 +65,7 @@ public abstract class JoglDisplay extends SpaceGraph {
 
     }
 
-    private void initDepth(GL2 gl) {
+    private static void initDepth(GL2 gl) {
         gl.glEnable(GL_DEPTH_TEST);
         gl.glDepthFunc(GL_LEQUAL);
 
@@ -67,7 +73,7 @@ public abstract class JoglDisplay extends SpaceGraph {
         gl.glClearDepth(1f);
     }
 
-    private void initBlend(GL gl) {
+    private static void initBlend(GL gl) {
         gl.glEnable(GL_BLEND);
         gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
         gl.glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
@@ -105,17 +111,17 @@ public abstract class JoglDisplay extends SpaceGraph {
     }
 
 
-    private void clear(GL2 gl) {
+    private static void clear(GL2 gl) {
         //clearMotionBlur(0.5f, gl);
         clearComplete(gl);
 
     }
 
-    protected void clearComplete(GL2 gl) {
+    protected static void clearComplete(GL2 gl) {
         gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    private void clearMotionBlur(float rate /* TODO */, GL2 gl) {
+    private static void clearMotionBlur(float rate /* TODO */, GL2 gl) {
 
 
         gl.glAccum(GL2.GL_LOAD, 0.5f);

@@ -16,7 +16,8 @@ import java.util.Set;
  */
 public class UnenforcedConcatSet<X> extends AbstractSet<X> {
 
-    final Set<X> a, b;
+    final Set<X> a;
+    final Set<X> b;
     final int size;
 
     UnenforcedConcatSet(Set<X> a, Set<X> b) {

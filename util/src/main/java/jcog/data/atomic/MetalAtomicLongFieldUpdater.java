@@ -12,15 +12,14 @@ public final class MetalAtomicLongFieldUpdater<T> extends AtomicLongFieldUpdater
 	private final long offset;
     //        private final Class<T> tclass;
 
-	public MetalAtomicLongFieldUpdater(final Class<T> tclass, final String fieldName) {
+	public MetalAtomicLongFieldUpdater(Class<T> tclass, String fieldName) {
 
 //            try {
 //                field = (Field) AccessController.doPrivileged(new PrivilegedExceptionAction<Field>() {
 //                    public Field run() throws NoSuchFieldException {
-		Field field = null;
-		try {
-			field = tclass.getDeclaredField(fieldName);
-			field.trySetAccessible();
+        try {
+            Field field = tclass.getDeclaredField(fieldName);
+            field.trySetAccessible();
             //				this.tclass = tclass;
 			this.offset = U.objectFieldOffset(field);
 		} catch (Throwable e) {

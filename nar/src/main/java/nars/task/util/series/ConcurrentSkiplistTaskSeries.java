@@ -73,7 +73,9 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
 
     @Override
     public void forEach(Consumer<? super T> action) {
-        q.values().forEach(action);
+        for (T t : q.values()) {
+            action.accept(t);
+        }
     }
 
 
@@ -83,7 +85,7 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
     }
 
     @Override
-    public boolean whileEach(final long minT, final long maxT, boolean exactRange, Predicate<? super T> x) {
+    public boolean whileEach(long minT, long maxT, boolean exactRange, Predicate<? super T> x) {
         assert(minT!=ETERNAL);
 
 

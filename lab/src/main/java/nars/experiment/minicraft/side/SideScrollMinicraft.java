@@ -38,7 +38,11 @@ public class SideScrollMinicraft {
     private Sprite builderIcon;
     private Sprite minerIcon;
     private Sprite[] breakingSprites;
-    private Sprite fullHeart, halfHeart, emptyHeart, bubble, emptyBubble;
+    private Sprite fullHeart;
+    private Sprite halfHeart;
+    private Sprite emptyHeart;
+    private Sprite bubble;
+    private Sprite emptyBubble;
 
     public boolean viewFPS;
     private boolean inMenu = true;
@@ -105,7 +109,7 @@ public class SideScrollMinicraft {
         }
 
 
-        final SpriteStore ss = SpriteStore.get();
+        SpriteStore ss = SpriteStore.get();
         builderIcon = ss.getSprite("sprites/other/builder.png");
         minerIcon = ss.getSprite("sprites/other/miner.png");
         fullHeart = ss.getSprite("sprites/other/full_heart.png");
@@ -165,8 +169,8 @@ public class SideScrollMinicraft {
             return 0;
         }
 
-        final int screenWidth = GraphicsHandler.getScreenWidth();
-        final int screenHeight = GraphicsHandler.getScreenHeight();
+        int screenWidth = GraphicsHandler.getScreenWidth();
+        int screenHeight = GraphicsHandler.getScreenHeight();
         float cameraX = player.x - screenWidth / tileSize / 2;
         float cameraY = player.y - screenHeight / tileSize / 2;
         float worldMouseX = (cameraX * tileSize + screenMousePos.x) / tileSize;
@@ -358,7 +362,7 @@ public class SideScrollMinicraft {
             }
         } else if (level == 1) {
             if (tileSize < 128) {
-                tileSize = tileSize * 2;
+                tileSize *= 2;
                 for (Entity entity : entities) {
                     entity.widthPX *= 2;
                     entity.heightPX *= 2;
@@ -370,7 +374,7 @@ public class SideScrollMinicraft {
             }
         } else if (level == -1) {
             if (tileSize > 8) {
-                tileSize = tileSize / 2;
+                tileSize /= 2;
                 for (Entity entity : entities) {
                     entity.widthPX /= 2;
                     entity.heightPX /= 2;

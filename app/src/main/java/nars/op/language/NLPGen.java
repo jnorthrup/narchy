@@ -4,12 +4,14 @@ import nars.*;
 import nars.derive.premise.PatternTermBuilder;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.time.Tense;
 import nars.unify.Unify;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static nars.Op.VAR_PATTERN;
 
@@ -74,7 +76,7 @@ public class NLPGen {
                 if (Math.abs(t.freq() - freq) < 0.33f) {
                     if (Math.abs(t.conf() - conf) < 0.33f) {
 
-                        final String[] result = {null};
+                        String[] result = {null};
 
                         Unify u = new Unify(VAR_PATTERN, terminal.random(), NAL.unify.UNIFICATION_STACK_CAPACITY, terminal.deriveBranchTTL.intValue()) {
 
@@ -82,14 +84,16 @@ public class NLPGen {
                             public boolean match() {
 
 
-                                final String[] r = {natural};
-                                xy.forEach((x, y) -> {
+                                String[] r = {natural};
+                                for (Map.Entry<Variable, Term> entry : xy.entrySet()) {
+                                    Variable x = entry.getKey();
+                                    Term y = entry.getValue();
                                     String var = x.toString();
                                     if (!var.startsWith("%"))
-                                        return;
-                                    var = String.valueOf(((char) (var.charAt(1) - '1' + 'A'))); 
+                                        continue;
+                                    var = String.valueOf(((char) (var.charAt(1) - '1' + 'A')));
                                     r[0] = r[0].replace(var, y.toString());
-                                });
+                                }
 
                                 result[0] = r[0];
                                 return false;
@@ -108,7 +112,7 @@ public class NLPGen {
         });
     }
 
-    private boolean timeMatch(@NotNull Task t, Tense tense) {
+    private static boolean timeMatch(@NotNull Task t, Tense tense) {
         return t.isEternal() && tense == Tense.Eternal;
         
     }

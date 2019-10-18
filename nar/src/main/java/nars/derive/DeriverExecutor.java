@@ -100,7 +100,7 @@ public abstract class DeriverExecutor extends Derivation {
 //		return now;
 //	}
 
-	public final void next(What w, final BooleanSupplier kontinue) {
+	public final void next(What w, BooleanSupplier kontinue) {
 
 		next(w);
 
@@ -110,7 +110,7 @@ public abstract class DeriverExecutor extends Derivation {
 		next(kontinue);
 	}
 
-	public final void next(final BooleanSupplier kontinue) {
+	public final void next(BooleanSupplier kontinue) {
 
 		do {
 

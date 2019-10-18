@@ -28,12 +28,10 @@ public class RuleNeumBin {
 	
 	
 	public void InitFromString(String sStr) {
-		int iPos = 0;
-		int iStt;
-		String sOneChar;
-		ResetToDefaults();
+        ResetToDefaults();
 
-		iClo = Integer.valueOf(sStr.substring(iPos, iPos + 1));
+        int iPos = 0;
+        iClo = Integer.valueOf(sStr.substring(iPos, iPos + 1));
 		iPos++;
 		if (iClo < 2)
 			iClo = 2;
@@ -44,10 +42,10 @@ public class RuleNeumBin {
 				for (int k = 0; k < iClo; k++)
 					for (int l = 0; l < iClo; l++)
 						for (int m = 0; m < iClo; m++) {
-							sOneChar = sStr.substring(iPos, iPos + 1);
-							iPos++;
-							iStt = Integer.valueOf(sOneChar);
-							if (iStt < 0)
+                            String sOneChar = sStr.substring(iPos, iPos + 1);
+                            iPos++;
+                            int iStt = Integer.valueOf(sOneChar);
+                            if (iStt < 0)
 								iStt = 0;
 							if (iStt >= MAX_STATES)
 								iStt = MAX_STATES - 1;
@@ -81,7 +79,7 @@ public class RuleNeumBin {
 				for (int k = 0; k < iClo; k++)
 					for (int l = 0; l < iClo; l++)
 						for (int m = 0; m < iClo; m++) {
-							sBff = sBff + states[i][j][k][l][m];
+                            sBff += states[i][j][k][l][m];
 						}
 
 		return sBff;
@@ -103,39 +101,37 @@ public class RuleNeumBin {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState) {
-		short bOldVal, bNewVal;
-		int modCnt = 0;
-		int i, j, iCnt;
+        int modCnt = 0;
+		int iCnt;
 		int[] lurd = new int[4]; 
 		int[] iCntAry = new int[iClo];
 		int iTmp;
-		int l, u, r, d;
 
-		for (i = 0; i < sizX; ++i) {
+        for (int i = 0; i < sizX; ++i) {
 			
 			lurd[0] = (i > 0) ? i - 1 : (isWrap) ? sizX - 1 : sizX;
 			lurd[2] = (i < sizX - 1) ? i + 1 : (isWrap) ? 0 : sizX;
 
-			for (j = 0; j < sizY; ++j) {
+			for (int j = 0; j < sizY; ++j) {
 				
 				lurd[1] = (j > 0) ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
-				bOldVal = crrState[i][j];
-				bOldVal = (short) ((bOldVal < 0) ? 0 : (bOldVal >= iClo)
+                short bOldVal = crrState[i][j];
+                bOldVal = (short) ((bOldVal < 0) ? 0 : (bOldVal >= iClo)
 						? (iClo - 1)
 						: bOldVal);
 
-				l = crrState[lurd[0]][j];
-				u = crrState[i][lurd[1]];
-				r = crrState[lurd[2]][j];
-				d = crrState[i][lurd[3]];
-				l = (l < 0) ? 0 : (l >= iClo) ? (iClo - 1) : l;
+                int l = crrState[lurd[0]][j];
+                int u = crrState[i][lurd[1]];
+                int r = crrState[lurd[2]][j];
+                int d = crrState[i][lurd[3]];
+                l = (l < 0) ? 0 : (l >= iClo) ? (iClo - 1) : l;
 				u = (u < 0) ? 0 : (u >= iClo) ? (iClo - 1) : u;
 				r = (r < 0) ? 0 : (r >= iClo) ? (iClo - 1) : r;
 				d = (d < 0) ? 0 : (d >= iClo) ? (iClo - 1) : d;
-				bNewVal = (short) states[bOldVal][u][r][d][l];
+                short bNewVal = (short) states[bOldVal][u][r][d][l];
 
-				tmpState[i][j] = bNewVal;
+                tmpState[i][j] = bNewVal;
 				if (bNewVal != bOldVal) {
 					modCnt++; 
 				}

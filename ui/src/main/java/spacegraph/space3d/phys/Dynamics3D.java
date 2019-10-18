@@ -45,6 +45,7 @@ import spacegraph.util.math.Matrix3f;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -93,11 +94,7 @@ public class Dynamics3D<X> extends Collisions<X> {
         super(intersecter, broadphase);
         this.spatials = spatials;
         this.islands = new Islands();
-        if (constrainer == null) {
-            this.constrainer = new SequentialImpulseConstrainer();
-        } else {
-            this.constrainer = constrainer;
-        }
+        this.constrainer = Objects.requireNonNullElseGet(constrainer, SequentialImpulseConstrainer::new);
 
     }
 
@@ -200,10 +197,8 @@ public class Dynamics3D<X> extends Collisions<X> {
         List<Collidable> nextCollidables = coll.write();
         nextCollidables.clear();
 
-        final short[] i = {0};
-        spatials.forEach((s) -> {
-
-
+        short[] i = {0};
+        for (Spatial<X> s : spatials) {
             s.order = i[0]++;
 
             s.update(this);
@@ -217,8 +212,8 @@ public class Dynamics3D<X> extends Collisions<X> {
 
                     nextCollidables.add(d);
 
-                    if (d.getActivationState() != Collidable.ISLAND_SLEEPING)
-                        d.saveKinematicState(dt); 
+                    if (d.getActivationState() != ISLAND_SLEEPING)
+                        d.saveKinematicState(dt);
 
                     if (gravity != null) {
                         if (!d.isStaticOrKinematicObject())
@@ -233,9 +228,12 @@ public class Dynamics3D<X> extends Collisions<X> {
             });
 
             List<TypedConstraint> cc = s.constraints();
-            if (cc!=null)
-                cc.forEach(this::addConstraint);
-        });
+            if (cc != null) {
+                for (TypedConstraint typedConstraint : cc) {
+                    addConstraint(typedConstraint);
+                }
+            }
+        }
 
 
         this.collidable = coll.commitRead();
@@ -365,14 +363,14 @@ public class Dynamics3D<X> extends Collisions<X> {
         
 		float deactivationTime = isDeactivationDisabled() ? 0 : getDeactivationTime();
 
-        collidable.forEach(colObj -> {
+        for (Collidable colObj : collidable) {
             Body3D body = ifDynamic(colObj);
             if (body != null) {
                 body.updateDeactivation(timeStep);
 
                 if (deactivationTime > 0 && body.wantsSleeping(deactivationTime)) {
                     if (body.isStaticOrKinematicObject()) {
-                        body.setActivationState(Collidable.ISLAND_SLEEPING);
+                        body.setActivationState(ISLAND_SLEEPING);
                     } else {
                         switch (body.getActivationState()) {
                             case Collidable.ACTIVE_TAG:
@@ -391,7 +389,7 @@ public class Dynamics3D<X> extends Collisions<X> {
                     }
                 }
             }
-        });
+        }
     }
 
 
@@ -501,7 +499,7 @@ public class Dynamics3D<X> extends Collisions<X> {
 
         islands.updateActivationState(this);
 
-        forEachConstraint((TypedConstraint constraint) -> {
+        forEachConstraint(constraint -> {
             Body3D colObj0 = constraint.getRigidBodyA();
             if (colObj0 == null || !colObj0.isActive() || colObj0.isStaticOrKinematicObject())
                 return;
@@ -519,7 +517,9 @@ public class Dynamics3D<X> extends Collisions<X> {
     }
 
     private void forEachConstraint(Consumer<TypedConstraint> e) {
-        constraints.forEach(e);
+        for (TypedConstraint constraint : constraints) {
+            e.accept(constraint);
+        }
     }
 
     private void integrateTransforms(float timeStep) {
@@ -876,7 +876,6 @@ public class Dynamics3D<X> extends Collisions<X> {
                 
                 
                 int startConstraint_idx = -1;
-                int numCurConstraints = 0;
                 int i;
 
                 
@@ -889,7 +888,8 @@ public class Dynamics3D<X> extends Collisions<X> {
                         break;
                     }
                 }
-                
+
+                int numCurConstraints = 0;
                 for (; i < numConstraints; i++) {
                     
                     if (getConstraintIslandId(sc.get(i)) == islandId) {

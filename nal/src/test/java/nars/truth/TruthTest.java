@@ -45,13 +45,12 @@ class TruthTest {
     @Test
     void testPreciseTruthEquality() {
 
-        float insignificant = NAL.truth.TRUTH_EPSILON / 5f;
-        float significant = NAL.truth.TRUTH_EPSILON;
-
         assertEquals(t(0.5f, 0.5f),
                 t(0.5f, 0.5f));
+        float insignificant = NAL.truth.TRUTH_EPSILON / 5f;
         assertEquals(t(0.5f, 0.5f),
                 t(0.5f + insignificant, 0.50f));
+        float significant = NAL.truth.TRUTH_EPSILON;
         assertNotEquals(t(0.5f, 0.5f),
                 t(0.5f + significant, 0.50f));
 

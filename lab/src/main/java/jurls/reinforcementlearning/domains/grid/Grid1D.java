@@ -79,8 +79,8 @@ public class Grid1D implements World {
                  2 * action[5] + 
                  3 * action[6] + 
                  4 * action[7]);
-        
-        worldState = worldState + stepSize;  
+
+        worldState += stepSize;
                 
         
         if (Math.random() < JUMP_FRACTION) {

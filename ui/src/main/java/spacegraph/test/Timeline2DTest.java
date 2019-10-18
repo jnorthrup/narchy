@@ -57,7 +57,7 @@ public class Timeline2DTest {
         }
 
         return new Timeline2DEvents<>(dummyModel,
-                (NodeVis<Timeline2D.SimpleEvent> e) ->
+                e ->
                         e.set(new Scale(new PushButton(e.id.toString()), 0.8f)), new Timeline2DEvents.LaneTimelineUpdater());
     }
 

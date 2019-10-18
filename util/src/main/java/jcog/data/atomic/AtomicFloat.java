@@ -107,7 +107,7 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
      * @param value the value to setAt, not null
      * @throws NullPointerException if the object is null
      */
-    public final void set(final Number value) {
+    public final void set(Number value) {
         set(value.floatValue());
     }
 

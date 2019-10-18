@@ -166,8 +166,8 @@ public class NumericRange {
 											
 
 		double targetMin = target - range / 2.0;
-		double targetMax = target + range / 2.0;
-		min = (1.0 - rate) * min + (rate) * targetMin;
-		max = (1.0 - rate) * max + (rate) * targetMax;
+        min = (1.0 - rate) * min + (rate) * targetMin;
+        double targetMax = target + range / 2.0;
+        max = (1.0 - rate) * max + (rate) * targetMax;
 	}
 }

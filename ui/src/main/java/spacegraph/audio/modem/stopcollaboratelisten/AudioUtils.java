@@ -311,11 +311,10 @@ public class AudioUtils {
             line.open(kDefaultFormat, buffSize);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            int numBytesRead;
             byte[] data = new byte[line.getBufferSize() / 5];
             line.start();
             while (true) {
-                numBytesRead = line.read(data, 0, data.length);
+                int numBytesRead = line.read(data, 0, data.length);
                 buff.write(data, 0, numBytesRead);
             }
 	    /*
@@ -335,11 +334,10 @@ public class AudioUtils {
             line.open(kDefaultFormat, buffSize);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            int numBytesRead;
             byte[] data = new byte[line.getBufferSize() / 5];
             line.start();
             for (int i = 0; i < length; i++) {
-                numBytesRead = line.read(data, 0, data.length);
+                int numBytesRead = line.read(data, 0, data.length);
                 out.write(data, 0, numBytesRead);
             }
             line.drain();

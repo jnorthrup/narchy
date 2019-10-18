@@ -400,7 +400,6 @@ public class Secure {
     public void processMcsData(RdpPacket_Localised mcs_data)
             throws RdesktopException, CryptoException {
         logger.debug("Secure.processMcsData");
-        int tag = 0, length = 0, nexttag = 0;
 
         mcs_data.incrementPosition(21);
         int len = mcs_data.get8();
@@ -409,6 +408,9 @@ public class Secure {
             len = mcs_data.get8();
         }
 
+        int nexttag = 0;
+        int length = 0;
+        int tag = 0;
         while (mcs_data.getPosition() < mcs_data.getEnd()) {
             tag = mcs_data.getLittleEndian16();
             length = mcs_data.getLittleEndian16();
@@ -446,10 +448,10 @@ public class Secure {
         RdpPacket_Localised buffer;
         int flags = SEC_CLIENT_RANDOM;
         if (readCert) {
-            
-            int length = SEC_MODULUS_SIZE + SEC_PADDING_SIZE;
+
             buffer = this.init(flags, 76);
 
+            int length = SEC_MODULUS_SIZE + SEC_PADDING_SIZE;
             buffer.setLittleEndian32(length);
 
             buffer.copyFromByteArray(this.sec_crypted_random, 0, buffer.getPosition(), SEC_MODULUS_SIZE);
@@ -562,10 +564,6 @@ public class Secure {
      */
     public void send_to_channel(RdpPacket_Localised sec_data, int flags,
                                 int channel) throws RdesktopException, IOException, CryptoException {
-        int datalength = 0;
-        byte[] signature = null;
-        byte[] data;
-        byte[] buffer;
 
         sec_data.setPosition(sec_data.getHeader(RdpPacket.SECURE_HEADER));
 
@@ -583,12 +581,12 @@ public class Secure {
 
         if ((flags & SEC_ENCRYPT) != 0) {
             flags &= ~SEC_ENCRYPT;
-            datalength = sec_data.getEnd() - sec_data.getPosition() - 8;
-            data = new byte[datalength];
-            buffer = null;
+            int datalength = sec_data.getEnd() - sec_data.getPosition() - 8;
+            byte[] data = new byte[datalength];
+            byte[] buffer = null;
             sec_data.copyToByteArray(data, 0, sec_data.getPosition() + 8,
                     datalength);
-            signature = this.sign(this.sec_sign_key, 8, this.keylength, data,
+            byte[] signature = this.sign(this.sec_sign_key, 8, this.keylength, data,
                     datalength);
 
             buffer = this.encrypt(data, datalength);
@@ -615,27 +613,25 @@ public class Secure {
      */
     public byte[] sign(byte[] session_key, int length, int keylen, byte[] data,
                        int datalength) {
-        byte[] shasig;
-        byte[] md5sig;
         byte[] lenhdr = new byte[4];
-        byte[] signature = new byte[length];
 
         Secure.setLittleEndian32(lenhdr, datalength);
 
+        byte[] signature = new byte[length];
         synchronized (digestLock) {
             sha1.reset();
             sha1.update(session_key, 0, keylen);
             sha1.update(pad_54, 0, 40);
             sha1.update(lenhdr, 0, 4);
             sha1.update(data, 0, datalength);
-            shasig = sha1.digest();
+            byte[] shasig = sha1.digest();
             sha1.reset();
 
             md5.reset();
             md5.update(session_key, 0, keylen/* length */);
             md5.update(pad_92, 0, 48);
             md5.update(shasig, 0, 20);
-            md5sig = md5.digest();
+            byte[] md5sig = md5.digest();
             md5.reset();
 
             System.arraycopy(md5sig, 0, signature, 0, length);
@@ -758,8 +754,6 @@ public class Secure {
     private int parseCryptInfo(RdpPacket_Localised data)
             throws RdesktopException {
         logger.debug("Secure.parseCryptInfo");
-        int tag = 0, length = 0;
-        int next_tag = 0;
 
         int rc4_key_size = data.getLittleEndian32();
         int encryption_level = data.getLittleEndian32();
@@ -793,8 +787,11 @@ public class Secure {
         logger.debug("Flags = 0x{}", Integer.toHexString(flags));
         if ((flags & 1) != 0) {
             logger.debug(("We're going for the RDP4-style encryption"));
-            data.incrementPosition(8); 
+            data.incrementPosition(8);
 
+            int next_tag = 0;
+            int length = 0;
+            int tag = 0;
             while (data.getPosition() < data.getEnd()) {
                 tag = data.getLittleEndian16();
                 length = data.getLittleEndian16();
@@ -877,17 +874,14 @@ public class Secure {
 
     private void RSAEncrypt(int length, int modulus_size)
             throws RdesktopException {
-        byte[] inr = new byte[length];
-        
-        BigInteger mod = null;
-        BigInteger exp = null;
-        BigInteger x = null;
 
         Secure.reverse(this.exponent);
         Secure.reverse(this.modulus);
+        byte[] inr = new byte[length];
         System.arraycopy(this.client_random, 0, inr, 0, length);
         Secure.reverse(inr);
 
+        BigInteger mod = null;
         if ((this.modulus[0] & 0x80) != 0) {
             byte[] temp = new byte[this.modulus.length + 1];
             System.arraycopy(this.modulus, 0, temp, 1, this.modulus.length);
@@ -896,6 +890,7 @@ public class Secure {
         } else {
             mod = new BigInteger(this.modulus);
         }
+        BigInteger exp = null;
         if ((this.exponent[0] & 0x80) != 0) {
             byte[] temp = new byte[this.exponent.length + 1];
             System.arraycopy(this.exponent, 0, temp, 1, this.exponent.length);
@@ -904,6 +899,7 @@ public class Secure {
         } else {
             exp = new BigInteger(this.exponent);
         }
+        BigInteger x = null;
         if ((inr[0] & 0x80) != 0) {
             byte[] temp = new byte[inr.length + 1];
             System.arraycopy(inr, 0, temp, 1, inr.length);
@@ -926,9 +922,8 @@ public class Secure {
         }
         Secure.reverse(this.sec_crypted_random);
 
-        byte[] temp = new byte[SEC_MAX_MODULUS_SIZE];
-
         if (this.sec_crypted_random.length < modulus_size) {
+            byte[] temp = new byte[SEC_MAX_MODULUS_SIZE];
             System.arraycopy(this.sec_crypted_random, 0, temp, 0,
                     this.sec_crypted_random.length);
             for (int i = this.sec_crypted_random.length; i < temp.length; i++) {
@@ -981,14 +976,14 @@ public class Secure {
     }
 
     public byte[] hash48(byte[] in, byte[] salt1, byte[] salt2, int salt) {
-        byte[] shasig = new byte[20];
-        byte[] pad = new byte[4];
         byte[] out = new byte[48];
-        int i = 0;
 
         synchronized (digestLock) {
             sha1.reset();
             md5.reset();
+            int i = 0;
+            byte[] pad = new byte[4];
+            byte[] shasig = new byte[20];
             for (i = 0; i < 3; i++) {
                 for (int j = 0; j <= i; j++) {
                     pad[j] = (byte) (salt + i);
@@ -1026,8 +1021,7 @@ public class Secure {
      * @throws CryptoException
      */
     private byte[] update(byte[] key, byte[] update_key) throws CryptoException {
-        byte[] shasig = new byte[20];
-        byte[] update = new byte[this.keylength]; 
+        byte[] update = new byte[this.keylength];
         
         byte[] thekey = new byte[key.length];
 
@@ -1035,9 +1029,9 @@ public class Secure {
             sha1.reset();
             sha1.update(update_key, 0, keylength);
             sha1.update(pad_54, 0, 40);
-            sha1.update(key, 0, keylength); 
-            
-            shasig = sha1.digest();
+            sha1.update(key, 0, keylength);
+
+            byte[] shasig = sha1.digest();
             sha1.reset();
 
             md5.reset();

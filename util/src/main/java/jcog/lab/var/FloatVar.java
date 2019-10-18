@@ -10,7 +10,8 @@ import java.util.function.Function;
 
 public class FloatVar<X> extends Var<X,Float> {
 
-    private float min, max;
+    private float min;
+    private float max;
     private float inc;
 
     final List<String> unknown = new FasterList();

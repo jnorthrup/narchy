@@ -171,7 +171,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      * allows an implementation to remove items which may have been deleted
      * (by anything) since commit checked for them
      */
-    protected boolean cleanAuto() {
+    protected static boolean cleanAuto() {
         return false;
     }
 
@@ -213,12 +213,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             return 0;
 
         SortedArray<Y> items = table.items;
-        final Object[] a = items.array();
-
-        float above = Float.POSITIVE_INFINITY;
-        boolean sorted = true;
-
-        float m = 0;
+        Object[] a = items.array();
 
 
         ArrayHistogram.HistogramWriter hist;
@@ -229,6 +224,9 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             hist = null; //disabled
         }
 
+        float m = 0;
+        boolean sorted = true;
+        float above = Float.POSITIVE_INFINITY;
         for (int i = 0; i < s; ) {
             Object _y = a[i];
 
@@ -322,11 +320,10 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         Object[] ii;
         int s;
-        int i;
 
         while ((s = Math.min((ii = items()).length, size())) > 0) {
 
-            i = sampleNext(rng, s);
+            int i = sampleNext(rng, s);
 
             Object x = ii[i];
 
@@ -420,7 +417,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     }
 
     /** whether to delete immediately on pop, even if it cant be immediately removed from the bag during sampling */
-    protected boolean deleteOnPop() {
+    protected static boolean deleteOnPop() {
         return false;
     }
 
@@ -682,9 +679,9 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 //    }
 
     @Override
-    public Y put(final Y x, final NumberX overflow) {
+    public Y put(Y x, NumberX overflow) {
 
-        final int capacity = this.capacity();
+        int capacity = this.capacity();
         if (capacity == 0)
             return null;
 
@@ -838,7 +835,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     /**
      * whether to attempt re-sorting the list after each merge, in-between commits
      */
-    protected boolean sortContinuously() {
+    protected static boolean sortContinuously() {
         //TODO try policy of: randomly in proportion to bag fill %
         return true;
         //return false;
@@ -952,7 +949,9 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
             popBatch(s, popped::add);
 
-            popped.forEach(each);
+            for (Y y : popped) {
+                each.accept(y);
+            }
         }
 
     }
@@ -1109,7 +1108,9 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         @Override
         public void forEachKey(Consumer<? super X> each) {
-            forEach(t -> each.accept(key(t)));
+            for (Y t : this) {
+                each.accept(key(t));
+            }
         }
 
         public void clear() {
@@ -1128,7 +1129,11 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         }
 
         public final void forEach(BiConsumer<X, Y> each) {
-            map.forEach(each);
+            for (Map.Entry<X, Y> entry : map.entrySet()) {
+                X key = entry.getKey();
+                Y value = entry.getValue();
+                each.accept(key, value);
+            }
         }
 
         public final Y get(Object key) {

@@ -100,13 +100,11 @@ public class Curve2 {
 
         if ((x < this.xs[0]) || (x > this.xs[size - 1])) return -1;
 
-        
-        int idxMid;
 
         int idxLo = 0;
         int idxHi = size - 1;
         while ((idxHi - idxLo) > 1) {
-            idxMid = (idxHi + idxLo) >> 1;
+            int idxMid = (idxHi + idxLo) >> 1;
             if (x >= this.xs[idxMid]) idxLo = idxMid;
             else idxHi = idxMid;
         }
@@ -129,10 +127,10 @@ public class Curve2 {
         if ((x < this.xs[0]) || (x > this.xs[size - 1])) return -1;
 
         
-        int idxHi, idxMid, inc;
+        int idxHi;
 
         if (idxLo >= 0) {
-            inc = 1;    
+            int inc = 1;
             if (x >= this.xs[idxLo]) {    
                 idxHi = idxLo + 1;
                 if (idxHi >= size - 1) return idxLo;
@@ -166,7 +164,7 @@ public class Curve2 {
 
         
         while ((idxHi - idxLo) > 1) {
-            idxMid = (idxHi + idxLo) >> 1;
+            int idxMid = (idxHi + idxLo) >> 1;
             if (x >= this.xs[idxMid]) idxLo = idxMid;
             else idxHi = idxMid;
         }
@@ -187,13 +185,12 @@ public class Curve2 {
         len--;
 
         float stepX = (stopX - startX) / len;
-        float x;
         int idx = indexOf(startX);
 
         a[off] = calc(startX, idx);        
 
         for (int i = 1, j = off; i < len; i++) {
-            x = startX + i * stepX;
+            float x = startX + i * stepX;
             idx = indexOf(x, idx);
             a[++j] = calc(x, idx);
         }
@@ -217,15 +214,16 @@ public class Curve2 {
             }
             
             float[] u = new float[size - 1];
-            int i, j, k;
-            float p, sig;
 
             yDrv[0] = 0.0f;        
             u[0] = 0.0f;
             yDrv[size - 1] = 0.0f;
+            int k;
+            int j;
+            int i;
             for (i = 1, j = 0, k = 2; k < size; i++, j++, k++) {
-                sig = (xs[i] - xs[j]) / (xs[k] - xs[j]);
-                p = sig * yDrv[j] + 2.0f;
+                float sig = (xs[i] - xs[j]) / (xs[k] - xs[j]);
+                float p = sig * yDrv[j] + 2.0f;
                 yDrv[i] = (sig - 1.0f) / p;
                 u[i] = (ys[k] - ys[i]) / (xs[k] - xs[i]) -
                         (ys[i] - ys[j]) / (xs[i] - xs[j]);

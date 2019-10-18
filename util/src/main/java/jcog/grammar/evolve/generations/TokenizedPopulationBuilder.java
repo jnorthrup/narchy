@@ -62,11 +62,11 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
     }
 
  
-    private boolean matchW(String string){
+    private static boolean matchW(String string){
         return (string.length()==1 && matchW(string.charAt(0)));
     }
     
-    private boolean matchW(char character){
+    private static boolean matchW(char character){
         return Character.isAlphabetic(character) || Character.isDigit(character) || character == '_';
     }
     
@@ -77,10 +77,7 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
     }
         
     private List<Node> setup(Configuration configuration, DataSet usedTrainingDataset) {
-        Map<String, Double> tokensCounter = new HashMap<>();
 
-        List<List<String>> matchTokens = new LinkedList<>();
-        List<Node> newPopulation = new LinkedList<>();
         DataSet dataSet = usedTrainingDataset;
         
         Double TOKEN_THREASHOLD = 80.0; 
@@ -95,7 +92,9 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
                 DISCARD_W_TOKENS = Boolean.parseBoolean(parameters.get("discardWtokens"));
             }
         }
-               
+
+        List<List<String>> matchTokens = new LinkedList<>();
+        Map<String, Double> tokensCounter = new HashMap<>();
         for (Example example : dataSet.getExamples()) {
             for (String match : example.getMatchedStrings()) {
                 List<String> tokens = tokenizer.tokenize(match);
@@ -130,6 +129,7 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
         int popSize = configuration.getEvolutionParameters().getPopulationSize();
    
         int counter = 0;
+        List<Node> newPopulation = new LinkedList<>();
         for (List<String> tokenizedMatch : matchTokens){
             newPopulation.add(createIndividualFromString(tokenizedMatch, true, winnerTokens));
             newPopulation.add(createIndividualFromString(tokenizedMatch, false, winnerTokens));
@@ -143,9 +143,8 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
 
     static final RegexRange LETTERS_RANGE = new RegexRange("A-Za-z");
 
-    private Node createIndividualFromString(List<String> tokenizedString, boolean compact, Map<String,Double> winnerTokens) {
+    private static Node createIndividualFromString(List<String> tokenizedString, boolean compact, Map<String, Double> winnerTokens) {
         Deque<Node> nodes = new LinkedList<>();
-        Deque<Node> tmp = new LinkedList<>();
 
         String w = "\\w";
         String d = "\\d";
@@ -202,9 +201,8 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
             nodes = newNodes;
         }
 
-        
-        
-       
+
+        Deque<Node> tmp = new LinkedList<>();
         while (nodes.size() > 1) {
 
             while (nodes.size() > 0) {

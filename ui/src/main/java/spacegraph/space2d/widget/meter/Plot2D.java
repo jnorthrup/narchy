@@ -22,9 +22,9 @@ import java.util.function.Function;
 import static java.lang.Float.NaN;
 
 public class Plot2D extends Widget {
-    public static final PlotVis Line = (List<Series> series, float minValue, float maxValue, GL2 gl) -> plotLine(series, gl, minValue, maxValue, false, false);
-    public static final PlotVis LineLanes = (List<Series> series, float minValue, float maxValue, GL2 gl) -> plotLine(series, gl, minValue, maxValue, true, false);
-    public static final PlotVis BarLanes = (List<Series> series, float minValue, float maxValue, GL2 gl) -> plotLine(series, gl, minValue, maxValue, true, true);
+    public static final PlotVis Line = (series, minValue, maxValue, gl) -> plotLine(series, gl, minValue, maxValue, false, false);
+    public static final PlotVis LineLanes = (series, minValue, maxValue, gl) -> plotLine(series, gl, minValue, maxValue, true, false);
+    public static final PlotVis BarLanes = (series, minValue, maxValue, gl) -> plotLine(series, gl, minValue, maxValue, true, true);
     public final List<Series> series;
     private final int maxHistory;
     private final PlotVis vis;
@@ -32,7 +32,8 @@ public class Plot2D extends Widget {
     private String title;
     private Off on;
     private volatile boolean invalid = false;
-    private transient float minMinValue, maxMaxValue;
+    private transient float minMinValue;
+    private transient float maxMaxValue;
 
 
     public Plot2D(int history, PlotVis vis) {
@@ -85,11 +86,10 @@ public class Plot2D extends Widget {
             int histSize = s.size(), histCap = s.capacity();
 
             float dx = (w / histCap);
-            float x = (histCap - histSize) * dx;
 
 
             float[] color = s.color();
-            float r = color[0], g = color[1], b = color[2], a = 0;
+            float r = color[0], g = color[1], b = color[2];
 
             if (!filled) {
                 gl.glLineWidth(3);
@@ -98,6 +98,8 @@ public class Plot2D extends Widget {
 
             float laneOffset = laneHeight * i;
 
+            float a = 0;
+            float x = (histCap - histSize) * dx;
             for (int j = 0; j < histSize; j++) {
 
                 float y = s.get(j);
@@ -186,7 +188,7 @@ public class Plot2D extends Widget {
         return add(newSeries(name, data).autorange());
     }
 
-    protected AbstractSeries newSeries(String name, float[] data) {
+    protected static AbstractSeries newSeries(String name, float[] data) {
         //return new ArraySeries(name, data);
         return new RingTensorSeries(name, data);
     }
@@ -339,9 +341,9 @@ public class Plot2D extends Widget {
         synchronized (series) {
 
 
-            final float[] minValue = {Float.POSITIVE_INFINITY};
-            final float[] maxValue = {Float.NEGATIVE_INFINITY};
-            series.forEach((Series s) -> {
+            float[] minValue = {Float.POSITIVE_INFINITY};
+            float[] maxValue = {Float.NEGATIVE_INFINITY};
+            for (Series s : series) {
                 s.update();
 
                 float min = s.minValue();
@@ -352,7 +354,7 @@ public class Plot2D extends Widget {
                         maxValue[0] = Math.max(maxValue[0], max);
                     }
                 }
-            });
+            }
 
             if (Float.isFinite(minValue[0]) && Float.isFinite(maxValue[0])) {
                 this.minMinValue = minValue[0];
@@ -722,7 +724,9 @@ public class Plot2D extends Widget {
         protected int capacity;
         private final float[] color = {1, 1, 1, 0.75f};
         private String name;
-        protected transient float minValue, maxValue, meanValue;
+        protected transient float minValue;
+        protected transient float maxValue;
+        protected transient float meanValue;
 
         @Override
         public abstract float get(int i);

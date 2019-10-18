@@ -82,32 +82,34 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
             long start = Math.round(now - n.dur());            List<Term> dispatch = new FasterList(s);
             float exeThresh = this.exeThresh.floatValue();
 
-            active.forEach((PriReference<Term> x) -> {
+            for (PriReference<Term> x : active) {
                 Term xx = x.get();
 
                 Concept c = n.concept(xx);
                 if (c == null) {
-                    return;
+                    continue;
                 }
 
 
                 Truth goalTruth = c.goals().truth(start, end, n);
                 if (goalTruth == null || goalTruth.expectation() <= exeThresh) {
-                    return; //it may not have been input to the belief table yet so dont delete
+                    continue;
                 }
 
                 Truth beliefTruth = c.beliefs().truth(start, end, n); /* assume false with no evidence */
                 if (beliefTruth != null && beliefTruth.expectation() >= exeThresh) {
-                    return;
+                    continue;
                 }
 
                 logger.info("{} EVOKE (b={},g={}) {}", n.time(), beliefTruth, goalTruth, xx);
                 dispatch.add(xx);
 
                 x.delete();
-            });
+            }
 
-            dispatch.forEach(tt -> exe.accept(tt, n));
+            for (Term tt : dispatch) {
+                exe.accept(tt, n);
+            }
 
             active.commit();
             s = active.size();

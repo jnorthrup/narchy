@@ -706,7 +706,6 @@ public class M_Insane {
         public String getID() { return "insane_pain"; }
         @Override
         public void pain(edict_t self, edict_t other, float kick, int damage) {
-            int l;
 
 
             if (GameBase.level.time < self.pain_debounce_time)
@@ -715,6 +714,7 @@ public class M_Insane {
             self.pain_debounce_time = GameBase.level.time + 3;
 
             int r = 1 + (Lib.rand() & 1);
+            int l;
             if (self.health < 25)
                 l = 25;
             else if (self.health < 50)
@@ -832,13 +832,13 @@ public class M_Insane {
         @Override
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
-            int n;
 
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
                                 .soundindex("misc/udeath.wav"), 1,
                                 Defines.ATTN_IDLE, 0);
+                int n;
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
                             damage, Defines.GIB_ORGANIC);

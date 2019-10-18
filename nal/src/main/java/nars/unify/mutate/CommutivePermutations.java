@@ -14,7 +14,8 @@ import org.jetbrains.annotations.Nullable;
 public final class CommutivePermutations extends Termutator.AbstractTermutator {
 
 
-    private final Subterms x, y;
+    private final Subterms x;
+    private final Subterms y;
 
     static final Atom COMMUTIVE_PERMUTATIONS = $.the(CommutivePermutations.class);
 

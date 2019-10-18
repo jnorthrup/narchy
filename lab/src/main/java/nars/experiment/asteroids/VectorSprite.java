@@ -29,7 +29,8 @@ public class VectorSprite {
     boolean weaponSwitched;
     boolean invincible;
 
-    Polygon shape, drawShape;
+    Polygon shape;
+    Polygon drawShape;
 
     boolean active;
 
@@ -55,11 +56,11 @@ public class VectorSprite {
         if (!eternal)
             invincCounter++;
 
-        int x, y;
-
         xposition += xspeed;
         yposition += yspeed;
 
+        int y;
+        int x;
         for (int i = 0; i < shape.npoints; i++) {
 
             x = (int) Math.round(shape.xpoints[i] * Math.cos(angle) - shape.ypoints[i] * Math.sin(angle));

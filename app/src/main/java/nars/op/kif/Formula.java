@@ -416,11 +416,11 @@ public class Formula implements Comparable, Serializable {
                     ch = input.charAt(i);
                     if (!insideQuote) {
                         if (ch == '(') {
-                            sb.append(ch);
+                            sb.append('(');
                             level++;
                         }
                         else if (ch == ')') {
-                            sb.append(ch);
+                            sb.append(')');
                             level--;
                             if (level <= 0)
                                 break;
@@ -891,9 +891,9 @@ public class Formula implements Comparable, Serializable {
      */
     private static ArrayList<Formula> parseList(String s) {
 
-        ArrayList<Formula> result = new ArrayList<>();
         Formula f = new Formula();
         f.read('(' + s + ')');
+        ArrayList<Formula> result = new ArrayList<>();
         if (f.empty())
             return result;
         while (!f.empty()) {
@@ -1141,10 +1141,10 @@ public class Formula implements Comparable, Serializable {
         public static List<Set<VariableMapping>> intersect(Iterable<Set<VariableMapping>> mapList1,
                                                            Iterable<Set<VariableMapping>> mapList2) {
 
-            List<Set<VariableMapping>> intersection = new LinkedList<>();
             if (mapList1 == null || mapList2 == null) {
                 return null;
             }
+            List<Set<VariableMapping>> intersection = new LinkedList<>();
             for (Set<VariableMapping> set1 : mapList1) {
                 for (Set<VariableMapping> set2 : mapList2) {
                     Set<VariableMapping> newSet = unify(set1, set2);
@@ -1264,9 +1264,9 @@ public class Formula implements Comparable, Serializable {
         
         if (f1.atom() && f2.atom()) {
             if ((f1.isVariable() && f2.isVariable()) || (isSkolemTerm(f1.theFormula) && isSkolemTerm(f2.theFormula))) {
-                List<Set<VariableMapping>> result = new ArrayList<>();
                 Set<VariableMapping> set = new HashSet<>(1);
                 set.add(new VariableMapping(f1.theFormula, f2.theFormula));
+                List<Set<VariableMapping>> result = new ArrayList<>();
                 result.add(set);
                 return result;
             }
@@ -1413,7 +1413,7 @@ public class Formula implements Comparable, Serializable {
         if (args == null || args.isEmpty()) {
             return formula;
         }
-        List<String> orderedArgs = args.stream().map(arg -> normalizeParameterOrder(arg, kb, varPlaceholders)).collect(Collectors.toList());
+        List<String> orderedArgs = args.stream().map(s -> normalizeParameterOrder(s, kb, varPlaceholders)).collect(Collectors.toList());
 
 
         String head = f.car();
@@ -1445,9 +1445,9 @@ public class Formula implements Comparable, Serializable {
      */
     public String getArgument(int argnum) {
 
-        String ans = "";
         Formula form = new Formula();
         form.read(theFormula);
+        String ans = "";
         for (int i = 0; form.listP(); i++) {
             ans = form.car();
             if (i == argnum) break;
@@ -1581,7 +1581,6 @@ public class Formula implements Comparable, Serializable {
      */
     public ArrayList<ArrayList<String>> collectQuantifiedUnquantifiedVariables() {
 
-        ArrayList<ArrayList<String>> quantifiedUnquantifiedVariables = new ArrayList<>();
         HashSet<String> unquantifiedVariables = new HashSet<>();
         HashSet<String> quantifiedVariables = new HashSet<>();
         HashMap<String, Boolean> varFlag = new HashMap<>();
@@ -1595,6 +1594,7 @@ public class Formula implements Comparable, Serializable {
                     + ") are both quantified (" + quantifiedVariables
                     + ") and unquantified (" + unquantifiedVariables + ") in formula \n" + theFormula);
 
+        ArrayList<ArrayList<String>> quantifiedUnquantifiedVariables = new ArrayList<>();
         quantifiedUnquantifiedVariables.add(new ArrayList(quantifiedVariables));
         quantifiedUnquantifiedVariables.add(new ArrayList(unquantifiedVariables));
 
@@ -1690,11 +1690,11 @@ public class Formula implements Comparable, Serializable {
     public ArrayList<String> collectExistentiallyQuantifiedVariables() {
 
         ArrayList<String> result = new ArrayList<>();
-        Collection<String> resultSet = new HashSet<>();
         if (listLength() < 1)
             return result;
         Formula fcar = new Formula();
         fcar.read(this.car());
+        Collection<String> resultSet = new HashSet<>();
         if (fcar.theFormula.equals(EQUANT)) {
             Formula remainder = new Formula();
             remainder.read(this.cdr());
@@ -1726,11 +1726,11 @@ public class Formula implements Comparable, Serializable {
     public ArrayList<String> collectQuantifiedVariables() {
 
         ArrayList<String> result = new ArrayList<>();
-        Collection<String> resultSet = new HashSet<>();
         if (listLength() < 1)
             return result;
         Formula fcar = new Formula();
         fcar.read(this.car());
+        Collection<String> resultSet = new HashSet<>();
         if (fcar.theFormula.equals(UQUANT) || fcar.theFormula.equals(EQUANT)) {
             Formula remainder = new Formula();
             remainder.read(this.cdr());
@@ -1764,14 +1764,13 @@ public class Formula implements Comparable, Serializable {
      */
     public Set<String> collectTerms() {
 
-        HashSet<String> resultSet = new HashSet<>();
-
         if (this.theFormula == null || this.theFormula.isEmpty()) {
             System.out.println("Error in Formula.collectTerms(): " +
                     "No formula to collect terms from: " + this);
             return null;
         }
 
+        HashSet<String> resultSet = new HashSet<>();
         if (this.empty())
             return resultSet;
 
@@ -1872,10 +1871,10 @@ public class Formula implements Comparable, Serializable {
             Formula f = new Formula();
             f.read(this.theFormula);
             int flen = f.listLength();
-            String suffix = ("_" + (flen - 1));
-            String arg = null;
             sb.append('(');
-            for (int i = 0 ; i < flen ; i++) {
+            String arg = null;
+            String suffix = ("_" + (flen - 1));
+            for (int i = 0; i < flen ; i++) {
                 arg = f.getArgument(i);
                 if (i > 0)
                     sb.append(' ');
@@ -1924,11 +1923,11 @@ public class Formula implements Comparable, Serializable {
         var argtypemap = new HashMap<String,    List>();
         Set<String> relations = gatherRelationConstants();
 
-        relations.forEach(r -> {
+        for (String r : relations) {
             int atlen = (MAX_PREDICATE_ARITY + 1);
-            var argtypes = IntStream.range(0, atlen).mapToObj(i -> kb.getArgType(r, i)).collect(Collectors.toList());
+            var argtypes = IntStream.range(0, atlen).mapToObj(i -> kb.getArgType(r, i)).collect(Collectors.toCollection(ArrayList::new));
             argtypemap.put(r, argtypes);
-        });
+        }
         return argtypemap;
     }
 
@@ -1942,12 +1941,12 @@ public class Formula implements Comparable, Serializable {
      */
     public HashSet<String> gatherRelationConstants() {
 
-        HashSet<String> relations = new HashSet<>();
         Collection<String> accumulator = new HashSet<>();
         if (this.listP() && !this.empty())
             accumulator.add(this.theFormula);
         Collection<String> kifLists = new ArrayList<>();
         Formula f = null;
+        HashSet<String> relations = new HashSet<>();
         while (!accumulator.isEmpty()) {
             kifLists.clear();
             kifLists.addAll(accumulator);
@@ -2250,7 +2249,8 @@ public class Formula implements Comparable, Serializable {
 
         if (!StringUtil.emptyString(term) && !Formula.listP(term) &&
                 Character.isJavaIdentifierStart(term.charAt(0))) {
-            return IntStream.range(0, term.length()).allMatch(i -> Character.isJavaIdentifierPart(term.charAt(i)));
+            int bound = term.length();
+            return IntStream.range(0, bound).allMatch(i -> Character.isJavaIdentifierPart(term.charAt(i)));
         }
         else
             return false;

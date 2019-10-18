@@ -7,6 +7,7 @@ import nars.experiment.pacman.maze.Maze.Direction;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -20,7 +21,8 @@ public class Ghost extends Entity {
     public Point target;
     public boolean free;
     public boolean out;
-    double tilex, tiley;
+    double tilex;
+    double tiley;
     public boolean random;
     public boolean scared;
     public boolean relaxed;
@@ -139,7 +141,8 @@ public class Ghost extends Entity {
 
         ArrayList<Direction> openDirs = getAvailableDirections();
 
-        dir = Arrays.stream(dirs).filter(openDirs::contains).findFirst().orElseGet(() -> this.dir);
+        Optional<Direction> found = Arrays.stream(dirs).filter(openDirs::contains).findFirst();
+        dir = found.orElseGet(() -> this.dir);
 
     }
 

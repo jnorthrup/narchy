@@ -127,7 +127,7 @@ public class BitmapLabel extends AbstractLabel {
             String s = BitmapLabel.this.text;
             int n = s.length();
             int row = 0, col =0;
-            final Color4f fg = BitmapLabel.this.fgColor, bg = BitmapLabel.this.bgColor;
+            Color4f fg = BitmapLabel.this.fgColor, bg = BitmapLabel.this.bgColor;
             for (int i = 0; i < n; i++) {
                 char c = s.charAt(i);
                 if (c == '\n') {

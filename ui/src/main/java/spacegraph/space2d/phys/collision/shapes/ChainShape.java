@@ -76,8 +76,8 @@ public final class ChainShape extends Shape {
         assert (0 <= index && index < m_count - 1);
         edge.skinRadius = skinRadius;
 
-        final v2 v0 = m_vertices[index + 0];
-        final v2 v1 = m_vertices[index + 1];
+        v2 v0 = m_vertices[index + 0];
+        v2 v1 = m_vertices[index + 1];
         edge.m_vertex1.x = v0.x;
         edge.m_vertex1.y = v0.y;
         edge.m_vertex2.x = v1.x;
@@ -108,7 +108,7 @@ public final class ChainShape extends Shape {
 
     @Override
     public float distance(Transform xf, v2 p, int childIndex, v2 normalOut) {
-        final EdgeShape edge = pool0;
+        EdgeShape edge = pool0;
         getChildEdge(edge, childIndex);
         return edge.distance(xf, p, 0, normalOut);
     }
@@ -122,13 +122,13 @@ public final class ChainShape extends Shape {
     public boolean raycast(RayCastOutput output, RayCastInput input, Transform xf, int childIndex) {
         assert (childIndex < m_count);
 
-        final EdgeShape edgeShape = pool0;
+        EdgeShape edgeShape = pool0;
 
-        int i1 = childIndex;
         int i2 = childIndex + 1;
         if (i2 == m_count) {
             i2 = 0;
         }
+        int i1 = childIndex;
         v2 v = m_vertices[i1];
         edgeShape.m_vertex1.x = v.x;
         edgeShape.m_vertex1.y = v.y;
@@ -142,19 +142,19 @@ public final class ChainShape extends Shape {
     @Override
     public void computeAABB(AABB aabb, Transform xf, int childIndex) {
         assert (childIndex < m_count);
-        final v2 lower = aabb.lowerBound;
-        final v2 upper = aabb.upperBound;
+        v2 lower = aabb.lowerBound;
+        v2 upper = aabb.upperBound;
 
-        int i1 = childIndex;
         int i2 = childIndex + 1;
         if (i2 == m_count) {
             i2 = 0;
         }
 
-        final v2 vi1 = m_vertices[i1];
-        final v2 vi2 = m_vertices[i2];
-        final Rot xfq = xf;
-        final v2 xfp = xf.pos;
+        int i1 = childIndex;
+        v2 vi1 = m_vertices[i1];
+        v2 vi2 = m_vertices[i2];
+        Rot xfq = xf;
+        v2 xfp = xf.pos;
         float v1x = (xfq.c * vi1.x - xfq.s * vi1.y) + xfp.x;
         float v1y = (xfq.s * vi1.x + xfq.c * vi1.y) + xfp.y;
         float v2x = (xfq.c * vi2.x - xfq.s * vi2.y) + xfp.x;
@@ -190,7 +190,7 @@ public final class ChainShape extends Shape {
      * @param vertices an array of vertices, these are copied
      * @param count    the vertex count
      */
-    public void createLoop(final v2[] vertices, int count) {
+    public void createLoop(v2[] vertices, int count) {
         assert (m_vertices == null && m_count == 0);
         assert (count >= 3);
         m_count = count + 1;
@@ -219,7 +219,7 @@ public final class ChainShape extends Shape {
      * @param vertices an array of vertices, these are copied
      * @param count    the vertex count
      */
-    private void createChain(final v2[] vertices, int count) {
+    private void createChain(v2[] vertices, int count) {
         assert (m_vertices == null && m_count == 0);
         assert (count >= 2);
         m_count = count;
@@ -247,7 +247,7 @@ public final class ChainShape extends Shape {
      *
      * @param prevVertex
      */
-    public void setPrevVertex(final v2 prevVertex) {
+    public void setPrevVertex(v2 prevVertex) {
         m_prevVertex.set(prevVertex);
         m_hasPrevVertex = true;
     }
@@ -257,7 +257,7 @@ public final class ChainShape extends Shape {
      *
      * @param nextVertex
      */
-    public void setNextVertex(final v2 nextVertex) {
+    public void setNextVertex(v2 nextVertex) {
         m_nextVertex.set(nextVertex);
         m_hasNextVertex = true;
     }

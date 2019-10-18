@@ -49,7 +49,7 @@ public class MutableInt extends Number  {
      *
      * @param value  the initial value to store
      */
-    public MutableInt(final int value) {
+    public MutableInt(int value) {
         super();
         this.value = value;
     }
@@ -60,7 +60,7 @@ public class MutableInt extends Number  {
      * @param value  the initial value to store, not null
      * @throws NullPointerException if the object is null
      */
-    public MutableInt(final Number value) {
+    public MutableInt(Number value) {
         super();
         this.value = value.intValue();
     }
@@ -72,7 +72,7 @@ public class MutableInt extends Number  {
      * @throws NumberFormatException if the string cannot be parsed into an int
      * @since 2.5
      */
-    public MutableInt(final String value) throws NumberFormatException {
+    public MutableInt(String value) throws NumberFormatException {
         super();
         this.value = Integer.parseInt(value);
     }
@@ -92,7 +92,7 @@ public class MutableInt extends Number  {
      *
      * @param value  the value to setAt
      */
-    public void set(final int value) {
+    public void set(int value) {
         this.value = value;
     }
 
@@ -102,7 +102,7 @@ public class MutableInt extends Number  {
      * @param value  the value to setAt, not null
      * @throws NullPointerException if the object is null
      */
-    public void set(final Number value) {
+    public void set(Number value) {
         this.value = value.intValue();
     }
 
@@ -124,7 +124,7 @@ public class MutableInt extends Number  {
      * @since 3.5
      */
     public int getAndIncrement() {
-        final int last = value;
+        int last = value;
         value++;
         return last;
     }
@@ -158,7 +158,7 @@ public class MutableInt extends Number  {
      * @since 3.5
      */
     public int getAndDecrement() {
-        final int last = value;
+        int last = value;
         value--;
         return last;
     }
@@ -182,7 +182,7 @@ public class MutableInt extends Number  {
      * @param operand  the value to addAt, not null
      * @since Commons Lang 2.2
      */
-    public void add(final int operand) {
+    public void add(int operand) {
         this.value += operand;
     }
 
@@ -193,7 +193,7 @@ public class MutableInt extends Number  {
      * @throws NullPointerException if the object is null
      * @since Commons Lang 2.2
      */
-    public void add(final Number operand) {
+    public void add(Number operand) {
         this.value += operand.intValue();
     }
 
@@ -203,7 +203,7 @@ public class MutableInt extends Number  {
      * @param operand  the value to subtract, not null
      * @since Commons Lang 2.2
      */
-    public void subtract(final int operand) {
+    public void subtract(int operand) {
         this.value -= operand;
     }
 
@@ -214,7 +214,7 @@ public class MutableInt extends Number  {
      * @throws NullPointerException if the object is null
      * @since Commons Lang 2.2
      */
-    public void subtract(final Number operand) {
+    public void subtract(Number operand) {
         this.value -= operand.intValue();
     }
 
@@ -226,7 +226,7 @@ public class MutableInt extends Number  {
      * @return the value associated with this instance after adding the operand
      * @since 3.5
      */
-    public int addAndGet(final int operand) {
+    public int addAndGet(int operand) {
         this.value += operand;
         return value;
     }
@@ -240,7 +240,7 @@ public class MutableInt extends Number  {
      * @return the value associated with this instance after adding the operand
      * @since 3.5
      */
-    public int addAndGet(final Number operand) {
+    public int addAndGet(Number operand) {
         this.value += operand.intValue();
         return value;
     }
@@ -253,8 +253,8 @@ public class MutableInt extends Number  {
      * @return the value associated with this instance immediately before the operand was added
      * @since 3.5
      */
-    public int getAndAdd(final int operand) {
-        final int last = value;
+    public int getAndAdd(int operand) {
+        int last = value;
         this.value += operand;
         return last;
     }
@@ -268,8 +268,8 @@ public class MutableInt extends Number  {
      * @return the value associated with this instance immediately before the operand was added
      * @since 3.5
      */
-    public int getAndAdd(final Number operand) {
-        final int last = value;
+    public int getAndAdd(Number operand) {
+        int last = value;
         this.value += operand.intValue();
         return last;
     }
@@ -327,7 +327,7 @@ public class MutableInt extends Number  {
      * @return <code>true</code> if the objects are the same; <code>false</code> otherwise.
      */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (obj instanceof MutableInt) {
             return value == ((MutableInt) obj).intValue();
         }

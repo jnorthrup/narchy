@@ -20,6 +20,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
@@ -89,7 +91,7 @@ public class Box2DTests extends JComponent implements Runnable {
     private volatile v2 mousePosition = new v2();
 
     private void initMouse() {
-        addMouseWheelListener((MouseWheelEvent e) -> {
+        addMouseWheelListener(e -> {
             if (e.getWheelRotation() < 0) {
                 zoom *= 1.25f * -e.getWheelRotation();
             } else {
@@ -349,7 +351,7 @@ public class Box2DTests extends JComponent implements Runnable {
         }
     }
 
-    final int MAX_POLY_EDGES = 32;
+    static final int MAX_POLY_EDGES = 32;
     private final int x[] = new int[MAX_POLY_EDGES];
     private final int y[] = new int[MAX_POLY_EDGES];
 
@@ -503,7 +505,8 @@ public class Box2DTests extends JComponent implements Runnable {
 
             pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
 
-            String[] caseNames = IntStream.range(0, cases.length).mapToObj(i -> (i + 1) + ". " + cases[i]).toArray(String[]::new);
+            int bound = cases.length;
+            String[] caseNames = IntStream.range(0, bound).mapToObj(i -> (i + 1) + ". " + cases[i]).toArray(String[]::new);
 
             JComboBox petList = new JComboBox(caseNames);
             pane.add(petList);

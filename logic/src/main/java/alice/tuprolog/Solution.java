@@ -19,6 +19,7 @@ package alice.tuprolog;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -174,7 +175,12 @@ public class Solution implements Serializable/*, ISolution<Term,Term,Term>*/  {
      */
     public Term getVarValue(String varName) throws NoSolutionException {
         if (isSuccess) {
-            return bindings.stream().filter(v -> v != null && v.name().equals(varName)).findFirst().map(Var::term).orElse(null);
+            for (Var v : bindings) {
+                if (v != null && v.name().equals(varName)) {
+                    return Optional.of(v).map(Var::term).orElse(null);
+                }
+            }
+            return Optional.<Var>empty().map(Var::term).orElse(null);
         } else
             throw new NoSolutionException();
     }

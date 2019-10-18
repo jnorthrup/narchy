@@ -39,7 +39,6 @@ public class GameTest {
     public void testSame(String posOrNegChar) {
 
 
-        int cycles = 2000;
         int dur = 1; //cycles/100;
 
         boolean posOrNeg = posOrNegChar.charAt(0) == 't';
@@ -64,10 +63,9 @@ public class GameTest {
             float reward = a.happiness();
             if (reward!=reward) reward = 0;
             double dex = a.dexterity();
-            float x = 0;
             try {
                 Truth t = n.goalTruth("x", n.time());
-                x = t!=null ? t.freq() : 0.5f;
+                float x = t != null ? t.freq() : 0.5f;
                 s.add(reward, dex, x);
             } catch (Narsese.NarseseException e) {
                 e.printStackTrace();
@@ -76,6 +74,7 @@ public class GameTest {
 
 
         {
+            int cycles = 2000;
             n.run(cycles);
         }
 
@@ -132,8 +131,6 @@ public class GameTest {
     @ValueSource(ints = { 4, 8, 16 })
     @ParameterizedTest public void testOscillate1(int period) {
 
-        int cycles = 2000;
-
         NAR n = nar(1);
         n.termVolMax.set(6);
 //        n.goalPriDefault.setAt(0.9f);
@@ -145,6 +142,7 @@ public class GameTest {
         });
 
         //n.log();
+        int cycles = 2000;
         n.run(cycles);
 
 //        long bs = cycles/2, be = cycles+1;
@@ -186,21 +184,17 @@ public class GameTest {
 
     @Test void testAgentTimingDurs() {
         int dur = 10;
-        int dursPerFrame = 2;
-        int dursPerService = 3;
-        LongArrayList aFrames = new LongArrayList();
-        LongArrayList sFrames = new LongArrayList();
 
         NAR nar = NARS.tmp();
         nar.time.dur(dur);
+        int dursPerFrame = 2;
         Game a = new Game("x", GameTime.durs(dursPerFrame));
 
-        a.onFrame(()->{
-            aFrames.add(nar.time());
-        });
-        nar.onDur(() -> {
-            sFrames.add(nar.time());
-        }).durs(dursPerService);
+        LongArrayList aFrames = new LongArrayList();
+        a.onFrame(()-> aFrames.add(nar.time()));
+        LongArrayList sFrames = new LongArrayList();
+        int dursPerService = 3;
+        nar.onDur(() -> sFrames.add(nar.time())).durs(dursPerService);
         nar.run(50);
         assertEquals("[10, 30, 50]", aFrames.toString());
         assertEquals("[0, 10, 40]", sFrames.toString());

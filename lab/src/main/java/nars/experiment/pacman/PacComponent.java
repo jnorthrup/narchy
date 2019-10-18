@@ -226,7 +226,8 @@ public class PacComponent extends JComponent {
         public static final int TIME = 150;
 
         String text;
-        double x, y;
+        double x;
+        double y;
         int time;
         final Font font;
 

@@ -30,7 +30,8 @@ public class HijackMemory extends Memory {
     /**
      * how many items to visit during update
      */
-    private final float initialTask, initialNode;
+    private final float initialTask;
+    private final float initialNode;
     private final float getBoost;
 
 
@@ -165,7 +166,9 @@ public class HijackMemory extends Memory {
     @Override
     public void forEach(Consumer<? super Concept> c) {
 
-        table.forEach(k->c.accept(k.get()));
+        for (PLink<Concept> k : table) {
+            c.accept(k.get());
+        }
 
     }
 

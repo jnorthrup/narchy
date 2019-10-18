@@ -57,14 +57,14 @@ public class RMSPropWeightUpdater implements WeightUpdaterBase {
     }
 
     @Deprecated @Override
-    public void updateWeight(final Unit unit) {
+    public void updateWeight(Unit unit) {
 
-        final double gm = getGradientMomentum();
-        final double ugrad = unit.grad;
-        final double ugradGM = (1.0 - gm) * ugrad;
+        double gm = getGradientMomentum();
+        double ugrad = unit.grad;
+        double ugradGM = (1.0 - gm) * ugrad;
 
-        final double nt = n[t] = (gm * n[t]) + (ugradGM * ugrad);
-        final double gt = g[t] = (gm * g[t]) + ugradGM;
+        double nt = n[t] = (gm * n[t]) + (ugradGM * ugrad);
+        double gt = g[t] = (gm * g[t]) + ugradGM;
 
         
         unit.value +=
@@ -75,24 +75,24 @@ public class RMSPropWeightUpdater implements WeightUpdaterBase {
     }
 
     @Override
-    public void updateWeight(final UVector unit) {
+    public void updateWeight(UVector unit) {
 
-        final double[] ugrads = unit.grad;
-        final double[] uvalue = unit.value;
+        double[] ugrads = unit.grad;
+        double[] uvalue = unit.value;
 
-        final double changeConst = getChangeAddConstant();
-        final double changeMult = getChangeMultiplier();
-        final double deltaMomentum = getDeltaMomentum();
-        final double gm = getGradientMomentum();
+        double changeConst = getChangeAddConstant();
+        double changeMult = getChangeMultiplier();
+        double deltaMomentum = getDeltaMomentum();
+        double gm = getGradientMomentum();
 
         for (int i = 0; i < uvalue.length; i++) {
 
 
-            final double ugrad = ugrads[i];
-            final double ugradGM = (1.0 - gm) * ugrad;
+            double ugrad = ugrads[i];
+            double ugradGM = (1.0 - gm) * ugrad;
 
-            final double nt = n[t] = (gm * n[t]) + (ugradGM * ugrad);
-            final double gt = g[t] = (gm * g[t]) + ugradGM;
+            double nt = n[t] = (gm * n[t]) + (ugradGM * ugrad);
+            double gt = g[t] = (gm * g[t]) + ugradGM;
 
             
             uvalue[i] +=

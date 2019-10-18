@@ -250,8 +250,8 @@ public class GrammarSerializer {
     }
 
     public static Grammar deserializeNodeWithMerges(DataInputStream dis) throws IOException {
-        int numNodes = dis.readInt(); 
-        List<NodeSerialization> nodeSerializations = IntStream.range(0, numNodes).<NodeSerialization>mapToObj(i -> null).collect(Collectors.toCollection(() -> new ArrayList<>(numNodes)));
+        int numNodes = dis.readInt();
+        List<NodeSerialization> nodeSerializations = IntStream.range(0, numNodes).<NodeSerialization>mapToObj(i1 -> null).collect(Collectors.toCollection(() -> new ArrayList<>(numNodes)));
         for (int i = 0; i < numNodes; i++) {
             int id = dis.readInt(); 
             NodeData data = deserializeNodeData(dis); 

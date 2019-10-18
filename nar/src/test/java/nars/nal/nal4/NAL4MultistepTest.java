@@ -21,7 +21,6 @@ public class NAL4MultistepTest extends NALTest {
 
     @Test
     void nal4_everyday_reasoning() {
-        int time = 1000;
 
 
         TestNAR tester = test;
@@ -38,6 +37,7 @@ public class NAL4MultistepTest extends NALTest {
 
         tester.input("likes(cat,[blue])?");
 
+        int time = 1000;
         tester.mustBelieve(time, "(likes(cat,[blue]) <-> likes(cat,{sky}))",1f,0.45f);
         tester.mustBelieve(time, "(likes(cat,[blue]) <-> likes({tom},[blue]))",1f,0.45f);
         tester.mustBelieve(time, "(likes(cat,[blue]) <-> likes({tom},{sky}))",1f,0.45f);
@@ -61,7 +61,6 @@ public class NAL4MultistepTest extends NALTest {
     }
 
     @Test void nal4_everyday_reasoning_easier_sim() {
-        int time = 2550;
 
         test.confTolerance(0.3f);
         test.termVolMax(12);
@@ -72,6 +71,7 @@ public class NAL4MultistepTest extends NALTest {
         Term blue = $$("blue");
         Term answer = $$("likes(cat,blue)");;
 
+        int time = 2550;
         test.believe("(blue<->sky)")
             .believe("(cat<->tom)")
             .believe("likes(tom,sky)")
@@ -83,7 +83,6 @@ public class NAL4MultistepTest extends NALTest {
 
     }
     @Test void nal4_everyday_reasoning_easier_inh() {
-        int time = 2550;
 
         test.confTolerance(0.3f);
         test.termVolMax(12);
@@ -94,6 +93,7 @@ public class NAL4MultistepTest extends NALTest {
         Term blue = $$("blue");
         Term answer = $$("likes(cat,blue)");;
 
+        int time = 2550;
         test.believe("blue:sky")
             .believe("cat:tom")
             .believe("likes(tom,sky)")

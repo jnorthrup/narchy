@@ -34,14 +34,13 @@ public class GameTarget {
     }
 
     public static void SP_target_speaker(edict_t ent) {
-        
-        String buffer;
 
         if (GameBase.st.noise == null) {
             game_import_t.dprintf("target_speaker with no noise setAt at "
                     + Lib.vtos(ent.s.origin) + '\n');
             return;
         }
+        String buffer;
         if (!GameBase.st.noise.contains(".wav"))
             buffer = GameBase.st.noise + ".wav";
         else
@@ -294,14 +293,14 @@ public class GameTarget {
         public String getID() { return "Use_Target_Speaker"; }
         @Override
         public void use(edict_t ent, edict_t other, edict_t activator) {
-            int chan;
 
             if ((ent.spawnflags & 3) != 0) { 
                 if (ent.s.sound != 0)
                     ent.s.sound = 0; 
                 else
                     ent.s.sound = ent.noise_index; 
-            } else { 
+            } else {
+                int chan;
                 if ((ent.spawnflags & 4) != 0)
                     chan = Defines.CHAN_VOICE | Defines.CHAN_RELIABLE;
                 else
@@ -604,11 +603,6 @@ public class GameTarget {
         @Override
         public boolean think(edict_t self) {
 
-            float[] start = { 0, 0, 0 };
-            float[] end = { 0, 0, 0 };
-            trace_t tr;
-            float[] point = { 0, 0, 0 };
-            float[] last_movedir = { 0, 0, 0 };
             int count;
 
             if ((self.spawnflags & 0x80000000) != 0)
@@ -617,7 +611,9 @@ public class GameTarget {
                 count = 4;
 
             if (self.enemy != null) {
+                float[] last_movedir = {0, 0, 0};
                 Math3D.VectorCopy(self.movedir, last_movedir);
+                float[] point = {0, 0, 0};
                 Math3D.VectorMA(self.enemy.absmin, 0.5f, self.enemy.size, point);
                 Math3D.VectorSubtract(point, self.s.origin, self.movedir);
                 Math3D.VectorNormalize(self.movedir);
@@ -626,8 +622,11 @@ public class GameTarget {
             }
 
             edict_t ignore = self;
+            float[] start = {0, 0, 0};
             Math3D.VectorCopy(self.s.origin, start);
+            float[] end = {0, 0, 0};
             Math3D.VectorMA(start, 2048, self.movedir, end);
+            trace_t tr;
             while (true) {
                 tr = game_import_t.trace(start, null, null, end, ignore,
                         Defines.CONTENTS_SOLID | Defines.CONTENTS_MONSTER
@@ -836,9 +835,6 @@ public class GameTarget {
         @Override
         public boolean think(edict_t self) {
 
-            int i;
-            edict_t e;
-
             if (self.last_move_time < GameBase.level.time) {
                 game_import_t.positioned_sound(self.s.origin, self,
                         Defines.CHAN_AUTO, self.noise_index, 1.0f,
@@ -846,8 +842,8 @@ public class GameTarget {
                 self.last_move_time = GameBase.level.time + 0.5f;
             }
 
-            for (i = 1; i < GameBase.num_edicts; i++) {
-                e = GameBase.g_edicts[i];
+            for (int i = 1; i < GameBase.num_edicts; i++) {
+                edict_t e = GameBase.g_edicts[i];
 
                 if (!e.inuse)
                     continue;

@@ -66,7 +66,7 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
         max = FloatND.fill(dimensionality, NEGATIVE_INFINITY);
     }
 
-    public HyperRectFloat(final FloatND p) {
+    public HyperRectFloat(FloatND p) {
         min = max = p;
     }
 
@@ -141,14 +141,14 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
     }
 
     @Override
-    public HyperRegion mbr(final HyperRegion r) {
+    public HyperRegion mbr(HyperRegion r) {
         if (this == r)
             return this;
 
         int dim = dim();
         float[] newMin = new float[dim], newMax = new float[dim];
         if (r instanceof HyperRectFloat) {
-            final HyperRectFloat x = (HyperRectFloat) r;
+            HyperRectFloat x = (HyperRectFloat) r;
             for (int i = 0; i < dim; i++) {
                 newMin[i] = Math.min(min.data[i], x.min.data[i]);
                 newMax[i] = Math.max(max.data[i], x.max.data[i]);
@@ -206,7 +206,7 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
     }
 
     @Override
-    public double range(final int dim) {
+    public double range(int dim) {
         float min = this.min.data[dim];
         float max = this.max.data[dim];
         if (min == max)
@@ -273,7 +273,7 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
     public static final class Builder<X extends HyperRectFloat> implements Function<X, HyperRegion> {
 
         @Override
-        public X apply(final X rect2D) {
+        public X apply(X rect2D) {
             return rect2D;
         }
 

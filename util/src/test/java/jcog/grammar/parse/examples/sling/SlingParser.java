@@ -270,7 +270,7 @@ public class SlingParser {
 	 * Constructs and returns a parser that recognizes a
 	 * number and that uses a <code>NumAssembler</code>.
 	 */
-    private Parser num() {
+    private static Parser num() {
 		return new Num().put(new NumAssembler());
 	}
 
@@ -510,7 +510,7 @@ public class SlingParser {
 	/*
 	 * Recognize a word as a variable.
 	 */
-    private Parser variable() {
+    private static Parser variable() {
 		return new Word().put(new VariableAssembler());
 	}
 

@@ -103,7 +103,7 @@ public abstract class NQuadsRDF {
 
     public static Stream<Task> stream(@NotNull NAR nar, @NotNull Stream<Node[]> nxp) {
 
-        return nxp.map((Node[] nx) -> {
+        return nxp.map(nx -> {
             if (nx.length >= 3) {
                 
 
@@ -349,14 +349,11 @@ public abstract class NQuadsRDF {
                                     @Nullable Atomic subject,
                                     @Nullable Atomic predicate, @Nullable Term object) {
 
-        
-
-        Term belief = null;
-
 
         if (predicatesIgnored.contains(predicate))
             return null;
 
+        Term belief = null;
         if (Arrays.asList(type, subClassOf, subPropertyOf).contains(predicate)) {
             if (object.equals(owlClass)) {
                 belief = $.inst($.varDep(1), subject); 

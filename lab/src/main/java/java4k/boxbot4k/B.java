@@ -35,6 +35,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.stream.IntStream;
 
 public final class B extends GamePanel {
 
@@ -365,12 +366,7 @@ public final class B extends GamePanel {
 			}
 		}
 
-		boolean boxesOnGoal = true;
-		for (int i = 0; i < table.length; i++) {
-			if (table[i] == BOX) {
-				boxesOnGoal = false;
-			}
-		}
+		boolean boxesOnGoal = IntStream.range(0, table.length).noneMatch(i -> table[i] == BOX);
 		levelSolved = boxesOnGoal;
 
 		repaint();

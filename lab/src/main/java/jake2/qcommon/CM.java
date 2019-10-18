@@ -132,7 +132,8 @@ public class CM {
             map_leafs[n] = new cleaf_t();
     }
 
-    static int emptyleaf, solidleaf;
+    static int emptyleaf;
+    static int solidleaf;
 
     static int numleafbrushes;
 
@@ -295,9 +296,6 @@ public class CM {
     /** Loads Submodels. */
     public static void CMod_LoadSubmodels(lump_t l) {
         Com.DPrintf("CMod_LoadSubmodels()\n");
-        qfiles.dmodel_t in;
-        cmodel_t out;
-        int i, j;
 
         if ((l.filelen % qfiles.dmodel_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "CMod_LoadBmodel: funny lump size");
@@ -315,12 +313,12 @@ public class CM {
         if (debugloadmap) {
             Com.DPrintf("submodles(headnode, <origin>, <mins>, <maxs>)\n");
         }
-        for (i = 0; i < count; i++) {
-            in = new qfiles.dmodel_t(ByteBuffer.wrap(cmod_base, i
+        for (int i = 0; i < count; i++) {
+            qfiles.dmodel_t in = new qfiles.dmodel_t(ByteBuffer.wrap(cmod_base, i
                     * qfiles.dmodel_t.SIZE + l.fileofs, qfiles.dmodel_t.SIZE));
-            out = map_cmodels[i];
+            cmodel_t out = map_cmodels[i];
 
-            for (j = 0; j < 3; j++) { 
+            for (int j = 0; j < 3; j++) {
                 out.mins[j] = in.mins[j] - 1;
                 out.maxs[j] = in.maxs[j] + 1;
                 out.origin[j] = in.origin[j];
@@ -414,16 +412,14 @@ public class CM {
     }
 
     private static void loadNode(lump_t l, int i) {
-        int j;
-        int child;
         qfiles.dnode_t in = new qfiles.dnode_t(ByteBuffer.wrap(cmod_base,
                 qfiles.dnode_t.SIZE * i + l.fileofs, qfiles.dnode_t.SIZE));
 
         cnode_t out = map_nodes[i];
 
         out.plane = map_planes[in.planenum];
-        for (j = 0; j < 2; j++) {
-            child = in.children[j];
+        for (int j = 0; j < 2; j++) {
+            int child = in.children[j];
             out.children[j] = child;
         }
         if (debugloadmap) {
@@ -476,9 +472,6 @@ public class CM {
     /** Loads leafs.   */
     public static void CMod_LoadLeafs(lump_t l) {
         Com.DPrintf("CMod_LoadLeafs()\n");
-        int i;
-        cleaf_t out;
-        qfiles.dleaf_t in;
 
         if ((l.filelen % qfiles.dleaf_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
@@ -498,11 +491,12 @@ public class CM {
         numclusters = 0;
         if (debugloadmap)
             Com.DPrintf("cleaf-list:(contents, cluster, area, firstleafbrush, numleafbrushes)\n");
+        int i;
         for (i = 0; i < count; i++) {
-            in = new qfiles.dleaf_t(cmod_base, i * qfiles.dleaf_t.SIZE
+            qfiles.dleaf_t in = new qfiles.dleaf_t(cmod_base, i * qfiles.dleaf_t.SIZE
                     + l.fileofs, qfiles.dleaf_t.SIZE);
 
-            out = map_leafs[i];
+            cleaf_t out = map_leafs[i];
 
             out.contents = in.contents;
             out.cluster = in.cluster;
@@ -543,10 +537,6 @@ public class CM {
     /** Loads planes. */
     public static void CMod_LoadPlanes(lump_t l) {
         Com.DPrintf("CMod_LoadPlanes()\n");
-        int i, j;
-        cplane_t out;
-        qfiles.dplane_t in;
-        int bits;
 
         if ((l.filelen % qfiles.dplane_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
@@ -568,14 +558,14 @@ public class CM {
                     .DPrintf("cplanes(normal[0],normal[1],normal[2], dist, type, signbits)\n");
         }
 
-        for (i = 0; i < count; i++) {
-            in = new qfiles.dplane_t(ByteBuffer.wrap(cmod_base, i
+        for (int i = 0; i < count; i++) {
+            qfiles.dplane_t in = new qfiles.dplane_t(ByteBuffer.wrap(cmod_base, i
                     * qfiles.dplane_t.SIZE + l.fileofs, qfiles.dplane_t.SIZE));
 
-            out = map_planes[i];
+            cplane_t out = map_planes[i];
 
-            bits = 0;
-            for (j = 0; j < 3; j++) {
+            int bits = 0;
+            for (int j = 0; j < 3; j++) {
                 out.normal[j] = in.normal[j];
 
                 if (out.normal[j] < 0)
@@ -634,10 +624,6 @@ public class CM {
     /** Loads brush sides. */
     public static void CMod_LoadBrushSides(lump_t l) {
         Com.DPrintf("CMod_LoadBrushSides()\n");
-        int i, j;
-        cbrushside_t out;
-        qfiles.dbrushside_t in;
-        int num;
 
         if ((l.filelen % qfiles.dbrushside_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
@@ -654,19 +640,19 @@ public class CM {
         if (debugloadmap) {
             Com.DPrintf("brushside(planenum, surfacenum):\n");
         }
-        for (i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
 
-            in = new qfiles.dbrushside_t(ByteBuffer.wrap(cmod_base, i
-                    * qfiles.dbrushside_t.SIZE + l.fileofs,
+            qfiles.dbrushside_t in = new qfiles.dbrushside_t(ByteBuffer.wrap(cmod_base, i
+                            * qfiles.dbrushside_t.SIZE + l.fileofs,
                     qfiles.dbrushside_t.SIZE));
 
-            out = map_brushsides[i];
+            cbrushside_t out = map_brushsides[i];
 
-            num = in.planenum;
+            int num = in.planenum;
 
-            out.plane = map_planes[num]; 
+            out.plane = map_planes[num];
 
-            j = in.texinfo;
+            int j = in.texinfo;
 
             if (j >= numtexinfo)
                 Com.Error(Defines.ERR_DROP, "Bad brushside texinfo");
@@ -686,9 +672,6 @@ public class CM {
     /** Loads areas. */
     public static void CMod_LoadAreas(lump_t l) {
         Com.DPrintf("CMod_LoadAreas()\n");
-        int i;
-        carea_t out;
-        qfiles.darea_t in;
 
         if ((l.filelen % qfiles.darea_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
@@ -705,11 +688,11 @@ public class CM {
             Com.DPrintf("areas(numportals, firstportal)\n");
         }
 
-        for (i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
 
-            in = new qfiles.darea_t(ByteBuffer.wrap(cmod_base, i
+            qfiles.darea_t in = new qfiles.darea_t(ByteBuffer.wrap(cmod_base, i
                     * qfiles.darea_t.SIZE + l.fileofs, qfiles.darea_t.SIZE));
-            out = map_areas[i];
+            carea_t out = map_areas[i];
 
             out.numareaportals = in.numareaportals;
             out.firstareaportal = in.firstareaportal;
@@ -725,9 +708,6 @@ public class CM {
     /** Loads area portals. */
     public static void CMod_LoadAreaPortals(lump_t l) {
         Com.DPrintf("CMod_LoadAreaPortals()\n");
-        int i;
-        qfiles.dareaportal_t out;
-        qfiles.dareaportal_t in;
 
         if ((l.filelen % qfiles.dareaportal_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
@@ -741,12 +721,12 @@ public class CM {
         if (debugloadmap) {
             Com.DPrintf("areaportals(portalnum, otherarea)\n");
         }
-        for (i = 0; i < count; i++) {
-            in = new qfiles.dareaportal_t(ByteBuffer.wrap(cmod_base, i
-                    * qfiles.dareaportal_t.SIZE + l.fileofs,
+        for (int i = 0; i < count; i++) {
+            qfiles.dareaportal_t in = new qfiles.dareaportal_t(ByteBuffer.wrap(cmod_base, i
+                            * qfiles.dareaportal_t.SIZE + l.fileofs,
                     qfiles.dareaportal_t.SIZE));
 
-            out = map_areaportals[i];
+            qfiles.dareaportal_t out = map_areaportals[i];
 
             out.portalnum = in.portalnum;
             out.otherarea = in.otherarea;
@@ -881,21 +861,16 @@ public class CM {
 
         map_leafbrushes[numleafbrushes] = numbrushes;
 
-        int side;
-        cnode_t c;
-        cplane_t p;
-        cbrushside_t s;
-
         for (int i = 0; i < 6; i++) {
-            side = i & 1;
+            int side = i & 1;
 
-            
-            s = map_brushsides[numbrushsides + i];
+
+            cbrushside_t s = map_brushsides[numbrushsides + i];
             s.plane = map_planes[(numplanes + i * 2 + side)];
             s.surface = nullsurface;
 
-            
-            c = map_nodes[box_headnode + i];
+
+            cnode_t c = map_nodes[box_headnode + i];
             c.plane = map_planes[(numplanes + i * 2)];
             c.children[side] = -1 - emptyleaf;
             if (i != 5)
@@ -903,8 +878,8 @@ public class CM {
             else
                 c.children[side ^ 1] = -1 - numleafs;
 
-            
-            p = box_planes[i * 2];
+
+            cplane_t p = box_planes[i * 2];
             p.type = (byte) (i >> 1);
             p.signbits = 0;
             Math3D.VectorClear(p.normal);
@@ -939,14 +914,12 @@ public class CM {
 
     /** Recursively searches the leaf number that contains the 3d point. */
     private static int CM_PointLeafnum_r(float[] p, int num) {
-        float d;
-        cnode_t node;
-        cplane_t plane;
 
         while (num >= 0) {
-            node = map_nodes[num];
-            plane = node.plane;
+            cnode_t node = map_nodes[num];
+            cplane_t plane = node.plane;
 
+            float d;
             if (plane.type < 3)
                 d = p[plane.type] - plane.dist;
             else
@@ -971,7 +944,8 @@ public class CM {
     }
 
 
-    private static int leaf_count, leaf_maxcount;
+    private static int leaf_count;
+    private static int leaf_maxcount;
 
     private static int[] leaf_list;
 
@@ -982,9 +956,6 @@ public class CM {
 
     /** Recursively fills in a list of all the leafs touched. */    
     private static void CM_BoxLeafnums_r(int nodenum) {
-        cplane_t plane;
-        cnode_t node;
-        int s;
 
         while (true) {
             if (nodenum < 0) {
@@ -996,10 +967,10 @@ public class CM {
                 return;
             }
 
-            node = map_nodes[nodenum];
-            plane = node.plane;
+            cnode_t node = map_nodes[nodenum];
+            cplane_t plane = node.plane;
 
-            s = Math3D.BoxOnPlaneSide(leaf_mins, leaf_maxs, plane);
+            int s = Math3D.BoxOnPlaneSide(leaf_mins, leaf_maxs, plane);
 
             if (s == 1)
                 nodenum = node.children[0];
@@ -1061,21 +1032,25 @@ public class CM {
     public static int TransformedPointContents(float[] p, int headnode,
             float[] origin, float[] angles) {
         float[] p_l = { 0, 0, 0 };
-        float[] temp = { 0, 0, 0 };
-        float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
 
 
         Math3D.VectorSubtract(p, origin, p_l);
 
         
-        if (headnode != box_headnode
-                && (IntStream.of(0, 1, 2).anyMatch(i -> angles[i] != 0))) {
-            Math3D.AngleVectors(angles, forward, right, up);
+        if (headnode != box_headnode) {
+            boolean b = IntStream.of(0, 1, 2).anyMatch(i -> angles[i] != 0);
+            if (b) {
+                float[] up = {0, 0, 0};
+                float[] right = {0, 0, 0};
+                float[] forward = {0, 0, 0};
+                Math3D.AngleVectors(angles, forward, right, up);
 
-            Math3D.VectorCopy(p_l, temp);
-            p_l[0] = Math3D.DotProduct(temp, forward);
-            p_l[1] = -Math3D.DotProduct(temp, right);
-            p_l[2] = Math3D.DotProduct(temp, up);
+                float[] temp = {0, 0, 0};
+                Math3D.VectorCopy(p_l, temp);
+                p_l[0] = Math3D.DotProduct(temp, forward);
+                p_l[1] = -Math3D.DotProduct(temp, right);
+                p_l[2] = Math3D.DotProduct(temp, up);
+            }
         }
 
         int l = CM_PointLeafnum_r(p_l, headnode);
@@ -1113,17 +1088,6 @@ public class CM {
      */
     public static void CM_ClipBoxToBrush(float[] mins, float[] maxs,
             float[] p1, float[] p2, trace_t trace, cbrush_t brush) {
-        int i, j;
-        cplane_t plane;
-        float dist;
-        float[] ofs = { 0, 0, 0 };
-        float d1, d2;
-        float f;
-        cbrushside_t side;
-
-        float enterfrac = -1;
-        float leavefrac = 1;
-        cplane_t clipplane = null;
 
         if (brush.numsides == 0)
             return;
@@ -1134,18 +1098,22 @@ public class CM {
         boolean startout = false;
         cbrushside_t leadside = null;
 
-        for (i = 0; i < brush.numsides; i++) {
-            side = map_brushsides[brush.firstbrushside + i];
-            plane = side.plane;
+        cplane_t clipplane = null;
+        float leavefrac = 1;
+        float enterfrac = -1;
+        float[] ofs = {0, 0, 0};
+        for (int i = 0; i < brush.numsides; i++) {
+            cbrushside_t side = map_brushsides[brush.firstbrushside + i];
+            cplane_t plane = side.plane;
 
-            
 
-            if (!trace_ispoint) { 
+            float dist;
+            if (!trace_ispoint) {
 
                 
 
                 
-                for (j = 0; j < 3; j++) {
+                for (int j = 0; j < 3; j++) {
                     if (plane.normal[j] < 0)
                         ofs[j] = maxs[j];
                     else
@@ -1157,8 +1125,8 @@ public class CM {
                 dist = plane.dist;
             }
 
-            d1 = Math3D.DotProduct(p1, plane.normal) - dist;
-            d2 = Math3D.DotProduct(p2, plane.normal) - dist;
+            float d1 = Math3D.DotProduct(p1, plane.normal) - dist;
+            float d2 = Math3D.DotProduct(p2, plane.normal) - dist;
 
             if (d2 > 0)
                 getout = true; 
@@ -1172,8 +1140,9 @@ public class CM {
             if (d1 <= 0 && d2 <= 0)
                 continue;
 
-            
-            if (d1 > d2) { 
+
+            float f;
+            if (d1 > d2) {
                 f = (d1 - DIST_EPSILON) / (d1 - d2);
                 if (f > enterfrac) {
                     enterfrac = f;
@@ -1211,37 +1180,28 @@ public class CM {
      */
     public static void CM_TestBoxInBrush(float[] mins, float[] maxs,
             float[] p1, trace_t trace, cbrush_t brush) {
-        int i, j;
-        cplane_t plane;
-        float dist;
-        float[] ofs = { 0, 0, 0 };
-        float d1;
-        cbrushside_t side;
 
         if (brush.numsides == 0)
             return;
 
-        for (i = 0; i < brush.numsides; i++) {
-            side = map_brushsides[brush.firstbrushside + i];
-            plane = side.plane;
+        float[] ofs = {0, 0, 0};
+        for (int i = 0; i < brush.numsides; i++) {
+            cbrushside_t side = map_brushsides[brush.firstbrushside + i];
+            cplane_t plane = side.plane;
 
-            
-            
-            
-            
 
-            for (j = 0; j < 3; j++) {
+            for (int j = 0; j < 3; j++) {
                 if (plane.normal[j] < 0)
                     ofs[j] = maxs[j];
                 else
                     ofs[j] = mins[j];
             }
-            dist = Math3D.DotProduct(ofs, plane.normal);
+            float dist = Math3D.DotProduct(ofs, plane.normal);
             dist = plane.dist - dist;
 
-            d1 = Math3D.DotProduct(p1, plane.normal) - dist;
+            float d1 = Math3D.DotProduct(p1, plane.normal) - dist;
 
-            
+
             if (d1 > 0)
                 return;
 
@@ -1257,19 +1217,16 @@ public class CM {
      * CM_TraceToLeaf.
      */
     public static void CM_TraceToLeaf(int leafnum) {
-        int k;
-        int brushnum;
-        cbrush_t b;
 
         cleaf_t leaf = map_leafs[leafnum];
         if (0 == (leaf.contents & trace_contents))
             return;
 
         
-        for (k = 0; k < leaf.numleafbrushes; k++) {
+        for (int k = 0; k < leaf.numleafbrushes; k++) {
 
-            brushnum = map_leafbrushes[leaf.firstleafbrush + k];
-            b = map_brushes[brushnum];
+            int brushnum = map_leafbrushes[leaf.firstleafbrush + k];
+            cbrush_t b = map_brushes[brushnum];
             if (b.checkcount == checkcount)
                 continue; 
             b.checkcount = checkcount;
@@ -1288,17 +1245,14 @@ public class CM {
      * ================ CM_TestInLeaf ================
      */
     public static void CM_TestInLeaf(int leafnum) {
-        int k;
-        int brushnum;
-        cbrush_t b;
 
         cleaf_t leaf = map_leafs[leafnum];
         if (0 == (leaf.contents & trace_contents))
             return;
         
-        for (k = 0; k < leaf.numleafbrushes; k++) {
-            brushnum = map_leafbrushes[leaf.firstleafbrush + k];
-            b = map_brushes[brushnum];
+        for (int k = 0; k < leaf.numleafbrushes; k++) {
+            int brushnum = map_leafbrushes[leaf.firstleafbrush + k];
+            cbrush_t b = map_brushes[brushnum];
             if (b.checkcount == checkcount)
                 continue; 
             b.checkcount = checkcount;
@@ -1318,11 +1272,6 @@ public class CM {
      */
     public static void CM_RecursiveHullCheck(int num, float p1f, float p2f,
             float[] p1, float[] p2) {
-        float t1, t2, offset;
-        float frac, frac2;
-        float idist;
-        int i;
-        int side;
 
         if (trace_trace.fraction <= p1f)
             return; 
@@ -1337,6 +1286,9 @@ public class CM {
         cnode_t node = map_nodes[num];
         cplane_t plane = node.plane;
 
+        float offset;
+        float t2;
+        float t1;
         if (plane.type < 3) {
             t1 = p1[plane.type] - plane.dist;
             t2 = p2[plane.type] - plane.dist;
@@ -1362,7 +1314,11 @@ public class CM {
             return;
         }
 
-        
+
+        int side;
+        float idist;
+        float frac2;
+        float frac;
         if (t1 < t2) {
             idist = 1.0f / (t1 - t2);
             side = 1;
@@ -1388,6 +1344,7 @@ public class CM {
         float midf = p1f + (p2f - p1f) * frac;
         float[] mid = Vec3Cache.get();
 
+        int i;
         for (i = 0; i < 3; i++)
             mid[i] = p1[i] + frac * (p2[i] - p1[i]);
 
@@ -1444,21 +1401,22 @@ public class CM {
         
         if (start[0] == end[0] && start[1] == end[1] && start[2] == end[2]) {
 
-            int[] leafs = new int[1024];
-            int i;
-            float[] c1 = { 0, 0, 0 }, c2 = { 0, 0, 0 };
-            int topnode = 0;
+            float[] c1 = { 0, 0, 0 };
 
             Math3D.VectorAdd(start, mins, c1);
+            float[] c2 = {0, 0, 0};
             Math3D.VectorAdd(start, maxs, c2);
 
+            int i;
             for (i = 0; i < 3; i++) {
                 c1[i] -= 1;
                 c2[i] += 1;
             }
 
+            int topnode = 0;
             int[] tn = {topnode};
 
+            int[] leafs = new int[1024];
             int numleafs = CM_BoxLeafnums_headnode(c1, c2, leafs, 1024, headnode,
                     tn);
             topnode = tn[0];
@@ -1507,19 +1465,21 @@ public class CM {
     public static trace_t TransformedBoxTrace(float[] start, float[] end,
             float[] mins, float[] maxs, int headnode, int brushmask,
             float[] origin, float[] angles) {
-        float[] start_l = { 0, 0, 0 }, end_l = { 0, 0, 0 };
-        float[] a = { 0, 0, 0 };
-        float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
-        float[] temp = { 0, 0, 0 };
+        float[] start_l = { 0, 0, 0 };
 
 
         Math3D.VectorSubtract(start, origin, start_l);
+        float[] end_l = {0, 0, 0};
         Math3D.VectorSubtract(end, origin, end_l);
 
 
         boolean rotated = headnode != box_headnode
                 && (IntStream.of(0, 1, 2).anyMatch(i -> angles[i] != 0));
 
+        float[] temp = {0, 0, 0};
+        float[] up = {0, 0, 0};
+        float[] right = {0, 0, 0};
+        float[] forward = {0, 0, 0};
         if (rotated) {
             Math3D.AngleVectors(angles, forward, right, up);
 
@@ -1538,7 +1498,8 @@ public class CM {
         trace_t trace = BoxTrace(start_l, end_l, mins, maxs, headnode, brushmask);
 
         if (rotated && trace.fraction != 1.0) {
-            
+
+            float[] a = {0, 0, 0};
             Math3D.VectorNegate(angles, a);
             Math3D.AngleVectors(a, forward, right, up);
 
@@ -1565,11 +1526,9 @@ public class CM {
      * =================== CM_DecompressVis ===================
      */
     public static void CM_DecompressVis(byte[] in, int offset, byte[] out) {
-        int c;
 
         int row = (numclusters + 7) >> 3;
         int outp = 0;
-        int inp = offset;
 
         if (in == null || numvisibility == 0) { 
                                                 
@@ -1580,13 +1539,14 @@ public class CM {
             return;
         }
 
+        int inp = offset;
         do {
             if (in[inp] != 0) {
                 out[outp++] = in[inp++];
                 continue;
             }
 
-            c = in[inp + 1] & 0xFF;
+            int c = in[inp + 1] & 0xFF;
             inp += 2;
             if (outp + c > row) {
                 c = row - (outp);
@@ -1628,9 +1588,6 @@ public class CM {
      */
 
     public static void FloodArea_r(carea_t area, int floodnum) {
-        
-        int i;
-        qfiles.dareaportal_t p;
 
         if (area.floodvalid == floodvalid) {
             if (area.floodnum == floodnum)
@@ -1641,8 +1598,8 @@ public class CM {
         area.floodnum = floodnum;
         area.floodvalid = floodvalid;
 
-        for (i = 0; i < area.numareaportals; i++) {
-            p = map_areaportals[area.firstareaportal + i];
+        for (int i = 0; i < area.numareaportals; i++) {
+            qfiles.dareaportal_t p = map_areaportals[area.firstareaportal + i];
             if (portalopen[p.portalnum])
                 FloodArea_r(map_areas[p.otherarea], floodnum);
         }
@@ -1654,17 +1611,14 @@ public class CM {
     public static void FloodAreaConnections() {
         Com.DPrintf("FloodAreaConnections...\n");
 
-        int i;
-        carea_t area;
-
 
         floodvalid++;
         int floodnum = 0;
 
         
-        for (i = 1; i < numareas; i++) {
+        for (int i = 1; i < numareas; i++) {
 
-            area = map_areas[i];
+            carea_t area = map_areas[i];
 
             if (area.floodvalid == floodvalid)
                 continue; 
@@ -1706,8 +1660,6 @@ public class CM {
      * This is used by the client refreshes to cull visibility.
      */
     public static int CM_WriteAreaBits(byte[] buffer, int area) {
-        int i;
-        int floodnum;
 
         int bytes = (numareas + 7) >> 3;
 
@@ -1716,8 +1668,8 @@ public class CM {
             Arrays.fill(buffer, 0, bytes, (byte) 255);
         } else {
             Arrays.fill(buffer, 0, bytes, (byte) 0);
-            floodnum = map_areas[area].floodnum;
-            for (i = 0; i < numareas; i++) {
+            int floodnum = map_areas[area].floodnum;
+            for (int i = 0; i < numareas; i++) {
                 if (map_areas[i].floodnum == floodnum || area == 0)
                     buffer[i >> 3] |= 1 << (i & 7);
             }

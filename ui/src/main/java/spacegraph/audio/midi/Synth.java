@@ -11,7 +11,8 @@ public class Synth {
     private static Synthesizer synthesizer;
     private static Instrument[] soundbank;
     private static JComboBox instrumentControl;
-    private static JSlider volumeControl, forceControl;
+    private static JSlider volumeControl;
+    private static JSlider forceControl;
 
     public static void main(String[] args) throws MidiUnavailableException, ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException, InvalidMidiDataException {
         //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

@@ -1,9 +1,7 @@
 package jcog;
 
 import com.google.common.escape.Escapers;
-import org.HdrHistogram.AbstractHistogram;
-import org.HdrHistogram.AtomicHistogram;
-import org.HdrHistogram.DoubleHistogram;
+import org.HdrHistogram.*;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -202,10 +200,10 @@ public enum Texts {
 		int len0 = a.length() + 1;
 		int len1 = b.length() + 1;
 		int[] cost = new int[len0];
-		int[] newcost = new int[len0];
 		for (int i = 0; i < len0; i++) {
 			cost[i] = i;
 		}
+		int[] newcost = new int[len0];
 		for (int j = 1; j < len1; j++) {
 			newcost[0] = j;
 			char bj = b.charAt(j - 1);
@@ -575,7 +573,9 @@ public enum Texts {
 	}
 
 	public static int countRows(String s, char x) {
-		int c = (int) IntStream.range(0, s.length()).filter(i -> s.charAt(i) == x).count();
+		int bound = s.length();
+		long count = IntStream.range(0, bound).filter(i -> s.charAt(i) == x).count();
+		int c = (int) count;
 
         return c;
 	}
@@ -631,7 +631,8 @@ public enum Texts {
 	 */
 	public static String n2(byte... v) {
         int s = v.length;
-        String sb = IntStream.range(0, s).mapToObj(i -> Integer.toHexString(Byte.toUnsignedInt(v[i])) + ' ').collect(Collectors.joining());
+		String result = IntStream.range(0, s).mapToObj(i -> Integer.toHexString(Byte.toUnsignedInt(v[i])) + ' ').collect(Collectors.joining());
+		String sb = result;
 		return sb;
 	}
 
@@ -720,28 +721,28 @@ public enum Texts {
 
 	public static void histogramDecode(AbstractHistogram h, String header, int linearStep, BiConsumer<String, Object> x) {
 		int digits = (int) (1 + Math.log10(h.getMaxValue()));
-		h.linearBucketValues(linearStep).forEach((p) -> {
+		for (HistogramIterationValue p : h.linearBucketValues(linearStep)) {
 			x.accept(header + " [" +
-					iPad(p.getValueIteratedFrom(), digits) + ".." + iPad(p.getValueIteratedTo(), digits) + ']',
-				p.getCountAddedInThisIterationStep());
-		});
+							iPad(p.getValueIteratedFrom(), digits) + ".." + iPad(p.getValueIteratedTo(), digits) + ']',
+					p.getCountAddedInThisIterationStep());
+		}
 	}
 
 	public static void histogramDecode(DoubleHistogram h, String header, double linearStep, BiConsumer<String, Object> x) {
-		final char[] order = {'a'};
-		h.linearBucketValues(linearStep).forEach((p) -> {
+		char[] order = {'a'};
+		for (DoubleHistogramIterationValue p : h.linearBucketValues(linearStep)) {
 			x.accept(header + ' ' + (order[0]++) +
-					'[' + n4(p.getValueIteratedFrom()) + ".." + n4(p.getValueIteratedTo()) + ']',
-				p.getCountAddedInThisIterationStep());
-		});
+							'[' + n4(p.getValueIteratedFrom()) + ".." + n4(p.getValueIteratedTo()) + ']',
+					p.getCountAddedInThisIterationStep());
+		}
 	}
 
 	public static void histogramDecode(AbstractHistogram h, String header, BiConsumer<String, Object> x) {
-		h.percentiles(1).forEach(p -> {
+		for (HistogramIterationValue p : h.percentiles(1)) {
 			x.accept(header + " [" +
-					p.getValueIteratedFrom() + ".." + p.getValueIteratedTo() + ']',
-				p.getCountAddedInThisIterationStep());
-		});
+							p.getValueIteratedFrom() + ".." + p.getValueIteratedTo() + ']',
+					p.getCountAddedInThisIterationStep());
+		}
 	}
 
 	public static String histogramString(AbstractHistogram h, boolean percentiles) {
@@ -1063,7 +1064,7 @@ public enum Texts {
 				if (decP != 0L) {
 					// Remove trailing zeroes
 					while (decP % 10L == 0L) {
-						decP = decP / 10L;
+						decP /= 10L;
 						scale--;
 					}
 				}
@@ -1129,7 +1130,7 @@ public enum Texts {
 			if (fracPart != 0L) {
 				// Remove trailing zeroes
 				while (fracPart % 10L == 0L) {
-					fracPart = fracPart / 10L;
+					fracPart /= 10L;
 					scale--;
 				}
 			}
@@ -1165,7 +1166,7 @@ public enum Texts {
 			// See Double.doubleToRawLongBits javadoc or IEEE-754 spec
 			// to have this algorithm
 			long exp = Double.doubleToRawLongBits(value) & 0x7ff0000000000000L;
-			exp = exp >> 52;
+			exp >>= 52;
 			return (int) (exp - 1023L);
 		}
 

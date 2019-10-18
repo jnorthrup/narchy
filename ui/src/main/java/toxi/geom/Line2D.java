@@ -130,7 +130,8 @@ public class Line2D {
         return segments;
     }
 
-    public Vec2D a, b;
+    public Vec2D a;
+    public Vec2D b;
 
     public Line2D(float x1, float y1, float x2, float y2) {
         this.a = new Vec2D(x1, y1);
@@ -168,8 +169,8 @@ public class Line2D {
      * @return closest point on the line
      */
     public Vec2D closestPointTo(ReadonlyVec2D p) {
-        final Vec2D v = b.sub(a);
-        final float t = p.sub(a).dot(v) / v.magSquared();
+        Vec2D v = b.sub(a);
+        float t = p.sub(a).dot(v) / v.magSquared();
         // Check to see if t is beyond the extents of the line segment
         if (t < 0.0f) {
             return a.copy();
@@ -303,7 +304,7 @@ public class Line2D {
         if (denom != 0.0) {
             float ua = na / denom;
             float ub = nb / denom;
-            final Vec2D i = a.interpolateTo(b, ua);
+            Vec2D i = a.interpolateTo(b, ua);
             if (ua >= 0.0f && ua <= 1.0 && ub >= 0.0 && ub <= 1.0) {
                 isec = new LineIntersection(Type.INTERSECTING, i, ua, ub);
             } else {

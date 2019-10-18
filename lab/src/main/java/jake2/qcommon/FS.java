@@ -33,10 +33,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -63,7 +60,8 @@ public final class FS extends Globals {
 
         String name; 
 
-        int filepos, filelen;
+        int filepos;
+        int filelen;
 
         public String toString() {
             return name + " [ length: " + filelen + " pos: " + filepos + " ]";
@@ -167,16 +165,13 @@ public final class FS extends Globals {
     }
 
     public static int FileLength(String filename) {
-        searchpath_t search;
-        String netpath;
-        pack_t pak;
-        filelink_t link;
 
         file_from_pak = 0;
 
-        
+
+        String netpath;
         for (Iterator it = fs_links.iterator(); it.hasNext();) {
-            link = (filelink_t) it.next();
+            filelink_t link = (filelink_t) it.next();
 
             if (filename.regionMatches(0, link.from, 0, link.fromlength)) {
                 netpath = link.to + filename.substring(link.fromlength);
@@ -191,11 +186,11 @@ public final class FS extends Globals {
 
         
 
-        for (search = fs_searchpaths; search != null; search = search.next) {
+        for (searchpath_t search = fs_searchpaths; search != null; search = search.next) {
             
             if (search.pack != null) {
-                
-                pak = search.pack;
+
+                pack_t pak = search.pack;
                 filename = filename.toLowerCase();
                 packfile_t entry = (packfile_t) pak.files.get(filename);
 
@@ -239,19 +234,16 @@ public final class FS extends Globals {
      */
     public static RandomAccessFile FOpenFile(String filename)
             throws IOException {
-        searchpath_t search;
-        String netpath;
-        pack_t pak;
-        filelink_t link;
-        File file = null;
 
         file_from_pak = 0;
 
-        
-        for (Iterator it = fs_links.iterator(); it.hasNext();) {
-            link = (filelink_t) it.next();
 
-            
+        File file = null;
+        String netpath;
+        for (Iterator it = fs_links.iterator(); it.hasNext();) {
+            filelink_t link = (filelink_t) it.next();
+
+
             if (filename.regionMatches(0, link.from, 0, link.fromlength)) {
                 netpath = link.to + filename.substring(link.fromlength);
                 file = new File(netpath);
@@ -266,11 +258,11 @@ public final class FS extends Globals {
         
         
         
-        for (search = fs_searchpaths; search != null; search = search.next) {
+        for (searchpath_t search = fs_searchpaths; search != null; search = search.next) {
             
             if (search.pack != null) {
-                
-                pak = search.pack;
+
+                pack_t pak = search.pack;
                 filename = filename.toLowerCase();
                 packfile_t entry = (packfile_t) pak.files.get(filename);
 
@@ -327,10 +319,9 @@ public final class FS extends Globals {
         int read = 0;
         
         int remaining = len;
-        int block;
 
         while (remaining != 0) {
-            block = Math.min(remaining, MAX_READ);
+            int block = Math.min(remaining, MAX_READ);
             try {
                 read = f.read(buffer, offset, block);
             } catch (IOException e) {
@@ -357,9 +348,6 @@ public final class FS extends Globals {
      * return the file content as byte[]
      */
     public static byte[] LoadFile(String path) {
-        RandomAccessFile file;
-
-        byte[] buf = null;
 
 
         int index = path.indexOf('\0');
@@ -372,10 +360,11 @@ public final class FS extends Globals {
         if (len < 1)
             return null;
 
+        byte[] buf = null;
         try {
 
-            file = FOpenFile(path);
-            
+            RandomAccessFile file = FOpenFile(path);
+
             buf = new byte[len];
             file.readFully(buf);
             file.close();
@@ -392,24 +381,20 @@ public final class FS extends Globals {
      * return the file content as ByteBuffer (memory mapped)
      */
     public static ByteBuffer LoadMappedFile(String filename) {
-        searchpath_t search;
-        String netpath;
-        pack_t pak;
-        filelink_t link;
-        File file = null;
-
-        int fileLength = 0;
-        FileChannel channel = null;
-        FileInputStream input = null;
-        ByteBuffer buffer = null;
 
         file_from_pak = 0;
 
+        FileInputStream input = null;
+        FileChannel channel = null;
         try {
-            
 
+
+            ByteBuffer buffer = null;
+            int fileLength = 0;
+            File file = null;
+            String netpath;
             for (Iterator it = fs_links.iterator(); it.hasNext();) {
-                link = (filelink_t) it.next();
+                filelink_t link = (filelink_t) it.next();
 
                 if (filename.regionMatches(0, link.from, 0, link.fromlength)) {
                     netpath = link.to + filename.substring(link.fromlength);
@@ -430,11 +415,11 @@ public final class FS extends Globals {
             
             
             
-            for (search = fs_searchpaths; search != null; search = search.next) {
+            for (searchpath_t search = fs_searchpaths; search != null; search = search.next) {
                 
                 if (search.pack != null) {
-                    
-                    pak = search.pack;
+
+                    pack_t pak = search.pack;
                     filename = filename.toLowerCase();
                     packfile_t entry = (packfile_t) pak.files.get(filename);
 
@@ -526,7 +511,6 @@ public final class FS extends Globals {
      */
     static pack_t LoadPackFile(String packfile) {
 
-        dpackheader_t header;
         HashMap newfiles;
         RandomAccessFile file;
         int numpackfiles = 0;
@@ -542,8 +526,8 @@ public final class FS extends Globals {
             
             if (packhandle == null || packhandle.limit() < 1)
                 return null;
-            
-            header = new dpackheader_t();
+
+            dpackheader_t header = new dpackheader_t();
             header.ident = packhandle.getInt();
             header.dirofs = packhandle.getInt();
             header.dirlen = packhandle.getInt();
@@ -599,9 +583,6 @@ public final class FS extends Globals {
      * and adds pak1.pak pak2.pak ...
      */
     static void AddGameDirectory(String dir) {
-        int i;
-        pack_t pak;
-        String pakfile;
 
         fs_gamedir = dir;
 
@@ -618,12 +599,12 @@ public final class FS extends Globals {
         
         
         
-        for (i = 0; i < 10; i++) {
-            pakfile = dir + "/pak" + i + ".pak";
+        for (int i = 0; i < 10; i++) {
+            String pakfile = dir + "/pak" + i + ".pak";
             if (!(new File(pakfile).canRead()))
                 continue;
 
-            pak = LoadPackFile(pakfile);
+            pack_t pak = LoadPackFile(pakfile);
             if (pak == null)
                 continue;
 
@@ -682,9 +663,9 @@ public final class FS extends Globals {
      * Sets the gamedir and path to a different directory.
      */
     public static void SetGamedir(String dir) {
-        searchpath_t next;
 
-        if (Stream.of("..", "/", "\\", ":").anyMatch(dir::contains)) {
+        boolean b = Stream.of("..", "/", "\\", ":").anyMatch(dir::contains);
+        if (b) {
             Com.Printf("Gamedir should be a single filename, not a path\n");
             return;
         }
@@ -704,7 +685,7 @@ public final class FS extends Globals {
                 fs_searchpaths.pack.files = null;
                 fs_searchpaths.pack = null;
             }
-            next = fs_searchpaths.next;
+            searchpath_t next = fs_searchpaths.next;
             fs_searchpaths = null;
             fs_searchpaths = next;
         }
@@ -735,14 +716,14 @@ public final class FS extends Globals {
      * Creates a filelink_t
      */
     public static void Link_f() {
-        filelink_t entry = null;
 
         if (Cmd.Argc() != 3) {
             Com.Printf("USAGE: link <from> <to>\n");
             return;
         }
 
-        
+
+        filelink_t entry = null;
         for (Iterator it = fs_links.iterator(); it.hasNext();) {
             entry = (filelink_t) it.next();
 
@@ -789,15 +770,14 @@ public final class FS extends Globals {
      * Dir_f
      */
     public static void Dir_f() {
-        String path = null;
-        String findname = null;
         String wildcard = "*.*";
-        String[] dirnames;
 
         if (Cmd.Argc() != 1) {
             wildcard = Cmd.Argv(1);
         }
 
+        String findname = null;
+        String path = null;
         while ((path = NextPath(path)) != null) {
             String tmp = findname;
 
@@ -809,7 +789,7 @@ public final class FS extends Globals {
             Com.Printf("Directory of " + findname + '\n');
             Com.Printf("----\n");
 
-            dirnames = ListFiles(findname, 0, 0);
+            String[] dirnames = ListFiles(findname, 0, 0);
 
             if (dirnames != null) {
                 int index = 0;
@@ -831,11 +811,8 @@ public final class FS extends Globals {
      */
     public static void Path_f() {
 
-        searchpath_t s;
-        filelink_t link;
-
         Com.Printf("Current search path:\n");
-        for (s = fs_searchpaths; s != null; s = s.next) {
+        for (searchpath_t s = fs_searchpaths; s != null; s = s.next) {
             if (s == fs_base_searchpaths)
                 Com.Printf("----------\n");
             if (s.pack != null)
@@ -847,7 +824,7 @@ public final class FS extends Globals {
 
         Com.Printf("\nLinks:\n");
         for (Iterator it = fs_links.iterator(); it.hasNext();) {
-            link = (filelink_t) it.next();
+            filelink_t link = (filelink_t) it.next();
             Com.Printf(link.from + " : " + link.to + '\n');
         }
     }
@@ -858,13 +835,12 @@ public final class FS extends Globals {
      * Allows enumerating all of the directories in the search path
      */
     public static String NextPath(String prevpath) {
-        searchpath_t s;
 
         if (prevpath == null || prevpath.length() == 0)
             return fs_gamedir;
 
         String prev = fs_gamedir;
-        for (s = fs_searchpaths; s != null; s = s.next) {
+        for (searchpath_t s = fs_searchpaths; s != null; s = s.next) {
             if (s.pack != null)
                 continue;
 
@@ -953,11 +929,8 @@ public final class FS extends Globals {
      */
     public static int Developer_searchpath(int who) {
 
-        
-        
-        searchpath_t s;
 
-        for (s = fs_searchpaths; s != null; s = s.next) {
+        for (searchpath_t s = fs_searchpaths; s != null; s = s.next) {
             if (s.filename.contains("xatrix"))
                 return 1;
 

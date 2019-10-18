@@ -205,7 +205,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         SIZE.set(this, 0);
     }
 
-    public final int add(final X element, FloatFunction<X> cmp) {
+    public final int add(X element, FloatFunction<X> cmp) {
         return addRanked(element, cmp.floatValueOf(element), cmp);
     }
 
@@ -224,7 +224,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     public final int addSafe(X element, float elementRank, FloatFunction<X> cmp) {
         //assert (elementRank == elementRank);
 
-        final int index = indexOf(element, elementRank, cmp, false, true);
+        int index = indexOf(element, elementRank, cmp, false, true);
 
         int size1 = size;
 //        assert (index != -1);
@@ -330,15 +330,16 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     public boolean isSorted(FloatFunction<X> f) {
         X[] ii = this.items;
         //TODO use valueAt(
-        return IntStream.range(1, size).noneMatch(i -> f.floatValueOf(ii[i - 1]) >= f.floatValueOf(ii[i]));
+        int bound = size;
+        return IntStream.range(1, bound).noneMatch(i -> f.floatValueOf(ii[i - 1]) >= f.floatValueOf(ii[i]));
     }
 
-    public int indexOf(final X element, FloatFunction<X> cmp) {
+    public int indexOf(X element, FloatFunction<X> cmp) {
         return indexOf(element, cmp.floatValueOf(element) /*Float.NaN*/, cmp, false, false);
     }
 
 
-    public final int indexOf(final X element, float elementRank /* can be NaN for forFind */, FloatFunction<X> cmp, boolean eqByIdentity, boolean forInsertionOrFind) {
+    public final int indexOf(X element, float elementRank /* can be NaN for forFind */, FloatFunction<X> cmp, boolean eqByIdentity, boolean forInsertionOrFind) {
 
         int s = size;
         if (s == 0)
@@ -350,7 +351,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         main:
         while (right - left >= searchThresh) {
 
-            final int mid = left + (right - left) / 2;
+            int mid = left + (right - left) / 2;
 
             switch (Float.compare(valueAt(mid, cmp), elementRank)) {
                 case 0:
@@ -370,8 +371,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
         }
 //        if (right - left <= BINARY_SEARCH_THRESHOLD) {
-        int i;
-        for (i = left; i < right; i++) {
+        for (int i = left; i < right; i++) {
             if (!forInsertionOrFind) {
                 if (eq(element, items[i], eqByIdentity))
                     return i;
@@ -448,7 +448,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         if (s > 0) {
             X[] ii = items;
             //(X) ITEM.getOpaque(ii,i)
-            return Arrays.stream(ii, 0, s).filter(Objects::nonNull).allMatch(action);
+            return Arrays.stream(ii, 0, s).filter(Objects::nonNull).allMatch(action::test);
         }
         return true;
     }

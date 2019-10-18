@@ -73,8 +73,11 @@ public class gclient_t
 	public int weaponstate;
 	public float[] kick_angles = { 0, 0, 0 }; 
 	public float[] kick_origin = { 0, 0, 0 };
-	public float v_dmg_roll, v_dmg_pitch, v_dmg_time; 
-	public float fall_time, fall_value; 
+	public float v_dmg_roll;
+    public float v_dmg_pitch;
+    public float v_dmg_time;
+	public float fall_time;
+    public float fall_value;
 	public float damage_alpha;
 	public float bonus_alpha;
 	public float[] damage_blend = { 0, 0, 0 };

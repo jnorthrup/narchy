@@ -15,7 +15,9 @@ import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.iterator.MutableLongIterator;
 import org.eclipse.collections.impl.iterator.ImmutableEmptyLongIterator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -185,8 +187,9 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     @Override
     public String toString() {
         //HACK this could be better
-        final int[] i = {0};
-        return Joiner.on(',').join(this.stream().map(n -> when[i[0]++] + ":" + n).collect(Collectors.toList()));
+        int[] i = {0};
+        List<String> list = this.stream().map(n -> when[i[0]++] + ":" + n).collect(Collectors.toList());
+        return Joiner.on(',').join(list);
     }
 
     /**

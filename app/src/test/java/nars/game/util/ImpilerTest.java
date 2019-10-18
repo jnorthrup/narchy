@@ -122,7 +122,9 @@ class ImpilerTest {
     private static List<Task> deduce(ImpilerDeduction d, Term x, boolean forward, long at) {
         System.out.println((forward ? "forward: " : "reverse: " ) + x);
         List<Task> t = d.get(x, at, forward);
-        t.forEach(System.out::println);
+        for (Task task : t) {
+            System.out.println(task);
+        }
         return t;
     }
 
@@ -130,7 +132,7 @@ class ImpilerTest {
     public void testDeductionChainPositive() throws Narsese.NarseseException {
         NAR n = NARS.tmp(1);
 
-        final int[] edges = {0};
+        int[] edges = {0};
         Impiler.ImplGrapher t = new Impiler.ImplGrapher() {
 //            @Override
 //            protected float leak(Task next) {

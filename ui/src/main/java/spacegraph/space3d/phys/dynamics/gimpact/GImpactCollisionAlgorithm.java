@@ -82,14 +82,13 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 
 		this.resultOut = resultOut;
 		this.dispatchInfo = dispatchInfo;
-		GImpactShape gimpactshape0;
-		GImpactShape gimpactshape1;
+        GImpactShape gimpactshape1;
 
 		if (body0.shape().getShapeType()== BroadphaseNativeType.GIMPACT_SHAPE_PROXYTYPE)
 		{
-			gimpactshape0 = (GImpactShape)body0.shape();
+            GImpactShape gimpactshape0 = (GImpactShape) body0.shape();
 
-			if( body1.shape().getShapeType()== BroadphaseNativeType.GIMPACT_SHAPE_PROXYTYPE )
+            if( body1.shape().getShapeType()== BroadphaseNativeType.GIMPACT_SHAPE_PROXYTYPE )
 			{
 				gimpactshape1 = (GImpactShape)body1.shape();
 

@@ -166,8 +166,12 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     /**
      * precise time that the task and belief truth are sampled
      */
-    public transient long taskStart, taskEnd, beliefStart, beliefEnd; //TODO taskEnd, beliefEnd
-    public transient boolean overlapDouble, overlapSingle;
+    public transient long taskStart;
+    public transient long taskEnd;
+    public transient long beliefStart;
+    public transient long beliefEnd; //TODO taskEnd, beliefEnd
+    public transient boolean overlapDouble;
+    public transient boolean overlapSingle;
 
     @Deprecated public transient boolean single;
     @Deprecated public final MutableTruth truth = new MutableTruth();
@@ -178,13 +182,16 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
      */
     public transient long time = TIMELESS;
 
-    public transient Task _task, _belief;
+    public transient Task _task;
+    public transient Task _belief;
     public transient Term _beliefTerm;
 
     /** evi avg */
-    private double eviDouble, eviSingle;
+    private double eviDouble;
+    private double eviSingle;
 
-    private transient long[] stampDouble, stampSingle;
+    private transient long[] stampDouble;
+    private transient long[] stampSingle;
     private transient int taskUniqueAnonTermCount;
 
     /**
@@ -194,7 +201,8 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
      * whether to attempt before beginning,
      * or whether to continue deriving during the procedure.
      */
-    private transient float priSingle, priDouble;
+    private transient float priSingle;
+    private transient float priDouble;
     public Term _taskTerm;
     private final ImmutableMap<Atomic, Term> derivationFunctors;
 
@@ -347,7 +355,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         throw e;
     }
 
-    private Task resetBelief(Task nextBelief, final Term nextBeliefTerm) {
+    private Task resetBelief(Task nextBelief, Term nextBeliefTerm) {
 
         if (nextBelief != null) {
             beliefTruth_at_Belief.set( nextBelief.truth() );
@@ -389,10 +397,10 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     }
 
     //shift heuristic condition probabalities TODO refine
-    final float PREMISE_SHIFT_EQUALS_ROOT = 0.02f;
-    final float PREMISE_SHIFT_CONTAINS_RECURSIVELY = 0.05f;
-    final float PREMISE_SHIFT_OTHER = 0.9f;
-    final float PREMISE_SHIFT_RANDOM = 0.5f;
+    static final float PREMISE_SHIFT_EQUALS_ROOT = 0.02f;
+    static final float PREMISE_SHIFT_CONTAINS_RECURSIVELY = 0.05f;
+    static final float PREMISE_SHIFT_OTHER = 0.9f;
+    static final float PREMISE_SHIFT_RANDOM = 0.5f;
 
     /** t = raw task term, b = raw belief term */
     public Term beliefTerm(AnonWithVarShift anon, Term t, Term b) {
@@ -425,7 +433,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         return t!=null && t.evi() >= eviMin ? t : null;
     }
 
-    private Task resetTask(final Task nextTask, Task currentTask) {
+    private Task resetTask(Task nextTask, Task currentTask) {
 
         Term nextTaskTerm = nextTask.term();
 
@@ -635,7 +643,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     }
 
     /** returns appropriate Emotion counter representing the result state  */
-    FastCounter run(Premise p, final int deriveTTL) {
+    FastCounter run(Premise p, int deriveTTL) {
 
         short[] can;
 

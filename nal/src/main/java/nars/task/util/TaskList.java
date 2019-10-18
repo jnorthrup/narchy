@@ -31,11 +31,17 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
     }
 
     public TaskList(Collection<Task> t) {
-        super(0, new Task[t.size()]); t.forEach(this::addFast);
+        super(0, new Task[t.size()]);
+        for (Task task : t) {
+            addFast(task);
+        }
     }
 
     public TaskList(Iterable<Task> t, int sizeEstimate) {
-        super(0, new Task[sizeEstimate]); t.forEach(this::add);
+        super(0, new Task[sizeEstimate]);
+        for (Task task : t) {
+            add(task);
+        }
     }
 
     public static float pri(TaskRegion x) {
@@ -55,7 +61,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
     @Override
     public long start() {
 
-        long start = longify((long m, Task t)->{
+        long start = longify((m, t) ->{
             long s = t.start();
             return s != ETERNAL && s < m ? s : m;
         }, TIMELESS);
@@ -105,7 +111,9 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
 
     @Override
     public boolean addAll(Collection<? extends Task> source) {
-        source.forEach(this::add);
+        for (Task task : source) {
+            add(task);
+        }
         return true;
     }
 

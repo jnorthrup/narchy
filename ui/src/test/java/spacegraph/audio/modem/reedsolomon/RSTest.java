@@ -63,9 +63,6 @@ class RSTest implements Settings {
     @Test
     void testEncodeDecode() {
 
-        int erasures[] = new int[16];
-        int nerasures = 0;
-
         /* Initialization the ECC library */
 
         RS rs = new RS();
@@ -95,6 +92,8 @@ class RSTest implements Settings {
          * are indexed (1 based) from the end of the message...
          */
 
+        int nerasures = 0;
+        int[] erasures = new int[16];
         erasures[nerasures++] = ML - 17;
         erasures[nerasures++] = ML - 19;
 

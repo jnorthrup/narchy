@@ -4,7 +4,8 @@ import nars.NAL;
 import nars.time.Tense;
 
 public class StepTruthlet extends ProxyTruthlet {
-    public float freqBefore, freqAfter;
+    public float freqBefore;
+    public float freqAfter;
     public float eviInactive;
 
     public StepTruthlet(float freqBefore, Truthlet active, float freqAfter, float eviInactive) {

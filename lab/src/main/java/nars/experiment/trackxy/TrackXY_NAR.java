@@ -42,10 +42,10 @@ import static spacegraph.SpaceGraph.window;
 public class TrackXY_NAR extends GameX {
 
 	static boolean
-		sourceNumerics = true,
-		targetNumerics = false,
-		targetCam = !targetNumerics,
-		gui = true;
+		sourceNumerics = true;
+	static boolean targetNumerics = false;
+	static boolean targetCam = !targetNumerics;
+	static boolean gui = true;
 
 	//W = 3, H = 1;
 	//W = 5, H = 1;
@@ -462,7 +462,7 @@ public class TrackXY_NAR extends GameX {
 //        });
 
 		//FloatAveragedWindow _controlSpeed = new FloatAveragedWindow(8, 0.05f);
-		actionUnipolar($.inh(id, $.the("speed")), (float a) -> {
+		actionUnipolar($.inh(id, $.the("speed")), a -> {
 //            System.out.println(a);
 			//track.controlSpeed.add(Math.pow(((a-0.5)*2),3)/100f);
 			float cc = (float) Math.pow(a, 1f);

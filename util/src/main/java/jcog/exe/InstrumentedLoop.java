@@ -9,7 +9,7 @@ public abstract class InstrumentedLoop extends Loop {
 
 
 
-    protected final int windowLength = 4;
+    protected static final int windowLength = 4;
 
     /**
      * in seconds

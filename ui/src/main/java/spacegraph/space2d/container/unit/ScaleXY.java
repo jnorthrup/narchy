@@ -5,7 +5,8 @@ import spacegraph.space2d.Surface;
 
 public class ScaleXY extends UnitContainer {
 
-    private float sx, sy;
+    private float sx;
+    private float sy;
 
     public ScaleXY(Surface the, float sx, float sy) {
         super(the);

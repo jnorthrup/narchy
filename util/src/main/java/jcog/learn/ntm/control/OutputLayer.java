@@ -44,18 +44,19 @@ public class OutputLayer {
 
     public void forwardPropagation(HiddenLayer hiddenLayer) {
 
-        final double[] hiddenLayerNeurons = hiddenLayer.neurons.value;
+        double[] hiddenLayerNeurons = hiddenLayer.neurons.value;
 
-        final double[] out = outputs.value;
+        double[] out = outputs.value;
 
         for (int i = 0; i < _outputSize; i++) {
-            
-            double sum;
+
             Unit[] weights = _hiddenToOutputLayerWeights[i];
 
-            sum = IntStream.range(0, controllerSize).mapToDouble(j -> weights[j].value * hiddenLayerNeurons[j]).sum();
+            int bound = controllerSize;
+            double result = IntStream.range(0, bound).mapToDouble(j -> weights[j].value * hiddenLayerNeurons[j]).sum();
+            double sum = result;
 
-            
+
             sum += weights[controllerSize].value;
             out[i] = Sigmoid.getValue(sum);
         }
@@ -64,15 +65,16 @@ public class OutputLayer {
 
             
             Unit[][] headsWeights = _hiddenToHeadsWeights[i];
-            final Head head = heads[i];
+            Head head = heads[i];
 
             for (int j = 0; j < headsWeights.length; j++) {
-                double sum;
                 Unit[] headWeights = headsWeights[j];
 
-                sum = IntStream.range(0, controllerSize).mapToDouble(k -> headWeights[k].value * hiddenLayerNeurons[k]).sum();
+                int bound = controllerSize;
+                double result = IntStream.range(0, bound).mapToDouble(k -> headWeights[k].value * hiddenLayerNeurons[k]).sum();
+                double sum = result;
 
-                
+
                 sum += headWeights[controllerSize].value;
                 head.get(j).value += sum;
             }
@@ -89,16 +91,16 @@ public class OutputLayer {
 
     }
 
-    public void backwardErrorPropagation(final double[] knownOutput, final HiddenLayer hiddenLayer) {
+    public void backwardErrorPropagation(double[] knownOutput, HiddenLayer hiddenLayer) {
 
-        final Head[] heads = this.heads;
+        Head[] heads = this.heads;
 
         outputs.setDelta(knownOutput);
 
         double[] hiddenGrad = hiddenLayer.neurons.grad;
         double[] outGrad = outputs.grad;
 
-        final int cs = this.controllerSize;
+        int cs = this.controllerSize;
 
         Unit[][] hiddenToOutputLayerWeights = _hiddenToOutputLayerWeights;
 
@@ -106,9 +108,9 @@ public class OutputLayer {
         for (int j = 0; j < os; j++) {
             
 
-            final double unitGrad = outGrad[j];
+            double unitGrad = outGrad[j];
 
-            final Unit[] weights = hiddenToOutputLayerWeights[j];
+            Unit[] weights = hiddenToOutputLayerWeights[j];
 
 
             for (int i = 0; i < cs; i++) {
@@ -121,8 +123,8 @@ public class OutputLayer {
             Head head = heads[j];
             Unit[][] weights = _hiddenToHeadsWeights[j];
             for (int k = 0; k < _headUnitSize; k++) {
-                final double unitGrad = head.get(k).grad;
-                final Unit[] weightsK = weights[k];
+                double unitGrad = head.get(k).grad;
+                Unit[] weightsK = weights[k];
                 for (int i = 0; i < cs; i++) {
                     hiddenGrad[i] += weightsK[i].value * unitGrad;
                 }
@@ -134,7 +136,7 @@ public class OutputLayer {
         for (int i = 0; i < os; i++) {
             
             Unit[] wyh1I = _hiddenToOutputLayerWeights[i];
-            final double yGrad = outGrad[i];
+            double yGrad = outGrad[i];
             for (int j = 0; j < cs; j++) {
                 wyh1I[j].grad += hiddenValue[j] * yGrad;
             }
@@ -146,10 +148,10 @@ public class OutputLayer {
             
 
             Head head = heads[i];
-            final Unit[][] units = _hiddenToHeadsWeights[i];
+            Unit[][] units = _hiddenToHeadsWeights[i];
             for (int j = 0; j < _headUnitSize; j++) {
                 double headUnitGrad = head.get(j).grad;
-                final Unit[] unitJ = units[j];
+                Unit[] unitJ = units[j];
                 for (int k = 0; k < controllerSize; k++) {
                     unitJ[k].grad += headUnitGrad * hiddenValue[k];
                 }
@@ -179,7 +181,7 @@ public class OutputLayer {
 
     }
 
-    public final double getOutput(final int i) {
+    public final double getOutput(int i) {
         return outputs.value[i];
     }
 

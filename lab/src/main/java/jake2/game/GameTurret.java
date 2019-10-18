@@ -28,6 +28,8 @@ import jake2.game.monsters.M_Infantry;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import java.util.Objects;
+
 public class GameTurret {
 
     public static void AnglesNormalize(float[] vec) {
@@ -65,9 +67,9 @@ public class GameTurret {
 
     public static void turret_breach_fire(edict_t self) {
         float[] f = { 0, 0, 0 }, r = { 0, 0, 0 }, u = { 0, 0, 0 };
-        float[] start = { 0, 0, 0 };
 
         Math3D.AngleVectors(self.s.angles, f, r, u);
+        float[] start = {0, 0, 0};
         Math3D.VectorMA(self.s.origin, self.move_origin[0], f, start);
         Math3D.VectorMA(start, self.move_origin[1], r, start);
         Math3D.VectorMA(start, self.move_origin[2], u, start);
@@ -178,13 +180,9 @@ public class GameTurret {
         public String getID() { return "turret_blocked"; }
         @Override
         public void blocked(edict_t self, edict_t other) {
-            edict_t attacker;
 
             if (other.takedamage != 0) {
-                if (self.teammaster.owner != null)
-                    attacker = self.teammaster.owner;
-                else
-                    attacker = self.teammaster;
+                edict_t attacker = Objects.requireNonNullElseGet(self.teammaster.owner, () -> self.teammaster);
                 GameCombat.T_Damage(other, self, attacker, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin,
                         self.teammaster.dmg, 10, 0, Defines.MOD_CRUSH);
@@ -198,9 +196,7 @@ public class GameTurret {
         @Override
         public boolean think(edict_t self) {
 
-            edict_t ent;
             float[] current_angles = { 0, 0, 0 };
-            float[] delta = { 0, 0, 0 };
 
             Math3D.VectorCopy(self.s.angles, current_angles);
             AnglesNormalize(current_angles);
@@ -236,6 +232,7 @@ public class GameTurret {
                     self.move_angles[Defines.YAW] = self.pos2[Defines.YAW];
             }
 
+            float[] delta = {0, 0, 0};
             Math3D.VectorSubtract(self.move_angles, current_angles, delta);
             if (delta[0] < -180)
                 delta[0] += 360;
@@ -260,28 +257,27 @@ public class GameTurret {
 
             self.nextthink = GameBase.level.time + Defines.FRAMETIME;
 
-            for (ent = self.teammaster; ent != null; ent = ent.teamchain)
+            for (edict_t ent = self.teammaster; ent != null; ent = ent.teamchain)
                 ent.avelocity[1] = self.avelocity[1];
 
             
             if (self.owner != null) {
-                float angle;
-                float[] target = { 0, 0, 0 };
-                float[] dir = { 0, 0, 0 };
 
-                
+
                 self.owner.avelocity[0] = self.avelocity[0];
                 self.owner.avelocity[1] = self.avelocity[1];
 
-                
-                angle = self.s.angles[1] + self.owner.move_origin[1];
+
+                float angle = self.s.angles[1] + self.owner.move_origin[1];
                 angle *= (Math.PI * 2 / 360);
-                target[0] = GameTurret.SnapToEights((float) (self.s.origin[0] + 
+                float[] target = {0, 0, 0};
+                target[0] = GameTurret.SnapToEights((float) (self.s.origin[0] +
                 			Math.cos(angle) * self.owner.move_origin[0]));
                 target[1] = GameTurret.SnapToEights((float) (self.s.origin[1] + 
                 			Math.sin(angle) * self.owner.move_origin[0]));
                 target[2] = self.owner.s.origin[2];
 
+                float[] dir = {0, 0, 0};
                 Math3D.VectorSubtract(target, self.owner.s.origin, dir);
                 self.owner.velocity[0] = dir[0] * 1.0f / Defines.FRAMETIME;
                 self.owner.velocity[1] = dir[1] * 1.0f / Defines.FRAMETIME;
@@ -339,12 +335,11 @@ public class GameTurret {
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
 
-            edict_t ent;
 
-            
             self.target_ent.move_angles[0] = 0;
 
-            
+
+            edict_t ent;
             for (ent = self.target_ent.teammaster; ent.teamchain != self; ent = ent.teamchain)
                 ;
             ent.teamchain = null;
@@ -363,9 +358,6 @@ public class GameTurret {
         public String getID() { return "turret_driver_think"; }
         @Override
         public boolean think(edict_t self) {
-
-            float[] target = { 0, 0, 0 };
-            float[] dir = { 0, 0, 0 };
 
             self.nextthink = GameBase.level.time + Defines.FRAMETIME;
 
@@ -390,9 +382,11 @@ public class GameTurret {
                 }
             }
 
-            
+
+            float[] target = {0, 0, 0};
             Math3D.VectorCopy(self.enemy.s.origin, target);
             target[2] += self.enemy.viewheight;
+            float[] dir = {0, 0, 0};
             Math3D.VectorSubtract(target, self.target_ent.s.origin, dir);
             Math3D.vectoangles(dir, self.target_ent.move_angles);
 
@@ -418,9 +412,6 @@ public class GameTurret {
         @Override
         public boolean think(edict_t self) {
 
-            float[] vec = { 0, 0, 0 };
-            edict_t ent;
-
             self.think = turret_driver_think;
             self.nextthink = GameBase.level.time + Defines.FRAMETIME;
 
@@ -429,6 +420,7 @@ public class GameTurret {
             self.target_ent.teammaster.owner = self;
             Math3D.VectorCopy(self.target_ent.s.angles, self.s.angles);
 
+            float[] vec = {0, 0, 0};
             vec[0] = self.target_ent.s.origin[0] - self.s.origin[0];
             vec[1] = self.target_ent.s.origin[1] - self.s.origin[1];
             vec[2] = 0;
@@ -441,7 +433,8 @@ public class GameTurret {
             self.move_origin[1] = vec[1];
             self.move_origin[2] = self.s.origin[2] - self.target_ent.s.origin[2];
 
-            
+
+            edict_t ent;
             for (ent = self.target_ent.teammaster; ent.teamchain != null; ent = ent.teamchain)
                 ;
             ent.teamchain = self;

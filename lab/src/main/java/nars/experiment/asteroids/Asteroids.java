@@ -26,15 +26,29 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     ArrayList<Debris> explosionList;
     Timer timer;
     int shopSelection;
-    int level, credits, lives;
+    int level;
+    int credits;
+    int lives;
     int numAsteroids;
     int numDebris;
     int bulletDeathCounter;
 
     int starPositionSeed;
-    boolean upKey, downKey, leftKey, rightKey, spaceKey, shiftKey, SKey, DKey, PKey, FKey, escKey, RKey;
+    boolean upKey;
+    boolean downKey;
+    boolean leftKey;
+    boolean rightKey;
+    boolean spaceKey;
+    boolean shiftKey;
+    boolean SKey;
+    boolean DKey;
+    boolean PKey;
+    boolean FKey;
+    boolean escKey;
+    boolean RKey;
     boolean isExplosionShip;
-    boolean isMainInstr, instrSwitched;
+    boolean isMainInstr;
+    boolean instrSwitched;
     boolean pauseKeyActivated;
     boolean selectionMoved;
     boolean spaceKeyActivated;
@@ -462,10 +476,17 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
         }*/
     }
 
-    public boolean collision(VectorSprite object1, VectorSprite object2) {
+    public static boolean collision(VectorSprite object1, VectorSprite object2) {
 
 
-        return IntStream.range(0, object1.drawShape.npoints).anyMatch(i -> object2.drawShape.contains(object1.drawShape.xpoints[i], object1.drawShape.ypoints[i]) && object1.active && object2.active) || IntStream.range(0, object2.drawShape.npoints).anyMatch(i -> object1.drawShape.contains(object2.drawShape.xpoints[i], object2.drawShape.ypoints[i]) && object1.active && object2.active);
+        int bound1 = object1.drawShape.npoints;
+        for (int i1 = 0; i1 < bound1; i1++) {
+            if (object2.drawShape.contains(object1.drawShape.xpoints[i1], object1.drawShape.ypoints[i1]) && object1.active && object2.active) {
+                return true;
+            }
+        }
+        int bound = object2.drawShape.npoints;
+        return IntStream.range(0, bound).anyMatch(i -> object1.drawShape.contains(object2.drawShape.xpoints[i], object2.drawShape.ypoints[i]) && object1.active && object2.active);
 
     }
 

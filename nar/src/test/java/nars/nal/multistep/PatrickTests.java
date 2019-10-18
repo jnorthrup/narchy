@@ -90,8 +90,6 @@ public class PatrickTests extends NALTest {
         TestNAR n = test;
 
 
-        int cycles = 2000;
-
         n.confTolerance(0.5f);
 
 //        tt.nar.freqResolution.set(0.25f);
@@ -120,6 +118,7 @@ public class PatrickTests extends NALTest {
 //           System.out.println(t.proof());
 //        },GOAL);
 
+        int cycles = 2000;
         n.mustGoal(cycles, "lighter(I, toothbrush)", 1f,
                 0.2f,
 
@@ -135,8 +134,6 @@ public class PatrickTests extends NALTest {
 
         TestNAR tt = test;
 
-
-        int cycles = 3000;
 
         tt.confTolerance(0.9f);
 
@@ -159,6 +156,7 @@ public class PatrickTests extends NALTest {
                 "unscrews:toothbrush! |"
         );
 
+        int cycles = 3000;
         tt.mustGoal(cycles, "hot:toothbrush", 1f, 0.5f, (t) -> t >= 0);
 
         tt.mustGoal(cycles, "hard:toothbrush", 1f, 0.5f, (t) -> t >= 0);

@@ -30,7 +30,8 @@ public abstract class UDiscover<P> {
     final AtomicBoolean busy = new AtomicBoolean(false);
     private final P id;
     MulticastSocket ms;
-    private DatagramPacket p, q;
+    private DatagramPacket p;
+    private DatagramPacket q;
     private byte[] myID;
 
 
@@ -73,9 +74,9 @@ public abstract class UDiscover<P> {
 //                ms.setNetworkInterface(bestNic);
                 //System.out.println("nic=" + ms.getNetworkInterface());
 
-                byte[] theirID = new byte[MAX_PAYLOAD_ID];
                 myID = Util.toBytes(id);
                 p = new DatagramPacket(myID, myID.length, ia, port);
+                byte[] theirID = new byte[MAX_PAYLOAD_ID];
                 q = new DatagramPacket(theirID, theirID.length);
 
                 busy.set(false);
@@ -90,7 +91,7 @@ public abstract class UDiscover<P> {
 
     public boolean update() {
 
-        final MulticastSocket ms = this.ms;
+        MulticastSocket ms = this.ms;
         if (ms == null)
             return false;
 
@@ -112,13 +113,12 @@ public abstract class UDiscover<P> {
             try {
                 //logger.info("recv... {}", Thread.currentThread());
                 ms.receive(q);
-                P theirPayload;
                 try {
 
                     int len = q.getLength();
                     byte[] qd = q.getData();
                     if (!Arrays.equals(p.getData(), qd) && !Arrays.equals(myID, 0, myID.length, qd, 0, len)) {
-                        theirPayload = (P) Util.fromBytes(qd, len, id.getClass());
+                        P theirPayload = (P) Util.fromBytes(qd, len, id.getClass());
                         found(theirPayload, q.getAddress(), q.getPort());
 
                     }

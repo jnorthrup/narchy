@@ -151,12 +151,11 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener {
         prolog.addSpyListener(this);
         prolog.setSpy(true);
         pprocess = new Thread(() -> {
-            Term sol;
             Solution sinfo = prolog.solve(goal);
             if (sinfo != null) {
                 while (sinfo.isSuccess())
                     try {
-                        sol = sinfo.getSolution();
+                        Term sol = sinfo.getSolution();
                         results.append("\nsolution: " + sol);
                         results.append("\ninfo:     " + sinfo);
                         if (sinfo.hasOpenAlternatives()) sinfo = prolog.solveNext();

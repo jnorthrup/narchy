@@ -47,10 +47,13 @@ public abstract class AbstractButton extends Widget {
             if (enabled() && finger.test(click)) {
                 result = this;
                 finished = true;
-            } else if (IntStream.of(CLICK_BUTTON, 1, 0).anyMatch(finger::dragging)) {
-                //allow pass-through for drag actions
-                result = null;
-                finished = true;
+            } else {
+                boolean b = IntStream.of(CLICK_BUTTON, 1, 0).anyMatch(finger::dragging);
+                if (b) {
+                    //allow pass-through for drag actions
+                    result = null;
+                    finished = true;
+                }
             }
 
 

@@ -14,8 +14,10 @@ import spacegraph.space2d.container.graph.NodeVis;
  */
 public class MutableRectFloat<X> extends v2 {
 
-    private float cxPrev, cyPrev;
-    public float w, h;
+    private float cxPrev;
+    private float cyPrev;
+    public float w;
+    public float h;
 
     /**
      * TODO make a MutableFloatRect proxy and adapter class for transparently controlling a graph2d node
@@ -147,7 +149,7 @@ public class MutableRectFloat<X> extends v2 {
         y = Util.clampSafe(y, bounds.bottom() + h / 2, bounds.top() - h / 2);
     }
 
-    private void randomize(RectFloat bounds) {
+    private static void randomize(RectFloat bounds) {
         throw new TODO();
     }
 

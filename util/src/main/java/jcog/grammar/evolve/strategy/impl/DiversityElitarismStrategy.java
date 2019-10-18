@@ -65,9 +65,9 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
         if(deepDiversity){
             newPopulation.addAll(population);
         }
-        
 
-            boolean allPerfect = Arrays.stream(rankings.first().getFitness()).noneMatch(fitness -> Math.round(fitness * 10000) != 0);
+
+        boolean allPerfect = Arrays.stream(rankings.first().getFitness()).noneMatch(fitness -> Math.round(fitness * 10000) != 0);
         if (allPerfect) {
                 return;
             }

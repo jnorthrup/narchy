@@ -12,11 +12,12 @@ public class AutoConceptualizerTest extends CameraSensorTest {
 
     @Test
     public void test1() {
-        int W = 4, H = 4;
         NAR n = NARS.tmp();
         tmp = new MyGame();
         n.add(tmp);
 
+        int H = 4;
+        int W = 4;
         Bitmap2DSensor c = new Bitmap2DSensor<>((x, y) -> $.p(x,y), new Bitmap2D() {
             @Override
             public int width() {

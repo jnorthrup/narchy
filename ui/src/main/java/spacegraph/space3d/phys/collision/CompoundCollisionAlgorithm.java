@@ -57,10 +57,9 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 
 		CompoundShape compoundShape = (CompoundShape) colObj.shape();
 		int numChildren = compoundShape.size();
-		int i;
 
-		
-		for (i = 0; i < numChildren; i++) {
+
+        for (int i = 0; i < numChildren; i++) {
 			CollisionShape tmpShape = colObj.shape();
 			CollisionShape childShape = compoundShape.getChildShape(i);
 			colObj.internalSetTemporaryCollisionShape(childShape);
@@ -102,8 +101,7 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 		Transform newChildWorldTrans = new Transform();
 
 		int numChildren = childCollisionAlgorithms.size();
-		int i;
-		for (i = 0; i < numChildren; i++) {
+        for (int i = 0; i < numChildren; i++) {
 			
 			CollisionShape childShape = compoundShape.getChildShape(i);
 
@@ -150,8 +148,7 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 		float hitFraction = 1f;
 
 		int numChildren = childCollisionAlgorithms.size();
-		int i;
-		for (i = 0; i < numChildren; i++) {
+        for (int i = 0; i < numChildren; i++) {
 			
 			CollisionShape childShape = compoundShape.getChildShape(i);
 

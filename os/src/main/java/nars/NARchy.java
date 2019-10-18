@@ -60,15 +60,9 @@ public class NARchy extends NARS {
 
             {
                 NARSpeak s = new NARSpeak(nar);
-                s.spoken.on(new NativeSpeechDispatcher()::speak);
+                s.spoken.on(  NativeSpeechDispatcher ::speak);
                 
             }
-
-//            new NARVideo(nar);
-//            new NARAudio(nar, new AudioSource().start(),  10f);
-
-
-
 
             InterNAR i = new InterNAR(nar);
             i.fps(2);

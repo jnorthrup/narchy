@@ -85,7 +85,7 @@ class DynamicImplTruth extends AbstractDynamicTruth {
                     end = start + sdt;
                 else {
                     end = start;
-                    start = start + sdt;
+                    start += sdt;
                 }
             }
         }

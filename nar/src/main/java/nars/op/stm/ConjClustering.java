@@ -39,7 +39,8 @@ public class ConjClustering extends TaskAction {
     public final FloatRange termVolumeMaxPct = new FloatRange(1f, 0, 1f);
     public final FloatRange forgetRate = new FloatRange(1f, 0, 1);
 
-    private int inputTermVolMax, stampLenMax;
+    private int inputTermVolMax;
+    private int stampLenMax;
 
     /** collect at most Neach results from each queue */
     int tasksPerIterationPerCentroid = 1;
@@ -151,7 +152,7 @@ public class ConjClustering extends TaskAction {
 //    }
 
 
-    protected float pri(Task t) {
+    protected static float pri(Task t) {
         return    (1 + 0.5f * t.priElseZero())
                 * (1 + 0.5f * t.conf())
                 * (1 + 0.5f * t.polarity())
@@ -347,14 +348,10 @@ public class ConjClustering extends TaskAction {
                 return 0;
 
 
-            int count = 0;
             float confMinThresh = confMin + d.nar.confResolution.floatValue()/2f;
-
-            boolean active = true, reset = true;
 
             /** only an estimate to determine when threshold is being approached;
              * the actual conf will be computed more exactly but it wont exceed this */
-            double conf = 1;
 
             tried.clear();
             trying.clear();
@@ -363,8 +360,11 @@ public class ConjClustering extends TaskAction {
 
             ListIterator<Task> i = ArrayUtil.cycle(in);
             int volEstimate = 1;
-            long start = Long.MAX_VALUE;
-            main: for (; i.hasNext(); ) {
+            double conf = 1;
+            boolean reset = true;
+            boolean active = true;
+            int count = 0;
+            main: for (long start = Long.MAX_VALUE; i.hasNext(); ) {
 
 
                 if (--s < 0)

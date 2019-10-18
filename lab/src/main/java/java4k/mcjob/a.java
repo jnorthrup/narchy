@@ -43,8 +43,7 @@ public class a extends Applet implements Runnable {
 	@Override
     public void run() {
 
-		final int SPRITE_DIGIT_0 = 0;
-		final int SPRITE_DIGIT_1 = 1;
+        final int SPRITE_DIGIT_1 = 1;
 		final int SPRITE_DIGIT_2 = 2;
 		final int SPRITE_DIGIT_3 = 3;
 		final int SPRITE_DIGIT_4 = 4;
@@ -53,66 +52,16 @@ public class a extends Applet implements Runnable {
 		final int SPRITE_DIGIT_7 = 7;
 		final int SPRITE_DIGIT_8 = 8;
 		final int SPRITE_DIGIT_9 = 9;
-		final int SPRITE_LETTER_L = 10;
-		final int SPRITE_LETTER_E = 11;
-		final int SPRITE_LETTER_V = 12;
-		final int SPRITE_LETTER_G = 13;
-		final int SPRITE_LETTER_A = 14;
-		final int SPRITE_LETTER_M = 15;
-		final int SPRITE_LETTER_R = 16;
-		final int SPRITE_EXTRA_LIFE = 17;
-		final int SPRITE_BURGER = 18;
-		final int SPRITE_DRINK = 19;
+        final int SPRITE_DRINK = 19;
 		final int SPRITE_FRIES = 20;
 		final int SPRITE_CHICKEN = 21;
-		final int SPRITE_COIN = 22;
-		final int SPRITE_FLOOR_TILE = 23;
-		final int SPRITE_CUSTOMER = 24;
-		final int SPRITE_BUBBLE_QUOTE = 25;
-		final int SPRITE_PLAYER_STANDING = 26;
-		final int SPRITE_PLAYER_HOLDING = 27;
-		final int SPRITE_TRAY = 28;
-		final int SPRITE_TITLE = 29;
 
-		final int POINTS_PER_EXTRA_LIFE = 50000;
-
-		final int POINTS_X = 0;
-		final int POINTS_Y = 1;
-		final int POINTS_VALUE = 2;
-		final int POINTS_COUNTER = 3;
-
-		final int SLIDER_STATE_DOWN = 0;
-		final int SLIDER_STATE_LEFT = 1;
-		final int SLIDER_STATE_RIGHT = 2;
-		final int SLIDER_STATE_UP = 3;
-
-		final int SLIDER_X = 0;
-		final int SLIDER_Y = 1;
-		final int SLIDER_TRAY = 2;
-		final int SLIDER_HOLDING = 3;
-		final int SLIDER_COLUMN = 4;
-		final int SLIDER_STATE = 5;
-
-		final int CUSTOMER_X = 0;
-		final int CUSTOMER_Y = 1;
-		final int CUSTOMER_SPRITE_INDEX = 2;
-		final int CUSTOMER_WALK_INDEX = 3;
-		final int CUSTOMER_ITEM = 4;
-		final int CUSTOMER_BUBBLE_COUNTER = 5;
-		final int CUSTOMER_COLUMN = 6;
-
-		final int VK_LEFT = 0x25;
-		final int VK_RIGHT = 0x27;
-		final int VK_UP = 0x26;
-		final int VK_DOWN = 0x28;
-		final int VK_START = 0x0a;
-		final int VK_W = 0x57;
+        final int VK_W = 0x57;
 		final int VK_S = 0x53;
 		final int VK_A = 0x41;
 		final int VK_D = 0x44;
-		final int VK_PAUSE = 0x50;
 
-		final int COLOR_TRANSPARENT = 0x00000000;
+        final int COLOR_TRANSPARENT = 0x00000000;
 		final int COLOR_RED = 0xFFFF0000;
 		final int COLOR_ORANGE = 0xFFFFB800;
 		final int COLOR_YELLOW = 0xFFFFFF00;
@@ -134,137 +83,105 @@ public class a extends Applet implements Runnable {
 		final int CLR_YELLOW = 3;
 		final int CLR_GREEN = 4;
 		final int CLR_BROWN = 5;
-		final int CLR_VANILLA = 6;
-		final int CLR_GRAY = 7;
-		final int CLR_BLACK = 8;
-		final int CLR_WHITE = 9;
-		final int CLR_FLESH = 10;
-		final int CLR_DARK_GRAY = 11;
-		final int CLR_BLUE = 12;
+        final int CLR_FLESH = 10;
+        final int CLR_BLUE = 12;
 		final int CLR_DARK_BLUE = 13;
 		final int CLR_DARK_BROWN = 14;
 
-		final int[] COLORS = { COLOR_TRANSPARENT, COLOR_RED, COLOR_ORANGE, COLOR_YELLOW, COLOR_GREEN, COLOR_BROWN, COLOR_VANILLA, COLOR_GRAY, COLOR_BLACK, COLOR_WHITE, COLOR_FLESH, COLOR_DARK_GRAY,
+		int[] COLORS = { COLOR_TRANSPARENT, COLOR_RED, COLOR_ORANGE, COLOR_YELLOW, COLOR_GREEN, COLOR_BROWN, COLOR_VANILLA, COLOR_GRAY, COLOR_BLACK, COLOR_WHITE, COLOR_FLESH, COLOR_DARK_GRAY,
 				COLOR_BLUE, COLOR_DARK_BLUE, COLOR_DARK_BROWN, };
 
-		final String S = "aaiiiiaaaijjjjiaijjiijjiijjiijjiijjiijjiijjiijjiaijjjjiaa" + "aiiiiaaaaaiiaaaaaijjiaaaijjjiaaaaijjiaaaaijjiaaaaijjiaaaijjjjiaaaiii"
-				+ "iaaaaiiiiaaaijjjjiaijjiijjiaiiijjiaaaijjiaaaijjiiiaijjjjjjiaiiiiiiaa" + "aiiiiiaaijjjjjiaaiijjiaaaijjjiaaiiiijjiijjiijjiaijjjjiaaaiiiiaaaaaai"
-				+ "iaaaaaijjiaaaijjjiaaijijjiaijjijjiaijjjjjjiaiiijjiaaaaaiiaaiiiiiiiai" + "jjjjjiaijjiiiiaijjjjjiaiiiiijjiiiiiijjiijjjjjiaiiiiiiaaaaaiiiaaaaijj"
-				+ "jiaaijjiiaaijjjjjiaijjiijjiijjiijjiaijjjjiaaaiiiiaaiiiiiiiiijjjjjjii" + "jjiijjiiiiijjiaaaijjiaaaaijjiaaaaijjiaaaaiiiiaaaaiiiiaaaijjjjiaijjii"
-				+ "jjiaijjjjiaijjiijjiijjiijjiaijjjjiaaaiiiiaaaaiiiiaaaijjjjiaijjiijjii" + "jjiijjiaijjjjjiaaiijjiaaijjjiaaaaiiiaaaaiiaaaaaijjiaaaaijjiaaaaijjia"
-				+ "aaaijjiiiaaijjjjjiaijjjjjiaaiiiiiaaaiiiiiaaijjjjjiaijjiiiaaijjjiaaai" + "jjiiiaaijjjjjiaijjjjjiaaiiiiiaaaiiaiiaaijjijjiaijjijjiaijjijjiaaijjj"
-				+ "iaaaijjjiaaaaijiaaaaaaiaaaaaaiiiaaaaijjjiaaijjiijiaijjiiiaaijjijjiai" + "jjiijiaaijjjiaaaaiiiaaaaaiiiaaaaijjjiaaijjijjiaijjijjiaijjjjjiaijjjj"
-				+ "jiaijjijjiaaiiaiiaaaiiaiiaaijjijjiaijjjjjiaijjjjjiaijijijiaijijijiai" + "jiiijiaaiaaaiaaaiiiiiaaijjjjiiaijjijjiaijjjjjiaijjjjiaaijjijjiaijjij"
-				+ "jiaaiiaiiiaiiiiiiiiaiggggiaaiggggiafiiiiiifififfifiikikkikiaikkkkiaa" + "aiiiiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacccccccca"
-				+ "aaaaaccccccccccccaaaccccccccccccccaaccccccccccccccaaccccccccccccccaa" + "bebbbbbbbebbeeeaeeeeeeeeeeeeeeaeeeffffffffeeeeaabffffffffffffbaeebbb"
-				+ "eeebbbbbefeeeeebbbbbeeffefeaeeeefffffefeeeaaaaccccccccceaaaaaahhhhhh" + "hhhhhaaaahgfffffffffghaaaahghggggggghaaaaahghhbbbggghaaaaahghhbbbggg"
-				+ "haaaaahghhbbbggghaaaaahghhbbbggghaaaaaahghhgggghaaaaaaahghhgggghaaaa" + "aaahghhgggghaaaaaaahghhgggghaaaaaaahghhhggghaaaaaaahghhhggghaaaaaaah"
-				+ "ghhhhgghaaaaaaaahggggghaaaaaaaaahhhhhhhaaaaaaaaaacaaaaaaaaaaaaaaadaa" + "aacaaaaaaaaadcacaadacaaaacacadddcadadaaaadadddccdccddaaaacddcccdcdcd"
-				+ "daaaccccddccdcdcccaabbbcdcddcdcbbbaabbbccdcccdcbbbaabbbbcdcdccbbbbaa" + "abbbbccccbbbbaaaabbbbbbbbbbbbaaaabbbbbbbbbbbbaaaaabbbbbbbbbbaaaaaabb"
-				+ "bbbbbbbbaaaaaabbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + "aaaaaaaaaaaaaaaaaaaaffaaaaaaaaaaaaafdcfaaaaaaaaaaffcccfaaaaafffffccc"
-				+ "cfaaafffccccccccfaaafcdccccccccfaaaafdddccccccfaaaafcddccccccfaaaaaf" + "ddcccccccfaaaaafcdddccccfaaaaaaafcdccccfaaaaaaaaafcccffaaaaaaaaaaaff"
-				+ "faaaaaaaaaaaaaaaiiiiiaaaaaaaaaiidddddiiaaaaaaiddddfddddiaaaaiddddfff" + "dddfiaaaidddfdfdfdddiiaiddddfdfdddddfiaidddddfffddddfiaiddddddfdfddd"
-				+ "fiaiddddddfdfdddfiaiddddfdfdfdddfiaaiddddfffddddiiaaidddddfddddfiaaa" + "iiddddddddfiiaaaaiiifffffiiiaaaaaaiiiiiiiiiaaaaaaaaaiiiiiiaaaaaooooo"
-				+ "oooofffffoooffoffoofffffffofffffffofffffffofffffffofffffffofffffffof" + "ffffffofffffffofffffffofffffffooffoffooofffffoooooooooooooooooooofff"
-				+ "ffoooffoffoofffffffofffffffofffffffofffffffofffffffofffffffofffffffo" + "fffffffofffffffofffffffooffoffooofffffoooooooooaaaiiiiiiaaaaaibbffbb"
-				+ "iaaaibbfbbfbbiaaibfbbbbffiaaifbbbbbbfiaaifbbbbbbfiaaifbbbbbbfiaikhff" + "ffffhkiikhhhhhhhhkiaihhhhhhhhiaaaihiiiihiaaaaiibbbbiiaaaibbbbbbbiaaa"
-				+ "ibbibbbibiaaibbibbbikiaaikkiiiibiaaaaibbiiiiiaaaaibbibbbiaaaaaiiibbb" + "iaaaaaaaaiiiaaaaaiiiiiiiiiiiiiiiiaaaijjjjjjjjjjjjjjjjiaijjjjjjjjjjjj"
-				+ "jjjjjjiijjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjii" + "jjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjiijjjjjjjj"
-				+ "jjjjjjjjjjiijjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjj" + "jjiijjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjiijjjj"
-				+ "jjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjiaijjjjjjjjjjjjjjjjiaaaiiiiiiiijjj" + "jjiiiaaaaaaaaaaaaijjjiaaaaaaaaaaaaaaaijjiaaaaaaaaaaaaaaaijjiaaaaaaaa"
-				+ "aaaaaaaiiiiaaaaaaaaaaaiiiiiiiiiiiiiiiiiiiiiaaaaaaigggggggggggggggggg" + "giaaaaaaigggggggggggggggggggiaaaaaaigggggggggggggggggggiaaaaaaaiggig"
-				+ "gigggggiggiggiaaaaaaaaiggiggigggggiggiggiaaaaaaaaiggiggigggggiggiggi" + "aaaaaaaaiggiggigggggiggiggiaaaaaaafiggiggigggggiggiggiaaaaaafffiiigg"
-				+ "igggggiggiiiffaaaaaififffiiiiiiiiiiiffffiaaaaaaiiffffffffffffffffffi" + "aaaaaaikffkkiikfffkiikffikiaaaaaaikffkkiikffkkiikkfikiaaaaaaaiikkkii"
-				+ "kkkkkiikkfiiaaaaaaaaaikkkiikkkkkiikkkiaaaaaaaaaaiikkkkkkkkkkkkkiiaaa" + "aaaaaaiggikkkkkkkkkkkiggiaaaaaaiiggggikkkkkkkkkiggggiiaaaigggggggiii"
-				+ "iiiiiigggggggiaaigggggggggficifgggggggggiaigggiiiggffcicicffggiiiggg" + "iiggikkiifccciiicccfiikkiggiiggikkkifccfgigfccfikkkiggiiggikkkifccfg"
-				+ "ggfccfikkkiggiaigikkiggffgggggffggikkigiaaaiiiigggggggggggggggiiiiaa" + "aaaaiiiiiiiiiiiiiiiiiiiiaaaaaaikkkkkigggggggikkkkkiaaaaaikkkkiiggggg"
-				+ "ggggiikkkkiaaaiiiiiigggggggggggggiiiiiiaaigggiiiggigggggiggiiigggiai" + "ggggigiggigggggiggigiggggiigggiggiggigggggiggiggigggiigggiggiggigggg"
-				+ "giggiggigggiigggiggiggigggggiggiggigggiigggiiiiggigggggiggiiiigggiig" + "ggifffiiiiiiiiiiifffigggiigggifffffffffffffffffigggiigggiffkkiikfffk"
-				+ "iikffiigggiigggiffkkiikffkkiikkfiigggiigggiikkkiikkkkkiikkfiigggiigg" + "ggikkkiikkkkkiikkkiggggiaigggiikkkkkkkkkkkkkiigggiaaigggggikkkkkkkkk"
-				+ "kkigggggiaaaigggggikkkkkkkkkigggggiaaaaaigggggiiiiiiiiigggggiaaaaaaa" + "iggggggficifggggggiaaaaaaaaaigggffcicicffgggiaaaaaaaaaaiggfccciiiccc"
-				+ "fggiaaaaaaaaaaiggfccfgigfccfggiaaaaaaaaaaiggfccfgggfccfggiaaaaaaaaaa" + "igggffgggggffgggiaaaaaaaaaaigggggggggggggggiaaaaaaannnnnnnnnnnnnnnna"
-				+ "aannnnnnnnnnnnnnnnnnannnmmmmmmmmmmmmmmnnnnnmmmmmmmmmmmmmmmmnnnmmmmmm" + "mmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmm"
-				+ "mmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmm" + "mmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmm"
-				+ "mmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmm" + "nnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmm"
-				+ "mmmmmmmmmmmmnnnmmmmmmmmmmmmmmmmnnnnnmmmmmmmmmmmmmmnnnannnnnnnnnnnnnn" + "nnnnaaannnnnnnnnnnnnnnnaaaaaaaaaaaaaaaaaaaaaaaaaaaccccccccccccccaaaa"
-				+ "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacccccccccccccccccccccccccaaa" + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacccccccccccccccccccgcccccccccccaaaaaa"
-				+ "aaaaaaaaaaaaaaaaaaaaaaacccccccccccccccgccccccccccccccccccccaaaaaaaaa" + "aaaaaaaaaaaaaaaaccccccccccccccccccccccccccccccccccccccccaaaaaaaaaaaa"
-				+ "aaaaaaaaacccccccccgccccccccccccccccccccccccccccccggcaaaaaaaaaaaaaaaa" + "aaaccccccccccccccccccccccgccccccccccccccccccccccaaaaaaaaaaaaaaaaaccc"
-				+ "cccccccccccccccccccccccccccgccccccccccccccccaaaaaaaaaaaaaaaacccccccc" + "ccccccccgccccccccccccccccccccccccccccccccaaaaaaaaaaaaacccccccccccccc"
-				+ "ccccccccccccccccccccccccccccccccccccaaaaaaaaaaaacccccccccccccccccccc" + "cccccccccccccccccccccccgccccccccaaaaaaaaaaaccccccccccccccccccccccccc"
-				+ "ccccccccccccccccccccccccccccaaaaaaaaaccccccccccccccccccccccccccccccc" + "ccccccccccccccccccccccccaaaaaaaacccccccccccccccccccccccccccccccccccg"
-				+ "cccccccccccccccccccaaaaaaaaccccccccgcccccccccccccccccccccccccccccccc" + "ccccccccccccccaaaaaaaacccccccccccccccccccccccccgcccccccccccccccccccc"
-				+ "cccccccccaaaaaaaaccccccccccccccccccccccccccccccccccccccccccccccccccc" + "cccaaaaaaaaaccccccccccccccccccccccccccccccccccccccccccccccccccccccaa"
-				+ "aaaaaaaacccccccccccccccccccccccccccccccccccccccccgcccccccfffaaaaaaaa" + "aaaffffcccccccccccccccccccccccccccccccccccccccccffffffffaeeaaaaaafff"
-				+ "fffffffffffffffffffffffffffffffffffffffffffffffffffeeeaaaaaaffffffff" + "ffffffffffffffffffffffffffffffffffffffffffffffeeaaaaaaafffffffffffff"
-				+ "ffffffffffffffffffffffffffffffffffffffffeeeeeaaeeafffiiifffffiiiffff" + "ffffffffffffiiffffffffffffiiffffffeeeeeeaaeeaaaibbbifffibbbiffffffff"
-				+ "ffffffibbiffffffffffibbifeeceeeceeaaaaeeeeibbbifffibbbiffffffffffddd" + "dibbiefffffffffibbieeeeeeeeeeaaaaaaacibbbbifibbbbidffiiiieedddddibbi"
-				+ "eeeiiiieeeibbiiiiccccceeaaaaaaccibbbbidibbbbidfibbbbiedddddibbieeibb" + "bbieeibbibbbiccccceeaaaaaccibbibidibibbieibbbbbbieddddibbicibbbbbbie"
-				+ "ibbbbbbbiccccaaaaaaaceibbibbibbibbiibbbiibbieecddibbiibbbiibbbiibbbi" + "ibbbicccaaaaaaeeeibbibbibbibbiibbicciiccccccibbiibbiccibbiibbiccibbi"
-				+ "ccaaaaaeeeecibbibbibbibbiibbiccecciicccibbiibbiccibbiibbiccibbiccaaa" + "aaaaaacibbiibbbiibbiibbicciiibbiccibbiibbiccibbiibbiccibbicaaaaaaaaa"
-				+ "aaibbiibbbiibbiibbbiibbibbbiibbbiibbbiibbbiibbbiibbbifaaaaaaaaaffibb" + "iibbbiibbicibbbbbbiibbbbbbiccibbbbbbicibbbbbbbifffaaaaaaaaffibbicibi"
-				+ "cibbiccibbbbiccibbbbiccccibbbbiccibbibbbiffffaaaaaaaffffiiffficcciic" + "ccciiiicccciiiicccccciiiicdddiifiiifffffaaaaaaafffffffffffffffcccccc"
-				+ "ccccccccccccccccfffffdfffffffffffffaaaaaaaafffffffffffffffffdddffddf" + "fffffffffffffffffffffffffffffddaaaeeeefffffffffffffffffffffddfffffff"
-				+ "fffffffffffffffffffffffddddaaeeeeeeefeeddfffffffffffffffffffffffffff" + "ffffffffffffffffdddddddaaeeeeeeeeddddeffffffffffffffffffffffffffffff"
-				+ "fffffffdddddddddddaeeeeeeeeedddddffffffffffffffffffffffffffffffeefff" + "eedddddddddddaeeeeeeeccdddddcddddddddddddddddddddddddddddeeeefceeeee"
-				+ "eccddddddaaaeeeecceedceedddddddddddddddddddddddddddeeeeecceeeeeccccc" + "ddddaaaeeeeccceeeeeedddddddddddddddddddeeeeceeeeeeeecccceeccccaaaaaa"
-				+ "aaaaaecccceeeeeedddddddddddcccccccceeeeccceeceecccceeccccaaaaaaaaaaa" + "accccceeeeecddddddccccccccccccceeecccccceeccceeecccaaaaaaaaaaaaaaacc"
-				+ "cccccccdddcccccccccccccccceeeecccccccccceecccaaaaaaaaaaaaaaaaacccccc" + "cccccccccccccccccccccceeeccccccccccccccaaaaaaaaaaaaaaaaaaaaccccccccc"
-				+ "cccccccccccccccccceeccccccccccccaaaaaaaaaaaaaaaaaaaaaaaacccccccccccc" + "cccccccccccccccccccccccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaccccccccccccccc"
-				+ "ccccccccccccccccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaccccccccccccccccc" + "ccccccccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacccccccccaaaaaaaa" + "aaaaaaaaaaaaaaaaaaaaaa";
-
-		Random random = new Random();
+        Random random = new Random();
 		BufferedImage image = new BufferedImage(256, 300, BufferedImage.TYPE_INT_RGB);
-		BufferedImage[] sprites = new BufferedImage[30];
-		BufferedImage[][] customerSprites = new BufferedImage[8][2];
-		Graphics2D g = (Graphics2D) image.getGraphics();
-		Graphics2D g2 = null;
+        Graphics2D g = (Graphics2D) image.getGraphics();
 
-		ArrayList<int[]> customers = new ArrayList<>();
-		ArrayList<int[]> sliders = new ArrayList<>();
-		ArrayList<int[]> points = new ArrayList<>();
+        int i;
 
-		int i;
-		int j;
-		int k;
-		int m;
-		int x;
-		int y;
-		int z;
-
-		int lives = 7;
-		int level = 1;
-		int playerX = 34;
-		int playerHolding = -1;
-
-		int walkCounter = 0;
-		int walkRate = 0;
-		int customerCount = 0;
-		int spawnDelay = 0;
-		int timer = 0;
-		int loseLife = 0;
-		int beatLevel = 0;
-		int gameOver = 0;
-		int playerRunning = 0;
-		int score = 0;
-
-		int[] customer = null;
-		int[] slider = null;
-		int[] point = null;
-		boolean paused = false;
-		boolean showTitle = true;
-		boolean keysReleased = true;
-		boolean[] columnBlinking = new boolean[4];
-		float gameOverScale = 0;
-
-		final Color[] CLRS = new Color[15];
+        Color[] CLRS = new Color[15];
 		for (i = 0; i < 15; i++) {
 			CLRS[i] = new Color(COLORS[i], true);
 		}
-		Color darkGray = CLRS[CLR_DARK_GRAY];
+        final int CLR_DARK_GRAY = 11;
+        Color darkGray = CLRS[CLR_DARK_GRAY];
 
-		
-		for (m = i = 0; i < 30; i++) {
+
+        int z;
+        int y;
+        int x;
+        int k;
+        BufferedImage[] sprites = new BufferedImage[30];
+        final String S = "aaiiiiaaaijjjjiaijjiijjiijjiijjiijjiijjiijjiijjiaijjjjiaa" + "aiiiiaaaaaiiaaaaaijjiaaaijjjiaaaaijjiaaaaijjiaaaaijjiaaaijjjjiaaaiii"
+                + "iaaaaiiiiaaaijjjjiaijjiijjiaiiijjiaaaijjiaaaijjiiiaijjjjjjiaiiiiiiaa" + "aiiiiiaaijjjjjiaaiijjiaaaijjjiaaiiiijjiijjiijjiaijjjjiaaaiiiiaaaaaai"
+                + "iaaaaaijjiaaaijjjiaaijijjiaijjijjiaijjjjjjiaiiijjiaaaaaiiaaiiiiiiiai" + "jjjjjiaijjiiiiaijjjjjiaiiiiijjiiiiiijjiijjjjjiaiiiiiiaaaaaiiiaaaaijj"
+                + "jiaaijjiiaaijjjjjiaijjiijjiijjiijjiaijjjjiaaaiiiiaaiiiiiiiiijjjjjjii" + "jjiijjiiiiijjiaaaijjiaaaaijjiaaaaijjiaaaaiiiiaaaaiiiiaaaijjjjiaijjii"
+                + "jjiaijjjjiaijjiijjiijjiijjiaijjjjiaaaiiiiaaaaiiiiaaaijjjjiaijjiijjii" + "jjiijjiaijjjjjiaaiijjiaaijjjiaaaaiiiaaaaiiaaaaaijjiaaaaijjiaaaaijjia"
+                + "aaaijjiiiaaijjjjjiaijjjjjiaaiiiiiaaaiiiiiaaijjjjjiaijjiiiaaijjjiaaai" + "jjiiiaaijjjjjiaijjjjjiaaiiiiiaaaiiaiiaaijjijjiaijjijjiaijjijjiaaijjj"
+                + "iaaaijjjiaaaaijiaaaaaaiaaaaaaiiiaaaaijjjiaaijjiijiaijjiiiaaijjijjiai" + "jjiijiaaijjjiaaaaiiiaaaaaiiiaaaaijjjiaaijjijjiaijjijjiaijjjjjiaijjjj"
+                + "jiaijjijjiaaiiaiiaaaiiaiiaaijjijjiaijjjjjiaijjjjjiaijijijiaijijijiai" + "jiiijiaaiaaaiaaaiiiiiaaijjjjiiaijjijjiaijjjjjiaijjjjiaaijjijjiaijjij"
+                + "jiaaiiaiiiaiiiiiiiiaiggggiaaiggggiafiiiiiifififfifiikikkikiaikkkkiaa" + "aiiiiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacccccccca"
+                + "aaaaaccccccccccccaaaccccccccccccccaaccccccccccccccaaccccccccccccccaa" + "bebbbbbbbebbeeeaeeeeeeeeeeeeeeaeeeffffffffeeeeaabffffffffffffbaeebbb"
+                + "eeebbbbbefeeeeebbbbbeeffefeaeeeefffffefeeeaaaaccccccccceaaaaaahhhhhh" + "hhhhhaaaahgfffffffffghaaaahghggggggghaaaaahghhbbbggghaaaaahghhbbbggg"
+                + "haaaaahghhbbbggghaaaaahghhbbbggghaaaaaahghhgggghaaaaaaahghhgggghaaaa" + "aaahghhgggghaaaaaaahghhgggghaaaaaaahghhhggghaaaaaaahghhhggghaaaaaaah"
+                + "ghhhhgghaaaaaaaahggggghaaaaaaaaahhhhhhhaaaaaaaaaacaaaaaaaaaaaaaaadaa" + "aacaaaaaaaaadcacaadacaaaacacadddcadadaaaadadddccdccddaaaacddcccdcdcd"
+                + "daaaccccddccdcdcccaabbbcdcddcdcbbbaabbbccdcccdcbbbaabbbbcdcdccbbbbaa" + "abbbbccccbbbbaaaabbbbbbbbbbbbaaaabbbbbbbbbbbbaaaaabbbbbbbbbbaaaaaabb"
+                + "bbbbbbbbaaaaaabbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + "aaaaaaaaaaaaaaaaaaaaffaaaaaaaaaaaaafdcfaaaaaaaaaaffcccfaaaaafffffccc"
+                + "cfaaafffccccccccfaaafcdccccccccfaaaafdddccccccfaaaafcddccccccfaaaaaf" + "ddcccccccfaaaaafcdddccccfaaaaaaafcdccccfaaaaaaaaafcccffaaaaaaaaaaaff"
+                + "faaaaaaaaaaaaaaaiiiiiaaaaaaaaaiidddddiiaaaaaaiddddfddddiaaaaiddddfff" + "dddfiaaaidddfdfdfdddiiaiddddfdfdddddfiaidddddfffddddfiaiddddddfdfddd"
+                + "fiaiddddddfdfdddfiaiddddfdfdfdddfiaaiddddfffddddiiaaidddddfddddfiaaa" + "iiddddddddfiiaaaaiiifffffiiiaaaaaaiiiiiiiiiaaaaaaaaaiiiiiiaaaaaooooo"
+                + "oooofffffoooffoffoofffffffofffffffofffffffofffffffofffffffofffffffof" + "ffffffofffffffofffffffofffffffooffoffooofffffoooooooooooooooooooofff"
+                + "ffoooffoffoofffffffofffffffofffffffofffffffofffffffofffffffofffffffo" + "fffffffofffffffofffffffooffoffooofffffoooooooooaaaiiiiiiaaaaaibbffbb"
+                + "iaaaibbfbbfbbiaaibfbbbbffiaaifbbbbbbfiaaifbbbbbbfiaaifbbbbbbfiaikhff" + "ffffhkiikhhhhhhhhkiaihhhhhhhhiaaaihiiiihiaaaaiibbbbiiaaaibbbbbbbiaaa"
+                + "ibbibbbibiaaibbibbbikiaaikkiiiibiaaaaibbiiiiiaaaaibbibbbiaaaaaiiibbb" + "iaaaaaaaaiiiaaaaaiiiiiiiiiiiiiiiiaaaijjjjjjjjjjjjjjjjiaijjjjjjjjjjjj"
+                + "jjjjjjiijjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjii" + "jjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjiijjjjjjjj"
+                + "jjjjjjjjjjiijjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjj" + "jjiijjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjiijjjj"
+                + "jjjjjjjjjjjjjjiijjjjjjjjjjjjjjjjjjiaijjjjjjjjjjjjjjjjiaaaiiiiiiiijjj" + "jjiiiaaaaaaaaaaaaijjjiaaaaaaaaaaaaaaaijjiaaaaaaaaaaaaaaaijjiaaaaaaaa"
+                + "aaaaaaaiiiiaaaaaaaaaaaiiiiiiiiiiiiiiiiiiiiiaaaaaaigggggggggggggggggg" + "giaaaaaaigggggggggggggggggggiaaaaaaigggggggggggggggggggiaaaaaaaiggig"
+                + "gigggggiggiggiaaaaaaaaiggiggigggggiggiggiaaaaaaaaiggiggigggggiggiggi" + "aaaaaaaaiggiggigggggiggiggiaaaaaaafiggiggigggggiggiggiaaaaaafffiiigg"
+                + "igggggiggiiiffaaaaaififffiiiiiiiiiiiffffiaaaaaaiiffffffffffffffffffi" + "aaaaaaikffkkiikfffkiikffikiaaaaaaikffkkiikffkkiikkfikiaaaaaaaiikkkii"
+                + "kkkkkiikkfiiaaaaaaaaaikkkiikkkkkiikkkiaaaaaaaaaaiikkkkkkkkkkkkkiiaaa" + "aaaaaaiggikkkkkkkkkkkiggiaaaaaaiiggggikkkkkkkkkiggggiiaaaigggggggiii"
+                + "iiiiiigggggggiaaigggggggggficifgggggggggiaigggiiiggffcicicffggiiiggg" + "iiggikkiifccciiicccfiikkiggiiggikkkifccfgigfccfikkkiggiiggikkkifccfg"
+                + "ggfccfikkkiggiaigikkiggffgggggffggikkigiaaaiiiigggggggggggggggiiiiaa" + "aaaaiiiiiiiiiiiiiiiiiiiiaaaaaaikkkkkigggggggikkkkkiaaaaaikkkkiiggggg"
+                + "ggggiikkkkiaaaiiiiiigggggggggggggiiiiiiaaigggiiiggigggggiggiiigggiai" + "ggggigiggigggggiggigiggggiigggiggiggigggggiggiggigggiigggiggiggigggg"
+                + "giggiggigggiigggiggiggigggggiggiggigggiigggiiiiggigggggiggiiiigggiig" + "ggifffiiiiiiiiiiifffigggiigggifffffffffffffffffigggiigggiffkkiikfffk"
+                + "iikffiigggiigggiffkkiikffkkiikkfiigggiigggiikkkiikkkkkiikkfiigggiigg" + "ggikkkiikkkkkiikkkiggggiaigggiikkkkkkkkkkkkkiigggiaaigggggikkkkkkkkk"
+                + "kkigggggiaaaigggggikkkkkkkkkigggggiaaaaaigggggiiiiiiiiigggggiaaaaaaa" + "iggggggficifggggggiaaaaaaaaaigggffcicicffgggiaaaaaaaaaaiggfccciiiccc"
+                + "fggiaaaaaaaaaaiggfccfgigfccfggiaaaaaaaaaaiggfccfgggfccfggiaaaaaaaaaa" + "igggffgggggffgggiaaaaaaaaaaigggggggggggggggiaaaaaaannnnnnnnnnnnnnnna"
+                + "aannnnnnnnnnnnnnnnnnannnmmmmmmmmmmmmmmnnnnnmmmmmmmmmmmmmmmmnnnmmmmmm" + "mmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmm"
+                + "mmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmm" + "mmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmm"
+                + "mmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmm" + "nnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmmmmmmmmmmmmmmnnmmmmmm"
+                + "mmmmmmmmmmmmnnnmmmmmmmmmmmmmmmmnnnnnmmmmmmmmmmmmmmnnnannnnnnnnnnnnnn" + "nnnnaaannnnnnnnnnnnnnnnaaaaaaaaaaaaaaaaaaaaaaaaaaaccccccccccccccaaaa"
+                + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacccccccccccccccccccccccccaaa" + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacccccccccccccccccccgcccccccccccaaaaaa"
+                + "aaaaaaaaaaaaaaaaaaaaaaacccccccccccccccgccccccccccccccccccccaaaaaaaaa" + "aaaaaaaaaaaaaaaaccccccccccccccccccccccccccccccccccccccccaaaaaaaaaaaa"
+                + "aaaaaaaaacccccccccgccccccccccccccccccccccccccccccggcaaaaaaaaaaaaaaaa" + "aaaccccccccccccccccccccccgccccccccccccccccccccccaaaaaaaaaaaaaaaaaccc"
+                + "cccccccccccccccccccccccccccgccccccccccccccccaaaaaaaaaaaaaaaacccccccc" + "ccccccccgccccccccccccccccccccccccccccccccaaaaaaaaaaaaacccccccccccccc"
+                + "ccccccccccccccccccccccccccccccccccccaaaaaaaaaaaacccccccccccccccccccc" + "cccccccccccccccccccccccgccccccccaaaaaaaaaaaccccccccccccccccccccccccc"
+                + "ccccccccccccccccccccccccccccaaaaaaaaaccccccccccccccccccccccccccccccc" + "ccccccccccccccccccccccccaaaaaaaacccccccccccccccccccccccccccccccccccg"
+                + "cccccccccccccccccccaaaaaaaaccccccccgcccccccccccccccccccccccccccccccc" + "ccccccccccccccaaaaaaaacccccccccccccccccccccccccgcccccccccccccccccccc"
+                + "cccccccccaaaaaaaaccccccccccccccccccccccccccccccccccccccccccccccccccc" + "cccaaaaaaaaaccccccccccccccccccccccccccccccccccccccccccccccccccccccaa"
+                + "aaaaaaaacccccccccccccccccccccccccccccccccccccccccgcccccccfffaaaaaaaa" + "aaaffffcccccccccccccccccccccccccccccccccccccccccffffffffaeeaaaaaafff"
+                + "fffffffffffffffffffffffffffffffffffffffffffffffffffeeeaaaaaaffffffff" + "ffffffffffffffffffffffffffffffffffffffffffffffeeaaaaaaafffffffffffff"
+                + "ffffffffffffffffffffffffffffffffffffffffeeeeeaaeeafffiiifffffiiiffff" + "ffffffffffffiiffffffffffffiiffffffeeeeeeaaeeaaaibbbifffibbbiffffffff"
+                + "ffffffibbiffffffffffibbifeeceeeceeaaaaeeeeibbbifffibbbiffffffffffddd" + "dibbiefffffffffibbieeeeeeeeeeaaaaaaacibbbbifibbbbidffiiiieedddddibbi"
+                + "eeeiiiieeeibbiiiiccccceeaaaaaaccibbbbidibbbbidfibbbbiedddddibbieeibb" + "bbieeibbibbbiccccceeaaaaaccibbibidibibbieibbbbbbieddddibbicibbbbbbie"
+                + "ibbbbbbbiccccaaaaaaaceibbibbibbibbiibbbiibbieecddibbiibbbiibbbiibbbi" + "ibbbicccaaaaaaeeeibbibbibbibbiibbicciiccccccibbiibbiccibbiibbiccibbi"
+                + "ccaaaaaeeeecibbibbibbibbiibbiccecciicccibbiibbiccibbiibbiccibbiccaaa" + "aaaaaacibbiibbbiibbiibbicciiibbiccibbiibbiccibbiibbiccibbicaaaaaaaaa"
+                + "aaibbiibbbiibbiibbbiibbibbbiibbbiibbbiibbbiibbbiibbbifaaaaaaaaaffibb" + "iibbbiibbicibbbbbbiibbbbbbiccibbbbbbicibbbbbbbifffaaaaaaaaffibbicibi"
+                + "cibbiccibbbbiccibbbbiccccibbbbiccibbibbbiffffaaaaaaaffffiiffficcciic" + "ccciiiicccciiiicccccciiiicdddiifiiifffffaaaaaaafffffffffffffffcccccc"
+                + "ccccccccccccccccfffffdfffffffffffffaaaaaaaafffffffffffffffffdddffddf" + "fffffffffffffffffffffffffffffddaaaeeeefffffffffffffffffffffddfffffff"
+                + "fffffffffffffffffffffffddddaaeeeeeeefeeddfffffffffffffffffffffffffff" + "ffffffffffffffffdddddddaaeeeeeeeeddddeffffffffffffffffffffffffffffff"
+                + "fffffffdddddddddddaeeeeeeeeedddddffffffffffffffffffffffffffffffeefff" + "eedddddddddddaeeeeeeeccdddddcddddddddddddddddddddddddddddeeeefceeeee"
+                + "eccddddddaaaeeeecceedceedddddddddddddddddddddddddddeeeeecceeeeeccccc" + "ddddaaaeeeeccceeeeeedddddddddddddddddddeeeeceeeeeeeecccceeccccaaaaaa"
+                + "aaaaaecccceeeeeedddddddddddcccccccceeeeccceeceecccceeccccaaaaaaaaaaa" + "accccceeeeecddddddccccccccccccceeecccccceeccceeecccaaaaaaaaaaaaaaacc"
+                + "cccccccdddcccccccccccccccceeeecccccccccceecccaaaaaaaaaaaaaaaaacccccc" + "cccccccccccccccccccccceeeccccccccccccccaaaaaaaaaaaaaaaaaaaaccccccccc"
+                + "cccccccccccccccccceeccccccccccccaaaaaaaaaaaaaaaaaaaaaaaacccccccccccc" + "cccccccccccccccccccccccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaccccccccccccccc"
+                + "ccccccccccccccccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaccccccccccccccccc" + "ccccccccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacccccccccaaaaaaaa" + "aaaaaaaaaaaaaaaaaaaaaa";
+        final int SPRITE_TITLE = 29;
+        final int SPRITE_TRAY = 28;
+        final int SPRITE_PLAYER_STANDING = 26;
+        final int SPRITE_BUBBLE_QUOTE = 25;
+        final int SPRITE_CUSTOMER = 24;
+        final int SPRITE_BURGER = 18;
+        for (int m = i = 0; i < 30; i++) {
 			k = z = 8;
 			if (i >= SPRITE_BURGER && i < SPRITE_CUSTOMER) {
 				k = z = 16;
@@ -292,8 +209,10 @@ public class a extends Applet implements Runnable {
 			}
 		}
 
-		
-		for (i = 0; i < 8; i++) {
+
+        int j;
+        BufferedImage[][] customerSprites = new BufferedImage[8][2];
+        for (i = 0; i < 8; i++) {
 			customerSprites[i][0] = new BufferedImage(12, 20, BufferedImage.TYPE_INT_ARGB_PRE);
 			customerSprites[i][1] = new BufferedImage(12, 20, BufferedImage.TYPE_INT_ARGB_PRE);
 			for (y = 0; y < 20; y++) {
@@ -309,14 +228,84 @@ public class a extends Applet implements Runnable {
 		}
 
 		long nextFrameStartTime = System.nanoTime();
-		while (true) {
+        float gameOverScale = 0;
+        boolean[] columnBlinking = new boolean[4];
+        boolean keysReleased = true;
+        boolean showTitle = true;
+        boolean paused = false;
+        int[] point = null;
+        int[] slider = null;
+        int[] customer = null;
+        int score = 0;
+        int playerRunning = 0;
+        int gameOver = 0;
+        int beatLevel = 0;
+        int loseLife = 0;
+        int timer = 0;
+        int spawnDelay = 0;
+        int customerCount = 0;
+        int walkRate = 0;
+        int walkCounter = 0;
+        int playerHolding = -1;
+        int playerX = 34;
+        int level = 1;
+        int lives = 7;
+        ArrayList<int[]> points = new ArrayList<>();
+        ArrayList<int[]> sliders = new ArrayList<>();
+        ArrayList<int[]> customers = new ArrayList<>();
+        Graphics2D g2 = null;
+        final int CLR_WHITE = 9;
+        final int CLR_BLACK = 8;
+        final int CLR_GRAY = 7;
+        final int CLR_VANILLA = 6;
+        final int VK_PAUSE = 0x50;
+        final int VK_START = 0x0a;
+        final int VK_DOWN = 0x28;
+        final int VK_UP = 0x26;
+        final int VK_RIGHT = 0x27;
+        final int VK_LEFT = 0x25;
+        final int CUSTOMER_COLUMN = 6;
+        final int CUSTOMER_BUBBLE_COUNTER = 5;
+        final int CUSTOMER_ITEM = 4;
+        final int CUSTOMER_WALK_INDEX = 3;
+        final int CUSTOMER_SPRITE_INDEX = 2;
+        final int CUSTOMER_Y = 1;
+        final int CUSTOMER_X = 0;
+        final int SLIDER_STATE = 5;
+        final int SLIDER_COLUMN = 4;
+        final int SLIDER_HOLDING = 3;
+        final int SLIDER_TRAY = 2;
+        final int SLIDER_Y = 1;
+        final int SLIDER_X = 0;
+        final int SLIDER_STATE_UP = 3;
+        final int SLIDER_STATE_RIGHT = 2;
+        final int SLIDER_STATE_LEFT = 1;
+        final int SLIDER_STATE_DOWN = 0;
+        final int POINTS_COUNTER = 3;
+        final int POINTS_VALUE = 2;
+        final int POINTS_Y = 1;
+        final int POINTS_X = 0;
+        final int POINTS_PER_EXTRA_LIFE = 50000;
+        final int SPRITE_PLAYER_HOLDING = 27;
+        final int SPRITE_FLOOR_TILE = 23;
+        final int SPRITE_COIN = 22;
+        final int SPRITE_EXTRA_LIFE = 17;
+        final int SPRITE_LETTER_R = 16;
+        final int SPRITE_LETTER_M = 15;
+        final int SPRITE_LETTER_A = 14;
+        final int SPRITE_LETTER_G = 13;
+        final int SPRITE_LETTER_V = 12;
+        final int SPRITE_LETTER_E = 11;
+        final int SPRITE_LETTER_L = 10;
+        final int SPRITE_DIGIT_0 = 0;
+        while (true) {
 
 			do {
 				nextFrameStartTime += 16666667;
 
-				
 
-				if (IntStream.of(VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_START, VK_PAUSE).noneMatch(i1 -> a[i1])) {
+				boolean result = IntStream.of(VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_START, VK_PAUSE).noneMatch(i1 -> a[i1]);
+				if (result) {
 					keysReleased = true;
 				}
 
@@ -333,34 +322,36 @@ public class a extends Applet implements Runnable {
 					gameOverScale = (float) (1 + 0.01f * (1 + Math.cos(.03f * gameOver)) * gameOver);
 					if (showTitle || --gameOver == 0) {
 						gameOver = 1;
-						if (keysReleased && (IntStream.of(VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_START).anyMatch(v -> a[v]))) {
+						if (keysReleased) {
+							boolean b = IntStream.of(VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_START).anyMatch(v -> a[v]);
+							if (b) {
 
-							
 
-							keysReleased = false;
-							showTitle = false;
+								keysReleased = false;
+								showTitle = false;
 
-							gameOver = 0;
-							lives = 7;
-							level = 1;
-							playerX = 34;
-							playerHolding = -1;
+								gameOver = 0;
+								lives = 7;
+								level = 1;
+								playerX = 34;
+								playerHolding = -1;
 
-							walkCounter = 0;
-							walkRate = 0;
-							customerCount = 0;
-							spawnDelay = 0;
-							timer = 0;
-							loseLife = 0;
-							beatLevel = 0;
-							playerRunning = 0;
-							score = 0;
+								walkCounter = 0;
+								walkRate = 0;
+								customerCount = 0;
+								spawnDelay = 0;
+								timer = 0;
+								loseLife = 0;
+								beatLevel = 0;
+								playerRunning = 0;
+								score = 0;
 
-							columnBlinking = new boolean[4];
+								columnBlinking = new boolean[4];
 
-							customers.clear();
-							sliders.clear();
-							points.clear();
+								customers.clear();
+								sliders.clear();
+								points.clear();
+							}
 						}
 					}
 					continue;
@@ -754,21 +745,21 @@ public class a extends Applet implements Runnable {
 
 	@Override
 	public void processKeyEvent(KeyEvent keyEvent) {
-		final int VK_LEFT = 0x25;
-		final int VK_RIGHT = 0x27;
-		final int VK_UP = 0x26;
-		final int VK_DOWN = 0x28;
-		final int VK_START = 0x0a;
-		final int VK_W = 0x57;
-		final int VK_S = 0x53;
-		final int VK_A = 0x41;
-		final int VK_D = 0x44;
-		final int VK_PAUSE = 0x50; 
 
-		int k = keyEvent.getKeyCode();
+        int k = keyEvent.getKeyCode();
 		if (k > 0) {
-			k = k == VK_W ? VK_UP : k == VK_D ? VK_RIGHT : k == VK_A ? VK_LEFT : k == VK_S ? VK_DOWN : k;
-			a[(k >= VK_LEFT && k <= VK_DOWN) || k == VK_PAUSE ? k : VK_START] = keyEvent.getID() != 402;
+            final int VK_D = 0x44;
+            final int VK_A = 0x41;
+            final int VK_S = 0x53;
+            final int VK_W = 0x57;
+            final int VK_DOWN = 0x28;
+            final int VK_UP = 0x26;
+            final int VK_RIGHT = 0x27;
+            final int VK_LEFT = 0x25;
+            k = k == VK_W ? VK_UP : k == VK_D ? VK_RIGHT : k == VK_A ? VK_LEFT : k == VK_S ? VK_DOWN : k;
+            final int VK_PAUSE = 0x50;
+            final int VK_START = 0x0a;
+            a[(k >= VK_LEFT && k <= VK_DOWN) || k == VK_PAUSE ? k : VK_START] = keyEvent.getID() != 402;
 		}
 	}
 

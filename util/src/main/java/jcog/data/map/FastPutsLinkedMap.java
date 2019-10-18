@@ -26,16 +26,14 @@ public class FastPutsLinkedMap<K, V> extends AbstractMap<K, V> implements Serial
     }
 
     public void compact() {
-        int size = 0;
 
         synchronized(header) {
             LinkedEntry<K, V> entry = header.next;
-            LinkedEntry<K, V> newerEntry;
-            LinkedEntry<K, V> next;
+            int size = 0;
             while (entry != header) {
                 size++;
-                next = entry.next;
-                newerEntry = getEntry(entry.getKey());
+                LinkedEntry<K, V> next = entry.next;
+                LinkedEntry<K, V> newerEntry = getEntry(entry.getKey());
                 if (newerEntry != null && newerEntry != entry) {
                     remove(entry);
                     size--;

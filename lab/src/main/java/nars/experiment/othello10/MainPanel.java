@@ -179,7 +179,7 @@ public class MainPanel extends JPanel implements MouseListener {
      *
      * @param g �`��I�u�W�F�N�g�B
      */
-    private void drawBoard(Graphics g) {
+    private static void drawBoard(Graphics g) {
 
         g.setColor(new Color(0, 128, 128));
         g.fillRect(0, 0, WIDTH, HEIGHT);
@@ -447,7 +447,7 @@ public class MainPanel extends JPanel implements MouseListener {
     /**
      * SLEEP_TIME�����x�~������
      */
-    private void sleep() {
+    private static void sleep() {
         try {
             Thread.sleep(SLEEP_TIME);
         } catch (InterruptedException e) {
@@ -461,7 +461,7 @@ public class MainPanel extends JPanel implements MouseListener {
      * @param g �`��I�u�W�F�N�g
      * @param s �`�悵����������
      */
-    public void drawTextCentering(Graphics g, String s) {
+    public static void drawTextCentering(Graphics g, String s) {
         Font f = new Font("SansSerif", Font.BOLD, 20);
         g.setFont(f);
         FontMetrics fm = g.getFontMetrics();

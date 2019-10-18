@@ -89,7 +89,8 @@ public final class TermMatch<X extends Unify> extends AbstractTermMatchPred<X> {
     }
 
     private final class Merge2TermMatch extends AbstractTermMatchPred<X> {
-        private final TermMatch<X> a, b;
+        private final TermMatch<X> a;
+        private final TermMatch<X> b;
 
         Merge2TermMatch(TermMatch<X> a, TermMatch<X> b) {
             super(Op.SETe.the(a, b), TermMatch.this.resolve, TermMatch.this.resolveCost);

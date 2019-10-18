@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
+import jcog.data.graph.path.FromTo;
 import jcog.pri.Prioritized;
 import jcog.pri.UnitPri;
 import nars.$;
@@ -101,9 +102,11 @@ public class PriNode implements Prioritized {
         assert(parent.length > 0);
 
 
-            thisNode.edges(true, false).forEach(g::edgeRemove);
+        for (FromTo<Node<PriNode, Object>, Object> nodeObjectFromTo : thisNode.edges(true, false)) {
+            g.edgeRemove(nodeObjectFromTo);
+        }
 
-            for (PriNode p : parent) {
+        for (PriNode p : parent) {
                 assert(!this.equals(p));
                 g.addEdge(p, "pri", thisNode);
             }

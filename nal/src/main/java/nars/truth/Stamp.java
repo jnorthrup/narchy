@@ -197,9 +197,6 @@ public interface Stamp {
         int aLen = a.length, bLen = b.length;
 
 
-        int baseLength = Math.min(aLen + bLen, maxLen);
-
-
         int aMin = 0, bMin = 0;
         if (aLen + bLen > maxLen) {
             if (!newToOld)
@@ -224,6 +221,7 @@ public interface Stamp {
 
         }
 
+        int baseLength = Math.min(aLen + bLen, maxLen);
         long[] c = new long[baseLength];
         if (newToOld) {
 
@@ -422,7 +420,7 @@ public interface Stamp {
     }
 
     /*@NotNull*/
-    static long[] toSetArray(long[] x, final int outputLen) {
+    static long[] toSetArray(long[] x, int outputLen) {
         int l = x.length;
 
 
@@ -561,9 +559,6 @@ public interface Stamp {
         }
 
         LongHashSet l = new LongHashSet(maxLen);
-        int done = 0;
-
-        int repeats = 0;
 
         int totalEvidence = 0;
 
@@ -585,6 +580,8 @@ public interface Stamp {
 
         int size = 0;
         boolean halted = false;
+        int repeats = 0;
+        int done = 0;
         main:
         while (done < S) {
             done = 0;
@@ -615,7 +612,8 @@ public interface Stamp {
                 int rr = ptr[i];
                 if (rr >= 0) {
                     long[] ss = stamps.get(i);
-                    repeats += IntStream.range(0, rr).filter(j -> l.contains(ss[j])).count();
+                    long count = IntStream.range(0, rr).filter(j -> l.contains(ss[j])).count();
+                    repeats += count;
                 }
             }
         }
@@ -703,7 +701,8 @@ public interface Stamp {
         return Util.unitize(((float) common) / denom);
     }
     private static int overlapCount(LongSet aa,  long[] b) {
-        int common = (int) Arrays.stream(b).filter(aa::contains).count();
+        long count = Arrays.stream(b).filter(aa::contains).count();
+        int common = (int) count;
         return common;
     }
 

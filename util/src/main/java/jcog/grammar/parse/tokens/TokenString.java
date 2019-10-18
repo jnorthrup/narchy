@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /*
@@ -109,7 +110,12 @@ public class TokenString {
 	 */
 	@Override
 	public String toString() {
-		String buf = Arrays.stream(tokens).map(String::valueOf).collect(Collectors.joining(" "));
+		StringJoiner joiner = new StringJoiner(" ");
+		for (Token token : tokens) {
+			String s = String.valueOf(token);
+			joiner.add(s);
+		}
+		String buf = joiner.toString();
         return buf;
 	}
 }

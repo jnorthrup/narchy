@@ -91,9 +91,7 @@ public interface Node<N, E> {
 
     default void print(PrintStream out) {
         out.println(this);
-        stream().forEach(e -> {
-            out.println("\t" + e);
-        });
+        stream().forEach(e -> out.println("\t" + e));
     }
 
     default int edgeCount(boolean in, boolean out) {

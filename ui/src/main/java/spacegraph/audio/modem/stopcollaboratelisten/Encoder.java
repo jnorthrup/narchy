@@ -14,6 +14,7 @@ import spacegraph.audio.modem.reedsolomon.CRCGen;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 /**
@@ -111,7 +112,7 @@ public class Encoder implements Constants {
                 double innerMultiplier = getFrequency((j * kBitsPerByte) + k)
                         * (1 / kSamplingFrequency) * 2 * Math.PI;
                 for (int l = 0; l < signal.length; l++) {
-                    signal[l] = signal[l] + (kAmplitude * Math.cos(innerMultiplier * l));
+                    signal[l] += (kAmplitude * Math.cos(innerMultiplier * l));
                 }
             }
         }
@@ -126,7 +127,15 @@ public class Encoder implements Constants {
         //add a sinusoid of the hail frequency, amplitude kAmplitude and duration kDuration
         double innerMultiplier = Constants.kSOSFrequency * (1 / kSamplingFrequency) * 2 * Math.PI;
         /*kAmplitude **/
-        double[] signal = IntStream.range(0, kSamplesPerDuration).mapToDouble(l -> Math.cos(innerMultiplier * l)).toArray();
+        double[] signal = new double[10];
+        int count = 0;
+        int bound = kSamplesPerDuration;
+        for (int l = 0; l < bound; l++) {
+            double cos = Math.cos(innerMultiplier * l);
+            if (signal.length == count) signal = Arrays.copyOf(signal, count * 2);
+            signal[count++] = cos;
+        }
+        signal = Arrays.copyOfRange(signal, 0, count);
         return getByteArrayFromDoubleArray(smoothWindow(signal, 0.3));
     }
 
@@ -137,7 +146,15 @@ public class Encoder implements Constants {
         //add a sinusoid of the hail frequency, amplitude kAmplitude and duration kDuration
         double innerMultiplier = Constants.kHailFrequency * (1 / kSamplingFrequency) * 2 * Math.PI;
         /*kAmplitude **/
-        double[] signal = IntStream.range(0, kSamplesPerDuration).mapToDouble(l -> Math.cos(innerMultiplier * l)).toArray();
+        double[] signal = new double[10];
+        int count = 0;
+        int bound = kSamplesPerDuration;
+        for (int l = 0; l < bound; l++) {
+            double cos = Math.cos(innerMultiplier * l);
+            if (signal.length == count) signal = Arrays.copyOf(signal, count * 2);
+            signal[count++] = cos;
+        }
+        signal = Arrays.copyOfRange(signal, 0, count);
         return getByteArrayFromDoubleArray(smoothWindow(signal, 0.3));
     }
 
@@ -145,7 +162,6 @@ public class Encoder implements Constants {
      * @return audio samples (of length 2 * kSamplesPerDuration), used to calibrate the decoding
      */
     private static byte[] getCalibrationSequence() {
-        byte[] results = new byte[2 * kSamplesPerDuration];
         byte[] inputBytes1 = new byte[kBytesPerDuration];
         byte[] inputBytes2 = new byte[kBytesPerDuration];
         for (int i = 0; i < kBytesPerDuration; i++) {
@@ -155,6 +171,7 @@ public class Encoder implements Constants {
 
         //encode inputBytes1 and 2 in sequence
         byte[] partialResult = encodeDuration(inputBytes1);
+        byte[] results = new byte[2 * kSamplesPerDuration];
         System.arraycopy(partialResult, 0, results, 0, kSamplesPerDuration);
         partialResult = encodeDuration(inputBytes2);
         System.arraycopy(partialResult, 0, results, 4410, kSamplesPerDuration);

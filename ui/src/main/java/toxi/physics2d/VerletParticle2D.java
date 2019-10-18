@@ -64,7 +64,8 @@ public class VerletParticle2D extends Vec2D {
      */
     public List<ParticleConstraint2D> constraints;
 
-    public FasterList<ParticleBehavior2D> behaviors, behaviorsGlobal;
+    public FasterList<ParticleBehavior2D> behaviors;
+    public FasterList<ParticleBehavior2D> behaviorsGlobal;
     /**
      * Particle weight, default = 1
      */

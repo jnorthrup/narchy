@@ -64,10 +64,9 @@ public class BomberMenu extends JPanel {
         Toolkit tk = Toolkit.getDefaultToolkit();
 
         String path = BomberMain.RP + "Images/BomberMenu/";
-        String file = null;
         try {
             /** load background image */
-            file = path + "Background.jpg";
+            String file = path + "Background.jpg";
             backgroundImg = tk.getImage(new File(file).getCanonicalPath());
 
             /** load each button image */

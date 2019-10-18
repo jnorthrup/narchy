@@ -74,13 +74,11 @@ public abstract class IDebugDraw {
 		center.add(from);
 		center.scaled(0.5f);
 
-		int i, j;
-
-		v3 edgecoord = new v3();
+        v3 edgecoord = new v3();
 		edgecoord.set(1f, 1f, 1f);
 		v3 pa = new v3(), pb = new v3();
-		for (i = 0; i < 4; i++) {
-			for (j = 0; j < 3; j++) {
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 3; j++) {
 				pa.set(edgecoord.x * halfExtents.x, edgecoord.y * halfExtents.y, edgecoord.z * halfExtents.z);
 				pa.add(center);
 

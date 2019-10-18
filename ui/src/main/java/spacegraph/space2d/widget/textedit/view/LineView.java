@@ -62,7 +62,7 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 
             float width = 0;
             for (CharView c : cc) {
-                float w = c.width() / 2;
+                float w = CharView.width() / 2;
                 width += w;
                 c.position.set(width, 0, 0);
                 width += w;
@@ -103,7 +103,7 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 
     CharView leaveChar(BufferChar bc) {
 
-        final CharView[] leaved = new CharView[1];
+        CharView[] leaved = new CharView[1];
         update((chars) -> {
             CharView leave = chars.stream().filter(c -> c.bufferChar() == bc).findFirst().orElse(null);
             leaved[0] = leave;
@@ -119,11 +119,11 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 //        });
     }
 
-    public LineView apply(int from, int to, TextStyle highlight) {
+    public static LineView apply(int from, int to, TextStyle highlight) {
         throw new TODO();
     }
 
-    public String substring(int from, int to) {
+    public static String substring(int from, int to) {
         throw new TODO();
     }
 

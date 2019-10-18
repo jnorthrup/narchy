@@ -131,7 +131,7 @@ public class BagClustering<X> {
         for (L l : ll)
             l.clear();
 
-        final int[] centroids = {0};
+        int[] centroids = {0};
 //        for (VLink<X> x : bag) {
 //        }
         bag.sampleUnique(ThreadLocalRandom.current(), x ->{
@@ -163,8 +163,11 @@ public class BagClustering<X> {
             net.setLambdaPeriod((int) Math.ceil((bag.capacity()) * lambdaFactor));
 
             Consumer<VLink<X>> l = this::learn;
-            for (int i = 0; i < learningIterations; i++)
-                bag.forEach(l);
+            for (int i = 0; i < learningIterations; i++) {
+                for (VLink<X> xvLink : bag) {
+                    l.accept(xvLink);
+                }
+            }
 //        }
     }
 

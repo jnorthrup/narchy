@@ -679,7 +679,9 @@ public class Dynamics2D {
     }
 
     public void bodies(Consumer<Body2D> each) {
-        bodies.forEach(each);
+        for (Body2D body : bodies) {
+            each.accept(body);
+        }
     }
 
     public Iterable<Joint> joints() {
@@ -687,7 +689,9 @@ public class Dynamics2D {
     }
 
     public void joints(Consumer<Joint> each) {
-        joints.forEach(each);
+        for (Joint joint : joints) {
+            each.accept(joint);
+        }
     }
 
     /**
@@ -874,7 +878,9 @@ public class Dynamics2D {
         });
 
         if (!preRemove.isEmpty()) {
-            preRemove.forEach(this::removeBody);
+            for (Body2D body2D : preRemove) {
+                removeBody(body2D);
+            }
             preRemove.clear();
         }
 
@@ -1025,9 +1031,9 @@ public class Dynamics2D {
     }
 
 
-    private void solveTOI(final TimeStep step) {
+    private void solveTOI(TimeStep step) {
 
-        final Island island = toiIsland;
+        Island island = toiIsland;
         island.init(2 * Settings.maxTOIContacts, Settings.maxTOIContacts, 0,
                 contactManager.contactListener);
         if (stepComplete) {
@@ -1116,7 +1122,7 @@ public class Dynamics2D {
                     int indexB = c.bIndex;
 
 
-                    final TimeOfImpact.TOIInput input = toiInput;
+                    TimeOfImpact.TOIInput input = toiInput;
                     input.proxyA.set(fA.shape(), indexA);
                     input.proxyB.set(fB.shape(), indexB);
                     input.sweepA.set(bA.sweep);
@@ -1308,8 +1314,8 @@ public class Dynamics2D {
 
 
     private static final Integer LIQUID_INT = 1234598372;
-    private final float liquidLength = .12f;
-    private final float averageLinearVel = -1;
+    private static final float liquidLength = .12f;
+    private static final float averageLinearVel = -1;
     private final v2 liquidOffset = new v2();
     private final v2 circCenterMoved = new v2();
     private final Color3f liquidColor = new Color3f(.4f, .4f, 1f);
@@ -1761,7 +1767,6 @@ public class Dynamics2D {
     public static void staticBox(Dynamics2D world, float x1, float y1, float x2, float y2, boolean top, boolean right, boolean bottom, boolean left) {
 
         float cx = (x1 + x2) / 2f;
-        float cy = (y1 + y2) / 2f;
         float w = Math.abs(x2 - x1);
         float h = Math.abs(y2 - y1);
 
@@ -1781,6 +1786,7 @@ public class Dynamics2D {
             _top.setTransform(new v2(cx, y2), 0);
         }
 
+        float cy = (y1 + y2) / 2f;
         if (left) {
             Body2D _left = world.addBody(new BodyDef(BodyType.STATIC),
                     new FixtureDef(PolygonShape.box(thick / 2, h / 2 - thick / 2),

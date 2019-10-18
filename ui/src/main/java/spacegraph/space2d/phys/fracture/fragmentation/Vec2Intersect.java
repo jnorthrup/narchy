@@ -12,12 +12,14 @@ public class Vec2Intersect extends v2 {
     /**
      * Fragmenty, ktore rozdeluje hrana, na ktorej sa nachadza prienikovy bod
      */
-    public Fragment p1, p2;
+    public Fragment p1;
+    public Fragment p2;
 
     /**
      * Indexy v ramci polygonov p1 a p2 na ktorych sa nachadza bod prieniku
      */
-    public int i1, i2;
+    public int i1;
+    public int i2;
 
     /**
      * Index, na ktorom sa nachadza dany bod v ramci primarneho polygonu (ten je len jeden, nepotrebuje referenciu)

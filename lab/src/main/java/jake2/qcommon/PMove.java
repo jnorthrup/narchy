@@ -90,13 +90,11 @@ public class PMove {
      * Slide off of the impacting object returns the blocked flags (1 = floor, 2 = step / wall)
      */
     public static void PM_ClipVelocity(float[] in, float[] normal, float[] out, float overbounce) {
-        float change;
-        int i;
 
         float backoff = Math3D.DotProduct(in, normal) * overbounce;
 
-        for (i = 0; i < 3; i++) {
-            change = normal[i] * backoff;
+        for (int i = 0; i < 3; i++) {
+            float change = normal[i] * backoff;
             out[i] = in[i] - change;
             if (out[i] > -Defines.MOVE_STOP_EPSILON
                     && out[i] < Defines.MOVE_STOP_EPSILON)
@@ -107,28 +105,24 @@ public class PMove {
     static final float[][] planes = new float[SV.MAX_CLIP_PLANES][3];
     
     public static void PM_StepSlideMove_() {
-        int bumpcount;
-        float[] dir = { 0, 0, 0 };
-        float d;
 
         float[] primal_velocity = { 0, 0, 0 };
-        int i, j;
-        trace_t trace;
-        float[] end = { 0, 0, 0 };
-
-        int numbumps = 4;
 
         Math3D.VectorCopy(pml.velocity, primal_velocity);
         int numplanes = 0;
 
         float time_left = pml.frametime;
 
-        for (bumpcount = 0; bumpcount < numbumps; bumpcount++) {
+        int numbumps = 4;
+        float[] end = {0, 0, 0};
+        float[] dir = {0, 0, 0};
+        for (int bumpcount = 0; bumpcount < numbumps; bumpcount++) {
+            int i;
             for (i = 0; i < 3; i++)
                 end[i] = pml.origin[i] + time_left
                         * pml.velocity[i];
 
-            trace = pm.trace.trace(pml.origin, pm.mins,
+            trace_t trace = pm.trace.trace(pml.origin, pm.mins,
                     pm.maxs, end);
 
             if (trace.allsolid) { 
@@ -166,6 +160,7 @@ public class PMove {
             for (i = 0; i < numplanes; i++) {
                 PM_ClipVelocity(pml.velocity, planes[i],
                         pml.velocity, 1.01f);
+                int j;
                 for (j = 0; j < numplanes; j++)
                     if (j != i) {
                         if (Math3D.DotProduct(pml.velocity, planes[j]) < 0)
@@ -185,7 +180,7 @@ public class PMove {
                     break;
                 }
                 Math3D.CrossProduct(planes[0], planes[1], dir);
-                d = Math3D.DotProduct(dir, pml.velocity);
+                float d = Math3D.DotProduct(dir, pml.velocity);
                 Math3D.VectorScale(dir, d, pml.velocity);
             }
 
@@ -211,19 +206,20 @@ public class PMove {
      * Does not modify any world state?
      */
     public static void PM_StepSlideMove() {
-        float[] start_o = { 0, 0, 0 }, start_v = { 0, 0, 0 };
-        float[] down_o = { 0, 0, 0 }, down_v = { 0, 0, 0 };
-
-        float[] up = { 0, 0, 0 }, down = { 0, 0, 0 };
+        float[] start_o = { 0, 0, 0 };
 
         Math3D.VectorCopy(pml.origin, start_o);
+        float[] start_v = {0, 0, 0};
         Math3D.VectorCopy(pml.velocity, start_v);
 
         PM_StepSlideMove_();
 
+        float[] down_o = {0, 0, 0};
         Math3D.VectorCopy(pml.origin, down_o);
+        float[] down_v = {0, 0, 0};
         Math3D.VectorCopy(pml.velocity, down_v);
 
+        float[] up = {0, 0, 0};
         Math3D.VectorCopy(start_o, up);
         up[2] += Defines.STEPSIZE;
 
@@ -237,7 +233,8 @@ public class PMove {
 
         PM_StepSlideMove_();
 
-        
+
+        float[] down = {0, 0, 0};
         Math3D.VectorCopy(pml.origin, down);
         down[2] -= Defines.STEPSIZE;
         trace = pm.trace.trace(pml.origin, pm.mins,
@@ -268,8 +265,6 @@ public class PMove {
      * Handles both ground friction and water friction.
      */
     public static void PM_Friction() {
-        float control;
-        float friction;
 
         float[] vel = pml.velocity;
 
@@ -286,8 +281,8 @@ public class PMove {
         if ((pm.groundentity != null && pml.groundsurface != null && 
         		0 == (pml.groundsurface.flags & Defines.SURF_SLICK))
                 || (pml.ladder)) {
-            friction = pm_friction;
-            control = speed < pm_stopspeed ? pm_stopspeed : speed;
+            float friction = pm_friction;
+            float control = speed < pm_stopspeed ? pm_stopspeed : speed;
             drop += control * friction * pml.frametime;
         }
 
@@ -303,9 +298,9 @@ public class PMove {
         }
         newspeed /= speed;
 
-        vel[0] = vel[0] * newspeed;
-        vel[1] = vel[1] * newspeed;
-        vel[2] = vel[2] * newspeed;
+        vel[0] *= newspeed;
+        vel[1] *= newspeed;
+        vel[2] *= newspeed;
     }
 
     /**
@@ -313,7 +308,6 @@ public class PMove {
      */
     public static void PM_Accelerate(float[] wishdir, float wishspeed,
             float accel) {
-        int i;
 
         float currentspeed = Math3D.DotProduct(pml.velocity, wishdir);
         float addspeed = wishspeed - currentspeed;
@@ -323,7 +317,7 @@ public class PMove {
         if (accelspeed > addspeed)
             accelspeed = addspeed;
 
-        for (i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++)
             pml.velocity[i] += accelspeed * wishdir[i];
     }
     
@@ -333,20 +327,19 @@ public class PMove {
 
     public static void PM_AirAccelerate(float[] wishdir, float wishspeed,
             float accel) {
-        int i;
-        float addspeed, wishspd = wishspeed;
+        float wishspd = wishspeed;
 
         if (wishspd > 30)
             wishspd = 30;
         float currentspeed = Math3D.DotProduct(pml.velocity, wishdir);
-        addspeed = wishspd - currentspeed;
+        float addspeed = wishspd - currentspeed;
         if (addspeed <= 0)
             return;
         float accelspeed = accel * wishspeed * pml.frametime;
         if (accelspeed > addspeed)
             accelspeed = addspeed;
 
-        for (i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++)
             pml.velocity[i] += accelspeed * wishdir[i];
     }
 
@@ -354,10 +347,8 @@ public class PMove {
      * PM_AddCurrents.
      */
     public static void PM_AddCurrents(float[] wishvel) {
-        float[] v = { 0, 0, 0 };
-        float s;
 
-        
+
         if (pml.ladder && Math.abs(pml.velocity[2]) <= 200) {
             if ((pm.viewangles[Defines.PITCH] <= -15)
                     && (pm.cmd.forwardmove > 0))
@@ -384,7 +375,8 @@ public class PMove {
                 wishvel[1] = 25;
         }
 
-        
+
+        float[] v = {0, 0, 0};
         if ((pm.watertype & Defines.MASK_CURRENT) != 0) {
             Math3D.VectorClear(v);
 
@@ -401,7 +393,7 @@ public class PMove {
             if ((pm.watertype & Defines.CONTENTS_CURRENT_DOWN) != 0)
                 v[2] -= 1;
 
-            s = pm_waterspeed;
+            float s = pm_waterspeed;
             if ((pm.waterlevel == 1) && (pm.groundentity != null))
                 s /= 2;
 
@@ -433,13 +425,10 @@ public class PMove {
      * PM_WaterMove.
      */
     public static void PM_WaterMove() {
-        int i;
         float[] wishvel = { 0, 0, 0 };
-        float[] wishdir = { 0, 0, 0 };
 
-      
-        
-        for (i = 0; i < 3; i++)
+
+        for (int i = 0; i < 3; i++)
             wishvel[i] = pml.forward[i] * pm.cmd.forwardmove
                     + pml.right[i] * pm.cmd.sidemove;
 
@@ -451,6 +440,7 @@ public class PMove {
 
         PM_AddCurrents(wishvel);
 
+        float[] wishdir = {0, 0, 0};
         Math3D.VectorCopy(wishvel, wishdir);
         float wishspeed = Math3D.VectorNormalize(wishdir);
 
@@ -470,7 +460,6 @@ public class PMove {
      */
     public static void PM_AirMove() {
         float[] wishvel = { 0, 0, 0 };
-        float[] wishdir = { 0, 0, 0 };
 
         float fmove = pm.cmd.forwardmove;
         float smove = pm.cmd.sidemove;
@@ -482,6 +471,7 @@ public class PMove {
 
         PM_AddCurrents(wishvel);
 
+        float[] wishdir = {0, 0, 0};
         Math3D.VectorCopy(wishvel, wishdir);
         float wishspeed = Math3D.VectorNormalize(wishdir);
 
@@ -538,7 +528,6 @@ public class PMove {
      */
     public static void PM_CatagorizePosition() {
         float[] point = { 0, 0, 0 };
-        trace_t trace;
 
 
         point[0] = pml.origin[0];
@@ -550,7 +539,7 @@ public class PMove {
             pm.s.pm_flags &= ~pmove_t.PMF_ON_GROUND;
             pm.groundentity = null;
         } else {
-            trace = pm.trace.trace(pml.origin, pm.mins,
+            trace_t trace = pm.trace.trace(pml.origin, pm.mins,
                     pm.maxs, point);
             pml.groundsurface = trace.surface;
             pml.groundcontents = trace.contents;
@@ -597,7 +586,6 @@ public class PMove {
         pm.watertype = 0;
 
         int sample2 = (int) (pm.viewheight - pm.mins[2]);
-        int sample1 = sample2 / 2;
 
         point[2] = pml.origin[2] + pm.mins[2] + 1;
         int cont = pm.pointcontents.pointcontents(point);
@@ -605,6 +593,7 @@ public class PMove {
         if ((cont & Defines.MASK_WATER) != 0) {
             pm.watertype = cont;
             pm.waterlevel = 1;
+            int sample1 = sample2 / 2;
             point[2] = pml.origin[2] + pm.mins[2] + sample1;
             cont = pm.pointcontents.pointcontents(point);
             if ((cont & Defines.MASK_WATER) != 0) {
@@ -669,20 +658,20 @@ public class PMove {
      * PM_CheckSpecialMovement.
      */
     public static void PM_CheckSpecialMovement() {
-        float[] spot = { 0, 0, 0 };
-        float[] flatforward = { 0, 0, 0 };
 
         if (pm.s.pm_time != 0)
             return;
 
         pml.ladder = false;
 
-        
+
+        float[] flatforward = {0, 0, 0};
         flatforward[0] = pml.forward[0];
         flatforward[1] = pml.forward[1];
         flatforward[2] = 0;
         Math3D.VectorNormalize(flatforward);
 
+        float[] spot = {0, 0, 0};
         Math3D.VectorMA(pml.origin, 1, flatforward, spot);
         trace_t trace = pm.trace.trace(pml.origin, pm.mins,
                 pm.maxs, spot);
@@ -716,12 +705,6 @@ public class PMove {
      * PM_FlyMove.
      */
     public static void PM_FlyMove(boolean doclip) {
-        float drop, friction, control, newspeed;
-        int i;
-        float[] wishvel = { 0, 0, 0 };
-        float[] wishdir = { 0, 0, 0 };
-        float[] end = { 0, 0, 0 };
-        trace_t trace;
 
         pm.viewheight = 22;
 
@@ -730,14 +713,14 @@ public class PMove {
         if (speed < 1) {
             Math3D.VectorCopy(Globals.vec3_origin, pml.velocity);
         } else {
-            drop = 0;
+            float drop = 0;
 
-            friction = pm_friction * 1.5f; 
-            control = speed < pm_stopspeed ? pm_stopspeed : speed;
+            float friction = pm_friction * 1.5f;
+            float control = speed < pm_stopspeed ? pm_stopspeed : speed;
             drop += control * friction * pml.frametime;
 
-            
-            newspeed = speed - drop;
+
+            float newspeed = speed - drop;
             if (newspeed < 0)
                 newspeed = 0;
             newspeed /= speed;
@@ -752,11 +735,14 @@ public class PMove {
         Math3D.VectorNormalize(pml.forward);
         Math3D.VectorNormalize(pml.right);
 
+        float[] wishvel = {0, 0, 0};
+        int i;
         for (i = 0; i < 3; i++)
             wishvel[i] = pml.forward[i] * fmove + pml.right[i]
                     * smove;
         wishvel[2] += pm.cmd.upmove;
 
+        float[] wishdir = {0, 0, 0};
         Math3D.VectorCopy(wishvel, wishdir);
         float wishspeed = Math3D.VectorNormalize(wishdir);
 
@@ -778,10 +764,11 @@ public class PMove {
             pml.velocity[i] += accelspeed * wishdir[i];
 
         if (doclip) {
+            float[] end = {0, 0, 0};
             for (i = 0; i < 3; i++)
                 end[i] = pml.origin[i] + pml.frametime * pml.velocity[i];
 
-            trace = pm.trace.trace(pml.origin, pm.mins, pm.maxs, end);
+            trace_t trace = pm.trace.trace(pml.origin, pm.mins, pm.maxs, end);
 
             Math3D.VectorCopy(trace.endpos, pml.origin);
         } else {
@@ -794,7 +781,6 @@ public class PMove {
      * Sets mins, maxs, and pm.viewheight.
      */
     public static void PM_CheckDuck() {
-        trace_t trace;
 
         pm.mins[0] = -16;
         pm.mins[1] = -16;
@@ -819,7 +805,7 @@ public class PMove {
             if ((pm.s.pm_flags & pmove_t.PMF_DUCKED) != 0) {
                 
                 pm.maxs[2] = 32;
-                trace = pm.trace.trace(pml.origin, pm.mins, pm.maxs, pml.origin);
+                trace_t trace = pm.trace.trace(pml.origin, pm.mins, pm.maxs, pml.origin);
                 if (!trace.allsolid)
                     pm.s.pm_flags &= ~pmove_t.PMF_DUCKED;
             }
@@ -838,13 +824,12 @@ public class PMove {
      * Dead bodies have extra friction.
      */
     public static void PM_DeadMove() {
-        float forward;
 
         if (null == pm.groundentity)
             return;
 
-        
-        forward = Math3D.VectorLength(pml.velocity);
+
+        float forward = Math3D.VectorLength(pml.velocity);
         forward -= 20;
         if (forward <= 0) {
             Math3D.VectorClear(pml.velocity);
@@ -855,13 +840,13 @@ public class PMove {
     }
 
     public static boolean PM_GoodPosition() {
-        float[] origin = { 0, 0, 0 }, end = { 0, 0, 0 };
-        int i;
 
         if (pm.s.pm_type == Defines.PM_SPECTATOR)
             return true;
 
-        for (i = 0; i < 3; i++)
+        float[] end = {0, 0, 0};
+        float[] origin = {0, 0, 0};
+        for (int i = 0; i < 3; i++)
             origin[i] = end[i] = pm.s.origin[i] * 0.125f;
         trace_t trace = pm.trace.trace(origin, pm.mins, pm.maxs, end);
 
@@ -874,14 +859,13 @@ public class PMove {
      */
 
     public static void PM_SnapPosition() {
-        int[] sign = {0, 0, 0};
-        int i, j, bits;
-        short[] base = {0, 0, 0};
+        int i;
 
-        
+
         for (i = 0; i < 3; i++)
             pm.s.velocity[i] = (short) (pml.velocity[i] * 8);
 
+        int[] sign = {0, 0, 0};
         for (i = 0; i < 3; i++) {
             if (pml.origin[i] >= 0)
                 sign[i] = 1;
@@ -891,11 +875,12 @@ public class PMove {
             if (pm.s.origin[i] * 0.125 == pml.origin[i])
                 sign[i] = 0;
         }
+        short[] base = {0, 0, 0};
         Math3D.VectorCopy(pm.s.origin, base);
 
         
-        for (j = 0; j < 8; j++) {
-            bits = jitterbits[j];
+        for (int j = 0; j < 8; j++) {
+            int bits = jitterbits[j];
             Math3D.VectorCopy(base, pm.s.origin);
             for (i = 0; i < 3; i++)
                 if ((bits & (1 << i)) != 0)
@@ -914,16 +899,15 @@ public class PMove {
      * Snaps the origin of the player move to 0.125 grid.
      */
     public static void PM_InitialSnapPosition() {
-        int x, y, z;
         short[] base = {0, 0, 0};
 
         Math3D.VectorCopy(pm.s.origin, base);
 
-        for (z = 0; z < 3; z++) {
+        for (int z = 0; z < 3; z++) {
             pm.s.origin[2] = (short) (base[2] + offset[z]);
-            for (y = 0; y < 3; y++) {
+            for (int y = 0; y < 3; y++) {
                 pm.s.origin[1] = (short) (base[1] + offset[y]);
-                for (x = 0; x < 3; x++) {
+                for (int x = 0; x < 3; x++) {
                     pm.s.origin[0] = (short) (base[0] + offset[x]);
                     if (PM_GoodPosition()) {
                         pml.origin[0] = pm.s.origin[0] * 0.125f;
@@ -944,8 +928,6 @@ public class PMove {
      * PM_ClampAngles.
      */
     public static void PM_ClampAngles() {
-        short temp;
-        int i;
 
         if ((pm.s.pm_flags & pmove_t.PMF_TIME_TELEPORT) != 0) {
             pm.viewangles[Defines.YAW] = Math3D
@@ -955,8 +937,8 @@ public class PMove {
             pm.viewangles[Defines.ROLL] = 0;
         } else {
             
-            for (i = 0; i < 3; i++) {
-                temp = (short) (pm.cmd.angles[i] + pm.s.delta_angles[i]);
+            for (int i = 0; i < 3; i++) {
+                short temp = (short) (pm.cmd.angles[i] + pm.s.delta_angles[i]);
                 pm.viewangles[i] = Math3D.SHORT2ANGLE(temp);
             }
 
@@ -1072,7 +1054,7 @@ public class PMove {
                 Math3D.VectorCopy(pm.viewangles, angles);
                 
                 if (angles[Defines.PITCH] > 180)
-                    angles[Defines.PITCH] = angles[Defines.PITCH] - 360;
+                    angles[Defines.PITCH] -= 360;
                 
                 angles[Defines.PITCH] /= 3;
 

@@ -49,7 +49,7 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
     private volatile Thread workingThread = null;
     private volatile boolean terminated = false;
 
-    private int countThreads(Map<String, String> parameters) {
+    private static int countThreads(Map<String, String> parameters) {
         String paramValue = parameters.get(THREADS_KEY);
         int threads;
         try {
@@ -78,13 +78,13 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
         int changejobs = jobs+1;
         
         if(parameters.containsKey(RUN_ALT_STRATEGY_KEY)){
-            altStrategyClass = this.getAlternativeStrategy(parameters);
+            altStrategyClass = CombinedMultithreadStrategy.getAlternativeStrategy(parameters);
             changejobs = jobs / 2;
         }
 
         String altFitnessClassName = null;
         if(parameters.containsKey(RUN_ALT_FITNESS_KEY)){
-            altFitnessClassName = this.getAlternativeFitness(parameters);
+            altFitnessClassName = CombinedMultithreadStrategy.getAlternativeFitness(parameters);
         }
         
         for (int i = 0; i < jobs; i++) {
@@ -94,7 +94,7 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
                  job = strategyClass.newInstance();
             } else {
                 
-                 this.activeAlternativeParameter(RUN_ALT_TERMINATION_CRITERIA_KEY, jobConf.getStrategyParameters());
+                 CombinedMultithreadStrategy.activeAlternativeParameter(RUN_ALT_TERMINATION_CRITERIA_KEY, jobConf.getStrategyParameters());
                  if(altFitnessClassName != null){
                      jobConf.updateObjective(altFitnessClassName);
                  }
@@ -150,7 +150,7 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
         }
     }
     
-    protected Class<? extends RunStrategy> getAlternativeStrategy(Map<String, String> parameters) {
+    protected static Class<? extends RunStrategy> getAlternativeStrategy(Map<String, String> parameters) {
         String paramValue = parameters.get(RUN_ALT_STRATEGY_KEY);
         Class<? extends RunStrategy> strategyClass;
         try{
@@ -163,12 +163,12 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
     }
 
     
-    private String getAlternativeFitness(Map<String, String> parameters) {
+    private static String getAlternativeFitness(Map<String, String> parameters) {
         String paramValue = parameters.get(RUN_ALT_FITNESS_KEY);
         return paramValue;
     }
     
-    private void activeAlternativeParameter(String parameterAlternativeName, Map<String,String> parametersMap) {
+    private static void activeAlternativeParameter(String parameterAlternativeName, Map<String, String> parametersMap) {
         if(!parametersMap.containsKey(parameterAlternativeName)){
             LOG.warning("Invalid parameterAlternativeName provided to activeAlternaveParameter method");
             return;

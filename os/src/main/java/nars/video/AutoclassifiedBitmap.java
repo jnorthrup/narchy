@@ -61,9 +61,12 @@ public class AutoclassifiedBitmap extends VectorSensor {
     public final float[][] pixRecon;
 
     private final float[] ins;
-    private final int sw, sh;
-    private final int nw, nh;
-    private final int pw, ph;
+    private final int sw;
+    private final int sh;
+    private final int nw;
+    private final int nh;
+    private final int pw;
+    private final int ph;
     private final Game game;
     private final Term[] feature;
 
@@ -295,11 +298,10 @@ public class AutoclassifiedBitmap extends VectorSensor {
                     ae.recode(ins, true, false);
                 }
 
-                float mult;
-
                 float[] peij = encoded[i][j];
 
                 Arrays.fill(peij, 0);
+                float mult;
                 if (po != null && po.length > 0) {
                     mult = +1;
                     float f = 0.5f + 0.5f / po.length;

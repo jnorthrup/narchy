@@ -68,12 +68,6 @@ public class PlayerView {
      */
 
     public static void P_DamageFeedback(edict_t player) {
-        float side;
-        float[] v = { 0, 0, 0 };
-        int r, l;
-        float[] power_color = { 0.0f, 1.0f, 0.0f };
-        float[] acolor = { 1.0f, 1.0f, 1.0f };
-        float[] bcolor = { 1.0f, 0.0f, 0.0f };
 
         gclient_t client = player.client;
 
@@ -127,8 +121,9 @@ public class PlayerView {
         if ((GameBase.level.time > player.pain_debounce_time)
                 && 0 == (player.flags & Defines.FL_GODMODE)
                 && (client.invincible_framenum <= GameBase.level.framenum)) {
-            r = 1 + (Lib.rand() & 1);
+            int r = 1 + (Lib.rand() & 1);
             player.pain_debounce_time = GameBase.level.time + 0.7f;
+            int l;
             if (player.health < 25)
                 l = 25;
             else if (player.health < 50)
@@ -149,21 +144,22 @@ public class PlayerView {
         if (client.damage_alpha < 0.2f)
             client.damage_alpha = 0.2f;
         if (client.damage_alpha > 0.6f)
-            client.damage_alpha = 0.6f; 
+            client.damage_alpha = 0.6f;
 
-        
-        
-        
-        
+
+        float[] v = {0, 0, 0};
         Math3D.VectorClear(v);
+        float[] power_color = {0.0f, 1.0f, 0.0f};
         if (client.damage_parmor != 0)
             Math3D.VectorMA(v, (float) client.damage_parmor / realcount,
                     power_color, v);
 
+        float[] acolor = {1.0f, 1.0f, 1.0f};
         if (client.damage_armor != 0)
             Math3D.VectorMA(v, (float) client.damage_armor / realcount, acolor,
                     v);
 
+        float[] bcolor = {1.0f, 0.0f, 0.0f};
         if (client.damage_blood != 0)
             Math3D.VectorMA(v, (float) client.damage_blood / realcount, bcolor,
                     v);
@@ -184,7 +180,7 @@ public class PlayerView {
             Math3D.VectorSubtract(client.damage_from, player.s.origin, v);
             Math3D.VectorNormalize(v);
 
-            side = Math3D.DotProduct(v, right);
+            float side = Math3D.DotProduct(v, right);
             client.v_dmg_roll = kick * side * 0.3f;
 
             side = -Math3D.DotProduct(v, forward);
@@ -213,8 +209,6 @@ public class PlayerView {
      */
     public static void SV_CalcViewOffset(edict_t ent) {
         float ratio;
-        float delta;
-        float[] v = { 0, 0, 0 };
 
 
         float[] angles = ent.client.ps.kick_angles;
@@ -249,8 +243,8 @@ public class PlayerView {
                 ratio = 0;
             angles[Defines.PITCH] += ratio * ent.client.fall_value;
 
-            
-            delta = Math3D.DotProduct(ent.velocity, forward);
+
+            float delta = Math3D.DotProduct(ent.velocity, forward);
             angles[Defines.PITCH] += delta * GameBase.run_pitch.value;
 
             delta = Math3D.DotProduct(ent.velocity, right);
@@ -269,7 +263,8 @@ public class PlayerView {
             angles[Defines.ROLL] += delta;
         }
 
-        
+
+        float[] v = {0, 0, 0};
         Math3D.VectorClear(v);
 
         
@@ -317,10 +312,8 @@ public class PlayerView {
      * Calculates where to draw the gun.
      */
     public static void SV_CalcGunOffset(edict_t ent) {
-        int i;
-        float delta;
 
-        
+
         ent.client.ps.gunangles[Defines.ROLL] = xyspeed * bobfracsin * 0.005f;
         ent.client.ps.gunangles[Defines.YAW] = xyspeed * bobfracsin * 0.01f;
         if ((bobcycle & 1) != 0) {
@@ -330,9 +323,10 @@ public class PlayerView {
 
         ent.client.ps.gunangles[Defines.PITCH] = xyspeed * bobfracsin * 0.005f;
 
-        
+
+        int i;
         for (i = 0; i < 3; i++) {
-            delta = ent.client.oldviewangles[i] - ent.client.ps.viewangles[i];
+            float delta = ent.client.oldviewangles[i] - ent.client.ps.viewangles[i];
             if (delta > 180)
                 delta -= 360;
             if (delta < -180)
@@ -379,12 +373,11 @@ public class PlayerView {
      * Calculates the blending color according to the players environment.
      */
     public static void SV_CalcBlend(edict_t ent) {
-        float[] vieworg = { 0, 0, 0 };
-        int remaining;
 
         ent.client.ps.blend[0] = ent.client.ps.blend[1] = ent.client.ps.blend[2] = ent.client.ps.blend[3] = 0;
 
-        
+
+        float[] vieworg = {0, 0, 0};
         Math3D.VectorAdd(ent.s.origin, ent.client.ps.viewoffset, vieworg);
         int contents = GameBase.gi.pointcontents.pointcontents(vieworg);
         if ((contents & (Defines.CONTENTS_LAVA | Defines.CONTENTS_SLIME | Defines.CONTENTS_WATER)) != 0)
@@ -399,7 +392,8 @@ public class PlayerView {
         else if ((contents & Defines.CONTENTS_WATER) != 0)
             SV_AddBlend(0.5f, 0.3f, 0.2f, 0.4f, ent.client.ps.blend);
 
-        
+
+        int remaining;
         if (ent.client.quad_framenum > GameBase.level.framenum) {
             remaining = (int) (ent.client.quad_framenum - GameBase.level.framenum);
             if (remaining == 30) 
@@ -458,9 +452,6 @@ public class PlayerView {
      * Calculates damage and effect when a player falls down.
      */
     public static void P_FallingDamage(edict_t ent) {
-        float delta;
-        int damage;
-        float[] dir = { 0, 0, 0 };
 
         if (ent.s.modelindex != 255)
             return; 
@@ -468,6 +459,7 @@ public class PlayerView {
         if (ent.movetype == Defines.MOVETYPE_NOCLIP)
             return;
 
+        float delta;
         if ((ent.client.oldvelocity[2] < 0)
                 && (ent.velocity[2] > ent.client.oldvelocity[2])
                 && (null == ent.groundentity)) {
@@ -507,11 +499,12 @@ public class PlayerView {
                 else
                     ent.s.event = Defines.EV_FALL;
             }
-            ent.pain_debounce_time = GameBase.level.time; 
-                                                          
-            damage = (int) ((delta - 30) / 2);
+            ent.pain_debounce_time = GameBase.level.time;
+
+            int damage = (int) ((delta - 30) / 2);
             if (damage < 1)
                 damage = 1;
+            float[] dir = {0, 0, 0};
             Math3D.VectorSet(dir, 0, 0, 1);
 
             if (GameBase.deathmatch.value == 0
@@ -719,8 +712,6 @@ public class PlayerView {
      * ===============
      */
     public static void G_SetClientEffects(edict_t ent) {
-        int pa_type;
-        int remaining;
 
         ent.s.effects = 0;
         ent.s.renderfx = 0;
@@ -729,7 +720,7 @@ public class PlayerView {
             return;
 
         if (ent.powerarmor_time > GameBase.level.time) {
-            pa_type = GameItems.PowerArmorType(ent);
+            int pa_type = GameItems.PowerArmorType(ent);
             if (pa_type == Defines.POWER_ARMOR_SCREEN) {
                 ent.s.effects |= Defines.EF_POWERSCREEN;
             } else if (pa_type == Defines.POWER_ARMOR_SHIELD) {
@@ -738,6 +729,7 @@ public class PlayerView {
             }
         }
 
+        int remaining;
         if (ent.client.quad_framenum > GameBase.level.framenum) {
             remaining = (int) ent.client.quad_framenum
                     - GameBase.level.framenum;
@@ -780,7 +772,6 @@ public class PlayerView {
      * ===============
      */
     public static void G_SetClientSound(edict_t ent) {
-        String weap;
 
         if (ent.client.pers.game_helpchanged != GameBase.game.helpchanged) {
             ent.client.pers.game_helpchanged = GameBase.game.helpchanged;
@@ -796,6 +787,7 @@ public class PlayerView {
                     .soundindex("misc/pc_up.wav"), 1, Defines.ATTN_STATIC, 0);
         }
 
+        String weap;
         if (ent.client.pers.weapon != null)
             weap = ent.client.pers.weapon.classname;
         else
@@ -901,7 +893,6 @@ public class PlayerView {
      * spawning.
      */
     public static void ClientEndServerFrame(edict_t ent) {
-        int i;
 
         current_player = ent;
         current_client = ent.client;
@@ -914,7 +905,7 @@ public class PlayerView {
         
         
         
-        for (i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             current_client.ps.pmove.origin[i] = (short) (ent.s.origin[i] * 8.0);
             current_client.ps.pmove.velocity[i] = (short) (ent.velocity[i] * 8.0);
         }

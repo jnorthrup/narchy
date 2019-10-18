@@ -1,7 +1,6 @@
 package jcog.lab;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
 import com.google.common.primitives.Primitives;
 import jcog.data.graph.ObjectGraph;
 import jcog.data.list.FasterList;
@@ -158,7 +157,8 @@ public class Lab<X> {
      * @param goal
      */
     public Optimize<X, X> optimize(Consumer<X> procedure, Goal<X> goal) {
-        return optimize(subject, vars.values().stream().filter(Var::ready).collect(toList()),(s -> {
+        List<Var<X, ?>> list = vars.values().stream().filter(Var::ready).collect(toList());
+        return optimize(subject, list,(s -> {
                     X ss = s.get();
                     procedure.accept(ss);
                     return ss;
@@ -166,7 +166,8 @@ public class Lab<X> {
     }
 
     public <Y> Optimize<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, List<Sensor<Y, ?>> sensors) {
-        return optimize(subject, vars.values().stream().filter(Var::ready).collect(toList()), procedure, goal, sensors
+        List<Var<X, ?>> list = vars.values().stream().filter(Var::ready).collect(toList());
+        return optimize(subject, list, procedure, goal, sensors
         );
     }
 
@@ -177,7 +178,8 @@ public class Lab<X> {
 
     @SafeVarargs
     public final <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, FloatFunction<Y>... goal) {
-        return optilive(procedure, Stream.of(goal).map(Goal::new).collect(toList()), Collections.EMPTY_LIST);
+        List<Goal<Y>> list = Arrays.stream(goal).map(Goal::new).collect(toList());
+        return optilive(procedure, list, Collections.EMPTY_LIST);
     }
 
     @SafeVarargs
@@ -186,12 +188,14 @@ public class Lab<X> {
     }
 
     public <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, List<Goal<Y>> goal, List<Sensor<Y, ?>> sensors) {
+        List<Var<X, ?>> list = vars.values().stream().filter(Var::ready).collect(toList());
         return new Optilive<>(subject, procedure, goal,
-                    vars.values().stream().filter(Var::ready).collect(toList()), sensors);
+                list, sensors);
     }
 
     public <Y> Optimize<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, Lab<Y> sensors) {
-        return optimize(subject, vars.values().stream().filter(Var::ready).collect(toList()),
+        List<Var<X, ?>> list = vars.values().stream().filter(Var::ready).collect(toList());
+        return optimize(subject, list,
                 procedure, goal, new FasterList(sensors.sensors.values())
         );
     }
@@ -313,7 +317,7 @@ public class Lab<X> {
                     return false;
 
                 Class<?> targetType = target.getClass();
-                if (!filter.includeClass(targetType))
+                if (!DiscoveryFilter.includeClass(targetType))
                     return false;
 
                 if (contains(targetType)) {
@@ -327,23 +331,23 @@ public class Lab<X> {
             @Override
             public boolean recurse(Object x) {
                 Class<?> xc = x.getClass();
-                return filter.includeClass(xc) && !contains(xc);
+                return DiscoveryFilter.includeClass(xc) && !contains(xc);
             }
 
             @Override
             public boolean includeValue(Object v) {
-                return filter.includeClass(v.getClass());
+                return DiscoveryFilter.includeClass(v.getClass());
             }
 
             @Override
             public boolean includeClass(Class<?> c) {
-                return filter.includeClass(c);
+                return DiscoveryFilter.includeClass(c);
             }
 
             @Override
             public boolean includeField(Field f) {
                 int m = f.getModifiers();
-                if (!Modifier.isPublic(m) || !filter.includeField(f))
+                if (!Modifier.isPublic(m) || !DiscoveryFilter.includeField(f))
                     return false;
 
                 Class<?> t = Primitives.wrap(f.getType());
@@ -398,7 +402,7 @@ public class Lab<X> {
     }
 
     public Lab<X> var(String key, Function<X, Integer> get, ObjectIntProcedure<X> apply) {
-        return var(key, Float.NaN, Float.NaN, Float.NaN, (x) -> get.apply(x).floatValue() /* HACK */, (X x, float v) -> {
+        return var(key, Float.NaN, Float.NaN, Float.NaN, (x) -> get.apply(x).floatValue() /* HACK */, (x, v) -> {
             int i = Math.round(v);
             apply.value(x, i);
             return i;
@@ -408,7 +412,7 @@ public class Lab<X> {
     public Lab<X> var(String key, int min, int max, int inc, Function<X, Integer> get, ObjectIntProcedure<X> apply) {
         return var(key, min, max, inc < 0 ? Float.NaN : inc,
             (x) -> get!=null ? get.apply(x).floatValue() : null /* HACK */,
-            (X x, float v) -> {
+            (x, v) -> {
                 int i = Math.round(v);
                 apply.value(x, i);
                 return i;
@@ -463,11 +467,11 @@ public class Lab<X> {
 
         public static final DiscoveryFilter all = new DiscoveryFilter();
 
-        protected boolean includeField(Field f) {
+        protected static boolean includeField(Field f) {
             return true;
         }
 
-        protected boolean includeClass(Class<?> targetType) {
+        protected static boolean includeClass(Class<?> targetType) {
             return true;
         }
 
@@ -477,7 +481,7 @@ public class Lab<X> {
 
             Boolean.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
                 Function<X, Boolean> get = ObjectGraph.getter(p);
-                final BiConsumer<X, Boolean> set = ObjectGraph.setter(p);
+                BiConsumer<X, Boolean> set = ObjectGraph.setter(p);
                 var(k, 0, 1, 0.5f,
                         (x)->get.apply(x) ? 1f : 0f,
                         (x, v) -> {
@@ -488,7 +492,7 @@ public class Lab<X> {
             },
 
             AtomicBoolean.class, (sample, k, p) -> {
-                final Function<X, AtomicBoolean> get = ObjectGraph.getter(p);
+                Function<X, AtomicBoolean> get = ObjectGraph.getter(p);
                 AtomicBoolean fr = get.apply(sample);
                 var(k, 0, 1, 0.5f, (x, v) -> {
                     boolean b = v >= 0.5f;
@@ -498,23 +502,21 @@ public class Lab<X> {
             },
 
             Integer.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
-                final Function<X, Integer> get = ObjectGraph.getter(p);
-                final BiConsumer<X, Integer> set = ObjectGraph.setter(p);
+                Function<X, Integer> get = ObjectGraph.getter(p);
+                BiConsumer<X, Integer> set = ObjectGraph.setter(p);
                 var(k, get, set::accept);
             },
             IntRange.class, (sample, k, p) -> {
-                final Function<X, IntRange> get = ObjectGraph.getter(p);
+                Function<X, IntRange> get = ObjectGraph.getter(p);
                 IntRange fr = get.apply(sample);
-                var(k, fr.min, fr.max, -1, null /* TODO */, (ObjectIntProcedure<X>) (x, v) -> {
-                    get.apply(x).set(v);
-                });
+                var(k, fr.min, fr.max, -1, null /* TODO */, (ObjectIntProcedure<X>) (x, v) -> get.apply(x).set(v));
             },
 
 
 
             Float.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
                 Function<X, Float> get = ObjectGraph.getter(p);
-                final BiConsumer<X, Float> set = ObjectGraph.setter(p);
+                BiConsumer<X, Float> set = ObjectGraph.setter(p);
                 var(k, Float.NaN, Float.NaN, Float.NaN,
                         get,
                         (x,v)->{ set.accept(x,v); return v; });
@@ -523,7 +525,7 @@ public class Lab<X> {
 
 
             FloatRange.class, (sample, k, p) -> {
-                final Function<X, FloatRange> get = ObjectGraph.getter(p);
+                Function<X, FloatRange> get = ObjectGraph.getter(p);
                 FloatRange fr = get.apply(sample);
                 var(k, fr.min, fr.max, Float.NaN,
                         (x)-> get.apply(x).floatValue(),

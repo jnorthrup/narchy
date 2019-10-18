@@ -42,7 +42,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
     protected final Bagregate<Concept> concepts;
 
     private final Flip<List<ConceptWidget>> next = new Flip(FasterList::new);
-    final float bagUpdateRate = 0.25f;
+    static final float bagUpdateRate = 0.25f;
 
 
     static volatile int serial = 0;
@@ -90,9 +90,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         synchronized (this) {
             super.start(space);
             init();
-            updater = nar.onDur(nn -> {
-                concepts.commit();
-            });
+            updater = nar.onDur(nn -> concepts.commit());
         }
 
     }
@@ -145,25 +143,24 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             List<ConceptWidget> w = next.write();
                 w.clear();
 
-                concepts.forEach((clink) -> {
-                    
-                    Concept cc = clink.get();
-                    ConceptWidget cw = cc.meta(spaceID, () -> new ConceptWidget(cc) {
-                        @Override
-                        protected void onClicked(PushButton b) {
-                            SpaceGraph.window(new ConceptSurface(id.term(), nar), 800, 700);
-                        }
-                    });
-                    if (cw != null) {
-
-                        cw.activate();
-
-                        cw.pri = clink.priElseZero();
-                        w.add(cw);
-
+            for (PriReference<Concept> clink : concepts) {
+                Concept cc = clink.get();
+                ConceptWidget cw = cc.meta(spaceID, () -> new ConceptWidget(cc) {
+                    @Override
+                    protected void onClicked(PushButton b) {
+                        SpaceGraph.window(new ConceptSurface(id.term(), nar), 800, 700);
                     }
-                    
                 });
+                if (cw != null) {
+
+                    cw.activate();
+
+                    cw.pri = clink.priElseZero();
+                    w.add(cw);
+
+                }
+
+            }
 
 
             vis.accept(next.write());
@@ -193,9 +190,8 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             @Override
             public void color(ConceptWidget cw, NAR nar) {
                 Truth beliefTruth = cw.id.beliefs().truth(nar.time(), nar);
-                float beliefTruthFreq;
                 if (beliefTruth != null) {
-                    beliefTruthFreq = beliefTruth.freq();
+                    float beliefTruthFreq = beliefTruth.freq();
                     Draw.colorUnipolarHue(cw.shapeColor, beliefTruthFreq, 0.25f, 0.75f, 0.1f + beliefTruth.conf() * 0.9f);
                 } else {
                     Draw.colorRGBA(cw.shapeColor, 0.5f, 0.5f, 0.5f, 0.1f);
@@ -283,13 +279,14 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         @Override
         public void accept(List<ConceptWidget> pending) {
 
-            pending.forEach(this::preCollect);
+            for (ConceptWidget widget : pending) {
+                preCollect(widget);
+            }
 
-            
 
-            pending.forEach(c -> {
-                c.edges.write().forEachValue(x -> x.inactive = true);
-            });
+            for (ConceptWidget conceptWidget : pending) {
+                conceptWidget.edges.write().forEachValue(x -> x.inactive = true);
+            }
 
             edges.commit(e -> {
                 if (!e.active()) {
@@ -313,7 +310,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             float _lineAlphaMin = this.lineAlphaMin.floatValue();
             float lineAlphaMin = Math.min(_lineAlphaMin, _lineAlphaMax);
             float lineAlphaMax = Math.max(lineAlphaMin, _lineAlphaMax);
-            pending.forEach(c -> {
+            for (ConceptWidget c : pending) {
                 float srcRad = c.radius();
                 c.edges.write().removeIf(e -> {
                     if (e.inactive || !e.connected()) {
@@ -344,13 +341,12 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
                         e.a = Util.lerpSafe(p /* * Math.max(taskish, termish) */, lineAlphaMin, lineAlphaMax);
 
-                        
 
                         e.attraction = 0.5f * e.width / 2f;
                         float totalRad = srcRad + e.tgt().radius();
                         e.attractionDist =
-                                
-                                (totalRad * separation) + totalRad; 
+
+                                (totalRad * separation) + totalRad;
                     } else {
                         e.a = -1;
                         e.attraction = 0;
@@ -359,7 +355,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                     return false;
                 });
                 c.edges.commit();
-            });
+            }
 
 
         }
@@ -417,7 +413,6 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             
 
             float volume = 1f / (1f + cw.id.term().complexity());
-            float density = 5f / (1f + volume);
             float ep = 1 + p;
             float minSize = this.minSize.floatValue();
             float nodeScale = minSize + (ep * ep) * maxSizeMult.floatValue()
@@ -440,6 +435,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
 
             if (cw.body != null) {
+                float density = 5f / (1f + volume);
                 cw.body.setMass(nodeScale * nodeScale * nodeScale /* approx */ * density);
                 cw.body.setDamping(0.99f, 0.9f);
 

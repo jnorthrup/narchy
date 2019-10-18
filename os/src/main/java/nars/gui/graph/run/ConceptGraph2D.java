@@ -77,7 +77,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
     }
 
 
-    public Graph2DUpdater<Term> getLayout() {
+    public static Graph2DUpdater<Term> getLayout() {
         return new ForceDirected2D<>() {
 
             @Override
@@ -88,13 +88,13 @@ public class ConceptGraph2D extends Graph2D<Term> {
 
             @Override
             public void update(Graph2D<Term> g, float dtS) {
-                g.forEachValue(nn -> updateNode(nn));
+                g.forEachValue(ConceptGraph2D::updateNode);
                 super.update(g, dtS);
             }
         };
     }
 
-    void updateNode(NodeVis<Term> nn) {
+    static void updateNode(NodeVis<Term> nn) {
         Term i = nn.id;
         if (i != null && nn.visible()) {
 
@@ -191,7 +191,10 @@ public class ConceptGraph2D extends Graph2D<Term> {
         final Iterable<TaskLink> links;
 
         /** non-volatile cached is this helpful? */
-        private transient boolean _belief, _goal, _question, _quest;
+        private transient boolean _belief;
+        private transient boolean _goal;
+        private transient boolean _question;
+        private transient boolean _quest;
 
 
         private TasklinkVis(Iterable<TaskLink> links) {
@@ -209,7 +212,9 @@ public class ConceptGraph2D extends Graph2D<Term> {
                 return;
 
 
-            links.forEach(l -> add(edit, l));
+            for (TaskLink l : links) {
+                add(edit, l);
+            }
 
 
         }
@@ -238,7 +243,6 @@ public class ConceptGraph2D extends Graph2D<Term> {
             Term from = l.from().concept();
             EdgeVis<Term> e = graph.edge(from, targetTerm);
             if (e != null) {
-                int r, g, b;
                 /*
                 https://www.colourlovers.com/palette/848743/(_%E2%80%9D_)
                 BELIEF   Red     189,21,80
@@ -252,6 +256,9 @@ public class ConceptGraph2D extends Graph2D<Term> {
                     if (ppi < ScalarValue.EPSILON)
                         continue;
 
+                    int b;
+                    int g;
+                    int r;
                     switch (i) {
                         case 0:
                             r = 189;

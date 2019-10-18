@@ -28,20 +28,19 @@ class BayazitDecomposer {
 	}
 
 	private static FasterList<v2> copy(int i, int j, FasterList<v2> vertices) {
-		FasterList<v2> p = new FasterList<>();
-		while (j < i)
+        while (j < i)
 			j += vertices.size();
-		
-		for (; i <= j; ++i) {
+
+        FasterList<v2> p = new FasterList<>();
+        for (; i <= j; ++i) {
 			p.add(at(i, vertices));
 		}
 		return p;
 	}
 
 	private static float getSignedArea(FasterList<v2> vect) {
-		int i;
-		float area = 0;
-		for (i = 0; i < vect.size(); i++) {
+        float area = 0;
+		for (int i = 0; i < vect.size(); i++) {
 			int j = (i + 1) % vect.size();
 			v2 vi = vect.get(i);
 			v2 vj = vect.get(j);
@@ -53,9 +52,8 @@ class BayazitDecomposer {
 	}
 
 	private static float getSignedArea(v2[] vect) {
-		int i;
-		float area = 0;
-		for (i = 0; i < vect.length; i++) {
+        float area = 0;
+		for (int i = 0; i < vect.length; i++) {
 			int j = (i + 1) % vect.length;
 			v2 vi = vect[i];
 			v2 vj = vect[j];
@@ -97,18 +95,19 @@ class BayazitDecomposer {
 			
 		}
 		FasterList<FasterList<v2>> list = new FasterList<>();
-		float d, lowerDist, upperDist;
-		v2 p;
-		v2 lowerInt = new v2();
+        v2 lowerInt = new v2();
 		v2 upperInt = new v2();
 		int lowerIndex = 0, upperIndex = 0;
 		FasterList<v2> lowerPoly, upperPoly;
 		for (int i = 0; i < vertices.size(); ++i) {
 			if (reflex(i, vertices)) {
-				lowerDist = upperDist = Float.MAX_VALUE; 
-				for (int j = 0; j < vertices.size(); ++j) {
-					
-					if (left(at(i - 1, vertices), at(i, vertices), at(j, vertices))
+                float upperDist;
+                float lowerDist = upperDist = Float.MAX_VALUE;
+                for (int j = 0; j < vertices.size(); ++j) {
+
+                    v2 p;
+                    float d;
+                    if (left(at(i - 1, vertices), at(i, vertices), at(j, vertices))
 							&& rightOn(at(i - 1, vertices), at(i, vertices), at(j - 1, vertices))) {
 						
 						p = lineIntersect(at(i - 1, vertices), at(i, vertices), at(j, vertices),
@@ -148,10 +147,11 @@ class BayazitDecomposer {
 					upperPoly = copy(lowerIndex, i, vertices);
 					upperPoly.add(sp);
 				} else {
-					double highestScore = 0, bestIndex = lowerIndex;
+					double bestIndex = lowerIndex;
 					while (upperIndex < lowerIndex)
 						upperIndex += vertices.size();
-					for (int j = lowerIndex; j <= upperIndex; ++j) {
+                    double highestScore = 0;
+                    for (int j = lowerIndex; j <= upperIndex; ++j) {
 						if (canSee(i, j, vertices)) {
 							double score = 1 / (squareDist(at(i, vertices), at(j, vertices)) + 1);
 							if (reflex(j, vertices)) {

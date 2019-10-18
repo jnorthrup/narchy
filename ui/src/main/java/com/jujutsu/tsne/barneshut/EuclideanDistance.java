@@ -15,10 +15,9 @@ public class EuclideanDistance implements Distance{
 	    double dd = .0;
 	    double [] x1 = d1.getDataRef();
 	    double [] x2 = d2.getDataRef();
-	    double diff;
-	    for(int d = 0; d < d1._D; d++) {
-	        diff = (x1[d] - x2[d]);
-	        dd += diff * diff;
+        for(int d = 0; d < d1._D; d++) {
+            double diff = (x1[d] - x2[d]);
+            dd += diff * diff;
 	    }
 	    return dd;
 	}

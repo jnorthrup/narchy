@@ -126,17 +126,17 @@ class GeometryOperations {
 
 		if (tp[0] < BulletGlobals.SIMD_EPSILON)
 		{
-			
-			boolean invert_b_order = false;
-			_M.x = vB1.dot(AD);
+
+            _M.x = vB1.dot(AD);
 			_M.y = vB2.dot(AD);
 
-			if (_M.x > _M.y) {
+            boolean invert_b_order = false;
+            if (_M.x > _M.y) {
 				invert_b_order = true;
-				
-				_M.x = _M.x + _M.y;
+
+                _M.x += _M.y;
 				_M.y = _M.x - _M.y;
-				_M.x = _M.x - _M.y;
+                _M.x -= _M.y;
 			}
 			_M.z = vA1.dot(AD);
 			_M.w = vA2.dot(AD);

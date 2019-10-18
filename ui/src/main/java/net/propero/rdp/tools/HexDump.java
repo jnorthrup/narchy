@@ -10,12 +10,11 @@ public class HexDump {
     private static String dumpHexString(byte[] array, int offset, int length) {
         StringBuilder result = new StringBuilder();
 
-        byte[] line = new byte[16];
-        int lineIndex = 0;
-
         result.append("0x");
         result.append(toHexString(offset));
 
+        int lineIndex = 0;
+        byte[] line = new byte[16];
         for (int i = offset; i < offset + length; i++) {
             if (lineIndex == 16) {
                 result.append(' ');

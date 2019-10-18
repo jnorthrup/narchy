@@ -18,8 +18,8 @@ public class World {
 
     public final Player rlPlayer = new Player();
     public final Player opponentPlayer = new Player();
-    public final int width = 800;
-    public final int height = 600;
+    public static final int width = 800;
+    public static final int height = 600;
     public BufferedImage background = null;
     public final List<Hit> hits = Collections.synchronizedList(new ArrayList<>());
 }

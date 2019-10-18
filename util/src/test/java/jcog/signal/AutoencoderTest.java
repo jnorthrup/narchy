@@ -20,7 +20,6 @@ class AutoencoderTest {
         float noise_level = 0.01f, corruption_level = 0.01f;
         int training_epochs = 40;
         int train_N = 10;
-        int test_N = 2;
         int n_visible = 20;
         int n_hidden = 7;
         float learning_rate = 0.1f; //0.1f / train_N;
@@ -54,6 +53,7 @@ class AutoencoderTest {
                 {1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0}};
 
+        int test_N = 2;
         for (int i = 0; i < test_N; i++) {
             System.out.println(Texts.n4(test_X[i]));
             float[] reconstructed_X = da.reconstruct(test_X[i]);

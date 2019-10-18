@@ -3,6 +3,7 @@ package jcog.bloom;
 import jcog.bloom.hash.BytesHasher;
 import jcog.bloom.hash.Hasher;
 
+import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -41,14 +42,23 @@ public class MetalBloomFilter<E> {
     /** possibly contains */
     public boolean contains(int[] indices) {
 
-        return IntStream.range(0, numberOfHashes).anyMatch(i -> cells[indices[i]] > 0);
+        int bound = numberOfHashes;
+        return IntStream.range(0, bound).anyMatch(i -> cells[indices[i]] > 0);
     }
 
     public int[] hash(E element) {
 
         int h1 = hasher.hash1(element);
         int h2 = hasher.hash2(element);
-        int[] hashes = IntStream.range(0, numberOfHashes).map(i -> Math.abs(((h1 + i * h2) % numberOfCells))).toArray();
+        int[] hashes = new int[10];
+        int count = 0;
+        int bound = numberOfHashes;
+        for (int i = 0; i < bound; i++) {
+            int abs = Math.abs(((h1 + i * h2) % numberOfCells));
+            if (hashes.length == count) hashes = Arrays.copyOf(hashes, count * 2);
+            hashes[count++] = abs;
+        }
+        hashes = Arrays.copyOfRange(hashes, 0, count);
 
         return hashes;
     }

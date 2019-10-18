@@ -798,10 +798,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     final V doPut(K key, V value, boolean onlyIfNull) {
         if (key == null || value == null)
             throw new NullPointerException();
-        V oldValue = null;
         int hash = spreadHash(keyEquivalence.hash(key));
         Segment seg = addSegment(hash);
         seg.lock();
+        V oldValue = null;
         try {
             Node r = findNode(key, hash, seg);
             if (r != null) {
@@ -1114,9 +1114,11 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             Segment seg = segs.getFast(i);
             Node[] tab;
             if (seg != null && (tab = seg.table()) != null) {
-                if (Arrays.stream(tab).anyMatch(aTab -> Stream.iterate(aTab, Objects::nonNull, Node::getLinkage).map(p -> (V) (p.getValue())).anyMatch(v -> v == value ||
-                        (v != null && valueEquivalence.equal(v, value))))) {
-                    return true;
+                for (Node aTab : tab) {
+                    if (Stream.iterate(aTab, Objects::nonNull, Node::getLinkage).map(p -> (V) (p.getValue())).anyMatch(v -> v == value ||
+                            (v != null && valueEquivalence.equal(v, value)))) {
+                        return true;
+                    }
                 }
             }
         }
@@ -1243,9 +1245,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         if (key == null || remappingFunction == null)
             throw new NullPointerException();
         int hash = spreadHash(keyEquivalence.hash(key));
-        V value = null;
         Segment seg = addSegment(hash);
         seg.lock();
+        V value = null;
         try {
             Node[] tab = seg.getTableForAdd(this);
             int i = hash & (tab.length - 1);
@@ -1784,7 +1786,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
          * @return the hash code
          */
         public int hashCode() {
-            int h = this.stream().mapToInt(cchm.keyEquivalence::hash).sum();
+            Equivalence<? super K> equivalence = cchm.keyEquivalence;
+            int h = this.stream().mapToInt(equivalence::hash).sum();
             return h;
         }
     }
@@ -3555,15 +3558,14 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
 
 
+    //try {
+//UNSAFE = getUnsafe();
     //    static final Unsafe UNSAFE;
-    static final long tableBase;
+    static final long tableBase = UNSAFE.arrayBaseOffset(Node[].class);
     static final int tableShift;
 
 
     static {
-        //try {
-        //UNSAFE = getUnsafe();
-        tableBase = UNSAFE.arrayBaseOffset(Node[].class);
         int scale = UNSAFE.arrayIndexScale(Node[].class);
         if ((scale & (scale - 1)) != 0)
             throw new Error("data type scale not a power of two");

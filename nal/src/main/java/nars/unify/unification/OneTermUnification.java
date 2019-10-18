@@ -6,7 +6,8 @@ import nars.unify.Unify;
 
 public class OneTermUnification extends DeterministicUnification {
 
-    public final Term tx, ty;
+    public final Term tx;
+    public final Term ty;
 
     public OneTermUnification(Term tx, Term ty) {
         super();

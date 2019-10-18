@@ -11,7 +11,8 @@ import java.util.function.Consumer;
  */
 public final class BiSubterm extends TermVector {
 
-    protected final Term x,y;
+    protected final Term x;
+    protected final Term y;
 
     /**
      * uses an array argument so that the input array can be used directly without needing to create a new one when it calls the superclass constructor
@@ -76,7 +77,11 @@ public final class BiSubterm extends TermVector {
                 switch (stop) {
                     case 0: return;
                     case 1: a.accept(x); return;
-                    case 2: forEach(a); return;
+                    case 2:
+                        for (Term term : this) {
+                            a.accept(term);
+                        }
+                        return;
                 }
                 break;
             case 1:

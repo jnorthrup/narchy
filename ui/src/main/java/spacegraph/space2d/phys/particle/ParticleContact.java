@@ -6,7 +6,8 @@ public class ParticleContact {
     /**
      * Indices of the respective particles making contact.
      */
-    public int indexA, indexB;
+    public int indexA;
+    public int indexB;
     /**
      * The logical sum of the particle behaviors that have been setAt.
      */

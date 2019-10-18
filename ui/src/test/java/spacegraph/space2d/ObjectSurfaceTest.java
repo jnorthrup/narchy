@@ -16,9 +16,7 @@ public class ObjectSurfaceTest {
 
         public final FloatRange AT_FIELD = new FloatRange(0.5f, 0, 1f);
 
-        public final Runnable ABORT = ()->{
-            AT_FIELD.set(0.1f);
-        };
+        public final Runnable ABORT = ()-> AT_FIELD.set(0.1f);
 
         public MyInnerClass inner = new MyInnerClass();
     }

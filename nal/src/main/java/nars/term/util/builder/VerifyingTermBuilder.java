@@ -15,7 +15,8 @@ import java.util.Arrays;
  */
 public class VerifyingTermBuilder extends TermBuilder {
 
-    private final TermBuilder a, b;
+    private final TermBuilder a;
+    private final TermBuilder b;
 
     public VerifyingTermBuilder(TermBuilder a, TermBuilder b) {
         this.a = a;
@@ -44,7 +45,7 @@ public class VerifyingTermBuilder extends TermBuilder {
         return aa;
     }
 
-    protected boolean equals(Term x, Term y) {
+    protected static boolean equals(Term x, Term y) {
         try {
             TermTest.assertEq(x, y);
             return true;
@@ -54,7 +55,7 @@ public class VerifyingTermBuilder extends TermBuilder {
         }
     }
 
-    protected boolean equals(Subterms x, Subterms y) {
+    protected static boolean equals(Subterms x, Subterms y) {
         try {
             TermTest.assertEq(x, y);
             return true;

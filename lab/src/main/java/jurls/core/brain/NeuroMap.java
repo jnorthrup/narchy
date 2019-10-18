@@ -61,7 +61,7 @@ public class NeuroMap {
                     continue;
                 }
 
-                final InputOutput io = randomMemory();
+                InputOutput io = randomMemory();
 
                 assert io.output.length == functions.length;
 

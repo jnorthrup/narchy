@@ -327,8 +327,6 @@ public class Math3D {
 
 		assert(emins.length == 3 && emaxs.length == 3) : "vec3_t bug";
 
-		float dist1, dist2;
-
 
         byte ptype = p.type;
 		float pDist = p.dist;
@@ -351,7 +349,9 @@ public class Math3D {
 		float min0 = emins[0];
 		float min1 = emins[1];
 		float min2 = emins[2];
-		switch (p.signbits) {
+        float dist2;
+        float dist1;
+        switch (p.signbits) {
 			case 0 :
 				dist1 = n0 * max0 + n1 * max1 + n2 * max2;
 				dist2 = n0 * min0 + n1 * min1 + n2 * min2;

@@ -11,17 +11,24 @@ public class SelectiveBlur {
 
 		
 		static ImageTracer.ImageData blur (ImageTracer.ImageData imgd, float rad, float del){
-			int i,j,k,d,idx;
-			double racc,gacc,bacc,aacc,wacc;
-			ImageTracer.ImageData imgd2 = new ImageTracer.ImageData(imgd.width,imgd.height,new byte[imgd.width*imgd.height*4]);
+            ImageTracer.ImageData imgd2 = new ImageTracer.ImageData(imgd.width,imgd.height,new byte[imgd.width*imgd.height*4]);
 
 			
 			int radius = (int)Math.floor(rad); if(radius<1){ return imgd; } if(radius>5){ radius = 5; }
 			int delta = (int)Math.abs(del); if(delta>1024){ delta = 1024; }
 			double[] thisgk = gks[radius-1];
 
-			
-			for( j=0; j < imgd.height; j++ ){
+
+            double wacc;
+            double aacc;
+            double bacc;
+            double gacc;
+            double racc;
+            int idx;
+            int k;
+            int j;
+            int i;
+            for(j=0; j < imgd.height; j++ ){
 				for( i=0; i < imgd.width; i++ ){
 
 					racc = 0; gacc = 0; bacc = 0; aacc = 0; wacc = 0;
@@ -82,11 +89,11 @@ public class SelectiveBlur {
 				for( i=0; i < imgd.width; i++ ){
 
 					idx = ((j*imgd.width)+i)*4;
-					
-					d = Math.abs(imgd2.data[idx  ] - imgd.data[idx  ]) + Math.abs(imgd2.data[idx+1] - imgd.data[idx+1]) +
-							Math.abs(imgd2.data[idx+2] - imgd.data[idx+2]) + Math.abs(imgd2.data[idx+3] - imgd.data[idx+3]);
-					
-					if(d>delta){
+
+                    int d = Math.abs(imgd2.data[idx] - imgd.data[idx]) + Math.abs(imgd2.data[idx + 1] - imgd.data[idx + 1]) +
+                            Math.abs(imgd2.data[idx + 2] - imgd.data[idx + 2]) + Math.abs(imgd2.data[idx + 3] - imgd.data[idx + 3]);
+
+                    if(d>delta){
 						imgd2.data[idx  ] = imgd.data[idx  ];
 						imgd2.data[idx+1] = imgd.data[idx+1];
 						imgd2.data[idx+2] = imgd.data[idx+2];

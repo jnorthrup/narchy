@@ -1,6 +1,8 @@
 package jcog.grammar.parse.examples.combinatorics;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /*
@@ -197,7 +199,8 @@ public class Permutations implements Iterator<Object> {
 			return null;
 		}
 
-		Object[] out = IntStream.range(0, m).mapToObj(i -> inArray[index[i]]).toArray();
+		int bound = m;
+		Object[] out = IntStream.range(0, bound).mapToObj(i -> inArray[index[i]]).toArray();
 
         moveIndex();
 		return out;

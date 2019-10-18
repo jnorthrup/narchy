@@ -38,7 +38,7 @@ public class CompactArrayMap<K, V> {
         this.items = initial;
     }
 
-    public boolean containsValue(Object aValue) {
+    public static boolean containsValue(Object aValue) {
         throw new TODO();
     }
 
@@ -140,7 +140,7 @@ public class CompactArrayMap<K, V> {
     /**
      * override for alternate equality test
      */
-    protected boolean keyEquals(Object a, Object b) {
+    protected static boolean keyEquals(Object a, Object b) {
         return a.equals(b);
     }
 

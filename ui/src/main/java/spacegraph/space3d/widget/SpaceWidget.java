@@ -63,19 +63,19 @@ public abstract class SpaceWidget<T> extends SurfacedCuboid<T> {
 
 
         Quat4f tmpQ = new Quat4f();
-        ee.forEach(e -> {
+        for (EDraw e : ee) {
             float width = e.width;
             float thresh = 0.1f;
             if (width <= thresh) {
                 float aa = e.a * (width / thresh);
-                if (aa < 1/256f)
-                    return;
+                if (aa < 1 / 256f)
+                    continue;
                 gl.glColor4f(e.r, e.g, e.b, aa /* fade opacity */);
                 Draw.renderLineEdge(gl, src, e.tgt(), width);
             } else {
                 Draw.renderHalfTriEdge(gl, src, e, width, twist, tmpQ);
             }
-        });
+        }
     }
 
     @Override
@@ -110,7 +110,9 @@ public abstract class SpaceWidget<T> extends SurfacedCuboid<T> {
     @FunctionalInterface
     public interface SimpleNodeVis<X extends SpaceWidget<?>> extends Consumer<List<X>> {
         default void accept(List<X> l) {
-            l.forEach(this::each);
+            for (X x : l) {
+                each(x);
+            }
         }
 
         void each(X e);

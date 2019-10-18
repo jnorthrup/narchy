@@ -95,8 +95,17 @@ public class DecisionTree<K, V> {
      */
     static <K, V> V majority(K value, Stream<Function<K, V>> data) {
 
-        return data.collect(groupingBy(x -> x.apply(value), counting()))
-                .entrySet().stream().max(Map.Entry.comparingByValue()).get().getKey();
+        boolean seen = false;
+        Map.Entry<V, Long> best = null;
+        Comparator<Map.Entry<V, Long>> comparator = Map.Entry.comparingByValue();
+        for (Map.Entry<V, Long> vLongEntry : data.collect(groupingBy(x -> x.apply(value), counting()))
+                .entrySet()) {
+            if (!seen || comparator.compare(vLongEntry, best) > 0) {
+                seen = true;
+                best = vLongEntry;
+            }
+        }
+        return (seen ? Optional.of(best) : Optional.<Map.Entry<V, Long>>empty()).get().getKey();
     }
 
     private static void printSubtree(DecisionNode<?> node, PrintStream o) {
@@ -245,7 +254,7 @@ public class DecisionTree<K, V> {
      * Finds best feature to split on which is the one whose split results in lowest impurity measure.
      */
     protected Predicate<Function<K, V>> bestSplit(K value, Supplier<Stream<Function<K, V>>> data, Stream<Predicate<Function<K, V>>> features) {
-        final double[] currentImpurity = {Double.POSITIVE_INFINITY};
+        double[] currentImpurity = {Double.POSITIVE_INFINITY};
 
         return features.reduce(null, (bestSplit, feature) -> {
             double calculatedSplitImpurity =
@@ -283,14 +292,12 @@ public class DecisionTree<K, V> {
     /** var is the name of the target value */
     public SortedMap<DecisionNode.LeafNode<V>, List<String>> explainedConditions() {
         SortedMap<DecisionNode.LeafNode<V>, List<String>> map = new TreeMap<>();
-        explanations().entrySet().forEach((e) -> {
+        for (Map.Entry<DecisionNode.LeafNode<V>, List<ObjectBooleanPair<DecisionNode<V>>>> e : explanations().entrySet()) {
             DecisionNode.LeafNode<V> result = e.getKey();
-            List<String> cond = e.getValue().stream().map(c ->
-                c.getOne().condition(c.getTwo())
-            ).filter(x -> !"false".equals(x)).collect(toList());
+            List<String> cond = e.getValue().stream().map(c -> c.getOne().condition(c.getTwo())).filter(x -> !"false".equals(x)).collect(toList());
             if (!cond.isEmpty())
                 map.put(result, cond);
-        });
+        }
         return map;
     }
 
@@ -460,6 +467,10 @@ public class DecisionTree<K, V> {
     }
 
     public void printExplanations(PrintStream out) {
-        explainedConditions().forEach((leaf, path) -> out.println(leaf + "\n\t" + path));
+        for (Map.Entry<DecisionNode.LeafNode<V>, List<String>> entry : explainedConditions().entrySet()) {
+            DecisionNode.LeafNode<V> leaf = entry.getKey();
+            List<String> path = entry.getValue();
+            out.println(leaf + "\n\t" + path);
+        }
     }
 }

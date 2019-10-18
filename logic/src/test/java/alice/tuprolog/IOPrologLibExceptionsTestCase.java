@@ -439,7 +439,7 @@ public class IOPrologLibExceptionsTestCase {
 		assertFileNotFound(message);
 	}
 
-	public void assertFileNotFound(Term message) {
+	public static void assertFileNotFound(Term message) {
 		assertTrue(message.toString().contains("FileNotFoundException"));
 	}
 

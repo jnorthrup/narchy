@@ -67,7 +67,8 @@ public class PlaySound {
     private long beginTime;
 
     
-    private PlaySound prev, next;
+    private PlaySound prev;
+    private PlaySound next;
 
     private PlaySound() {
         prev = next = null;
@@ -85,12 +86,11 @@ public class PlaySound {
         
         freeList.next = freeList.prev = freeList;
         playableList.next = playableList.prev = playableList;
-        
-        
-        PlaySound ps;
-	    for (int i = 0; i < backbuffer.length; i++) {
-	        ps = backbuffer[i];
-	        ps.clear();
+
+
+        for (int i = 0; i < backbuffer.length; i++) {
+            PlaySound ps = backbuffer[i];
+            ps.clear();
 	        ps.prev = freeList;
             ps.next = freeList.next;
             ps.prev.next = ps;

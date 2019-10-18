@@ -115,7 +115,7 @@ public class Scale extends SlingFunction {
 	 * all. In that case, this method returns (somewhat 
 	 * arbitrarily) the average value for b.
 	 */
-    private double linear(double aFrom, double a, double aTo, double bFrom, double bTo) {
+    private static double linear(double aFrom, double a, double aTo, double bFrom, double bTo) {
 
 		double denom = aTo - aFrom;
 		if (denom == 0) {

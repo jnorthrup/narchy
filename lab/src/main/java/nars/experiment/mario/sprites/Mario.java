@@ -16,9 +16,9 @@ public class Mario extends Sprite {
     @Deprecated public static int coins;
     public static int lives = 3;
     public static String levelString = "none";
-    private final int kill_reward_coins = 4;
+    private static final int kill_reward_coins = 4;
     private static final int medical_bill = 2;
-    private final int burial_cost = 4;
+    private static final int burial_cost = 4;
 
     public static void resetStatic() {
         large = false;
@@ -57,7 +57,8 @@ public class Mario extends Sprite {
     public int facing;
     private int powerUpTime;
 
-    public int xDeathPos, yDeathPos;
+    public int xDeathPos;
+    public int yDeathPos;
 
     public int deathTime;
     public int winTime;

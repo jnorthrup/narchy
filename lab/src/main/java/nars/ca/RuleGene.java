@@ -31,27 +31,24 @@ public class RuleGene {
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void InitFromString(String sStr) {
 
-        String sTok;
-		int i, iNum = 1;
-		char cChar;
-		int iCharVal;
-		ResetToDefaults();
+        ResetToDefaults();
 
         StringTokenizer st = new StringTokenizer(sStr, ",/", true);
-		while (st.hasMoreTokens()) {
-			sTok = st.nextToken();
-			if ((sTok.compareTo("/") == 0) || (sTok.compareTo(",") == 0)) {
+        int iNum = 1;
+        while (st.hasMoreTokens()) {
+            String sTok = st.nextToken();
+            if ((sTok.compareTo("/") == 0) || (sTok.compareTo(",") == 0)) {
 				iNum++;
 				continue;
 			}
 			switch (iNum) {
 			case 1: 
 			case 2: 
-				for (i = 0; i < sTok.length(); i++) {
-					cChar = sTok.charAt(i);
-					if (Character.isDigit(cChar)) {
-						iCharVal = cChar - '0';
-						if ((iCharVal >= 0) && (iCharVal <= 8)) {
+				for (int i = 0; i < sTok.length(); i++) {
+                    char cChar = sTok.charAt(i);
+                    if (Character.isDigit(cChar)) {
+                        int iCharVal = cChar - '0';
+                        if ((iCharVal >= 0) && (iCharVal <= 8)) {
 							if (iNum == 1)
 								RulesS[iCharVal] = true;
 							else
@@ -85,26 +82,26 @@ public class RuleGene {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public String GetAsString() {
-		String sBff = "";
-		int i;
 
-		
-		Validate();
 
-		
-		for (i = 0; i <= 8; i++)
+        Validate();
+
+
+        int i;
+        String sBff = "";
+        for (i = 0; i <= 8; i++)
 			
 			if (RulesS[i])
-				sBff = sBff + i;
-		sBff = sBff + '/';
+                sBff += i;
+        sBff += '/';
 
 		for (i = 0; i <= 8; i++)
 			
 			if (RulesB[i])
-				sBff = sBff + i;
-		sBff = sBff + '/';
+                sBff += i;
+        sBff += '/';
 
-		sBff = sBff + iClo;
+        sBff += iClo;
 		return sBff;
 	}
 
@@ -122,28 +119,26 @@ public class RuleGene {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 					   short[][] crrState, short[][] tmpState, MJBoard mjb) {
-		short bOldVal, bNewVal;
-		int modCnt = 0;
-		int i, j, iCnt;
-		int[] lurd = new int[4]; 
+        int modCnt = 0;
+        int[] lurd = new int[4];
 
-		for (i = 0; i < sizX; ++i) {
+		for (int i = 0; i < sizX; ++i) {
 			
 			lurd[0] = (i > 0) ? i - 1 : (isWrap) ? sizX - 1 : sizX;
 			lurd[2] = (i < sizX - 1) ? i + 1 : (isWrap) ? 0 : sizX;
-			for (j = 0; j < sizY; ++j) {
+			for (int j = 0; j < sizY; ++j) {
 				
 				lurd[1] = (j > 0) ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
-				bOldVal = crrState[i][j];
-				bNewVal = bOldVal;
-				if (bOldVal > 1) 
+                short bOldVal = crrState[i][j];
+                short bNewVal = bOldVal;
+                if (bOldVal > 1)
 				{
 					bNewVal = bOldVal < iClo - 1 ? (short) (bOldVal + 1) : 0;
 				} else 
 				{
-					iCnt = 0;
-					if (crrState[lurd[0]][lurd[1]] == 1)
+                    int iCnt = 0;
+                    if (crrState[lurd[0]][lurd[1]] == 1)
 						++iCnt;
 					if (crrState[i][lurd[1]] == 1)
 						++iCnt;

@@ -25,9 +25,7 @@ class RuleInductionTest {
     @Test
     void test1() {
         int dur = 2;
-        int loops = 10;
         int period = dur * 4;
-        int dutyPeriod = period/2;
 
         NAR n = NARS.shell();
         n.termVolMax.set(8);
@@ -54,6 +52,7 @@ class RuleInductionTest {
 
         n.log();
 
+        int dutyPeriod = period / 2;
         Term aConjB = $$("(a &&+" + dutyPeriod + " --a)");
         Term aConjB_root = aConjB.concept();
         Term aImpB = $$("(a ==>+" + dutyPeriod + " --a)");
@@ -76,6 +75,7 @@ class RuleInductionTest {
         });
 
         PairedStatsAccumulator aImpB_exp = new PairedStatsAccumulator();
+        int loops = 10;
         for (int i = 0; i < loops; i++) {
 
 

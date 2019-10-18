@@ -79,7 +79,7 @@ public class TaskRule extends TaskMatch {
     public boolean test(Task x) {
         if (super.test(x)) {
 
-            final MySubUnify match = new MySubUnify(x);
+            MySubUnify match = new MySubUnify(x);
 
             try {
                 match.unify(input, x.term());

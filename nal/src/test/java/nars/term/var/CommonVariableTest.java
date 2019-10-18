@@ -95,7 +95,9 @@ class CommonVariableTest {
                     $$("x(" + vx + "1," + vy + "1)").unify($$("x(" + vy + "1," + vx + "1)"), u)
             );
             uu.add(u.toString());
-            u.xy.values().forEach(c -> assertSerialize((Variable)c));
+            for (Term c : u.xy.values()) {
+                assertSerialize((Variable) c);
+            }
             //System.out.println(u);
         }
 

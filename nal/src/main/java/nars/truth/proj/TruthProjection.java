@@ -55,7 +55,8 @@ import static nars.term.util.Intermpolate.dtDiff;
 @Paper
 public abstract class TruthProjection extends TaskList {
 
-	protected long start, end;
+	protected long start;
+	protected long end;
 
 	/**
 	 * content target, either equal in all the tasks, or the result is
@@ -88,7 +89,7 @@ public abstract class TruthProjection extends TaskList {
 		return this;
 	}
 
-	public static @Nullable Task merge(Supplier<Task[]> tasks, Term x, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, final long start, final long end, NAL n) {
+	public static @Nullable Task merge(Supplier<Task[]> tasks, Term x, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, NAL n) {
 		Term y = Task.taskTerm(x, beliefOrGoal ? BELIEF : GOAL, !NAL.test.DEBUG_EXTRA);
 		if (y == null)
 			return null;
@@ -230,7 +231,8 @@ public abstract class TruthProjection extends TaskList {
 		if (s == 0)
 			return 0;
 		double[] evi = this.evi;
-		int y = (int) IntStream.range(0, s).filter(i -> sane(evi[i])).count();
+		long count = IntStream.range(0, s).filter(i -> sane(evi[i])).count();
+		int y = (int) count;
         return y;
 	}
 
@@ -243,7 +245,8 @@ public abstract class TruthProjection extends TaskList {
 		if (evi == null || evi.length < s)
 			evi = this.evi = new double[s];
 
-		int count = (int) IntStream.range(0, s).filter(this::update).count();
+		long result = IntStream.range(0, s).filter(this::update).count();
+		int count = (int) result;
 
         if (count > 0) {
 			if (count!=s)
@@ -268,8 +271,7 @@ public abstract class TruthProjection extends TaskList {
 		//shuffle spans of equivalent items
 		double last = evi[0];
 		int contig = 0;
-		int i;
-		for (i = 1; i <= s; i++) {
+		for (int i = 1; i <= s; i++) {
 			double ei = i < s ? evi[i] : Double.NaN;
 			if (ei != last) {
 				if (contig > 0) {
@@ -374,13 +376,11 @@ public abstract class TruthProjection extends TaskList {
 //		if (us == ue)
 //			return; //all collapse at a point anyway
 
-		final long us = start, ue = end;
+		long us = start, ue = end;
 		if (us == TIMELESS)
 			throw new TODO("compute union here");
 		if (us == ue)
 			return;
-
-		double ud = 1 + (ue - us);
 
 
 		//first non-eternal
@@ -414,6 +414,7 @@ public abstract class TruthProjection extends TaskList {
 				}
 			}
 
+			double ud = 1 + (ue - us);
 			double densityUnion = eviSum / (1 + ud);
 			double densityRoot = eviRoot / (1 + re - rs);
 			//System.out.println(Texts.n4(densityRoot) +"/"+ Texts.n4(densityUnion) + " : " + this);
@@ -493,9 +494,9 @@ public abstract class TruthProjection extends TaskList {
 			return Stamp.zip(s0, stamp(1), (float) (evi[0] / (evi[0] + evi[1])), capacity);
 		}
 
-		int lenSum = IntStream.range(0, n).map(i -> stamp(i).length).sum();
+		int lenSum = IntStream.range(0, n).map(i1 -> stamp(i1).length).sum();
 
-        if (lenSum <= capacity) {
+		if (lenSum <= capacity) {
 			//return Stamp.toMutableSet(maxPossibleStampLen, this::stamp, n).toSortedArray();
 
 
@@ -666,7 +667,9 @@ public abstract class TruthProjection extends TaskList {
 
 	public final TruthProjection add(Collection<? extends Tasked> tasks) {
 		ensureCapacity(tasks.size());
-		tasks.forEach(this::addFast);
+		for (Tasked task : tasks) {
+			addFast(task);
+		}
 		return this;
 	}
 
@@ -827,7 +830,7 @@ public abstract class TruthProjection extends TaskList {
 							if (remain-1 >= minComponents) {
 								//determine whether to keep B if B can be removed
 								double eviLoss = IntStream.range(0, B).mapToDouble(x -> evi[x] * (1 - discA)).sum();
-                                if (eviLoss > evi[B]) {
+								if (eviLoss > evi[B]) {
 									nullify(B); //intermpolating with B is too costly
 									remain--;
 									assert(remain >= minComponents);
@@ -839,7 +842,8 @@ public abstract class TruthProjection extends TaskList {
 							}
 
 							ea = 0;
-                            ea += IntStream.range(0, B).mapToDouble(x -> (evi[x] *= discA)).sum();
+							double sum = IntStream.range(0, B).mapToDouble(x -> (evi[x] *= discA)).sum();
+							ea += sum;
 						}
 
 

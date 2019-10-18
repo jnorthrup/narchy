@@ -7,7 +7,8 @@ import java.awt.image.BufferedImage;
 
 public class Grid2DRelative implements World {
 
-    private final int width, height;
+    private final int width;
+    private final int height;
 
     private final double REWARD_MAGNITUDE;
     private final double JUMP_FRACTION;
@@ -190,8 +191,6 @@ public class Grid2DRelative implements World {
         double dist = Math.sqrt(dx * dx + dy * dy);
         double match = 1.0 / (1.0 + dist);
 
-        double reward = REWARD_MAGNITUDE * ((MATCH_REWARD_FACTOR * match) - (energyCost * ENERGY_COST_FACTOR)) - 0.5;
-
         int ix = (int)Math.round(positionX);
         int iy = (int)Math.round(positionY);
         for (int x = 0; x < width; x++) {
@@ -224,7 +223,8 @@ public class Grid2DRelative implements World {
             if (time % displayPeriod == 0)
                 image.updateImage();
         }
-        
+
+        double reward = REWARD_MAGNITUDE * ((MATCH_REWARD_FACTOR * match) - (energyCost * ENERGY_COST_FACTOR)) - 0.5;
         return reward;
     }
 

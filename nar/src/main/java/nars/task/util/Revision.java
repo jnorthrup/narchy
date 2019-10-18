@@ -132,7 +132,7 @@ public enum Revision {;
     /** truth revision task merge strategy */
     public static @Nullable <T extends TaskRegion> Pair<Task, TruthProjection> _merge(T[] tasks, int n, int minComponents, boolean ditherTruth, NAL nal) {
 
-        TruthProjection p = nal.newProjection(TIMELESS, TIMELESS).ditherDT(nal).add(n, tasks);
+        TruthProjection p = NAL.newProjection(TIMELESS, TIMELESS).ditherDT(nal).add(n, tasks);
 
         if (!p.minComponents(minComponents).commit(false, nal))
             return null;

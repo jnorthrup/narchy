@@ -82,7 +82,8 @@ class NAL7ImplTruthProjectionTest {
      */
     private final double absoluteThreshold;
 
-    final double min, max;
+    final double min;
+        final double max;
     private final DoubleToDoubleFunction func;
 
 
@@ -152,10 +153,9 @@ class NAL7ImplTruthProjectionTest {
     }
 
     double[] max(double xStart, double[] previous) {
-        final boolean isMinim = false; 
-        final double lo = min;
+        double lo = min;
         
-        final double hi = max;
+        double hi = max;
 
         
 
@@ -174,9 +174,8 @@ class NAL7ImplTruthProjectionTest {
         double X = xStart;
         double v = X;
         double w = X;
-        double d = 0;
-        double e = 0;
         double Y = func.valueOf(X);
+        final boolean isMinim = false;
         if (!isMinim) {
             Y = -Y;
         }
@@ -188,25 +187,24 @@ class NAL7ImplTruthProjectionTest {
         
         double[] best = current;
 
+        double e = 0;
+        double d = 0;
         while (true) {
             
 
-            final double m = 0.5 * (a + b);
-            final double tol1 = relativeThreshold * Math.abs(X) + absoluteThreshold;
-            final double tol2 = 2 * tol1;
+            double m = 0.5 * (a + b);
+            double tol1 = relativeThreshold * Math.abs(X) + absoluteThreshold;
+            double tol2 = 2 * tol1;
 
             
-            final boolean stop = Math.abs(X - m) <= tol2 - 0.5 * (b - a);
+            boolean stop = Math.abs(X - m) <= tol2 - 0.5 * (b - a);
             if (!stop) {
-                double p = 0;
-                double q = 0;
-                double r = 0;
                 double u = 0;
 
-                if (Math.abs(e) > tol1) { 
-                    r = (X - w) * (Y - fv);
-                    q = (X - v) * (Y - fw);
-                    p = (X - v) * q - (X - w) * r;
+                if (Math.abs(e) > tol1) {
+                    double r = (X - w) * (Y - fv);
+                    double q = (X - v) * (Y - fw);
+                    double p = (X - v) * q - (X - w) * r;
                     q = 2 * (q - r);
 
                     if (q > 0) {
@@ -322,7 +320,7 @@ class NAL7ImplTruthProjectionTest {
      * both {@code null}. When {@code a} and {@code b} have the same function
      * value, {@code a} is returned.
      */
-    private double[] best(double[] a, double[] b, boolean isMinim) {
+    private static double[] best(double[] a, double[] b, boolean isMinim) {
         if (a == null) {
             return b;
         }

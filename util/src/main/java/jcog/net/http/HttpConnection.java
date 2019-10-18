@@ -15,10 +15,7 @@ import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
@@ -72,8 +69,10 @@ public class HttpConnection {
         lastReceivedNS = System.nanoTime();
 
 
-        if (Stream.of(STATE.CLOSED, STATE.BAD_REQUEST, STATE.UPGRADE).anyMatch(v -> state == v)) {
-            return;
+        for (STATE v : Arrays.asList(STATE.CLOSED, STATE.BAD_REQUEST, STATE.UPGRADE)) {
+            if (state == v) {
+                return;
+            }
         }
 
         while (buf.hasRemaining()) {
@@ -115,11 +114,11 @@ public class HttpConnection {
                 content, !this.keepAlive, null));
     }
 
-    public void respond(byte[] content) {
+    public static void respond(byte[] content) {
         throw new TODO();
     }
 
-    public void respond(InputStream content) {
+    public static void respond(InputStream content) {
         throw new TODO();
     }
 

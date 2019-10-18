@@ -14,7 +14,7 @@ public abstract class Handle {
 	 * Gets the size of the handle.
 	 * @return the size of the handle
 	 */
-	public int getSize() {
+	public static int getSize() {
 		return 12;
 	}
 	

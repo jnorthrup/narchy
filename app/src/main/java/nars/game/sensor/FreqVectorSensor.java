@@ -29,7 +29,8 @@ public class FreqVectorSensor extends VectorSensor {
     float[] componentValue;
     private float[] inBuf = null;
 
-    public final FloatRange center, bandwidth;
+    public final FloatRange center;
+    public final FloatRange bandwidth;
 
     public FreqVectorSensor(CircularFloatBuffer buf, IntFunction<Term> termizer, int fftSize, int components, NAR n) {
         super(termizer.apply(components) /*n+1*/, n);

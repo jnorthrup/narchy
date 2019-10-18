@@ -2,6 +2,7 @@ package jcog.grammar.parse;
 
 import jcog.Util;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -91,7 +92,7 @@ public class Terminal extends Parser {
 	@Override
 	public Set<Assembly> match(Set<Assembly> in) {
 		Set<Assembly> out = in.stream().map(this::matchOneAssembly).filter(Objects::nonNull).collect(Collectors.toSet());
-        return out;
+		return out;
 	}
 
 	/**

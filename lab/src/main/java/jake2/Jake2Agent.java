@@ -51,7 +51,8 @@ public class Jake2Agent extends GameX implements Runnable {
     private static final boolean lookPitch = false;
     static float pitchSpeed = 5;
 
-    private final GLScreenShot rgb, depth;
+    private final GLScreenShot rgb;
+    private final GLScreenShot depth;
     private final FreqVectorSensor hear;
 
 
@@ -122,7 +123,7 @@ public class Jake2Agent extends GameX implements Runnable {
 
     }
 
-    protected String nextMap() {
+    protected static String nextMap() {
         return "demo1";
     }
 
@@ -137,11 +138,12 @@ public class Jake2Agent extends GameX implements Runnable {
 
 
         //int px = 64, py = 48, nx = 4, aeStates = 8;
-        int px = 64, py = 48, nx = 8, aeStates = 16;
 
         rgb = new GLScreenShot(true);
         depth = new GLScreenShot(false);
 
+        int py = 48;
+        int px = 64;
         PixelBag rgbVision = new PixelBag(
                 new BrightnessNormalize(
                         new ImageFlip(false, true, new ScaledBitmap2D(rgb, px, py))
@@ -153,6 +155,8 @@ public class Jake2Agent extends GameX implements Runnable {
         )));
 
 
+        int aeStates = 16;
+        int nx = 8;
         AutoclassifiedBitmap rgbAE = new AutoclassifiedBitmap($.the("gray"), rgbVision, nx, nx, aeStates, this);
         rgbAE.alpha(0.03f);
         rgbAE.noise.set(0.05f);
@@ -220,9 +224,7 @@ public class Jake2Agent extends GameX implements Runnable {
 
         rewardNormalized("health", -1, +1, new FloatFirstOrderDifference(nar::time, () -> player.health).nanIfZero());
 
-        rewardNormalized("speed", 0, +1, new FloatNormalized(() -> {
-            return player.speed;
-        }));
+        rewardNormalized("speed", 0, +1, new FloatNormalized(() -> player.speed));
         rewardNormalized("frags", 0, +1,
                 new FloatFirstOrderDifference(nar::time, player.damageInflicted::getOpaque).nanIfZero());
 
@@ -274,13 +276,13 @@ public class Jake2Agent extends GameX implements Runnable {
                 byte[] b = SND_JAVA.dma.buffer;
                 if (b == null)
                     return;
-                int samples = 1024;
                 int sample = SND_JAVA.SNDDMA_GetDMAPos();
                 if (sample != lastSamplePos) {
 
 
                     //System.out.println(sample + " " + SND_MIX.paintedtime);
 
+                    int samples = 1024;
                     if (hear.buf.available() < samples * 2)
                         hear.buf.skip(samples * 2);
 

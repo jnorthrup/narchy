@@ -13,8 +13,10 @@ import org.junit.platform.commons.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -36,9 +38,11 @@ public class Emotion implements Meter, Consumer<NAR> {
 
 
     private static final int history = 2;
-    private static final Field[] EmotionFields = ReflectionUtils.findFields(Emotion.class, (f) -> true, ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)
-            .stream().filter(f-> !Modifier.isPrivate(f.getModifiers())).sorted(Comparator.comparing(Field::getName))
-            .toArray(Field[]::new);
+    private static final Field[] EmotionFields;
+
+    static {
+        EmotionFields = ReflectionUtils.findFields(Emotion.class, (f) -> true, ReflectionUtils.HierarchyTraversalMode.TOP_DOWN).stream().filter(field -> !Modifier.isPrivate(field.getModifiers())).sorted(Comparator.comparing(Field::getName)).toArray(Field[]::new);
+    }
 
     /**
      * TODO
@@ -107,8 +111,8 @@ public class Emotion implements Meter, Consumer<NAR> {
      */
     public final float[] want = new float[MetaGoal.values().length];
     public final FloatAveragedWindow
-            busyVol = new FloatAveragedWindow(history, 0.75f, 0f),
-            busyVolPriWeighted = new FloatAveragedWindow(history, 0.75f, 0);
+            busyVol = new FloatAveragedWindow(history, 0.75f, 0f);
+    public final FloatAveragedWindow busyVolPriWeighted = new FloatAveragedWindow(history, 0.75f, 0);
 
     /**
      * count of errors

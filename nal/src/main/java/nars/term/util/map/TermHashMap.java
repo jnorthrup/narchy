@@ -117,8 +117,13 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     public void forEach(BiConsumer<? super Term, ? super X> action) {
         if (!id.isEmpty())
             id.forEachKeyValue((x, y) -> action.accept(Intrin.term(x), y));
-        if (!other.isEmpty())
-            other.forEach(action);
+        if (!other.isEmpty()) {
+            for (Entry<Term, X> entry : other.entrySet()) {
+                Term key = entry.getKey();
+                X value = entry.getValue();
+                action.accept(key, value);
+            }
+        }
     }
 
     static final class AnonMapEntrySet<X> extends AbstractSet<Map.Entry<Term, X>> {

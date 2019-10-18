@@ -708,7 +708,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		}
 
 		boolean isValid() {
-			boolean valid = IntStream.of(0, 1, 2, 3).allMatch(i -> (barycentricCoords[i] >= 0f));
+            boolean valid = IntStream.of(0, 1, 2, 3).noneMatch(i -> (!(barycentricCoords[i] >= 0f)));
 			return valid;
 		}
 

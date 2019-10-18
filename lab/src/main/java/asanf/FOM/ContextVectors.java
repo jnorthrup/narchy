@@ -95,11 +95,7 @@ public class ContextVectors<E> extends DTMatrix<E> implements Iterable<E> {
         terms.forEachKey(t1 -> {
 
             toRet.append(t1 + ": ");
-            terms.forEachKey(t2 -> {
-
-                toRet.append(getValue(t1, t2) + "\t");
-
-            });
+            terms.forEachKey(t2 -> toRet.append(getValue(t1, t2) + "\t"));
 
             toRet.append("\n");
         });

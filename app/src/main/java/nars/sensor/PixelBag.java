@@ -30,12 +30,15 @@ public class PixelBag implements Bitmap2D {
      * Z = 0: zoomed in all the way
      * = 1: zoomed out all the way
      */
-    public final v2 pos = new v2(0.5f, 0.5f), posNext = new v2(pos);
+    public final v2 pos = new v2(0.5f, 0.5f);
+    public final v2 posNext = new v2(pos);
     private final Bitmap2D src;
-    public float Z = 1f, Znext = Z;
+    public float Z = 1f;
+    public float Znext = Z;
 
 
-    protected float panRate = 0.5f, zoomRate = 0.75f;
+    protected float panRate = 0.5f;
+    protected float zoomRate = 0.75f;
 
 
     public final float[][] pixels;
@@ -105,12 +108,13 @@ public class PixelBag implements Bitmap2D {
         if (inBoundsOnly) {
 
 
-            float mw, mh;
+            float mw;
             if (ew > sw) {
                 mw = 0;
             } else {
                 mw = sw - ew;
             }
+            float mh;
             if (eh > sh) {
                 mh = 0;
             } else {

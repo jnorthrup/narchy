@@ -49,7 +49,7 @@ public class Transform extends Rot {
     /**
      * Set this to equal another transform.
      */
-    public final Transform set(final Transform xf) {
+    public final Transform set(Transform xf) {
         pos.set(xf.pos);
         this.set((Rot) xf);
         return this;
@@ -74,27 +74,27 @@ public class Transform extends Rot {
         super.setIdentity();
     }
 
-    public static v2 mul(final Transform T, final v2 v) {
+    public static v2 mul(Transform T, v2 v) {
         return new v2((T.c * v.x - T.s * v.y) + T.pos.x, (T.s * v.x + T.c * v.y) + T.pos.y);
     }
 
-    public static void mulToOut(final Transform T, final v2 v, final v2 out) {
+    public static void mulToOut(Transform T, v2 v, v2 out) {
         float ts = T.s;
         float vx = v.x;
         float vy = v.y;
         float tc = T.c;
-        final float tempy = (ts * vx + tc * vy) + T.pos.y;
+        float tempy = (ts * vx + tc * vy) + T.pos.y;
         out.x = (tc * vx - ts * vy) + T.pos.x;
         out.y = tempy;
     }
 
-    public static void mulToOutUnsafe(final Transform T, final v2 v, final v2 out) {
+    public static void mulToOutUnsafe(Transform T, v2 v, v2 out) {
         assert (v != out);
         Rot tq = T;
         out.x = (tq.c * v.x - tq.s * v.y) + T.pos.x;
         out.y = (tq.s * v.x + tq.c * v.y) + T.pos.y;
     }
-    public static void mulToOutUnsafe(final Transform T, final v2 v, float scale, final v2 out) {
+    public static void mulToOutUnsafe(Transform T, v2 v, float scale, v2 out) {
         assert (v != out);
         float vy = v.y * scale;
         float vx = v.x * scale;
@@ -106,7 +106,7 @@ public class Transform extends Rot {
         out.y = (tqs * vx + tqc * vy) + pos.y;
     }
 
-    public static void mulToOutUnsafe(final Transform T, final v2 v, float scale, final GL2 gl) {
+    public static void mulToOutUnsafe(Transform T, v2 v, float scale, GL2 gl) {
         float vy = v.y;
         float vx = v.x;
         Rot tq = T;
@@ -120,30 +120,30 @@ public class Transform extends Rot {
 
     }
 
-    public static v2 mulTrans(final Transform T, final v2 v) {
-        final float px = v.x - T.pos.x;
-        final float py = v.y - T.pos.y;
+    public static v2 mulTrans(Transform T, v2 v) {
+        float px = v.x - T.pos.x;
+        float py = v.y - T.pos.y;
         float y = (-T.s * px + T.c * py);
         return new v2((T.c * px + T.s * py), y);
     }
 
-    public static void mulTransToOut(final Transform T, final v2 v, final v2 out) {
-        final float px = v.x - T.pos.x;
-        final float py = v.y - T.pos.y;
-        final float tempy = (-T.s * px + T.c * py);
+    public static void mulTransToOut(Transform T, v2 v, v2 out) {
+        float px = v.x - T.pos.x;
+        float py = v.y - T.pos.y;
+        float tempy = (-T.s * px + T.c * py);
         out.x = (T.c * px + T.s * py);
         out.y = tempy;
     }
 
-    public static void mulTransToOutUnsafe(final Transform T, final v2 v, final v2 out) {
+    public static void mulTransToOutUnsafe(Transform T, v2 v, v2 out) {
         assert (v != out);
-        final float px = v.x - T.pos.x;
-        final float py = v.y - T.pos.y;
+        float px = v.x - T.pos.x;
+        float py = v.y - T.pos.y;
         out.x = (T.c * px + T.s * py);
         out.y = (-T.s * px + T.c * py);
     }
 
-    public static Transform mul(final Transform A, final Transform B) {
+    public static Transform mul(Transform A, Transform B) {
         Transform C = new Transform();
         mulUnsafe(A, B, C);
         Rot.mulToOutUnsafe(A, B.pos, C.pos);
@@ -151,14 +151,14 @@ public class Transform extends Rot {
         return C;
     }
 
-    public static void mulToOut(final Transform A, final Transform B, final Transform out) {
+    public static void mulToOut(Transform A, Transform B, Transform out) {
         assert (out != A);
         mul(A, B, out);
         Rot.mulToOut(A, B.pos, out.pos);
         out.pos.added(A.pos);
     }
 
-    public static void mulToOutUnsafe(final Transform A, final Transform B, final Transform out) {
+    public static void mulToOutUnsafe(Transform A, Transform B, Transform out) {
         assert (out != B);
         assert (out != A);
         mulUnsafe(A, B, out);
@@ -183,8 +183,8 @@ public class Transform extends Rot {
 
 
 
-    public static void mulTransToOutUnsafe(final Transform A, final Transform B,
-                                           final Transform out) {
+    public static void mulTransToOutUnsafe(Transform A, Transform B,
+                                           Transform out) {
         assert (out != A);
         assert (out != B);
         mulTransUnsafe(A, B, out);

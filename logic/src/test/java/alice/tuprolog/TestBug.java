@@ -24,18 +24,16 @@ public class TestBug {
 		"').";
 		
 		new Prolog().solve(goal);
-		
-		String st =
-		"p(X).				\n"+
-		"test(L1,L2):-		\n"+
-		"	findall(p(X),p(X),L1), \n"+
-		"	append([a,b],L1,L2).	\n";
-		
-		
-		Prolog engine = new Prolog();
+
+
+        Prolog engine = new Prolog();
 		engine.addSpyListener(System.out::println);
-		
-		engine.setTheory(new Theory(st));
+
+        String st = "p(X).				\n" +
+                "test(L1,L2):-		\n" +
+                "	findall(p(X),p(X),L1), \n" +
+                "	append([a,b],L1,L2).	\n";
+        engine.setTheory(new Theory(st));
 		Solution info = engine.solve("test(L1,L2).");
 		System.out.println(info);
 		

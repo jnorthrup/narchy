@@ -51,7 +51,7 @@ public class client_static_t {
 	public String servername = ""; 
 	public float connect_time; 
 
-	final int quakePort = 0; 
+	static final int quakePort = 0;
 	
 	public final netchan_t netchan = new netchan_t();
 	public int serverProtocol; 

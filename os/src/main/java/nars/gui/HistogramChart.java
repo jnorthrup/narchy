@@ -16,7 +16,8 @@ public class HistogramChart extends PaintSurface {
 
 
     private final Supplier<float[]> data;
-    private final Color3f dark, light;
+    private final Color3f dark;
+    private final Color3f light;
 
     public HistogramChart(Supplier<float[]> source, Color3f dark, Color3f light) {
 

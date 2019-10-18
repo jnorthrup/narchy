@@ -20,7 +20,7 @@ class AIMATests {
     @ParameterizedTest
     @ValueSource(doubles = {0.01, 0.05, 0.1, 0.25, 0.5})
     void testAIMAExample(double truthRes) throws Narsese.NarseseException {
-        final NAR n = NARS.tmp(6);
+        NAR n = NARS.tmp(6);
 
         n.termVolMax.set(5);
         n.freqResolution.set((float) truthRes);
@@ -59,7 +59,7 @@ class AIMATests {
     @Test
     void testWeaponsDomain() throws Narsese.NarseseException {
 
-        final NAR n = NARS.tmp();
+        NAR n = NARS.tmp();
 
 //        n.freqResolution.set(0.25f);
 //        n.confResolution.set(0.1f);
@@ -114,7 +114,7 @@ class AIMATests {
 
     private static void assertBelief(NAR n, boolean expcted, String x, int time) {
 
-        final int metricPeriod = time / 4;
+        int metricPeriod = time / 4;
 
         PairedStatsAccumulator timeVsConf = new PairedStatsAccumulator();
 

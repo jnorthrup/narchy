@@ -139,12 +139,10 @@ final class LayoutParser {
         boolean negative = false;
         int i = 0, max = tokenLength;
         String s = data;
-        int limit;
-        int multmin;
-        int digit;
 
         if (max > 0) {
             int p = this.tokenPos;
+            int limit;
             if (s.charAt(p) == '-') {
                 negative = true;
                 limit = Integer.MIN_VALUE;
@@ -152,7 +150,8 @@ final class LayoutParser {
             } else {
                 limit = -Integer.MAX_VALUE;
             }
-            multmin = limit / 10;
+            int multmin = limit / 10;
+            int digit;
             if (i < max) {
                 digit = Character.digit(s.charAt(p + i++), 10);
                 if (digit < 0) {

@@ -31,7 +31,6 @@ public class VideoEqualizer extends VideoTransform {
         int W = in.getWidth();
         int H = in.getHeight();
         int bands = src.getColorModel().getNumColorComponents();
-        int totpix = W * H;
 
         Arrays.fill(histogram, 0);
 
@@ -42,6 +41,7 @@ public class VideoEqualizer extends VideoTransform {
         }
 
         float momentum = this.momentum.floatValue();
+        int totpix = W * H;
         for (int i = 0; i < 256; i++) {
             int c = (i > 0 ? chistogram[i - 1] : 0) + histogram[i];
             chistogram[i] = c;

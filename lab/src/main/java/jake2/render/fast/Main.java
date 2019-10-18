@@ -56,8 +56,8 @@ public abstract class Main extends Base {
 
     public static final int[] d_8to24table = new int[256];
 
-    final int c_visible_lightmaps = 0;
-    final int c_visible_textures = 0;
+    static final int c_visible_lightmaps = 0;
+    static final int c_visible_textures = 0;
 
     int registration_sequence;
 
@@ -121,7 +121,8 @@ public abstract class Main extends Base {
 
     model_t r_worldmodel;
 
-    float gldepthmin, gldepthmax;
+    float gldepthmin;
+    float gldepthmax;
 
     final glconfig_t gl_config = new glconfig_t();
     final glstate_t gl_state = new glstate_t();
@@ -137,7 +138,8 @@ public abstract class Main extends Base {
     int r_visframecount; 
     int r_framecount; 
 
-    int c_brush_polys, c_alias_polys;
+    int c_brush_polys;
+    int c_alias_polys;
 
     final float[] v_blend = { 0, 0, 0, 0 }; 
 
@@ -159,7 +161,10 @@ public abstract class Main extends Base {
     
     refdef_t r_newrefdef = new refdef_t();
 
-    int r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
+    int r_viewcluster;
+    int r_viewcluster2;
+    int r_oldviewcluster;
+    int r_oldviewcluster2;
 
     cvar_t r_norefresh;
     cvar_t r_drawentities;
@@ -271,7 +276,6 @@ public abstract class Main extends Base {
      * R_DrawSpriteModel
      */
     void R_DrawSpriteModel(entity_t e) {
-        float alpha = 1.0F;
 
 
         qfiles.dsprite_t psprite = (qfiles.dsprite_t) currentmodel.extradata;
@@ -280,6 +284,7 @@ public abstract class Main extends Base {
 
         qfiles.dsprframe_t frame = psprite.frames[e.frame];
 
+        float alpha = 1.0F;
         if ((e.flags & Defines.RF_TRANSLUCENT) != 0)
             alpha = e.alpha;
 
@@ -461,7 +466,6 @@ public abstract class Main extends Base {
      * GL_DrawParticles
      */
     void GL_DrawParticles(int num_particles) {
-        float origin_x, origin_y, origin_z;
 
         Math3D.VectorScale(vup, 1.5f, up);
         Math3D.VectorScale(vright, 1.5f, right);
@@ -475,24 +479,21 @@ public abstract class Main extends Base {
 
         FloatBuffer sourceVertices = particle_t.vertexArray;
         IntBuffer sourceColors = particle_t.colorArray;
-        float scale;
-        int color;
         for (int j = 0, i = 0; i < num_particles; i++) {
-            origin_x = sourceVertices.get(j++);
-            origin_y = sourceVertices.get(j++);
-            origin_z = sourceVertices.get(j++);
+            float origin_x = sourceVertices.get(j++);
+            float origin_y = sourceVertices.get(j++);
+            float origin_z = sourceVertices.get(j++);
 
-            
+
             float[] r_origin = this.r_origin;
             float[] vpn = this.vpn;
-            scale =
-                    (origin_x - r_origin[0]) * vpn[0]
-                            + (origin_y - r_origin[1]) * vpn[1]
-                                    + (origin_z - r_origin[2]) * vpn[2];
+            float scale = (origin_x - r_origin[0]) * vpn[0]
+                    + (origin_y - r_origin[1]) * vpn[1]
+                    + (origin_z - r_origin[2]) * vpn[2];
 
             scale = (scale < 20) ? 1 :  1 + scale * 0.004f;
 
-            color = sourceColors.get(i);
+            int color = sourceColors.get(i);
 
             gl.glColor4ub(
                     (byte)((color) & 0xFF),
@@ -641,12 +642,11 @@ public abstract class Main extends Base {
 
         Math3D.AngleVectors(r_newrefdef.viewangles, vpn, vright, vup);
 
-        
-        mleaf_t leaf;
+
         if ((r_newrefdef.rdflags & Defines.RDF_NOWORLDMODEL) == 0) {
             r_oldviewcluster = r_viewcluster;
             r_oldviewcluster2 = r_viewcluster2;
-            leaf = Mod_PointInLeaf(r_origin, r_worldmodel);
+            mleaf_t leaf = Mod_PointInLeaf(r_origin, r_worldmodel);
             r_viewcluster = r_viewcluster2 = leaf.cluster;
 
             
@@ -699,9 +699,9 @@ public abstract class Main extends Base {
         double ymin = -ymax;
 
         double xmin = ymin * aspect;
-        double xmax = ymax * aspect;
 
         xmin += - (2 * gl_state.camera_separation) / zNear;
+        double xmax = ymax * aspect;
         xmax += - (2 * gl_state.camera_separation) / zNear;
 
         gl.glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
@@ -1450,10 +1450,10 @@ public abstract class Main extends Base {
         
         
         int i;
-        int color = 0;
 
         if (palette != null) {
             int j =0;
+            int color = 0;
             for (i = 0; i < 256; i++) {
                 color = (palette[j++] & 0xFF) << 0;
                 color |= (palette[j++] & 0xFF) << 8;
@@ -1534,10 +1534,8 @@ public abstract class Main extends Base {
 
         gl.glBegin(GL_TRIANGLE_STRIP);
 
-        float[] v;
-
         for (int i = 0; i < NUM_BEAM_SEGS; i++) {
-            v = start_points[i];
+            float[] v = start_points[i];
             gl.glVertex3f(v[0], v[1], v[2]);
             v = end_points[i];
             gl.glVertex3f(v[0], v[1], v[2]);

@@ -11,6 +11,7 @@ import nars.link.TaskLinks;
 import nars.memory.RadixTreeMemory;
 import nars.task.EternalTask;
 import nars.task.util.PriBuffer;
+import nars.term.Term;
 import nars.term.util.TermTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -73,7 +74,7 @@ class KIFTest {
                     return Collections.EMPTY_LIST;
                 }
             }
-        ).forEach((Iterable ww) ->
+        ).forEach(ww ->
             ww.forEach((x) -> w.accept((Task)x)));
 
         //System.out.println(Joiner.on("\n").join(n.stats().entrySet()));
@@ -110,21 +111,6 @@ class KIFTest {
 
     }
     @Test void test_TQG2() throws Narsese.NarseseException {
-        String t =
-            "(instance TheKB2_1 ComputerProgram)\n" +
-            "(instance Inconsistent Attribute)\n" +
-            "\n" +
-            "(=>\n" +
-            "  (and\n" +
-            "    (contraryAttribute ?ATTR1 ?ATTR2)\n" +
-            "    (property ?X ?ATTR1)\n" +
-            "    (property ?X ?ATTR2))\n" +
-            "  (property TheKB2_1 Inconsistent))\n" +
-            "\n" +
-            "(instance Entity2_1 Organism)\n" +
-            "(instance Entity2_2 Organism)\n" +
-            "(mother Entity2_1 Entity2_2)\n" +
-            "(father Entity2_1 Entity2_2)";
         //(query (property TheKB2_1 Inconsistent))
         //(answer yes)
         NAR n = new NARS().index(new RadixTreeMemory(128*1024)).get();
@@ -133,6 +119,20 @@ class KIFTest {
 
 //        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new FirstOrderIndexer()); // ~= PROLOG
 
+        String t = "(instance TheKB2_1 ComputerProgram)\n" +
+                "(instance Inconsistent Attribute)\n" +
+                "\n" +
+                "(=>\n" +
+                "  (and\n" +
+                "    (contraryAttribute ?ATTR1 ?ATTR2)\n" +
+                "    (property ?X ?ATTR1)\n" +
+                "    (property ?X ?ATTR2))\n" +
+                "  (property TheKB2_1 Inconsistent))\n" +
+                "\n" +
+                "(instance Entity2_1 Organism)\n" +
+                "(instance Entity2_2 Organism)\n" +
+                "(mother Entity2_1 Entity2_2)\n" +
+                "(father Entity2_1 Entity2_2)";
         KIF k = new KIF(t);
         n.input(k.tasks());
 
@@ -143,22 +143,7 @@ class KIFTest {
     }
 
     @Test void test_TQG4() throws Narsese.NarseseException {
-        String t =
-            "(instance Entity4_1 Human)\n" +
-            "\n" +
-            "(instance DoingSomething4_1 IntentionalProcess)\n" +
-            "\n" +
-            "(agent DoingSomething4_1 Entity4_1)\n" +
-            "\n" +
-            "(=>\n" +
-            "  (and\n" +
-            "    (agent ?PROC ?AGENT)\n" +
-            "    (instance ?PROC IntentionalProcess))\n" +
-            "  (and\n" +
-            "    (instance ?AGENT CognitiveAgent)\n" +
-            "    (not\n" +
-            "      (Dead ?PROC ?AGENT ) )))";
-//            "(query (not (holdsDuring (WhenFn DoingSomething4-1) (attribute Entity4-1 Dead))))\n" +
+        //            "(query (not (holdsDuring (WhenFn DoingSomething4-1) (attribute Entity4-1 Dead))))\n" +
 //            "(answer yes)\n";
         NAR n = new NARS().index(new RadixTreeMemory(128*1024)).get();
 
@@ -167,6 +152,20 @@ class KIFTest {
 //        new Deriver(Derivers.nal(n, /*NAL*/5, /*NAL*/8), new FirstOrderIndexer()); // ~= PROLOG
         n.log();
 
+        String t = "(instance Entity4_1 Human)\n" +
+                "\n" +
+                "(instance DoingSomething4_1 IntentionalProcess)\n" +
+                "\n" +
+                "(agent DoingSomething4_1 Entity4_1)\n" +
+                "\n" +
+                "(=>\n" +
+                "  (and\n" +
+                "    (agent ?PROC ?AGENT)\n" +
+                "    (instance ?PROC IntentionalProcess))\n" +
+                "  (and\n" +
+                "    (instance ?AGENT CognitiveAgent)\n" +
+                "    (not\n" +
+                "      (Dead ?PROC ?AGENT ) )))";
         KIF k = new KIF(t);
         n.input(k.tasks());
 
@@ -347,7 +346,9 @@ class KIFTest {
     public void testCapabilityExtension() throws IOException {
 
         KIF k = KIF.file("/home/me/sumo/Merge.kif");
-        k.assertions.forEach(System.out::println);
+        for (Term assertion : k.assertions) {
+            System.out.println(assertion);
+        }
 
     }
 

@@ -114,7 +114,7 @@ public class CharmaskMatchLengthObjective implements Objective {
     }
 
     
-    private int intersection(Bounds[] extractedRanges, List<Bounds> expectedRanges) {
+    private static int intersection(Bounds[] extractedRanges, List<Bounds> expectedRanges) {
         int overallNumChars = 0;
          
         for (Bounds extractedBounds : extractedRanges) {
@@ -128,7 +128,7 @@ public class CharmaskMatchLengthObjective implements Objective {
     }
 
     
-    private int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
+    private static int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
         int identicalRanges = 0;
          
         for (Bounds boundsA : rangesA) {

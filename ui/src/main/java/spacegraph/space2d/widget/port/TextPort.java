@@ -9,8 +9,8 @@ public class TextPort extends EditablePort<String> {
     public TextPort() {
 
         super("", String.class);
-        on((String s)->{
-            final boolean[] changed = {false};
+        on(s ->{
+            boolean[] changed = {false};
             val.accumulateAndGet(s, (p, n) -> {
                 if (p != null && n.equals(p)) {
                     changed[0] = true;

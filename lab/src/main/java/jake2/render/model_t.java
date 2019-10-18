@@ -46,7 +46,8 @@ public class model_t implements Cloneable {
 	
 	
 	
-	public float[] mins = { 0, 0, 0 }, maxs = { 0, 0, 0 };
+	public float[] mins = { 0, 0, 0 };
+    public float[] maxs = { 0, 0, 0 };
 	public float radius;
 
 	
@@ -59,7 +60,8 @@ public class model_t implements Cloneable {
 	
 	
 	
-	public int firstmodelsurface, nummodelsurfaces;
+	public int firstmodelsurface;
+    public int nummodelsurfaces;
 	public int lightmap; 
 
 	public int numsubmodels;

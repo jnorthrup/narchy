@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.zhz.dfargx.automata.DFA;
 import org.zhz.dfargx.automata.NFA;
+import org.zhz.dfargx.automata.NFAState;
 import org.zhz.dfargx.node.Node;
 
 import java.util.UUID;
@@ -55,7 +56,9 @@ public class RegexTest {
 
         NFA nfa = new NFA(root);
         System.out.println("NFA has " + nfa.states.size() + " states");
-        nfa.states.forEach(System.out::println);
+        for (NFAState state : nfa.states) {
+            System.out.println(state);
+        }
         System.out.println();
 
         DFA dfa = new DFA(nfa.states);
@@ -103,7 +106,7 @@ public class RegexTest {
         testSearchingSpeed(regex, str, num);
     }
 
-    private void testMatchingSpeed(String regex, String str, int num) {
+    private static void testMatchingSpeed(String regex, String str, int num) {
         System.out.println("Matching " + num + " strings using: ");
         System.out.println("[Pattern] " + regex);
         System.out.println("[String]" + str);
@@ -133,11 +136,11 @@ public class RegexTest {
         Assertions.assertTrue(dfaResult == jpResult);
     }
 
-    private float matchesPerMS(float num, long pre) {
+    private static float matchesPerMS(float num, long pre) {
         return (num * 1f)/(System.nanoTime() - pre);
     }
 
-    private void testSearchingSpeed(String regex, String str, int num) {
+    private static void testSearchingSpeed(String regex, String str, int num) {
         long pre = System.nanoTime();
         RegexSearcher searcher = new RegexSearcher(regex);
         for (int i = 0; i < num; i++) {

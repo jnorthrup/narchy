@@ -22,7 +22,8 @@ package jcog.math;
  * @see java.lang.Float#floatToRawIntBits(float)
  */
 public class FastLog {
-    private final int q, qM1;
+    private final int q;
+    private final int qM1;
     private final float[] data;
     private final float korr;
 
@@ -38,11 +39,11 @@ public class FastLog {
      *             requires 32 KB.
      */
     public FastLog(double base, int q) {
-        final int tabSize = 1 << (24 - q);
 
         this.q = q;
         qM1 = q - 1;
         korr = (float) (LN2 / Math.log(base));
+        int tabSize = 1 << (24 - q);
         data = new float[tabSize];
 
         for (int i = 0; i < tabSize; i++) {
@@ -66,9 +67,9 @@ public class FastLog {
      */
     public float log(float x) {
         assert (x > 0);
-        final int raw = Float.floatToIntBits(x);
-        final int exp = (raw >> 23) & 0xFF;
-        final int mant = (raw & 0x7FFFFF);
+        int raw = Float.floatToIntBits(x);
+        int exp = (raw >> 23) & 0xFF;
+        int mant = (raw & 0x7FFFFF);
         return (exp + data[exp == 0 ?
                 (mant >> qM1) :
                 ((mant | 0x800000) >> q)]) * korr;

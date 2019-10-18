@@ -49,18 +49,15 @@ public final class EmulatorVT100 extends TerminalEmulator {
     public void start() {
         reset();
 
-        int[] intarg = new int[10];
-        int intargi = 0;
-
         x = 0;
         y = char_height;
 
-        byte b;
-
         try {
+            int intargi = 0;
+            int[] intarg = new int[10];
             while (true) {
 
-                b = getChar();
+                byte b = getChar();
 
                 
 

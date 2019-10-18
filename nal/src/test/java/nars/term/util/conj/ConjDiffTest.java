@@ -157,7 +157,12 @@ class ConjDiffTest {
 
         assertEventOf(xy, r);
 
-        var results = IntStream.range(0, 16).mapToObj(i -> Conj.diffAllPN(xy, r)).collect (Collectors.toCollection((Supplier<TreeSet>) TreeSet::new));
+        Supplier<TreeSet> collectionFactory = TreeSet::new;
+        var results = collectionFactory.get();
+        for (int i = 0; i < 16; i++) {
+            Term term = Conj.diffAllPN(xy, r);
+            results.add(term);
+        }
         assertEquals(s, results.toString());
     }
 

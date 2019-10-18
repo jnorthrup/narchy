@@ -16,7 +16,8 @@ import java.io.IOException;
  */
 public class MNISTWorld extends MNIST implements World {
 
-    int currentImage = 0, currentFrame = -1;
+    int currentImage = 0;
+    int currentFrame = -1;
     int cycle = 0;
     static final int maxDigit = 2;
     
@@ -129,7 +130,8 @@ public class MNISTWorld extends MNIST implements World {
     }
     
     
-    int maxTrainingCyclesPerImage = 256, trainingCyclesPerImage = 1;
+    int maxTrainingCyclesPerImage = 256;
+    int trainingCyclesPerImage = 1;
     static final double noise = 0.01;
     
     public static void main(String[] args) throws Exception {

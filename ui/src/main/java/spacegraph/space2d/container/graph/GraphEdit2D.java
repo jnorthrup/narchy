@@ -1,7 +1,6 @@
 package spacegraph.space2d.container.graph;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
 import com.jogamp.opengl.GL2;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
@@ -36,7 +35,9 @@ import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.space2d.widget.windo.util.Box2DGraphEditPhysics;
 import spacegraph.space2d.widget.windo.util.GraphEditPhysics;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -93,7 +94,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
         physics.start(this);
 
-        loop = root().animate(((float dt) -> {
+        loop = root().animate((dt -> {
             //constraints.update();
             this.physics.update(GraphEdit2D.this, dt);
             return true;
@@ -117,7 +118,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
     /**
      * wraps window content for a new window
      */
-    private Scale windowContent(Surface xx) {
+    private static Scale windowContent(Surface xx) {
         return new Scale(new MetaFrame(xx), 0.98f);
     }
 
@@ -312,7 +313,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
     /**
      * undirected link
      */
-    public @Nullable Wire addWire(final Wire wire) {
+    public @Nullable Wire addWire(Wire wire) {
 
         Surface aa = wire.a, bb = wire.b;
 
@@ -384,7 +385,9 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
         @Override
         protected void onRemoved(Node<Surface, Wire> r) {
-            r.edges(true, true).forEach(e -> e.id().remove());
+            for (FromTo<Node<Surface, Wire>, Wire> e : r.edges(true, true)) {
+                e.id().remove();
+            }
         }
 
     }
@@ -442,7 +445,8 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
     class Debugger extends Gridding {
 
-        private final AbstractLabel boundsInfo, children;
+        private final AbstractLabel boundsInfo;
+        private final AbstractLabel children;
 
         {
             add(boundsInfo = new BitmapLabel());
@@ -453,7 +457,8 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
         void update() {
             boundsInfo.text(GraphEdit2D.this.bounds.toString());
 
-            children.text(Joiner.on("\n").join(GraphEdit2D.this.keySet().stream().map(t -> info(t, getValue(t))).collect(Collectors.toList())));
+            List<String> list = GraphEdit2D.this.keySet().stream().map(t -> info(t, getValue(t))).collect(Collectors.toList());
+            children.text(Joiner.on("\n").join(list));
         }
 
         private String info(Surface x, ContainerSurface w) {

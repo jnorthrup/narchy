@@ -20,7 +20,10 @@ import net.beadsproject.beads.data.DataBeadReceiver;
  * @beads.category filter
  */
 public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
-    private float freq, b0, a1, y1;
+    private float freq;
+    private float b0;
+    private float a1;
+    private float y1;
     private UGen freqUGen;
     private final float samplingfreq;
 	private final float two_pi_over_sf;

@@ -138,8 +138,6 @@ public class BagLab {
 
     private void measure() {
         int bins = selectionHistogram.length;
-        float sampleBatches = 1;
-        int batchSize = 32;
 
         if (iteration++ % histogramResetPeriod == 0)
             Arrays.fill(selectionHistogram, 0);
@@ -151,6 +149,8 @@ public class BagLab {
                 ThreadLocalRandom.current();
 
         List<PriReference<Integer>> sampled = $.newArrayList(1024);
+        int batchSize = 32;
+        float sampleBatches = 1;
         for (int i = 0; i < (int) sampleBatches; i++) {
             sampled.clear();
 
@@ -177,7 +177,8 @@ public class BagLab {
 //        if (!bag.isEmpty())
 //            return; //assume done already
 
-        float totalInputs = (float) inputSliders.stream().mapToDouble(FloatSlider::get).sum();
+        double sum = inputSliders.stream().mapToDouble(FloatSlider::get).sum();
+        float totalInputs = (float) sum;
         if (totalInputs < 0.01f)
             return;
 

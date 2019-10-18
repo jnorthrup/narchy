@@ -538,14 +538,10 @@ public class M extends Applet implements Runnable {
 		}
 
 		
-		int x1 = 0, x2, x3, x4, x5, x6, x7;
-		int y1 = 0, y2 = 0, y3 = 0, y4, y5, y6, y7;
-		int p0, p1, p2, p3, p4, p5, p6;
-		boolean b1, b2, b3, b4;
+		int x7;
 
-		
 
-		BufferedImage image = new BufferedImage(RENDER_WIDTH, RENDER_HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(RENDER_WIDTH, RENDER_HEIGHT, BufferedImage.TYPE_INT_RGB);
 		Graphics ogr = image.getGraphics();
 
 		
@@ -570,7 +566,11 @@ public class M extends Applet implements Runnable {
 		/*y1 = 0;*/
 		/*y2 = 0;*/
 		/*y3 = 0;*/
-		while (true) {
+        int y3 = 0;
+        int y2 = 0;
+        int y1 = 0;
+        int x1 = 0;
+        while (true) {
 			COLORS[x1++] = new Color(y1 << PALETTE_COMPONENT_SHL, y2 << PALETTE_COMPONENT_SHL, y3 << PALETTE_COMPONENT_SHL);
 			if (++y1 >= PALETTE_COMPONENT_MAX) {
 				y1 = 0;
@@ -601,41 +601,19 @@ public class M extends Applet implements Runnable {
 			
 			
 			long lastTime = System.nanoTime();
-			int frameCount = 0;
-			int reflectCount = 0;
-			int wallCount = 0;
-			int wallLeft = MIN_WALL_LEFT;
-			int wallRight = MAX_WALL_RIGHT;
 
-			boolean ballReflect = false;
 
-			
-			
-			boolean ballSticky = true;
+            int p0 = WALL_OBJECT_INST_START_POS;
 
-			
-			
-			int[] OBJECT_INST = new int[OBJECT_INST_SIZE];
+            int p1 = OBJECT_INST_IMAGE_BASE_START_POS;
 
-			
-			
-			
 
-			
-			
-			p0 = WALL_OBJECT_INST_START_POS;
-			
-			p1 = OBJECT_INST_IMAGE_BASE_START_POS;
-			
+            y1 = WALL_START_Y;
 
-			
-			
-			
-			
-			y1 = WALL_START_Y;
-			
-			
-			for (x1 = 0; x1 < WALL_TOTAL_COUNT; x1++) {
+
+            int[] OBJECT_INST = new int[OBJECT_INST_SIZE];
+            int x2;
+            for (x1 = 0; x1 < WALL_TOTAL_COUNT; x1++) {
 				
 				OBJECT_INST[p0 + OBJECT_INST_RECORD_VISIBLE_INDEX] = VISIBLE_YES;
 				OBJECT_INST[p0 + OBJECT_INST_RECORD_IMAGE_POS_INDEX] = p1;
@@ -659,14 +637,12 @@ public class M extends Applet implements Runnable {
 				p1 += OBJECT_INST_IMAGE_SIZE;
 			}
 
-			
-			
 
-			
-			x4 = OBJECT_TYPE_BREAKOUT_POS;
-			
-			
-			for (x3 = OBJECT_TYPE_BREAKOUT_INDEX; x3 < OBJECT_TYPE_COUNT; x3++) {
+            int x4 = OBJECT_TYPE_BREAKOUT_POS;
+
+
+            int x3;
+            for (x3 = OBJECT_TYPE_BREAKOUT_INDEX; x3 < OBJECT_TYPE_COUNT; x3++) {
 				
 				
 				y1 = OBJECT_TYPES[x4 + OBJECT_TYPE_RECORD_PREPOPULATE_VINDENT_INDEX];
@@ -732,7 +708,14 @@ public class M extends Applet implements Runnable {
 
 			int objectCount = BALL_OBJECT_INST_START_INDEX + 1;
 
-			loopGame: while (true) {
+            boolean ballSticky = true;
+            boolean ballReflect = false;
+            int wallRight = MAX_WALL_RIGHT;
+            int wallLeft = MIN_WALL_LEFT;
+            int wallCount = 0;
+            int reflectCount = 0;
+            int frameCount = 0;
+            loopGame: while (true) {
 				Graphics sg = getGraphics();
 				
 				
@@ -767,15 +750,11 @@ public class M extends Applet implements Runnable {
 				for (x1 = 0; x1 < RENDER_WIDTH; x1 += DR_NET_SEP) {
 					ogr.fillRect(x1, DR_NET_Y, DR_NET_WIDTH, DR_NET_HEIGHT);
 				}
-				
 
-				
-				
 
-				
-				
-
-				if (ballReflect && (reflectCount & REFLECT_SPECIAL_BITS) == SPECIAL_COMPUTE_EQUALS) {
+                int p2;
+                int y4;
+                if (ballReflect && (reflectCount & REFLECT_SPECIAL_BITS) == SPECIAL_COMPUTE_EQUALS) {
 					ballReflect = false;
 					
 					p2 = BASE_EVENT_MOD + playerScore + computerScore + (reflectCount >> REFLECT_SPECIAL_SHR);
@@ -955,21 +934,13 @@ public class M extends Applet implements Runnable {
 				OBJECT_TYPES[MISSILE_EXPLODE_1_TYPE_COLOR_POS] = x1;
 				OBJECT_TYPES[MISSILE_EXPLODE_2_TYPE_COLOR_POS] = x1;
 				OBJECT_TYPES[MISSILE_EXPLODE_3_TYPE_COLOR_POS] = x1;
-				
 
-				
-				
-				
-				
-				
-				
-				
 
-				
-				p3 = 0;
-				
-				
-				for (x2 = 0; x2 < objectCount; x2++, p3 += OBJECT_INST_RECORD_SIZE) {
+                int p3 = 0;
+
+
+                boolean b1;
+                for (x2 = 0; x2 < objectCount; x2++, p3 += OBJECT_INST_RECORD_SIZE) {
 					
 					if (OBJECT_INST[p3 + OBJECT_INST_RECORD_VISIBLE_INDEX] != VISIBLE_YES) {
 						continue;
@@ -994,9 +965,9 @@ public class M extends Applet implements Runnable {
 					int nextXPos = OBJECT_INST[p3 + OBJECT_INST_RECORD_X_INDEX];
 					int nextYPos = OBJECT_INST[p3 + OBJECT_INST_RECORD_Y_INDEX];
 
-					
-					
-					if (OBJECT_INST[p3 + OBJECT_INST_RECORD_NEEDSCOPY_INDEX] == NEEDSCOPY_COPY) {
+
+                    int y5;
+                    if (OBJECT_INST[p3 + OBJECT_INST_RECORD_NEEDSCOPY_INDEX] == NEEDSCOPY_COPY) {
 						OBJECT_INST[p3 + OBJECT_INST_RECORD_NEEDSCOPY_INDEX] = NEEDSCOPY_NOOP;
 
 						
@@ -1037,9 +1008,9 @@ public class M extends Applet implements Runnable {
 						
 					}
 
-					
-					
-					switch (x3) {
+
+                    int x5;
+                    switch (x3) {
 
 					case OBJECT_TYPE_WALL_INDEX:
 						
@@ -1521,11 +1492,11 @@ public class M extends Applet implements Runnable {
 						int ypos = OBJECT_INST[p3 + OBJECT_INST_RECORD_Y_INDEX];
 						int ydelta = nextYPos - ypos;
 						int ydir = 0;
-						int withYOverlapAdd = GR_BLOCK_HEIGHT;
-						if (ydelta > 0) {
+                        if (ydelta > 0) {
 							ydir++;
 						}
-						if (ydelta < 0) {
+                        int withYOverlapAdd = GR_BLOCK_HEIGHT;
+                        if (ydelta < 0) {
 							
 							
 							ydir--;
@@ -1562,35 +1533,19 @@ public class M extends Applet implements Runnable {
 								
 								
 								b1 = ((p1 & FLAGMSK_CAUSES_DESTROY) != 0) && ((y1 & FLAGMSK_DESTROYABLE) != 0);
-								
-								
-								b2 = ((p1 & FLAGMSK_CAUSES_DENTS) != 0) && ((y1 & FLAGMSK_DENTABLE) != 0) && !((x3 == OBJECT_TYPE_BALL_INDEX) && (p2 == SPADDLE_OBJECT_INST_START_POS))
-										&& !((x3 == OBJECT_TYPE_WALL_INDEX) && ((y1 & FLAGMSK_IS_TETRIS) != 0));
-								
-								
-								
-								b3 = (x3 == OBJECT_TYPE_BALL_INDEX) && ((y1 & FLAGMSK_REFLECTS_BALL) != 0);
-								
-								
-								b4 = ((p1 & FLAGMSK_IS_TETRIS) != 0) && ((y1 & FLAGMSK_STOPS_TETRIS) != 0);
-								
-								
 
-								
-								
-								
-								
-								
-								
-								
 
-								
-								
-								
-								
+                                boolean b2 = ((p1 & FLAGMSK_CAUSES_DENTS) != 0) && ((y1 & FLAGMSK_DENTABLE) != 0) && !((x3 == OBJECT_TYPE_BALL_INDEX) && (p2 == SPADDLE_OBJECT_INST_START_POS))
+                                        && !((x3 == OBJECT_TYPE_WALL_INDEX) && ((y1 & FLAGMSK_IS_TETRIS) != 0));
 
-								
-								x1 = OBJECT_INST[p2 + OBJECT_INST_RECORD_X_INDEX] /*+ withXPlane */;
+
+                                boolean b3 = (x3 == OBJECT_TYPE_BALL_INDEX) && ((y1 & FLAGMSK_REFLECTS_BALL) != 0);
+
+
+                                boolean b4 = ((p1 & FLAGMSK_IS_TETRIS) != 0) && ((y1 & FLAGMSK_STOPS_TETRIS) != 0);
+
+
+                                x1 = OBJECT_INST[p2 + OBJECT_INST_RECORD_X_INDEX] /*+ withXPlane */;
 								
 								
 								y1 = OBJECT_INST[p2 + OBJECT_INST_RECORD_Y_INDEX] /*+ withYPlane*/;
@@ -1613,19 +1568,19 @@ public class M extends Applet implements Runnable {
 
 									
 									int withType = OBJECT_INST[p2 + OBJECT_INST_RECORD_TYPE_INDEX];
-									int withTypePos = withType * OBJECT_TYPE_RECORD_SIZE;
-									
-									p4 = OBJECT_INST[p2 + OBJECT_INST_RECORD_IMAGE_POS_INDEX];
-									
-									int withWidth = OBJECT_TYPES[withTypePos + OBJECT_TYPE_RECORD_WIDTH_INDEX];
+
+                                    int p4 = OBJECT_INST[p2 + OBJECT_INST_RECORD_IMAGE_POS_INDEX];
+
+                                    int withTypePos = withType * OBJECT_TYPE_RECORD_SIZE;
+                                    int withWidth = OBJECT_TYPES[withTypePos + OBJECT_TYPE_RECORD_WIDTH_INDEX];
 									int withHeight = OBJECT_TYPES[withTypePos + OBJECT_TYPE_RECORD_HEIGHT_INDEX];
 									int withX2 = x1 + withWidth * GR_BLOCK_WIDTH;
 									int withY2 = y1 - withHeight * GR_BLOCK_HEIGHT;
 
-									
-									p5 = p0;
-									
-									for (int sourceY = 0; sourceY < sourceHeight; sourceY++) {
+
+                                    int p5 = p0;
+
+                                    for (int sourceY = 0; sourceY < sourceHeight; sourceY++) {
 										
 										y5 = ypos + sourceY * GR_BLOCK_WIDTH;
 										for (int sourceX = 0; sourceX < sourceWidth; sourceX++, p5++) {
@@ -1636,30 +1591,21 @@ public class M extends Applet implements Runnable {
 												
 												
 												for (int corner = 0; corner < 4; corner++) {
-													
-													x6 = x5 + ((corner & 1) * (GR_BLOCK_WIDTH - 1));
-													
-													y6 = y5 - (((corner >> 1) & 1) * (GR_BLOCK_HEIGHT - 1));
-													
-													
 
-													
-													
-													
-													
-													
+                                                    int x6 = x5 + ((corner & 1) * (GR_BLOCK_WIDTH - 1));
 
-													
-													
-													int overlapX = (x6 - x1) / GR_BLOCK_WIDTH;
+                                                    int y6 = y5 - (((corner >> 1) & 1) * (GR_BLOCK_HEIGHT - 1));
+
+
+                                                    int overlapX = (x6 - x1) / GR_BLOCK_WIDTH;
 													if (overlapX >= withWidth || overlapX < 0) {
 														continue;
 													}
-													
-													p6 = p4 + overlapX;
-													
 
-													int overlapY = (y1 - y6) / GR_BLOCK_HEIGHT;
+                                                    int p6 = p4 + overlapX;
+
+
+                                                    int overlapY = (y1 - y6) / GR_BLOCK_HEIGHT;
 													if (overlapY >= withHeight || overlapY < 0) {
 														continue;
 													}
@@ -1677,10 +1623,10 @@ public class M extends Applet implements Runnable {
 														
 
 														if (b1) {
-															
-															
-															y7 = VISIBLE_DESTROY;
-															if (p2 < OBJECT_INST_FIRST_DESTROYABLE_POS) {
+
+
+                                                            int y7 = VISIBLE_DESTROY;
+                                                            if (p2 < OBJECT_INST_FIRST_DESTROYABLE_POS) {
 																y7 = VISIBLE_NO;
 															}
 															OBJECT_INST[p2 + OBJECT_INST_RECORD_VISIBLE_INDEX] = y7;

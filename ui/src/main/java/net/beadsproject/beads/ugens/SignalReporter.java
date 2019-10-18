@@ -14,7 +14,9 @@ import net.beadsproject.beads.core.UGen;
  * @beads.category lowlevel
  */
 public class SignalReporter extends UGen {
-    private long interval = 44100, index = 44100, count;
+    private long interval = 44100;
+    private long index = 44100;
+    private long count;
     private long total;
     private float flInt;
     private String name = "";

@@ -21,9 +21,7 @@ class MyShortIntHashMapTest {
 
             m.addToValues(4);
 
-            m.forEachKeyValue((k, v) -> {
-                assertEquals(5, v);
-            });
+            m.forEachKeyValue((k, v) -> assertEquals(5, v));
 
             m.filter(v -> v == 0);
 

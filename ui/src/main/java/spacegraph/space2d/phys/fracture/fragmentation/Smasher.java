@@ -67,7 +67,6 @@ public class Smasher {
         List<Fragment> list = getVoronoi();
 
         List<EdgePolygon> polygonEdgesList = new FasterList<>();
-        HashTabulka<EdgeDiagram> diagramEdges = new HashTabulka<>();
         HashTabulka<EdgePolygon> polygonEdges = new HashTabulka<>();
 
 
@@ -81,6 +80,7 @@ public class Smasher {
         }
 
 
+        HashTabulka<EdgeDiagram> diagramEdges = new HashTabulka<>();
         for (Fragment pp : list) {
             count = pp.size();
             for (int i = 1; i <= count; i++) {
@@ -136,7 +136,9 @@ public class Smasher {
                     diagramEdges.add(ex);
 
 
-                    polygonEdges.forEach(px -> process(px, ex));
+                    for (EdgePolygon px : polygonEdges) {
+                        process(px, ex);
+                    }
 
                 } else {
                     diagramEdges.remove(e.e);
@@ -146,7 +148,9 @@ public class Smasher {
                     EdgePolygon px = (EdgePolygon) e.e;
                     polygonEdges.add(px);
 
-                    diagramEdges.forEach(ex -> process(px, ex));
+                    for (EdgeDiagram ex : diagramEdges) {
+                        process(px, ex);
+                    }
 
 
                 } else {
@@ -187,11 +191,10 @@ public class Smasher {
             }
         }
 
-        MyList<Fragment> allIntersections = new MyList<>();
-
 
         precalc_values();
 
+        MyList<Fragment> allIntersections = new MyList<>();
         for (Fragment ppp : list) {
             List<Fragment> intsc = getIntersections(ppp, polygonAll);
             if (intsc == null) {
@@ -221,29 +224,31 @@ public class Smasher {
         }
 
 
-        final double[] distance = {Double.MAX_VALUE};
-        final Fragment[] startPolygon = {null};
-        final v2[] kolmicovyBod = {null};
+        double[] distance = {Double.MAX_VALUE};
+        Fragment[] startPolygon = {null};
+        v2[] kolmicovyBod = {null};
         MyList<EdgeDiagram> allEdgesPolygon = new MyList<>();
 
 
-        table.stream().filter(ep -> ep.d2 == null).forEach(ep -> {
-            v2 vv = ep.kolmicovyBod(contactPoint);
-            double newDistance = contactPoint.distanceSq(vv);
-            if (newDistance <= distance[0]) {
-                distance[0] = newDistance;
-                kolmicovyBod[0] = vv;
-                startPolygon[0] = ep.d1;
+        for (EdgeDiagram edgeDiagram : table) {
+            if (edgeDiagram.d2 == null) {
+                v2 vv = edgeDiagram.kolmicovyBod(contactPoint);
+                double newDistance = contactPoint.distanceSq(vv);
+                if (newDistance <= distance[0]) {
+                    distance[0] = newDistance;
+                    kolmicovyBod[0] = vv;
+                    startPolygon[0] = edgeDiagram.d1;
+                }
+                allEdgesPolygon.add(edgeDiagram);
             }
-            allEdgesPolygon.add(ep);
-        });
+        }
 
         MyList<Fragment> ppx = new MyList<>();
         ppx.add(startPolygon[0]);
         EdgeDiagram epx = new EdgeDiagram(null, null);
-        HashTabulka<Fragment> vysledneFragmenty = new HashTabulka<>();
         startPolygon[0].visited = true;
 
+        HashTabulka<Fragment> vysledneFragmenty = new HashTabulka<>();
         while (!ppx.isEmpty()) {
             Fragment px = ppx.get(0);
             vysledneFragmenty.add(px);
@@ -332,7 +337,7 @@ public class Smasher {
     }
 
 
-    private void tryFracture(final Fixture f1, final Fixture f2, final float iml, Contact contact, int i) {
+    private void tryFracture(Fixture f1, Fixture f2, float iml, Contact contact, int i) {
 
 
         Material m = f1.material;
@@ -363,8 +368,6 @@ public class Smasher {
      */
     private List<Fragment> getIntersections(Fragment p1, Polygon p2) {
         Vec2Intersect firstV = null;
-        boolean idemPoKonvexnom = false;
-        List<Fragment> polygonList = new ArrayList<>();
 
         for (v2 v : p1) {
             if (v instanceof Vec2Intersect) {
@@ -379,6 +382,7 @@ public class Smasher {
             }
         }
 
+        List<Fragment> polygonList = new ArrayList<>();
         if (firstV == null) {
             if (pointInPolygon(p1.get(0))) {
                 polygonList.add(p1);
@@ -390,14 +394,14 @@ public class Smasher {
 
         v2 start = firstV;
 
-        v2 iterator;
         Polygon iterationPolygon = p2;
         int index = firstV.index;
 
-        int exI = 0;
+        boolean idemPoKonvexnom = false;
         cyklus:
-        for (; ; ) {
+        for (int exI = 0; ; ) {
             Fragment prienik = new Fragment();
+            v2 iterator;
             do {
                 exI++;
                 if (exI >= 10000) {
@@ -474,7 +478,8 @@ public class Smasher {
 
         List<Fragment> fragmentList = new FasterList<>(focee.length);
 
-        v2[] pp = IntStream.range(0, factory.pCount).mapToObj(i -> new v2(factory.points[i])).toArray(v2[]::new);
+        int bound = factory.pCount;
+        v2[] pp = IntStream.range(0, bound).mapToObj(i1 -> new v2(factory.points[i1])).toArray(v2[]::new);
 
         for (int i = 0; i < focee.length; i++) {
 
@@ -568,10 +573,10 @@ public class Smasher {
      */
     private void precalc_values() {
         int n = p.size();
-        int i, j = n - 1;
         multiple = new float[n];
         constant = new float[n];
-        for (i = 0; i < n; i++) {
+        int j = n - 1;
+        for (int i = 0; i < n; i++) {
             v2 vi = p.get(i);
             v2 vj = p.get(j);
             multiple[i] = (vj.x - vi.x) / (vj.y - vi.y);
@@ -589,9 +594,9 @@ public class Smasher {
         float x = v.x;
         float y = v.y;
         int n = p.size();
-        int i, j = n - 1;
+        int j = n - 1;
         boolean b = false;
-        for (i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             v2 vi = p.get(i);
             v2 vj = p.get(j);
             if ((vi.y < y && vj.y >= y || vj.y < y && vi.y >= y) && y * multiple[i] + constant[i] < x) {
@@ -603,7 +608,9 @@ public class Smasher {
     }
 
     public void update(Dynamics2D dyn, float dt) {
-        fractures.forEach(f -> f.smash(this, dt, dyn));
+        for (Fracture f : fractures) {
+            f.smash(this, dt, dyn);
+        }
         fractures.clear();
     }
 }

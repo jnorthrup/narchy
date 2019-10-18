@@ -65,11 +65,10 @@ public abstract class KeyCode_FileBased {
      * @param keyMapFile File containing keymap data
      */
     protected KeyCode_FileBased(String keyMapFile) throws KeyMapException {
-        
 
-        FileInputStream fstream;
+
         try {
-            fstream = new FileInputStream(keyMapFile);
+            FileInputStream fstream = new FileInputStream(keyMapFile);
             readMapFile(fstream);
         } catch (FileNotFoundException e) {
             throw new KeyMapException("KeyMap file not found: " + keyMapFile);
@@ -105,21 +104,20 @@ public abstract class KeyCode_FileBased {
      * @throws KeyMapException
      */
     private void readMapFile(InputStream fstream) throws KeyMapException {
-        
-        int lineNum = 0; 
-        String line = ""; 
 
         if (fstream == null)
             throw new KeyMapException("Could not find specified keymap file");
 
         boolean mapCodeSet = false;
 
+        int lineNum = 0;
         try {
             DataInputStream in = new DataInputStream(fstream);
 
             if (in == null)
                 logger.warn("in == null");
 
+            String line = "";
             while (in.available() != 0) {
                 lineNum++;
                 line = in.readLine();
@@ -209,29 +207,27 @@ public abstract class KeyCode_FileBased {
      */
     private String stateChanges(KeyEvent e, MapDef theDef) {
 
-        String changes = "";
-
         final int SHIFT = 0;
-        final int CTRL = 1;
-        final int ALT = 2;
-        final int CAPSLOCK = 3;
 
         int BEFORE = 0;
-        int AFTER = 1;
 
         boolean[][] state = new boolean[4][2];
 
         state[SHIFT][BEFORE] = e.isShiftDown();
+        int AFTER = 1;
         state[SHIFT][AFTER] = theDef.isShiftDown();
 
+        final int CTRL = 1;
         state[CTRL][BEFORE] = e.isControlDown() || e.isAltGraphDown();
         state[CTRL][AFTER] = theDef.isCtrlDown();
 
+        final int ALT = 2;
         state[ALT][BEFORE] = e.isAltDown() || e.isAltGraphDown();
         state[ALT][AFTER] = theDef.isAltDown();
 
         updateCapsLock(e);
 
+        final int CAPSLOCK = 3;
         state[CAPSLOCK][BEFORE] = capsLockDown;
         state[CAPSLOCK][AFTER] = theDef.isCapslockOn();
 
@@ -246,9 +242,7 @@ public abstract class KeyCode_FileBased {
         String up = "" + ((char) UP);
         String down = "" + ((char) DOWN);
 
-        String quietup = "" + ((char) QUIETUP);
-        String quietdown = "" + ((char) QUIETDOWN);
-
+        String changes = "";
         if (state[SHIFT][BEFORE] != state[SHIFT][AFTER]) {
             if (state[SHIFT][BEFORE])
                 changes += ((char) 0x2a) + up;
@@ -265,6 +259,8 @@ public abstract class KeyCode_FileBased {
 
         if (Options.altkey_quiet) {
 
+            String quietdown = "" + ((char) QUIETDOWN);
+            String quietup = "" + ((char) QUIETUP);
             if (state[ALT][BEFORE] != state[ALT][AFTER]) {
                 if (state[ALT][BEFORE])
                     changes += (char) 0x38 + quietup + ((char) 0x38)

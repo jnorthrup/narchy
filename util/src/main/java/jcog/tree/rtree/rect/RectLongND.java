@@ -5,6 +5,7 @@ import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.point.LongND;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -33,7 +34,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
         max = unbounded;
     }
 
-    public RectLongND(final LongND p) {
+    public RectLongND(LongND p) {
         min = p;
         max = p;
     }
@@ -43,7 +44,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     }
 
 
-    public RectLongND(final LongND a, final LongND b) {
+    public RectLongND(LongND a, LongND b) {
         int dim = a.dim();
 
         long[] min = new long[dim];
@@ -66,16 +67,16 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     }
 
     @Override
-    public boolean contains(final HyperRegion _inner) {
-        final RectLongND inner = (RectLongND) _inner;
+    public boolean contains(HyperRegion _inner) {
+        RectLongND inner = (RectLongND) _inner;
 
         int dim = dim();
-        return IntStream.range(0, dim).allMatch(i -> min.coord[i] <= inner.min.coord[i] && max.coord[i] >= inner.max.coord[i]);
+        return IntStream.range(0, dim).noneMatch(i -> min.coord[i] > inner.min.coord[i] || max.coord[i] < inner.max.coord[i]);
     }
 
     @Override
-    public boolean intersects(final HyperRegion r) {
-        final RectLongND x = (RectLongND) r;
+    public boolean intersects(HyperRegion r) {
+        RectLongND x = (RectLongND) r;
 
         int dim = dim();
         /*return !((min.x > r2.max.x) || (r2.min.x > max.x) ||
@@ -94,8 +95,8 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     }
 
     @Override
-    public HyperRegion mbr(final HyperRegion r) {
-        final RectLongND x = (RectLongND) r;
+    public HyperRegion mbr(HyperRegion r) {
+        RectLongND x = (RectLongND) r;
 
         int dim = dim();
         long[] newMin = new long[dim];
@@ -128,7 +129,14 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
 
     public LongND center() {
         int dim = dim();
-        long[] c = IntStream.range(0, dim).mapToLong(i -> (min.coord(i) + max.coord(i)) / 2).toArray();
+        long[] c = new long[10];
+        int count = 0;
+        for (int i = 0; i < dim; i++) {
+            long l = (min.coord(i) + max.coord(i)) / 2;
+            if (c.length == count) c = Arrays.copyOf(c, count * 2);
+            c[count++] = l;
+        }
+        c = Arrays.copyOfRange(c, 0, count);
         return new LongND(c);
     }
 
@@ -148,7 +156,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     }
 
     @Override
-    public double range(final int dim) {
+    public double range(int dim) {
         float min = this.min.coord[dim];
         float max = this.max.coord[dim];
         if (min == max)
@@ -199,7 +207,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     public static final class Builder<X extends RectLongND> implements Function<X, HyperRegion> {
 
         @Override
-        public X apply(final X rect2D) {
+        public X apply(X rect2D) {
             return rect2D;
         }
 

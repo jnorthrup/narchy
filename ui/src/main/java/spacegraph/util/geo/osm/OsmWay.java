@@ -16,8 +16,11 @@ public class OsmWay extends OsmGroup {
 
     @Override
     public void forEach(Consumer<OsmElement> eachChild) {
-        if (children!=null)
-            children.forEach(eachChild);
+        if (children!=null) {
+            for (OsmElement child : children) {
+                eachChild.accept(child);
+            }
+        }
     }
 
     public List<OsmElement> getOsmNodes() {

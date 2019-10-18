@@ -19,6 +19,7 @@ import nars.truth.Stamp;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
@@ -41,7 +42,8 @@ public class DynTaskify extends TaskList {
     static class Component implements Function<DynTaskify,Task> {
         final Term term;
         final BeliefTable table;
-        final long start, end;
+        final long start;
+        final long end;
         final int termVolume;
 
         Component(Term term, BeliefTable _c, long start, long end) {
@@ -147,10 +149,16 @@ public class DynTaskify extends TaskList {
 
         if (cn > 1) {
 
-            int[] order = IntStream.range(0, cn).toArray();
+            int[] order = new int[10];
+            int count = 0;
+            for (int i1 = 0; i1 < cn; i1++) {
+                if (order.length == count) order = Arrays.copyOf(order, count * 2);
+                order[count++] = i1;
+            }
+            order = Arrays.copyOfRange(order, 0, count);
             Component[] cc = c.array();
 
-            IntToFloatFunction smallestFirst = (int j) -> +cc[j].termVolume;
+            IntToFloatFunction smallestFirst = j -> +cc[j].termVolume;
             //IntToFloatFunction biggestFirst = (int j) -> -(cc[j]).termVolume;
             QuickSort.sort(order,
                     smallestFirst

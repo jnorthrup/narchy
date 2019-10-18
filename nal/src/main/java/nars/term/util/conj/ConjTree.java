@@ -194,7 +194,7 @@ public class ConjTree implements ConjBuilder {
         FasterList<Term> toAdd = null;
         Term nxn = null;
         for (Iterator<Term> nyi = neg.iterator(); nyi.hasNext(); ) {
-            final Term ny = nyi.next();
+            Term ny = nyi.next();
             boolean yConj = ny.opID() == CONJ.id;
             //int nys = ny.structure();
             //disj
@@ -562,11 +562,10 @@ public class ConjTree implements ConjBuilder {
         if (terminal != null)
             return terminal;
 
-        Term s;
         if (seq != null && !seq.isEmpty()) {
 
 
-            s = termSeq(B);
+            Term s = termSeq(B);
 
             shift(); //cache the shift before clearing seq
             seq = null;
@@ -659,7 +658,7 @@ public class ConjTree implements ConjBuilder {
                             for (Term y : q)
                                 if (y != x && y.volume() < xv && x.hasAll(y.unneg().structure())) {
                                     //TODO test for disjunctive sequence contradictions
-                                    final boolean[] fail = {false};
+                                    boolean[] fail = {false};
                                     simple = !x.eventsOR((when,xx) -> {
                                         if (xx.equalsNeg(y)) {
                                             fail[0] = true;

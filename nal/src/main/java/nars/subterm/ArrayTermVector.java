@@ -72,7 +72,7 @@ public class ArrayTermVector extends TermVector {
             return Arrays.equals(terms, v.terms);
 
         } else {
-            final Term[] x = this.terms;
+            Term[] x = this.terms;
             int s = x.length;
             if (s != that.subs())
                 return false;

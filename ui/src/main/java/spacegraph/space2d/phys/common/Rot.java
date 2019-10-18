@@ -32,7 +32,8 @@ import jcog.math.v2;
  */
 public class Rot  {
 
-    public float s = 0, c = 1; 
+    public float s = 0;
+    public float c = 1;
 
     public Rot() {
     }
@@ -109,7 +110,7 @@ public class Rot  {
     }
 
     public static void mulTrans(Rot q, Rot r, Rot out) {
-        final float tempc = q.c * r.c + q.s * r.s;
+        float tempc = q.c * r.c + q.s * r.s;
         out.s = q.c * r.s - q.s * r.c;
         out.c = tempc;
     }
@@ -135,7 +136,7 @@ public class Rot  {
     }
 
     public static void mulTrans(Rot q, v2 v, v2 out) {
-        final float tempy = -q.s * v.x + q.c * v.y;
+        float tempy = -q.s * v.x + q.c * v.y;
         out.x = q.c * v.x + q.s * v.y;
         out.y = tempy;
     }

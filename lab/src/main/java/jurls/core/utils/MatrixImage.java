@@ -56,9 +56,8 @@ public class MatrixImage extends JComponent {
         this.maxValue = max;
     }
 
-    public int val2col(final double n, final double min, final double max) {
-        final double mean = (max + min) / 2.0;
-        final double n5 = min + 2.0 * (max - min) / 3.0;
+    public static int val2col(double n, double min, double max) {
+        double mean = (max + min) / 2.0;
         int r;
         if (n < mean) {
             r = (int) (255.0 * (min - n) / (mean - min)) + 255;
@@ -72,6 +71,7 @@ public class MatrixImage extends JComponent {
             r = 255;
         }
         int g;
+        double n5 = min + 2.0 * (max - min) / 3.0;
         if (n < mean) {
             g = (int) (255.0 * (n - min) / (mean - min));
         } else if (n < n5) {
@@ -103,7 +103,7 @@ public class MatrixImage extends JComponent {
         return 255 << 24 | b << 16 | g << 8 | r;
     }
 
-    public int getColorRedBlue(final double value) {
+    public int getColorRedBlue(double value) {
         if (value == 0) {
             return 255 << 24;
         } else if (value > 0) {
@@ -116,7 +116,7 @@ public class MatrixImage extends JComponent {
 
     }
 
-    public int getColor(final double value) {
+    public static int getColor(double value) {
         return val2col(value, -1, 1);
     }
 
@@ -126,7 +126,7 @@ public class MatrixImage extends JComponent {
         double getValue(int x, int y);
     }
 
-    public void draw(final double[] v, double minValue, double maxValue, boolean vertical) {
+    public void draw(double[] v, double minValue, double maxValue, boolean vertical) {
         int w, h;
         if (vertical) {
             w = 1;
@@ -141,8 +141,8 @@ public class MatrixImage extends JComponent {
 
     public void draw(ParameterizedFunction f) {
         int numParam = f.numberOfParameters();
-        final int cw = (int) Math.ceil(Math.sqrt(numParam));
-        final int ch = numParam / cw;
+        int cw = (int) Math.ceil(Math.sqrt(numParam));
+        int ch = numParam / cw;
         draw((x, y) -> {
             int i = y * ch + x;
             if (i < numParam) {
@@ -153,23 +153,25 @@ public class MatrixImage extends JComponent {
 
     }
 
-    public void draw(final RealMatrix M, double minValue, double maxValue) {
+    public void draw(RealMatrix M, double minValue, double maxValue) {
         draw(M::getEntry, M.getColumnDimension(), M.getRowDimension(), minValue, maxValue);
     }
 
     /* todo move these variables to a subclass specifically for visualizing neuromap */
     InputOutput io = null;
-    int lx = -1, ly = -1;
+    int lx = -1;
+    int ly = -1;
     int row = 0;
 
-    public void draw(final NeuroMap m, double minValue, double maxValue, int maxRows) {
+    public void draw(NeuroMap m, double minValue, double maxValue, int maxRows) {
 
         int entries = Math.min(maxRows, m.getCapacity());
         int row = m.getIndex() - entries;
 
         draw(new Data2D() {
 
-            double[] input, output; 
+            double[] input;
+            double[] output;
 
             @Override
             public double getValue(int y, int x) {
@@ -184,7 +186,7 @@ public class MatrixImage extends JComponent {
                 lx = x;
 
                 if ((io != null) && (input != null) && (output != null)) {
-                    final int ioil = input.length;
+                    int ioil = input.length;
                     if (lx < ioil) {
                         return input[lx];
                     } else {
@@ -201,7 +203,7 @@ public class MatrixImage extends JComponent {
     }
 
 
-    public void draw(final Data2D d, int cw, int ch, double minValue, double maxValue) {
+    public void draw(Data2D d, int cw, int ch, double minValue, double maxValue) {
 
         if ((cw == 0) || (ch == 0)) {
             image = null;
@@ -216,12 +218,12 @@ public class MatrixImage extends JComponent {
         this.minValue = minValue;
         this.maxValue = maxValue;
 
-        final int w = image.getWidth();
-        final int h = image.getHeight();
+        int w = image.getWidth();
+        int h = image.getHeight();
 
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
-                final double value = d.getValue(i, j);
+                double value = d.getValue(i, j);
                 pixel(image, j, i, value);
             }
         }
@@ -229,7 +231,7 @@ public class MatrixImage extends JComponent {
         repaint();
     }
 
-    protected void pixel(BufferedImage image, int j, int i, double value) {
+    protected static void pixel(BufferedImage image, int j, int i, double value) {
         image.setRGB(j, i, getColor(value));
     }
 

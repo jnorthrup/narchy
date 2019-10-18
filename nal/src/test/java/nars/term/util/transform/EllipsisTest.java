@@ -45,7 +45,6 @@ public class EllipsisTest {
         Term getMatchable(int arity) throws Narsese.NarseseException;
 
         default Set<Term> test(int arity, int repeats) throws Narsese.NarseseException {
-            Set<Term> selectedFixed = new HashSet(arity);
 
 
             Term y = /*index.patternify*/(getMatchable(arity));
@@ -69,6 +68,7 @@ public class EllipsisTest {
             assertNotNull(ellipsisTerm);
 
 
+            Set<Term> selectedFixed = new HashSet(arity);
             for (int seed = 0; seed < Math.max(1, repeats) /* enough chances to select all combinations */; seed++) {
 
                 
@@ -98,7 +98,9 @@ public class EllipsisTest {
                             Set<Term> varArgTerms = new HashSet(1);
                             if (u instanceof Fragment) {
                                 Fragment m = (Fragment) u;
-                                m.forEach(varArgTerms::add);
+                                for (Term term : m) {
+                                    varArgTerms.add(term);
+                                }
                             } else {
                                 varArgTerms.add(u);
                             }
@@ -355,7 +357,7 @@ public class EllipsisTest {
         testSect("&&");
     }
 
-    private void testSect(String o) throws Narsese.NarseseException {
+    private static void testSect(String o) throws Narsese.NarseseException {
         new CommutiveEllipsisTest1("%2..+", p('(' + o + ',', ")")).test(2, 2, 4);
     }
 

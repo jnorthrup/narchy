@@ -131,7 +131,7 @@ public class FloatSlider extends Widget implements FloatSupplier {
 
 
     public final FloatSlider on(FloatProcedure c) {
-        return on((ObjectFloatProcedure<SliderModel>)(SliderModel x, float v)->c.value(v));
+        return on((ObjectFloatProcedure<SliderModel>) (x, v) ->c.value(v));
     }
 
     @Override

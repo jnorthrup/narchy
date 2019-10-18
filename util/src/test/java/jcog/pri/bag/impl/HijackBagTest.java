@@ -72,7 +72,7 @@ class HijackBagTest {
         assertTrue(Math.abs(b.capacity() - b.size()) <= 2); 
 
         
-        b.setCapacity(cap = cap/2);
+        b.setCapacity(cap /= 2);
         assertEquals(cap, b.capacity());
         assertEquals(cap, b.space());
         assertTrue(cap >= b.size());
@@ -112,10 +112,10 @@ class HijackBagTest {
 
 
         TreeSet<String> keys2 = new TreeSet();
-        a.forEach((b)->{
+        for (PriReference<String> b : a) {
             if (!keys2.add(b.get()))
                 throw new RuntimeException("duplicate detected");
-        });
+        }
         System.out.println( keys2.size() + " " + Joiner.on(' ').join(keys2) );
 
         assertEquals(size, keys2.size());
@@ -137,19 +137,8 @@ class HijackBagTest {
     void testHijackSampling() {
         for (int cap : new int[] { 63, 37 }) {
             int rep = 4;
-            int batch = 4;
             int extraSpace = Math.round(cap *0.4f);
             PLinkHijackBag bag = new PLinkHijackBag(plus, cap * extraSpace, rep) {
-
-                @Override
-                public void onRemove(Object value) {
-                    //fail("");
-                }
-
-                @Override
-                public void onReject(Object value) {
-                    //fail("");
-                }
 
 
             };
@@ -157,6 +146,7 @@ class HijackBagTest {
 
             fillLinear(bag, cap);
             bag.print();
+            int batch = 4;
             testBagSamplingDistribution(bag, batch);
         }
 
@@ -204,7 +194,7 @@ class HijackBagTest {
 
     }
 
-    private void assertApproximatelySized(Table<String, ?> b, int expected, float closeness) {
+    private static void assertApproximatelySized(Table<String, ?> b, int expected, float closeness) {
         int bSize = b.size();
         float error = Math.abs(expected - bSize) / (Math.max(bSize, (float) expected));
         System.out.println(bSize + "  === " + expected + ", diff=" + error);

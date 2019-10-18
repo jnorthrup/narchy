@@ -46,7 +46,13 @@ public class DataTable extends Table implements Externalizable {
             addColumns(column.emptyCopy(rc));
         }
 
-        int[] rows = IntStream.range(0, rc).toArray();
+        int[] rows = new int[10];
+        int count = 0;
+        for (int i = 0; i < rc; i++) {
+            if (rows.length == count) rows = Arrays.copyOf(rows, count * 2);
+            rows[count++] = i;
+        }
+        rows = Arrays.copyOfRange(rows, 0, count);
         Rows.copyRowsToTable(rows, copy, this);
         nominalCats = new HashMap<>();
     }
@@ -229,7 +235,7 @@ public class DataTable extends Table implements Externalizable {
     }
 
 
-    public void printCSV() {
+    public static void printCSV() {
         printCSV(new FilterOutputStream(System.out) {
             @Override
             public void close() {
@@ -238,7 +244,7 @@ public class DataTable extends Table implements Externalizable {
         });
     }
 
-    private void printCSV(OutputStream o) {
+    private static void printCSV(OutputStream o) {
         throw new TODO();
 //        CsvWriteOptions.builder(o).header(true).build();
 //                .write();
@@ -247,8 +253,8 @@ public class DataTable extends Table implements Externalizable {
     }
 
     public @Nullable Row maxBy(int column) {
-        final double[] bestScore = {Double.NEGATIVE_INFINITY};
-        final Row[] best = {null};
+        double[] bestScore = {Double.NEGATIVE_INFINITY};
+        Row[] best = {null};
         doWithRows(e -> {
             double s = e.getDouble(column);
             if (s > bestScore[0]) {

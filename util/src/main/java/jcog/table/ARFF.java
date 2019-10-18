@@ -51,10 +51,7 @@ import tech.tablesaw.columns.strings.StringColumnType;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
@@ -507,10 +504,10 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
             incoming.print();
             throw new RuntimeException("schemas differ");
         }
-        final boolean[] changed = {false};
-        incoming.forEach(p -> {
+        boolean[] changed = {false};
+        for (Row p : incoming) {
             changed[0] |= add(p);
-        });
+        }
         return changed[0];
     }
 

@@ -82,8 +82,7 @@ public class CarTest implements Consumer<Dynamics2D> {
   @Override public void accept(Dynamics2D m_world) {
     
     m_hz = 4.0f;
-      float m_zeta = 0.7f;
-    m_speed = 50.0f;
+      m_speed = 50.0f;
 
     Body2D ground = null;
     {
@@ -163,8 +162,7 @@ public class CarTest implements Consumer<Dynamics2D> {
 
     // Bridge
     {
-      int N = 20;
-      PolygonShape shape = new PolygonShape();
+        PolygonShape shape = new PolygonShape();
       shape.setAsBox(1.0f, 0.125f);
 
       FixtureDef fd = new FixtureDef();
@@ -175,7 +173,8 @@ public class CarTest implements Consumer<Dynamics2D> {
       RevoluteJointDef jd = new RevoluteJointDef();
 
       Body2D prevBody = ground;
-      for (int i = 0; i < N; ++i) {
+        int N = 20;
+        for (int i = 0; i < N; ++i) {
         BodyDef bd = new BodyDef();
         bd.type = BodyType.DYNAMIC;
         bd.position.set(161.0f + 2.0f * i, -0.125f);
@@ -265,7 +264,8 @@ public class CarTest implements Consumer<Dynamics2D> {
       jd.maxMotorTorque = 20.0f;
       jd.enableMotor = true;
       jd.frequencyHz = m_hz;
-      jd.dampingRatio = m_zeta;
+        float m_zeta = 0.7f;
+        jd.dampingRatio = m_zeta;
       m_spring1 = (WheelJoint) m_world.addJoint(jd);
 
       jd.initialize(m_car, m_wheel2, m_wheel2.getPosition(), axis);

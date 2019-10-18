@@ -1,5 +1,6 @@
 package nars.experiment.mario.level;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -30,15 +31,15 @@ public final class ImprovedNoise {
                         lerp(u, grad(p[AB + 1], x, y - 1, z - 1), grad(p[BB + 1], x - 1, y - 1, z - 1))));
     }
 
-    double fade(double t) {
+    static double fade(double t) {
         return t * t * t * (t * (t * 6 - 15) + 10);
     }
 
-    double lerp(double t, double a, double b) {
+    static double lerp(double t, double a, double b) {
         return a + t * (b - a);
     }
 
-    double grad(int hash, double x, double y, double z) {
+    static double grad(int hash, double x, double y, double z) {
         int h = hash & 15;
         double u = h < 8 ? x : y,
                 v = h < 4 ? y : h == 12 || h == 14 ? x : z;
@@ -60,7 +61,13 @@ public final class ImprovedNoise {
 
     public void shuffle(long seed) {
         Random random = new Random(seed);
-        int[] permutation = IntStream.range(0, 256).toArray();
+        int[] permutation = new int[10];
+        int count = 0;
+        for (int i1 = 0; i1 < 256; i1++) {
+            if (permutation.length == count) permutation = Arrays.copyOf(permutation, count * 2);
+            permutation[count++] = i1;
+        }
+        permutation = Arrays.copyOfRange(permutation, 0, count);
 
         for (int i = 0; i < 256; i++) {
             int j = random.nextInt(256 - i) + i;

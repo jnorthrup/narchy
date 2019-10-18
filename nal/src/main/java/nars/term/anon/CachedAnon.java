@@ -66,7 +66,7 @@ public class CachedAnon extends Anon {
     }
 
     /** whether a target is cacheable */
-    protected boolean cache(Compound x, boolean putOrGet) {
+    protected static boolean cache(Compound x, boolean putOrGet) {
         return true;
     }
 

@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 /**
@@ -144,7 +145,15 @@ final class StdAudio {
     public static double[] read(String filename) {
         byte[] data = readByte(filename);
         int N = data.length;
-        double[] d = IntStream.range(0, N / 2).mapToDouble(i -> ((short) (((data[2 * i + 1] & 0xFF) << 8) + (data[2 * i] & 0xFF))) / MAX_16_BIT).toArray();
+        double[] d = new double[10];
+        int count = 0;
+        int bound = N / 2;
+        for (int i = 0; i < bound; i++) {
+            double v = ((short) (((data[2 * i + 1] & 0xFF) << 8) + (data[2 * i] & 0xFF))) / MAX_16_BIT;
+            if (d.length == count) d = Arrays.copyOf(d, count * 2);
+            d[count++] = v;
+        }
+        d = Arrays.copyOfRange(d, 0, count);
         return d;
     }
 
@@ -190,11 +199,11 @@ final class StdAudio {
     // return data as a byte array
     private static byte[] readByte(String filename) {
         byte[] data = null;
-        AudioInputStream ais = null;
         try {
 
             // try to read from file
             File file = new File(filename);
+            AudioInputStream ais = null;
             if (file.exists()) {
                 ais = AudioSystem.getAudioInputStream(file);
                 data = new byte[ais.available()];

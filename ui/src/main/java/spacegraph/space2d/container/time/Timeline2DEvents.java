@@ -14,7 +14,8 @@ import java.util.function.Consumer;
  * which can be materialized as arrangeable clips */
 public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRangeAware {
 
-    long start, end;
+    long start;
+    long end;
 
     public final Timeline2D.EventBuffer<E> model;
 
@@ -45,7 +46,7 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
         protected float minVisibleWidth = 0.01f;
 
         /** minimum displayed temporal width, for tasks less than this duration */
-        protected final double minVisibleTime = 0; //0.5f;
+        protected static final double minVisibleTime = 0; //0.5f;
 
 
         @Override
@@ -56,9 +57,7 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
             Timeline2D.EventBuffer model = gg.model;
             float yl = g.bottom(), yh = g.top();
 
-            g.forEachValue(t -> {
-                layout(t, gg, model, minVisibleWidth, yl, yh);
-            });
+            g.forEachValue(t -> layout(t, gg, model, minVisibleWidth, yl, yh));
         }
 
         protected void layout(NodeVis<E> jj, Timeline2DEvents gg, Timeline2D.EventBuffer model, float minVisibleWidth, float yl, float yh) {
@@ -108,9 +107,9 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
             next.sortThis((x, y) -> model.compareDurThenStart(x.id, y.id));
 
 
-            List<RoaringBitmap> lanes = new FasterList();
             RoaringBitmap l0 = new RoaringBitmap();
             l0.add(0);
+            List<RoaringBitmap> lanes = new FasterList();
             lanes.add(l0);
 
             for (int i = 1, byDurationSize = next.size(); i < byDurationSize; i++) {

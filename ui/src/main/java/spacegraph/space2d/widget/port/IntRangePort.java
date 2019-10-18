@@ -3,7 +3,8 @@ package spacegraph.space2d.widget.port;
 import jcog.Util;
 
 public class IntRangePort extends IntPort {
-    final int min, max;
+    final int min;
+    final int max;
 
     public IntRangePort(int min, int max) {
         this.min = min;

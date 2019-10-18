@@ -2,6 +2,8 @@ package jcog.learn.ntm.memory.address.content;
 
 import jcog.learn.ntm.control.Unit;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 

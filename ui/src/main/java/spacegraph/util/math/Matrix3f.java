@@ -34,6 +34,7 @@ package spacegraph.util.math;
 import jcog.math.VecMathUtil;
 import jcog.math.v3;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 /**
@@ -1137,8 +1138,15 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             throw new SingularMatrixException(VecMathI18N.getString("Matrix3f12"));
         }
 
-        
-        double[] result = IntStream.range(0, 9).mapToDouble(i -> 0.0).toArray();
+
+        double[] result = new double[10];
+        int count = 0;
+        for (int i = 0; i < 9; i++) {
+            if (result.length == count) result = Arrays.copyOf(result, count * 2);
+            double v = 0.0;
+            result[count++] = v;
+        }
+        result = Arrays.copyOfRange(result, 0, count);
         result[0] = 1.0;
         result[4] = 1.0;
         result[8] = 1.0;
@@ -1185,8 +1193,6 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
 
         
         {
-            int j;
-            double temp;
 
             int ptr = 0;
             int rs = 0;
@@ -1194,12 +1200,12 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             
             int i = 3;
             while (i-- != 0) {
-                double big = 0.0;
 
-                
-                j = 3;
+
+                int j = 3;
+                double big = 0.0;
                 while (j-- != 0) {
-                    temp = matrix0[ptr++];
+                    double temp = matrix0[ptr++];
                     temp = Math.abs(temp);
                     if (temp > big) {
                         big = temp;
@@ -1327,28 +1333,26 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
                                            int[] row_perm,
                                            double[] matrix2) {
 
-        int ii, ip, j, k;
-        int rv;
 
-        
         int rp = 0;
 
         
-        for (k = 0; k < 3; k++) {
+        for (int k = 0; k < 3; k++) {
             
             int cv = k;
-            ii = -1;
+            int ii = -1;
 
-            
+
+            int rv;
             for (int i = 0; i < 3; i++) {
 
-                ip = row_perm[rp + i];
+                int ip = row_perm[rp + i];
                 double sum = matrix2[cv + 3 * ip];
                 matrix2[cv + 3 * ip] = matrix2[cv + 3 * i];
                 if (ii >= 0) {
                     
                     rv = i * 3;
-                    for (j = ii; j <= i - 1; j++) {
+                    for (int j = ii; j <= i - 1; j++) {
                         sum -= matrix1[rv + j] * matrix2[cv + 3 * j];
                     }
                 } else if (sum != 0.0) {
@@ -1895,14 +1899,14 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      */
     public final void normalizeCP() {
         float mag = 1.0f / (float) Math.sqrt(m00 * m00 + m10 * m10 + m20 * m20);
-        m00 = m00 * mag;
-        m10 = m10 * mag;
-        m20 = m20 * mag;
+        m00 *= mag;
+        m10 *= mag;
+        m20 *= mag;
 
         mag = 1.0f / (float) Math.sqrt(m01 * m01 + m11 * m11 + m21 * m21);
-        m01 = m01 * mag;
-        m11 = m11 * mag;
-        m21 = m21 * mag;
+        m01 *= mag;
+        m11 *= mag;
+        m21 *= mag;
 
         m02 = m10 * m21 - m11 * m20;
         m12 = m01 * m20 - m00 * m21;

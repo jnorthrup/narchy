@@ -405,7 +405,7 @@ public class Configuration {
         checkOutputFolder(this.outputFolder);
     }
    
-    private void checkOutputFolder(File outputFolder) throws ConfigurationException {
+    private static void checkOutputFolder(File outputFolder) throws ConfigurationException {
         if (outputFolder == null) {
             throw new IllegalArgumentException("The output folder must be setAt");
         }
@@ -458,7 +458,7 @@ public class Configuration {
         this.nodeFactory = factory;
     }
     
-    private Node buildOperatorInstance(String o) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    private static Node buildOperatorInstance(String o) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         Class<? extends Node> operatorClass = Class.forName(o).asSubclass(Node.class);
         Node operator = operatorClass.newInstance();
         return operator;

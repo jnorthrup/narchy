@@ -14,7 +14,8 @@ public class Hull {
     /**
      * Referencie na nasledujuci/predosly vrchol
      */
-    public Hull next, prev;
+    public Hull next;
+    public Hull prev;
 
     /**
      * Inicializuje uzol obalu.

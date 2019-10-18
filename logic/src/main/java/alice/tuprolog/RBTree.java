@@ -29,7 +29,8 @@ Retrieved from: http:
 */
 
 enum Color { ;
-    static final boolean RED = true, BLACK = false;
+    static final boolean RED = true;
+    static final boolean BLACK = false;
 }
 
 /**
@@ -273,7 +274,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
         }
     }
 
-    void insertCase4(final Node<K, V> n) {
+    void insertCase4(Node<K, V> n) {
         Node<K, V> p = n.parent;
         Node<K, V> gp = n.grandparent();
         if (n == p.right && p == gp.left) {

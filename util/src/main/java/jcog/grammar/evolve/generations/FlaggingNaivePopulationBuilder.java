@@ -105,10 +105,8 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
     }
 
     private Node createByExample(String example, boolean replace, boolean compact) {
-        Deque<Node> nodes = new LinkedList<>();
-        Deque<Node> tmp = new LinkedList<>();
 
-        
+
         String d = this.useWordClasses ? "\\d" : ".";
         Node letters;
         if(useWordClasses){
@@ -118,7 +116,8 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
         } else {
             letters = new Constant(".");
         }
-        
+
+        Deque<Node> nodes = new LinkedList<>();
         for (char c : example.toCharArray()) {
             if (replace) {
                 if (Character.isLetter(c)) {
@@ -164,7 +163,8 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
             }
             nodes = newNodes;
         }
-        
+
+        Deque<Node> tmp = new LinkedList<>();
         while (nodes.size() > 1) {
 
             while (nodes.size() > 0) {

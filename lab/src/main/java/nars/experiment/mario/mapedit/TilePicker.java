@@ -18,7 +18,7 @@ public class TilePicker extends JComponent implements MouseListener, MouseMotion
     public byte pickedTile;
 
     @SuppressWarnings("unused")
-    private final byte paint = 0;
+    private static final byte paint = 0;
     private LevelEditor tilePickChangedListener;
 
     public TilePicker() {

@@ -61,31 +61,31 @@ public class FeatureMap {
      * @param history
      * @return
      */
-    public double[] getFeatures(final FrameHistory history) {
+    public double[] getFeatures(FrameHistory history) {
         
-        final ScreenMatrix screen = history.getLastFrame(0);
+        ScreenMatrix screen = history.getLastFrame(0);
 
-        final int blockWidth = screen.width / numColumns;
-        final int blockHeight = screen.height / numRows;
+        int blockWidth = screen.width / numColumns;
+        int blockHeight = screen.height / numRows;
 
-        final int featuresPerBlock = numColors;
+        int featuresPerBlock = numColors;
 
         int blockIndex = 0;
 
-        final int numColors = this.numColors;
+        int numColors = this.numColors;
 
-        final double[] features = this.features;
-        final int[][] matrix = screen.matrix;
+        double[] features = this.features;
+        int[][] matrix = screen.matrix;
 
         int rr = numRows;
         int cc = numColumns;
 
         
-        final boolean[] hasColor = this.hasColor;
+        boolean[] hasColor = this.hasColor;
 
         for (int by = 0; by < rr; by++) {
 
-            final int yo = by * blockHeight;
+            int yo = by * blockHeight;
 
             for (int bx = 0; bx < cc; bx++) {
                 Arrays.fill(hasColor, false);
@@ -94,7 +94,7 @@ public class FeatureMap {
 
                 
                 for (int x = xo; x < xo + blockWidth; x++) {
-                    final int[] sm = matrix[x];
+                    int[] sm = matrix[x];
                     for (int y = yo; y < yo + blockHeight; y++) {
                         int pixelColor = sm[y];
                         hasColor[encode(pixelColor)] = true;
@@ -119,7 +119,7 @@ public class FeatureMap {
      * @param color
      * @return
      */
-    protected static int encode(final int color) {
+    protected static int encode(int color) {
         return (color & 0xF) >> 1;
     }
 
@@ -135,7 +135,7 @@ public class FeatureMap {
      * 
      * @return
      */
-    public int historyLength() {
+    public static int historyLength() {
         return 1;
     }
 }

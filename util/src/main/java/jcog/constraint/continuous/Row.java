@@ -52,10 +52,11 @@ class Row {
      */
     void insert(Symbol symbol, double _coefficient) {
         cells.merge(symbol, _coefficient, (existingCoefficient, coefficient) -> {
+            Double coefficient1 = coefficient;
             if (existingCoefficient != null)
-                coefficient += existingCoefficient;
+                coefficient1 += existingCoefficient;
 
-            return ContinuousConstraintSolver.nearZero(coefficient) ? null : coefficient;
+            return ContinuousConstraintSolver.nearZero(coefficient1) ? null : coefficient1;
         });
     }
 
@@ -93,12 +94,13 @@ class Row {
 
             this.cells.merge(e.getKey(), e.getValue() * coefficient,
                     (existing, cc)->{
-                        if (existing == null)
-                            existing = 0.0;
+                        Double existing1 = existing;
+                        if (existing1 == null)
+                            existing1 = 0.0;
 
-                        existing += cc;
+                        existing1 += cc;
 
-                        return ContinuousConstraintSolver.nearZero(existing) ? null : existing;
+                        return ContinuousConstraintSolver.nearZero(existing1) ? null : existing1;
                     });
         }
     }

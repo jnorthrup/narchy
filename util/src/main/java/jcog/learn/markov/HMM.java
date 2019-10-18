@@ -83,17 +83,16 @@ public class HMM implements Serializable{
 	 *
 	 */
 	private void reset() {
-		int jumplimit = 2;
-		
-		
-		pi[0] = 1;
+
+
+        pi[0] = 1;
 		for(int i=1; i<numStates; i++) {
 			pi[i] = 0;
 		}
-		
-		
-		
-		for(int i=0; i<numStates; i++) {
+
+
+        int jumplimit = 2;
+        for(int i = 0; i<numStates; i++) {
 			for(int j=0; j<numStates; j++) {
 				if(i==numStates-1 && j==numStates-1) { 
 					a[i][j] = 1.0;

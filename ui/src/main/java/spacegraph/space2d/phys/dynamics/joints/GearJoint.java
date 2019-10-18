@@ -79,13 +79,28 @@ public class GearJoint extends Joint {
     private float m_impulse;
 
     
-    private int m_indexA, m_indexB, m_indexC, m_indexD;
-    private final v2 m_lcA = new v2(), m_lcB = new v2(), m_lcC = new v2(),
-            m_lcD = new v2();
-    private float m_mA, m_mB, m_mC, m_mD;
-    private float m_iA, m_iB, m_iC, m_iD;
-    private final v2 m_JvAC = new v2(), m_JvBD = new v2();
-    private float m_JwA, m_JwB, m_JwC, m_JwD;
+    private int m_indexA;
+    private int m_indexB;
+    private int m_indexC;
+    private int m_indexD;
+    private final v2 m_lcA = new v2();
+    private final v2 m_lcB = new v2();
+    private final v2 m_lcC = new v2();
+    private final v2 m_lcD = new v2();
+    private float m_mA;
+    private float m_mB;
+    private float m_mC;
+    private float m_mD;
+    private float m_iA;
+    private float m_iB;
+    private float m_iC;
+    private float m_iD;
+    private final v2 m_JvAC = new v2();
+    private final v2 m_JvBD = new v2();
+    private float m_JwA;
+    private float m_JwB;
+    private float m_JwC;
+    private float m_JwD;
     private float m_mass;
 
     GearJoint(IWorldPool argWorldPool, GearJointDef def) {
@@ -100,9 +115,6 @@ public class GearJoint extends Joint {
         assert (m_typeA == JointType.REVOLUTE || m_typeA == JointType.PRISMATIC);
         assert (m_typeB == JointType.REVOLUTE || m_typeB == JointType.PRISMATIC);
 
-        float coordinateA, coordinateB;
-
-        
 
         m_bodyC = m_joint1.getBodyA();
         A = m_joint1.getBodyB();
@@ -113,6 +125,7 @@ public class GearJoint extends Joint {
         Transform xfC = m_bodyC;
         float aC = m_bodyC.sweep.a;
 
+        float coordinateA;
         if (m_typeA == JointType.REVOLUTE) {
             RevoluteJoint revolute = (RevoluteJoint) def.joint1;
             m_localAnchorC.set(revolute.localAnchorA);
@@ -147,6 +160,7 @@ public class GearJoint extends Joint {
         Transform xfD = m_bodyD;
         float aD = m_bodyD.sweep.a;
 
+        float coordinateB;
         if (m_typeB == JointType.REVOLUTE) {
             RevoluteJoint revolute = (RevoluteJoint) def.joint2;
             m_localAnchorD.set(revolute.localAnchorA);
@@ -402,14 +416,12 @@ public class GearJoint extends Joint {
         qC.set(aC);
         qD.set(aD);
 
-        float linearError = 0.0f;
-
-        float coordinateA, coordinateB;
+        float coordinateA;
 
         v2 temp = pool.popVec2();
         v2 JvAC = pool.popVec2();
         v2 JvBD = pool.popVec2();
-        float JwA, JwB, JwC, JwD;
+        float JwA, JwC;
         float mass = 0.0f;
 
         if (m_typeA == JointType.REVOLUTE) {
@@ -437,6 +449,9 @@ public class GearJoint extends Joint {
             pool.pushVec2(4);
         }
 
+        float JwD;
+        float JwB;
+        float coordinateB;
         if (m_typeB == JointType.REVOLUTE) {
             JvBD.setZero();
             JwB = m_ratio;
@@ -498,7 +513,8 @@ public class GearJoint extends Joint {
         
         data.positions[m_indexD].a = aD;
 
-        
+
+        float linearError = 0.0f;
         return linearError < Settings.linearSlop;
     }
 }

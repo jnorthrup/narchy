@@ -30,8 +30,8 @@ abstract class IntVarTest {
   protected abstract IntVar intVar(DiscreteConstraintSolver solver, int[] values);
 
   
-  private boolean containsAll(IntVar x, int... values) {
-      return IntStream.range(0, values.length).allMatch(i -> x.contains(values[i]));
+  private static boolean containsAll(IntVar x, int... values) {
+    return IntStream.range(0, values.length).allMatch(i -> x.contains(values[i]));
   }
 
   

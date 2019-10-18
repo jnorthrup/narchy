@@ -99,19 +99,19 @@ public class Impiler {
 	private static AdjGraph<Term, Task> graph(Iterable<? extends Concept> concepts) {
 		AdjGraph<Term, Task> g = new AdjGraph<>(true);
 
-		concepts.forEach(c -> {
+		for (Concept c : concepts) {
 			ImplNode m = node(c, false);
 			if (m != null) {
 				//g.addNode(c.term());
-				m.edges(false, true).forEach(e -> {
-                    Term s = e.from().id();
-                    Term t = e.to().id();
-                    g.addNode(s);
-                    g.addNode(t);
-                    g.setEdge(s, t, e.id()); //TODO check if multiedge
-				});
+				for (FromTo<Node<Term, Task>, Task> e : m.edges(false, true)) {
+					Term s = e.from().id();
+					Term t = e.to().id();
+					g.addNode(s);
+					g.addNode(t);
+					g.setEdge(s, t, e.id()); //TODO check if multiedge
+				}
 			}
-		});
+		}
 
 		return g;
 	}
@@ -119,9 +119,7 @@ public class Impiler {
 	/** all tasks in NAR memory */
 	public static void impile(NAR n) {
 //		When<NAR> nxow = WhenTimeIs.now(n);
-		n.tasks().forEach(t -> {
-			Impiler.impile(t, n);
-		});
+		n.tasks().forEach(t -> Impiler.impile(t, n));
 	}
 
 //	/** a task from each relevant TaskLink in a bag */
@@ -208,15 +206,15 @@ public class Impiler {
 //			super.next(w, kontinue);
 //		}
 
-		protected boolean filter(Term term) {
+		protected static boolean filter(Term term) {
 			return !term.hasVars();
 		}
 
-		protected float leak(Task next, What what) {
+		protected static float leak(Task next, What what) {
 			return deduce(next, what, true);
 		}
 
-		float deduce(Task task, What what, boolean forward) {
+		static float deduce(Task task, What what, boolean forward) {
 			Term target = task.term();
 
 			ImpilerDeduction x = new ImpilerDeduction(what.nar);
@@ -257,11 +255,11 @@ public class Impiler {
 //            return next.punc() == BELIEF;
 //        }
 
-		protected boolean filter(Term term) {
+		protected static boolean filter(Term term) {
 			return filter(term);
 		}
 
-		protected float leak(Task t, What what) {
+		protected static float leak(Task t, What what) {
 			_impile(t, what.nar);
 			return 1;
 		}

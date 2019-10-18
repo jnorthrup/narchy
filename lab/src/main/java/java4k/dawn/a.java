@@ -46,7 +46,8 @@ public class a extends GamePanel {
 
     boolean[] key = new boolean[65535];
 	boolean click;
-	int my, mx;
+	int my;
+	int mx;
 	BufferStrategy strategy;
 	
 	static final int TILE_SIZE = 40;
@@ -137,40 +138,9 @@ public class a extends GamePanel {
 	public void run() {
 		int lvl = 1;
 		game: while(true) {
-			int msgWait = -1;
-			int tick = -1;
-			String msg = "";
-			String msg2 = "Press space to start.";
 			Random r = new Random();
-			boolean playing = false;
 
-			
-			int b_cooldown = 0;
-			int b_fatigue = 0;
-			int b_exhaustion = 0;
-			int b_push = 0;
-            boolean[] inventory = new boolean[3];
-			int bullets = 6;
-			int jacket_hp = 5;
 
-			
-			int v_cooldown = 0;
-			int v_dmg = 0;
-            int[][] v_map = new int[T_H][T_W];
-			int vantage_index = 0;
-			boolean v_seen = false;
-
-			
-			int sprk = 0;
-			double[] particles = new double[600];
-
-			
-			boolean game_over = false;
-			boolean dawn = false;
-
-			
-			
-			
 			int[][] t_type = new int[T_H][T_W]; /*{
 			
 				{G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G, G}, 
@@ -208,7 +178,28 @@ public class a extends GamePanel {
 			off += r.nextBoolean() ? -1 : 1;
             double v_y = Y_VANTAGES[off];
             double v_x = X_VANTAGES[off];
-			
+
+			boolean dawn = false;
+			boolean game_over = false;
+			double[] particles = new double[600];
+			int sprk = 0;
+			boolean v_seen = false;
+			int vantage_index = 0;
+			int[][] v_map = new int[T_H][T_W];
+			int v_dmg = 0;
+			int v_cooldown = 0;
+			int jacket_hp = 5;
+			int bullets = 6;
+			boolean[] inventory = new boolean[3];
+			int b_push = 0;
+			int b_exhaustion = 0;
+			int b_fatigue = 0;
+			int b_cooldown = 0;
+			boolean playing = false;
+			String msg2 = "Press space to start.";
+			String msg = "";
+			int tick = -1;
+			int msgWait = -1;
 			while (true) {
 				if (!playing) {
 					if (key[KeyEvent.VK_SPACE]) { playing = true; }
@@ -318,8 +309,8 @@ public class a extends GamePanel {
 						for (int y = 0; y < T_H; y++) { for (int x = 0; x < T_W; x++) {
 							v_map[y][x] = 100000;
 						}}
-						LinkedList<Point> queue = new LinkedList<>();
 						v_map[(int) v_b_y][(int) v_b_x] = 0;
+						LinkedList<Point> queue = new LinkedList<>();
 						queue.add(new Point((int) v_b_x, (int) v_b_y));
 						while (!queue.isEmpty()) {
 							Point p = queue.pop();
@@ -341,10 +332,10 @@ public class a extends GamePanel {
 							}
 						}
 
-						
-						int dir = -1;
+
 						int least = v_map[((int) v_y)][((int) v_x)];
 						sp = V_SPEED - v_dmg * v_dmg * 0.00000020;
+						int dir = -1;
 						for (int i = 0; i < 8; i++) {
 							int ny = ((int) v_y) + Y_DIRS[i];
 							int nx = ((int) v_x) + X_DIRS[i];
@@ -503,13 +494,13 @@ public class a extends GamePanel {
 									blocked = true;
 									if (bullets > 0 && click && b_cooldown <= 0) {
 										b_cooldown = B_COOLDOWN;
-										int p_start = 40;
 										if (t_type[(int) y][(int) x] > SOLIDS) {
 											t_hp[(int) y][(int) x] -= GUN_DMG;
 											if (t_hp[(int) y][(int) x] <= 0) {
 												t_type[(int) y][(int) x] = z;
 											}
 										}
+										int p_start = 40;
 										if ((int) y == (int) v_y && (int) x == (int) v_x) {
 											v_dmg = GUN_V_DMG;
 											p_start = 80;

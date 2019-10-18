@@ -55,7 +55,11 @@ public abstract class MultiExec extends Exec {
             int chunkSize = Math.max(1, (int) Math.min(concurrency, b.size() / (granularity)));
 
             (((FasterList<?>) b).chunkView(chunkSize))
-                    .parallelStream().forEach(x -> x.forEach(each));
+                    .parallelStream().forEach(x -> {
+                for (Object o : x) {
+                    each.accept(o);
+                }
+            });
         }
 
         return true;

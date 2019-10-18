@@ -515,7 +515,6 @@ public class GameTrigger {
         @Override
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
-            int dflags;
 
             if (other.takedamage == 0)
                 return;
@@ -534,6 +533,7 @@ public class GameTrigger {
                             self.noise_index, 1, Defines.ATTN_NORM, 0);
             }
 
+            int dflags;
             if ((self.spawnflags & 8) != 0)
                 dflags = Defines.DAMAGE_NO_PROTECTION;
             else

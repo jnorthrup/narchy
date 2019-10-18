@@ -93,14 +93,14 @@ public class MatchMinMax extends TernaryOperator {
             Node second = getSecond();
             if (!(second instanceof Constant)) return false;
 
-            final int leftValue = second.toNonNegativeInteger(-1);
+            int leftValue = second.toNonNegativeInteger(-1);
             if (leftValue < 0) return false;
 
 
             Node third = getThird();
             if (!(third instanceof Constant)) return false;
 
-            final int rightValue = third.toNonNegativeInteger(-1);
+            int rightValue = third.toNonNegativeInteger(-1);
             if (rightValue < 0) return false;
 
             return (leftValue < rightValue);

@@ -88,11 +88,10 @@ public abstract class Mesh extends Light {
         if ((currententity.flags & (Defines.RF_SHELL_RED
                 | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
                 | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0) {
-            float[] normal;
             int j = 0;
             for (int i = 0; i < nverts; i++/* , v++, ov++, lerp+=4 */) {
                 vv = v[i];
-                normal = r_avertexnormals[(vv >>> 24) & 0xFF];
+                float[] normal = r_avertexnormals[(vv >>> 24) & 0xFF];
                 ovv = ov[i];
                 lerp.put(j, move[0] + (ovv & 0xFF) * backv[0] + (vv & 0xFF)
                         * frontv[0] + normal[0] * Defines.POWERSUIT_SCALE);
@@ -168,9 +167,7 @@ public abstract class Mesh extends Light {
                 | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0)
             gl.glDisable(GL_TEXTURE_2D);
 
-        float frontlerp = 1.0f - backlerp;
 
-        
         Math3D.VectorSubtract(currententity.oldorigin, currententity.origin,
                 frontv);
         float[][] vectors = this.vectors;
@@ -189,6 +186,7 @@ public abstract class Mesh extends Light {
         float[] translate = frame.translate;
         float[] scale = frame.scale;
         float[] oldScale = oldframe.scale;
+        float frontlerp = 1.0f - backlerp;
         for (int i = 0; i < 3; i++) {
             move[i] = backlerp * move[i] + frontlerp * translate[i];
             frontv[i] = frontlerp * scale[i];
@@ -216,12 +214,11 @@ public abstract class Mesh extends Light {
             
             
             FloatBuffer color = colorArrayBuf;
-            float l;
             int size = paliashdr.num_xyz;
             int j = 0;
             float[] shadedots = this.shadedots;
             for (int i = 0; i < size; i++) {
-                l = shadedots[(verts[i] >>> 24) & 0xFF];
+                float l = shadedots[(verts[i] >>> 24) & 0xFF];
                 color.put(j, l * shadelight[0]);
                 color.put(j + 1, l * shadelight[1]);
                 color.put(j + 2, l * shadelight[2]);
@@ -244,19 +241,17 @@ public abstract class Mesh extends Light {
 
         int dstIndex = 0;
         int srcIndex = 0;
-        int count;
-        int mode;
         int size = counts.length;
         for (int j = 0; j < size; j++) {
 
-            
-            count = counts[j];
+
+            int count = counts[j];
             if (count == 0)
                 break; 
 
             srcIndexBuf = paliashdr.indexElements[j];
 
-            mode = GL_TRIANGLE_STRIP;
+            int mode = GL_TRIANGLE_STRIP;
             if (count < 0) {
                 mode = GL_TRIANGLE_FAN;
                 count = -count;
@@ -297,12 +292,10 @@ public abstract class Mesh extends Light {
         int orderIndex = 0;
         int index = 0;
 
-        
 
-        int count;
         while (true) {
-            
-            count = order[orderIndex++];
+
+            int count = order[orderIndex++];
             if (count == 0)
                 break; 
             if (count < 0) {
@@ -366,11 +359,10 @@ public abstract class Mesh extends Light {
                 maxs[i] = mins[i] + pframe.scale[i] * 255;
             }
         } else {
-            float thismaxs, oldmaxs;
             for (int i = 0; i < 3; i++) {
-                thismaxs = pframe.translate[i] + pframe.scale[i] * 255;
+                float thismaxs = pframe.translate[i] + pframe.scale[i] * 255;
 
-                oldmaxs = poldframe.translate[i] + poldframe.scale[i] * 255;
+                float oldmaxs = poldframe.translate[i] + poldframe.scale[i] * 255;
 
                 if (pframe.translate[i] < poldframe.translate[i])
                     mins[i] = pframe.translate[i];
@@ -424,13 +416,12 @@ public abstract class Mesh extends Light {
             Math3D.VectorAdd(e.origin, bbox[i], bbox[i]);
         }
 
-        int f, mask;
-        int aggregatemask = ~0; 
+        int aggregatemask = ~0;
 
         for (int p = 0; p < 8; p++) {
-            mask = 0;
+            int mask = 0;
 
-            for (f = 0; f < 4; f++) {
+            for (int f = 0; f < 4; f++) {
                 float dp = Math3D.DotProduct(frustum[f].normal, bbox[p]);
 
                 if ((dp - frustum[f].dist) < 0) {
@@ -547,11 +538,9 @@ public abstract class Mesh extends Light {
         if ((currententity.flags & Defines.RF_GLOW) != 0) {
 
 
-            float min;
-
             float scale = (float) (0.1f * Math.sin(r_newrefdef.time * 7));
             for (i = 0; i < 3; i++) {
-                min = shadelight[i] * 0.8f;
+                float min = shadelight[i] * 0.8f;
                 shadelight[i] += scale;
                 if (shadelight[i] < min)
                     shadelight[i] = min;

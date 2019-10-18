@@ -35,7 +35,8 @@ import java.util.Objects;
 public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, MenuSupplier {
 
     private final Term term;
-    private final TruthGrid beliefGrid, goalGrid;
+    private final TruthGrid beliefGrid;
+    private final TruthGrid goalGrid;
 
     public final FloatRange rangeDurs = new FloatRange(32, 0.5f, 2048f);
 
@@ -45,7 +46,8 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
      * (if > 0): draw additional projection wave to show truthpolation values for a set of evenly spaced points on the visible range
      */
 
-    private long start, end;
+    private long start;
+    private long end;
     private long now;
 
     @Override
@@ -100,7 +102,8 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
         wave.forEach((freq, conf, start, end) -> {
 
-            if (start > maxT || end < minT)
+            long end1 = end;
+            if (start > maxT || end1 < minT)
                 return;
 
             colorize.colorize(gl, freq, conf);
@@ -111,10 +114,10 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
             gl.glVertex2f(x1, midY);
             gl.glVertex2f(x1, Y);
 
-            if (start == end)
-                end = start + 1;
+            if (start == end1)
+                end1 = start + 1;
 
-            float x2 = xTime(end);
+            float x2 = xTime(end1);
             gl.glVertex2f(x2, Y);
             gl.glVertex2f(x2, midY);
 
@@ -133,8 +136,10 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
     class TruthGrid extends PaintSurface {
 
-        private final TruthWave projected, tasks;
-        private final Colorize colorizeLine, colorizeFill;
+        private final TruthWave projected;
+        private final TruthWave tasks;
+        private final Colorize colorizeLine;
+        private final Colorize colorizeFill;
         private static final float taskWidthMin = 0.005f;
         private static final float taskHeightMin = 0.04f;
         private final int projections;
@@ -250,7 +255,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
         private void renderTasks(GL2 gl, TruthWave wave, Colorize colorize) {
 
-            final float ph = Math.max(taskHeightMin, nar.freqResolution.floatValue());
+            float ph = Math.max(taskHeightMin, nar.freqResolution.floatValue());
 
             wave.forEach((freq, conf, s, e) -> {
 
@@ -264,7 +269,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
                 colorize.colorize(gl, freq, conf);
 
-                float yBottom = BeliefTableChart.this.y(freq) - ph / 2;
+                float yBottom = BeliefTableChart.y(freq) - ph / 2;
                 float width = end - start;
                 if (width < taskWidthMin) {
                     //point-like
@@ -285,7 +290,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
     }
 
-    private float y(float y) {
+    private static float y(float y) {
         //TODO map to space within some margin
         return y;
     }

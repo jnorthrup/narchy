@@ -28,6 +28,7 @@ import jake2.qcommon.Com;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 public class M_Soldier {
@@ -1359,7 +1360,8 @@ public class M_Soldier {
                 return true;
             }
 
-            if (Stream.of(soldier_move_walk1, soldier_move_walk2, soldier_move_start_run).anyMatch(mmove_t -> self.monsterinfo.currentmove == mmove_t)) {
+            boolean b = Stream.of(soldier_move_walk1, soldier_move_walk2, soldier_move_start_run).anyMatch(mmove_t -> self.monsterinfo.currentmove == mmove_t);
+            if (b) {
                 self.monsterinfo.currentmove = soldier_move_run;
             } else {
                 self.monsterinfo.currentmove = soldier_move_start_run;
@@ -1378,9 +1380,11 @@ public class M_Soldier {
                 self.s.skinnum |= 1;
 
             if (GameBase.level.time < self.pain_debounce_time) {
-                if ((self.velocity[2] > 100)
-                        && (Stream.of(soldier_move_pain1, soldier_move_pain2, soldier_move_pain3).anyMatch(mmove_t -> (self.monsterinfo.currentmove == mmove_t))))
-                    self.monsterinfo.currentmove = soldier_move_pain4;
+                if ((self.velocity[2] > 100)) {
+                    if (Stream.of(soldier_move_pain1, soldier_move_pain2, soldier_move_pain3).anyMatch(mmove_t -> (self.monsterinfo.currentmove == mmove_t))) {
+                        self.monsterinfo.currentmove = soldier_move_pain4;
+                    }
+                }
                 return;
             }
 
@@ -1589,12 +1593,6 @@ public class M_Soldier {
     };
 
     static void soldier_fire(edict_t self, int flash_number) {
-        float[] start = { 0, 0, 0 };
-        float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
-        float[] aim = { 0, 0, 0 };
-        float[] dir = { 0, 0, 0 };
-        float[] end = { 0, 0, 0 };
-        float r, u;
         int flash_index;
 
         if (self.s.skinnum < 2)
@@ -1604,22 +1602,29 @@ public class M_Soldier {
         else
             flash_index = machinegun_flash[flash_number];
 
+        float[] right = {0, 0, 0};
+        float[] forward = {0, 0, 0};
         Math3D.AngleVectors(self.s.angles, forward, right, null);
+        float[] start = {0, 0, 0};
         Math3D.G_ProjectSource(self.s.origin,
                 M_Flash.monster_flash_offset[flash_index], forward, right,
                 start);
 
+        float[] aim = {0, 0, 0};
         if (flash_number == 5 || flash_number == 6) {
             Math3D.VectorCopy(forward, aim);
         } else {
+            float[] end = {0, 0, 0};
             Math3D.VectorCopy(self.enemy.s.origin, end);
             end[2] += self.enemy.viewheight;
             Math3D.VectorSubtract(end, start, aim);
+            float[] dir = {0, 0, 0};
             Math3D.vectoangles(aim, dir);
+            float[] up = {0, 0, 0};
             Math3D.AngleVectors(dir, forward, right, up);
 
-            r = Lib.crandom() * 1000;
-            u = Lib.crandom() * 500;
+            float r = Lib.crandom() * 1000;
+            float u = Lib.crandom() * 500;
             Math3D.VectorMA(start, 8192, forward, end);
             Math3D.VectorMA(end, r, right, end);
             Math3D.VectorMA(end, u, up, end);

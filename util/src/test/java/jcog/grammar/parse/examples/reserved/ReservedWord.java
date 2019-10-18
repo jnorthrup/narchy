@@ -40,7 +40,7 @@ class ReservedWord extends Terminal {
 	 *
 	 * @see Parser#toString()
 	 */
-	public String unvisitedString(Vector visited) {
+	public static String unvisitedString(Vector visited) {
 		return "ReservedWord";
 	}
 }

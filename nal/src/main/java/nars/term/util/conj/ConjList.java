@@ -251,7 +251,8 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     public int eventCount(long w) {
         int s = size;
         long[] when = this.when;
-        int c = (int) IntStream.range(0, s).filter(i -> when[i] == w).count();
+        long count = IntStream.range(0, s).filter(i -> when[i] == w).count();
+        int c = (int) count;
         return c;
     }
 
@@ -344,7 +345,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
 //        if (x.op() == CONJ && x.dt() != XTERNAL) {
             //remove components
-            final boolean[] removed = {false};
+            boolean[] removed = {false};
             if (x.eventsOR((when, what) -> {
                 if (contains(when, what.negIf(polarity)))
                     return true; //contradiction
@@ -540,7 +541,14 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         int midIndex = centerByIndex(startIndex, endIndex);
         if (n <= 2)
             return midIndex;
-        int[] v = IntStream.range(0, n).map(i -> get(startIndex + i).volume()).toArray();
+        int[] v = new int[10];
+        int count = 0;
+        for (int i1 = 0; i1 < n; i1++) {
+            int volume = get(startIndex + i1).volume();
+            if (v.length == count) v = Arrays.copyOf(v, count * 2);
+            v[count++] = volume;
+        }
+        v = Arrays.copyOfRange(v, 0, count);
 
         int bestSplit = 1, bestSplitDiff = Integer.MAX_VALUE;
         for (int i = 1; i < n-1; i++) {
@@ -555,7 +563,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     }
 
-    public int centerByIndex(int startIndex, int endIndex) {
+    public static int centerByIndex(int startIndex, int endIndex) {
         return startIndex + (endIndex - 1 - startIndex) / 2;
     }
 
@@ -575,7 +583,12 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         int xn = x.size;
         long[] ww = x.when;
         Term[] ii = x.items;
-        boolean removed = IntStream.range(0, xn).mapToObj(i -> remove(ww[i] + f, ii[i])).reduce(false, (a, b) -> a || b);
+        Boolean acc = false;
+        for (int i = 0; i < xn; i++) {
+            Boolean remove = remove(ww[i] + f, ii[i]);
+            acc = acc || remove;
+        }
+        boolean removed = acc;
         return removed;
     }
 

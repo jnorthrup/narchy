@@ -32,8 +32,10 @@ import java.awt.event.KeyListener;
  */
 public class KeyboardControl implements KeyListener {
     /** Variables used to keep track of which keys are pressed */
-    public boolean up, down;
-    public boolean left, right;
+    public boolean up;
+    public boolean down;
+    public boolean left;
+    public boolean right;
     public boolean fire;
 
     public boolean reset;
@@ -131,12 +133,12 @@ public class KeyboardControl implements KeyListener {
      * @return
      */
     public int toALEAction() {
-        int bitfield = 0;
 
-        
+
         if (reset) return Actions.map("system_reset");
 
-        
+
+        int bitfield = 0;
         if (left == right) bitfield |= 0;
         else if (left) bitfield |= 0x08;
         else if (right) bitfield |= 0x04;

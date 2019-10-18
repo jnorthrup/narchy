@@ -53,7 +53,9 @@ public class ExperimentRun<E> implements Runnable {
      */
     public static <X> DataTable newData(Iterable<Sensor<X,?>> sensors) {
         DataTable data = new ARFF();
-        sensors.forEach(s -> s.addToSchema(data));
+        for (Sensor<X, ?> s : sensors) {
+            s.addToSchema(data);
+        }
         return data;
     }
 

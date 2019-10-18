@@ -168,8 +168,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         j.setContentPane(m);
         j.setVisible(true);
 
-        int i;
-        for (i = 0; i < axiomArr.length; i++) {
+        for (int i = 0; i < axiomArr.length; i++) {
             VariableName.init();
             System.out.println(PrimFormula.getDisplay(axiomArr[i].assertion, false));
         }
@@ -236,7 +235,6 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         currentState = new State();
         undoStack = new Stack<>();
         redoStack = new Stack<>();
-        ArrayList<Connective> connectiveVec = new ArrayList<>();
 
         // A future version could parse this from a file?
 
@@ -249,6 +247,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         Connective tmpConnective = new Connective("wi", "wff", 2, "( $1 -> $2 )");
         tmpConnective.setArgtype(0, "wff");
         tmpConnective.setArgtype(1, "wff");
+        ArrayList<Connective> connectiveVec = new ArrayList<>();
         connectiveVec.add(tmpConnective);
 
         // Negation
@@ -1736,9 +1735,6 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
     // Build list of choices from axiom menu
     void buildAxiomChoices() {
-        State dummyState;
-        String menuString = "";
-        String menuFormula = "";
 
         if (proofInfoModeFlag) {
             return; // Disable selection in proof display mode
@@ -1780,6 +1776,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         // Put any user hypotheses first
         // Variable names have not been reinitialized here; we want to use
         // the names in the currentState display for best user info
+        String menuString = "";
         if (!axiomInfoModeFlag) {
             for (int i = 0; i < currentState.hypothesisVec.size(); i++) {
                 menuString = "1 $hyp" + (i + 1) + " " +
@@ -1799,6 +1796,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         // stack the most will be displayed first
         // Note: in info mode we show *all* axioms in their natural order, whether
         // or not they unify
+        String menuFormula = "";
         for (int hyps = maxAxiomHypotheses; hyps >= 0; hyps--) {
             if (axiomInfoModeFlag && hyps > 0) continue;
             for (int i = 0; i < axiomArr.length; i++) {
@@ -1808,7 +1806,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                     // If there are no hypotheses, don't bother to unify for speedup
                     menuString = axiomArr[i].menuEntry; // use pre-computed entry for speed
                 } else {
-                    dummyState = Unification.unify(axiomArr[i], currentState, false);
+                    State dummyState = Unification.unify(axiomArr[i], currentState, false);
                     if (dummyState == null) continue; // Unification not possible
                     menuFormula = dummyState.getStackTop();
                     VariableName.init(); // Initialize so types don't get mixed up
@@ -1851,15 +1849,15 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         g.setFont(new Font("Dialog", Font.PLAIN, FONT_SIZE));
         // Apply watermark to background
         // \u00a9 = copyright symbol
-        String token = "Metamath Solitaire \u00a9 2003 (GPL) Norman Megill nm" +
-                "@" +
-                "alum.mit.edu";
         if (axiomInfoModeFlag) {
             g.setColor(Color.magenta);
         } else {
             g.setColor(Color.cyan);
         }
         FontMetrics fm = g.getFontMetrics();
+        String token = "Metamath Solitaire \u00a9 2003 (GPL) Norman Megill nm" +
+                "@" +
+                "alum.mit.edu";
         g.drawString(token, (r.width - fm.stringWidth(token)) / 2, r.height - 10);
 
         // Display type colors
@@ -2127,7 +2125,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
     /* [sound] */ // Sound effects
     /* [sound] */
-    public void playAudio() {
+    public static void playAudio() {
         /* [sound] */
         if (enableAudioFlag && audioName != null) {
             /* [sound] */     // Find out if we've already read this one in so we don't read it again
@@ -2359,10 +2357,6 @@ final class DrawSymbols {
 
 
     static void drawFormula(Graphics wg, int wcurrentY, String formula) {
-        String token;
-        short varNum;
-        short varType;
-        int p2;
 
         lastTokenType = (short) (-1); /* Init */
 
@@ -2373,15 +2367,15 @@ final class DrawSymbols {
         formula = PrimFormula.getDisplay(formula, true); // true returns variables
         //   as $var:type
 
-        formula = formula + " ";
+        formula += " ";
         int position0 = 0;
         int position = formula.indexOf(' ');
         while (position != -1) {
-            token = formula.substring(position0, position);
+            String token = formula.substring(position0, position);
             if (token.charAt(0) == '$') { // Variable
-                p2 = token.indexOf(':');
-                varNum = (short) Integer.parseInt(token.substring(1, p2));
-                varType = (short) Integer.parseInt(token.substring(p2 + 1));
+                int p2 = token.indexOf(':');
+                short varNum = (short) Integer.parseInt(token.substring(1, p2));
+                short varType = (short) Integer.parseInt(token.substring(p2 + 1));
                 drawToken(VariableName.name(varNum, varType), varType);
             } else { // Connective
                 drawToken(token, (short) (-1));
@@ -2395,7 +2389,6 @@ final class DrawSymbols {
     // Returns the new currentY
     static int drawDistinct(Graphics wg, int wcurrentY,
                             ArrayList<String> distinctVarVec) {
-        short v;
 
         lastTokenType = (short) (-1); /* Init */
 
@@ -2406,7 +2399,7 @@ final class DrawSymbols {
 
         for (int i = 0; i < distinctVarVec.size(); i++) {
             for (int j = 0; j < 2; j++) {
-                v = (short) (distinctVarVec.get(i).charAt(j));
+                short v = (short) (distinctVarVec.get(i).charAt(j));
                 // We assume type is already assigned, so 0 is OK */
                 drawToken(VariableName.name(v, (short) 0), VariableName.type(v));
                 currentX += 4;
@@ -2433,22 +2426,18 @@ final class PrimFormula {
 
     // Get shortest primitive formula
     static String pformula(String formula, int start) {
-        String subformula;
-        int position;
-        short connNum;
-        int i;
         if ((short) (formula.charAt(start)) > 0) {
             // It's a variable
             return formula.substring(start, start + 1);
         } else {
             // It's a connective
-            connNum = (short) (formula.charAt(start));
+            short connNum = (short) (formula.charAt(start));
             connNum = (short) (-(connNum + 1));
-            subformula = formula.substring(start, start + 1);
-            position = start;
-            for (i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
+            String subformula = formula.substring(start, start + 1);
+            int position = start;
+            for (int i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
                 position = start + subformula.length();
-                subformula = subformula + pformula(formula, position);
+                subformula += pformula(formula, position);
             }
             return subformula;
         }
@@ -2456,22 +2445,17 @@ final class PrimFormula {
 
     // Return variable/connective types in a formula string
     static String getTypes(String formula, int start) {
-        String typesList;
-        int position;
-        short connNum;
-        short typeNum;
-        int i;
         if ((short) (formula.charAt(start)) > 0) {
             // It's a variable; we don't know the type yet; default to wff
             return String.valueOf((char) 0);
         } else {
             // It's a connective
-            connNum = (short) (formula.charAt(start));
+            short connNum = (short) (formula.charAt(start));
             connNum = (short) (-(connNum + 1));
-            typeNum = MetaMath.connectiveArr[connNum].type;
-            typesList = String.valueOf((char) typeNum);
-            position = start;
-            for (i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
+            short typeNum = MetaMath.connectiveArr[connNum].type;
+            String typesList = String.valueOf((char) typeNum);
+            int position = start;
+            for (int i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
                 position = start + typesList.length();
                 typeNum = MetaMath.connectiveArr[connNum].argtypes[i];
                 // Override the type of the first return char (could be
@@ -2491,17 +2475,6 @@ final class PrimFormula {
     static String subGetDisplay(String formula, int start, boolean raw) {
         // String tokenSeparator = " "; // Separator character between tokens in axiom menu
         String tokenSeparator = ""; // Separator character between tokens in axiom menu
-        String subformula;
-        int position;
-        short connNum;
-        int i;
-        String[] displayArgs;
-        String displayFormula;
-        String tmpNotation;
-        String token;
-        short argNum;
-        int charPosition0;
-        int charPosition;
         if (raw) {
             tokenSeparator = " "; // Must always be a space for further parsing
         } else {
@@ -2518,26 +2491,26 @@ final class PrimFormula {
             }
         } else {
             // It's a connective
-            connNum = (short) (formula.charAt(start));
+            short connNum = (short) (formula.charAt(start));
             connNum = (short) (-(connNum + 1));
-            subformula = formula.substring(start, start + 1);
-            position = start;
-            displayArgs = new String[MetaMath.connectiveArr[connNum].argtypes.length];
+            String subformula = formula.substring(start, start + 1);
+            int position = start;
+            String[] displayArgs = new String[MetaMath.connectiveArr[connNum].argtypes.length];
             // Collect the arguments in display notation
-            for (i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
+            for (int i = 0; i < MetaMath.connectiveArr[connNum].argtypes.length; i++) {
                 position = start + subformula.length();
-                subformula = subformula + pformula(formula, position);
+                subformula += pformula(formula, position);
                 displayArgs[i] = subGetDisplay(formula, position, raw);
             }
-            tmpNotation = MetaMath.connectiveArr[connNum].notation + " ";
-            displayFormula = "";
+            String tmpNotation = MetaMath.connectiveArr[connNum].notation + " ";
+            String displayFormula = "";
             // Replace the arguments in the connectives display notation
-            charPosition0 = 0;
-            charPosition = tmpNotation.indexOf(' ');
+            int charPosition0 = 0;
+            int charPosition = tmpNotation.indexOf(' ');
             while (charPosition != -1) {
-                token = tmpNotation.substring(charPosition0, charPosition);
+                String token = tmpNotation.substring(charPosition0, charPosition);
                 if (token.charAt(0) == '$') { // Display template argument
-                    argNum = (short) Integer.parseInt(token.substring(1));
+                    short argNum = (short) Integer.parseInt(token.substring(1));
                     if (displayFormula.length() == 0) {
                         displayFormula = displayArgs[argNum - 1];
                     } else {
@@ -2576,13 +2549,7 @@ final class VariableName {
 
     // Get name of variable - type must be 0 thru 3 (wff thru digit)
     static String name(short var, short type) {
-        int v;
-        int quotient;
-        int remainder;
-        String suffix;
         // wff, var, class, digit
-        String[] letters = {"PQRSTUWXYZ", "xyzwvutsrqpnmlkjihgfdcba",
-                "ABCDFGHJKLMN", "e"};
         if (var >= varNameVec.size()) { // extend to accomodate variable
             varNameVec.ensureCapacity(var + 1);
             varTypeVec.ensureCapacity(var + 1);
@@ -2593,10 +2560,13 @@ final class VariableName {
                 varTypeVec.add(null);
             }
             // Get name based on type and previous names
-            v = varSoFar[type];
+            int v = varSoFar[type];
             varSoFar[type]++;
-            quotient = v / letters[type].length();
-            remainder = v % letters[type].length();
+            String[] letters = {"PQRSTUWXYZ", "xyzwvutsrqpnmlkjihgfdcba",
+                    "ABCDFGHJKLMN", "e"};
+            int quotient = v / letters[type].length();
+            int remainder = v % letters[type].length();
+            String suffix;
             if (quotient == 0) suffix = "";
             else suffix = Integer.toString(quotient - 1);
             varNameVec.set(var, letters[type].substring(remainder, remainder + 1) + suffix);
@@ -2674,8 +2644,8 @@ class Axiom {
 
         // Remove all assertions except last
         ArrayList<String> trimmedAssertionVec = new ArrayList<>();
-        ArrayList<String> trimmedProofVec = new ArrayList<>();
         trimmedAssertionVec.add(stCopy.assertionVec.get(stCopy.assertionVec.size() - 1));
+        ArrayList<String> trimmedProofVec = new ArrayList<>();
         trimmedProofVec.add(stCopy.proofVec.get(stCopy.proofVec.size() - 1));
         stCopy.assertionVec = trimmedAssertionVec;
         stCopy.proofVec = trimmedProofVec;
@@ -2693,25 +2663,21 @@ class Axiom {
     // Convert RPN character, space-separated strings to RPN numeric strings
     // Connectives are negative, variables are positive
     private static String englToNumStr(String englRPN) {
-        String token;
-        short varNum;
-        short connNum;
-        int i;
         StringBuilder numRPNbuf = new StringBuilder();
 
-        englRPN = englRPN + " ";
+        englRPN += " ";
         numRPNbuf.ensureCapacity(englRPN.length() / 2);
         int position0 = 0;
         int position = englRPN.indexOf(' ');
         while (position != -1) {
-            token = englRPN.substring(position0, position);
+            String token = englRPN.substring(position0, position);
             if (token.charAt(0) == '$') { // Variable
-                varNum = (short) Integer.parseInt(token.substring(1));
+                short varNum = (short) Integer.parseInt(token.substring(1));
                 numRPNbuf.append((char) varNum);
             } else { // Connective
-                i = MetaMath.connectiveLabels.indexOf(" " + token + " ");
+                int i = MetaMath.connectiveLabels.indexOf(" " + token + " ");
                 if (i == -1) System.out.println("Bug: Unknown connective " + token);
-                connNum = (short) (MetaMath.connectiveLabelMap.charAt(i));
+                short connNum = (short) (MetaMath.connectiveLabelMap.charAt(i));
                 numRPNbuf.append((char) (-(connNum + 1)));
             }
             position0 = position + 1;
@@ -2781,12 +2747,11 @@ class State {
             proofInfoState.addHyp();
         }
         // Scan the axiom-list proof
-        proof = proof + " ";
+        proof += " ";
         int position0 = 0;
         int position = proof.indexOf(' ');
-        String label;
         while (position != -1) {
-            label = proof.substring(position0, position);
+            String label = proof.substring(position0, position);
             if (label.charAt(0) == '$') { // Hypothesis $hypnn - future: make sure
                 //   that $ is not allowed if user name accepted for user proofs
                 int hypNum = Integer.parseInt(label.substring(4)) - 1;
@@ -2920,10 +2885,9 @@ class State {
             hypothesisVec.set(i, scanBuf.toString());
         }
         // Scan distinct variable pairs
-        boolean discardFlag;
         for (i = 0; i < distinctVarVec.size(); i++) {
             scanBuf = new StringBuffer(distinctVarVec.get(i));
-            discardFlag = false;
+            boolean discardFlag = false;
             for (j = 0; j < scanBuf.length(); j++) {
                 if (j > 1) System.out.println("Bug #1"); // S.b. only two vars each
                 c = (short) (scanBuf.charAt(j));
@@ -2974,8 +2938,7 @@ class Substitution {
 
     // Makes a set of substitutions into a formula
     static String makeVecSubst(String formula, ArrayList substVec) {
-        int i;
-        for (i = 0; i < substVec.size(); i++) {
+        for (int i = 0; i < substVec.size(); i++) {
             formula = makeSubst(formula, (Substitution) (substVec.get(i)));
         }
         return formula;
@@ -2999,15 +2962,6 @@ final class Unification {
     // possible, null otherwise
     static State unify(Axiom testAxiom, State currentState,
                              boolean proofInfoFlag) {
-        int i;
-        int hyp;
-        short cr;
-        short cs;
-        short substVar;
-        String substStr;
-        Substitution subst;
-        String axiomHyp;
-        String stateHyp;
 
         substVec = new ArrayList<>();
         int currentStateStackSize = currentState.assertionVec.size();
@@ -3021,6 +2975,7 @@ final class Unification {
 
         // Build state hypothesis ArrayList
         stateHypVec = new ArrayList<>();
+        int hyp;
         for (hyp = 0; hyp < axiomHypSize; hyp++) {
             stateHypVec.add(currentState.assertionVec.get(
                     currentStateStackSize - axiomHypSize + hyp));
@@ -3038,6 +2993,7 @@ final class Unification {
             axiomHypVec.add(renumberVars(testAxiom.axiomHypothesisVec.get(hyp)));
         }
         // Renumber distinct variables of axiom and add to dist var ArrayList
+        int i;
         for (i = 0; i < testAxiom.axiomDistVarVec.size(); i++) {
             newDistinctVarVec.add(renumberVars(testAxiom.axiomDistVarVec.get(i)));
         }
@@ -3045,6 +3001,8 @@ final class Unification {
         // Unify each hypothesis
         for (hyp = 0; hyp < axiomHypSize; hyp++) {
             i = -1;
+            String stateHyp;
+            String axiomHyp;
             while (true) {
                 i++;
                 // Assign working hypotheses strings; also reassign them each
@@ -3054,9 +3012,11 @@ final class Unification {
                 if (i >= axiomHyp.length() || i >= stateHyp.length()) {
                     break;
                 }
-                cr = (short) (axiomHyp.charAt(i));
-                cs = (short) (stateHyp.charAt(i));
+                short cr = (short) (axiomHyp.charAt(i));
+                short cs = (short) (stateHyp.charAt(i));
                 if (cr == cs) continue;
+                String substStr;
+                short substVar;
                 if (cr > 0) { // Variable in axiom
                     substStr = PrimFormula.pformula(stateHyp, i); // Get subformula
                     substVar = cr;
@@ -3071,7 +3031,7 @@ final class Unification {
                 if (substStr.indexOf((char) substVar) >= 0) {
                     return null; // Unif not possible - substituted var in substitution
                 }
-                subst = new Substitution(substVar, substStr);
+                Substitution subst = new Substitution(substVar, substStr);
                 if (!rebuildDistinct(subst)) {
                     return null; // Dist var violation
                 }
@@ -3144,12 +3104,10 @@ final class Unification {
     // (which must be > 0) to oldMaxVar
     static String renumberVars(String axiomFormula) {
         StringBuilder formulaBuf = new StringBuilder(axiomFormula);
-        int i;
-        short newVar;
         // Renumber variables
-        for (i = 0; i < formulaBuf.length(); i++) {
+        for (int i = 0; i < formulaBuf.length(); i++) {
             if ((short) (formulaBuf.charAt(i)) > 0) {
-                newVar = (short) (oldMaxVar + (short) (formulaBuf.charAt(i)));
+                short newVar = (short) (oldMaxVar + (short) (formulaBuf.charAt(i)));
                 formulaBuf.setCharAt(i, (char) newVar);
                 if (newVar > newMaxVar) newMaxVar = newVar;
             }
@@ -3161,13 +3119,11 @@ final class Unification {
     // Make substitution to hyp's and substVec (substVec is theoretically
     // not necessary but done to speed things up)
     static void makeSub(Substitution subst) {
-        int hyp;
-        int sub;
-        for (hyp = 0; hyp < stateHypVec.size(); hyp++) {
+        for (int hyp = 0; hyp < stateHypVec.size(); hyp++) {
             stateHypVec.set(hyp, Substitution.makeSubst(stateHypVec.get(hyp), subst));
             axiomHypVec.set(hyp, Substitution.makeSubst(axiomHypVec.get(hyp), subst));
         }
-        for (sub = 0; sub < substVec.size(); sub++) {
+        for (int sub = 0; sub < substVec.size(); sub++) {
             substVec.get(sub).substString =
                     Substitution.makeSubst(substVec.get(sub).substString, subst);
         }
@@ -3178,11 +3134,9 @@ final class Unification {
     static boolean rebuildDistinct(Substitution subst) {
         int ilimit = newDistinctVarVec.size();
         int i;
-        int j;
         boolean found = false;
         short v0;
         short v1;
-        short vsub;
         String dpair;
         for (i = 0; i < ilimit; i++) {
             v0 = (short) (newDistinctVarVec.get(i).charAt(0));
@@ -3194,8 +3148,8 @@ final class Unification {
             }
             if (v0 == subst.substVar) {
                 // 1st var is substituted
-                for (j = 0; j < (subst.substString).length(); j++) {
-                    vsub = (short) ((subst.substString).charAt(j));
+                for (int j = 0; j < (subst.substString).length(); j++) {
+                    short vsub = (short) ((subst.substString).charAt(j));
                     if (vsub < 0) continue; // Not a variable
                     if (vsub == v1) {
                         // Distinct variable conflict

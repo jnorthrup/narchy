@@ -21,7 +21,6 @@ public class DBN {
 
 
     public DBN(int N, int n_ins, int[] hidden_layer_sizes, int n_outs, int n_layers, Random rng) {
-        int input_size;
 
         this.N = N;
         this.n_ins = n_ins;
@@ -37,6 +36,7 @@ public class DBN {
 
         
         for(int i=0; i<this.n_layers; i++) {
+            int input_size;
             if(i == 0) {
                 input_size = this.n_ins;
             } else {
@@ -61,8 +61,6 @@ public class DBN {
 
     public void pretrain(double[][] train_X, double lr, int k, int epochs) {
         double[] layer_input = ArrayUtil.EMPTY_DOUBLE_ARRAY;
-        int prev_layer_input_size;
-        double[] prev_layer_input;
 
         for(int i=0; i<n_layers; i++) {  
             for(int epoch=0; epoch<epochs; epoch++) {  
@@ -74,10 +72,11 @@ public class DBN {
                             layer_input = new double[n_ins];
                             System.arraycopy(train_X[n], 0, layer_input, 0, n_ins);
                         } else {
+                            int prev_layer_input_size;
                             if(l == 1) prev_layer_input_size = n_ins;
                             else prev_layer_input_size = hidden_layer_sizes[l-2];
 
-                            prev_layer_input = new double[prev_layer_input_size];
+                            double[] prev_layer_input = new double[prev_layer_input_size];
                             System.arraycopy(layer_input, 0, prev_layer_input, 0, prev_layer_input_size);
 
                             layer_input = new double[hidden_layer_sizes[l-1]];
@@ -121,20 +120,17 @@ public class DBN {
     }
 
     public void predict(double[] x, double[] y) {
-        double[] layer_input = ArrayUtil.EMPTY_DOUBLE_ARRAY;
-        
+
         double[] prev_layer_input = new double[n_ins];
         System.arraycopy(x, 0, prev_layer_input, 0, n_ins);
 
-        double linear_output;
 
-
-        
-        for(int i=0; i<n_layers; i++) {
+        double[] layer_input = ArrayUtil.EMPTY_DOUBLE_ARRAY;
+        for(int i = 0; i<n_layers; i++) {
             layer_input = new double[sigmoid_layers[i].n_out];
 
             for(int k=0; k<sigmoid_layers[i].n_out; k++) {
-                linear_output = 0.0;
+                double linear_output = 0.0;
 
                 for(int j=0; j<sigmoid_layers[i].n_in; j++) {
                     linear_output += sigmoid_layers[i].W[k][j] * prev_layer_input[j];
@@ -166,11 +162,8 @@ public class DBN {
         double pretrain_lr = 0.1;
         int pretraining_epochs = 1000;
         int k = 1;
-        double finetune_lr = 0.1;
-        int finetune_epochs = 500;
 
         int train_N = 6;
-        int test_N = 4;
         int n_ins = 6;
         int n_outs = 2;
         int[] hidden_layer_sizes = {3, 3};
@@ -186,6 +179,13 @@ public class DBN {
                 {0, 0, 1, 1, 1, 0}
         };
 
+
+        DBN dbn = new DBN(train_N, n_ins, hidden_layer_sizes, n_outs, n_layers, rng);
+
+        
+        dbn.pretrain(train_X, pretrain_lr, k, pretraining_epochs);
+
+
         double[][] train_Y = {
                 {1, 0},
                 {1, 0},
@@ -194,15 +194,8 @@ public class DBN {
                 {0, 1},
                 {0, 1},
         };
-
-
-        
-        DBN dbn = new DBN(train_N, n_ins, hidden_layer_sizes, n_outs, n_layers, rng);
-
-        
-        dbn.pretrain(train_X, pretrain_lr, k, pretraining_epochs);
-
-        
+        int finetune_epochs = 500;
+        double finetune_lr = 0.1;
         dbn.finetune(train_X, train_Y, finetune_lr, finetune_epochs);
 
 
@@ -214,6 +207,7 @@ public class DBN {
                 {0, 0, 1, 1, 1, 0},
         };
 
+        int test_N = 4;
         double[][] test_Y = new double[test_N][n_outs];
 
         

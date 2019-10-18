@@ -22,8 +22,10 @@ import static jcog.math.v3.v;
 public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
 
 
-    private int mouseDragPrevX, mouseDragPrevY;
-    private int mouseDragDX, mouseDragDY;
+    private int mouseDragPrevX;
+    private int mouseDragPrevY;
+    private int mouseDragDX;
+    private int mouseDragDY;
     private final v3 gOldPickingPos = v();
 
     private TypedConstraint pickConstraint;
@@ -142,14 +144,14 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
         );*/
 
         Spatial prevPick = pickedSpatial;
-        Spatial pickedSpatial = null;
 
         picked = cray.collidable;
+        Spatial pickedSpatial = null;
         if (picked != null) {
             Object t = picked.data();
             if (t instanceof Spatial) {
                 pickedSpatial = ((Spatial) t);
-                if (pickedSpatial.onTouch(finger, picked, cray, buttons, space) != null) {
+                if (Spatial.onTouch(finger, picked, cray, buttons, space) != null) {
 
 
                     clearDrag();

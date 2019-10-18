@@ -68,7 +68,7 @@ public class CircleShape extends Shape {
      * @param d
      * @return
      */
-    public static int getSupport(final v2 d) {
+    public static int getSupport(v2 d) {
         return 0;
     }
 
@@ -78,7 +78,7 @@ public class CircleShape extends Shape {
      * @param d
      * @return
      */
-    public final v2 getSupportVertex(final v2 d) {
+    public final v2 getSupportVertex(v2 d) {
         return center;
     }
 
@@ -97,20 +97,20 @@ public class CircleShape extends Shape {
      * @param index
      * @return
      */
-    public final v2 getVertex(final int index) {
+    public final v2 getVertex(int index) {
         assert (index == 0);
         return center;
     }
 
     @Override
-    public final boolean testPoint(final Transform transform, final v2 p) {
+    public final boolean testPoint(Transform transform, v2 p) {
         
         
         
         
         
-        final Rot q = transform;
-        final v2 tp = transform.pos;
+        Rot q = transform;
+        v2 tp = transform.pos;
         float centerx = -(q.c * center.x - q.s * center.y + tp.x - p.x);
         float centery = -(q.s * center.x + q.c * center.y + tp.y - p.y);
 
@@ -119,7 +119,7 @@ public class CircleShape extends Shape {
 
     @Override
     public float distance(Transform xf, v2 p, int childIndex, v2 normalOut) {
-        final Rot xfq = xf;
+        Rot xfq = xf;
         float centerx = xfq.c * center.x - xfq.s * center.y + xf.pos.x;
         float centery = xfq.s * center.x + xfq.c * center.y + xf.pos.y;
         float dx = p.x - centerx;
@@ -138,29 +138,29 @@ public class CircleShape extends Shape {
     public final boolean raycast(RayCastOutput output, RayCastInput input, Transform transform,
                                  int childIndex) {
 
-        final v2 inputp1 = input.p1;
-        final v2 inputp2 = input.p2;
-        final Rot tq = transform;
-        final v2 tp = transform.pos;
+        v2 inputp1 = input.p1;
+        v2 inputp2 = input.p2;
+        Rot tq = transform;
+        v2 tp = transform.pos;
 
         
         
-        final float positionx = tq.c * center.x - tq.s * center.y + tp.x;
-        final float positiony = tq.s * center.x + tq.c * center.y + tp.y;
+        float positionx = tq.c * center.x - tq.s * center.y + tp.x;
+        float positiony = tq.s * center.x + tq.c * center.y + tp.y;
 
-        final float sx = inputp1.x - positionx;
-        final float sy = inputp1.y - positiony;
+        float sx = inputp1.x - positionx;
+        float sy = inputp1.y - positiony;
         
-        final float b = sx * sx + sy * sy - skinRadius * skinRadius;
+        float b = sx * sx + sy * sy - skinRadius * skinRadius;
 
         
-        final float rx = inputp2.x - inputp1.x;
-        final float ry = inputp2.y - inputp1.y;
+        float rx = inputp2.x - inputp1.x;
+        float ry = inputp2.y - inputp1.y;
         
         
-        final float c = sx * rx + sy * ry;
-        final float rr = rx * rx + ry * ry;
-        final float sigma = c * c - rr * b;
+        float c = sx * rx + sy * ry;
+        float rr = rx * rx + ry * ry;
+        float sigma = c * c - rr * b;
 
         
         if (sigma < 0.0f || rr < Settings.EPSILON) {
@@ -184,11 +184,11 @@ public class CircleShape extends Shape {
     }
 
     @Override
-    public final void computeAABB(final AABB aabb, final Transform transform, int childIndex) {
-        final Rot tq = transform;
-        final v2 tp = transform.pos;
-        final float px = tq.c * center.x - tq.s * center.y + tp.x;
-        final float py = tq.s * center.x + tq.c * center.y + tp.y;
+    public final void computeAABB(AABB aabb, Transform transform, int childIndex) {
+        Rot tq = transform;
+        v2 tp = transform.pos;
+        float px = tq.c * center.x - tq.s * center.y + tp.x;
+        float py = tq.s * center.x + tq.c * center.y + tp.y;
 
         aabb.lowerBound.x = px - skinRadius;
         aabb.lowerBound.y = py - skinRadius;
@@ -197,7 +197,7 @@ public class CircleShape extends Shape {
     }
 
     @Override
-    public final void computeMass(final MassData massData, final float density) {
+    public final void computeMass(MassData massData, float density) {
         massData.mass = density * Settings.PI * skinRadius * skinRadius;
         massData.center.x = center.x;
         massData.center.y = center.y;

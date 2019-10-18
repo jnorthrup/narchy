@@ -30,6 +30,7 @@ public class mmodel_t
 	public final float[] origin = { 0, 0, 0 }; 
 	public float radius;
 	public int headnode;
-	public final int visleafs = 0; 
-	public int firstface, numfaces;
+	public static final int visleafs = 0;
+	public int firstface;
+    public int numfaces;
 }

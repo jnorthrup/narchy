@@ -310,13 +310,13 @@ public class LongArrayBitVector extends AbstractBitVector implements Cloneable, 
 			copy.bits[ 0 ] = bits[ startWord ] >>> startBit & ( ( 1L << to - from ) - 1 );
 		}
 		else {
-			int bitsPerWordMinusStartBit = BITS_PER_WORD - startBit;
-			long[] bits = this.bits;
+            long[] bits = this.bits;
 			long[] copyBits = copy.bits;
 			
 			copyBits[ 0 ] = bits[ startWord ] >>> startBit;
-			
-			for( int word = 1; word < numWords; word++ ) {
+
+            int bitsPerWordMinusStartBit = BITS_PER_WORD - startBit;
+            for(int word = 1; word < numWords; word++ ) {
 				copyBits[ word - 1 ] |= bits[ word + startWord ] << bitsPerWordMinusStartBit;
 				copyBits[ word ] = bits[ word + startWord ] >>> startBit;
 			}
@@ -405,16 +405,16 @@ public class LongArrayBitVector extends AbstractBitVector implements Cloneable, 
 		else {
 			int word = word( index );
 			int bit = bit( index );
-			boolean carry = ( bits[ word ] & LAST_BIT_MASK ) != 0, nextCarry;
-			long t = bits[ word ];
+			boolean carry = ( bits[ word ] & LAST_BIT_MASK ) != 0;
+            long t = bits[ word ];
 			if ( bit == LAST_BIT ) t &= ~LAST_BIT_MASK;
 			else t = ( t & - ( 1L << bit ) ) << 1 | t & ( 1L << bit ) - 1;
 			if ( value ) t |= 1L << bit;
 			bits[ word ] = t;
 			int numWords = numWords( length );
 			for( int i = word + 1; i < numWords; i++ ) {
-				nextCarry = ( bits[ i ] & LAST_BIT_MASK ) != 0;
-				bits[ i ] <<= 1;
+                boolean nextCarry = (bits[i] & LAST_BIT_MASK) != 0;
+                bits[ i ] <<= 1;
 				if ( carry ) bits[ i ] |= 1;
 				carry = nextCarry;
 			}

@@ -87,7 +87,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
         out.y = Math.abs(a.y);
     }
 
-    public static float dot(final v2 a, final v2 b) {
+    public static float dot(v2 a, v2 b) {
         return a.x * b.x + a.y * b.y;
     }
 
@@ -311,7 +311,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
         this.y -= dy;
     }
 
-    public static float cross(final v2 a, final v2 b) {
+    public static float cross(v2 a, v2 b) {
         return a.x * b.y - a.y * b.x;
     }
 
@@ -372,7 +372,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
 
 
     public static void crossToOut(v2 a, float s, v2 out) {
-        final float tempy = -s * a.x;
+        float tempy = -s * a.x;
         out.x = s * a.y;
         out.y = tempy;
     }
@@ -389,7 +389,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
     }
 
     public static void crossToOut(float s, v2 a, v2 out) {
-        final float tempY = s * a.x;
+        float tempY = s * a.x;
         out.x = -s * a.y;
         out.y = tempY;
     }

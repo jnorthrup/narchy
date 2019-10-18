@@ -21,7 +21,7 @@ public class NQuadsRDFTest {
 
     @Test
     public void test1() {
-        final NAR n = NARS.tmp();
+        NAR n = NARS.tmp();
         n.log();
         NQuadsRDF.input(n, "<http://example.org/#spiderman> <http://xmlns.com/foaf/0.1/name> \"Человек-паук\"@ru .");
         n.run(1);
@@ -31,7 +31,7 @@ public class NQuadsRDFTest {
     @Disabled
     @Test
     public void testSchema1() throws Exception {
-        final NAR n = NARS.tmp();
+        NAR n = NARS.tmp();
         File output = new File("/tmp/onto.nal");
         PrintStream pout = new PrintStream(new BufferedOutputStream(new FileOutputStream(output), 512 * 1024));
 
@@ -39,10 +39,7 @@ public class NQuadsRDFTest {
                 NQuadsRDF.stream(n, new File(
                         
                         "/home/me/Downloads/nquad"
-                )).peek(t -> {
-                    pout.println(t.term().toString() + t.punc());
-                    
-                })
+                )).peek(t -> pout.println(t.term().toString() + t.punc()))
         );
 
         pout.close();
@@ -71,7 +68,7 @@ public class NQuadsRDFTest {
     @Test
     public void testSchema2() throws Exception {
 
-        final NAR n = NARS.tmp();
+        NAR n = NARS.tmp();
 
 
 

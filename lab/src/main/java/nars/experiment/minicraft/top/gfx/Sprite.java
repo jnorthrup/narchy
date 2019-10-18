@@ -1,7 +1,8 @@
 package nars.experiment.minicraft.top.gfx;
 
 public class Sprite {
-    public int x, y;
+    public int x;
+    public int y;
     public int img;
     public int col;
     public int bits;

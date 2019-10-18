@@ -34,47 +34,47 @@ public class a extends GamePanel {
 	private static final int WIDTH = 640;
 	private static final int HEIGHT = 420;
 
-	final int VK_LEFT = 0x25;
-	final int VK_RIGHT = 0x27;
-	final int VK_SHOOT = 0x42;
-	final int VK_PAUSE = 0x50;
+	static final int VK_LEFT = 0x25;
+	static final int VK_RIGHT = 0x27;
+	static final int VK_SHOOT = 0x42;
+	static final int VK_PAUSE = 0x50;
 
-	final float DEMON_REFORM_SPEED = 0.035f;
-	final float BULLET_DELTA_ANGLE = 0.5f;
+	static final float DEMON_REFORM_SPEED = 0.035f;
+	static final float BULLET_DELTA_ANGLE = 0.5f;
 
-	final int BULLET_X = 0;
-	final int BULLET_Y = 1;
-	final int BULLET_ANGLE = 2;
-	final int BULLET_DEMON_X = 3;
-	final int BULLET_OFFSET_X = 4;
-	final int BULLET_RADIUS = 5;
+	static final int BULLET_X = 0;
+	static final int BULLET_Y = 1;
+	static final int BULLET_ANGLE = 2;
+	static final int BULLET_DEMON_X = 3;
+	static final int BULLET_OFFSET_X = 4;
+	static final int BULLET_RADIUS = 5;
 
-	final int DEMON_X = 0;
-	final int DEMON_Y = 1;
-	final int DEMON_SPRITE = 2;
-	final int DEMON_ROW = 3;
-	final int DEMON_START_Y = 4;
-	final int DEMON_DELTA_Y = 5;
-	final int DEMON_PERCENT_Y = 6;
-	final int DEMON_DELTA_PERCENT_Y = 7;
-	final int DEMON_START_X = 8;
-	final int DEMON_DELTA_X = 9;
-	final int DEMON_PERCENT_X = 10;
-	final int DEMON_DELTA_PERCENT_X = 11;
-	final int DEMON_FORMING = 12;
-	final int DEMON_X2 = 13;
-	final int DEMON_DELTA_X2 = 14;
-	final int DEMON_HIDDEN = 15;
-	final int DEMON_EXPLODING = 16;
-	final int DEMON_EXPLODING_INDEX = 17;
-	final int DEMON_DELAY = 18;
-	final int DEMON_BIRD = 19;
-	final int DEMON_SHOOTER = 20;
-	final int DEMON_DIVING = 21;
-	final int DEMON_DIVING_Y = 22;
+	static final int DEMON_X = 0;
+	static final int DEMON_Y = 1;
+	static final int DEMON_SPRITE = 2;
+	static final int DEMON_ROW = 3;
+	static final int DEMON_START_Y = 4;
+	static final int DEMON_DELTA_Y = 5;
+	static final int DEMON_PERCENT_Y = 6;
+	static final int DEMON_DELTA_PERCENT_Y = 7;
+	static final int DEMON_START_X = 8;
+	static final int DEMON_DELTA_X = 9;
+	static final int DEMON_PERCENT_X = 10;
+	static final int DEMON_DELTA_PERCENT_X = 11;
+	static final int DEMON_FORMING = 12;
+	static final int DEMON_X2 = 13;
+	static final int DEMON_DELTA_X2 = 14;
+	static final int DEMON_HIDDEN = 15;
+	static final int DEMON_EXPLODING = 16;
+	static final int DEMON_EXPLODING_INDEX = 17;
+	static final int DEMON_DELAY = 18;
+	static final int DEMON_BIRD = 19;
+	static final int DEMON_SHOOTER = 20;
+	static final int DEMON_DIVING = 21;
+	static final int DEMON_DIVING_Y = 22;
 
-	final int scoreColor = 0xFFDFB755;
-	final int playerColor = 0xFFB846A2;
+	static final int scoreColor = 0xFFDFB755;
+	static final int playerColor = 0xFFB846A2;
 	final Color playerBulletColor = new Color(0xD48CFC);
 	final Color enemyBulletColor = new Color(0xFC9090);
 	final Color[] extraLivesColors = new Color[100];
@@ -862,21 +862,21 @@ public class a extends GamePanel {
 	public void processAWTEvent(AWTEvent e) {
 		if (e instanceof KeyEvent) {
 			KeyEvent keyEvent = (KeyEvent) e;
-			final int VK_LEFT = 0x25;
-			final int VK_RIGHT = 0x27;
-			final int VK_SHOOT = 0x42;
-			final int VK_A = 0x41;
-			final int VK_D = 0x44;
-			final int VK_P = 0x50;
 
-			int k = keyEvent.getKeyCode();
+            int k = keyEvent.getKeyCode();
 			if (k > 0) {
-				if (k == VK_D) {
+                final int VK_D = 0x44;
+                final int VK_A = 0x41;
+                final int VK_RIGHT = 0x27;
+                final int VK_LEFT = 0x25;
+                if (k == VK_D) {
 					k = VK_RIGHT;
 				} else if (k == VK_A) {
 					k = VK_LEFT;
 				}
-				a[(k == VK_LEFT || k == VK_RIGHT || k == VK_P) ? k : VK_SHOOT] = keyEvent.getID() != 402;
+                final int VK_P = 0x50;
+                final int VK_SHOOT = 0x42;
+                a[(k == VK_LEFT || k == VK_RIGHT || k == VK_P) ? k : VK_SHOOT] = keyEvent.getID() != 402;
 			}
 		}
 	}

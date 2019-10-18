@@ -27,7 +27,10 @@ public class NodeVis<X> extends Windo {
      */
     public final ConcurrentFastIteratingHashMap<X, EdgeVis<X>> outs = new ConcurrentFastIteratingHashMap(new EdgeVis[0]);
 
-    private float r, g, b, a;
+    private float r;
+    private float g;
+    private float b;
+    private float a;
 
     /** general re-purposeable serial integer */
     public transient int i;
@@ -71,7 +74,7 @@ public class NodeVis<X> extends Windo {
         color(r,g,b,1);
     }
 
-    public boolean pinned() {
+    public static boolean pinned() {
 
         return false;
     }
@@ -99,11 +102,12 @@ public class NodeVis<X> extends Windo {
             return null;
 
         EdgeVis<X> y = outs.compute(tid, (tt, yy) -> {
-            if (yy == null) {
-                yy = pool.get();
-                yy.to = target;
+            EdgeVis<X> yy1 = yy;
+            if (yy1 == null) {
+                yy1 = pool.get();
+                yy1.to = target;
             }
-            return yy;
+            return yy1;
         });
         y.invalid = false;
         return y;

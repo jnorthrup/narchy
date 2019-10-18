@@ -116,10 +116,10 @@ public final class TruthFunctions {
      *
      * stronger than analogy
      */
-    static Truth resemblance(final Truth  v1, final Truth  v2, float minConf) {
-        final float f1 = v1.freq();
-        final float f2 = v2.freq();
-        final float c = and(confCompose(v1, v2), or(f1, f2));
+    static Truth resemblance(Truth  v1, Truth  v2, float minConf) {
+        float f1 = v1.freq();
+        float f2 = v2.freq();
+        float c = and(confCompose(v1, v2), or(f1, f2));
         return c >= minConf ? tt(and(f1, f2), c) : null;
     }
 
@@ -157,13 +157,13 @@ public final class TruthFunctions {
 //            f2 = 1 - f2;
 //        }
 
-        final float f0 = or(f1, f2);
-        final double w = and(f0, confCompose(a,b));
-        final double c = w2cSafe(w);
+        float f0 = or(f1, f2);
+        double w = and(f0, confCompose(a,b));
+        double c = w2cSafe(w);
         if (c < minConf)
             return null;
 
-        final float f = (f0 < NAL.truth.TRUTH_EPSILON) ? 0 : (and(f1, f2) / f0);
+        float f = (f0 < NAL.truth.TRUTH_EPSILON) ? 0 : (and(f1, f2) / f0);
         return $.tt(f,(float)c);
     }
 
@@ -317,12 +317,12 @@ public final class TruthFunctions {
 //    }
 
     /** original OpenNARS desire function */
-    public static Truth desire(final Truth a, final Truth b, float minConf, boolean strong) {
-        final float f1 = a.freq();
-        final float f2 = b.freq();
-        final float f = and(f1, f2);
-        final float c12 = confCompose(a, b);
-        final float c = and(c12, f2) * (strong ? 1 : w2cSafe(1));
+    public static Truth desire(Truth a, Truth b, float minConf, boolean strong) {
+        float f1 = a.freq();
+        float f2 = b.freq();
+        float f = and(f1, f2);
+        float c12 = confCompose(a, b);
+        float c = and(c12, f2) * (strong ? 1 : w2cSafe(1));
         return c > minConf ? tt(f, c) : null;
     }
 

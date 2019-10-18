@@ -113,7 +113,7 @@ public class Grid1DRelative implements World {
             if (sensor[i] < 0.2)
                 sensor[i] = 0;
             if (i == 0) {
-                min = max = sensor[i];
+                min = max = sensor[0];
             }
             else {
                 if (sensor[i] < min) min = sensor[i];

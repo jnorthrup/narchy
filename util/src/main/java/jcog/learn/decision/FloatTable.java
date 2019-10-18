@@ -28,7 +28,10 @@ import java.util.List;
 
     public FloatTable<H> print(PrintStream out) {
         System.out.println(Joiner.on("\t").join(cols));
-        rows.stream().map(Texts::n4).forEach(out::println);
+        for (float[] row : rows) {
+            String s = Texts.n4(row);
+            out.println(s);
+        }
         return this;
     }
 

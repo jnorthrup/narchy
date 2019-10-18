@@ -12,7 +12,11 @@ public class EDraw<Y extends SimpleSpatial> extends UnitPri {
 
     private final int hash;
     
-    public float width, r, g, b, a;
+    public float width;
+    public float r;
+    public float g;
+    public float b;
+    public float a;
 
     /** additional attraction force multiplier */
     public float attraction = 1f;
@@ -20,7 +24,8 @@ public class EDraw<Y extends SimpleSpatial> extends UnitPri {
     /** proportional to radius */
     public float attractionDist = 1f;
 
-    final Y src, tgt;
+    final Y src;
+    final Y tgt;
     public EDraw(Y src, Y target, float pri) {
         //super(Tuples.twin(src,target), pri);
         super(pri);

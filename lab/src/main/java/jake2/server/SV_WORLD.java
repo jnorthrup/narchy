@@ -52,7 +52,8 @@ public class SV_WORLD {
 
     public static edict_t[] area_list;
 
-    public static int area_count, area_maxcount;
+    public static int area_count;
+    public static int area_maxcount;
 
     public static int area_type;
 
@@ -98,9 +99,6 @@ public class SV_WORLD {
      */
     public static areanode_t SV_CreateAreaNode(int depth, float[] mins,
             float[] maxs) {
-        float[] size = { 0, 0, 0 };
-        float[] mins1 = { 0, 0, 0 }, maxs1 = { 0, 0, 0 }, mins2 = { 0, 0, 0 }, maxs2 = {
-                0, 0, 0 };
         areanode_t anode = SV_WORLD.sv_areanodes[SV_WORLD.sv_numareanodes];
         
 
@@ -113,15 +111,21 @@ public class SV_WORLD {
             anode.children[0] = anode.children[1] = null;
             return anode;
         }
+        float[] size = {0, 0, 0};
         Math3D.VectorSubtract(maxs, mins, size);
         if (size[0] > size[1])
             anode.axis = 0;
         else
             anode.axis = 1;
         anode.dist = 0.5f * (maxs[anode.axis] + mins[anode.axis]);
+        float[] mins1 = {0, 0, 0};
         Math3D.VectorCopy(mins, mins1);
+        float[] mins2 = {0, 0, 0};
         Math3D.VectorCopy(mins, mins2);
+        float[] maxs1 = {0, 0, 0};
         Math3D.VectorCopy(maxs, maxs1);
+        float[] maxs2 = {
+                0, 0, 0};
         Math3D.VectorCopy(maxs, maxs2);
         maxs1[anode.axis] = mins2[anode.axis] = anode.dist;
         anode.children[0] = SV_CreateAreaNode(depth + 1, mins2, maxs2);
@@ -161,9 +165,6 @@ public class SV_WORLD {
     }
 
     public static void SV_LinkEdict(edict_t ent) {
-        int j, k;
-        int area;
-        int topnode = 0;
         if (ent.area.prev != null)
             SV_UnlinkEdict(ent); 
         if (ent == GameBase.g_edicts[0])
@@ -172,7 +173,8 @@ public class SV_WORLD {
             return;
         
         Math3D.VectorSubtract(ent.maxs, ent.mins, ent.size);
-        
+
+        int j;
         if (ent.solid == Defines.SOLID_BBOX
                 && 0 == (ent.svflags & Defines.SVF_DEADMONSTER)) {
             
@@ -187,8 +189,8 @@ public class SV_WORLD {
                 j = 1;
             if (j > 31)
                 j = 31;
-            
-            k = (int) ((ent.maxs[2] + 32) / 8);
+
+            int k = (int) ((ent.maxs[2] + 32) / 8);
             if (k < 1)
                 k = 1;
             if (k > 63)
@@ -201,11 +203,10 @@ public class SV_WORLD {
         
         if (ent.solid == Defines.SOLID_BSP
                 && (IntStream.of(0, 1, 2).anyMatch(i1 -> ent.s.angles[i1] != 0))) {
-            
-            float v;
+
             float max = 0;
             for (int i = 0; i < 3; i++) {
-                v = Math.abs(ent.mins[i]);
+                float v = Math.abs(ent.mins[i]);
                 if (v > max)
                     max = v;
                 v = Math.abs(ent.maxs[i]);
@@ -235,6 +236,7 @@ public class SV_WORLD {
         ent.areanum = 0;
         ent.areanum2 = 0;
 
+        int topnode = 0;
         int[] iw = {topnode};
         int num_leafs = CM.CM_BoxLeafnums(ent.absmin, ent.absmax, SV_WORLD.leafs,
                 SV_WORLD.MAX_TOTAL_ENT_LEAFS, iw);
@@ -242,7 +244,7 @@ public class SV_WORLD {
         
         for (int i = 0; i < num_leafs; i++) {
             SV_WORLD.clusters[i] = CM.CM_LeafCluster(SV_WORLD.leafs[i]);
-            area = CM.CM_LeafArea(SV_WORLD.leafs[i]);
+            int area = CM.CM_LeafArea(SV_WORLD.leafs[i]);
             if (area != 0) {
                 
                 
@@ -312,16 +314,16 @@ public class SV_WORLD {
      * ====================
      */
     public static void SV_AreaEdicts_r(areanode_t node) {
-        link_t l, next, start;
-        edict_t check;
-        
+        link_t start;
+
         if (SV_WORLD.area_type == Defines.AREA_SOLID)
             start = node.solid_edicts;
         else
             start = node.trigger_edicts;
-        for (l = start.next; l != start; l = next) {
+        link_t next;
+        for (link_t l = start.next; l != start; l = next) {
             next = l.next;
-            check = (edict_t) l.o;
+            edict_t check = (edict_t) l.o;
             if (check.solid == Defines.SOLID_NOT)
                 continue; 
             if (check.absmin[0] > SV_WORLD.area_maxs[0]
@@ -366,22 +368,18 @@ public class SV_WORLD {
      * ============= SV_PointContents =============
      */
     public static int SV_PointContents(float[] p) {
-        edict_t hit;
-        int i;
-        int c2;
-        int headnode;
 
         int contents = CM.PointContents(p, SV_INIT.sv.models[1].headnode);
 
         int num = SV_AreaEdicts(p, p, SV_WORLD.touch, Defines.MAX_EDICTS,
                 Defines.AREA_SOLID);
-        for (i = 0; i < num; i++) {
-            hit = SV_WORLD.touch[i];
-            
-            headnode = SV_HullForEntity(hit);
+        for (int i = 0; i < num; i++) {
+            edict_t hit = SV_WORLD.touch[i];
+
+            int headnode = SV_HullForEntity(hit);
             if (hit.solid != Defines.SOLID_BSP) {
 	    }
-            c2 = CM.TransformedPointContents(p, headnode, hit.s.origin,
+            int c2 = CM.TransformedPointContents(p, headnode, hit.s.origin,
                     hit.s.angles);
             contents |= c2;
         }
@@ -397,11 +395,10 @@ public class SV_WORLD {
      * returned hull. ================
      */
     public static int SV_HullForEntity(edict_t ent) {
-        cmodel_t model;
-        
+
         if (ent.solid == Defines.SOLID_BSP) {
-            
-            model = SV_INIT.sv.models[ent.s.modelindex];
+
+            cmodel_t model = SV_INIT.sv.models[ent.s.modelindex];
             if (null == model)
                 Com.Error(Defines.ERR_FATAL,
                         "MOVETYPE_PUSH with a non bsp model");
@@ -412,17 +409,12 @@ public class SV_WORLD {
     }
 
     public static void SV_ClipMoveToEntities(moveclip_t clip) {
-        int i;
-        edict_t touch;
-        trace_t trace;
-        int headnode;
-        float[] angles;
         int num = SV_AreaEdicts(clip.boxmins, clip.boxmaxs, SV_WORLD.touchlist,
                 Defines.MAX_EDICTS, Defines.AREA_SOLID);
         
         
-        for (i = 0; i < num; i++) {
-            touch = SV_WORLD.touchlist[i];
+        for (int i = 0; i < num; i++) {
+            edict_t touch = SV_WORLD.touchlist[i];
             if (touch.solid == Defines.SOLID_NOT)
                 continue;
             if (touch == clip.passedict)
@@ -438,11 +430,12 @@ public class SV_WORLD {
             if (0 == (clip.contentmask & Defines.CONTENTS_DEADMONSTER)
                     && 0 != (touch.svflags & Defines.SVF_DEADMONSTER))
                 continue;
-            
-            headnode = SV_HullForEntity(touch);
-            angles = touch.s.angles;
+
+            int headnode = SV_HullForEntity(touch);
+            float[] angles = touch.s.angles;
             if (touch.solid != Defines.SOLID_BSP)
-                angles = Globals.vec3_origin; 
+                angles = Globals.vec3_origin;
+            trace_t trace;
             if ((touch.svflags & Defines.SVF_MONSTER) != 0)
                 trace = CM.TransformedBoxTrace(clip.start, clip.end,
                         clip.mins2, clip.maxs2, headnode, clip.contentmask,
@@ -469,8 +462,7 @@ public class SV_WORLD {
      */
     public static void SV_TraceBounds(float[] start, float[] mins,
             float[] maxs, float[] end, float[] boxmins, float[] boxmaxs) {
-        int i;
-        for (i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             if (end[i] > start[i]) {
                 boxmins[i] = start[i] + mins[i] - 1;
                 boxmaxs[i] = end[i] + maxs[i] + 1;

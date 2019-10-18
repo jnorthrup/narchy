@@ -16,7 +16,10 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     public static final RectFloat Unit = XYXY(0, 0, 1, 1);
     public static final RectFloat Zero = XYXY(0, 0, 0, 0);
 
-    public final float x, y, w, h;
+    public final float x;
+    public final float y;
+    public final float w;
+    public final float h;
 
 
     protected RectFloat(RectFloat r) {
@@ -115,10 +118,10 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
 
     @Override
-    public RectFloat mbr(final HyperRegion _b) {
+    public RectFloat mbr(HyperRegion _b) {
         if (_b == this) return this;
 
-        final RectFloat b = (RectFloat) _b;
+        RectFloat b = (RectFloat) _b;
 
         //TODO better merge of these conditions
 //        if (contains(b))
@@ -128,10 +131,10 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 //        else if (b.equals(this))
 //            return this;
 
-        final float ax = this.x, bx = b.x,
+        float ax = this.x, bx = b.x,
                 minX = Math.min(ax, bx),
                 maxX = Math.max(ax + w, bx + b.w);
-        final float ay = this.y, by = b.y,
+        float ay = this.y, by = b.y,
                 minY = Math.min(ay, by),
                 maxY = Math.max(ay + h, by + b.h);
 
@@ -169,7 +172,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
 
     @Override
-    public double range(final int dim) {
+    public double range(int dim) {
         if (dim == 0) {
             return w;
         } else if (dim == 1) {
@@ -181,15 +184,15 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
 
     @Override
-    public final boolean contains(final HyperRegion r) {
+    public final boolean contains(HyperRegion r) {
         if (this == r) return true;
-        final RectFloat R = (RectFloat) r;
+        RectFloat R = (RectFloat) r;
         return contains(R.x, R.y, R.w, R.h);
     }
     @Override
-    public final boolean intersects(final HyperRegion r) {
+    public final boolean intersects(HyperRegion r) {
         if (this == r) return true;
-        final RectFloat R = (RectFloat) r;
+        RectFloat R = (RectFloat) r;
         return intersects(R.x, R.y, R.w, R.h);
     }
 

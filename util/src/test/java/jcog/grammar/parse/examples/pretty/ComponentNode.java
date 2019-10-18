@@ -32,7 +32,8 @@ abstract class ComponentNode {
 	 * @return  a string of blanks
 	 */
 	static String indent(int n) {
-		String buf = IntStream.range(0, n).mapToObj(i -> "    ").collect(Collectors.joining());
+        String sb = IntStream.range(0, n).mapToObj(i -> "    ").collect(Collectors.joining());
+		String buf = sb;
         return buf;
 	}
 

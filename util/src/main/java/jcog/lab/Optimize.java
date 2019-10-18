@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.Row;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -79,7 +80,9 @@ public class Optimize<S, E> extends Lab<E>  {
 
         this.var = new FasterList(_vars).sortThis();
 
-        this.varSensors = var/* sorted */.stream().map(Var::sense).collect(toList());
+        /* sorted */
+        List<Sensor<S, ?>> list = var.stream().map(Var::sense).collect(toList());
+        this.varSensors = list;
 
         this.sensors.addAll( sensors );
         this.sensors.sortThis();
@@ -122,7 +125,7 @@ public class Optimize<S, E> extends Lab<E>  {
     public void run(OptimizationStrategy strategy) {
 
         //initialize numeric or numeric-able variables
-        final int numVars = var.size();
+        int numVars = var.size();
 
         mid = new double[numVars];
         min = new double[numVars];
@@ -162,7 +165,9 @@ public class Optimize<S, E> extends Lab<E>  {
 
 
         goal.addToSchema(data);
-        varSensors.forEach(s -> s.addToSchema(data));
+        for (Sensor<S, ?> varSensor : varSensors) {
+            varSensor.addToSchema(data);
+        }
         sensors.forEach(s -> s.addToSchema(data));
 
         if (logger.isTraceEnabled()) {

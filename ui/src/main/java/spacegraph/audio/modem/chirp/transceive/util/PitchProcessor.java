@@ -105,7 +105,7 @@ public class PitchProcessor {
          * @param bufferSize
          *            The size of a buffer. E.g. 1024.
          */
-        public Yin(final float audioSampleRate, final int bufferSize) {
+        public Yin(float audioSampleRate, int bufferSize) {
             this(audioSampleRate, bufferSize, DEFAULT_THRESHOLD);
         }
 
@@ -121,7 +121,7 @@ public class PitchProcessor {
          *            The parameter that defines which peaks are kept as possible
          *            pitch candidates. See the YIN paper for more details.
          */
-        public Yin(final float audioSampleRate, final int bufferSize, final double yinThreshold) {
+        public Yin(float audioSampleRate, int bufferSize, double yinThreshold) {
             this.sampleRate = audioSampleRate;
             this.threshold = yinThreshold;
             yinBuffer = new float[bufferSize / 2];
@@ -134,9 +134,7 @@ public class PitchProcessor {
          *
          * @return a pitch value in Hz or -1 if no pitch is detected.
          */
-        public PitchDetectionResult getPitch(final float[] audioBuffer) {
-
-            final float pitchInHertz;
+        public PitchDetectionResult getPitch(float[] audioBuffer) {
 
             // step 2
             difference(audioBuffer);
@@ -145,11 +143,12 @@ public class PitchProcessor {
             cumulativeMeanNormalizedDifference();
 
             // step 4
-            final int tauEstimate = absoluteThreshold();
+            int tauEstimate = absoluteThreshold();
 
             // step 5
+            float pitchInHertz;
             if (tauEstimate != -1) {
-                final float betterTau = parabolicInterpolation(tauEstimate);
+                float betterTau = parabolicInterpolation(tauEstimate);
 
                 // step 6
                 // TODO Implement optimization for the AUBIO_YIN algorithm.
@@ -173,15 +172,14 @@ public class PitchProcessor {
          * Implements the difference function as described in step 2 of the YIN
          * paper.
          */
-        private void difference(final float[] audioBuffer) {
-            int index, tau;
-            float delta;
+        private void difference(float[] audioBuffer) {
+            int tau;
             for (tau = 0; tau < yinBuffer.length; tau++) {
                 yinBuffer[tau] = 0;
             }
             for (tau = 1; tau < yinBuffer.length; tau++) {
-                for (index = 0; index < yinBuffer.length; index++) {
-                    delta = audioBuffer[index] - audioBuffer[index + tau];
+                for (int index = 0; index < yinBuffer.length; index++) {
+                    float delta = audioBuffer[index] - audioBuffer[index + tau];
                     yinBuffer[tau] += delta * delta;
                 }
             }
@@ -195,10 +193,9 @@ public class PitchProcessor {
          * </code>
          */
         private void cumulativeMeanNormalizedDifference() {
-            int tau;
             yinBuffer[0] = 1;
             float runningSum = 0;
-            for (tau = 1; tau < yinBuffer.length; tau++) {
+            for (int tau = 1; tau < yinBuffer.length; tau++) {
                 runningSum += yinBuffer[tau];
                 yinBuffer[tau] *= tau / runningSum;
             }
@@ -256,21 +253,21 @@ public class PitchProcessor {
          *            The estimated tau value.
          * @return A better, more precise tau value.
          */
-        private float parabolicInterpolation(final int tauEstimate) {
-            final float betterTau;
-            final int x0;
-            final int x2;
+        private float parabolicInterpolation(int tauEstimate) {
+            int x0;
 
             if (tauEstimate < 1) {
                 x0 = tauEstimate;
             } else {
                 x0 = tauEstimate - 1;
             }
+            int x2;
             if (tauEstimate + 1 < yinBuffer.length) {
                 x2 = tauEstimate + 1;
             } else {
                 x2 = tauEstimate;
             }
+            float betterTau;
             if (x0 == tauEstimate) {
                 if (yinBuffer[tauEstimate] <= yinBuffer[x2]) {
                     betterTau = tauEstimate;

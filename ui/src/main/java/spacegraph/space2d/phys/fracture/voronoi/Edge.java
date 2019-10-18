@@ -31,7 +31,7 @@ class Edge {
      *
      * @param triangle
      */
-    final void add(final Triangle t) {
+    final void add(Triangle t) {
         if (t1 == null) {
             t1 = t;
         } else {
@@ -44,7 +44,7 @@ class Edge {
      *
      * @param t
      */
-    final void remove(final Triangle t) {
+    final void remove(Triangle t) {
         if (t1 == t) {
             t1 = null;
         } else {
@@ -56,7 +56,7 @@ class Edge {
      * @param t
      * @return Vrati susedny trojuholnik, ktory nieje v parametri
      */
-    final Triangle get(final Triangle triangle) {
+    final Triangle get(Triangle triangle) {
         return t1 == triangle ? t2 : t1;
     }
 
@@ -72,7 +72,7 @@ class Edge {
      * @param i2 Index 2. vrcholu
      * @return Vrati index hrany
      */
-    static int index(final int i1, final int i2) {
+    static int index(int i1, int i2) {
         if (i1 < i2) {
             return i1 << 8 | i2;
         } else {

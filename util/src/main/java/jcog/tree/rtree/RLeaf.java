@@ -202,7 +202,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
     @Override
     public boolean contains(X x, HyperRegion b, Spatialization<X> model) {
 
-        final int s = size;
+        int s = size;
         if (s > 0 && bounds.contains(b)) {
 
             X[] data = this.data;
@@ -213,9 +213,9 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
 
 
     @Override
-    public RNode<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, int[] removed) {
+    public RNode<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, int[] removed) {
 
-        final int size = this.size;
+        int size = this.size;
         if (size > 1 && !bounds.contains(xBounds))
             return this; //not found
 
@@ -228,9 +228,9 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
         if (i == size)
             return this; //not found
         else {
-            final int j = i + 1;
+            int j = i + 1;
             if (j < size) {
-                final int nRemaining = size - j;
+                int nRemaining = size - j;
                 System.arraycopy(data, j, data, i, nRemaining);
                 Arrays.fill(data, size - 1, size, null);
             } else {
@@ -251,8 +251,8 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
     }
 
     @Override
-    public RNode<X> replace(final X told, HyperRegion oldBounds, final X tnew, Spatialization<X> model) {
-        final int s = size;
+    public RNode<X> replace(X told, HyperRegion oldBounds, X tnew, Spatialization<X> model) {
+        int s = size;
         if (s > 0 && bounds.contains(oldBounds)) {
             X[] data = this.data;
             HyperRegion r = null;
@@ -336,27 +336,27 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
      * @param x     data entry to be added
      * @param model
      */
-    public final void transfer(final RLeaf<X> a, final RLeaf<X> b, final X x, Spatialization<X> model) {
+    public final void transfer(RLeaf<X> a, RLeaf<X> b, X x, Spatialization<X> model) {
 
-        final HyperRegion xReg = model.bounds(x);
+        HyperRegion xReg = model.bounds(x);
         double tCost = xReg.cost();
 
-        final HyperRegion aReg = a.bounds();
-        final HyperRegion aMbr = aReg != null ? xReg.mbr(aReg) : xReg;
+        HyperRegion aReg = a.bounds();
+        HyperRegion aMbr = aReg != null ? xReg.mbr(aReg) : xReg;
         double axCost = aMbr.cost();
-        final double aCostInc = Math.max(axCost - ((/*aReg!=null ? */aReg.cost() /*: 0*/) + tCost), 0.0);
+        double aCostInc = Math.max(axCost - ((/*aReg!=null ? */aReg.cost() /*: 0*/) + tCost), 0.0);
 
-        final HyperRegion bReg = b.bounds();
-        final HyperRegion bMbr = xReg.mbr(bReg);
+        HyperRegion bReg = b.bounds();
+        HyperRegion bMbr = xReg.mbr(bReg);
         double bxCost = bMbr.cost();
-        final double bCostInc = Math.max(bxCost - ((/*bReg!=null ? */ bReg.cost()/* : 0*/) + tCost), 0.0);
+        double bCostInc = Math.max(bxCost - ((/*bReg!=null ? */ bReg.cost()/* : 0*/) + tCost), 0.0);
 
         RLeaf<X> target;
-        double eps = model.epsilon();
+        double eps = Spatialization.epsilon();
         if (Util.equals(aCostInc, bCostInc, eps)) {
             if (Util.equals(axCost, bxCost, eps)) {
 
-                final double aMbrMargin = aMbr.perimeter(), bMbrMargin = bMbr.perimeter();
+                double aMbrMargin = aMbr.perimeter(), bMbrMargin = bMbr.perimeter();
 
                 if (Util.equals(aMbrMargin, bMbrMargin, eps)) {
 

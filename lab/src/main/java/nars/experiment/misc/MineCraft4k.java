@@ -8,6 +8,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.ImageObserver;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -45,9 +46,16 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 			int[] arrayOfInt1 = ((DataBufferInt)localBufferedImage.getRaster().getDataBuffer()).getData();
             localRandom.setSeed((long)rand.nextInt(50) + 1L);
 
-            int[] arrayOfInt2 = IntStream.range(0, 262144).map(i -> i / 64 % 64 > 32 + localRandom.nextInt(8) ? localRandom.nextInt(8) + 1 : 0).toArray();
+            int[] arrayOfInt2 = new int[10];
+            int count = 0;
+            for (int i = 0; i < 262144; i++) {
+                int i12 = i / 64 % 64 > 32 + localRandom.nextInt(8) ? localRandom.nextInt(8) + 1 : 0;
+                if (arrayOfInt2.length == count) arrayOfInt2 = Arrays.copyOf(arrayOfInt2, count * 2);
+                arrayOfInt2[count++] = i12;
+            }
+            arrayOfInt2 = Arrays.copyOfRange(arrayOfInt2, 0, count);
 
-			int[] arrayOfInt3 = new int[12288];
+            int[] arrayOfInt3 = new int[12288];
 
 			for(int j = 1; j < 16; ++j) {
 				int k = 255 - localRandom.nextInt(96);
@@ -258,10 +266,7 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 										}
 
 										float f28 = 1.0F / (f27 < 0.0F ? -f27 : f27);
-										float f29 = f24 * f28;
-										float f30 = f23 * f28;
-										float f31 = f25 * f28;
-										float f32 = f1 - (float)((int)f1);
+                                        float f32 = f1 - (float)((int)f1);
 										if (i18 == 1) {
 											f32 = f2 - (float)((int)f2);
 										}
@@ -275,9 +280,12 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 										}
 
 										float f33 = f28 * f32;
-										float f34 = f1 + f29 * f32;
-										float f35 = f2 + f30 * f32;
-										float f36 = f3 + f31 * f32;
+                                        float f29 = f24 * f28;
+                                        float f34 = f1 + f29 * f32;
+                                        float f30 = f23 * f28;
+                                        float f35 = f2 + f30 * f32;
+                                        float f31 = f25 * f28;
+                                        float f36 = f3 + f31 * f32;
 										if (f27 < 0.0F) {
 											if (i18 == 0) {
 												--f34;
@@ -325,7 +333,7 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 														i5 = -1;
 													}
 
-													i5 = i5 << 6 * i18;
+													i5 <<= 6 * i18;
 													f26 = f33;
 												}
 

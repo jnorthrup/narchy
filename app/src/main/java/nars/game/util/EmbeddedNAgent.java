@@ -7,8 +7,11 @@ import nars.NARS;
 import nars.game.Game;
 import nars.game.action.SwitchAction;
 import nars.game.sensor.GameLoop;
+import nars.game.sensor.Signal;
 import nars.term.Term;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static java.lang.System.arraycopy;
@@ -44,14 +47,13 @@ public class EmbeddedNAgent extends Agent {
 
         this.env = new Game("agent");
 
-        GameLoop[] sense = IntStream.range(0, inputs).mapToObj(i -> env.sense($.inh($.the(i), env.id), () -> senseValue[i])
-        ).toArray(GameLoop[]::new);
+        GameLoop[] sense = IntStream.range(0, inputs).mapToObj(i1 -> env.sense($.inh($.the(i1), env.id), () -> senseValue[i1])).toArray(GameLoop[]::new);
 
         SwitchAction act;
         this.env.addSensor(act = new SwitchAction(n, (a) -> {
                 nextAction = a;
                 return true;
-            }, IntStream.range(0, actions).mapToObj(a -> $.inh($.the(a), env.id)).toArray(Term[]::new))
+            }, IntStream.range(0, actions).mapToObj(i -> $.inh($.the(i), env.id)).toArray(Term[]::new))
         );
 
         this.env.reward(()->nextReward);

@@ -33,7 +33,8 @@ class JTarTest {
 	private static final int BUFFER = 2048;
 
 	private File dir;
-	static final File tartest, tartestGZ;
+	static final File tartest;
+    static final File tartestGZ;
 
 	static {
 		try {
@@ -157,14 +158,12 @@ class JTarTest {
 		rif.close();
 	}
 	
-	private void untar(TarInputStream tis, String destFolder) throws IOException {
+	private static void untar(TarInputStream tis, String destFolder) throws IOException {
 		BufferedOutputStream dest = null;
 
 		TarEntry entry;
 		while ((entry = tis.getNextEntry()) != null) {
 			System.out.println("Extracting: " + entry.getName());
-			int count;
-			byte data[] = new byte[BUFFER];
 
 			if (entry.isDirectory()) {
 				new File(destFolder + '/' + entry.getName()).mkdirs();
@@ -179,6 +178,8 @@ class JTarTest {
 			FileOutputStream fos = new FileOutputStream(destFolder + '/' + entry.getName());
 			dest = new BufferedOutputStream(fos);
 
+			byte[] data = new byte[BUFFER];
+			int count;
 			while ((count = tis.read(data)) != -1) {
 				dest.write(data, 0, count);
 			}
@@ -188,8 +189,7 @@ class JTarTest {
 		}
 	}
 
-	private void tarFolder(String parent, String path, TarOutputStream out) throws IOException {
-		BufferedInputStream origin = null;
+	private static void tarFolder(String parent, String path, TarOutputStream out) throws IOException {
 		File f = new File(path);
 		String files[] = f.list();
 
@@ -201,10 +201,10 @@ class JTarTest {
 
 		parent = ((parent == null) ? (f.isFile()) ? "" : f.getName() + '/' : parent + f.getName() + '/');
 
+		BufferedInputStream origin = null;
 		for (int i = 0; i < files.length; i++) {
 			System.out.println("Adding: " + files[i]);
 			File fe = f;
-			byte data[] = new byte[BUFFER];
 
 			if (f.isDirectory()) {
 				fe = new File(f, files[i]);
@@ -228,6 +228,7 @@ class JTarTest {
 
 			int count;
 
+			byte[] data = new byte[BUFFER];
 			while ((count = origin.read(data)) != -1) {
 				out.write(data, 0, count);
 			}
@@ -264,7 +265,7 @@ class JTarTest {
 		assertTrue(fileEntry.equals(createdEntry));
 	}
 
-	private void assertFileContents(File destFolder) throws IOException {
+	private static void assertFileContents(File destFolder) throws IOException {
 		assertEquals("HPeX2kD5kSTc7pzCDX", TARTestUtils.readFile(new File(destFolder, "tartest/one")));
 		assertEquals("gTzyuQjfhrnyX9cTBSy", TARTestUtils.readFile(new File(destFolder, "tartest/two")));
 		assertEquals("KG889vdgjPHQXUEXCqrr", TARTestUtils.readFile(new File(destFolder, "tartest/three")));

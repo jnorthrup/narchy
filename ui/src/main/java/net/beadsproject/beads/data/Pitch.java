@@ -46,7 +46,6 @@ public abstract class Pitch {
      */
     private static int forceToScale(int pitch, int[] scale, int notesPerOctave) {
         int pitchClass = pitch % notesPerOctave;
-        int register = pitch / notesPerOctave;
         int newPitchClass = -1;
         for (int i = scale.length - 1; i >= 0; i--) {
             if (pitchClass >= scale[i]) {
@@ -57,6 +56,7 @@ public abstract class Pitch {
         if (newPitchClass == -1) {
             newPitchClass = pitchClass;
         }
+        int register = pitch / notesPerOctave;
         return register * notesPerOctave + newPitchClass;
     }
 

@@ -485,16 +485,16 @@ public class VID extends Globals {
 	};
 
 	static void initModeList() {
-	        final List<MonitorMode> modes = re.getModeList();
-                final ArrayList<String> fs_resolutions_list = new ArrayList<>();
-                final ArrayList<vidmode_t> fs_modes_list = new ArrayList<>();
-                final HashSet<DimensionImmutable> resSet = new HashSet<>();
+	        List<MonitorMode> modes = re.getModeList();
+                ArrayList<String> fs_resolutions_list = new ArrayList<>();
+                ArrayList<vidmode_t> fs_modes_list = new ArrayList<>();
+                HashSet<DimensionImmutable> resSet = new HashSet<>();
 		for (int i = 0; i < modes.size(); i++) {
-		    final MonitorMode mm = modes.get(modes.size() - 1 - i); 
-                    final SurfaceSize ss = mm.getSurfaceSize();
-                    final DimensionImmutable m = ss.getResolution();
+		    MonitorMode mm = modes.get(modes.size() - 1 - i);
+                    SurfaceSize ss = mm.getSurfaceSize();
+                    DimensionImmutable m = ss.getResolution();
                     if( resSet.add(m) ) {
-                        final StringBuilder sb = new StringBuilder();
+                        StringBuilder sb = new StringBuilder();
 			sb.append('[');
 			sb.append(m.getWidth());
 			sb.append(' ');
@@ -743,9 +743,8 @@ public class VID extends Globals {
 	static String MenuKey( int key )
 	{
 		Menu.menuframework_s m = s_current_menu;
-		final String sound = "misc/menu1.wav";
 
-		switch ( key )
+        switch ( key )
 		{
 		case K_ESCAPE:
 			Menu.PopMenu();
@@ -769,7 +768,8 @@ public class VID extends Globals {
 			break;
 		}
 
-		return sound;
+        final String sound = "misc/menu1.wav";
+        return sound;
 	}
 
 }

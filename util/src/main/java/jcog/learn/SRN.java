@@ -85,7 +85,7 @@ public class SRN  {
         return propagate(doubles);
     }
 
-    protected double[][] copy(double[][] original) {
+    protected static double[][] copy(double[][] original) {
         double[][] copy = new double[original.length][original[0].length];
         for (int i = 0; i < original.length; i++) {
             System.arraycopy(original[i], 0, copy[i], 0, original[i].length);
@@ -105,7 +105,7 @@ public class SRN  {
         }
     }
 
-    protected void propagateOneStep(double[] fromLayer, double[] toLayer, double[][] connections) {
+    protected static void propagateOneStep(double[] fromLayer, double[] toLayer, double[][] connections) {
         for (int from = 0; from < fromLayer.length; from++) {
             for (int to = 0; to < toLayer.length; to++) {
                 toLayer[to] += fromLayer[from] * connections[from][to];
@@ -113,11 +113,11 @@ public class SRN  {
         }
     }
 
-    protected void clear(double[] array) {
+    protected static void clear(double[] array) {
 		Arrays.fill(array, 0);
     }
 
-    protected void tanh(double[] array) {
+    protected static void tanh(double[] array) {
         for (int i = 0; i < array.length; i++) {
             array[i] = Math.tanh(array[i]);
         }

@@ -26,6 +26,7 @@ import jcog.tree.rtree.point.DoubleND;
 import jcog.util.ArrayUtil;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -56,7 +57,7 @@ public class HyperRectDouble implements HyperRegion, Serializable {
         max = VOID;
     }
 
-    public HyperRectDouble(final DoubleND p) {
+    public HyperRectDouble(DoubleND p) {
         min = p;
         max = p;
     }
@@ -70,7 +71,7 @@ public class HyperRectDouble implements HyperRegion, Serializable {
         return (maxOrMin ? max : min).coord[dimension];
     }
 
-    public HyperRectDouble(final DoubleND a, final DoubleND b) {
+    public HyperRectDouble(DoubleND a, DoubleND b) {
         int dim = a.dim();
 
         double[] min = new double[dim];
@@ -128,8 +129,8 @@ public class HyperRectDouble implements HyperRegion, Serializable {
     }
 
     @Override
-    public HyperRegion mbr(final HyperRegion r) {
-        final HyperRectDouble x = (HyperRectDouble) r;
+    public HyperRegion mbr(HyperRegion r) {
+        HyperRectDouble x = (HyperRectDouble) r;
 
         int dim = dim();
         double[] newMin = new double[dim];
@@ -161,7 +162,14 @@ public class HyperRectDouble implements HyperRegion, Serializable {
 
     public DoubleND center() {
         int dim = dim();
-        double[] c = IntStream.range(0, dim).mapToDouble(this::centerF).toArray();
+        double[] c = new double[10];
+        int count = 0;
+        for (int i = 0; i < dim; i++) {
+            double v = centerF(i);
+            if (c.length == count) c = Arrays.copyOf(c, count * 2);
+            c[count++] = v;
+        }
+        c = Arrays.copyOfRange(c, 0, count);
         return new DoubleND(c);
     }
 
@@ -172,7 +180,7 @@ public class HyperRectDouble implements HyperRegion, Serializable {
     }
 
     @Override
-    public double range(final int dim) {
+    public double range(int dim) {
         double min = this.min.coord[dim];
         double max = this.max.coord[dim];
         if (min == max)
@@ -210,7 +218,7 @@ public class HyperRectDouble implements HyperRegion, Serializable {
     public static final class Builder<X extends HyperRectDouble> implements Function<X, HyperRegion> {
 
         @Override
-        public X apply(final X rect2D) {
+        public X apply(X rect2D) {
             return rect2D;
         }
 

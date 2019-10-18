@@ -29,9 +29,14 @@ public class CPG {
 
         float input;
 
-        float y, yp, yn;
+        float y;
+        float yp;
+        float yn;
         float gain = 0.05f;//input weight
-        float v1, v2, xp, xn; // state variables
+        float v1;
+        float v2;
+        float xp;
+        float xn; // state variables
 
         float bi =
                 //2.0f;
@@ -45,13 +50,16 @@ public class CPG {
 //        float tau2 = 0.6f; // tau1:tau2 controls shape of osc (stable in range 0.1 - 0.5)
         float tau_R =
                 //0.05f,
-                1f,
-            tau_A = 2f;
+                1f;
+        float tau_A = 2f;
 
         float Si = 0.1f; // controls amplitude of oscillation
 
         //        float dt = 0.005f; // euler step size
-        float dx1, dx2, dv1, dv2; // tmp vars for euler approximation
+        float dx1;
+        float dx2;
+        float dv1;
+        float dv2; // tmp vars for euler approximation
 
 
         // to model periodic input
@@ -89,10 +97,10 @@ public class CPG {
             dv2 = (yn - v2) / tau_A; //(max(xn, 0.0f) - v2) / tau2;
 
             // update state vars (Euler)
-            xp = xp + dx1 * dt;
-            xn = xn + dx2 * dt;
-            v1 = v1 + dv1 * dt;
-            v2 = v2 + dv2 * dt;
+            xp += dx1 * dt;
+            xn += dx2 * dt;
+            v1 += dv1 * dt;
+            v2 += dv2 * dt;
 
             //  Calc outputs each neuron using new vals
             yp = Util.clamp(xp, -1, +1); //max(xp, 0.0f);
@@ -101,7 +109,7 @@ public class CPG {
             //  and the final output
             y = yp - yn;
 
-            t = t + dt;
+            t += dt;
         }
 
         /*
@@ -156,7 +164,7 @@ public class CPG {
     }
 
     public static void main(String[] args) {
-        final AtomicFloat nextInput = new AtomicFloat(), nextOutput = new AtomicFloat();
+        AtomicFloat nextInput = new AtomicFloat(), nextOutput = new AtomicFloat();
         Plot2D p = new Plot2D(4200, Plot2D.Line)
                 .add("input", nextInput::floatValue)
                 .add("output", nextOutput::floatValue)

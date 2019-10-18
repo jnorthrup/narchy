@@ -65,7 +65,7 @@ public class ConstantVolumeJoint extends Joint {
 
         float[] targetLengths = new float[n];
         for (int i = 0; i < targetLengths.length; ++i) {
-            final int next = (i == targetLengths.length - 1) ? 0 : i + 1;
+            int next = (i == targetLengths.length - 1) ? 0 : i + 1;
             float dist = bodies[i].getWorldCenter().subClone(bodies[next].getWorldCenter()).length();
             targetLengths[i] = dist;
         }
@@ -76,10 +76,10 @@ public class ConstantVolumeJoint extends Joint {
                     "Incorrect joint definition.  Joints have to correspond to the bodies");
         }
         if (def.joints == null) {
-            final DistanceJointDef djd = new DistanceJointDef();
+            DistanceJointDef djd = new DistanceJointDef();
             distanceJoints = new DistanceJoint[bodies.length];
             for (int i = 0; i < targetLengths.length; ++i) {
-                final int next = (i == targetLengths.length - 1) ? 0 : i + 1;
+                int next = (i == targetLengths.length - 1) ? 0 : i + 1;
                 djd.frequencyHz = def.frequencyHz;
                 djd.dampingRatio = def.dampingRatio;
                 djd.collideConnected = def.collideConnected;
@@ -107,7 +107,7 @@ public class ConstantVolumeJoint extends Joint {
     private float getBodyArea() {
         float area = 0.0f;
         for (int i = 0; i < bodies.length; ++i) {
-            final int next = (i == bodies.length - 1) ? 0 : i + 1;
+            int next = (i == bodies.length - 1) ? 0 : i + 1;
             v2 ic = bodies[i].getWorldCenter();
             v2 nc = bodies[next].getWorldCenter();
             area += ic.x * nc.y - nc.x * ic.y;
@@ -119,7 +119,7 @@ public class ConstantVolumeJoint extends Joint {
     private float getSolverArea(v2[] positions) {
         float area = 0.0f;
         for (int i = 0; i < bodies.length; ++i) {
-            final int next = (i == bodies.length - 1) ? 0 : i + 1;
+            int next = (i == bodies.length - 1) ? 0 : i + 1;
             v2 pi = positions[bodies[i].island];
             v2 pn = positions[bodies[next].island];
             area += pi.x * pn.y - pn.x * pi.y;
@@ -131,17 +131,17 @@ public class ConstantVolumeJoint extends Joint {
     private boolean constrainEdges(v2[] positions) {
         float perimeter = 0.0f;
         for (int i = 0; i < bodies.length; ++i) {
-            final int next = (i == bodies.length - 1) ? 0 : i + 1;
+            int next = (i == bodies.length - 1) ? 0 : i + 1;
             v2 pn = positions[bodies[next].island];
             v2 pi = positions[bodies[i].island];
             float dx = pn.x - pi.x;
             float dy = pn.y - pi.y;
-            float distSq = (dx * dx + dy * dy), dist;
+            float distSq = (dx * dx + dy * dy);
             v2 ni = normals[i];
             if (distSq < Settings.EPSILONsqr) {
                 ni.setZero();
             } else {
-                dist = (float) Math.sqrt(distSq);
+                float dist = (float) Math.sqrt(distSq);
 
                 ni.x = dy / dist;
                 ni.y = -dx / dist;
@@ -150,14 +150,14 @@ public class ConstantVolumeJoint extends Joint {
 
         }
 
-        final v2 delta = pool.popVec2();
+        v2 delta = pool.popVec2();
 
         float deltaArea = targetVolume - getSolverArea(positions);
         float toExtrude = 0.5f * deltaArea / perimeter;
 
         boolean done = true;
         for (int i = 0; i < bodies.length; ++i) {
-            final int next = (i == bodies.length - 1) ? 0 : i + 1;
+            int next = (i == bodies.length - 1) ? 0 : i + 1;
             delta.set(toExtrude * (normals[i].x + normals[next].x), toExtrude
                     * (normals[i].y + normals[next].y));
 
@@ -180,14 +180,14 @@ public class ConstantVolumeJoint extends Joint {
     }
 
     @Override
-    public void initVelocityConstraints(final SolverData step) {
+    public void initVelocityConstraints(SolverData step) {
         v2[] velocities = step.velocities;
         v2[] positions = step.positions;
-        final v2[] d = pool.getVec2Array(bodies.length);
+        v2[] d = pool.getVec2Array(bodies.length);
 
         for (int i = 0; i < bodies.length; ++i) {
-            final int prev = (i == 0) ? bodies.length - 1 : i - 1;
-            final int next = (i == bodies.length - 1) ? 0 : i + 1;
+            int prev = (i == 0) ? bodies.length - 1 : i - 1;
+            int next = (i == bodies.length - 1) ? 0 : i + 1;
             d[i].set(positions[bodies[next].island]);
             d[i].subbed(positions[bodies[prev].island]);
         }
@@ -211,17 +211,17 @@ public class ConstantVolumeJoint extends Joint {
     }
 
     @Override
-    public void solveVelocityConstraints(final SolverData step) {
+    public void solveVelocityConstraints(SolverData step) {
         float crossMassSum = 0.0f;
         float dotMassSum = 0.0f;
 
         v2[] velocities = step.velocities;
         v2[] positions = step.positions;
-        final v2[] d = pool.getVec2Array(bodies.length);
+        v2[] d = pool.getVec2Array(bodies.length);
 
         for (int i = 0; i < bodies.length; ++i) {
-            final int prev = (i == 0) ? bodies.length - 1 : i - 1;
-            final int next = (i == bodies.length - 1) ? 0 : i + 1;
+            int prev = (i == 0) ? bodies.length - 1 : i - 1;
+            int next = (i == bodies.length - 1) ? 0 : i + 1;
             d[i].set(positions[bodies[next].island]);
             d[i].subbed(positions[bodies[prev].island]);
             dotMassSum += (d[i].lengthSquared()) / bodies[i].getMass();

@@ -219,9 +219,7 @@ public enum MetaGoal {
 
         public Report add(Iterable<Cause> cc) {
 
-            cc.forEach(c -> {
-
-//                int i = 0;
+            for (Cause c : cc) {//                int i = 0;
 //                MetaGoal[] values = MetaGoal.values();
                 //TODO
 //                for (Credit t : c.credit) {
@@ -237,7 +235,7 @@ public enum MetaGoal {
 //                    i++;
 //                }
 
-            });
+            }
             return this;
         }
 

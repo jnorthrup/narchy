@@ -49,7 +49,7 @@ public class QuadraticSplit<X> implements Split<X> {
                 HyperRegion ij = iiMbr.apply(jj);
                 double jjc = COST[j];
                 double ijc = (ij==ii ? iic : (ij ==jj ? jjc : ij.cost())); //assert(ijc >= iic && ijc >= iic);
-                final double waste = (ijc - iic) + (ijc - jjc);
+                double waste = (ijc - iic) + (ijc - jjc);
                 if (waste > maxWaste) {
                     r1 = i;
                     r2 = j;

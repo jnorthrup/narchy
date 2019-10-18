@@ -126,8 +126,8 @@ public class GameFunc {
                         - moveinfo.decel_distance;
                 float p2_distance = moveinfo.move_speed
                         * (1.0f - (p1_distance / moveinfo.move_speed));
-                float distance = p1_distance + p2_distance;
                 moveinfo.current_speed = moveinfo.move_speed;
+                float distance = p1_distance + p2_distance;
                 moveinfo.next_speed = moveinfo.move_speed - moveinfo.decel
                         * (p2_distance / distance);
                 return;
@@ -176,7 +176,6 @@ public class GameFunc {
     }
 
     static void plat_spawn_inside_trigger(edict_t ent) {
-        float[] tmin = { 0, 0, 0 }, tmax = { 0, 0, 0 };
 
 
         edict_t trigger = GameUtil.G_Spawn();
@@ -185,10 +184,12 @@ public class GameFunc {
         trigger.solid = Defines.SOLID_TRIGGER;
         trigger.enemy = ent;
 
+        float[] tmin = {0, 0, 0};
         tmin[0] = ent.mins[0] + 25;
         tmin[1] = ent.mins[1] + 25;
         tmin[2] = ent.mins[2];
 
+        float[] tmax = {0, 0, 0};
         tmax[0] = ent.maxs[0] - 25;
         tmax[1] = ent.maxs[1] - 25;
         tmax[2] = ent.maxs[2] + 8;
@@ -323,13 +324,13 @@ public class GameFunc {
      */
 
     static void door_use_areaportals(edict_t self, boolean open) {
-        edict_t t = null;
 
         if (self.target == null)
             return;
 
         EdictIterator edit = null;
 
+        edict_t t = null;
         while ((edit = GameBase
                 .G_Find(edit, GameBase.findByTarget, self.target)) != null) {
             t = edit.o;
@@ -382,7 +383,6 @@ public class GameFunc {
      */
 
     static void SP_func_water(edict_t self) {
-        float[] abs_movedir = { 0, 0, 0 };
 
         GameBase.G_SetMovedir(self.s.angles, self.movedir);
         self.movetype = Defines.MOVETYPE_PUSH;
@@ -410,6 +410,7 @@ public class GameFunc {
 
         
         Math3D.VectorCopy(self.s.origin, self.pos1);
+        float[] abs_movedir = {0, 0, 0};
         abs_movedir[0] = Math.abs(self.movedir[0]);
         abs_movedir[1] = Math.abs(self.movedir[1]);
         abs_movedir[2] = Math.abs(self.movedir[2]);
@@ -884,10 +885,11 @@ public class GameFunc {
         @Override
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
-            if (IntStream.of(0, 1, 2).anyMatch(i -> self.avelocity[i] != 0))
+            if (IntStream.of(0, 1, 2).anyMatch(i -> self.avelocity[i] != 0)) {
                 GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
                         Defines.MOD_CRUSH);
+            }
         }
     };
 
@@ -1097,7 +1099,6 @@ public class GameFunc {
         public String getID() { return "sp_func_button";}
         @Override
         public boolean think(edict_t ent) {
-            float[] abs_movedir = { 0, 0, 0 };
 
             GameBase.G_SetMovedir(ent.s.angles, ent.movedir);
             ent.movetype = Defines.MOVETYPE_STOP;
@@ -1121,6 +1122,7 @@ public class GameFunc {
                 GameBase.st.lip = 4;
 
             Math3D.VectorCopy(ent.s.origin, ent.pos1);
+            float[] abs_movedir = {0, 0, 0};
             abs_movedir[0] = Math.abs(ent.movedir[0]);
             abs_movedir[1] = Math.abs(ent.movedir[1]);
             abs_movedir[2] = Math.abs(ent.movedir[2]);
@@ -1227,11 +1229,11 @@ public class GameFunc {
         public String getID() { return "door_use";}
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
-            edict_t ent;
 
             if ((self.flags & Defines.FL_TEAMSLAVE) != 0)
                 return;
 
+            edict_t ent;
             if ((self.spawnflags & DOOR_TOGGLE) != 0) {
                 if (self.moveinfo.state == STATE_UP
                         || self.moveinfo.state == STATE_TOP) {
@@ -1284,18 +1286,15 @@ public class GameFunc {
         public String getID() { return "think_calc_movespeed";}
         @Override
         public boolean think(edict_t self) {
-            edict_t ent;
-            float newspeed;
-            float ratio;
-            float dist;
 
             if ((self.flags & Defines.FL_TEAMSLAVE) != 0)
                 return true;
 
 
             float min = Math.abs(self.moveinfo.distance);
+            edict_t ent;
             for (ent = self.teamchain; ent != null; ent = ent.teamchain) {
-                dist = Math.abs(ent.moveinfo.distance);
+                float dist = Math.abs(ent.moveinfo.distance);
                 if (dist < min)
                     min = dist;
             }
@@ -1304,8 +1303,8 @@ public class GameFunc {
 
             
             for (ent = self; ent != null; ent = ent.teamchain) {
-                newspeed = Math.abs(ent.moveinfo.distance) / time;
-                ratio = newspeed / ent.moveinfo.speed;
+                float newspeed = Math.abs(ent.moveinfo.distance) / time;
+                float ratio = newspeed / ent.moveinfo.speed;
                 if (ent.moveinfo.accel == ent.moveinfo.speed)
                     ent.moveinfo.accel = newspeed;
                 else
@@ -1325,15 +1324,16 @@ public class GameFunc {
         public String getID() { return "think_spawn_door_trigger";}
         @Override
         public boolean think(edict_t ent) {
-            edict_t other;
-            float[] mins = { 0, 0, 0 }, maxs = { 0, 0, 0 };
 
             if ((ent.flags & Defines.FL_TEAMSLAVE) != 0)
-                return true; 
+                return true;
 
+            float[] mins = {0, 0, 0};
             Math3D.VectorCopy(ent.absmin, mins);
+            float[] maxs = {0, 0, 0};
             Math3D.VectorCopy(ent.absmax, maxs);
 
+            edict_t other;
             for (other = ent.teamchain; other != null; other = other.teamchain) {
                 GameBase.AddPointToBounds(other.absmin, mins, maxs);
                 GameBase.AddPointToBounds(other.absmax, mins, maxs);
@@ -1367,7 +1367,6 @@ public class GameFunc {
         public String getID() { return "door_blocked";}
         @Override
         public void blocked(edict_t self, edict_t other) {
-            edict_t ent;
 
             if (0 == (other.svflags & Defines.SVF_MONSTER)
                     && (null == other.client)) {
@@ -1392,6 +1391,7 @@ public class GameFunc {
             
             
             if (self.moveinfo.wait >= 0) {
+                edict_t ent;
                 if (self.moveinfo.state == STATE_DOWN) {
                     for (ent = self.teammaster; ent != null; ent = ent.teamchain)
                         door_go_up(ent, ent.activator);
@@ -1409,9 +1409,8 @@ public class GameFunc {
         @Override
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
-            edict_t ent;
 
-            for (ent = self.teammaster; ent != null; ent = ent.teamchain) {
+            for (edict_t ent = self.teammaster; ent != null; ent = ent.teamchain) {
                 ent.health = ent.max_health;
                 ent.takedamage = Defines.DAMAGE_NO;
             }
@@ -1443,7 +1442,6 @@ public class GameFunc {
         public String getID() { return "sp_func_door";}
         @Override
         public boolean think(edict_t ent) {
-            float[] abs_movedir = { 0, 0, 0 };
 
             if (ent.sounds != 1) {
                 ent.moveinfo.sound_start = game_import_t
@@ -1481,6 +1479,7 @@ public class GameFunc {
 
             
             Math3D.VectorCopy(ent.s.origin, ent.pos1);
+            float[] abs_movedir = {0, 0, 0};
             abs_movedir[0] = Math.abs(ent.movedir[0]);
             abs_movedir[1] = Math.abs(ent.movedir[1]);
             abs_movedir[2] = Math.abs(ent.movedir[2]);
@@ -1771,7 +1770,6 @@ public class GameFunc {
         @Override
         public boolean think(edict_t self) {
             edict_t ent = null;
-            float[] dest = { 0, 0, 0 };
 
             boolean first = true;
 
@@ -1821,6 +1819,7 @@ public class GameFunc {
                 self.s.sound = self.moveinfo.sound_middle;
             }
 
+            float[] dest = {0, 0, 0};
             Math3D.VectorSubtract(ent.s.origin, self.mins, dest);
             self.moveinfo.state = STATE_TOP;
             Math3D.VectorCopy(self.s.origin, self.moveinfo.start_origin);
@@ -2209,8 +2208,6 @@ public class GameFunc {
         public String getID() { return "sp_func_door_secret";}
         @Override
         public boolean think(edict_t ent) {
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
-            float width;
 
             ent.moveinfo.sound_start = game_import_t
                     .soundindex("doors/dr1_strt.wav");
@@ -2241,10 +2238,14 @@ public class GameFunc {
 
             ent.moveinfo.accel = ent.moveinfo.decel = ent.moveinfo.speed = 50;
 
-            
+
+            float[] up = {0, 0, 0};
+            float[] right = {0, 0, 0};
+            float[] forward = {0, 0, 0};
             Math3D.AngleVectors(ent.s.angles, forward, right, up);
             Math3D.VectorClear(ent.s.angles);
             float side = 1.0f - (ent.spawnflags & SECRET_1ST_LEFT);
+            float width;
             if ((ent.spawnflags & SECRET_1ST_DOWN) != 0)
                 width = Math.abs(Math3D.DotProduct(up, ent.size));
             else

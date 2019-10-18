@@ -30,7 +30,8 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
     /**
      * current estimate
      */
-    protected @Nullable Truth actionTruth, beliefTruth;
+    protected @Nullable Truth actionTruth;
+    protected @Nullable Truth beliefTruth;
 
     /**
      * instantaneous truth (implemented as avg truth integrated over a finite present-moment answer interval)
@@ -111,7 +112,8 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
         if (t.isEmpty())
             return null;
 
-        int limit = componentsMax, tries = (int)Math.ceil(limit * NAL.ANSWER_TRYING);
+        int limit = componentsMax;
+        int tries = (int)Math.ceil(limit * NAL.ANSWER_TRYING);
 
         long s = g.start+shift, e = g.end+shift;
         Answer a = Answer.taskStrength(true, limit, s, e, term, null, g.x.nar);
@@ -148,7 +150,8 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
     /** returns feedback truth value */
     protected abstract @Nullable Truth updateAction(@Nullable Truth beliefTruth, @Nullable Truth actionTruth, Game g);
 
-    private  @Nullable Truth truth(@Nullable TruthProjection t, When when, int shift) {
+    private  @Nullable
+    static Truth truth(@Nullable TruthProjection t, When when, int shift) {
         return t!=null ?
             t.truth(when.start + shift, when.end + shift, NAL.truth.EVI_MIN,
             false, false, null) :

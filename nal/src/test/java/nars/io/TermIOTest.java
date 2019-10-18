@@ -34,7 +34,7 @@ class TermIOTest {
 //    private final NAR nar = NARS.shell();
     final DummyNAL nal = new DummyNAL();
 
-    private byte[] assertEqualSerialize(@NotNull String orig) throws Narsese.NarseseException, IOException {
+    private static byte[] assertEqualSerialize(@NotNull String orig) throws Narsese.NarseseException, IOException {
         return assertEqualSerialize($.$(orig).term());
     }
 

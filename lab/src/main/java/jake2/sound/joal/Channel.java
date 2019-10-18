@@ -109,12 +109,12 @@ public class Channel {
         
 	    Channel.al = al;
 		Channel.buffers = buffers;
-	    
-		int sourceId;
-		numChannels = 0;
+
+        numChannels = 0;
 		for (int i = 0; i < MAX_CHANNELS; i++) {
-			
-		    try {
+
+            int sourceId;
+            try {
                         al.alGetError(); 
 			al.alGenSources(1, tmp, 0);
 			sourceId = tmp[0];
@@ -296,10 +296,9 @@ public class Channel {
 	}
 	
 	private static Channel pickForLoop(int bufferId, float attenuation) {
-        Channel ch;
         for (int i = 0; i < numChannels; i++) {
-            ch = channels[i];
-            
+            Channel ch = channels[i];
+
             if (!ch.active) {
                 ch.entnum = 0;
                 ch.entchannel = 0;
@@ -321,16 +320,13 @@ public class Channel {
 	private static final float[] sourceOrigin = {0, 0, 0};
 
 	static void playAllSounds(float[] listenerOrigin) {
-		Channel ch;
-		int sourceId;
-		int state;
         int[] tmp = {0};
 
 		for (int i = 0; i < numChannels; i++) {
-			ch = channels[i];
-			if (ch.active) {
-				sourceId = ch.sourceId;
-				switch (ch.type) {
+            Channel ch = channels[i];
+            if (ch.active) {
+                int sourceId = ch.sourceId;
+                switch (ch.type) {
 					case Channel.LISTENER:
 						Math3D.VectorCopy(listenerOrigin, sourceOrigin);
 						break;
@@ -362,7 +358,7 @@ public class Channel {
 					ch.modified = false;
 				} else {
 					al.alGetSourcei(sourceId, ALConstants.AL_SOURCE_STATE, tmp , 0);
-					state = tmp[0];
+                    int state = tmp[0];
                     if (state == ALConstants.AL_PLAYING) {
 						al.alSourcefv(sourceId, ALConstants.AL_POSITION, sourceOrigin, 0);
 					} else {
@@ -386,38 +382,32 @@ public class Channel {
 			removeUnusedLoopSounds();
 			return;
 		}
-		
-		Channel ch;
-		sfx_t	sfx;
-		sfxcache_t sc;
-		int num;
-		entity_state_t ent;
-		Integer key;
-		int sound = 0;
+
+        int sound = 0;
 
 		for (int i=0 ; i<Globals.cl.frame.num_entities ; i++) {
-			num = (Globals.cl.frame.parse_entities + i)&(Defines.MAX_PARSE_ENTITIES-1);
-			ent = Globals.cl_parse_entities[num];
-			sound = ent.sound;
+            int num = (Globals.cl.frame.parse_entities + i) & (Defines.MAX_PARSE_ENTITIES - 1);
+            entity_state_t ent = Globals.cl_parse_entities[num];
+            sound = ent.sound;
 
 			if (sound == 0) continue;
 
-			key = ent.number;
-			ch = looptable.get(key);
+            Integer key = ent.number;
+            Channel ch = looptable.get(key);
 
-			if (ch != null) {
+            if (ch != null) {
 				
 				ch.autosound = true;
 				Math3D.VectorCopy(ent.origin, ch.origin);
 				continue;
 			}
 
-			sfx = Globals.cl.sound_precache[sound];
-			if (sfx == null)
-				continue;		
+            sfx_t sfx = Globals.cl.sound_precache[sound];
+            if (sfx == null)
+				continue;
 
-			sc = sfx.cache;
-			if (sc == null)
+            sfxcache_t sc = sfx.cache;
+            if (sc == null)
 				continue;
 
 			
@@ -438,11 +428,10 @@ public class Channel {
 	}
 	
 	private static void removeUnusedLoopSounds() {
-		Channel ch;
-		
-		for (Iterator <Channel> iter = looptable.values().iterator(); iter.hasNext();) {
-			ch = iter.next();
-			if (!ch.autosound) {
+
+        for (Iterator <Channel> iter = looptable.values().iterator(); iter.hasNext();) {
+            Channel ch = iter.next();
+            if (!ch.autosound) {
 				al.alSourceStop(ch.sourceId);
 				al.alSourcei(ch.sourceId, ALConstants.AL_LOOPING, ALConstants.AL_FALSE);
 				iter.remove();

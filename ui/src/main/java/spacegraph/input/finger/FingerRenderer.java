@@ -26,7 +26,7 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
 
             float speed = lastPixel.distance(posPixel);
 
-            float cw = 32f + speedFilter.valueOf(speed)/1f, ch = cw;
+            float cw = 32f + speedFilter.valueOf(speed)/1f;
 
             gl.glPushMatrix();
 
@@ -53,6 +53,7 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
                 gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
                 gl.glLineWidth(3f);
                 gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
+                float ch = cw;
                 Draw.line(0, -ch, 0, -ch / 2, gl);
                 Draw.line(0, ch / 2, 0, ch, gl);
                 Draw.line(-cw, 0, -cw / 2, 0, gl);
@@ -119,7 +120,7 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
             gl.glPopMatrix();
         }
 
-        protected void drawTri(float rad, GL2 gl) {
+        protected static void drawTri(float rad, GL2 gl) {
             float w = rad/2;
             float x1 = rad * 0.5f;
             float x2 = rad * 1f;

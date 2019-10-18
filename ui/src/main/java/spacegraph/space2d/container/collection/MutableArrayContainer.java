@@ -96,7 +96,8 @@ public abstract class MutableArrayContainer<S extends Surface> extends AbstractM
     @Override
     public int childrenCount() {
         int l = this.length;
-        int count = (int) IntStream.range(0, l).filter(i -> children.getFast(i) != null).count();
+        long result = IntStream.range(0, l).filter(i -> children.getFast(i) != null).count();
+        int count = (int) result;
         return count;
     }
 
@@ -118,7 +119,8 @@ public abstract class MutableArrayContainer<S extends Surface> extends AbstractM
 
     @Override
     public boolean whileEach(Predicate<Surface> o) {
-        return IntStream.range(0, length).mapToObj(children::getFast).filter(Objects::nonNull).allMatch(o);
+        int bound = length;
+        return IntStream.range(0, bound).mapToObj(children::getFast).filter(Objects::nonNull).allMatch(o::test);
     }
 
     @Override

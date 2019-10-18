@@ -45,7 +45,7 @@ public class CoffeeParser {
 	 * @return a parser that will recognize and build a 
 	 *         <code>Coffee</object> from a textual description.
 	 */
-    private Parser coffee() {
+    private static Parser coffee() {
 		Symbol comma = new Symbol(',');
 		comma.ok();
 		Seq s = new Seq();
@@ -67,7 +67,7 @@ public class CoffeeParser {
 	 * Use a CountryAssembler to update the target coffee 
 	 * object.
 	 */
-    private Parser country() {
+    private static Parser country() {
 		return new Word().put(new CountryAssembler());
 	}
 
@@ -79,7 +79,7 @@ public class CoffeeParser {
 	 * Use a FormerNameAssembler to update the target coffee 
 	 * object.
 	 */
-    private Parser formerName() {
+    private static Parser formerName() {
 		Seq s = new Seq();
 		s.get(new Symbol('(').ok());
 		s.get(new Word().put(new FormerNameAssembler()));
@@ -96,7 +96,7 @@ public class CoffeeParser {
 	 * with the recognized Word; formerName also uses an
 	 * assembler.
 	 */
-    private Parser name() {
+    private static Parser name() {
 		Seq s = new Seq();
 		s.get(new Word().put(new NameAssembler()));
 		Alternation a = new Alternation();
@@ -114,7 +114,7 @@ public class CoffeeParser {
 	 * Use an AlsoFrenchAssembler to update the target coffee 
 	 * object.
 	 */
-    private Parser orFrench() {
+    private static Parser orFrench() {
 		Seq s = new Seq();
 		s.get(new Symbol('/').ok());
 		s.get(new CaselessLiteral("french").ok());
@@ -129,7 +129,7 @@ public class CoffeeParser {
 	 *
 	 * Use a PriceAssembler to update the target coffee object.
 	 */
-    private Parser price() {
+    private static Parser price() {
 		return new Num().put(new PriceAssembler());
 	}
 
@@ -142,7 +142,7 @@ public class CoffeeParser {
 	 * with the recognized Word; orFrench also uses an 
 	 * assembler.
 	 */
-    private Parser roast() {
+    private static Parser roast() {
 		Seq s = new Seq();
 		s.get(new Word().put(new RoastAssembler()));
 		Alternation a = new Alternation();

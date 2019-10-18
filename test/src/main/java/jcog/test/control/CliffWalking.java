@@ -26,12 +26,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * https://github.com/openai/gym/blob/master/gym/envs/toy_text/cliffwalking.py */
 public class CliffWalking extends AbstractAgentTest {
 
-    static final int UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
+    static final int UP = 0;
+    static final int RIGHT = 1;
+    static final int DOWN = 2;
+    static final int LEFT = 3;
 
     //increasing the size of the map increases the complexity
     //final int shapeX = 4, shapeY = 12; //<- original
     //final int shapeX = 3, shapeY = 4; //small
-    final int shapeX = 2, shapeY = 3; //minimum
+    static final int shapeX = 2;
+    static final int shapeY = 3; //minimum
     {
         assert(shapeX > 1);
         assert(shapeY > 2);
@@ -39,12 +43,15 @@ public class CliffWalking extends AbstractAgentTest {
 
     int cycles = 2000;
 
-    final int gx = shapeX-1, gy = shapeY-1;
-    final int sx = shapeX-1, sy = 0;
+    static final int gx = shapeX-1;
+    static final int gy = shapeY-1;
+    static final int sx = shapeX-1;
+    static final int sy = 0;
 
-    int x = sx, y = sy;
+    int x = sx;
+    int y = sy;
 
-    private int index(int x, int y) {
+    private static int index(int x, int y) {
         return shapeX * y + x;
     }
 
@@ -62,7 +69,7 @@ public class CliffWalking extends AbstractAgentTest {
         float reward = 0;
 
         int goals = 0, deaths = 0;
-        final float[] map = new float[shapeX * shapeY];
+        float[] map = new float[shapeX * shapeY];
 
         FloatArrayList episodeReward = new FloatArrayList(2 * cycles/(shapeX*shapeY));
         for (int i = 0; i < cycles; i++) {

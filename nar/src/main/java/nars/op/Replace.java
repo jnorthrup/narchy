@@ -32,11 +32,11 @@ public class Replace extends Functor implements InlineFunctor<Evaluation>, The {
     @Override
     public @Nullable Term apply(Evaluation e, Subterms xx) {
 
-        final Term input = xx.sub(0); 
+        Term input = xx.sub(0);
 
-        final Term x = xx.sub(1); 
+        Term x = xx.sub(1);
 
-        final Term y = xx.sub(2); 
+        Term y = xx.sub(2);
 
         return apply(xx, input, x, y);
     }

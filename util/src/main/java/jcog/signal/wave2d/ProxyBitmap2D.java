@@ -9,7 +9,8 @@ import org.jetbrains.annotations.Nullable;
 public class ProxyBitmap2D implements Bitmap2D {
 
     private Bitmap2D src;
-    private int w,h;
+    private int w;
+    private int h;
 
     public ProxyBitmap2D() {
         set(null);

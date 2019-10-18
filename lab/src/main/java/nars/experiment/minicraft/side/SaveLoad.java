@@ -40,10 +40,10 @@ public class SaveLoad {
 
     @SuppressWarnings("unchecked")
     public static boolean doLoad(SideScrollMinicraft game) {
-        File f = new File("/tmp/MiniCraft.sav");
 
         ObjectInputStream in = null;
         try {
+            File f = new File("/tmp/MiniCraft.sav");
             in = new ObjectInputStream(new FileInputStream(f));
         } catch (InvalidClassException ignored) {
             System.err.println("Save file has the wrong version.");
@@ -60,10 +60,7 @@ public class SaveLoad {
             game.world = (World) in.readObject();
             game.entities = (ArrayList<Entity>) in.readObject();
             in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return false;
         }

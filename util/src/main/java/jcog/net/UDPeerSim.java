@@ -24,9 +24,9 @@ public class UDPeerSim {
 
 
     public UDPeerSim(int population) throws IOException {
-        int port = 10000;
 
         peer = new MyUDPeer[population];
+        int port = 10000;
         for (int i = 0; i < population; i++)
             peer[i] = new MyUDPeer(port, i);
 

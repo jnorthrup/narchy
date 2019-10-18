@@ -200,9 +200,8 @@ public abstract class Surf extends Draw {
 
 		for (int i=0 ; i<MAX_LIGHTMAPS ; i++)
 		{
-			msurface_t surf;
 
-			for ( surf = gl_lms.lightmap_surfaces[i]; surf != null; surf = surf.lightmapchain )
+            for (msurface_t surf = gl_lms.lightmap_surfaces[i]; surf != null; surf = surf.lightmapchain )
 			{
 				glpoly_t p = surf.polys;
 				for ( ; p != null ; p=p.chain)
@@ -264,12 +263,9 @@ public abstract class Surf extends Draw {
 	*/
 	void R_BlendLightmaps()
 	{
-		int i;
-		msurface_t	surf; 
-		msurface_t newdrawsurf = null;
 
-		
-		if (r_fullbright.value != 0)
+
+        if (r_fullbright.value != 0)
 			return;
 		if (r_worldmodel.lightdata == null)
 			return;
@@ -321,7 +317,8 @@ public abstract class Surf extends Draw {
 		/*
 		** render static lightmaps first
 		*/
-		for ( i = 1; i < MAX_LIGHTMAPS; i++ )
+        msurface_t surf;
+        for (int i = 1; i < MAX_LIGHTMAPS; i++ )
 		{
 			if ( gl_lms.lightmap_surfaces[i] != null )
 			{
@@ -353,9 +350,9 @@ public abstract class Surf extends Draw {
 			if (currentmodel == r_worldmodel)
 				c_visible_lightmaps++;
 
-			newdrawsurf = gl_lms.lightmap_surfaces[0];
+            msurface_t newdrawsurf = gl_lms.lightmap_surfaces[0];
 
-			for ( surf = gl_lms.lightmap_surfaces[0]; surf != null; surf = surf.lightmapchain )
+            for ( surf = gl_lms.lightmap_surfaces[0]; surf != null; surf = surf.lightmapchain )
 			{
                 IntBuffer base;
 
@@ -377,13 +374,13 @@ public abstract class Surf extends Draw {
 				}
 				else
 				{
-					msurface_t drawsurf;
 
-					
-					LM_UploadBlock( true );
 
-					
-					for ( drawsurf = newdrawsurf; drawsurf != surf; drawsurf = drawsurf.lightmapchain )
+                    LM_UploadBlock( true );
+
+
+                    msurface_t drawsurf;
+                    for (drawsurf = newdrawsurf; drawsurf != surf; drawsurf = drawsurf.lightmapchain )
 					{
 						if ( drawsurf.polys != null )
 							DrawGLPolyChain( drawsurf.polys, 
@@ -443,10 +440,8 @@ public abstract class Surf extends Draw {
 	*/
 	void R_RenderBrushPoly(msurface_t fa)
 	{
-		int maps;
-        boolean is_dynamic = false;
 
-		c_brush_polys++;
+        c_brush_polys++;
 
         image_t image = R_TextureAnimation(fa.texinfo);
 
@@ -485,7 +480,8 @@ public abstract class Surf extends Draw {
 		/*
 		** check for lightmap modification
 		*/
-		for ( maps = 0; maps < Defines.MAXLIGHTMAPS && fa.styles[maps] != (byte)255; maps++ )
+        int maps;
+        for (maps = 0; maps < Defines.MAXLIGHTMAPS && fa.styles[maps] != (byte)255; maps++ )
 		{
 			if ( r_newrefdef.lightstyles[fa.styles[maps] & 0xFF].white != fa.cached_light[maps] ) {
 				gotoDynamic = true;
@@ -496,8 +492,9 @@ public abstract class Surf extends Draw {
 		
 		if (maps == 4) maps--;
 
-		
-		if ( gotoDynamic || ( fa.dlightframe == r_framecount ) )
+
+        boolean is_dynamic = false;
+        if ( gotoDynamic || ( fa.dlightframe == r_framecount ) )
 		{
 			
 			if ( gl_dynamic.value != 0 )
@@ -557,7 +554,6 @@ public abstract class Surf extends Draw {
     @Override
     void R_DrawAlphaSurfaces()
 	{
-		msurface_t s;
 
 
         r_world_matrix.clear();
@@ -569,7 +565,7 @@ public abstract class Surf extends Draw {
 
         float intens = gl_state.inverse_intensity;
 
-		for (s=r_alpha_surfaces ; s != null ; s=s.texturechain)
+		for (msurface_t s = r_alpha_surfaces; s != null ; s=s.texturechain)
 		{
 			GL_Bind(s.texinfo.image.texnum);
 			c_brush_polys++;
@@ -601,14 +597,14 @@ public abstract class Surf extends Draw {
 	*/
 	void DrawTextureChains()
 	{
-		int i;
-		msurface_t	s;
-		image_t image;
 
-		c_visible_textures = 0;
+        c_visible_textures = 0;
 
 
-		if ( !qglSelectTextureSGIS && !qglActiveTextureARB )
+        image_t image;
+        msurface_t s;
+        int i;
+        if ( !qglSelectTextureSGIS && !qglActiveTextureARB )
 		{
 			for (i = 0; i < numgltextures ; i++)
 			{
@@ -677,12 +673,10 @@ public abstract class Surf extends Draw {
 		int nv = surf.polys.numverts;
 		int map;
 		image_t image = R_TextureAnimation( surf.texinfo );
-		boolean is_dynamic = false;
-		int lmtex = surf.lightmaptexturenum;
-		glpoly_t p;
+        int lmtex = surf.lightmaptexturenum;
 
-		
-		boolean gotoDynamic = false;
+
+        boolean gotoDynamic = false;
 
 		for ( map = 0; map < Defines.MAXLIGHTMAPS && (surf.styles[map] != (byte)255); map++ )
 		{
@@ -695,8 +689,9 @@ public abstract class Surf extends Draw {
 		
 		if (map == 4) map--;
 
-		
-		if ( gotoDynamic || ( surf.dlightframe == r_framecount ) )
+
+        boolean is_dynamic = false;
+        if ( gotoDynamic || ( surf.dlightframe == r_framecount ) )
 		{
 			
 			if ( gl_dynamic.value != 0 )
@@ -708,7 +703,8 @@ public abstract class Surf extends Draw {
 			}
 		}
 
-		if ( is_dynamic )
+        glpoly_t p;
+        if ( is_dynamic )
 		{
 			
 			int smax, tmax;
@@ -860,19 +856,14 @@ public abstract class Surf extends Draw {
 	*/
 	void R_DrawInlineBModel()
 	{
-		int i, k;
-		cplane_t pplane;
-		float dot;
-		msurface_t	psurf;
-		dlight_t	lt;
 
-		
-		if ( gl_flashblend.value == 0 )
+
+        if ( gl_flashblend.value == 0 )
 		{
-			for (k=0 ; k<r_newrefdef.num_dlights ; k++)
+			for (int k = 0; k<r_newrefdef.num_dlights ; k++)
 			{
-				lt = r_newrefdef.dlights[k];
-				R_MarkLights(lt, 1<<k, currentmodel.nodes[currentmodel.firstnode]);
+                dlight_t lt = r_newrefdef.dlights[k];
+                R_MarkLights(lt, 1<<k, currentmodel.nodes[currentmodel.firstnode]);
 			}
 		}
 
@@ -891,16 +882,16 @@ public abstract class Surf extends Draw {
 		
 		
 		
-		for (i=0 ; i<currentmodel.nummodelsurfaces ; i++)
+		for (int i = 0; i<currentmodel.nummodelsurfaces ; i++)
 		{
-			psurf = surfaces[psurfp++];
-			
-			pplane = psurf.plane;
+            msurface_t psurf = surfaces[psurfp++];
 
-			dot = Math3D.DotProduct(modelorg, pplane.normal) - pplane.dist;
+            cplane_t pplane = psurf.plane;
 
-			
-			if (((psurf.flags & Defines.SURF_PLANEBACK) != 0 && (dot < -BACKFACE_EPSILON)) ||
+            float dot = Math3D.DotProduct(modelorg, pplane.normal) - pplane.dist;
+
+
+            if (((psurf.flags & Defines.SURF_PLANEBACK) != 0 && (dot < -BACKFACE_EPSILON)) ||
 				((psurf.flags & Defines.SURF_PLANEBACK) == 0 && (dot > BACKFACE_EPSILON)))
 			{
 				if ((psurf.texinfo.flags & (Defines.SURF_TRANS33 | Defines.SURF_TRANS66)) != 0 )
@@ -942,21 +933,21 @@ public abstract class Surf extends Draw {
     @Override
     void R_DrawBrushModel(entity_t e)
 	{
-		float[] mins = {0, 0, 0};
-		float[] maxs = {0, 0, 0};
-		int i;
-		boolean rotated;
 
-		if (currentmodel.nummodelsurfaces == 0)
+        if (currentmodel.nummodelsurfaces == 0)
 			return;
 
 		currententity = e;
 		gl_state.currenttextures[0] = gl_state.currenttextures[1] = -1;
 
-		if (IntStream.of(0, 1, 2).anyMatch(v -> e.angles[v] != 0))
+		boolean b = IntStream.of(0, 1, 2).anyMatch(v -> e.angles[v] != 0);
+        boolean rotated;
+        float[] maxs = {0, 0, 0};
+        float[] mins = {0, 0, 0};
+        if (b)
 		{
 			rotated = true;
-			for (i=0 ; i<3 ; i++)
+			for (int i = 0; i<3 ; i++)
 			{
 				mins[i] = e.origin[i] - currentmodel.radius;
 				maxs[i] = e.origin[i] + currentmodel.radius;
@@ -985,12 +976,12 @@ public abstract class Surf extends Draw {
 		if (rotated)
 		{
 			float[] temp = {0, 0, 0};
-			float[] forward = {0, 0, 0};
-			float[] right = {0, 0, 0};
-			float[] up = {0, 0, 0};
 
-			Math3D.VectorCopy (modelorg, temp);
-			Math3D.AngleVectors (e.angles, forward, right, up);
+            Math3D.VectorCopy (modelorg, temp);
+            float[] up = {0, 0, 0};
+            float[] right = {0, 0, 0};
+            float[] forward = {0, 0, 0};
+            Math3D.AngleVectors (e.angles, forward, right, up);
 			modelorg[0] = Math3D.DotProduct (temp, forward);
 			modelorg[1] = -Math3D.DotProduct (temp, right);
 			modelorg[2] = Math3D.DotProduct (temp, up);
@@ -1031,14 +1022,8 @@ public abstract class Surf extends Draw {
 	*/
 	void R_RecursiveWorldNode (mnode_t node)
 	{
-		int c, side, sidebit;
-        msurface_t surf;
-		msurface_t mark;
-		mleaf_t pleaf;
-		float dot = 0;
-		image_t image;
 
-		if (node.contents == Defines.CONTENTS_SOLID)
+        if (node.contents == Defines.CONTENTS_SOLID)
 			return;		
 		
 		if (node.visframe != r_visframecount)
@@ -1046,14 +1031,15 @@ public abstract class Surf extends Draw {
 			
 		if (R_CullBox(node.mins, node.maxs))
 			return;
-	
-		
-		if (node.contents != -1)
-		{
-			pleaf = (mleaf_t)node;
 
-			
-			if (r_newrefdef.areabits != null)
+
+        int c;
+        if (node.contents != -1)
+		{
+            mleaf_t pleaf = (mleaf_t) node;
+
+
+            if (r_newrefdef.areabits != null)
 			{
 				if ( ((r_newrefdef.areabits[pleaf.area >> 3] & 0xFF) & (1 << (pleaf.area & 7)) ) == 0 )
 					return;		
@@ -1061,8 +1047,8 @@ public abstract class Surf extends Draw {
 
 			int markp = 0;
 
-			mark = pleaf.getMarkSurface(markp); 
-			c = pleaf.nummarksurfaces;
+            msurface_t mark = pleaf.getMarkSurface(markp);
+            c = pleaf.nummarksurfaces;
 
 			if (c != 0)
 			{
@@ -1079,7 +1065,8 @@ public abstract class Surf extends Draw {
 
         cplane_t plane = node.plane;
 
-		switch (plane.type)
+        float dot = 0;
+        switch (plane.type)
 		{
 		case Defines.PLANE_X:
 			dot = modelorg[0] - plane.dist;
@@ -1095,7 +1082,9 @@ public abstract class Surf extends Draw {
 			break;
 		}
 
-		if (dot >= 0.0f)
+        int sidebit;
+        int side;
+        if (dot >= 0.0f)
 		{
 			side = 0;
 			sidebit = 0;
@@ -1113,8 +1102,8 @@ public abstract class Surf extends Draw {
 		
 		for ( c = 0; c < node.numsurfaces; c++)
 		{
-			surf = r_worldmodel.surfaces[node.firstsurface + c];
-			if (surf.visframe != r_framecount)
+            msurface_t surf = r_worldmodel.surfaces[node.firstsurface + c];
+            if (surf.visframe != r_framecount)
 				continue;
 
 			if ( (surf.flags & Defines.SURF_PLANEBACK) != sidebit )
@@ -1137,11 +1126,10 @@ public abstract class Surf extends Draw {
 				}
 				else
 				{
-					
-					
-					
-					image = R_TextureAnimation(surf.texinfo);
-					surf.texturechain = image.texturechain;
+
+
+                    image_t image = R_TextureAnimation(surf.texinfo);
+                    surf.texturechain = image.texturechain;
 					image.texturechain = surf;
 				}
 			}
@@ -1233,13 +1221,8 @@ public abstract class Surf extends Draw {
 
 
         Arrays.fill(fatvis, (byte)0);
-		
-		mnode_t node;
-		int i, c;
-		mleaf_t leaf;
-		int cluster;
 
-		if (r_oldviewcluster == r_viewcluster && r_oldviewcluster2 == r_viewcluster2 && r_novis.value == 0 && r_viewcluster != -1)
+        if (r_oldviewcluster == r_viewcluster && r_oldviewcluster2 == r_viewcluster2 && r_novis.value == 0 && r_viewcluster != -1)
 			return;
 
 		
@@ -1251,7 +1234,8 @@ public abstract class Surf extends Draw {
 		r_oldviewcluster = r_viewcluster;
 		r_oldviewcluster2 = r_viewcluster2;
 
-		if (r_novis.value != 0 || r_viewcluster == -1 || r_worldmodel.vis == null)
+        int i;
+        if (r_novis.value != 0 || r_viewcluster == -1 || r_worldmodel.vis == null)
 		{
 			
 			for (i=0 ; i<r_worldmodel.numleafs ; i++)
@@ -1268,8 +1252,8 @@ public abstract class Surf extends Draw {
 			
 			System.arraycopy(vis, 0, fatvis, 0, (r_worldmodel.numleafs+7) / 8);
 			vis = Mod_ClusterPVS(r_viewcluster2, r_worldmodel);
-			c = (r_worldmodel.numleafs + 31) / 32;
-			int k = 0;
+            int c = (r_worldmodel.numleafs + 31) / 32;
+            int k = 0;
 			for (i=0 ; i<c ; i++) {
 				fatvis[k] |= vis[k++];
 				fatvis[k] |= vis[k++];
@@ -1282,14 +1266,14 @@ public abstract class Surf extends Draw {
 	
 		for ( i=0; i < r_worldmodel.numleafs; i++)
 		{
-			leaf = r_worldmodel.leafs[i];
-			cluster = leaf.cluster;
-			if (cluster == -1)
+            mleaf_t leaf = r_worldmodel.leafs[i];
+            int cluster = leaf.cluster;
+            if (cluster == -1)
 				continue;
 			if (((vis[cluster>>3] & 0xFF) & (1 << (cluster & 7))) != 0)
 			{
-				node = leaf;
-				do
+                mnode_t node = leaf;
+                do
 				{
 					if (node.visframe == r_visframecount)
 						break;
@@ -1318,9 +1302,8 @@ public abstract class Surf extends Draw {
 	void LM_UploadBlock( boolean dynamic )
 	{
 		int texture;
-		int height = 0;
 
-		if ( dynamic )
+        if ( dynamic )
 		{
 			texture = 0;
 		}
@@ -1336,9 +1319,9 @@ public abstract class Surf extends Draw {
         gl_lms.lightmap_buffer.rewind();
 		if ( dynamic )
 		{
-			int i;
 
-			for ( i = 0; i < BLOCK_WIDTH; i++ )
+            int height = 0;
+            for (int i = 0; i < BLOCK_WIDTH; i++ )
 			{
 				if ( gl_lms.allocated[i] > height )
 					height = gl_lms.allocated[i];
@@ -1375,16 +1358,16 @@ public abstract class Surf extends Draw {
 	boolean LM_AllocBlock (int w, int h, pos_t pos)
 	{
 		int x = pos.x; 
-		int i, j;
-		int best2;
+		int i;
 
         int best = BLOCK_HEIGHT;
 
 		for (i=0 ; i<BLOCK_WIDTH-w ; i++)
 		{
-			best2 = 0;
+            int best2 = 0;
 
-			for (j=0 ; j<w ; j++)
+            int j;
+            for (j=0 ; j<w ; j++)
 			{
 				if (gl_lms.allocated[i+j] >= best)
 					break;
@@ -1414,10 +1397,6 @@ public abstract class Surf extends Draw {
 	*/
 	void GL_BuildPolygonFromSurface(msurface_t fa)
 	{
-		int lindex;
-        medge_t r_pedge;
-		float[] vec;
-		float s, t;
         float[] total = {0, 0, 0};
 
 
@@ -1434,9 +1413,11 @@ public abstract class Surf extends Draw {
 
 		for (int i=0 ; i<lnumverts ; i++)
 		{
-			lindex = currentmodel.surfedges[fa.firstedge + i];
+            int lindex = currentmodel.surfedges[fa.firstedge + i];
 
-			if (lindex > 0)
+            float[] vec;
+            medge_t r_pedge;
+            if (lindex > 0)
 			{
 				r_pedge = pedges[lindex];
 				vec = currentmodel.vertexes[r_pedge.v[0]].position;
@@ -1446,11 +1427,11 @@ public abstract class Surf extends Draw {
 				r_pedge = pedges[-lindex];
 				vec = currentmodel.vertexes[r_pedge.v[1]].position;
 			}
-			s = Math3D.DotProduct (vec, fa.texinfo.vecs[0]) + fa.texinfo.vecs[0][3];
-			s /= fa.texinfo.image.width;
+            float s = Math3D.DotProduct(vec, fa.texinfo.vecs[0]) + fa.texinfo.vecs[0][3];
+            s /= fa.texinfo.image.width;
 
-			t = Math3D.DotProduct (vec, fa.texinfo.vecs[1]) + fa.texinfo.vecs[1][3];
-			t /= fa.texinfo.image.height;
+            float t = Math3D.DotProduct(vec, fa.texinfo.vecs[1]) + fa.texinfo.vecs[1][3];
+            t /= fa.texinfo.image.height;
 
 			Math3D.VectorAdd (total, vec, total);
 			

@@ -47,7 +47,7 @@ public class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
 
         if (!queue.isEmpty()) {
             float dt = j.dtS;
-            queue.clear((Short k) -> {
+            queue.clear(k -> {
                 FloatProcedure f = ((k >= 0) ? keyPressed : keyReleased).get((short) Math.abs(k));
                 if (f != null)
                     f.value(dt);

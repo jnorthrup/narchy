@@ -273,7 +273,6 @@ public class ConcurrentOpenHashMapTest {
     @Test
     public void testHashConflictWithDeletion() {
         final int Buckets = 16;
-        ConcurrentOpenHashMap<Long, String> map = new ConcurrentOpenHashMap<>(Buckets, 1);
 
         // Pick 2 keys that fall into the same bucket
         long key1 = 1;
@@ -283,6 +282,7 @@ public class ConcurrentOpenHashMapTest {
         int bucket2 = ConcurrentOpenHashMap.signSafeMod(ConcurrentOpenHashMap.hash(key2), Buckets);
         assertEquals(bucket1, bucket2);
 
+        ConcurrentOpenHashMap<Long, String> map = new ConcurrentOpenHashMap<>(Buckets, 1);
         assertNull(map.put(key1, "value-1"));
         assertNull(map.put(key2, "value-2"));
         assertEquals(2, map.size());
@@ -357,8 +357,6 @@ public class ConcurrentOpenHashMapTest {
             }
         }
 
-        ConcurrentOpenHashMap<T, String> map = new ConcurrentOpenHashMap<>();
-
         T t1 = new T(1);
         T t1_b = new T(1);
         T t2 = new T(2);
@@ -367,6 +365,7 @@ public class ConcurrentOpenHashMapTest {
         assertNotEquals(t1, t2);
         assertNotEquals(t1_b, t2);
 
+        ConcurrentOpenHashMap<T, String> map = new ConcurrentOpenHashMap<>();
         assertNull(map.put(t1, "t1"));
         assertEquals("t1", map.get(t1));
         assertEquals("t1", map.get(t1_b));

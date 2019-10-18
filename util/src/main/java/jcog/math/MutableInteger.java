@@ -173,7 +173,7 @@ public class MutableInteger extends NumberX implements Comparable, IntSupplier, 
      *
      * @return true if NaN
      */
-    public final boolean isNaN() {
+    public static boolean isNaN() {
         return false;
     }
 
@@ -182,7 +182,7 @@ public class MutableInteger extends NumberX implements Comparable, IntSupplier, 
      *
      * @return true if infinite
      */
-    public final boolean isInfinite() {
+    public static boolean isInfinite() {
         return false;
     }
 

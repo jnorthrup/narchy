@@ -44,32 +44,11 @@ public class a extends GamePanel {
 	@Override
     public void run() {
 
-		final float GRAVITY = 0.05f;
-		final int JUMP_SPEED = -1;
-		final int UPPER_FLOOR_Y = 97;
-		final int LOWER_FLOOR_Y = 152;
-		final int UPPER_FLOOR_LOWER_Y = 142;
-		final int LADDER_TOP_Y = 112;
-		final int LADDER_BOTTOM_Y = 152;
-
-		final int RIGHT = 0;
-		final int LEFT = 1;
-
-		final int VK_LEFT = 0x25;
-		final int VK_RIGHT = 0x27;
-		final int VK_UP = 0x26;
-		final int VK_DOWN = 0x28;
-		final int VK_JUMP = 0x42;
-		final int VK_PAUSE = 0x50;
-		final int VK_HINTS = 0x38;
-
-		final int BACKGROUND_0 = 0;
+        final int BACKGROUND_0 = 0;
 		final int BACKGROUND_1 = 1;
 		final int BACKGROUND_2 = 2;
-		final int BACKGROUND_3 = 3;
 
-		final int SPRITE_DIGIT_0 = 0;
-		final int SPRITE_DIGIT_1 = 1;
+        final int SPRITE_DIGIT_1 = 1;
 		final int SPRITE_DIGIT_2 = 2;
 		final int SPRITE_DIGIT_3 = 3;
 		final int SPRITE_DIGIT_4 = 4;
@@ -78,85 +57,31 @@ public class a extends GamePanel {
 		final int SPRITE_DIGIT_7 = 7;
 		final int SPRITE_DIGIT_8 = 8;
 		final int SPRITE_DIGIT_9 = 9;
-		final int SPRITE_COLON = 10;
-		final int SPRITE_ARROW_0 = 11;
-		final int SPRITE_ARROW_1 = 12;
-		final int SPRITE_ARROW_2 = 13;
-		final int SPRITE_TREE_BRANCHES = 14;
-		final int SPRITE_WATER = 15;
-		final int SPRITE_TAR = 16;
-		final int SPRITE_LEAVES_0 = 17;
+        final int SPRITE_LEAVES_0 = 17;
 		final int SPRITE_LEAVES_1 = 18;
 		final int SPRITE_LEAVES_2 = 19;
-		final int SPRITE_LEAVES_3 = 20;
-		final int SPRITE_DIAMOND_RING = 21;
-		final int SPRITE_GOLD_BAR_0 = 22;
-		final int SPRITE_GOLD_BAR_1 = 23;
-		final int SPRITE_SILVER_BAR_0 = 24;
-		final int SPRITE_SILVER_BAR_1 = 25;
-		final int SPRITE_BRICK_WALL = 26;
-		final int SPRITE_SCORPION_0 = 27;
-		final int SPRITE_SCORPION_1 = 28;
-		final int SPRITE_MONEY_BAG = 29;
-		final int SPRITE_CROCODILE_0 = 30;
-		final int SPRITE_CROCODILE_1 = 31;
-		final int SPRITE_RATTLESNAKE_0 = 32;
-		final int SPRITE_RATTLESNAKE_1 = 33;
-		final int SPRITE_FIRE = 34;
-		final int SPRITE_LOG = 35;
-		final int SPRITE_COPYRIGHT_0 = 36;
-		final int SPRITE_COPYRIGHT_1 = 37;
+        final int SPRITE_GOLD_BAR_1 = 23;
+        final int SPRITE_SILVER_BAR_1 = 25;
+        final int SPRITE_RATTLESNAKE_1 = 33;
+        final int SPRITE_COPYRIGHT_1 = 37;
 		final int SPRITE_COPYRIGHT_2 = 38;
 		final int SPRITE_COPYRIGHT_3 = 39;
 		final int SPRITE_COPYRIGHT_4 = 40;
 		final int SPRITE_COPYRIGHT_5 = 41;
-		final int SPRITE_HARRY_CLIMBING = 42;
-		final int SPRITE_HARRY_SWINGING = 43;
-		final int SPRITE_HARRY_STANDING = 44;
-		final int SPRITE_HARRY_RUNNING_0 = 45;
-		final int SPRITE_HARRY_RUNNING_1 = 46;
+        final int SPRITE_HARRY_RUNNING_1 = 46;
 		final int SPRITE_HARRY_RUNNING_2 = 47;
 		final int SPRITE_HARRY_RUNNING_3 = 48;
-		final int SPRITE_HARRY_RUNNING_4 = 49; 
 
-		final int SCENE_LADDER = 0;
-		final int SCENE_LADDER_AND_HOLES = 1;
-		final int SCENE_TAR_WITH_VINE = 2;
-		final int SCENE_QUICKSAND_WITH_VINE = 3;
-		final int SCENE_CROCODILES = 4;
-		final int SCENE_SHIFTING_TAR_WITH_TREASURE = 5;
-		final int SCENE_SHIFTING_TAR_WITH_VINE = 6;
-		final int SCENE_SHIFTING_QUICKSAND = 7;
+        final int SCENE_SHIFTING_QUICKSAND = 7;
 
 		final int ITEM_1_ROLLING_LOG = 0;
-		final int ITEM_2_CLOSE_ROLLING_LOGS = 1;
-		final int ITEM_2_FAR_ROLLING_LOGS = 2;
-		final int ITEM_3_ROLLING_LOGS = 3;
-		final int ITEM_1_STATIONARY_LOG = 4;
-		final int ITEM_3_STATIONARY_LOGS = 5;
-		final int ITEM_FIRE = 6;
+        final int ITEM_1_STATIONARY_LOG = 4;
+        final int ITEM_FIRE = 6;
 		final int ITEM_RATTLESNAKE = 7;
 
 		final int OBJECT_ARRAY_SIZE = 8;
 
-		final int OBJECT_TYPE_LOG = 0;
-		final int OBJECT_TYPE_FIRE = 1;
-		final int OBJECT_TYPE_RATTLESNAKE = 2;
-		final int OBJECT_TYPE_MONEY_BAG = 3;
-		final int OBJECT_TYPE_SILVER_BRICK = 4;
-		final int OBJECT_TYPE_GOLD_BRICK = 5;
-		final int OBJECT_TYPE_DIAMOND_RING = 6;
-		final int OBJECT_TYPE_SCORPION = 7;
-
-		final int OBJECT_X = 0;
-		final int OBJECT_Y = 1;
-		final int OBJECT_SPRITE_INDEX = 2;
-		final int OBJECT_SPRITE_DIRECTION = 3;
-		final int OBJECT_ROLLING = 4;
-		final int OBJECT_TYPE = 5;
-		final int OBJECT_SPRITE_INDEX_2 = 6;
-
-		final int BROWN = 0x69690F; 
+        final int BROWN = 0x69690F;
 		final int DARK_BROWN = 0x484800; 
 		final int YELLOW = 0xFCFC54; 
 		final int LIGHT_ORANGE = 0xECC860; 
@@ -174,168 +99,233 @@ public class a extends GamePanel {
 		final int DARK_YELLOW = 0xBBBB35; 
 		final int DARKEST_GRAY = 0x6F6F6F; 
 		final int DARKEST_GREEN = 0x143C00; 
-		final int LIGHT_GREEN = 0x5CBA5C; 
+		final int LIGHT_GREEN = 0x5CBA5C;
 
-		final int[] COLORS = { BROWN, 
-				DARK_BROWN, 
-				YELLOW, 
-				LIGHT_ORANGE, 
-				ORANGE, 
-				RED, 
-				YELLOW_GREEN, 
-				PINK, 
-				GREEN, 
-				BLUE, 
-				BLACK, 
-				DARK_GRAY, 
-				WHITE, 
-				GRAY, 
-				DARK_GREEN, 
-				DARK_YELLOW, 
-				DARKEST_GRAY, 
-				DARKEST_GREEN, 
-				LIGHT_GREEN, 
-		};
-
-		final Color COLOR_DARK_BROWN = new Color(DARK_BROWN);
-		final Color COLOR_BLACK = new Color(0);
-		final Color COLOR_DARK_GREEN = new Color(DARK_GREEN);
-		final Color COLOR_YELLOW_GREEN = new Color(YELLOW_GREEN);
-		final Color COLOR_GREEN = new Color(GREEN);
-		final Color COLOR_GRAY = new Color(GRAY);
-		final Color COLOR_DARK_YELLOW = new Color(DARK_YELLOW);
-
-		final String S = "  nnnn   nn  nn  nn  nn  nn  nn  nn  nn  nn  nn  nn  nn  " + " nnnn     nn     nnn      nn      nn      nn      nn      nn     nnn"
-				+ "n    nnnn   n   nn      nn      nn   nnnn   nn      nn      nnnnnn  " + " nnnn   n   nn      nn     nn      nn       nn  n   nn   nnnn      n"
-				+ "n     nnn    n nn   n  nn   nnnnnn     nn      nn      nn   nnnnnn  " + "nn      nn      nnnnn       nn      nn  n   nn  nnnnn    nnnn   nn  "
-				+ " n  nn      nnnnn   nn  nn  nn  nn  nn  nn   nnnn   nnnnnn  n    n  " + "    nn     nn     nn      nn      nn      nn     nnnn   nn  nn  nn  "
-				+ "nn   nnnn    nnnn   nn  nn  nn  nn   nnnn    nnnn   nn  nn  nn  nn  " + "nn  nn   nnnnn      nn  n   nn   nnnn             nn      nn        "
-				+ "              nn      nn              nn       nn       nn nnnnnnnnn" + "nnnnnnn     nn     nn     nn      nn      nn      nn   n  nn  nnn nn"
-				+ " nn nnnnnn   nnnn     nn      nn     nnnn   nnnnnn nn nn nnn  nn  n " + "  nn      nn      nn   b  bb  bb  bb  bb  bb  bb  bb  bb  bb  bb  bb"
-				+ "  bbb bb bb bbbbbb                         j       jjjj    jjjjjj  j" + "jjjjjj jjjjjjjj                        k       kkkk    kkkkkk  kkkkk"
-				+ "kk kkkkkkkkooooooo oooooo   oooo     oo    ooooooooooooooo o oooo   " + "  oo    ooooooo  oooo o   oo           oooooooooo  ooooo     oo     "
-				+ "  o                          mmm    mmmmm    mmm      c      ccc    " + "cc cc   c   c   c   c   c   c   cc cc    ccc                        "
-				+ "              m             m m m            m m                    " + " ccccc  cccccc ccccccc ccccccc cccccc  ccccc                      m "
-				+ "           m  m  m          m m m             m              ccccc  " + "cccccc ccccccc ccccccc cccccc  ccccc                              m "
-				+ "            m m m            m m                     lllll  llllll l" + "llllll lllllll llllll  lllll                      m            m  m "
-				+ " m          m m m             m              lllll  llllll lllllll l" + "llllll llllll  lllll           fff fff fff fff fff fff lllllll f fff"
-				+ " f f fff f f fff f lllllll fff fff fff fff fff fff lllllll f fff f f" + " fff f f fff f lllllll                                              "
-				+ "    mmm    mm mm   m   m   m  m  m mm   m  mmmmm m  mmmm     mmmm   " + " mm  mm m  m  m                                         mmm    mm mm"
-				+ "   m   m   m  m    m     m mm   mm mmmmm    mmmm     mmmm m  mm  m m" + "    m m          qq qq    qqq      a      qqq    qq qq   qq qq  qq  "
-				+ " qq qq qqqq qq   qq qqqq qq qq   qq qqq qqq qqq qqq  qqqqq          " + "                                            r       rr rrrrrrrr r r "
-				+ "r rr r r rrrrrrrrrr                                                 " + "       r       rrr     r rrr r   r rrr     r rr      rr      rrr r r"
-				+ " rrrrrrrrrr                                                f        " + " kk      kkk       k       kk      kk      k      k     kk     kkkkk"
-				+ " k qqqqq q kkkkk  kqqqqq  qkkkkkkk                  f        kk     " + " kkk       k       kk      kk      k      k     kk     kkkkk  kqqqqq"
-				+ "  qkkkkk  kqqqqq  qkkkkkkk             d       d       dd      dd   " + "  ddd     ddd     dddd   ddddd   eeeee   eeee     ee     bbbb   bbbb"
-				+ "bb bbb  bbbbb    bb                   aa     aaaa   aa aaa  aaaa a  " + "aaaaaa  aa aaa  aaaa a  aaaaaa  aa  aa  a aa a  a aa a  a aa a   a  "
-				+ "a     aa           nnnn    n  n    n       n    nnnn  n n nnnnn nnn " + "                                                                    "
-				+ "                                    nnn n n n n n n nnn nnn n     n " + "n   nnn            nnnn n     nnnn nn nn n n  nnnn n  nn n n  nn n n"
-				+ "n n            n            nn n nn n  n n  n  n nn              nn " + "       nnnn       n   n n n  nn n n nn  n nnn   n nn    n n         "
-				+ " n   n  nnn  n   n n nnn n n n n n n n n n n       n               n" + "nnnnnn n         nnn n n n   n n nnn n n   n n n nnn n            n "
-				+ "nnn   n n n   n nnn   n   n   n   n                                 " + "       nnn n  nn n nn nn n nnnnn n n nnnnn n  n         nnn nnn n n "
-				+ "  n nnn nnn n n n   nnn nnn                                         " + "                                          aa      hh      hh    h   "
-				+ "    s ss    ssss     ssss     sss     sss     ss     ooo    oooo    " + "oo o    o  o    oo o     o o     o o    oo o       o       o       o"
-				+ "       oo          aa      hh h    hh h    h  h    ss s    ssss    s" + "s      ss      ss      ss      ss      oo ooo  oooo oo oooo  o  oo  "
-				+ " oo                                                           aa    " + "  hh      hh      h       ss      ss      ss s    ssss    sss     ss"
-				+ "      ss      oo      oo      oo      oo      oo      oo      oo    " + "  ooo     o       oo              aa      hh      hh      h       ss"
-				+ "      ss     sss     sss s   sssss   ssss     ss      oo      oo    " + "  ooo     ooo     o o   ooo o   o   o   o    oo      o              "
-				+ "      aa      hh      hh      h       ss      ss      ss      ss    " + "  ss      sss     sss     oo      oo      ooo      ooo     o o   ooo"
-				+ "oo   o o     o o       o       oo             aa      hh      hh    " + "  h       ss      ss      ss      ss      sss     sss     ss      oo"
-				+ "      ooo     oooo    o oo   oo  o   oo o    o  o    o   o   o      " + "  o               aa      hh      hh      h       ss      ss     sss"
-				+ "     sss s   sssss   ssss     ss      oo      ooo    ooooo   oo oo  " + "oo   o  oo   o oo    ooo       o                          aa      hh"
-				+ "      hh      h       ss      ss s   sssss  sssss   s ss    s ss    " + "  ss      ooo     oooo oo oo o  ooo  o   oo  oo                     " + "                   ";
-
-		ArrayList<int[]> queue = new ArrayList<>();
+        ArrayList<int[]> queue = new ArrayList<>();
 
         int[] object = new int[OBJECT_ARRAY_SIZE];
 		queue.add(object);
-		object[OBJECT_X] = 116;
-		object[OBJECT_Y] = 111;
-		object[OBJECT_SPRITE_INDEX] = SPRITE_LOG;
-		object[OBJECT_SPRITE_DIRECTION] = LEFT;
+        final int OBJECT_X = 0;
+        object[OBJECT_X] = 116;
+        final int OBJECT_Y = 1;
+        object[OBJECT_Y] = 111;
+        final int OBJECT_SPRITE_INDEX = 2;
+        final int SPRITE_LOG = 35;
+        object[OBJECT_SPRITE_INDEX] = SPRITE_LOG;
+        final int OBJECT_SPRITE_DIRECTION = 3;
+        final int LEFT = 1;
+        object[OBJECT_SPRITE_DIRECTION] = LEFT;
 
-		boolean[] collectedTreasures = new boolean[256];
-		BufferedImage[][] sprites = new BufferedImage[50][2];
+        BufferedImage[][] sprites = new BufferedImage[50][2];
 		BufferedImage image = new BufferedImage(152, 192, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = (Graphics2D) image.getGraphics();
-		Graphics2D g2 = null;
 
-		int i;
+        int i;
 		int j;
 		int k = 0;
 		int x;
 		int y;
-		int z;
 
-		int treasures = 32;
-		int score = 2000;
-		int clockMinutes = 20;
-		int clockSeconds = 0;
-		int clockTicks = 0;
-		int harryX = 8;
-		int copyrightOffset = 0;
-		int copyrightTimer = 0;
-		int restartDelay = 0;
-		int screen = 196;
-		int screenIndex = 0;
-		int scene = SCENE_LADDER;
-		int background = BACKGROUND_3;
-		int harryDirection = 0;
-		int harryOffsetY = 0;
-		int harrySprite = SPRITE_HARRY_STANDING;
-		int harryRunTimer = 0;
-		int harryCrushed = 0;
-		int timer = 0;
-		int vineTimer = 0;
-		int extraLives = 2;
-		int pitOffset = 0;
-		int pitSprite = 0;
-		int pitTimer = 0;
-		int crocodileTimer = 0;
-		int crocodileSprite = SPRITE_CROCODILE_0;
-		boolean attractMode = true;
-		boolean jumpReleased = true;
-		boolean hintsKeyReleased = true;
-		boolean pauseKeyReleased = true;
-		boolean harryJumping = false;
-		boolean harryClimbing = false;
-		boolean harryClimbedDown = false;
-		boolean harrySinking = false;
-		boolean harrySwinging = false;
-		boolean wallOnLeft = false;
-		boolean resetScreen = false;
-		boolean pit = false;
-		boolean crocodiles = false;
-		boolean shiftingPit = false;
-		boolean vine = false;
-		boolean harryLanded = true;
-		boolean hintsEnabled = false;
-		boolean paused = false;
-		float harryY = UPPER_FLOOR_Y;
-		float harryVy = 0;
-		float harryVineRadius = 0;
-		float vineAngle = 0;
-		float vx = 0;
-		float vy = 0;
-		int vineX = 0;
-		int vineY = 0;
 
-		
-		for (i = 0; i < 50; i++) {
+        final String S = "  nnnn   nn  nn  nn  nn  nn  nn  nn  nn  nn  nn  nn  nn  " + " nnnn     nn     nnn      nn      nn      nn      nn      nn     nnn"
+                + "n    nnnn   n   nn      nn      nn   nnnn   nn      nn      nnnnnn  " + " nnnn   n   nn      nn     nn      nn       nn  n   nn   nnnn      n"
+                + "n     nnn    n nn   n  nn   nnnnnn     nn      nn      nn   nnnnnn  " + "nn      nn      nnnnn       nn      nn  n   nn  nnnnn    nnnn   nn  "
+                + " n  nn      nnnnn   nn  nn  nn  nn  nn  nn   nnnn   nnnnnn  n    n  " + "    nn     nn     nn      nn      nn      nn     nnnn   nn  nn  nn  "
+                + "nn   nnnn    nnnn   nn  nn  nn  nn   nnnn    nnnn   nn  nn  nn  nn  " + "nn  nn   nnnnn      nn  n   nn   nnnn             nn      nn        "
+                + "              nn      nn              nn       nn       nn nnnnnnnnn" + "nnnnnnn     nn     nn     nn      nn      nn      nn   n  nn  nnn nn"
+                + " nn nnnnnn   nnnn     nn      nn     nnnn   nnnnnn nn nn nnn  nn  n " + "  nn      nn      nn   b  bb  bb  bb  bb  bb  bb  bb  bb  bb  bb  bb"
+                + "  bbb bb bb bbbbbb                         j       jjjj    jjjjjj  j" + "jjjjjj jjjjjjjj                        k       kkkk    kkkkkk  kkkkk"
+                + "kk kkkkkkkkooooooo oooooo   oooo     oo    ooooooooooooooo o oooo   " + "  oo    ooooooo  oooo o   oo           oooooooooo  ooooo     oo     "
+                + "  o                          mmm    mmmmm    mmm      c      ccc    " + "cc cc   c   c   c   c   c   c   cc cc    ccc                        "
+                + "              m             m m m            m m                    " + " ccccc  cccccc ccccccc ccccccc cccccc  ccccc                      m "
+                + "           m  m  m          m m m             m              ccccc  " + "cccccc ccccccc ccccccc cccccc  ccccc                              m "
+                + "            m m m            m m                     lllll  llllll l" + "llllll lllllll llllll  lllll                      m            m  m "
+                + " m          m m m             m              lllll  llllll lllllll l" + "llllll llllll  lllll           fff fff fff fff fff fff lllllll f fff"
+                + " f f fff f f fff f lllllll fff fff fff fff fff fff lllllll f fff f f" + " fff f f fff f lllllll                                              "
+                + "    mmm    mm mm   m   m   m  m  m mm   m  mmmmm m  mmmm     mmmm   " + " mm  mm m  m  m                                         mmm    mm mm"
+                + "   m   m   m  m    m     m mm   mm mmmmm    mmmm     mmmm m  mm  m m" + "    m m          qq qq    qqq      a      qqq    qq qq   qq qq  qq  "
+                + " qq qq qqqq qq   qq qqqq qq qq   qq qqq qqq qqq qqq  qqqqq          " + "                                            r       rr rrrrrrrr r r "
+                + "r rr r r rrrrrrrrrr                                                 " + "       r       rrr     r rrr r   r rrr     r rr      rr      rrr r r"
+                + " rrrrrrrrrr                                                f        " + " kk      kkk       k       kk      kk      k      k     kk     kkkkk"
+                + " k qqqqq q kkkkk  kqqqqq  qkkkkkkk                  f        kk     " + " kkk       k       kk      kk      k      k     kk     kkkkk  kqqqqq"
+                + "  qkkkkk  kqqqqq  qkkkkkkk             d       d       dd      dd   " + "  ddd     ddd     dddd   ddddd   eeeee   eeee     ee     bbbb   bbbb"
+                + "bb bbb  bbbbb    bb                   aa     aaaa   aa aaa  aaaa a  " + "aaaaaa  aa aaa  aaaa a  aaaaaa  aa  aa  a aa a  a aa a  a aa a   a  "
+                + "a     aa           nnnn    n  n    n       n    nnnn  n n nnnnn nnn " + "                                                                    "
+                + "                                    nnn n n n n n n nnn nnn n     n " + "n   nnn            nnnn n     nnnn nn nn n n  nnnn n  nn n n  nn n n"
+                + "n n            n            nn n nn n  n n  n  n nn              nn " + "       nnnn       n   n n n  nn n n nn  n nnn   n nn    n n         "
+                + " n   n  nnn  n   n n nnn n n n n n n n n n n       n               n" + "nnnnnn n         nnn n n n   n n nnn n n   n n n nnn n            n "
+                + "nnn   n n n   n nnn   n   n   n   n                                 " + "       nnn n  nn n nn nn n nnnnn n n nnnnn n  n         nnn nnn n n "
+                + "  n nnn nnn n n n   nnn nnn                                         " + "                                          aa      hh      hh    h   "
+                + "    s ss    ssss     ssss     sss     sss     ss     ooo    oooo    " + "oo o    o  o    oo o     o o     o o    oo o       o       o       o"
+                + "       oo          aa      hh h    hh h    h  h    ss s    ssss    s" + "s      ss      ss      ss      ss      oo ooo  oooo oo oooo  o  oo  "
+                + " oo                                                           aa    " + "  hh      hh      h       ss      ss      ss s    ssss    sss     ss"
+                + "      ss      oo      oo      oo      oo      oo      oo      oo    " + "  ooo     o       oo              aa      hh      hh      h       ss"
+                + "      ss     sss     sss s   sssss   ssss     ss      oo      oo    " + "  ooo     ooo     o o   ooo o   o   o   o    oo      o              "
+                + "      aa      hh      hh      h       ss      ss      ss      ss    " + "  ss      sss     sss     oo      oo      ooo      ooo     o o   ooo"
+                + "oo   o o     o o       o       oo             aa      hh      hh    " + "  h       ss      ss      ss      ss      sss     sss     ss      oo"
+                + "      ooo     oooo    o oo   oo  o   oo o    o  o    o   o   o      " + "  o               aa      hh      hh      h       ss      ss     sss"
+                + "     sss s   sssss   ssss     ss      oo      ooo    ooooo   oo oo  " + "oo   o  oo   o oo    ooo       o                          aa      hh"
+                + "      hh      h       ss      ss s   sssss  sssss   s ss    s ss    " + "  ss      ooo     oooo oo oo o  ooo  o   oo  oo                     " + "                   ";
+        int[] COLORS = {BROWN,
+                DARK_BROWN,
+                YELLOW,
+                LIGHT_ORANGE,
+                ORANGE,
+                RED,
+                YELLOW_GREEN,
+                PINK,
+                GREEN,
+                BLUE,
+                BLACK,
+                DARK_GRAY,
+                WHITE,
+                GRAY,
+                DARK_GREEN,
+                DARK_YELLOW,
+                DARKEST_GRAY,
+                DARKEST_GREEN,
+                LIGHT_GREEN,
+        };
+        for (i = 0; i < 50; i++) {
 			j = (i < 17) ? 8 : (i < 21) ? 4 : (i < 42) ? 16 : 22;
 			sprites[i][0] = new BufferedImage(8, j, BufferedImage.TYPE_INT_ARGB_PRE);
 			sprites[i][1] = new BufferedImage(8, j, BufferedImage.TYPE_INT_ARGB_PRE);
 			for (y = 0; y < j; y++) {
 				for (x = 0; x < 8; x++, k++) {
-					z = (S.charAt(k) == ' ') ? 0 : (0xFF000000 | COLORS[S.charAt(k) - 'a']);
-					sprites[i][0].setRGB(x, y, z);
+                    int z = (S.charAt(k) == ' ') ? 0 : (0xFF000000 | COLORS[S.charAt(k) - 'a']);
+                    sprites[i][0].setRGB(x, y, z);
 					sprites[i][1].setRGB(7 - x, y, z);
 				}
 			}
 		}
 
 		long nextFrameStartTime = System.nanoTime();
-		while (true) {
+        int vineY = 0;
+        int vineX = 0;
+        float vy = 0;
+        float vx = 0;
+        float vineAngle = 0;
+        float harryVineRadius = 0;
+        float harryVy = 0;
+        final int UPPER_FLOOR_Y = 97;
+        float harryY = UPPER_FLOOR_Y;
+        boolean paused = false;
+        boolean hintsEnabled = false;
+        boolean harryLanded = true;
+        boolean vine = false;
+        boolean shiftingPit = false;
+        boolean crocodiles = false;
+        boolean pit = false;
+        boolean resetScreen = false;
+        boolean wallOnLeft = false;
+        boolean harrySwinging = false;
+        boolean harrySinking = false;
+        boolean harryClimbedDown = false;
+        boolean harryClimbing = false;
+        boolean harryJumping = false;
+        boolean pauseKeyReleased = true;
+        boolean hintsKeyReleased = true;
+        boolean jumpReleased = true;
+        boolean attractMode = true;
+        final int SPRITE_CROCODILE_0 = 30;
+        int crocodileSprite = SPRITE_CROCODILE_0;
+        int crocodileTimer = 0;
+        int pitTimer = 0;
+        int pitSprite = 0;
+        int pitOffset = 0;
+        int extraLives = 2;
+        int vineTimer = 0;
+        int timer = 0;
+        int harryCrushed = 0;
+        int harryRunTimer = 0;
+        final int SPRITE_HARRY_STANDING = 44;
+        int harrySprite = SPRITE_HARRY_STANDING;
+        int harryOffsetY = 0;
+        int harryDirection = 0;
+        final int BACKGROUND_3 = 3;
+        int background = BACKGROUND_3;
+        final int SCENE_LADDER = 0;
+        int scene = SCENE_LADDER;
+        int screenIndex = 0;
+        int screen = 196;
+        int restartDelay = 0;
+        int copyrightTimer = 0;
+        int copyrightOffset = 0;
+        int harryX = 8;
+        int clockTicks = 0;
+        int clockSeconds = 0;
+        int clockMinutes = 20;
+        int score = 2000;
+        int treasures = 32;
+        Graphics2D g2 = null;
+        boolean[] collectedTreasures = new boolean[256];
+        Color COLOR_DARK_YELLOW = new Color(DARK_YELLOW);
+        Color COLOR_GRAY = new Color(GRAY);
+        Color COLOR_GREEN = new Color(GREEN);
+        Color COLOR_YELLOW_GREEN = new Color(YELLOW_GREEN);
+        Color COLOR_DARK_GREEN = new Color(DARK_GREEN);
+        Color COLOR_BLACK = new Color(0);
+        Color COLOR_DARK_BROWN = new Color(DARK_BROWN);
+        final int OBJECT_SPRITE_INDEX_2 = 6;
+        final int OBJECT_TYPE = 5;
+        final int OBJECT_ROLLING = 4;
+        final int OBJECT_TYPE_SCORPION = 7;
+        final int OBJECT_TYPE_DIAMOND_RING = 6;
+        final int OBJECT_TYPE_GOLD_BRICK = 5;
+        final int OBJECT_TYPE_SILVER_BRICK = 4;
+        final int OBJECT_TYPE_MONEY_BAG = 3;
+        final int OBJECT_TYPE_RATTLESNAKE = 2;
+        final int OBJECT_TYPE_FIRE = 1;
+        final int OBJECT_TYPE_LOG = 0;
+        final int ITEM_3_STATIONARY_LOGS = 5;
+        final int ITEM_3_ROLLING_LOGS = 3;
+        final int ITEM_2_FAR_ROLLING_LOGS = 2;
+        final int ITEM_2_CLOSE_ROLLING_LOGS = 1;
+        final int SCENE_SHIFTING_TAR_WITH_VINE = 6;
+        final int SCENE_SHIFTING_TAR_WITH_TREASURE = 5;
+        final int SCENE_CROCODILES = 4;
+        final int SCENE_QUICKSAND_WITH_VINE = 3;
+        final int SCENE_TAR_WITH_VINE = 2;
+        final int SCENE_LADDER_AND_HOLES = 1;
+        final int SPRITE_HARRY_RUNNING_4 = 49;
+        final int SPRITE_HARRY_RUNNING_0 = 45;
+        final int SPRITE_HARRY_SWINGING = 43;
+        final int SPRITE_HARRY_CLIMBING = 42;
+        final int SPRITE_COPYRIGHT_0 = 36;
+        final int SPRITE_FIRE = 34;
+        final int SPRITE_RATTLESNAKE_0 = 32;
+        final int SPRITE_CROCODILE_1 = 31;
+        final int SPRITE_MONEY_BAG = 29;
+        final int SPRITE_SCORPION_1 = 28;
+        final int SPRITE_SCORPION_0 = 27;
+        final int SPRITE_BRICK_WALL = 26;
+        final int SPRITE_SILVER_BAR_0 = 24;
+        final int SPRITE_GOLD_BAR_0 = 22;
+        final int SPRITE_DIAMOND_RING = 21;
+        final int SPRITE_LEAVES_3 = 20;
+        final int SPRITE_TAR = 16;
+        final int SPRITE_WATER = 15;
+        final int SPRITE_TREE_BRANCHES = 14;
+        final int SPRITE_ARROW_2 = 13;
+        final int SPRITE_ARROW_1 = 12;
+        final int SPRITE_ARROW_0 = 11;
+        final int SPRITE_COLON = 10;
+        final int SPRITE_DIGIT_0 = 0;
+        final int VK_HINTS = 0x38;
+        final int VK_PAUSE = 0x50;
+        final int VK_JUMP = 0x42;
+        final int VK_DOWN = 0x28;
+        final int VK_UP = 0x26;
+        final int VK_RIGHT = 0x27;
+        final int VK_LEFT = 0x25;
+        final int RIGHT = 0;
+        final int LADDER_BOTTOM_Y = 152;
+        final int LADDER_TOP_Y = 112;
+        final int UPPER_FLOOR_LOWER_Y = 142;
+        final int LOWER_FLOOR_Y = 152;
+        final int JUMP_SPEED = -1;
+        final float GRAVITY = 0.05f;
+        while (true) {
 
 			do {
 				nextFrameStartTime += 16666667;
@@ -383,51 +373,54 @@ public class a extends GamePanel {
 						
 
 						restartDelay--;
-					} else if (IntStream.of(VK_JUMP, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT).anyMatch(v -> a[v])) {
+					} else {
+						boolean b = IntStream.of(VK_JUMP, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT).anyMatch(v -> a[v]);
+						if (b) {
 
-						
-						attractMode = false;
-						harryJumping = false;
-						harryClimbing = false;
-						harryClimbedDown = false;
-						harrySinking = false;
-						harrySwinging = false;
-						wallOnLeft = false;
-						resetScreen = false;
-						pit = false;
-						crocodiles = false;
-						vine = false;
-						harryLanded = true;
-						treasures = 32;
-						score = 2000;
-						clockMinutes = 20;
-						clockSeconds = 0;
-						clockTicks = 0;
-						harryX = 8;
-						harryY = UPPER_FLOOR_Y;
-						harryVy = 0;
-						screen = 196;
-						screenIndex = 0;
-						scene = SCENE_LADDER;
-						background = BACKGROUND_3;
-						harryDirection = 0;
-						harryOffsetY = 0;
-						harryCrushed = 0;
-						timer = 0;
-						vineTimer = 0;
-						pitTimer = 0;
-						crocodileTimer = 0;
-						extraLives = 2;
-						harrySprite = SPRITE_HARRY_STANDING;
-						collectedTreasures = new boolean[256];
 
-						queue.clear();
-						object = new int[OBJECT_ARRAY_SIZE];
-						queue.add(object);
-						object[OBJECT_X] = 116;
-						object[OBJECT_Y] = 111;
-						object[OBJECT_SPRITE_INDEX] = SPRITE_LOG;
-						object[OBJECT_SPRITE_DIRECTION] = LEFT;
+							attractMode = false;
+							harryJumping = false;
+							harryClimbing = false;
+							harryClimbedDown = false;
+							harrySinking = false;
+							harrySwinging = false;
+							wallOnLeft = false;
+							resetScreen = false;
+							pit = false;
+							crocodiles = false;
+							vine = false;
+							harryLanded = true;
+							treasures = 32;
+							score = 2000;
+							clockMinutes = 20;
+							clockSeconds = 0;
+							clockTicks = 0;
+							harryX = 8;
+							harryY = UPPER_FLOOR_Y;
+							harryVy = 0;
+							screen = 196;
+							screenIndex = 0;
+							scene = SCENE_LADDER;
+							background = BACKGROUND_3;
+							harryDirection = 0;
+							harryOffsetY = 0;
+							harryCrushed = 0;
+							timer = 0;
+							vineTimer = 0;
+							pitTimer = 0;
+							crocodileTimer = 0;
+							extraLives = 2;
+							harrySprite = SPRITE_HARRY_STANDING;
+							collectedTreasures = new boolean[256];
+
+							queue.clear();
+							object = new int[OBJECT_ARRAY_SIZE];
+							queue.add(object);
+							object[OBJECT_X] = 116;
+							object[OBJECT_Y] = 111;
+							object[OBJECT_SPRITE_INDEX] = SPRITE_LOG;
+							object[OBJECT_SPRITE_DIRECTION] = LEFT;
+						}
 					}
 
 				} else if (restartDelay > 0) {
@@ -1078,22 +1071,22 @@ public class a extends GamePanel {
 
 	@Override
 	public void processKeyEvent(KeyEvent keyEvent) {
-		final int VK_LEFT = 0x25;
-		final int VK_RIGHT = 0x27;
-		final int VK_UP = 0x26;
-		final int VK_DOWN = 0x28;
-		final int VK_JUMP = 0x42;
-		final int VK_W = 0x57;
-		final int VK_S = 0x53;
-		final int VK_A = 0x41;
-		final int VK_D = 0x44;
-		final int VK_PAUSE = 0x50; 
-		final int VK_HINTS = 0x38; 
 
-		int k = keyEvent.getKeyCode();
+        int k = keyEvent.getKeyCode();
 		if (k > 0) {
-			k = k == VK_W ? VK_UP : k == VK_D ? VK_RIGHT : k == VK_A ? VK_LEFT : k == VK_S ? VK_DOWN : k;
-			a[(k >= VK_LEFT && k <= VK_DOWN) || k == VK_HINTS || k == VK_PAUSE ? k : VK_JUMP] = keyEvent.getID() != 402;
+            final int VK_D = 0x44;
+            final int VK_A = 0x41;
+            final int VK_S = 0x53;
+            final int VK_W = 0x57;
+            final int VK_DOWN = 0x28;
+            final int VK_UP = 0x26;
+            final int VK_RIGHT = 0x27;
+            final int VK_LEFT = 0x25;
+            k = k == VK_W ? VK_UP : k == VK_D ? VK_RIGHT : k == VK_A ? VK_LEFT : k == VK_S ? VK_DOWN : k;
+            final int VK_HINTS = 0x38;
+            final int VK_PAUSE = 0x50;
+            final int VK_JUMP = 0x42;
+            a[(k >= VK_LEFT && k <= VK_DOWN) || k == VK_HINTS || k == VK_PAUSE ? k : VK_JUMP] = keyEvent.getID() != 402;
 		}
 	}
 

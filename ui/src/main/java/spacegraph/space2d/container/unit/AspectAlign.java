@@ -82,13 +82,13 @@ public class AspectAlign extends UnitContainer {
     }
 
     public static RectFloat innerBounds(RectFloat bounds, float scaleX, float scaleY, float aspect, Align align) {
-        final float w = bounds.w;
-        final float h = bounds.h;
+        float w = bounds.w;
+        float h = bounds.h;
 
         
         float tw = w * scaleX;
         float th = h * scaleY;
-        final float otw = tw, oth = th;
+        float otw = tw, oth = th;
 
         if (aspect == aspect /* not NaN */) {
 

@@ -13,10 +13,9 @@ public class utils {
         if(p < 0 || p > 1) return 0;
 
         int c = 0;
-        double r;
 
         for(int i=0; i<n; i++) {
-            r = rng.nextDouble();
+            double r = rng.nextDouble();
             if (r < p) c++;
         }
 

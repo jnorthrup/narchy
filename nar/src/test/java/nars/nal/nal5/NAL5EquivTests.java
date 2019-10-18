@@ -11,7 +11,7 @@ import static nars.time.Tense.ETERNAL;
 /** original nal5 tests involving the equivalence operator */
 @Disabled
 class NAL5EquivTests extends NALTest {
-    private final int cycles = 50;
+    private static final int cycles = 50;
 
 
     @Test

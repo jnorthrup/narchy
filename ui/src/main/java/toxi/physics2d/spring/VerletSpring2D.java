@@ -71,7 +71,8 @@ public class VerletSpring2D {
      * Flag, if either particle is locked in space (only within the scope of
      * this spring)
      */
-    protected boolean isALocked, isBLocked;
+    protected boolean isALocked;
+    protected boolean isBLocked;
 
     /**
      * @param a

@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ArrayBagTest {
 
 
-    private ArrayBag<PLink<String>, PLink<String>> newBag(int n, PriMerge mergeFunction) {
+    private static ArrayBag<PLink<String>, PLink<String>> newBag(int n, PriMerge mergeFunction) {
         return new PLinkArrayBag(mergeFunction, n);
     }
 
@@ -136,7 +136,7 @@ class ArrayBagTest {
     @Disabled
     @Test
     void testInsertOrBoostDoesntCauseSort() {
-        final int[] sorts = {0};
+        int[] sorts = {0};
         @NotNull ArrayBag<PLink<String>, PLink<String>> x = new PLinkArrayBag(PriMerge.plus, 4) {
             @Override
             protected void sort() {
@@ -225,7 +225,6 @@ class ArrayBagTest {
         int cap = 32;
         float dynamicRange = 0.25f;
         float dynamicFloor = 0;
-        int samples = cap * 1000;
         int bins = cap/2;
 
         ArrayBag<PLink<String>, PLink<String>> b = newBag(cap, plus);
@@ -243,6 +242,7 @@ class ArrayBagTest {
 
         {
             Histogram h = new Histogram(1, cap+1, 3);
+            int samples = cap * 1000;
             for (int i = 0; i < samples; i++) {
                 int s = b.sampleNext(rng, b.size());
                 h.recordValue(s);

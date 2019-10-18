@@ -42,7 +42,7 @@ public class STMLinker extends TaskAction {
 		if (prev == null)
 			return true;
 
-		final Term att = next.term().concept(), btt = prev.term().concept();
+		Term att = next.term().concept(), btt = prev.term().concept();
 		if (att.equals(btt))
 			return false;
 
@@ -81,11 +81,11 @@ public class STMLinker extends TaskAction {
 		w.links.link(l);
 	}
 
-	public boolean keep(Task x) {
+	public static boolean keep(Task x) {
 		return x.isInput();
 	}
 
-	public boolean filter(Task x) {
+	public static boolean filter(Task x) {
 		return x.isInput();
 	}
 
@@ -115,7 +115,13 @@ public class STMLinker extends TaskAction {
 			//TODO test
 			//int i = 0;
 			int h = stm.head();
-			novel= IntStream.range(0, capacity).mapToObj(i -> link(x, stm.peek(h, i), factor, why, d)).reduce(true, (a, b) -> a && b);
+			Boolean acc = true;
+			int bound = capacity;
+			for (int i = 0; i < bound; i++) {
+				Boolean link = link(x, stm.peek(h, i), factor, why, d);
+				acc = acc && link;
+			}
+			novel= acc;
 		}
 
 		if (novel && keep(x)) {

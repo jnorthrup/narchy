@@ -38,7 +38,7 @@ public class glstate_t
 	public int currenttmu;
 
 	public float camera_separation;
-	public final boolean stereo_enabled = false;
+	public static final boolean stereo_enabled = false;
 
 
 

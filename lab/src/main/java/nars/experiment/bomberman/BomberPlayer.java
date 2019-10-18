@@ -103,11 +103,11 @@ public class BomberPlayer extends Thread {
 
         /** create the images */
         sprites = new Image[4][5][5];
-        int[] states = {UP, DOWN, LEFT, RIGHT, EXPLODING};
         Toolkit tk = Toolkit.getDefaultToolkit();
-        String path = "";
         /** open the files */
         try {
+            String path = "";
+            int[] states = {UP, DOWN, LEFT, RIGHT, EXPLODING};
             for (int p = 0; p < 4; p++) {
                 for (int d = 0; d < 5; d++) {
                     for (int f = 0; f < 5; f++) {
@@ -199,7 +199,6 @@ public class BomberPlayer extends Thread {
      */
     public void keyPressed(KeyEvent evt) {
         /** assume no new key is pressed */
-        byte newKey = 0x00;
         /** if player isn't exploding or dead and key pressed is in player's */
         /** key list */
         if (!isExploding && !isDead &&
@@ -208,6 +207,7 @@ public class BomberPlayer extends Thread {
                 evt.getKeyCode() == keys[LEFT] ||
                 evt.getKeyCode() == keys[RIGHT]) {
             /** if down key pressed */
+            byte newKey = 0x00;
             if (evt.getKeyCode() == keys[DOWN]) {
                 newKey = BDOWN;
                 /** if only the up key is pressed */
@@ -269,68 +269,70 @@ public class BomberPlayer extends Thread {
      */
     public void keyReleased(KeyEvent evt) {
         /** if a direction key is released */
-        if (!isExploding && !isDead && (
-                IntStream.of(UP, DOWN, LEFT, RIGHT).anyMatch(i -> evt.getKeyCode() == keys[i]))) {
-            /** if down key is released */
-            if (evt.getKeyCode() == keys[DOWN]) {
-                /** remove key from the all keys down buffer */
-                dirKeysDown ^= BDOWN;
-                /** reset current key down */
-                currentDirKeyDown ^= BDOWN;
-                /** remove it from the key queue */
-                keyQueue.removeItems(BDOWN);
-            }
-            /** if up key is released */
-            else if (evt.getKeyCode() == keys[UP]) {
-                /** remove key from the all keys down buffer */
-                dirKeysDown ^= BUP;
-                /** reset current key down */
-                currentDirKeyDown ^= BUP;
-                /** remove it from the key queue */
-                keyQueue.removeItems(BUP);
-            }
-            /** if left key is released */
-            else if (evt.getKeyCode() == keys[LEFT]) {
-                /** remove key from the all keys down buffer */
-                dirKeysDown ^= BLEFT;
-                /** reset current key down */
-                currentDirKeyDown ^= BLEFT;
-                /** remove it from the key queue */
-                keyQueue.removeItems(BLEFT);
-            }
-            /** if right key is released */
-            else if (evt.getKeyCode() == keys[RIGHT]) {
-                /** remove key from the all keys down buffer */
-                dirKeysDown ^= BRIGHT;
-                /** reset current key down */
-                currentDirKeyDown ^= BRIGHT;
-                /** remove it from the key queue */
-                keyQueue.removeItems(BRIGHT);
-            }
-            /** if no key is currently down */
-            if (currentDirKeyDown == 0) {
-                /** see if last key pressed is still pressed or not */
-                boolean keyFound = false;
-                /** search for last key pressed */
-                while (!keyFound && keyQueue.size() > 0) {
-                    /** if key is found then exit the loop */
-                    if ((keyQueue.getLastItem() & dirKeysDown) > 0) {
-                        currentDirKeyDown = keyQueue.getLastItem();
-                        keyFound = true;
-                    }
-                    /** if key is not found then pop the current key */
-                    /** and on to the next one */
-                    else keyQueue.pop();
+        if (!isExploding && !isDead) {
+            boolean b = IntStream.of(UP, DOWN, LEFT, RIGHT).anyMatch(i -> evt.getKeyCode() == keys[i]);
+            if (b) {
+                /** if down key is released */
+                if (evt.getKeyCode() == keys[DOWN]) {
+                    /** remove key from the all keys down buffer */
+                    dirKeysDown ^= BDOWN;
+                    /** reset current key down */
+                    currentDirKeyDown ^= BDOWN;
+                    /** remove it from the key queue */
+                    keyQueue.removeItems(BDOWN);
                 }
-                /** if no key found */
-                if (!keyFound) {
-                    /** remove all keys from queue if not already removed */
-                    keyQueue.removeAll();
-                    /** reset key buffers */
-                    currentDirKeyDown = 0x00;
-                    dirKeysDown = 0x00;
-                    keyPressed = false;
-                    interrupt();
+                /** if up key is released */
+                else if (evt.getKeyCode() == keys[UP]) {
+                    /** remove key from the all keys down buffer */
+                    dirKeysDown ^= BUP;
+                    /** reset current key down */
+                    currentDirKeyDown ^= BUP;
+                    /** remove it from the key queue */
+                    keyQueue.removeItems(BUP);
+                }
+                /** if left key is released */
+                else if (evt.getKeyCode() == keys[LEFT]) {
+                    /** remove key from the all keys down buffer */
+                    dirKeysDown ^= BLEFT;
+                    /** reset current key down */
+                    currentDirKeyDown ^= BLEFT;
+                    /** remove it from the key queue */
+                    keyQueue.removeItems(BLEFT);
+                }
+                /** if right key is released */
+                else if (evt.getKeyCode() == keys[RIGHT]) {
+                    /** remove key from the all keys down buffer */
+                    dirKeysDown ^= BRIGHT;
+                    /** reset current key down */
+                    currentDirKeyDown ^= BRIGHT;
+                    /** remove it from the key queue */
+                    keyQueue.removeItems(BRIGHT);
+                }
+                /** if no key is currently down */
+                if (currentDirKeyDown == 0) {
+                    /** see if last key pressed is still pressed or not */
+                    boolean keyFound = false;
+                    /** search for last key pressed */
+                    while (!keyFound && keyQueue.size() > 0) {
+                        /** if key is found then exit the loop */
+                        if ((keyQueue.getLastItem() & dirKeysDown) > 0) {
+                            currentDirKeyDown = keyQueue.getLastItem();
+                            keyFound = true;
+                        }
+                        /** if key is not found then pop the current key */
+                        /** and on to the next one */
+                        else keyQueue.pop();
+                    }
+                    /** if no key found */
+                    if (!keyFound) {
+                        /** remove all keys from queue if not already removed */
+                        keyQueue.removeAll();
+                        /** reset key buffers */
+                        currentDirKeyDown = 0x00;
+                        dirKeysDown = 0x00;
+                        keyPressed = false;
+                        interrupt();
+                    }
                 }
             }
         }
@@ -366,7 +368,7 @@ public class BomberPlayer extends Thread {
             isExploding = true;
             /** release keys */
             keyPressed = false;
-            BomberMain.sndEffectPlayer.playSound("Die");
+            BomberSndEffect.playSound("Die");
             /** wake up and die */
             interrupt();
         }
@@ -399,7 +401,6 @@ public class BomberPlayer extends Thread {
     @Override
     public void run() {
         /** can move flat */
-        boolean canMove;
         /** keeps track of last key state */
         boolean lastState = false;
         /** shift count */
@@ -439,7 +440,7 @@ public class BomberPlayer extends Thread {
                 /** set moving to true */
                 moving = true;
                 /** assume can't move */
-                canMove = false;
+                boolean canMove = false;
                 /** make sure a key is down */
                 if (dirKeysDown > 0) {
                     /** if left key is down */

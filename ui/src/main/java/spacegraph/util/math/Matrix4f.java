@@ -34,6 +34,7 @@ package spacegraph.util.math;
 import jcog.math.VecMathUtil;
 import jcog.math.v3;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 /**
@@ -1775,8 +1776,15 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
             throw new SingularMatrixException(VecMathI18N.getString("Matrix4f12"));
         }
 
-        
-        double[] result = IntStream.range(0, 16).mapToDouble(i -> 0.0).toArray();
+
+        double[] result = new double[10];
+        int count = 0;
+        for (int i = 0; i < 16; i++) {
+            if (result.length == count) result = Arrays.copyOf(result, count * 2);
+            double v = 0.0;
+            result[count++] = v;
+        }
+        result = Arrays.copyOfRange(result, 0, count);
         result[0] = 1.0;
         result[5] = 1.0;
         result[10] = 1.0;
@@ -1832,8 +1840,6 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
 
         
         {
-            int j;
-            double temp;
 
             int ptr = 0;
             int rs = 0;
@@ -1841,12 +1847,12 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
             
             int i = 4;
             while (i-- != 0) {
-                double big = 0.0;
 
-                
-                j = 4;
+
+                int j = 4;
+                double big = 0.0;
                 while (j-- != 0) {
-                    temp = matrix0[ptr++];
+                    double temp = matrix0[ptr++];
                     temp = Math.abs(temp);
                     if (temp > big) {
                         big = temp;
@@ -1867,9 +1873,9 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
         for (int j = 0; j < 4; j++) {
             int i, k;
             int target, p1, p2;
-            double sum, temp;
+            double sum;
 
-            
+
             for (i = 0; i < j; i++) {
                 target = mtx + (4 * i) + j;
                 sum = matrix0[target];
@@ -1888,6 +1894,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
             
             double big = 0.0;
             int imax = -1;
+            double temp;
             for (i = j; i < 4; i++) {
                 target = mtx + (4 * i) + j;
                 sum = matrix0[target];
@@ -1973,28 +1980,26 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
                                            int[] row_perm,
                                            double[] matrix2) {
 
-        int ii, ip, j, k;
-        int rv;
 
-        
         int rp = 0;
 
         
-        for (k = 0; k < 4; k++) {
+        for (int k = 0; k < 4; k++) {
             
             int cv = k;
-            ii = -1;
+            int ii = -1;
 
-            
+
+            int rv;
             for (int i = 0; i < 4; i++) {
 
-                ip = row_perm[rp + i];
+                int ip = row_perm[rp + i];
                 double sum = matrix2[cv + 4 * ip];
                 matrix2[cv + 4 * ip] = matrix2[cv + 4 * i];
                 if (ii >= 0) {
                     
                     rv = i * 4;
-                    for (j = ii; j <= i - 1; j++) {
+                    for (int j = ii; j <= i - 1; j++) {
                         sum -= matrix1[rv + j] * matrix2[cv + 4 * j];
                     }
                 } else if (sum != 0.0) {

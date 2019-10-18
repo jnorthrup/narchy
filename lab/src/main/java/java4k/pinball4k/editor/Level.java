@@ -53,7 +53,7 @@ public class Level {
 	 * Gets the size of the level in pixels.
 	 * @return the size of the level
 	 */
-	public Dimension getSize() {
+	public static Dimension getSize() {
 		return new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
 	
@@ -91,9 +91,8 @@ public class Level {
 	 * @return a list of selected handles
 	 */
 	public  List<Handle> select(Rectangle rect) {
-		var selected = levelObjects.stream().map(LevelObject::getHandles).flatMap(Collection::stream).filter(handle -> handle.intersects(rect)).collect(Collectors.toList());
-
-        return selected;
+		List<Handle> list = levelObjects.stream().map(LevelObject::getHandles).flatMap(Collection::stream).filter(handle -> handle.intersects(rect)).collect(Collectors.toList());
+		return list;
 	}
 	
 	public ArrayList<Handle> select(ArrayList<LevelObject> objects) {
@@ -124,7 +123,7 @@ public class Level {
 		}
 	}
 	
-	private ArrayList<ArrayList<Line>> createLineStrips(ArrayList<Line> lines) {
+	private static ArrayList<ArrayList<Line>> createLineStrips(ArrayList<Line> lines) {
 		ArrayList<Line> clone = (ArrayList<Line>) lines.clone();
 		ArrayList<ArrayList<Line>> strips = new ArrayList<>();
 		
@@ -142,9 +141,8 @@ public class Level {
 	 * Creates a strip from lines and removes strip from lines.
 	 * @param lines line soup
 	 */
-	private ArrayList<Line> createStrip(ArrayList<Line> lines) {
-		ArrayList<Line> strip = new ArrayList<>();
-		
+	private static ArrayList<Line> createStrip(ArrayList<Line> lines) {
+
 		ArrayList<Line> searchList = (ArrayList<Line>) lines.clone();
 		Line start = searchList.get(0);
 		
@@ -156,8 +154,9 @@ public class Level {
 			}
 			start = newStart;
 		}
-		
-		
+
+
+		ArrayList<Line> strip = new ArrayList<>();
 		while (start != null) {
 			lines.remove(start);
 			strip.add(start);
@@ -167,7 +166,7 @@ public class Level {
 		return strip;
 	}
 
-	private Line findConnectedLine(ArrayList<Line> lines, Line source, boolean forward) {
+	private static Line findConnectedLine(ArrayList<Line> lines, Line source, boolean forward) {
 		for (int i=0; i<lines.size(); i++) {
 			Line line = lines.get(i);
 			if (line.getSortValue() == source.getSortValue()) {
@@ -272,11 +271,11 @@ public class Level {
 		sortGroups(lines);
 		sortGroups(sircles);
 
-		
-		HashMap<ArrayList<Line>, Integer> stripLineMap = new HashMap<>();
+
 		ArrayList<ArrayList<Line>> strips = createLineStrips(lines);
 		lines.clear();
-		for (int stripIdx=0; stripIdx<strips.size(); stripIdx++) {
+		HashMap<ArrayList<Line>, Integer> stripLineMap = new HashMap<>();
+		for (int stripIdx = 0; stripIdx<strips.size(); stripIdx++) {
 			ArrayList<Line> strip = strips.get(stripIdx);
 			Line firstLine = strip.remove(0);
 			if (strip.size() == 0) {
@@ -406,7 +405,7 @@ public class Level {
 	}
 	
 	
-	private int getFlags(LevelObject obj) {
+	private static int getFlags(LevelObject obj) {
 		int flags = 0;
 		if (obj.visible) {
 			flags |= VISIBLE_MASK;
@@ -534,12 +533,11 @@ public class Level {
 		}
 		
 		int groupCnt = dataIn.readByte();
-		int groupBytes = 1+groupCnt*2;
 		for (int groupIdx = 0; groupIdx < groupCnt; groupIdx++) {
 			int objCnt = dataIn.readByte();
 			int firstIdx = dataIn.readByte();
 			ArrayList<LevelObject> group = IntStream.range(0, objCnt).map(objIdx -> firstIdx + objIdx).mapToObj(levelObjects::get).collect(Collectors.toCollection(ArrayList::new));
-            groups.add(group);
+			groups.add(group);
 		}
 
 		if (dataIn.available() > 0) {
@@ -559,12 +557,13 @@ public class Level {
 		
 		int flipperBytes = 1 + (flippers * 9);
 		int sircleBytes = 1 + (sircles * 6);
-		int arrowBytes = 1 + (arrows * 6);
 		int lineBytes = 1 + (lineCnt * 7);
+		int groupBytes = 1 + groupCnt * 2;
 		int total = flipperBytes + sircleBytes + stripBytes + groupBytes + lineBytes;
 		System.out.println("reading level");
 		System.out.println(flippers+" flippers (9) "+flipperBytes);
 		System.out.println(sircles+" sircles (6) "+sircleBytes);
+		int arrowBytes = 1 + (arrows * 6);
 		System.out.println(arrows+" arrows (6) "+arrowBytes);
 		System.out.println(lineCnt+" lines (7) "+lineBytes);
 		System.out.println(strips+" strips "+stripBytes);

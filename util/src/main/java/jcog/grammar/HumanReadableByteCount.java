@@ -139,9 +139,9 @@ public final class HumanReadableByteCount implements Comparable<HumanReadableByt
      */
     @JsonCreator
     public static HumanReadableByteCount valueOf(String byteCount) {
-        String lower = byteCount.toLowerCase(Locale.ROOT).trim();
 
         try {
+            String lower = byteCount.toLowerCase(Locale.ROOT).trim();
             Matcher matcher = BYTE_COUNT_PATTERN.matcher(lower);
 
             Preconditions.checkArgument(matcher.matches(), "Invalid byte string: %s", byteCount);
@@ -223,7 +223,7 @@ public final class HumanReadableByteCount implements Comparable<HumanReadableByt
         if ((otherByteCount == null) || (getClass() != otherByteCount.getClass())) {
             return false;
         }
-        final HumanReadableByteCount other = (HumanReadableByteCount) otherByteCount;
+        HumanReadableByteCount other = (HumanReadableByteCount) otherByteCount;
         if (unit == other.unit) {
             return size == other.size;
         }

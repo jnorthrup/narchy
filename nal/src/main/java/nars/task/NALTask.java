@@ -18,7 +18,7 @@ public abstract class NALTask extends AbstractTask {
 
 
     @Deprecated
-    public final Task next(Object w) {
+    public static Task next(Object w) {
         //return Perceive.perceive(this, w);
         //return null;
         throw new WTF();

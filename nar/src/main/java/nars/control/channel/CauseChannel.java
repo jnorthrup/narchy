@@ -35,7 +35,9 @@ public abstract class CauseChannel<X extends Prioritizable>  {
     }
 
     public final void acceptAll(Iterable<? extends X> xx, ConsumerX<? super X> target) {
-        xx.forEach(this::preAccept);
+        for (X x : xx) {
+            preAccept(x);
+        }
         target.acceptAll(xx);
     }
     public final void acceptAll(Collection<? extends X> xx, ConsumerX<? super X> target) {

@@ -34,12 +34,12 @@ public class RangeLimiter extends UGen {
      */
     @Override
     public void gen() {
-        float y;
 
         for (int j = 0; j < ins; j++) {
             float[] bi = bufIn[j];
             float[] bo = bufOut[j];
             for (int i = 0; i < bufferSize; i++) {
+                float y;
                 if ((y = bi[i]) > 1.0f) {
                     bo[i] = 1f;
                 } else bo[i] = Math.max(y, -1f);

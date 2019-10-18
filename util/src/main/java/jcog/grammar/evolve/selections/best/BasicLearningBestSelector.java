@@ -42,10 +42,10 @@ public class BasicLearningBestSelector implements BestSelector {
 
     @Override
     public void elaborate(Results results) {
-        this.selectAndPopulateBest(results);
+        BasicLearningBestSelector.selectAndPopulateBest(results);
     }
     
-    private void selectAndPopulateBest(Results results) {
+    private static void selectAndPopulateBest(Results results) {
         double bestIndividualIndex = Double.NEGATIVE_INFINITY;
         int bestLength = Integer.MAX_VALUE;
         FinalSolution best = null;

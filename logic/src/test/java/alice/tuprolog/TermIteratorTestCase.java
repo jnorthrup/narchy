@@ -63,9 +63,9 @@ public class TermIteratorTestCase {
 	}
 	
 	@Test public void testIteratorOnInvalidTerm() {
-		String t = "q(1)"; 
-		try {
-			Term.getIterator(t);
+        try {
+            String t = "q(1)";
+            Term.getIterator(t);
 			fail("");
 		} catch (InvalidTermException expected) {}
 	}

@@ -130,7 +130,7 @@ public class Fixture {
      *
      * @param filter
      */
-    public void setFilterData(final Filter filter) {
+    public void setFilterData(Filter filter) {
         this.filter.set(filter);
 
         refilter();
@@ -231,7 +231,7 @@ public class Fixture {
      * @param p a point in world coordinates.
      * @return
      */
-    public boolean testPoint(final v2 p) {
+    public boolean testPoint(v2 p) {
         return shape.testPoint(body, p);
     }
 
@@ -384,7 +384,7 @@ public class Fixture {
     }
 
     
-    public void createProxies(BroadPhase broadPhase, final Transform xf) {
+    public void createProxies(BroadPhase broadPhase, Transform xf) {
         assert (m_proxyCount == 0);
 
         m_proxyCount = shape.getChildCount();
@@ -425,13 +425,13 @@ public class Fixture {
      * @param xf1
      * @param xf2
      */
-    void synchronize(BroadPhase broadPhase, final Transform transform1, final Transform transform2) {
+    void synchronize(BroadPhase broadPhase, Transform transform1, Transform transform2) {
         if (m_proxyCount == 0)
             return;
 
         v2 t1p = transform1.pos, t2p = transform2.pos;
 
-        final AABB aabb1 = pool1, aabb2 = pool2;
+        AABB aabb1 = pool1, aabb2 = pool2;
         v2 a1l = aabb1.lowerBound, a2l = aabb2.lowerBound;
         v2 a1u = aabb1.upperBound, a2u = aabb2.upperBound;
 

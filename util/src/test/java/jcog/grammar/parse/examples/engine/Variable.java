@@ -110,16 +110,18 @@ public class Variable implements ArithmeticTerm, ComparisonTerm {
 	 *         variables' instantiations are equal
 	 */
 	public boolean equals(Object o) {
-		if (!(o instanceof Variable))
-			return false;
-		Variable v = (Variable) o;
-		if (!name.equals(v.name)) {
-			return false;
+		boolean result = false;
+		if (o instanceof Variable) {
+			Variable v = (Variable) o;
+			if (name.equals(v.name)) {
+				if (instantiation == null) {
+					result = v.instantiation == null;
+				} else {
+					result = true;
+				}
+			}
 		}
-		if (instantiation == null) {
-			return v.instantiation == null;
-		}
-		return instantiation.equals(instantiation);
+		return result;
 	}
 
 	/**

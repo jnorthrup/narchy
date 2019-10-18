@@ -246,9 +246,8 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
                 getEdgeWeight()
         );
 
-        Path<Class, Function> path;
         while (pfinder.hasNext()) {
-            path = pfinder.next();
+            Path<Class, Function> path = pfinder.next();
             if (path == null) break;
             Class lastnode = path.node(-1);
             //assert(!lastnode.equals(to));
@@ -269,7 +268,7 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
             throw new ClassCastException("can't cast " + fromType + " to " + targetType + ", can't find start class");
         }
 
-        final List<Path<Class, Function>> p = new FasterList<>();
+        List<Path<Class, Function>> p = new FasterList<>();
 
         for (Class startCls : starts) {
 
@@ -425,7 +424,9 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
         for( Class cf : roots ){
             List<Path<Class, Function>> paths = paths(cf, cto);
             if( paths != null ) {
-                paths.forEach(c -> convertors.add(Converter.the(c)));
+                for (Path<Class, Function> c : paths) {
+                    convertors.add(Converter.the(c));
+                }
             }
         }
 

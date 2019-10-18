@@ -70,7 +70,7 @@ public class BomberFire extends Thread {
         this.x = x;
         this.y = y;
         this.type = type;
-        this.owner = owner - 1;
+        this.owner -= 1;
         images = BomberMap.fireImages;
 
         if (type == BomberMap.FIRE_BRICK)
@@ -109,7 +109,7 @@ public class BomberFire extends Thread {
                 }
             }
             /** increase frame */
-            frame = frame + 1;
+            frame += 1;
             /** sleep for 65 ms */
             try {
                 sleep(65);

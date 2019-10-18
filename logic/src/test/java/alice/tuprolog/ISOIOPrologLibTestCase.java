@@ -145,7 +145,7 @@ public class ISOIOPrologLibTestCase {
 	}
 
 	@Test public void test_6() throws InvalidTheoryException, MalformedGoalException {
-		final String[] dataToRead = { "c", "\n", "iao" };
+		String[] dataToRead = { "c", "\n", "iao" };
 		
 		
 		OutputListener listener = new OutputListener() {
@@ -229,7 +229,7 @@ public class ISOIOPrologLibTestCase {
 	}
 
 	@Test public void test_10() throws InvalidTheoryException, MalformedGoalException {
-		final int[] dataToRead = { 99, 105, 105 }; 
+		int[] dataToRead = { 99, 105, 105 };
 
 		
 		
@@ -265,7 +265,7 @@ public class ISOIOPrologLibTestCase {
 
 
 
-	private String getStringDataWritten(String filePath) throws IOException
+	private static String getStringDataWritten(String filePath) throws IOException
 	{
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));
 		String dataRead = reader.readLine();
@@ -273,7 +273,7 @@ public class ISOIOPrologLibTestCase {
 		return dataRead;
 	}
 
-	private int getByteDataWritten(String filePath) throws IOException
+	private static int getByteDataWritten(String filePath) throws IOException
 	{
 		FileInputStream fins = new FileInputStream(filePath);
 		int dataRead = fins.read();

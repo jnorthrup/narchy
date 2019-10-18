@@ -1216,7 +1216,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public final NAR outputBinary(File f, boolean append) throws IOException {
-        return outputBinary(f, append, ((Task t) -> t));
+        return outputBinary(f, append, Function.identity());
     }
 
     public final NAR outputBinary(File f, boolean append, Predicate<Task> each) throws IOException {
@@ -1395,13 +1395,15 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public SortedMap<String, Object> stats(boolean concepts, boolean emotions, Appendable out) {
 
         SortedMap<String, Object> stat = stats(concepts, emotions);
-        stat.forEach((k, v) -> {
+        for (Map.Entry<String, Object> entry : stat.entrySet()) {
+            String k = entry.getKey();
+            Object v = entry.getValue();
             try {
                 out.append(k.replace(" ", "/")).append(" \t ").append(v.toString()).append('\n');
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        });
+        }
         try {
             out.append('\n');
         } catch (IOException e) {
@@ -1432,7 +1434,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 //        return control.amp(task);
 //    }
 
-    public float value(Term why) {
+    public static float value(Term why) {
         throw new TODO();
     }
 

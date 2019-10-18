@@ -14,17 +14,17 @@ import static spacegraph.SpaceGraph.window;
 public
 class Chimera {
 
-    public static void main(String... args) {
-        GameX.runRT(n -> {
-            //potential boredom without the down button.
-            System.setProperty("tetris.fall.rate", "5");
-            System.setProperty("tetris.can.fall", "true");
-            //survival only.
-            System.setProperty("tetris.use.density", "false");
-            //dot
-            System.setProperty("tetris.easy", "true");
+    public static void main(String... args) {   //potential boredom without the down button.
+        System.setProperty("tetris.fall.rate", "5");
+        System.setProperty("tetris.can.fall", "true");
+        //survival only.
+        System.setProperty("tetris.use.density", "false");
+        //dot
+        System.setProperty("tetris.easy", "true");
 //            reduce con io
-            System.setProperty("avg.err", "false");
+        System.setProperty("avg.err", "false");
+        GameX.runRT(n -> {
+
 
             var t = new Tetris(n, tetris_width, tetris_height);
             var g = new Gradius(n);

@@ -127,11 +127,11 @@ public class Body2D extends Transform {
     final v2 posNext = new v2();
     float angleNext;
 
-    public Body2D(final BodyType t, Dynamics2D world) {
+    public Body2D(BodyType t, Dynamics2D world) {
         this(new BodyDef(t), world);
     }
 
-    public Body2D(final BodyDef bd, Dynamics2D world) {
+    public Body2D(BodyDef bd, Dynamics2D world) {
         assert (bd.position.isValid());
         assert (bd.linearVelocity.isValid());
         assert (bd.gravityScale >= 0.0f);
@@ -726,7 +726,7 @@ public class Body2D extends Transform {
             m_invI = 1.0f / m_I;
         }
 
-        final v2 oldCenter = new v2();
+        v2 oldCenter = new v2();
 
         oldCenter.set(sweep.c);
         sweep.localCenter.set(massData.center);
@@ -735,7 +735,7 @@ public class Body2D extends Transform {
         sweep.c.set(sweep.c0);
 
 
-        final v2 temp = new v2();
+        v2 temp = new v2();
         temp.set(sweep.c).subbed(oldCenter);
         v2.crossToOut(velAngular, temp, temp);
         vel.added(temp);
@@ -758,7 +758,7 @@ public class Body2D extends Transform {
         m_invI = 0.0f;
         sweep.localCenter.set(0, 0);
 
-        final MassData massData = pmd;
+        MassData massData = pmd;
         for (Fixture f = fixtures; f != null; f = f.next) {
             if (f.density != 0.0f) {
                 f.getMassData(massData);
@@ -778,9 +778,9 @@ public class Body2D extends Transform {
         assert (type == DYNAMIC);
 
 
-        final v2 localCenter = new v2();
+        v2 localCenter = new v2();
         localCenter.set(0, 0);
-        final v2 temp = new v2();
+        v2 temp = new v2();
         for (Fixture f = fixtures; f != null; f = f.next) {
             if (f.density == 0.0f) {
                 continue;
@@ -824,7 +824,7 @@ public class Body2D extends Transform {
 
         temp.set(sweep.c).subbed(oldCenter);
 
-        final v2 temp2 = oldCenter;
+        v2 temp2 = oldCenter;
         v2.crossToOutUnsafe(velAngular, temp, temp2);
         vel.added(temp2);
 
@@ -919,8 +919,8 @@ public class Body2D extends Transform {
     }
 
     private void getLinearVelocityFromWorldPointToOut(v2 worldPoint, v2 out) {
-        final float tempX = worldPoint.x - sweep.c.x;
-        final float tempY = worldPoint.y - sweep.c.y;
+        float tempX = worldPoint.x - sweep.c.x;
+        float tempY = worldPoint.y - sweep.c.y;
         out.x = -velAngular * tempY + vel.x;
         out.y = velAngular * tempX + vel.y;
     }
@@ -1226,7 +1226,7 @@ public class Body2D extends Transform {
     private final Transform pxf = new Transform();
 
     protected void synchronizeFixtures() {
-        final Transform xf1 = pxf;
+        Transform xf1 = pxf;
 
         float a = sweep.a0;
 

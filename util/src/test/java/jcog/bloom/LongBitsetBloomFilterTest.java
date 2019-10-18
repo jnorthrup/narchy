@@ -77,13 +77,13 @@ class LongBitsetBloomFilterTest {
     void testBloomFilterBytes() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         byte[] val = {1, 2, 3};
-        byte[] val1 = {1, 2, 3, 4};
-        byte[] val2 = {1, 2, 3, 4, 5};
-        byte[] val3 = {1, 2, 3, 4, 5, 6};
 
         assertEquals(false, bf.test(val));
+        byte[] val1 = {1, 2, 3, 4};
         assertEquals(false, bf.test(val1));
+        byte[] val2 = {1, 2, 3, 4, 5};
         assertEquals(false, bf.test(val2));
+        byte[] val3 = {1, 2, 3, 4, 5, 6};
         assertEquals(false, bf.test(val3));
         bf.add(val);
         assertEquals(true, bf.test(val));
@@ -128,13 +128,13 @@ class LongBitsetBloomFilterTest {
     void testBloomFilterByte() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         byte val = Byte.MIN_VALUE;
-        byte val1 = 1;
-        byte val2 = 2;
-        byte val3 = Byte.MAX_VALUE;
 
         assertEquals(false, bf.testByte(val));
+        byte val1 = 1;
         assertEquals(false, bf.testByte(val1));
+        byte val2 = 2;
         assertEquals(false, bf.testByte(val2));
+        byte val3 = Byte.MAX_VALUE;
         assertEquals(false, bf.testByte(val3));
         bf.addByte(val);
         assertEquals(true, bf.testByte(val));
@@ -174,13 +174,13 @@ class LongBitsetBloomFilterTest {
     void testBloomFilterInt() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         int val = Integer.MIN_VALUE;
-        int val1 = 1;
-        int val2 = 2;
-        int val3 = Integer.MAX_VALUE;
 
         assertEquals(false, bf.testInt(val));
+        int val1 = 1;
         assertEquals(false, bf.testInt(val1));
+        int val2 = 2;
         assertEquals(false, bf.testInt(val2));
+        int val3 = Integer.MAX_VALUE;
         assertEquals(false, bf.testInt(val3));
         bf.addInt(val);
         assertEquals(true, bf.testInt(val));
@@ -220,13 +220,13 @@ class LongBitsetBloomFilterTest {
     void testBloomFilterLong() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         long val = Long.MIN_VALUE;
-        long val1 = 1;
-        long val2 = 2;
-        long val3 = Long.MAX_VALUE;
 
         assertEquals(false, bf.testLong(val));
+        long val1 = 1;
         assertEquals(false, bf.testLong(val1));
+        long val2 = 2;
         assertEquals(false, bf.testLong(val2));
+        long val3 = Long.MAX_VALUE;
         assertEquals(false, bf.testLong(val3));
         bf.addLong(val);
         assertEquals(true, bf.testLong(val));
@@ -266,13 +266,13 @@ class LongBitsetBloomFilterTest {
     void testBloomFilterFloat() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         float val = Float.NEGATIVE_INFINITY;
-        float val1 = 1.1f;
-        float val2 = 2.2f;
-        float val3 = Float.POSITIVE_INFINITY;
 
         assertEquals(false, bf.testFloat(val));
+        float val1 = 1.1f;
         assertEquals(false, bf.testFloat(val1));
+        float val2 = 2.2f;
         assertEquals(false, bf.testFloat(val2));
+        float val3 = Float.POSITIVE_INFINITY;
         assertEquals(false, bf.testFloat(val3));
         bf.addFloat(val);
         assertEquals(true, bf.testFloat(val));
@@ -312,13 +312,13 @@ class LongBitsetBloomFilterTest {
     void testBloomFilterDouble() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         double val = Double.MIN_VALUE;
-        double val1 = 1.1d;
-        double val2 = 2.2d;
-        double val3 = Double.MAX_VALUE;
 
         assertEquals(false, bf.testDouble(val));
+        double val1 = 1.1d;
         assertEquals(false, bf.testDouble(val1));
+        double val2 = 2.2d;
         assertEquals(false, bf.testDouble(val2));
+        double val3 = Double.MAX_VALUE;
         assertEquals(false, bf.testDouble(val3));
         bf.addDouble(val);
         assertEquals(true, bf.testDouble(val));
@@ -358,13 +358,13 @@ class LongBitsetBloomFilterTest {
     void testBloomFilterString() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         String val = "bloo";
-        String val1 = "bloom fil";
-        String val2 = "bloom filter";
-        String val3 = "cuckoo filter";
 
         assertEquals(false, bf.testString(val));
+        String val1 = "bloom fil";
         assertEquals(false, bf.testString(val1));
+        String val2 = "bloom filter";
         assertEquals(false, bf.testString(val2));
+        String val3 = "cuckoo filter";
         assertEquals(false, bf.testString(val3));
         bf.addString(val);
         assertEquals(true, bf.testString(val));
@@ -404,22 +404,22 @@ class LongBitsetBloomFilterTest {
     void testMerge() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         String val = "bloo";
-        String val1 = "bloom fil";
-        String val2 = "bloom filter";
-        String val3 = "cuckoo filter";
         bf.addString(val);
+        String val1 = "bloom fil";
         bf.addString(val1);
+        String val2 = "bloom filter";
         bf.addString(val2);
+        String val3 = "cuckoo filter";
         bf.addString(val3);
 
         LongBitsetBloomFilter bf2 = new LongBitsetBloomFilter(10000);
         String v = "2_bloo";
-        String v1 = "2_bloom fil";
-        String v2 = "2_bloom filter";
-        String v3 = "2_cuckoo filter";
         bf2.addString(v);
+        String v1 = "2_bloom fil";
         bf2.addString(v1);
+        String v2 = "2_bloom filter";
         bf2.addString(v2);
+        String v3 = "2_cuckoo filter";
         bf2.addString(v3);
 
         assertEquals(true, bf.testString(val));

@@ -34,6 +34,7 @@ import jake2.util.Math3D;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 public class SV_INIT {
@@ -43,11 +44,11 @@ public class SV_INIT {
      */
     public static int SV_FindIndex(String name, int start, int max,
             boolean create) {
-        int i;
 
         if (name == null || name.length() == 0)
             return 0;
 
+        int i;
         for (i = 1; i < max && sv.configstrings[start + i] != null; i++)
             if (0 == Lib.strcmp(sv.configstrings[start + i], name))
                 return i;
@@ -91,11 +92,9 @@ public class SV_INIT {
      * only the fields that differ from the baseline will be transmitted.
      */
     public static void SV_CreateBaseline() {
-        edict_t svent;
-        int entnum;
 
-        for (entnum = 1; entnum < GameBase.num_edicts; entnum++) {
-            svent = GameBase.g_edicts[entnum];
+        for (int entnum = 1; entnum < GameBase.num_edicts; entnum++) {
+            edict_t svent = GameBase.g_edicts[entnum];
 
             if (!svent.inuse)
                 continue;
@@ -116,10 +115,6 @@ public class SV_INIT {
      */
     public static void SV_CheckForSavegame() {
 
-        RandomAccessFile f;
-
-        int i;
-
         if (SV_MAIN.sv_noreload.value != 0)
             return;
 
@@ -127,6 +122,7 @@ public class SV_INIT {
             return;
 
         String name = FS.Gamedir() + "/save/current/" + sv.name + ".sav";
+        RandomAccessFile f;
         try {
             f = new RandomAccessFile(name, "r");
         }
@@ -151,7 +147,7 @@ public class SV_INIT {
 
             int previousState = sv.state;
             sv.state = Defines.ss_loading; 
-            for (i = 0; i < 100; i++)
+            for (int i = 0; i < 100; i++)
                 GameBase.G_RunFrame();
 
             sv.state = previousState; 
@@ -166,8 +162,6 @@ public class SV_INIT {
      */
     public static void SV_SpawnServer(String server, String spawnpoint,
             int serverstate, boolean attractloop, boolean loadgame) {
-        int i;
-        int checksum = 0;
 
         if (attractloop)
             Cvar.Set("paused", "0");
@@ -211,7 +205,8 @@ public class SV_INIT {
 
         sv.name = server;
 
-        
+
+        int i;
         for (i = 0; i < SV_MAIN.maxclients.value; i++) {
             
             if (svs.clients[i].state > Defines.cs_connected)
@@ -224,6 +219,7 @@ public class SV_INIT {
         sv.name = server;
         sv.configstrings[Defines.CS_NAME] = server;
 
+        int checksum = 0;
         int[] iw = {checksum};
 
         if (serverstate != Defines.ss_game) {
@@ -285,8 +281,6 @@ public class SV_INIT {
      * A brand new game has been started.
      */
     public static void SV_InitGame() {
-        int i;
-        edict_t ent;
 
         if (svs.initialized) {
             
@@ -360,8 +354,8 @@ public class SV_INIT {
         
         SV_GAME.SV_InitGameProgs();
 
-        for (i = 0; i < SV_MAIN.maxclients.value; i++) {
-            ent = GameBase.g_edicts[i + 1];
+        for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+            edict_t ent = GameBase.g_edicts[i + 1];
             svs.clients[i].edict = ent;
             svs.clients[i].lastcmd = new usercmd_t();
         }
@@ -385,7 +379,7 @@ public class SV_INIT {
      */
     public static void SV_Map(boolean attractloop, String levelstring, boolean loadgame) {
 
-        String ch, spawnpoint;
+        String ch;
 
         sv.loadgame = loadgame;
         sv.attractloop = attractloop;
@@ -407,8 +401,9 @@ public class SV_INIT {
         
         
         if (firstmap.length() == 0)
-        {        
-        	if (Stream.of(".cin", ".pcx", ".dm2").noneMatch(levelstring::endsWith))
+        {
+            boolean b = Stream.of(".cin", ".pcx", ".dm2").noneMatch(levelstring::endsWith);
+            if (b)
         	{
         		int pos = levelstring.indexOf('+');
         		firstmap = levelstring.substring(pos + 1);
@@ -421,6 +416,7 @@ public class SV_INIT {
 
         
         int pos = level.indexOf('$');
+        String spawnpoint;
         if (pos != -1) {
             spawnpoint = level.substring(pos + 1);
             level = level.substring(0, pos);

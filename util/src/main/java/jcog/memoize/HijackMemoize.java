@@ -31,7 +31,9 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
     private final Function<X, Y> func;
     private final boolean soft;
 
-    protected float DEFAULT_VALUE, CACHE_HIT_BOOST, CACHE_SURVIVE_COST;
+    protected float DEFAULT_VALUE;
+    protected float CACHE_HIT_BOOST;
+    protected float CACHE_SURVIVE_COST;
 
     public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes) {
         this(f, initialCapacity, reprobes, false);
@@ -54,10 +56,13 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 
     private float statReset(ObjectLongProcedure<String> eachStat) {
 
-        long H, M, R, E;
+        long H;
         eachStat.accept("H" /* hit */, H = hit.getAndSet(0));
+        long M;
         eachStat.accept("M" /* miss */, M = miss.getAndSet(0));
+        long R;
         eachStat.accept("R" /* reject */, R = reject.getAndSet(0));
+        long E;
         eachStat.accept("E" /* evict */, E = evict.getAndSet(0));
         return (H / ((float) (H + M + R /* + E */)));
     }
@@ -156,9 +161,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
     public String summary() {
         StringBuilder sb = new StringBuilder(64);
         sb.append(" N=").append(bag.size()).append(' ');
-        float rate = statReset((k, v) -> {
-            sb.append(k).append('=').append(v).append(' ');
-        });
+        float rate = statReset((k, v) -> sb.append(k).append('=').append(v).append(' '));
         sb.setLength(sb.length() - 1);
         sb.append(" D=").append(Texts.n2percent(bag.density()));
         sb.insert(0, Texts.n2percent(rate));

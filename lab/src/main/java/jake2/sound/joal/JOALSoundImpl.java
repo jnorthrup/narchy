@@ -384,7 +384,6 @@ public final class JOALSoundImpl implements Sound {
 	static int num_sfx;
 
 	sfx_t FindName(String name, boolean create) {
-		int i;
 
         if (name == null)
 			Com.Error(Defines.ERR_FATAL, "S_FindName: NULL\n");
@@ -394,8 +393,9 @@ public final class JOALSoundImpl implements Sound {
 		if (name.length() >= Defines.MAX_QPATH)
 			Com.Error(Defines.ERR_FATAL, "Sound name too long: " + name);
 
-		
-		for (i = 0; i < num_sfx; i++)
+
+        int i;
+        for (i = 0; i < num_sfx; i++)
 			if (name.equals(known_sfx[i].name)) {
 				return known_sfx[i];
 			}
@@ -434,10 +434,8 @@ public final class JOALSoundImpl implements Sound {
 	{
         int i;
 
-        String s = truename;
 
-		
-		for (i=0 ; i < num_sfx ; i++)
+        for (i=0 ; i < num_sfx ; i++)
 			if (known_sfx[i].name == null)
 				break;
 
@@ -452,7 +450,8 @@ public final class JOALSoundImpl implements Sound {
 		sfx.clear();
 		sfx.name = aliasname;
 		sfx.registration_sequence = s_registration_sequence;
-		sfx.truename = s;
+        String s = truename;
+        sfx.truename = s;
 		
 		sfx.bufferId = i;
 
@@ -508,9 +507,8 @@ public final class JOALSoundImpl implements Sound {
         
         if (format == ALConstants.AL_FORMAT_MONO8) {
             ShortBuffer sampleData = streamBuffer;
-            int value;
             for (int i = 0; i < samples; i++) {
-                value = (data.get(i) & 0xFF) - 128;
+                int value = (data.get(i) & 0xFF) - 128;
                 sampleData.put(i, (short) value);
             }
             format = ALConstants.AL_FORMAT_MONO16;
@@ -536,10 +534,9 @@ public final class JOALSoundImpl implements Sound {
 
 	void Play() {
         int i = 1;
-        String name;
-		while (i < Cmd.Argc()) {
-			name = Cmd.Argv(i);
-			if (name.indexOf('.') == -1)
+        while (i < Cmd.Argc()) {
+            String name = Cmd.Argv(i);
+            if (name.indexOf('.') == -1)
 				name += ".wav";
 
 			RegisterSound(name);
@@ -549,20 +546,16 @@ public final class JOALSoundImpl implements Sound {
 	}
 
 	static void SoundList() {
-		int i;
-		sfx_t sfx;
-		sfxcache_t sc;
-		int size;
 
         int total = 0;
-		for (i = 0; i < num_sfx; i++) {
-			sfx = known_sfx[i];
-			if (sfx.registration_sequence == 0)
+		for (int i = 0; i < num_sfx; i++) {
+            sfx_t sfx = known_sfx[i];
+            if (sfx.registration_sequence == 0)
 				continue;
-			sc = sfx.cache;
-			if (sc != null) {
-				size = sc.length * sc.width * (sc.stereo + 1);
-				total += size;
+            sfxcache_t sc = sfx.cache;
+            if (sc != null) {
+                int size = sc.length * sc.width * (sc.stereo + 1);
+                total += size;
 				if (sc.loopstart >= 0)
 					Com.Printf("L");
 				else

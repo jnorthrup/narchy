@@ -63,7 +63,8 @@ public class edict_t {
     /** unused if num_clusters != -1. */
     public int headnode;
 
-    public int areanum, areanum2;
+    public int areanum;
+    public int areanum2;
 
     
 
@@ -124,7 +125,9 @@ public class edict_t {
 
     public edict_t target_ent;
 
-    public float speed, accel, decel;
+    public float speed;
+    public float accel;
+    public float decel;
 
     public float[] movedir = { 0, 0, 0 };
 

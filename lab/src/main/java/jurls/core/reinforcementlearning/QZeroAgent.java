@@ -19,7 +19,9 @@ package jurls.core.reinforcementlearning;
     import jurls.core.utils.ActionValuePair;
     import jurls.core.utils.Utils;
 
+    import java.util.ArrayList;
     import java.util.Arrays;
+    import java.util.List;
     import java.util.stream.IntStream;
 
     /**
@@ -65,7 +67,8 @@ public class QZeroAgent extends LearnerAndActor {
     }
 
     public ActionValuePair[] getActionProbabilities(double[] state) {
-        ActionValuePair[] actionValuePairs = IntStream.range(0, numActions).mapToObj(i -> new ActionValuePair(
+        int bound = numActions;
+        ActionValuePair[] actionValuePairs = IntStream.range(0, bound).mapToObj(i -> new ActionValuePair(
                 i, Utils.q(parameterizedFunction, stateAction, state, i)
         )).toArray(ActionValuePair[]::new);
 
@@ -74,7 +77,7 @@ public class QZeroAgent extends LearnerAndActor {
 
     public int chooseAction(double[] state) {
         ActionValuePair[] actionProbabilityPairs = getActionProbabilities(state);
-        Arrays.sort(actionProbabilityPairs, (ActionValuePair o1, ActionValuePair o2) -> (int) Math.signum(o1.getV() - o2.getV()));
+        Arrays.sort(actionProbabilityPairs, (o1, o2) -> (int) Math.signum(o1.getV() - o2.getV()));
 
         double x = Math.random();
         int i = -1;

@@ -144,7 +144,7 @@ public class EvalSocket<X> implements HttpModel {
         private final X context;
         private final WebSocket socket;
 
-        final int MAX_QUEUE_SIZE = 64;
+        static final int MAX_QUEUE_SIZE = 64;
 
 
         final AtomicBoolean pending = new AtomicBoolean(false);

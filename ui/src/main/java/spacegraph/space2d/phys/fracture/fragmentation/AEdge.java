@@ -15,7 +15,8 @@ abstract class AEdge {
     /**
      * Vrchol hrany.
      */
-    v2 p1, p2;
+    v2 p1;
+    v2 p2;
 
     /**
      * Inicializuje vrcholy hrany

@@ -55,13 +55,10 @@ public class SV_ENTS {
      */
     static void SV_EmitPacketEntities(client_frame_t from, client_frame_t to,
             sizebuf_t msg) {
-        entity_state_t oldent = null, newent = null;
-        int oldnum, newnum;
-        int from_num_entities;
-        int bits;
 
         MSG.WriteByte(msg, Defines.svc_packetentities);
 
+        int from_num_entities;
         if (from == null)
             from_num_entities = 0;
         else
@@ -69,7 +66,10 @@ public class SV_ENTS {
 
         int newindex = 0;
         int oldindex = 0;
+        entity_state_t newent = null;
+        entity_state_t oldent = null;
         while (newindex < to.num_entities || oldindex < from_num_entities) {
+            int newnum;
             if (newindex >= to.num_entities)
                 newnum = 9999;
             else {
@@ -78,6 +78,7 @@ public class SV_ENTS {
                 newnum = newent.number;
             }
 
+            int oldnum;
             if (oldindex >= from_num_entities)
                 oldnum = 9999;
             else {
@@ -108,9 +109,9 @@ public class SV_ENTS {
                 continue;
             }
 
-            if (newnum > oldnum) { 
-            	
-                bits = Defines.U_REMOVE;
+            if (newnum > oldnum) {
+
+                int bits = Defines.U_REMOVE;
                 if (oldnum >= 256)
                     bits |= Defines.U_NUMBER16 | Defines.U_MOREBITS1;
 
@@ -139,13 +140,11 @@ public class SV_ENTS {
             client_frame_t to, sizebuf_t msg) {
         
         player_state_t ops;
-        
-        player_state_t dummy;
 
         player_state_t ps = to.ps;
         if (from == null) {
-            
-            dummy = new player_state_t();
+
+            player_state_t dummy = new player_state_t();
             ops = dummy;
         } else {
             ops = from.ps;
@@ -290,8 +289,9 @@ public class SV_ENTS {
         if ((pflags & Defines.PS_RDFLAGS) != 0)
             MSG.WriteByte(msg, ps.rdflags);
 
-        
-        int statbits = IntStream.range(0, Defines.MAX_STATS).filter(i -> ps.stats[i] != ops.stats[i]).map(i -> 1 << i).reduce(0, (a, b) -> a | b);
+
+        int bound = Defines.MAX_STATS;
+        int statbits = IntStream.range(0, bound).filter(i1 -> ps.stats[i1] != ops.stats[i1]).map(i1 -> 1 << i1).reduce(0, (a, b) -> a | b);
         MSG.WriteLong(msg, statbits);
         for (int i = 0; i < Defines.MAX_STATS; i++)
             if ((statbits & (1 << i)) != 0)
@@ -344,9 +344,7 @@ public class SV_ENTS {
      * PVS point. 
      */
     public static void SV_FatPVS(float[] org) {
-        int[] leafs = new int[64];
-        int i, j;
-        byte[] src;
+        int i;
         float[] mins = { 0, 0, 0 }, maxs = { 0, 0, 0 };
 
         for (i = 0; i < 3; i++) {
@@ -354,6 +352,7 @@ public class SV_ENTS {
             maxs[i] = org[i] + 8;
         }
 
+        int[] leafs = new int[64];
         int count = CM.CM_BoxLeafnums(mins, maxs, leafs, 64, null);
 
         if (count < 1)
@@ -369,16 +368,16 @@ public class SV_ENTS {
                 longs << 2);
         
         for (i = 1; i < count; i++) {
+            int j;
             for (j = 0; j < i; j++)
                 if (leafs[i] == leafs[j])
                     break;
             if (j != i)
-                continue; 
+                continue;
 
-            src = CM.CM_ClusterPVS(leafs[i]);
+            byte[] src = CM.CM_ClusterPVS(leafs[i]);
 
-            
-            
+
             int k = 0;
             for (j = 0; j < longs; j++) {
                 SV_ENTS.fatpvs[k] |= src[k++];
@@ -394,12 +393,6 @@ public class SV_ENTS {
      * off the playerstat and areabits.
      */
     public static void SV_BuildClientFrame(client_t client) {
-        int e, i;
-        float[] org = { 0, 0, 0 };
-        edict_t ent;
-        entity_state_t state;
-        int l;
-        byte[] bitvector;
 
         edict_t clent = client.edict;
         if (clent.client == null)
@@ -408,9 +401,11 @@ public class SV_ENTS {
 
         client_frame_t frame = client.frames[SV_INIT.sv.framenum & Defines.UPDATE_MASK];
 
-        frame.senttime = SV_INIT.svs.realtime; 
+        frame.senttime = SV_INIT.svs.realtime;
 
-        
+
+        float[] org = {0, 0, 0};
+        int i;
         for (i = 0; i < 3; i++)
             org[i] = clent.client.ps.pmove.origin[i] * 0.125f
                     + clent.client.ps.viewoffset[i];
@@ -434,10 +429,10 @@ public class SV_ENTS {
 
         int c_fullsend = 0;
 
-        for (e = 1; e < GameBase.num_edicts; e++) {
-            ent = GameBase.g_edicts[e];
+        for (int e = 1; e < GameBase.num_edicts; e++) {
+            edict_t ent = GameBase.g_edicts[e];
 
-            
+
             if ((ent.svflags & Defines.SVF_NOCLIENT) != 0)
                 continue;
 
@@ -455,14 +450,16 @@ public class SV_ENTS {
                         continue; 
                 }
 
-                
+
+                int l;
                 if ((ent.s.renderfx & Defines.RF_BEAM) != 0) {
                     l = ent.clusternums[0];
                     if (0 == (clientphs[l >> 3] & (1 << (l & 7))))
                         continue;
                 } else {
-                    
-                    
+
+
+                    byte[] bitvector;
                     if (ent.s.sound == 0) {
                         bitvector = SV_ENTS.fatpvs; 
                     } else
@@ -499,7 +496,7 @@ public class SV_ENTS {
             
             int ix = SV_INIT.svs.next_client_entities
                     % SV_INIT.svs.num_client_entities;
-            state = SV_INIT.svs.client_entities[ix];
+            entity_state_t state = SV_INIT.svs.client_entities[ix];
             if (ent.s.number != e) {
                 Com.DPrintf("FIXING ENT.S.NUMBER!!!\n");
                 ent.s.number = e;

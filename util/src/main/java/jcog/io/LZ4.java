@@ -87,11 +87,11 @@ public enum LZ4 { ;
      * need to know the total decompressed length).
      */
     public static int decompress(DataInput compressed, int decompressedLen, byte[] dest, int dOff) throws IOException {
-        final int destEnd = dest.length;
+        int destEnd = dest.length;
 
         do {
             // literals
-            final int token = compressed.readByte() & 0xFF;
+            int token = compressed.readByte() & 0xFF;
             int literalLen = token >>> 4;
 
             if (literalLen != 0) {
@@ -111,7 +111,7 @@ public enum LZ4 { ;
             }
 
             // matchs
-            final int matchDec = (compressed.readByte() & 0xFF); // | ((compressed.readByte() & 0xFF) << 8);
+            int matchDec = (compressed.readByte() & 0xFF); // | ((compressed.readByte() & 0xFF) << 8);
             assert matchDec > 0;
 
             int matchLen = token & 0x0F;
@@ -125,7 +125,7 @@ public enum LZ4 { ;
             matchLen += MIN_MATCH;
 
             // copying a multiple of 8 bytes can make decompression from 5% to 10% faster
-            final int fastLen = (matchLen + 7) & 0xFFFFFFF8;
+            int fastLen = (matchLen + 7) & 0xFFFFFFF8;
             if (matchDec < matchLen || dOff + fastLen > destEnd) {
                 // overlap -> naive incremental copy
                 for (int ref = dOff - matchDec, end = dOff + matchLen; dOff < end; ++ref, ++dOff) {
@@ -162,19 +162,19 @@ public enum LZ4 { ;
     }
 
     private static void encodeLastLiterals(byte[] bytes, int anchor, int literalLen, ByteArrayDataOutput out) {
-        final int token = Math.min(literalLen, 0x0F) << 4;
+        int token = Math.min(literalLen, 0x0F) << 4;
         encodeLiterals(bytes, token, anchor, literalLen, out);
     }
 
     private static void encodeSequence(byte[] bytes, int anchor, int matchRef, int matchOff, int matchLen, ByteArrayDataOutput out) {
-        final int literalLen = matchOff - anchor;
+        int literalLen = matchOff - anchor;
 //        assert matchLen >= MIN_MATCH;
         // encode token
-        final int token = (Math.min(literalLen, 0x0F) << 4) | Math.min(matchLen - MIN_MATCH, 0x0F);
+        int token = (Math.min(literalLen, 0x0F) << 4) | Math.min(matchLen - MIN_MATCH, 0x0F);
         encodeLiterals(bytes, token, anchor, literalLen, out);
 
         // encode match dec
-        final int matchDec = matchOff - matchRef;
+        int matchDec = matchOff - matchRef;
         assert matchDec > 0 && matchDec < 1 << 16;
         out.writeByte((byte) matchDec);
 //        out.writeByte((byte) (matchDec >>> 8));
@@ -190,8 +190,8 @@ public enum LZ4 { ;
         private PackedInts.Mutable hashTable;
 
         void reset(int len) {
-            final int bitsPerOffset = PackedInts.bitsRequired(len - LAST_LITERALS);
-            final int bitsPerOffsetLog = 32 - Integer.numberOfLeadingZeros(bitsPerOffset - 1);
+            int bitsPerOffset = PackedInts.bitsRequired(len - LAST_LITERALS);
+            int bitsPerOffsetLog = 32 - Integer.numberOfLeadingZeros(bitsPerOffset - 1);
             hashLog = MEMORY_USAGE + 3 - bitsPerOffsetLog;
             if (hashTable == null || hashTable.size() < 1 << hashLog || hashTable.getBitsPerValue() < bitsPerOffset) {
                 hashTable = PackedInts.getMutable(1 << hashLog, bitsPerOffset, PackedInts.DEFAULT);
@@ -209,19 +209,19 @@ public enum LZ4 { ;
      */
     public static void compress(byte[] bytes, int off, int len, ByteArrayDataOutput out, LZ4Table ht) {
 
-        final int base = off;
-        final int end = off + len;
+        int base = off;
+        int end = off + len;
 
         int anchor = off++;
 
         if (len > LAST_LITERALS + MIN_MATCH) {
 
-            final int limit = end - LAST_LITERALS;
-            final int matchLimit = limit - MIN_MATCH;
+            int limit = end - LAST_LITERALS;
             ht.reset(len);
-            final int hashLog = ht.hashLog;
-            final PackedInts.Mutable hashTable = ht.hashTable;
+            int hashLog = ht.hashLog;
+            PackedInts.Mutable hashTable = ht.hashTable;
 
+            int matchLimit = limit - MIN_MATCH;
             main:
             while (off <= limit) {
                 // find a match
@@ -230,8 +230,8 @@ public enum LZ4 { ;
                     if (off >= matchLimit) {
                         break main;
                     }
-                    final int v = readInt(bytes, off);
-                    final int h = hash(v, hashLog);
+                    int v = readInt(bytes, off);
+                    int h = hash(v, hashLog);
                     ref = base + (int) hashTable.get(h);
                     //assert PackedInts.bitsRequired(off - base) <= hashTable.getBitsPerValue();
                     hashTable.set(h, off - base);
@@ -242,7 +242,7 @@ public enum LZ4 { ;
                 }
 
                 // compute match length
-                final int matchLen = MIN_MATCH + commonBytes(bytes, ref + MIN_MATCH, off + MIN_MATCH, limit);
+                int matchLen = MIN_MATCH + commonBytes(bytes, ref + MIN_MATCH, off + MIN_MATCH, limit);
 
                 encodeSequence(bytes, anchor, ref, off, matchLen, out);
                 off += matchLen;
@@ -251,13 +251,15 @@ public enum LZ4 { ;
         }
 
         // last literals
-        final int literalLen = end - anchor;
+        int literalLen = end - anchor;
         assert literalLen >= LAST_LITERALS || literalLen == len;
         encodeLastLiterals(bytes, anchor, end - anchor, out);
     }
 
     private static final class Match {
-        int start, ref, len;
+        int start;
+        int ref;
+        int len;
 
         void fix(int correction) {
             start += correction;
@@ -297,8 +299,8 @@ public enum LZ4 { ;
         }
 
         private int hashPointer(byte[] bytes, int off) {
-            final int v = readInt(bytes, off);
-            final int h = hashHC(v);
+            int v = readInt(bytes, off);
+            int h = hashHC(v);
             return hashTable[h];
         }
 
@@ -307,8 +309,8 @@ public enum LZ4 { ;
         }
 
         private void addHash(byte[] bytes, int off) {
-            final int v = readInt(bytes, off);
-            final int h = hashHC(v);
+            int v = readInt(bytes, off);
+            int h = hashHC(v);
             int delta = off - hashTable[h];
             assert delta > 0 : delta;
             if (delta >= MAX_DISTANCE) {
@@ -327,13 +329,13 @@ public enum LZ4 { ;
         boolean insertAndFindBestMatch(byte[] buf, int off, int matchLimit, Match match) {
             match.start = off;
             match.len = 0;
-            int delta = 0;
-            int repl = 0;
 
             insert(off, buf);
 
             int ref = hashPointer(buf, off);
 
+            int repl = 0;
+            int delta = 0;
             if (ref >= off - 4 && ref <= off && ref >= base) { // potential repetition
                 if (readIntEquals(buf, ref, off)) { // confirmed
                     delta = off - ref;
@@ -348,7 +350,7 @@ public enum LZ4 { ;
                     break;
                 }
                 if (buf[ref + match.len] == buf[off + match.len] && readIntEquals(buf, ref, off)) {
-                    final int matchLen = MIN_MATCH + commonBytes(buf, ref + MIN_MATCH, off + MIN_MATCH, matchLimit);
+                    int matchLen = MIN_MATCH + commonBytes(buf, ref + MIN_MATCH, off + MIN_MATCH, matchLimit);
                     if (matchLen > match.len) {
                         match.ref = ref;
                         match.len = matchLen;
@@ -359,7 +361,7 @@ public enum LZ4 { ;
 
             if (repl != 0) {
                 int ptr = off;
-                final int end = off + repl - (MIN_MATCH - 1);
+                int end = off + repl - (MIN_MATCH - 1);
                 while (ptr < end - delta) {
                     chainTable[ptr & MASK] = (short) delta; // pre load
                     ++ptr;
@@ -380,7 +382,7 @@ public enum LZ4 { ;
 
             insert(off, buf);
 
-            final int delta = off - startLimit;
+            int delta = off - startLimit;
             int ref = hashPointer(buf, off);
             for (int i = 0; i < MAX_ATTEMPTS; ++i) {
                 if (ref < Math.max(base, off - MAX_DISTANCE + 1) || ref > off) {
@@ -388,9 +390,9 @@ public enum LZ4 { ;
                 }
                 if (buf[ref - delta + match.len] == buf[startLimit + match.len]
                         && readIntEquals(buf, ref, off)) {
-                    final int matchLenForward = MIN_MATCH + commonBytes(buf, ref + MIN_MATCH, off + MIN_MATCH, matchLimit);
-                    final int matchLenBackward = commonBytesBackward(buf, ref, off, base, startLimit);
-                    final int matchLen = matchLenBackward + matchLenForward;
+                    int matchLenForward = MIN_MATCH + commonBytes(buf, ref + MIN_MATCH, off + MIN_MATCH, matchLimit);
+                    int matchLenBackward = commonBytesBackward(buf, ref, off, base, startLimit);
+                    int matchLen = matchLenBackward + matchLenForward;
                     if (matchLen > match.len) {
                         match.len = matchLen;
                         match.ref = ref - matchLenBackward;
@@ -416,19 +418,19 @@ public enum LZ4 { ;
      */
     public static void compressHC(byte[] src, int srcOff, int srcLen, ByteArrayDataOutput out, LZ4HCTable ht) {
 
-        final int srcEnd = srcOff + srcLen;
-        final int matchLimit = srcEnd - LAST_LITERALS;
-        final int mfLimit = matchLimit - MIN_MATCH;
+        int srcEnd = srcOff + srcLen;
+        int matchLimit = srcEnd - LAST_LITERALS;
 
         int sOff = srcOff;
         int anchor = sOff++;
 
         ht.reset(srcOff);
-        final Match match0 = new Match();
-        final Match match1 = new Match();
-        final Match match2 = new Match();
-        final Match match3 = new Match();
+        Match match0 = new Match();
+        Match match1 = new Match();
+        Match match2 = new Match();
+        Match match3 = new Match();
 
+        int mfLimit = matchLimit - MIN_MATCH;
         main:
         while (sOff <= mfLimit) {
             if (!ht.insertAndFindBestMatch(src, sOff, matchLimit, match1)) {
@@ -472,7 +474,7 @@ public enum LZ4 { ;
                         if (match1.start + newMatchLen > match2.end() - MIN_MATCH) {
                             newMatchLen = match2.start - match1.start + match2.len - MIN_MATCH;
                         }
-                        final int correction = newMatchLen - (match2.start - match1.start);
+                        int correction = newMatchLen - (match2.start - match1.start);
                         if (correction > 0) {
                             match2.fix(correction);
                         }
@@ -496,7 +498,7 @@ public enum LZ4 { ;
                     if (match3.start < match1.end() + 3) { // Not enough space for match 2 : remove it
                         if (match3.start >= match1.end()) { // // can write Seq1 immediately ==> Seq2 is removed, so Seq3 becomes Seq1
                             if (match2.start < match1.end()) {
-                                final int correction = match1.end() - match2.start;
+                                int correction = match1.end() - match2.start;
                                 match2.fix(correction);
                                 if (match2.len < MIN_MATCH) {
                                     copyTo(match3, match2);
@@ -525,7 +527,7 @@ public enum LZ4 { ;
                             if (match1.end() > match2.end() - MIN_MATCH) {
                                 match1.len = match2.end() - match1.start - MIN_MATCH;
                             }
-                            final int correction = match1.end() - match2.start;
+                            int correction = match1.end() - match2.start;
                             match2.fix(correction);
                         } else {
                             match1.len = match2.start - match1.start;

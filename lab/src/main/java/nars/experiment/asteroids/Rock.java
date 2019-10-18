@@ -3,8 +3,20 @@ package nars.experiment.asteroids;
 import java.awt.*;
 
 public class Rock extends VectorSprite {
-    int c, d, e, f, g, h, i, j, k, l, m, n;
-    double a, b;
+    int c;
+    int d;
+    int e;
+    int f;
+    int g;
+    int h;
+    int i;
+    int j;
+    int k;
+    int l;
+    int m;
+    int n;
+    double a;
+    double b;
 
     public Rock() {
         size = 4;

@@ -12,7 +12,8 @@ class Metronome {
     public Metronome(Term id, Clock cc, NAR n) {
         cc.on(new Auvent<Clock>() {
 
-            public final Envelope kickEnv, snareEnv;
+            public final Envelope kickEnv;
+            public final Envelope snareEnv;
             final AudioContext ac = cc.getContext();
 
             {

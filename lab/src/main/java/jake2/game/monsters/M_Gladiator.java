@@ -421,19 +421,18 @@ public class M_Gladiator {
         @Override
         public boolean think(edict_t self) {
 
-            float[] start = { 0, 0, 0 };
-
-            float[] dir = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D
                     .G_ProjectSource(
                             self.s.origin,
                             M_Flash.monster_flash_offset[Defines.MZ2_GLADIATOR_RAILGUN_1],
                             forward, right, start);
 
-            
+
+            float[] dir = {0, 0, 0};
             Math3D.VectorSubtract(self.pos1, start, dir);
             Math3D.VectorNormalize(dir);
 
@@ -591,14 +590,14 @@ public class M_Gladiator {
         @Override
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
-            int n;
 
-            
+
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
                                 .soundindex("misc/udeath.wav"), 1,
                                 Defines.ATTN_NORM, 0);
+                int n;
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
                             damage, Defines.GIB_ORGANIC);

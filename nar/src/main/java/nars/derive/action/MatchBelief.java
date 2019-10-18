@@ -56,7 +56,7 @@ public class MatchBelief extends NativeHow {
 	 */
     private static @Nullable Premise match(Premise p, int var, RuleCause why, Derivation d) {
 
-		final Term beliefTerm = p.beliefTerm();
+		Term beliefTerm = p.beliefTerm();
 		if (!beliefTerm.op().taskable)
 			return null; //HACK some non-taskable / non-conceptualizable beliefTerms op's are invisible to the predicate trie due to being masked in Anom's
 
@@ -125,11 +125,12 @@ public class MatchBelief extends NativeHow {
 			Term _nextBeliefTerm = nextBeliefTerm;
 			//TODO shuffle recursion order
 			taskTerm.recurseTerms(x -> x.hasAll(bStruct), s -> {
-				if (s instanceof Compound) {
-					s = s.unneg();
-					if (s.opID() == bOp) {
-						if (_nextBeliefTerm.equalsRoot(s)) {
-							found[0] = s;
+                Term s1 = s;
+                if (s1 instanceof Compound) {
+					s1 = s1.unneg();
+					if (s1.opID() == bOp) {
+						if (_nextBeliefTerm.equalsRoot(s1)) {
+							found[0] = s1;
 							return false;
 						}
 					}
@@ -150,7 +151,7 @@ public class MatchBelief extends NativeHow {
 
 	private static @Nullable Task match(Task task, Term beliefTerm, Derivation d) {
 
-		final BeliefTable beliefTable = d.nar.tableDynamic(beliefTerm, true);
+		BeliefTable beliefTable = d.nar.tableDynamic(beliefTerm, true);
 
 		return beliefTable != null && !beliefTable.isEmpty() ?
 			match(task, beliefTerm, beliefTable, timeFocus(task, beliefTerm, d), d) : null;

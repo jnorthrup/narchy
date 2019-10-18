@@ -89,7 +89,7 @@ public abstract class AbstractAgent {
      * @param paletteName The name of the palette (NTSC or SECAM).
      * @return
      */
-    protected final ColorPalette makePalette(String paletteName) {
+    protected static ColorPalette makePalette(String paletteName) {
         if ("NTSC".equals(paletteName))
             return new NTSCPalette();
         else if ("SECAM".equals(paletteName))
@@ -201,7 +201,7 @@ public abstract class AbstractAgent {
         ui.refresh();
     }
 
-    protected void pause(long waitTime) {
+    protected static void pause(long waitTime) {
         try {
             Thread.sleep(waitTime);
         }

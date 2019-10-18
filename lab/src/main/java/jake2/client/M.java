@@ -38,7 +38,6 @@ import jake2.util.Math3D;
 public final class M {
 
     public static void M_CheckGround(edict_t ent) {
-        float[] point = { 0, 0, 0 };
 
         if ((ent.flags & (Defines.FL_SWIM | Defines.FL_FLY)) != 0)
             return;
@@ -48,8 +47,8 @@ public final class M {
             return;
         }
 
-        
-        
+
+        float[] point = {0, 0, 0};
         point[0] = ent.s.origin[0];
         point[1] = ent.s.origin[1];
         point[2] = ent.s.origin[2] - 0.25f;
@@ -82,26 +81,21 @@ public final class M {
 
     public static boolean M_CheckBottom(edict_t ent) {
         float[] mins = { 0, 0, 0 };
-        float[] maxs = { 0, 0, 0 };
-        float[] start = { 0, 0, 0 };
-        float[] stop = { 0, 0, 0 };
-
-        trace_t trace;
-        int x, y;
-        float mid, bottom;
 
         Math3D.VectorAdd(ent.s.origin, ent.mins, mins);
+        float[] maxs = {0, 0, 0};
         Math3D.VectorAdd(ent.s.origin, ent.maxs, maxs);
 
-        
-        
-        
+
+        float[] start = {0, 0, 0};
         start[2] = mins[2] - 1;
+        int x;
         for (x = 0; x <= 1; x++)
 
             start[0] = x != 0 ? maxs[0] : mins[0];
 
-            for (y = 0; y <= 1; y++) {
+        float[] stop = {0, 0, 0};
+        for (int y = 0; y <= 1; y++) {
 
                 start[1] = y != 0 ? maxs[1] : mins[1];
                 if (GameBase.gi.pointcontents.pointcontents(start) != Defines.CONTENTS_SOLID) {
@@ -115,15 +109,16 @@ public final class M {
                     start[0] = stop[0] = (mins[0] + maxs[0]) * 0.5f;
                     start[1] = stop[1] = (mins[1] + maxs[1]) * 0.5f;
                     stop[2] = start[2] - 2 * GameBase.STEPSIZE;
-                    trace = game_import_t.trace(start, Globals.vec3_origin,
+                    trace_t trace = game_import_t.trace(start, Globals.vec3_origin,
                             Globals.vec3_origin, stop, ent,
                             Defines.MASK_MONSTERSOLID);
 
                     if (trace.fraction == 1.0)
                         return false;
-                    mid = bottom = trace.endpos[2];
+                    float bottom;
+                    float mid = bottom = trace.endpos[2];
 
-                    
+
                     for (x = 0; x <= 1; x++)
 
                         start[0] = stop[0] = x != 0 ? maxs[0] : mins[0];
@@ -168,10 +163,10 @@ public final class M {
         float speed = ent.yaw_speed;
         if (ideal > current) {
             if (move >= 180)
-                move = move - 360;
+                move -= 360;
         } else {
             if (move <= -180)
-                move = move + 360;
+                move += 360;
         }
         if (move > 0) {
             if (move > speed)
@@ -210,7 +205,6 @@ public final class M {
      * M_walkmove.
      */
     public static boolean M_walkmove(edict_t ent, float yaw, float dist) {
-        float[] move = { 0, 0, 0 };
 
         if ((ent.groundentity == null)
                 && (ent.flags & (Defines.FL_FLY | Defines.FL_SWIM)) == 0)
@@ -218,6 +212,7 @@ public final class M {
 
         yaw = (float) (yaw * Math.PI * 2 / 360);
 
+        float[] move = {0, 0, 0};
         move[0] = (float) Math.cos(yaw) * dist;
         move[1] = (float) Math.sin(yaw) * dist;
         move[2] = 0;
@@ -255,9 +250,9 @@ public final class M {
     }
 
     public static void M_WorldEffects(edict_t ent) {
-        int dmg;
 
         if (ent.health > 0) {
+            int dmg;
             if (0 == (ent.flags & Defines.FL_SWIM)) {
                 if (ent.waterlevel < 3) {
                     ent.air_finished = GameBase.level.time + 12;
@@ -357,9 +352,9 @@ public final class M {
         public String getID() { return "m_drop_to_floor";}
         @Override
         public boolean think(edict_t ent) {
-            float[] end = { 0, 0, 0 };
 
             ent.s.origin[2] += 1;
+            float[] end = {0, 0, 0};
             Math3D.VectorCopy(ent.s.origin, end);
             end[2] -= 256;
 

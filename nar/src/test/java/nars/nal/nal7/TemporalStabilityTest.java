@@ -72,7 +72,7 @@ abstract class TemporalStabilityTest {
         return t.term().eventsAND((r, xt) -> !validOccurrence(s + r), (long) 0, false, false);
     }
 
-    private void run(int cycles, NAR n) {
+    private static void run(int cycles, NAR n) {
 
         if (cycles > 0) {
 

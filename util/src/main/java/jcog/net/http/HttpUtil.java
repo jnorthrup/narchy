@@ -139,7 +139,8 @@ public final class HttpUtil
         public static int findCRLF(ByteBuffer buf, int offset)
         {
 
-            return IntStream.range(offset, buf.limit() - 1).filter(a -> isCR(buf.get(a)) && isLF(buf.get(a + 1))).findFirst().orElse(-1);
+                int bound = buf.limit() - 1;
+                return IntStream.range(offset, bound).filter(a -> isCR(buf.get(a)) && isLF(buf.get(a + 1))).findFirst().orElse(-1);
 
         }
 
@@ -148,14 +149,16 @@ public final class HttpUtil
         {
 
 
-            return IntStream.range(offset, buf.limit() - 2).filter(a -> isCR(buf.get(a)) && isLF(buf.get(a + 1))).filter(a -> !isSP(buf.get(a + 2)) && !isHT(buf.get(a + 2))).findFirst().orElse(-1);
+                int bound = buf.limit() - 2;
+                return IntStream.range(offset, bound).filter(a -> isCR(buf.get(a)) && isLF(buf.get(a + 1))).filter(a -> !isSP(buf.get(a + 2)) && !isHT(buf.get(a + 2))).findFirst().orElse(-1);
 
         }
 
         
         public static int findSP(ByteBuffer buf, int offset)
         {
-            return IntStream.range(offset, buf.limit()).filter(a -> isSP(buf.get(a))).findFirst().orElse(-1);
+                int bound = buf.limit();
+                return IntStream.range(offset, bound).filter(a -> isSP(buf.get(a))).findFirst().orElse(-1);
 
         }
 
@@ -376,7 +379,7 @@ public final class HttpUtil
              *
              * @throws DateParseException if none of the dataFormats could parse the dateValue
              */
-            public static Date parseDate(final String dateValue, String[] dateFormats)
+            public static Date parseDate(String dateValue, String[] dateFormats)
                     throws DateParseException
             {
                     return parseDate(dateValue, dateFormats, null);

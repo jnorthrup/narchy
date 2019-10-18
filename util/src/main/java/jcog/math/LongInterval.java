@@ -122,12 +122,12 @@ public interface LongInterval {
 
 	default boolean isDuringAny(long... when) {
 		if (when.length == 2 && when[0] == when[1]) return isDuring(when[0]);
-        return Arrays.stream(when).anyMatch(this::isDuring);
+		return Arrays.stream(when).anyMatch(this::isDuring);
 	}
 
 	default boolean isDuringAll(long... when) {
 		if (when.length == 2 && when[0] == when[1]) return isDuring(when[0]);
-        return Arrays.stream(when).allMatch(this::isDuring);
+		return Arrays.stream(when).allMatch(this::isDuring);
 	}
 
 	default boolean isDuring(long when) {

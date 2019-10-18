@@ -81,7 +81,8 @@ class AxialSplitTest {
 
         RBranch<RectDouble> root = (RBranch<RectDouble>) rTree.root();
         RNode<RectDouble>[] children = root.data;
-        int childCount = (int) Arrays.stream(children).filter(Objects::nonNull).count();
+        long count = Arrays.stream(children).filter(Objects::nonNull).count();
+        int childCount = (int) count;
         assertEquals(2, root.size);
         assertEquals( 2, childCount, "Expected different number of children after split");
 
@@ -109,7 +110,7 @@ class AxialSplitTest {
     @Test
     void overlappingEntryTest() {
 
-        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(TYPE);
+        RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(TYPE);
         rTree.add(new RectDouble(0, 0, 1, 1));
         rTree.add(new RectDouble(0, 0, 2, 2));
         rTree.add(new RectDouble(0, 0, 2.1, 2));
@@ -134,7 +135,7 @@ class AxialSplitTest {
         
         final int expectedEntryCount = 17;
 
-        final Stats stats = rTree.stats();
+        Stats stats = rTree.stats();
         assertEquals( expectedEntryCount, stats.size(), () -> "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + expectedEntryCount + " actual: " + stats.size());
     }
 
@@ -147,13 +148,13 @@ class AxialSplitTest {
     void randomEntryTest(int maxLeaf) {
 
         final int entryCount = 10000;
-        final RectDouble[] rects = RTree2DTest.generateRandomRects(entryCount);
+        RectDouble[] rects = RTree2DTest.generateRandomRects(entryCount);
 
-        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(maxLeaf, TYPE);
+        RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(maxLeaf, TYPE);
         for (int i = 0; i < rects.length; i++)
             rTree.add(rects[i]);
 
-        final Stats stats = rTree.stats();
+        Stats stats = rTree.stats();
         assertTrue(Math.abs(entryCount - stats.size()) == 0,
                 () -> "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + entryCount + " actual: " + stats.size() /* in case of duplicates */);
         stats.print(System.out);
@@ -166,17 +167,17 @@ class AxialSplitTest {
      */
     @Test
     void causeLinearSplitOverflow() {
-        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(TYPE);
-        final Random rand = new Random(13);
+        RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(TYPE);
+        Random rand = new Random(13);
         for (int i = 0; i < 500; i++) {
-            final int x1 = rand.nextInt(10);
-            final int y1 = rand.nextInt(10);
-            final int x2 = x1 + rand.nextInt(200);
-            final int y2 = y1 + rand.nextInt(200);
+            int x1 = rand.nextInt(10);
+            int y1 = rand.nextInt(10);
+            int x2 = x1 + rand.nextInt(200);
+            int y2 = y1 + rand.nextInt(200);
 
             rTree.add(new RectDouble(x1, y1, x2, y2));
         }
-        final Stats stats = rTree.stats();
+        Stats stats = rTree.stats();
         stats.print(System.out);
     }
 

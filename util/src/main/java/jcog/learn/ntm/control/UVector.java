@@ -25,29 +25,30 @@ public class UVector {
         return value.length;
     }
 
-    public void value(final int i, final double newValue) {
+    public void value(int i, double newValue) {
         this.value[i] = newValue;
     }
-    public double value(final int i) {
+    public double value(int i) {
         return this.value[i];
     }
 
 
-    public void grad(final int i, final double newValue) {
+    public void grad(int i, double newValue) {
         this.grad[i] = newValue;
     }
-    public double grad(final int i) {
+    public double grad(int i) {
         return this.grad[i];
     }
 
     public double sumGradientValueProducts() {
-        final double[] value = this.value;
-        double s = IntStream.range(0, value.length).mapToDouble(i -> value[i] * grad[i]).sum();
+        double[] value = this.value;
+        int bound = value.length;
+        double s = IntStream.range(0, bound).mapToDouble(i -> value[i] * grad[i]).sum();
         return s;
     }
 
-    public void valueMultiplySelf(final double factor) {
-        final double[] value = this.value;
+    public void valueMultiplySelf(double factor) {
+        double[] value = this.value;
         for (int i = 0; i < value.length; i++) {
             value[i] *= factor;
         }
@@ -61,20 +62,21 @@ public class UVector {
         Arrays.fill(grad, 0);
     }
 
-    public void setDelta(final double[] target) {
-        final double[] v = this.value;
-        final double[] g = this.grad;
+    public void setDelta(double[] target) {
+        double[] v = this.value;
+        double[] g = this.grad;
 
         for (int j = 0; j < v.length; j++) {
             g[j] = v[j] - target[j];
         }
     }
 
-    public double sumDot(final double[] input) {
+    public double sumDot(double[] input) {
 
-        final double[] v = this.value;
+        double[] v = this.value;
 
-        double s = IntStream.range(0, size()).mapToDouble(j -> v[j] * input[j]).sum();
+        int bound = size();
+        double s = IntStream.range(0, bound).mapToDouble(j -> v[j] * input[j]).sum();
         return s;
     }
 }

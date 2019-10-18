@@ -208,7 +208,7 @@ public class M extends GamePanel {
 					int def = p_defence[selP] * 3 / 4;
 					if (e_f_pos[victim] == selP) {
 						def += e_ships[victim];
-						e_ships[victim] = e_ships[victim] / 2;
+						e_ships[victim] /= 2;
 						p_owner[selP] = selE;
 						
 						for (int p = 0; p < 24; p++) {
@@ -265,12 +265,18 @@ public class M extends GamePanel {
 			for (int e = 1; e < 5; e++) {
 				e_lost[e] = true;
 				for (int p = 0; p < 24; p++) {
-					if (p_owner[p] == e) { e_lost[e] = false; }
+					if (p_owner[p] == e) {
+						e_lost[e] = false;
+						break;
+					}
 				}
 				if (!e_lost[e]) {
 					e_won[e] = true;
 					for (int p = 0; p < 24; p++) {
-						if (p_owner[p] != e && p_owner[p] != 0) { e_won[e] = false; }
+						if (p_owner[p] != e && p_owner[p] != 0) {
+							e_won[e] = false;
+							break;
+						}
 					}
 					if (e_transcend[e]) {
 						e_won[e] = true;
@@ -417,9 +423,9 @@ public class M extends GamePanel {
 	}
 
 	boolean inRange() {
-        return IntStream.range(0, 24).anyMatch(p2 -> p_owner[p2] == selE &&
-                ((p_x[p2] - p_x[selP]) * (p_x[p2] - p_x[selP]) + (p_y[p2] - p_y[selP]) * (p_y[p2] - p_y[selP])) <=
-                        e_range[selE] * e_range[selE]);
+		return IntStream.range(0, 24).anyMatch(p2 -> p_owner[p2] == selE &&
+				((p_x[p2] - p_x[selP]) * (p_x[p2] - p_x[selP]) + (p_y[p2] - p_y[selP]) * (p_y[p2] - p_y[selP])) <=
+						e_range[selE] * e_range[selE]);
 	}
 
 	int value(int a) {
@@ -542,7 +548,8 @@ public class M extends GamePanel {
 	boolean antechamber = true;
 
 	boolean needAntechamber() {
-		int hps = (int) IntStream.range(1, 5).filter(e -> e_human[e]).count();
+		long count = IntStream.range(1, 5).filter(e -> e_human[e]).count();
+		int hps = (int) count;
         return hps > 1 && e_human[selE];
 	}
 

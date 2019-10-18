@@ -34,10 +34,9 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
 
     @Override
     public void remember(/*@NotNull*/ Remember r) {
-        Task u;
         Task t = r.input;
         synchronized (this) {
-            u = merge(t, t, (prev, next) -> {
+            Task u = merge(t, t, (prev, next) -> {
                 r.merge(prev);
                 return next;
             });

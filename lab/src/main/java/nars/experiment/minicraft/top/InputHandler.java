@@ -7,8 +7,10 @@ import java.util.List;
 
 public class InputHandler implements KeyListener {
     public final class Key {
-        public int presses, absorbs;
-        public boolean down, clicked;
+        public int presses;
+        public int absorbs;
+        public boolean down;
+        public boolean clicked;
 
         public Key() {
             keys.add(this);

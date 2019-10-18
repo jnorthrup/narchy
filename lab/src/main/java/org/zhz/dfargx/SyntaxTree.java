@@ -57,7 +57,10 @@ public class SyntaxTree {
 
     private void shunt() {
         ShuntingStack shuntingStack = new ShuntingStack();
-        nodeList.forEach((Consumer<Node>) n -> n.accept(shuntingStack));
+        Consumer<Node> c = n -> n.accept(shuntingStack);
+        for (Node node : nodeList) {
+            c.accept(node);
+        }
         shuntingStack.finish(nodeStack);
     }
 
@@ -71,12 +74,12 @@ public class SyntaxTree {
             switch (ch) {
                 case '[':
                     tryConcat();
-                    List<Character> all = new FasterList<>();
                     boolean isComplementarySet;
                     if (r.charAt(index) == '^') {
                         isComplementarySet = true;
                         index++;
                     } else isComplementarySet = false;
+                    List<Character> all = new FasterList<>();
                     for (char next = r.charAt(index++); next != ']'; next = r.charAt(index++)) {
                         if (next == '\\' || next == '.') {
                             String token;
@@ -256,7 +259,9 @@ public class SyntaxTree {
 
     public static List<Node> copyNodes(List<Node> sample) {
         List<Node> result = new FasterList(sample.size());
-        sample.forEach(node -> result.add(node.copy()));
+        for (Node node : sample) {
+            result.add(node.copy());
+        }
         return result;
     }
 

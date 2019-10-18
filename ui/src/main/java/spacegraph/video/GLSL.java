@@ -29,16 +29,16 @@ public class GLSL extends PaintSurface {
         SpaceGraph.window(new GLSL().pos(r), 800, 600);
     }
 
-    private final boolean updateUniformVars = true;
+    private static final boolean updateUniformVars = true;
     private int vertexShaderProgram;
     private int fragmentShaderProgram;
     private int shaderprogram;
 
-    private final float x = -2;
-    private final float y = -2;
-    private final float height = 4;
-    private final float width = 4;
-    private final int iterations = 1;
+    private static final float x = -2;
+    private static final float y = -2;
+    private static final float height = 4;
+    private static final float width = 4;
+    private static final int iterations = 1;
 
 
     private boolean init = false;
@@ -89,7 +89,7 @@ public class GLSL extends PaintSurface {
         ShaderCode fp0 = new ShaderCode(GL_FRAGMENT_SHADER, 1, new CharSequence[][]{{fsrc}});
         
         fp0.defaultShaderCustomization(gl, true, true);
-        final ShaderProgram sp0 = new ShaderProgram();
+        ShaderProgram sp0 = new ShaderProgram();
         
         sp0.add(gl, fp0, System.err);
         st.attachShaderProgram(gl, sp0, true);

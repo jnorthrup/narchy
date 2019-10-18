@@ -175,11 +175,12 @@ public class CodiCA extends CA {
                             }
 
                             int InputSum =
-                                    IntStream.of(0, 1, 2, 3, 4, 5).map(i2 -> caio[i2]).sum();
+                                    IntStream.of(0, 1, 2, 3, 4, 5).map(i21 -> caio[i21]).sum();
                             if (InputSum == 0) break;
 
+                            int result = IntStream.of(0, 1, 2, 3, 4, 5).map(i11 -> (caio[i11] & AXON_SIG)).sum();
                             InputSum =
-                                    IntStream.of(0, 1, 2, 3, 4, 5).map(i1 -> (caio[i1] & AXON_SIG)).sum();
+                                    result;
                             if (InputSum == AXON_SIG) {
                                 ca.Type = AXON;
                                 CAChanged = 1;
@@ -196,8 +197,9 @@ public class CodiCA extends CA {
                                 break;
                             }
 
+                            int sum = IntStream.of(0, 1, 2, 3, 4, 5).map(v -> (caio[v] & DEND_SIG)).sum();
                             InputSum =
-                                    IntStream.of(0, 1, 2, 3, 4, 5).map(v -> (caio[v] & DEND_SIG)).sum();
+                                    sum;
                             if (InputSum == DEND_SIG) {
                                 CAChanged = 1;
                                 ca.Type = DEND;

@@ -6,6 +6,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -16,7 +17,7 @@ public class Launcher {
 
     static class Experiment implements Runnable {
         final Class<? extends GameX> env;
-        final float fps = 25f;
+        static final float fps = 25f;
 
         Experiment(Class<? extends GameX> env) {
             this.env = env;
@@ -25,16 +26,14 @@ public class Launcher {
         @Override
         public void run() {
 
-            new Thread(()-> {
-                GameX.runRT((n) -> {
-                    try {
+            new Thread(()-> GameX.runRT((n) -> {
+                try {
 
-                        return env.getConstructor(NAR.class).newInstance(n);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }, fps);
-            }).start();
+                    return env.getConstructor(NAR.class).newInstance(n);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }, fps)).start();
         }
 
         @Override
@@ -66,9 +65,10 @@ public class Launcher {
 
         Set<Class<? extends GameX>> envs = new Reflections("nars").getSubTypesOf(GameX.class);
 
+        List<Experiment> list = envs.stream().map(Experiment::new).collect(toList());
         Surface m = grid(
                 new ObjectSurface(
-                        envs.stream().map(Experiment::new).collect(toList())
+                        list
                 ),
                 new ObjectSurface(
                         List.of(new MainRunner(() -> GUI.main(new String[]{})))

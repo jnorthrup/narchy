@@ -270,20 +270,20 @@ class MyCMAESOptimizerTest {
 
 	@Test
 	void testMath864() {
-		final double[] sigma = {1e-1};
-		final MyCMAESOptimizer optimizer
+		double[] sigma = {1e-1};
+		MyCMAESOptimizer optimizer
 			= new MyCMAESOptimizer(30000, 0, true, 10,
 			0, rng(), false, null, 5, sigma);
-		final MultivariateFunction fitnessFunction = parameters -> {
+		MultivariateFunction fitnessFunction = parameters -> {
             final double target = 1;
-            final double error = target - parameters[0];
+            double error = target - parameters[0];
             return error * error;
         };
 
-		final double[] start = {0};
-		final double[] lower = {-1e6};
-		final double[] upper = {1.5};
-		final double[] result = optimizer.optimize(new MaxEval(10000),
+		double[] start = {0};
+		double[] lower = {-1e6};
+		double[] upper = {1.5};
+		double[] result = optimizer.optimize(new MaxEval(10000),
 			new ObjectiveFunction(fitnessFunction),
 			GoalType.MINIMIZE,
 			new InitialGuess(start),
@@ -302,13 +302,13 @@ class MyCMAESOptimizerTest {
 		MyCMAESOptimizer optimizer
 			= new MyCMAESOptimizer(30000, 0, true, 10,
 			0, rng(), false, null, 5, sigma1);
-		final MultivariateFunction fitnessFunction = parameters -> {
+		MultivariateFunction fitnessFunction = parameters -> {
             final double target = 11.1;
-            final double error = target - parameters[0];
+            double error = target - parameters[0];
             return error * error;
         };
 
-		final double[] start = {1};
+		double[] start = {1};
 
 
 		PointValuePair result = optimizer.optimize(new MaxEval(100000),
@@ -316,22 +316,22 @@ class MyCMAESOptimizerTest {
 			GoalType.MINIMIZE,
 			SimpleBounds.unbounded(1),
 			new InitialGuess(start));
-		final double resNoBound = result.getPoint()[0];
+		double resNoBound = result.getPoint()[0];
 
 
-		final double[] lower = {-20};
-		final double[] upper = {5e16};
-		final double[] sigma2 = {10};
+        double[] sigma2 = {10};
 		optimizer
 			= new MyCMAESOptimizer(30000, 0, true, 10,
 			0, rng(), false, null, 5, sigma2);
 
-		result = optimizer.optimize(new MaxEval(100000),
+        double[] upper = {5e16};
+        double[] lower = {-20};
+        result = optimizer.optimize(new MaxEval(100000),
 			new ObjectiveFunction(fitnessFunction),
 			GoalType.MINIMIZE,
 			new InitialGuess(start),
 			new SimpleBounds(lower, upper));
-		final double resNearLo = result.getPoint()[0];
+		double resNearLo = result.getPoint()[0];
 
 
 		lower[0] = -5e16;
@@ -341,7 +341,7 @@ class MyCMAESOptimizerTest {
 			GoalType.MINIMIZE,
 			new InitialGuess(start),
 			new SimpleBounds(lower, upper));
-		final double resNearHi = result.getPoint()[0];
+		double resNearHi = result.getPoint()[0];
 
 
 		assertEquals(resNoBound, resNearLo, 1e-3);
@@ -363,19 +363,19 @@ class MyCMAESOptimizerTest {
 	 * @param maxEvaluations Maximum number of evaluations.
 	 * @param expected       Expected point / value.
 	 */
-	private void doTest(MultivariateFunction func,
-						double[] startPoint,
-						double[] inSigma,
-						double[][] boundaries,
-						GoalType goal,
-						int lambda,
-						boolean isActive,
-						int diagonalOnly,
-						double stopValue,
-						double fTol,
-						double pointTol,
-						int maxEvaluations,
-						PointValuePair expected) {
+	private static void doTest(MultivariateFunction func,
+							   double[] startPoint,
+							   double[] inSigma,
+							   double[][] boundaries,
+							   GoalType goal,
+							   int lambda,
+							   boolean isActive,
+							   int diagonalOnly,
+							   double stopValue,
+							   double fTol,
+							   double pointTol,
+							   int maxEvaluations,
+							   PointValuePair expected) {
 		int dim = startPoint.length;
 
 		MyCMAESOptimizer optim = new MyCMAESOptimizer(10000, stopValue, isActive, diagonalOnly,
@@ -431,7 +431,7 @@ class MyCMAESOptimizerTest {
 		@Override
 		public double value(double[] x) {
 			double f = Arrays.stream(x).map(v -> v * v).sum();
-            return f;
+			return f;
 		}
 	}
 
@@ -449,7 +449,8 @@ class MyCMAESOptimizerTest {
 		@Override
 		public double value(double[] x) {
 			double f = x[0] * x[0];
-            f += IntStream.range(1, x.length).mapToDouble(i -> factor * x[i] * x[i]).sum();
+			double sum = IntStream.range(1, x.length).mapToDouble(i -> factor * x[i] * x[i]).sum();
+			f += sum;
 			return f;
 		}
 	}
@@ -468,7 +469,8 @@ class MyCMAESOptimizerTest {
 		@Override
 		public double value(double[] x) {
 			double f = factor * x[0] * x[0];
-            f += IntStream.range(1, x.length).mapToDouble(i -> x[i] * x[i]).sum();
+			double sum = IntStream.range(1, x.length).mapToDouble(i -> x[i] * x[i]).sum();
+			f += sum;
 			return f;
 		}
 	}
@@ -488,7 +490,8 @@ class MyCMAESOptimizerTest {
 		public double value(double[] x) {
 			int end = x.length - 1;
 			double f = x[0] * x[0] / factor + factor * x[end] * x[end];
-            f += IntStream.range(1, end).mapToDouble(i -> x[i] * x[i]).sum();
+			double sum = IntStream.range(1, end).mapToDouble(i -> x[i] * x[i]).sum();
+			f += sum;
 			return f;
 		}
 	}
@@ -508,7 +511,7 @@ class MyCMAESOptimizerTest {
 		@Override
 		public double value(double[] x) {
 			double f = IntStream.range(0, x.length).mapToDouble(i -> (i < x.length / 2 ? factor : 1) * x[i] * x[i]).sum();
-            return f;
+			return f;
 		}
 	}
 
@@ -526,9 +529,9 @@ class MyCMAESOptimizerTest {
 
 		@Override
 		public double value(double[] x) {
-			double f = 0;
-			x = B.Rotate(x);
-			for (int i = 0; i < x.length; ++i) {
+            x = B.Rotate(x);
+            double f = 0;
+            for (int i = 0; i < x.length; ++i) {
 				f += FastMath.pow(factor, i / (x.length - 1.)) * x[i] * x[i];
 			}
 			return f;
@@ -550,7 +553,7 @@ class MyCMAESOptimizerTest {
 		@Override
 		public double value(double[] x) {
 			double f = IntStream.range(0, x.length).mapToDouble(i -> FastMath.pow(factor, i / (x.length - 1.)) * x[i] * x[i]).sum();
-            return f;
+			return f;
 		}
 	}
 
@@ -567,8 +570,8 @@ class MyCMAESOptimizerTest {
 		@Override
 		public double value(double[] x) {
 			double f = IntStream.range(0, x.length).mapToDouble(i -> FastMath.pow(FastMath.abs(x[i]), 2. + 10 * (double) i
-                    / (x.length - 1.))).sum();
-            return f;
+					/ (x.length - 1.))).sum();
+			return f;
 		}
 	}
 
@@ -585,7 +588,8 @@ class MyCMAESOptimizerTest {
 
 		@Override
 		public double value(double[] x) {
-			double f = IntStream.range(0, x.length - 1).mapToDouble(i -> 1e2 * (x[i] * x[i] - x[i + 1]) * (x[i] * x[i] - x[i + 1])
+            int bound = x.length - 1;
+            double f = IntStream.range(0, bound).mapToDouble(i -> 1e2 * (x[i] * x[i] - x[i + 1]) * (x[i] * x[i] - x[i + 1])
                     + (x[i] - 1.) * (x[i] - 1.)).sum();
             return f;
 		}
@@ -635,10 +639,9 @@ class MyCMAESOptimizerTest {
 		@Override
 		public double value(double[] x) {
 			double f = 0;
-			double fac;
-			for (int i = 0; i < x.length; ++i) {
-				fac = FastMath.pow(axisratio, (i - 1.) / (x.length - 1.));
-				if (i == 0 && x[i] < 0) {
+            for (int i = 0; i < x.length; ++i) {
+                double fac = FastMath.pow(axisratio, (i - 1.) / (x.length - 1.));
+                if (i == 0 && x[i] < 0) {
 					fac *= 1.;
 				}
 				f += fac * fac * x[i] * x[i] + amplitude
@@ -669,18 +672,18 @@ class MyCMAESOptimizerTest {
 				return;
 			}
 
-			double sp;
-			int i, j, k;
-
-			/* generate orthogonal basis */
+            /* generate orthogonal basis */
 			basis = new double[DIM][DIM];
-			for (i = 0; i < DIM; ++i) {
+			for (int i = 0; i < DIM; ++i) {
 				/* sample components gaussian */
-				for (j = 0; j < DIM; ++j) {
+                int j;
+                for (j = 0; j < DIM; ++j) {
 					basis[i][j] = rand.nextGaussian();
 				}
 				/* substract projection of previous vectors */
-				for (j = i - 1; j >= 0; --j) {
+                int k;
+                double sp;
+                for (j = i - 1; j >= 0; --j) {
 					for (sp = 0., k = 0; k < DIM; ++k) {
 						sp += basis[i][k] * basis[j][k]; /* scalar product */
 					}

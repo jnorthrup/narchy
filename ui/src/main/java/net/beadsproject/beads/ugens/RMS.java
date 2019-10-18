@@ -46,9 +46,9 @@ public class RMS extends UGen {
     public void gen() {
         float[] bo = bufOut[0];
         for (int i = 0; i < bufferSize; i++) {
-            float x, newMem = 0;
+            float newMem = 0;
             for (int j = 0; j < channels; j++) {
-                x = bufIn[j][i];
+                float x = bufIn[j][i];
                 newMem += x * x;
             }
             sum -= rmsMem[index];

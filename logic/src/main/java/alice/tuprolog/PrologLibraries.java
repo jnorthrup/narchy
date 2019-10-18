@@ -308,11 +308,15 @@ public class PrologLibraries {
     }
 
     public void onSolveHalt() {
-        currentLibraries.forEach(PrologLib::onSolveHalt);
+        for (PrologLib currentLibrary : currentLibraries) {
+            currentLibrary.onSolveHalt();
+        }
     }
 
     public void onSolveEnd() {
-        currentLibraries.forEach(PrologLib::onSolveEnd);
+        for (PrologLib currentLibrary : currentLibraries) {
+            currentLibrary.onSolveEnd();
+        }
     }
 
     public URL getExternalLibraryURL(String name) {

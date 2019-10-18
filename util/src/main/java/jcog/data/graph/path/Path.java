@@ -36,7 +36,7 @@ import java.util.function.ToDoubleFunction;
  * @author gocha
  */
 public interface Path<N, E> {
-    static <N, E> N firstNode(FromTo<Node<N, E>, E> edge, final Direction d) {
+    static <N, E> N firstNode(FromTo<Node<N, E>, E> edge, Direction d) {
         if (d == null) throw new IllegalArgumentException("d == null");
         if (edge == null) throw new IllegalArgumentException("edge == null");
 
@@ -50,7 +50,7 @@ public interface Path<N, E> {
         return null;
     }
 
-    static <N, E> N secondNode(FromTo<Node<N, E>, E> edge, final Direction d) {
+    static <N, E> N secondNode(FromTo<Node<N, E>, E> edge, Direction d) {
         if (d == null) throw new IllegalArgumentException("d == null");
         if (edge == null) throw new IllegalArgumentException("edge == null");
 
@@ -185,7 +185,7 @@ public interface Path<N, E> {
 
 
     default double sum(ToDoubleFunction<FromTo<Node<N, E>, E>> v) {
-        double s = fetch(0, nodeCount()).stream().mapToDouble(v).sum();
+        double s = fetch(0, nodeCount()).stream().mapToDouble(v::applyAsDouble).sum();
         return s;
     }
 

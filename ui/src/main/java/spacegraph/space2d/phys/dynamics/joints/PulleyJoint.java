@@ -100,7 +100,7 @@ public class PulleyJoint extends Joint {
     }
 
     public float getCurrentLengthA() {
-        final v2 p = pool.popVec2();
+        v2 p = pool.popVec2();
         A.getWorldPointToOut(m_localAnchorA, p);
         p.subbed(m_groundAnchorA);
         float length = p.length();
@@ -109,7 +109,7 @@ public class PulleyJoint extends Joint {
     }
 
     public float getCurrentLengthB() {
-        final v2 p = pool.popVec2();
+        v2 p = pool.popVec2();
         B.getWorldPointToOut(m_localAnchorB, p);
         p.subbed(m_groundAnchorB);
         float length = p.length();
@@ -156,7 +156,7 @@ public class PulleyJoint extends Joint {
     }
 
     public float getLength1() {
-        final v2 p = pool.popVec2();
+        v2 p = pool.popVec2();
         A.getWorldPointToOut(m_localAnchorA, p);
         p.subbed(m_groundAnchorA);
 
@@ -166,7 +166,7 @@ public class PulleyJoint extends Joint {
     }
 
     public float getLength2() {
-        final v2 p = pool.popVec2();
+        v2 p = pool.popVec2();
         B.getWorldPointToOut(m_localAnchorB, p);
         p.subbed(m_groundAnchorB);
 
@@ -180,7 +180,7 @@ public class PulleyJoint extends Joint {
     }
 
     @Override
-    public void initVelocityConstraints(final SolverData data) {
+    public void initVelocityConstraints(SolverData data) {
         m_indexA = A.island;
         m_indexB = B.island;
         m_localCenterA.set(A.sweep.localCenter);
@@ -200,9 +200,9 @@ public class PulleyJoint extends Joint {
         v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
-        final Rot qA = pool.popRot();
-        final Rot qB = pool.popRot();
-        final v2 temp = pool.popVec2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 temp = pool.popVec2();
 
         qA.set(aA);
         qB.set(aB);
@@ -248,8 +248,8 @@ public class PulleyJoint extends Joint {
             m_impulse *= data.step.dtRatio;
 
             
-            final v2 PA = pool.popVec2();
-            final v2 PB = pool.popVec2();
+            v2 PA = pool.popVec2();
+            v2 PB = pool.popVec2();
 
             PA.set(m_uA).scaled(-m_impulse);
             PB.set(m_uB).scaled(-m_ratio * m_impulse);
@@ -275,16 +275,16 @@ public class PulleyJoint extends Joint {
     }
 
     @Override
-    public void solveVelocityConstraints(final SolverData data) {
+    public void solveVelocityConstraints(SolverData data) {
         v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
         v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
-        final v2 vpA = pool.popVec2();
-        final v2 vpB = pool.popVec2();
-        final v2 PA = pool.popVec2();
-        final v2 PB = pool.popVec2();
+        v2 vpA = pool.popVec2();
+        v2 vpB = pool.popVec2();
+        v2 PA = pool.popVec2();
+        v2 PB = pool.popVec2();
 
         v2.crossToOutUnsafe(wA, m_rA, vpA);
         vpA.added(vA);
@@ -313,16 +313,16 @@ public class PulleyJoint extends Joint {
     }
 
     @Override
-    public boolean solvePositionConstraints(final SolverData data) {
-        final Rot qA = pool.popRot();
-        final Rot qB = pool.popRot();
-        final v2 rA = pool.popVec2();
-        final v2 rB = pool.popVec2();
-        final v2 uA = pool.popVec2();
-        final v2 uB = pool.popVec2();
-        final v2 temp = pool.popVec2();
-        final v2 PA = pool.popVec2();
-        final v2 PB = pool.popVec2();
+    public boolean solvePositionConstraints(SolverData data) {
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 rA = pool.popVec2();
+        v2 rB = pool.popVec2();
+        v2 uA = pool.popVec2();
+        v2 uB = pool.popVec2();
+        v2 temp = pool.popVec2();
+        v2 PA = pool.popVec2();
+        v2 PB = pool.popVec2();
 
         v2 cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
@@ -367,7 +367,6 @@ public class PulleyJoint extends Joint {
         }
 
         float C = m_constant - lengthA - m_ratio * lengthB;
-        float linearError = Math.abs(C);
 
         float impulse = -mass * C;
 
@@ -389,6 +388,7 @@ public class PulleyJoint extends Joint {
         pool.pushRot(2);
         pool.pushVec2(7);
 
+        float linearError = Math.abs(C);
         return linearError < Settings.linearSlop;
     }
 }

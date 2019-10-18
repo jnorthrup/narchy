@@ -363,11 +363,8 @@ public class Quantize {
             for (int x = width; x-- > 0; ) {
                 for (int y = height; y-- > 0; ) {
                     int pixel = pixels[x][y];
-                    int red = (pixel >> 16) & 0xFF;
-                    int green = (pixel >> 8) & 0xFF;
-                    int blue = (pixel >> 0) & 0xFF;
 
-                    
+
                     if (nodes > MAX_NODES) {
                         
                         root.pruneLevel();
@@ -377,6 +374,9 @@ public class Quantize {
                     
                     
                     Node node = root;
+                    int blue = (pixel >> 0) & 0xFF;
+                    int green = (pixel >> 8) & 0xFF;
+                    int red = (pixel >> 16) & 0xFF;
                     for (int level = 1; level <= depth; ++level) {
                         int id = (((red > node.mid_red ? 1 : 0) << 0) |
                                 ((green > node.mid_green ? 1 : 0) << 1) |

@@ -107,9 +107,7 @@ public class FZero extends GameX {
         //        {
             int nx = 4;
             AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(
-                    $.p(id,$.the("cam")), vision, nx, nx, (subX, subY) -> {
-                return new float[]{/*cc.X, cc.Y*/};
-            }, 12, this);
+                    $.p(id,$.the("cam")), vision, nx, nx, (subX, subY) -> new float[]{/*cc.X, cc.Y*/}, 12, this);
             camAE.alpha(0.01f);
             camAE.noise.set(0.0f);
 
@@ -232,15 +230,11 @@ public class FZero extends GameX {
 //            //return Util.equals(damage, 0, 0.01f) ? Float.NaN : 0; //Math.max(0, 1 - damage);
 //            return Util.equals(damage, 0, 0.01f) ? 1 : 0;
 //        });
-        Reward race = rewardNormalized("race", -1, +1, (() -> {
-            return Util.clamp(progress * 0.5f, -1, +1);
-        }));
+        Reward race = rewardNormalized("race", -1, +1, (() -> Util.clamp(progress * 0.5f, -1, +1)));
         //race.resolution().set(0.1f);
 
         FloatAveragedWindow f = new FloatAveragedWindow(64, 0.25f, 0).mode(FloatAveragedWindow.Mode.Mean);
-        Reward race2 = rewardNormalized("RaceRace", -1, +1, (() -> {
-            return f.valueOf(Util.clamp(progress * 0.5f, -1, +1));
-        }));
+        Reward race2 = rewardNormalized("RaceRace", -1, +1, (() -> f.valueOf(Util.clamp(progress * 0.5f, -1, +1))));
         //race2.resolution().set(0.1f);
 
 //        rewardNormalized("efficient", 0, +1, (() -> {
@@ -371,11 +365,11 @@ public class FZero extends GameX {
 
         float powerScale = 0.1f;
         float rotSpeed = 1.0f;
-        final float[] left = new float[1];
-        final float[] right = new float[1];
+        float[] left = new float[1];
+        float[] right = new float[1];
         float fwdSpeed = 75;
 
-        final Atom TANK = Atomic.atom("tank");
+        Atom TANK = Atomic.atom("tank");
 
 
         GoalActionConcept l = actionUnipolar($.inh(id, $.p(TANK,NEG)), (_x) -> {
@@ -465,7 +459,7 @@ public class FZero extends GameX {
 
     public void initBipolarRotateAbsolute(boolean fair) {
 
-        final MiniPID rotFilter = new MiniPID(0.1f, 0.1, 0.1f); //LP filter
+        MiniPID rotFilter = new MiniPID(0.1f, 0.1, 0.1f); //LP filter
         FloatToFloatFunction x = (heading) -> {
 
             fz.playerAngle = (float) rotFilter.out(fz.playerAngle, heading * Math.PI * 2);
@@ -518,7 +512,9 @@ public class FZero extends GameX {
         public static final int FULL_POWER = 80;
         public static final int MAX_VEL = 20;
         private final JPanel panel;
-        public volatile boolean thrust, left, right;
+        public volatile boolean thrust;
+        public volatile boolean left;
+        public volatile boolean right;
         public volatile double playerAngle;
         public BufferedImage image = new BufferedImage(
                 320, 240, BufferedImage.TYPE_INT_RGB);
@@ -530,10 +526,10 @@ public class FZero extends GameX {
         public int rank;
         double rotVel = 0.05;
         float fwdVel = 1.5f;
-        final double VIEWER_X = 159.5;
-        final double VIEWER_Y = 32;
-        final double VIEWER_Z = -128;
-        final double GROUND_Y = 207;
+        static final double VIEWER_X = 159.5;
+        static final double VIEWER_Y = 32;
+        static final double VIEWER_Z = -128;
+        static final double GROUND_Y = 207;
 
         final int[] screenBuffer = new int[320 * 240];
         final int[][][] projectionMap = new int[192][320][2];
@@ -544,7 +540,7 @@ public class FZero extends GameX {
 
         final int[] powerOvalY = new int[2];
         boolean onPowerBar;
-        final boolean playing = true;
+        static final boolean playing = true;
 
         final BufferedImage[] vehicleSprites = new BufferedImage[10];
         final int[] vehicleSpriteData = new int[64 * 32];
@@ -659,6 +655,7 @@ public class FZero extends GameX {
                             for (int j = -1; j < 2; j++) {
                                 if (raceTrack[0x1FF & (i + y)][0x1FF & (j + x)] == -1) {
                                     raceTrack[y][x] = 1;
+                                    break;
                                 }
                             }
                         }
@@ -671,12 +668,12 @@ public class FZero extends GameX {
                 for (int x = 0; x < 32; x++) {
                     double dx = 15.5 - x;
                     double dy = 15.5 - y;
-                    double dist = Math.sqrt(dx * dx + dy * dy);
                     bitmaps[0][y][x] = 0xFF98A8A8;
                     bitmaps[4][y][x] = 0xFF90A0A0;
                     bitmaps[5][y][x]
                             = (((x >> 3) + (y >> 3)) & 1) == 0 ? 0xFF000000 : 0xFFFFFFFF;
                     bitmaps[2][y][x] = C(4.5, Math.abs(dy) / 16, 1);
+                    double dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < 16) {
                         bitmaps[3][y][x] = 0xFFFFFFFF;
                         bitmaps[1][y][x] = C(5.3, dist / 16, 1 + dist / 256);
@@ -714,7 +711,7 @@ public class FZero extends GameX {
 
         }
 
-        public int C(double angle, double light, double dark) {
+        public static int C(double angle, double light, double dark) {
             return (D(angle, light, dark) << 16)
                     | (D(angle + 2 * Math.PI / 3, light, dark) << 8)
                     | (D(angle - 2 * Math.PI / 3, light, dark));
@@ -803,12 +800,12 @@ public class FZero extends GameX {
                             vehicleMetrics[i][6] += 0.2 + i * 0.2;
                         }
                         double targetZ = 11 + vehicleMetrics[i][1];
-                        double tz = (targetZ / 32) % 512;
                         double targetX = 7984 + (i & 0x03) * 80;
                         if (i >= 4) {
                             targetX += 32;
                         }
 
+                        double tz = (targetZ / 32) % 512;
                         if (tz >= 128) {
                             double angle = tz * Math.PI / 64;
                             targetX += ((8 * Math.cos(angle) + 24) * Math.sin(angle)) * 32;
@@ -1020,11 +1017,11 @@ public class FZero extends GameX {
 
             if (power <= 0 || (vehicleMetrics[0][1] >= 81984 && rank > 3)) {
 
-                String failString = "FAIL";
                 imageGraphics.setFont(largeFont);
+                String failString = "FAIL";
                 int width = imageGraphics.getFontMetrics().stringWidth(failString);
-                int x = (320 - width) / 2;
                 imageGraphics.setColor(darkColor);
+                int x = (320 - width) / 2;
                 imageGraphics.fillRect(x, 65, width + 5, 90);
                 imageGraphics.setColor(Color.RED);
                 imageGraphics.drawString(failString, x, 145);
@@ -1033,8 +1030,8 @@ public class FZero extends GameX {
                 String rankString = Integer.toString(rank);
                 imageGraphics.setFont(largeFont);
                 int width = imageGraphics.getFontMetrics().stringWidth(rankString);
-                int x = (320 - width) / 2;
                 imageGraphics.setColor(darkColor);
+                int x = (320 - width) / 2;
                 imageGraphics.fillRect(x - 5, 65, width + 15, 90);
                 imageGraphics.setColor((wiresBitmapIndex & 4) == 0
                         ? Color.WHITE : Color.GREEN);
@@ -1054,7 +1051,7 @@ public class FZero extends GameX {
 
         }
 
-        public int D(double angle, double light, double dark) {
+        public static int D(double angle, double light, double dark) {
             return (int) (255 * Math.pow((Math.cos(angle) + 1) / 2, light) / dark);
         }
 

@@ -72,7 +72,6 @@ public class DIBHandler extends TypeHandler implements ImageObserver {
 
     @Override
     public void send_data(Transferable in, ClipInterface c) {
-        byte[] out = null;
 
         try {
             if (in != null
@@ -97,7 +96,7 @@ public class DIBHandler extends TypeHandler implements ImageObserver {
 
                 int width = img.getWidth(this);
                 int height = img.getHeight(this);
-                out = b.getBitmapAsBytes(img, width, height);
+                byte[] out = b.getBitmapAsBytes(img, width, height);
 
                 c.send_data(out, out.length);
             }

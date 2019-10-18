@@ -37,29 +37,29 @@ public class Demos extends javax.swing.JFrame {
         getContentPane().setLayout(new java.awt.GridLayout(0, 1));
 
         jButton1.setText("Function Approximation 1D");
-        jButton1.addActionListener(this::jButton1ActionPerformed);
+        jButton1.addActionListener(Demos::jButton1ActionPerformed);
         getContentPane().add(jButton1);
 
         jButton2.setText("Function Approximation 2D");
-        jButton2.addActionListener(this::jButton2ActionPerformed);
+        jButton2.addActionListener(Demos::jButton2ActionPerformed);
         getContentPane().add(jButton2);
 
         jButton3.setText("Reinforcement Learning");
-        jButton3.addActionListener(this::jButton3ActionPerformed);
+        jButton3.addActionListener(Demos::jButton3ActionPerformed);
         getContentPane().add(jButton3);
 
         pack();
     }
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+    private static void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
         ApproximationDemo1D.main(new String[0]);
     }
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
+    private static void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
         ApproximationDemo2D.main(new String[0]);
     }
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
+    private static void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
         RLDemo.main(new String[0]);
     }
 

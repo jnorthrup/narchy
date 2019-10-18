@@ -288,7 +288,7 @@ public class BitmapMatrixView extends TexSurface {
         int color(int x, int y);
 
         default void color(BufferedImage buf, int[] pix) {
-            final int w = buf.getWidth(), h = buf.getHeight();
+            int w = buf.getWidth(), h = buf.getHeight();
             int i = 0;
             for (int y = 0; y < h; y++) {
                 for (int x = 0; x < w; x++) {

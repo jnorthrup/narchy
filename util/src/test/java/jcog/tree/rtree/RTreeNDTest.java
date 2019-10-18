@@ -25,16 +25,16 @@ class RTreeNDTest {
     @Test
     void pointSearchTest() {
 
-        final RTree<Double2D> pTree = new RTree<>(new Double2D.Builder(), 8, Spatialization.DefaultSplits.AXIAL.get());
+        RTree<Double2D> pTree = new RTree<>(new Double2D.Builder(), 8, Spatialization.DefaultSplits.AXIAL.get());
 
         for (int i = 0; i < 10; i++) {
             pTree.add(new Double2D(i, i));
         }
 
-        final RectDouble rect = new RectDouble(new Double2D(2, 2), new Double2D(8, 8));
-        final Double2D[] result = new Double2D[10];
+        RectDouble rect = new RectDouble(new Double2D(2, 2), new Double2D(8, 8));
+        Double2D[] result = new Double2D[10];
 
-        final int n = pTree.containedToArray(rect, result);
+        int n = pTree.containedToArray(rect, result);
         assertEquals(7, n);
 
         for (int i = 0; i < n; i++) {
@@ -53,21 +53,22 @@ class RTreeNDTest {
     @Test
     void rectNDSearchTest2() {
 
-        final int entryCount = 20;
-
         System.out.println("rectNDSearchTest2");
 
+        final int entryCount = 20;
         for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
             RTree<HyperRectFloat> rTree = RTree2DTest.createRectNDTree(8, type);
             for (int i = 0; i < entryCount; i++) {
                 rTree.add(new HyperRectFloat(new FloatND(i, i), new FloatND(i + 3, i + 3)));
             }
 
-            final HyperRectFloat searchRect = new HyperRectFloat(new FloatND(5, 5), new FloatND(10, 10));
+            HyperRectFloat searchRect = new HyperRectFloat(new FloatND(5, 5), new FloatND(10, 10));
             List<HyperRectFloat> results = new ArrayList();
 
             rTree.intersectsWhile(searchRect, results::add);
-            int resultCount = (int) IntStream.range(0, results.size()).filter(i -> results.get(i) != null).count();
+            int bound = results.size();
+            long count = IntStream.range(0, bound).filter(i1 -> results.get(i1) != null).count();
+            int resultCount = (int) count;
 
             final int expectedCount = 9;
             
@@ -106,7 +107,7 @@ class RTreeNDTest {
     private static void searchAll(int minDim, int maxDim, IntFunction<HyperRectFloat[]> generator) {
         for (int dim = minDim; dim <= maxDim; dim++) {
 
-            final HyperRectFloat[] rects = generator.apply(dim);
+            HyperRectFloat[] rects = generator.apply(dim);
             Set<HyperRectFloat> input = new HashSet();
             Collections.addAll(input, rects);
 
@@ -118,17 +119,18 @@ class RTreeNDTest {
                     rTree.add(rects[i]);
                 }
 
-                final HyperRectFloat searchRect = new HyperRectFloat(
+                HyperRectFloat searchRect = new HyperRectFloat(
                         FloatND.fill(dim, Float.NEGATIVE_INFINITY),
                         FloatND.fill(dim, Float.POSITIVE_INFINITY)
                 );
 
                 HyperRectFloat[] results = new HyperRectFloat[rects.length];
 
-                final int foundCount = rTree.containedToArray(searchRect, results);
-                int resultCount = (int) IntStream.range(0, results.length).filter(i -> results[i] != null).count();
+                int foundCount = rTree.containedToArray(searchRect, results);
+                long count = IntStream.range(0, results.length).filter(i -> results[i] != null).count();
+                int resultCount = (int) count;
 
-                final int expectedCount = rects.length;
+                int expectedCount = rects.length;
                 
                 assertTrue(Math.abs(expectedCount - foundCount) < 10,
                         () -> "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount /* in case of duplicates */);
@@ -167,11 +169,12 @@ class RTreeNDTest {
                 rTree.add(new RectDouble(i, i, i + 3, i + 3));
             }
 
-            final RectDouble searchRect = new RectDouble(5, 5, 10, 10);
+            RectDouble searchRect = new RectDouble(5, 5, 10, 10);
             RectDouble[] results = new RectDouble[3];
 
-            final int foundCount = rTree.containedToArray(searchRect, results);
-            int resultCount = (int) IntStream.range(0, results.length).filter(i -> results[i] != null).count();
+            int foundCount = rTree.containedToArray(searchRect, results);
+            long count = IntStream.range(0, results.length).filter(i1 -> results[i1] != null).count();
+            int resultCount = (int) count;
 
             final int expectedCount = 3;
             assertEquals(expectedCount, foundCount, () -> "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount);
@@ -204,13 +207,13 @@ class RTreeNDTest {
                 rTree.add(new RectDouble(i, i, i + 3, i + 3));
             }
 
-            final RectDouble searchRect = new RectDouble(5, 5, 10, 10);
+            RectDouble searchRect = new RectDouble(5, 5, 10, 10);
 
             final int expectedCount = 9;
             List<RectDouble> results = new ArrayList(expectedCount);
 
             rTree.intersectsWhile(searchRect, results::add);
-            final int resultCount = results.size();
+            int resultCount = results.size();
 
 
             assertEquals(expectedCount, resultCount, () -> "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + resultCount);
@@ -232,7 +235,7 @@ class RTreeNDTest {
 
 
     private static RectDouble[] generateRandomRects(int count) {
-        final Random rand = new Random(13);
+        Random rand = new Random(13);
 
         
         final int minX = 500;
@@ -240,14 +243,14 @@ class RTreeNDTest {
         final int maxXRange = 25;
         final int maxYRange = 25;
 
-        final double hitProb = 1.0 * count * maxXRange * maxYRange / (minX * minY);
+        double hitProb = 1.0 * count * maxXRange * maxYRange / (minX * minY);
 
-        final RectDouble[] rects = new RectDouble[count];
+        RectDouble[] rects = new RectDouble[count];
         for (int i = 0; i < count; i++) {
-            final int x1 = rand.nextInt(minX);
-            final int y1 = rand.nextInt(minY);
-            final int x2 = x1 + rand.nextInt(maxXRange);
-            final int y2 = y1 + rand.nextInt(maxYRange);
+            int x1 = rand.nextInt(minX);
+            int y1 = rand.nextInt(minY);
+            int x2 = x1 + rand.nextInt(maxXRange);
+            int y2 = y1 + rand.nextInt(maxYRange);
             rects[i] = new RectDouble(x1, y1, x2, y2);
         }
 
@@ -262,7 +265,7 @@ class RTreeNDTest {
     void RectDouble2DSearchAllTest() {
 
         final int entryCount = 1000;
-        final RectDouble[] rects = generateRandomRects(entryCount);
+        RectDouble[] rects = generateRandomRects(entryCount);
 
         for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
             RTree<RectDouble> rTree = createRectDouble2DTree(8, type);
@@ -270,13 +273,14 @@ class RTreeNDTest {
                 rTree.add(rects[i]);
             }
 
-            final RectDouble searchRect = new RectDouble(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
+            RectDouble searchRect = new RectDouble(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
             RectDouble[] results = new RectDouble[entryCount];
 
-            final int foundCount = rTree.containedToArray(searchRect, results);
-            int resultCount = (int) IntStream.range(0, results.length).filter(i -> results[i] != null).count();
+            int foundCount = rTree.containedToArray(searchRect, results);
+            long count = IntStream.range(0, results.length).filter(i -> results[i] != null).count();
+            int resultCount = (int) count;
 
-            final AtomicInteger visitCount = new AtomicInteger();
+            AtomicInteger visitCount = new AtomicInteger();
             rTree.containsWhile(searchRect, (n) -> {
                 visitCount.incrementAndGet();
                 return true;
@@ -294,11 +298,11 @@ class RTreeNDTest {
      * more visible.
      */
     @Disabled
-    void treeStructureStatsTest() {
+    static void treeStructureStatsTest() {
 
         final int entryCount = 50_000;
 
-        final RectDouble[] rects = generateRandomRects(entryCount);
+        RectDouble[] rects = generateRandomRects(entryCount);
         for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
             RTree<RectDouble> rTree = createRectDouble2DTree(8, type);
             for (int i = 0; i < rects.length; i++) {
@@ -319,11 +323,11 @@ class RTreeNDTest {
      * - QUADRATIC seems to be ideal for small search bounding boxes.
      */
     @Disabled
-    void treeSearchStatsTest() {
+    static void treeSearchStatsTest() {
 
         final int entryCount = 5000;
 
-        final RectDouble[] rects = generateRandomRects(entryCount);
+        RectDouble[] rects = generateRandomRects(entryCount);
 
         for (int j = 0; j < 6; j++) {
             for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
@@ -334,11 +338,11 @@ class RTreeNDTest {
 
                 rTree.instrumentTree();
 
-                final RectDouble searchRect = new RectDouble(100, 100, 120, 120);
+                RectDouble searchRect = new RectDouble(100, 100, 120, 120);
                 RectDouble[] results = new RectDouble[entryCount];
-                final long start = System.nanoTime();
+                long start = System.nanoTime();
                 int foundCount = rTree.containedToArray(searchRect, results);
-                final long end = System.nanoTime() - start;
+                long end = System.nanoTime() - start;
                 CounterRNode<RectDouble> root = (CounterRNode<RectDouble>) rTree.root();
 
                 
@@ -351,9 +355,9 @@ class RTreeNDTest {
 
     @Test
     void treeContainsTest() {
-        final RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
+        RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
-        final RectDouble[] rects = new RectDouble[5];
+        RectDouble[] rects = new RectDouble[5];
         for (int i = 0; i < rects.length; i++) {
             rects[i] = new RectDouble(i, i, i + 1, i + 1);
             rTree.add(rects[i]);
@@ -369,9 +373,9 @@ class RTreeNDTest {
 
     @Test
     void treeRemovalTest5Entries() {
-        final RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
+        RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
-        final RectDouble[] rects = new RectDouble[5];
+        RectDouble[] rects = new RectDouble[5];
         for (int i = 0; i < rects.length; i++) {
             rects[i] = new RectDouble(i, i, i + 1, i + 1);
             rTree.add(rects[i]);
@@ -390,7 +394,7 @@ class RTreeNDTest {
             assertTrue(rTree.containedToSet(rects[i]).isEmpty(), "Found hyperRect that should have been removed on search " + rects[i]);
         }
 
-        final RectDouble hr = new RectDouble(0, 0, 5, 5);
+        RectDouble hr = new RectDouble(0, 0, 5, 5);
         rTree.add(hr);
         assertFalse(rTree.containedToSet(hr).isEmpty());
         assertTrue(rTree.size() != 0, "Found hyperRect that should have been removed on search");
@@ -401,10 +405,10 @@ class RTreeNDTest {
 
         final int NENTRY = 500;
 
-        final RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
+        RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         for (int i = 0; i < NENTRY; i++) {
-            final RectDouble rect = new RectDouble(i, i, i + 1, i + 1);
+            RectDouble rect = new RectDouble(i, i, i + 1, i + 1);
             rTree.add(rect);
         }
 
@@ -415,17 +419,16 @@ class RTreeNDTest {
     @Test
     void treeRemovalTestDuplicates() {
 
-        final int NENTRY = 50;
+        RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
-        final RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
-
-        final RectDouble[] rect = new RectDouble[2];
+        RectDouble[] rect = new RectDouble[2];
         for (int i = 0; i < rect.length; i++) {
             rect[i] = new RectDouble(i, i, i + 1, i + 1);
             rTree.add(rect[i]);
         }
         assertEquals(2, rTree.size());
 
+        final int NENTRY = 50;
         for (int i = 0; i < NENTRY; i++) {
             rTree.add(rect[1]);
         }
@@ -444,10 +447,10 @@ class RTreeNDTest {
 
     @Test
     void treeRemovalTest1000Entries() {
-        final RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
+        RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         int N = 1000;
-        final RectDouble[] rect = new RectDouble[N];
+        RectDouble[] rect = new RectDouble[N];
         for (int i = 0; i < rect.length; i++) {
             rect[i] = new RectDouble(i, i, i + 1, i + 1);
             rTree.add(rect[i]);
@@ -471,7 +474,7 @@ class RTreeNDTest {
 
     @Test
     void treeSingleRemovalTest() {
-        final RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
+        RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         RectDouble rect = new RectDouble(0, 0, 2, 2);
         rTree.add(rect);
@@ -483,8 +486,8 @@ class RTreeNDTest {
     }
 
     @Disabled
-    void treeRemoveAndRebalanceTest() {
-        final RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
+    static void treeRemoveAndRebalanceTest() {
+        RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         RectDouble[] rect = new RectDouble[65];
         for (int i = 0; i < rect.length; i++) {
@@ -536,7 +539,7 @@ class RTreeNDTest {
 
     @Test
     void treeUpdateTest() {
-        final RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
+        RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         RectDouble rect = new RectDouble(0, 1, 2, 3);
         rTree.add(rect);
@@ -544,7 +547,7 @@ class RTreeNDTest {
         RectDouble newRect = new RectDouble(1, 2, 3, 4);
         rTree.replace(oldRect, newRect);
         RectDouble[] results = new RectDouble[2];
-        final int num = rTree.containedToArray(newRect, results);
+        int num = rTree.containedToArray(newRect, results);
         assertTrue(num == 1, "Did not find the updated HyperRect");
         System.out.print(results[0]);
     }
@@ -559,11 +562,10 @@ class RTreeNDTest {
 
     @Test
     void testAddsubtreeWithSideTree() {
-        final RTree<RectDouble> rTree = createRectDouble2DTree(6, Spatialization.DefaultSplits.QUADRATIC);
-
-        final RectDouble search;
+        RTree<RectDouble> rTree = createRectDouble2DTree(6, Spatialization.DefaultSplits.QUADRATIC);
 
         rTree.add(new RectDouble(2, 2, 4, 4));
+        RectDouble search;
         rTree.add(search = new RectDouble(5, 2, 6, 3));
 
         
@@ -576,7 +578,7 @@ class RTreeNDTest {
 
         assertEquals(8, rTree.size());
 
-        final AtomicInteger hitCount = new AtomicInteger();
+        AtomicInteger hitCount = new AtomicInteger();
         
         rTree.containsWhile(search, (closure) -> {
             hitCount.incrementAndGet();

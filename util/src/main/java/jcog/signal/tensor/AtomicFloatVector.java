@@ -4,6 +4,7 @@ import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
 
+import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -98,9 +99,15 @@ public class AtomicFloatVector extends AbstractVector implements WritableTensor 
 
     @Override
     public String toString() {
-        return IntStream.range(0, volume()).mapToObj(x -> Float.toString(
-            getAt(x)
-        )).collect(Collectors.joining(","));
+        StringJoiner joiner = new StringJoiner(",");
+        int bound = volume();
+        for (int x = 0; x < bound; x++) {
+            String s = Float.toString(
+                    getAt(x)
+            );
+            joiner.add(s);
+        }
+        return joiner.toString();
     }
 
 

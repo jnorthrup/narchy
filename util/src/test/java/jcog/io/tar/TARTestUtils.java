@@ -15,16 +15,16 @@ class TARTestUtils {
 	}
 
 	public static String readFile(File file) throws IOException {
-		final char[] buffer = new char[BUFFER];
-		final StringBuilder out = new StringBuilder();
-		try (final Reader in = new InputStreamReader(new FileInputStream(file), "UTF-8")) {
-			return readFromStream(buffer, out, in);
+        StringBuilder out = new StringBuilder();
+		try (Reader in = new InputStreamReader(new FileInputStream(file), "UTF-8")) {
+            char[] buffer = new char[BUFFER];
+            return readFromStream(buffer, out, in);
 		}
 	}
 
-	private static String readFromStream(final char[] buffer, final StringBuilder out, final Reader in) throws IOException {
+	private static String readFromStream(char[] buffer, StringBuilder out, Reader in) throws IOException {
 		while (true) {
-			final int read = in.read(buffer, 0, BUFFER);
+			int read = in.read(buffer, 0, BUFFER);
 			if (read <= 0) {
 				break;
 			}

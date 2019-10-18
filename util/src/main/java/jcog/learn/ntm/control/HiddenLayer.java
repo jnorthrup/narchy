@@ -3,6 +3,7 @@ package jcog.learn.ntm.control;
 import jcog.learn.ntm.learn.IWeightUpdater;
 import jcog.learn.ntm.memory.ReadData;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 public class HiddenLayer {
@@ -70,11 +71,11 @@ public class HiddenLayer {
 
 	public void forwardPropagation(double[] i, ReadData[] d) {
 
-		final double[] nv = neurons.value;
+		double[] nv = neurons.value;
 
-		final double[] hlt = hiddenLayerThresholds.value;
+		double[] hlt = hiddenLayerThresholds.value;
 
-		final int N = neurons();
+		int N = neurons();
 
 		for (int n = 0; n < N; n++) {
 			nv[n] = activation.value(
@@ -91,7 +92,9 @@ public class HiddenLayer {
 			Unit[] headWeights = readWeightsForEachHead[headIndex];
 			ReadData read = readData[headIndex];
             Unit[] r = read.read;
-            tempSum += IntStream.range(0, memoryUnitSizeM).mapToDouble(memoryCellIndex -> headWeights[memoryCellIndex].value * r[memoryCellIndex].value).sum();
+            int bound = memoryUnitSizeM;
+            double sum = IntStream.range(0, bound).mapToDouble(memoryCellIndex -> headWeights[memoryCellIndex].value * r[memoryCellIndex].value).sum();
+            tempSum += sum;
 		}
 		return tempSum;
 	}
@@ -119,8 +122,16 @@ public class HiddenLayer {
         double[] g = this.neurons.grad;
 		double[] v = this.neurons.value;
 		IDifferentiableFunction a = this.activation;
-        double[] hiddenLayerGradients = IntStream.range(0, n).mapToDouble(i -> a.derivative(g[i], v[i])).toArray();
-		return hiddenLayerGradients;
+        double[] hiddenLayerGradients = new double[10];
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            double derivative = a.derivative(g[i], v[i]);
+            if (hiddenLayerGradients.length == count)
+                hiddenLayerGradients = Arrays.copyOf(hiddenLayerGradients, count * 2);
+            hiddenLayerGradients[count++] = derivative;
+        }
+        hiddenLayerGradients = Arrays.copyOfRange(hiddenLayerGradients, 0, count);
+        return hiddenLayerGradients;
 	}
 
 	private void updateReadDataGradient(double[] hiddenLayerGradients, ReadData[] reads) {
@@ -156,8 +167,8 @@ public class HiddenLayer {
 			g[i] += hiddenLayerGradient * input[i];
 	}
 
-	private void updateHiddenLayerThresholdsGradients(final double[] hiddenLayerGradients) {
-		final double[] hgrad = hiddenLayerThresholds.grad;
+	private void updateHiddenLayerThresholdsGradients(double[] hiddenLayerGradients) {
+		double[] hgrad = hiddenLayerThresholds.grad;
 		int n = neurons();
 		for (int i = 0; i < n; i++)
 			hgrad[i] += hiddenLayerGradients[i];

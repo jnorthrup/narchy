@@ -10,7 +10,8 @@ import spacegraph.space2d.widget.text.LabeledPane;
 /** TODO abstract to generic process controller */
 public class PIDChip extends Widget {
 
-    public final FloatPort actual = new FloatPort(), out = new FloatPort();
+    public final FloatPort actual = new FloatPort();
+    public final FloatPort out = new FloatPort();
     private final MiniPID pid;
 
     public PIDChip() {

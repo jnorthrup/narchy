@@ -206,12 +206,12 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
 		long gapCycles = (nextStart - lastEnd);
 
-		if (gapCycles <= series.latchDurs() * dur) {
+		if (gapCycles <= AbstractTaskSeries.latchDurs() * dur) {
 
 			if (next!=null) {
 				long lastStart = last.start();
 				long stretchCycles = (nextStart - lastStart);
-				boolean stretchable = stretchCycles <= series.stretchDurs() * dur;
+				boolean stretchable = stretchCycles <= AbstractTaskSeries.stretchDurs() * dur;
 				if (stretchable && last.truth().equals(next)) {
 					//continue, if not excessively long
 					stretch(last, nextEnd);

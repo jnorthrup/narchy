@@ -61,7 +61,8 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
     /**
      * The internal state of the algorithm.
      */
-    private long a, b;
+    private long a;
+    private long b;
 
 
 
@@ -73,7 +74,7 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
      *
      * @param seed a seed for the generator.
      */
-    public XoRoShiRo128PlusRandom(final long seed) {
+    public XoRoShiRo128PlusRandom(long seed) {
         super(0);
         setSeed(seed);
     }
@@ -85,9 +86,9 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
 
 
     @Override public long nextLong() {
-        final long s0 = a;
+        long s0 = a;
         long s1 = b;
-        final long result = s0 + s1;
+        long result = s0 + s1;
         s1 ^= s0;
         a = Long.rotateLeft(s0, 55) ^ s1 ^ s1 << 14;
         b = Long.rotateLeft(s1, 36);
@@ -104,7 +105,7 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
     }
 
     @Override
-    public int nextInt(final int n) {
+    public int nextInt(int n) {
 //        return (int) nextLong(n);
 
         assert(n>0);
@@ -121,10 +122,10 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
      * @param n the positive bound on the random number to be returned.
      * @return the next pseudorandom {@code long} value between {@code 0} (inclusive) and {@code n} (exclusive).
      */
-    public long nextLong(final long n) {
+    public long nextLong(long n) {
         if (n <= 0) throw new IllegalArgumentException("illegal bound " + n + " (must be positive)");
         long t = nextLong();
-        final long nMinus1 = n - 1;
+        long nMinus1 = n - 1;
         
         if ((n & nMinus1) == 0) return (t >>> Long.numberOfLeadingZeros(nMinus1)) & nMinus1;
         
@@ -175,10 +176,10 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
     }
 
     @Override
-    public void nextBytes(final byte[] bytes) {
-        int i = bytes.length, n;
+    public void nextBytes(byte[] bytes) {
+        int i = bytes.length;
         while (i != 0) {
-            n = Math.min(i, 8);
+            int n = Math.min(i, 8);
             for (long bits = nextLong(); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
         }
     }
@@ -234,8 +235,8 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
      * @param seed a seed for this generator.
      */
     @Override
-    public void setSeed(final long seed) {
-        final XorShift1024StarRandom.SplitMix64RandomGenerator r = new XorShift1024StarRandom.SplitMix64RandomGenerator(seed);
+    public void setSeed(long seed) {
+        XorShift1024StarRandom.SplitMix64RandomGenerator r = new XorShift1024StarRandom.SplitMix64RandomGenerator(seed);
         a = r.nextLong();
         b = r.nextLong();
     }

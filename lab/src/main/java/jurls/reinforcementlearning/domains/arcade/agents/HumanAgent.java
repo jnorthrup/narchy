@@ -44,7 +44,7 @@ public class HumanAgent extends AbstractAgent {
     /** Variables to enforce 60 frames per second */
     protected long lastFrameTime;
     protected long lastWaitTime;
-    protected final int framesPerSecond = 60;
+    protected static final int framesPerSecond = 60;
     protected long millisFraction = 0;
     protected long timeError = 0;
 
@@ -91,13 +91,13 @@ public class HumanAgent extends AbstractAgent {
 
     @Override
     public long getPauseLength() {
-        
-        
-        long targetDelta = 1000 / framesPerSecond;
+
+
         long deltaRemainder = 1000 % framesPerSecond;
         millisFraction += deltaRemainder;
 
-        
+
+        long targetDelta = 1000 / framesPerSecond;
         while (millisFraction > framesPerSecond) {
             targetDelta += 1;
             millisFraction -= framesPerSecond;

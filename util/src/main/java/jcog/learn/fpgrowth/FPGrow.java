@@ -30,9 +30,11 @@ public class FPGrow {
 
         HashMap<String, Integer> itemCount = count(data);
 
-        
-        data.forEach(transaction -> transaction.sort((o1, o2) ->
-                Integer.compare(itemCount.get(o2), itemCount.get(o1))));
+
+        for (List<String> transaction : data) {
+            transaction.sort((o1, o2) ->
+                    Integer.compare(itemCount.get(o2), itemCount.get(o1)));
+        }
 
         grow(data, null);
         return this;
@@ -47,16 +49,16 @@ public class FPGrow {
         Map<String, Integer> itemCount = count(data);
         Map<String, FPNode> headerTable = new HashMap<>();
 
-        
-        itemCount.forEach((itemName, count) -> {
 
-            
+        for (Entry<String, Integer> entry : itemCount.entrySet()) {
+            String itemName = entry.getKey();
+            Integer count = entry.getValue();
             if (count >= this.supportThreshold) {
                 FPNode node = new FPNode(itemName);
                 node.support = count;
                 headerTable.put(itemName, node);
             }
-        });
+        }
 
         FPNode root = buildTree(data, itemCount, headerTable);
 
@@ -142,14 +144,15 @@ public class FPGrow {
         double c = Math.pow(2, length);
         for (int i = 1; i < c; i++) {
 
-            String bitmap = Integer.toBinaryString(i); 
-            List<FPNode> combine = IntStream.range(0, bitmap.length()).filter(j -> bitmap.charAt(j) == '1').mapToObj(j -> path.get(length - bitmap.length() + j)).collect(Collectors.toList());
+            String bitmap = Integer.toBinaryString(i);
+            int bound = bitmap.length();
+            List<FPNode> combine = IntStream.range(0, bound).filter(j -> bitmap.charAt(j) == '1').mapToObj(j -> path.get(length - bitmap.length() + j)).collect(Collectors.toList());
             combinations.add(combine);
         }
     }
 
 
-    private static FPNode buildTree(List<List<String>> transactions, final Map<String, Integer> itemCount, final Map<String, FPNode> headerTable) {
+    private static FPNode buildTree(List<List<String>> transactions, Map<String, Integer> itemCount, Map<String, FPNode> headerTable) {
         FPNode root = new FPNode("ROOT");
         root.parent = null;
 
@@ -202,9 +205,11 @@ public class FPGrow {
 
     private static HashMap<String, Integer> count(List<List<String>> transactions) {
         HashMap<String, Integer> itemCount = new HashMap<>();
-        transactions.stream().flatMap(Collection::stream).forEach(item ->
-                itemCount.compute(item, (i, v) -> (v == null) ? 1 : v + 1)
-        );
+        for (List<String> transaction : transactions) {
+            for (String item : transaction) {
+                itemCount.compute(item, (i, v) -> (v == null) ? 1 : v + 1);
+            }
+        }
 
         return itemCount;
     }

@@ -102,7 +102,7 @@ public abstract class IIRFilter extends UGen {
 
         double w = -2 * freq * Math.PI / samplingFreq;
 
-        double nr = 0, ni = 0, dr = 1, di = 0;
+        double nr = 0, ni = 0;
 
         if (bs.length > 0) {
             nr = bs[0];
@@ -111,6 +111,8 @@ public abstract class IIRFilter extends UGen {
                 ni += bs[i] * Math.sin(w * i);
             }
         }
+        double di = 0;
+        double dr = 1;
         if (as.length > 0) {
             dr = as[0];
             for (int i = 1; i < as.length; i++) {

@@ -16,13 +16,16 @@ public class TrackXY  {
 
     public final ArrayBitmap2D grid;
 
-    public final int W, H;
+    public final int W;
+    public final int H;
 
     /** target coordinates: to be observed by the experiment */
-    public volatile float tx, ty;
+    public volatile float tx;
+    public volatile float ty;
 
     /** current coordinates: to be moved by the experiment */
-    public volatile float cx, cy;
+    public volatile float cx;
+    public volatile float cy;
 
     public final FloatRange controlSpeed = new FloatRange(0.05f, 0, 0.25f);
 
@@ -37,7 +40,7 @@ public class TrackXY  {
         this.grid = new ArrayBitmap2D(this.W = W, this.H = H);
     }
 
-    public Random random() {
+    public static Random random() {
         return ThreadLocalRandom.current();
     }
 
@@ -106,9 +109,9 @@ public class TrackXY  {
             public void accept(TrackXY t) {
                 float targetSpeed = t.targetSpeed.floatValue();
                 float ty;
-                float tx = Util.clamp(t.tx + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.W - 1);
+                float tx = Util.clamp(t.tx + 2 * targetSpeed * (TrackXY.random().nextFloat() - 0.5f), 0, t.W - 1);
                 if (t.H > 1) {
-                    ty = Util.clamp(t.ty + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.H - 1);
+                    ty = Util.clamp(t.ty + 2 * targetSpeed * (TrackXY.random().nextFloat() - 0.5f), 0, t.H - 1);
                 } else {
                     ty = 0;
                 }

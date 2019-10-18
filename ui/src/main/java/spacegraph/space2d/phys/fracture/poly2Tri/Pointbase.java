@@ -10,7 +10,8 @@ public class Pointbase implements Comparable {
     /**
      * coordinates;
      */
-    public double x = 0, y = 0;
+    public double x = 0;
+    public double y = 0;
 
     /**
      * type of points;

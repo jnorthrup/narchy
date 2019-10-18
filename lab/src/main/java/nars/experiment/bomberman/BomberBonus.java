@@ -95,7 +95,7 @@ public class BomberBonus extends Thread {
      * Gives this bonus to a user then removes it.
      */
     public void giveToPlayer(int player) {
-        BomberMain.sndEffectPlayer.playSound("Bonus");
+        BomberSndEffect.playSound("Bonus");
         /** if it's a fire bonus */
         if (type == FIRE) /** then increase the fire length by 1 */
             BomberGame.players[player - 1].fireLength += 1;

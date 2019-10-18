@@ -73,8 +73,6 @@ public abstract class AxisSweep3Internal extends Broadphase {
 		this.handleSentinel = handleSentinel;
 
 
-		int maxHandles = userMaxHandles + 1;
-
         boolean ownsPairCache;
         this.pairCache = (ownsPairCache = (pairCache!=null)) ? pairCache : new HashedOverlappingPairCache();
 
@@ -92,8 +90,9 @@ public abstract class AxisSweep3Internal extends Broadphase {
 
 		quantize.set(maxInt / aabbSize.x, maxInt / aabbSize.y, maxInt / aabbSize.z);
 
-		
-		handles = new Handle[maxHandles];
+
+        int maxHandles = userMaxHandles + 1;
+        handles = new Handle[maxHandles];
 		for (int i=0; i<maxHandles; i++) {
 			handles[i] = createHandle();
 		}
@@ -169,7 +168,7 @@ public abstract class AxisSweep3Internal extends Broadphase {
 		*/
 
 		return IntStream.range(0, 3).filter(axis -> axis != ignoreAxis).noneMatch(axis -> pHandleA.getMaxEdges(axis) < pHandleB.getMinEdges(axis) ||
-                pHandleB.getMaxEdges(axis) < pHandleA.getMinEdges(axis));
+				pHandleB.getMaxEdges(axis) < pHandleA.getMinEdges(axis));
 	}
 	
 	
@@ -368,11 +367,9 @@ public abstract class AxisSweep3Internal extends Broadphase {
 			MiscUtil.resize(overlappingPairArray, overlappingPairArray.size() - invalidPair, BroadphasePair.class);
 			invalidPair = 0;
 
-			int i;
+            BroadphasePair previousPair = new BroadphasePair(null, null);
 
-			BroadphasePair previousPair = new BroadphasePair(null, null);
-
-			for (i=0; i<overlappingPairArray.size(); i++) {
+			for (int i = 0; i<overlappingPairArray.size(); i++) {
 				
 				BroadphasePair pair = overlappingPairArray.get(i);
 
@@ -423,9 +420,10 @@ public abstract class AxisSweep3Internal extends Broadphase {
 	
 	private int addHandle(v3 aabbMin, v3 aabbMax, Collidable pOwner, short collisionFilterGroup, short collisionFilterMask, Intersecter intersecter, Object multiSapProxy) {
 		
-		int[] min = new int[3], max = new int[3];
-		quantize(min, aabbMin, 0);
-		quantize(max, aabbMax, 1);
+		int[] min = new int[3];
+        quantize(min, aabbMin, 0);
+        int[] max = new int[3];
+        quantize(max, aabbMax, 1);
 
 		
 		int handle = allocHandle();
@@ -518,9 +516,10 @@ public abstract class AxisSweep3Internal extends Broadphase {
 		Handle pHandle = handles[handle];
 
 		
-		int[] min = new int[3], max = new int[3];
-		quantize(min, aabbMin, 0);
-		quantize(max, aabbMax, 1);
+		int[] min = new int[3];
+        quantize(min, aabbMin, 0);
+        int[] max = new int[3];
+        quantize(max, aabbMax, 1);
 
 		
 		for (int axis = 0; axis < 3; axis++) {
@@ -579,8 +578,8 @@ public abstract class AxisSweep3Internal extends Broadphase {
 		Handle pHandleB = (Handle)proxy1;
 
 
-        return IntStream.range(0, 3).noneMatch(axis -> pHandleA.getMaxEdges(axis) < pHandleB.getMinEdges(axis) ||
-                pHandleB.getMaxEdges(axis) < pHandleA.getMinEdges(axis));
+		return IntStream.range(0, 3).noneMatch(axis -> pHandleA.getMaxEdges(axis) < pHandleB.getMinEdges(axis) ||
+				pHandleB.getMaxEdges(axis) < pHandleA.getMinEdges(axis));
 	}
 
 	@Override

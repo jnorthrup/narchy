@@ -121,7 +121,7 @@ public class RevoluteJointDef extends JointDef {
     }
 
     /** uses the midpoint of their centers */
-    public RevoluteJointDef(final Body2D b1, final Body2D b2) {
+    public RevoluteJointDef(Body2D b1, Body2D b2) {
         this();
         bodyA = b1;
         localAnchorA.set(0,0);
@@ -137,7 +137,7 @@ public class RevoluteJointDef extends JointDef {
      * @param b2
      * @param anchor
      */
-    public RevoluteJointDef initialize(final Body2D b1, final Body2D b2, final v2 anchor) {
+    public RevoluteJointDef initialize(Body2D b1, Body2D b2, v2 anchor) {
         bodyA = b1;
         bodyB = b2;
         bodyA.getLocalPointToOut(anchor, localAnchorA);

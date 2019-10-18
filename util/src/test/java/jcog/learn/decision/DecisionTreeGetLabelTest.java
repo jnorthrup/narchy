@@ -3,6 +3,7 @@ package jcog.learn.decision;
 import com.google.common.collect.Lists;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -43,7 +44,7 @@ class DecisionTreeGetLabelTest {
     @Test
     void testGetLabelOn95vs5() {
         DecisionTree tree = new DecisionTree();
-        List<Function<Object,Object>> data = IntStream.range(0, 95).mapToObj(i -> new TestValue(TRUE_LABEL)).collect(Collectors.toList());
+        List<Function<Object, Object>> data = IntStream.range(0, 95).mapToObj(i1 -> new TestValue(TRUE_LABEL)).collect(Collectors.toList());
         for (int i = 0; i < 5; i++) {
             data.add(new TestValue(FALSE_LABEL));
         }
@@ -63,7 +64,7 @@ class DecisionTreeGetLabelTest {
     }
 
     private static List<Function<Object,Object>> buildSample(int a, int b) {
-        List<Function<Object,Object>> homogenous = IntStream.range(0, a).mapToObj(i -> new TestValue(TRUE_LABEL)).collect(Collectors.toList());
+        List<Function<Object, Object>> homogenous = IntStream.range(0, a).mapToObj(i1 -> new TestValue(TRUE_LABEL)).collect(Collectors.toList());
         for (int i = 0; i < b; i++)
             homogenous.add(new TestValue(FALSE_LABEL));
         return homogenous;

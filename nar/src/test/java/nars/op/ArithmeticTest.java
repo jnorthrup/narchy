@@ -86,7 +86,13 @@ class ArithmeticTest {
 
     private void assertArith(String q, String... p) {
         var s = Set.of(p);
-        var  each = IntStream.range(0, p.length * 4).mapToObj(i -> Arithmeticize.apply($$(q), rng).toString()).collect(Collectors.toCollection((Supplier<TreeSet>) TreeSet::new));
+        Supplier<TreeSet> collectionFactory = TreeSet::new;
+        var each = collectionFactory.get();
+        int bound = p.length * 4;
+        for (int i = 0; i < bound; i++) {
+            String toString = Arithmeticize.apply($$(q), rng).toString();
+            each.add(toString);
+        }
         assertEquals(s, each);
     }
 

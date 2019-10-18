@@ -138,9 +138,8 @@ public class KIF implements Iterable<Task> {
     private void process() {
         KB kb = KBmanager.manager.addKB("preprocess");
 
-        kif.formulaMap.values().forEach(xx -> {
-
-            FormulaPreprocessor.preProcess(xx, false, kb).forEach(x -> {
+        for (Formula xx : kif.formulaMap.values()) {
+            for (Formula x : FormulaPreprocessor.preProcess(xx, false, kb)) {
                 try {
                     Term y = formulaToTerm(x, 0);
                     if (y != null) {
@@ -150,15 +149,17 @@ public class KIF implements Iterable<Task> {
                     logger.error("{} {}", x, e.getMessage());
                     e.printStackTrace();
                 }
-            });
+            }
 
 
 
             /*Unknown operators: {=>=466, rangeSubclass=5, inverse=1, relatedInternalConcept=7, documentation=128, range=29, exhaustiveAttribute=1, trichotomizingOn=4, subrelation=22, not=2, partition=12, contraryAttribute=1, subAttribute=2, disjoint=5, domain=102, disjointDecomposition=2, domainSubclass=9, <=>=70}*/
-        });
+        }
 
 
-        fn.forEach((f, s) -> {
+        for (Map.Entry<Term, FnDef> entry : fn.entrySet()) {
+            Term f = entry.getKey();
+            FnDef s = entry.getValue();
             int ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
             Term[] vt = Util.map(0, ds, Term[]::new, i -> $.varDep(1 + i));
             Term v = null;
@@ -166,7 +167,7 @@ public class KIF implements Iterable<Task> {
                 v = $.varDep("R");
                 vt = ArrayUtil.add(vt, v);
             }
-            final int[] k = {1};
+            int[] k = {1};
             Term[] typeConds = Util.map(0, ds, Term[]::new, i ->
                     INH.the($.varDep(1 + i),
                             s.domain.getIfAbsent(1 + i, () -> $.varDep(k[0]++))));
@@ -185,7 +186,7 @@ public class KIF implements Iterable<Task> {
                 }
             }
 
-        });
+        }
 
         if (symmetricRelations.size()>1 /*SymmetricRelation exists in the set initially */) {
 
@@ -250,7 +251,7 @@ public class KIF implements Iterable<Task> {
         return formulaToTerm(new Formula(sx.replace("?", "#")), level);
     }
 
-    private Term formulaToTerm(final Formula x, int level) {
+    private Term formulaToTerm(Formula x, int level) {
 
 
         int l = x.listLength();
@@ -267,7 +268,7 @@ public class KIF implements Iterable<Task> {
         }
 
         List<String> sargs = IntStream.range(1, l).mapToObj(x::getArgument).collect(Collectors.toList());
-        List<Term> args = sargs.stream().map((z) -> formulaToTerm(z, level + 1)).collect(Collectors.toList());
+        List<Term> args = sargs.stream().map(sarg -> formulaToTerm(sarg, level + 1)).collect(Collectors.toList());
 
         if (args.contains(null))
             return Bool.Null;
@@ -301,7 +302,6 @@ public class KIF implements Iterable<Task> {
         String root = xCar;
         Term y = null;
         boolean includeDoc = false;
-        boolean includeRelatedInternalConcept = true;
         switch (root) {
             case "ListFn":
                 y = $.p(args);
@@ -352,6 +352,7 @@ public class KIF implements Iterable<Task> {
 
             case "relatedInternalConcept":
                 /*(documentation relatedInternalConcept EnglishLanguage "Means that the two arguments are related concepts within the SUMO, i.e. there is a significant similarity of meaning between them. To indicate a meaning relation between a SUMO concept and a concept from another source, use the Predicate relatedExternalConcept.")            */
+                boolean includeRelatedInternalConcept = true;
                 if (includeRelatedInternalConcept) {
                     if (args.size() != 2) {
                         throw new UnsupportedOperationException("relatedInternalConcept expects 2 arguments");
@@ -634,12 +635,14 @@ public class KIF implements Iterable<Task> {
             });
         }
         for (MutableSet<Term> ab : new MutableSet[]{_aVars, _bVars}) {
-            ab.stream().filter(aa -> aa.op() == VAR_INDEP && !common.contains(aa)).forEach(aa -> {
-                String str = aa.toString().substring(1);
-                Variable bb = $.v(VAR_DEP, str);
-                if (!remap.containsKey(bb))
-                    remap.put(aa, bb);
-            });
+            for (Term aa : ab) {
+                if (aa.op() == VAR_INDEP && !common.contains(aa)) {
+                    String str = aa.toString().substring(1);
+                    Variable bb = $.v(VAR_DEP, str);
+                    if (!remap.containsKey(bb))
+                        remap.put(aa, bb);
+                }
+            }
         }
 
         if (!remap.isEmpty()) {

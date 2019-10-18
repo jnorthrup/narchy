@@ -141,8 +141,10 @@ public enum OsmSpace  { ;
 
     public static final class ECEFProjection extends LonLatProjection {
 
-        public final v3 camFwd = new v3(), camUp = new v3();
-        final v3 camPos = new v3(0,0,-10), rot = new v3();
+        public final v3 camFwd = new v3();
+        public final v3 camUp = new v3();
+        final v3 camPos = new v3(0,0,-10);
+        final v3 rot = new v3();
 
         private final float[] mat4f = new float[16];
 
@@ -719,7 +721,9 @@ public enum OsmSpace  { ;
 
         @Override
         public void accept(GL2 g) {
-            draw.forEach(d -> d.accept(g));
+            for (Consumer<GL2> d : draw) {
+                d.accept(g);
+            }
         }
     }
 
@@ -771,7 +775,10 @@ public enum OsmSpace  { ;
 //    }
 
     private static class OsmPolygonDraw implements Consumer<GL2> {
-        private final float r,g,b,a;
+        private final float r;
+        private final float g;
+        private final float b;
+        private final float a;
         private final float lw;
         private final short ls;
         //private final float[] coord;
@@ -799,7 +806,7 @@ public enum OsmSpace  { ;
             if (draws.length == 1)
                 this.draw = draws[0];
             else {
-                this.draw = (GL2 G)->{
+                this.draw = G ->{
                     for (Consumer<GL2> d : draws)
                         d.accept(G);
                 };
@@ -819,7 +826,10 @@ public enum OsmSpace  { ;
     }
 
     private static class OsmLineDraw implements Consumer<GL2> {
-        private final float r,g,b,a;
+        private final float r;
+        private final float g;
+        private final float b;
+        private final float a;
         private final float lw;
         private final short ls;
         private final float[] c3;
@@ -848,7 +858,10 @@ public enum OsmSpace  { ;
 
     private static class OsmDrawPoint implements Consumer<GL2> {
         private final float pointSize;
-        private final float r, g, b, a;
+        private final float r;
+        private final float g;
+        private final float b;
+        private final float a;
         private final float[] c3;
 
         public OsmDrawPoint(float pointSize, float r, float g, float b, float a, float[] c3) {

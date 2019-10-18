@@ -59,8 +59,6 @@ public class CL_ents {
 	 */
 	public static int ParseEntityBits(int[] bits) {
 		int b;
-        int i;
-		int number;
 
         int total = MSG.ReadByte(Globals.net_message);
 		if ((total & Defines.U_MOREBITS1) != 0) {
@@ -80,11 +78,12 @@ public class CL_ents {
 		}
 
 		
-		for (i = 0; i < 32; i++)
+		for (int i = 0; i < 32; i++)
 			if ((total & (1 << i)) != 0)
 				bitcounts[i]++;
 
-		if ((total & Defines.U_NUMBER16) != 0)
+        int number;
+        if ((total & Defines.U_NUMBER16) != 0)
 			number = MSG.ReadShort(Globals.net_message);
 		else
 			number = MSG.ReadByte(Globals.net_message);
@@ -234,18 +233,15 @@ public class CL_ents {
 	 * data stream. ==================
 	 */
 	public static void ParsePacketEntities(frame_t oldframe, frame_t newframe) {
-		int newnum;
-		int bits = 0;
 
-		entity_state_t oldstate = null;
-		int oldnum;
-
-		newframe.parse_entities = Globals.cl.parse_entities;
+        newframe.parse_entities = Globals.cl.parse_entities;
 		newframe.num_entities = 0;
 
 		
 		int oldindex = 0;
-		if (oldframe == null)
+        int oldnum;
+        entity_state_t oldstate = null;
+        if (oldframe == null)
 			oldnum = 99999;
 		else {
 			
@@ -257,11 +253,12 @@ public class CL_ents {
 			
 		}
 
-		while (true) {
+        int bits = 0;
+        while (true) {
 			
 			iw[0] = bits;
-			newnum = ParseEntityBits(iw);
-			bits = iw[0];
+            int newnum = ParseEntityBits(iw);
+            bits = iw[0];
 
 			if (newnum >= Defines.MAX_EDICTS)
 				Com.Error(Defines.ERR_DROP, "CL_ParsePacketEntities: bad number:" + newnum);
@@ -354,7 +351,6 @@ public class CL_ents {
 	 * =================== CL_ParsePlayerstate ===================
 	 */
 	public static void ParsePlayerstate(frame_t oldframe, frame_t newframe) {
-        int i;
 
         player_state_t state = newframe.playerstate;
 
@@ -456,7 +452,7 @@ public class CL_ents {
 
 
         int statbits = MSG.ReadLong(Globals.net_message);
-		for (i = 0; i < Defines.MAX_STATS; i++)
+		for (int i = 0; i < Defines.MAX_STATS; i++)
 			if ((statbits & (1 << i)) != 0)
 				state.stats[i] = MSG.ReadShort(Globals.net_message);
 	}
@@ -467,13 +463,11 @@ public class CL_ents {
 	 * ==================
 	 */
 	public static void FireEntityEvents(frame_t frame) {
-		entity_state_t s1;
-		int pnum, num;
 
-		for (pnum = 0; pnum < frame.num_entities; pnum++) {
-			num = (frame.parse_entities + pnum) & (Defines.MAX_PARSE_ENTITIES - 1);
-			s1 = Globals.cl_parse_entities[num];
-			if (s1.event != 0)
+        for (int pnum = 0; pnum < frame.num_entities; pnum++) {
+            int num = (frame.parse_entities + pnum) & (Defines.MAX_PARSE_ENTITIES - 1);
+            entity_state_t s1 = Globals.cl_parse_entities[num];
+            if (s1.event != 0)
 				CL_fx.EntityEvent(s1);
 
 			
@@ -486,10 +480,9 @@ public class CL_ents {
 	 * ================ CL_ParseFrame ================
 	 */
 	public static void ParseFrame() {
-        frame_t old;
 
-		
-		Globals.cl.frame.reset();
+
+        Globals.cl.frame.reset();
 
 		Globals.cl.frame.serverframe = MSG.ReadLong(Globals.net_message);
 		Globals.cl.frame.deltaframe = MSG.ReadLong(Globals.net_message);
@@ -502,11 +495,9 @@ public class CL_ents {
 		if (Globals.cl_shownet.value == 3)
 			Com.Printf("   frame:" + Globals.cl.frame.serverframe + "  delta:" + Globals.cl.frame.deltaframe + '\n');
 
-		
-		
-		
-		
-		if (Globals.cl.frame.deltaframe <= 0) {
+
+        frame_t old;
+        if (Globals.cl.frame.deltaframe <= 0) {
 			Globals.cl.frame.valid = true; 
 			old = null;
 			Globals.cls.demowaiting = false; 
@@ -594,12 +585,6 @@ public class CL_ents {
 	 * ===============
 	 */
 	static void AddPacketEntities(frame_t frame) {
-		entity_state_t s1;
-        int i;
-		int pnum;
-		centity_t cent;
-        clientinfo_t ci;
-		int effects, renderfx;
 
 
         float autorotate = Math3D.anglemod(Globals.cl.time / 10f);
@@ -610,16 +595,16 @@ public class CL_ents {
 		
 		ent.clear();
 
-		for (pnum = 0; pnum < frame.num_entities; pnum++) {
-			s1 = Globals.cl_parse_entities[(frame.parse_entities + pnum) & (Defines.MAX_PARSE_ENTITIES - 1)];
+		for (int pnum = 0; pnum < frame.num_entities; pnum++) {
+            entity_state_t s1 = Globals.cl_parse_entities[(frame.parse_entities + pnum) & (Defines.MAX_PARSE_ENTITIES - 1)];
 
-			cent = Globals.cl_entities[s1.number];
+            centity_t cent = Globals.cl_entities[s1.number];
 
-			effects = s1.effects;
-			renderfx = s1.renderfx;
+            int effects = s1.effects;
+            int renderfx = s1.renderfx;
 
-			
-			if ((effects & Defines.EF_ANIM01) != 0)
+
+            if ((effects & Defines.EF_ANIM01) != 0)
 				ent.frame = autoanim & 1;
 			else if ((effects & Defines.EF_ANIM23) != 0)
 				ent.frame = 2 + (autoanim & 1);
@@ -660,7 +645,8 @@ public class CL_ents {
 			ent.oldframe = cent.prev.frame;
 			ent.backlerp = 1.0f - Globals.cl.lerpfrac;
 
-			if ((renderfx & (Defines.RF_FRAMELERP | Defines.RF_BEAM)) != 0) {
+            int i;
+            if ((renderfx & (Defines.RF_FRAMELERP | Defines.RF_BEAM)) != 0) {
 				
 				
 				Math3D.VectorCopy(cent.current.origin, ent.origin);
@@ -672,10 +658,9 @@ public class CL_ents {
 				}
 			}
 
-			
 
-			
-			if ((renderfx & Defines.RF_BEAM) != 0) { 
+            clientinfo_t ci;
+            if ((renderfx & Defines.RF_BEAM) != 0) {
 													 
 													 
 				ent.alpha = 0.30f;
@@ -740,18 +725,17 @@ public class CL_ents {
 				ent.angles[1] = Math3D.anglemod(Globals.cl.time / 2f) + s1.angles[1];
 				ent.angles[2] = 180;
                 float[] forward = { 0, 0, 0 };
-                float[] start = { 0, 0, 0 };
 
                 Math3D.AngleVectors(ent.angles, forward, null, null);
+                float[] start = {0, 0, 0};
                 Math3D.VectorMA(ent.origin, 64, forward, start);
                 V.AddLight(start, 100, 1, 0, 0);
-            } else { 
-				float a1, a2;
+            } else {
 
-				for (i = 0; i < 3; i++) {
-					a1 = cent.current.angles[i];
-					a2 = cent.prev.angles[i];
-					ent.angles[i] = Math3D.LerpAngle(a2, a1, Globals.cl.lerpfrac);
+                for (i = 0; i < 3; i++) {
+                    float a1 = cent.current.angles[i];
+                    float a2 = cent.prev.angles[i];
+                    ent.angles[i] = Math3D.LerpAngle(a2, a1, Globals.cl.lerpfrac);
 				}
 			}
 
@@ -1022,10 +1006,9 @@ public class CL_ents {
 	 * ============== CL_AddViewWeapon ==============
 	 */
 	static void AddViewWeapon(player_state_t ps, player_state_t ops) {
-		int i;
 
-		
-		if (0 == Globals.cl_gun.value)
+
+        if (0 == Globals.cl_gun.value)
 			return;
 
 		
@@ -1044,7 +1027,7 @@ public class CL_ents {
 			return;
 
 		
-		for (i = 0; i < 3; i++) {
+		for (int i = 0; i < 3; i++) {
 			gun.origin[i] = Globals.cl.refdef.vieworg[i] + ops.gunoffset[i] + Globals.cl.lerpfrac
 					* (ps.gunoffset[i] - ops.gunoffset[i]);
 			gun.angles[i] = Globals.cl.refdef.viewangles[i] + Math3D.LerpAngle(ops.gunangles[i], ps.gunangles[i], Globals.cl.lerpfrac);
@@ -1073,7 +1056,6 @@ public class CL_ents {
 	 * Sets cl.refdef view values ===============
 	 */
 	static void CalcViewValues() {
-        float backlerp;
 
 
         player_state_t ps = Globals.cl.frame.playerstate;
@@ -1098,8 +1080,8 @@ public class CL_ents {
 		if ((Globals.cl_predict.value != 0) && 0 == (Globals.cl.frame.playerstate.pmove.pm_flags & pmove_t.PMF_NO_PREDICTION)) {
 
 
-            backlerp = 1.0f - lerp;
-			for (i = 0; i < 3; i++) {
+            float backlerp = 1.0f - lerp;
+            for (i = 0; i < 3; i++) {
 				Globals.cl.refdef.vieworg[i] = Globals.cl.predicted_origin[i] + ops.viewoffset[i] + Globals.cl.lerpfrac
 						* (ps.viewoffset[i] - ops.viewoffset[i]) - backlerp * Globals.cl.prediction_error[i];
 			}

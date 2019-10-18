@@ -23,7 +23,7 @@ public class CheckBox extends ToggleButton {
     }
 
     public CheckBox(String text, Runnable r) {
-        this(text, (boolean b) -> { if (b) r.run(); } );
+        this(text, b -> { if (b) r.run(); } );
     }
 
     public CheckBox(String text, BooleanProcedure b) {
@@ -58,7 +58,7 @@ public class CheckBox extends ToggleButton {
     }
 
 
-    protected String label(String text, boolean on) {
+    protected static String label(String text, boolean on) {
         return text.isEmpty() ? (on ? "[+]" : "[ ]") : ((on ? "[+] " : "[ ] ") + text);
     }
 

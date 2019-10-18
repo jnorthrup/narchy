@@ -111,12 +111,12 @@ public interface HyperRegion {
      * @param dim - dimension to calculate
      * @return double - the numeric range of the dimention (min - max)
      */
-    default double range(final int dim) {
+    default double range(int dim) {
         return Math.abs(coord(dim, true) - coord(dim, false));
     }
 
 
-    default double cost(final int dim) {
+    default double cost(int dim) {
         return rangeIfFinite(dim, 0);
     }
 
@@ -177,8 +177,9 @@ public interface HyperRegion {
      * @return - perimeter
      */
     default double perimeter() {
-        final int n = this.dim();
-        double p = IntStream.range(0, n).mapToDouble(this::cost).sum();
+        int n = this.dim();
+        int bound = n;
+        double p = IntStream.range(0, bound).mapToDouble(this::cost).sum();
         return p;
     }
 

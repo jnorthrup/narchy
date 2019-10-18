@@ -9,10 +9,7 @@ import org.eclipse.collections.api.block.procedure.Procedure2;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
 import java.util.stream.Collectors;
@@ -221,11 +218,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     @Override
     public final X[] apply(X[] current) {
-        if (current != null) {
-            return current;
-        } else {
-            return list.fillArray(arrayBuilder.apply(list.size()), false);
-        }
+        return Objects.requireNonNullElseGet(current, () -> list.fillArray(arrayBuilder.apply(list.size()), false));
     }
 
     //@Override
@@ -366,10 +359,10 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     public boolean isEmpty() { return size() == 0; }
 
     public boolean AND(Predicate<X> o) {
-        return Arrays.stream(array()).allMatch(o);
+        return Arrays.stream(array()).allMatch(o::test);
     }
     public boolean OR(Predicate<X> o) {
-        return Arrays.stream(array()).anyMatch(o);
+        return Arrays.stream(array()).anyMatch(o::test);
     }
     public boolean whileEach(Predicate<X> o) {
         return Arrays.stream(array()).noneMatch(x -> x != null && !o.test(x));
@@ -384,7 +377,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         return s;
     }
     public double sumBy(ToDoubleFunction<X> each) {
-        double s = Arrays.stream(array()).mapToDouble(each).sum();
+        double s = Arrays.stream(array()).mapToDouble(each::applyAsDouble).sum();
         return s;
     }
 

@@ -337,7 +337,10 @@ public class Grok implements Serializable {
         if (!str.isEmpty()) {
             int sl = sub.length();
             if (sl > 0) {
-                int count = (int) IntStream.iterate(0, idx -> (idx = str.indexOf(sub, idx)) != -1, idx -> idx + sl).count();
+                int count = (int) IntStream.iterate(0, idx -> {
+                    int idx1 = idx;
+                    return (idx1 = str.indexOf(sub, idx1)) != -1;
+                }, idx -> idx + sl).count();
 
 
                 return count;
@@ -367,15 +370,14 @@ public class Grok implements Serializable {
             throw new RuntimeException("{pattern} should not be empty or null");
         }
 
-        String namedRegex = pattern;
         originalGrokPattern = pattern;
         int index = 0;
         /** flag for infinite recurtion */
         int iterationLeft = 1000;
         Boolean continueIteration = true;
 
-        
-        
+
+        String namedRegex = pattern;
         while (continueIteration) {
             continueIteration = false;
             if (iterationLeft <= 0) {
@@ -564,7 +566,7 @@ public class Grok implements Serializable {
          * @param groks Map of the pattern name and grok instance
          * @return the map sorted by grok pattern complexity
          */
-        private Map<String, Grok> sort(Map<String, Grok> groks) {
+        private static Map<String, Grok> sort(Map<String, Grok> groks) {
 
             Collection<Grok> n = groks.values();
             List<Grok> groky = new ArrayList<>(n);
@@ -582,7 +584,7 @@ public class Grok implements Serializable {
          * @param expandedPattern regex string
          * @return the complexity of the regex
          */
-        private int complexity(String expandedPattern) {
+        private static int complexity(String expandedPattern) {
             int score = 0;
 
             score += complexity.split(expandedPattern, -1).length - 1;
@@ -607,10 +609,8 @@ public class Grok implements Serializable {
 
             Map<String, Grok> groks = new TreeMap<>();
             Map<String, String> gPatterns = grok.patterns();
-            
-            String texte = text;
 
-            
+
             for (Map.Entry<String, String> pairs : gPatterns.entrySet()) {
                 String key = pairs.getKey();
                 Grok g = new Grok();
@@ -628,17 +628,17 @@ public class Grok implements Serializable {
             }
 
             
-            Map<String, Grok> patterns = this.sort(groks);
+            Map<String, Grok> patterns = Discovery.sort(groks);
 
-            
-            
+
+            String texte = text;
             for (Map.Entry<String, Grok> pairs : patterns.entrySet()) {
                 String key = pairs.getKey();
                 Grok value = pairs.getValue();
 
                 
                 
-                if (this.complexity(value.namedRegex()) < 20) {
+                if (Discovery.complexity(value.namedRegex()) < 20) {
                     continue;
                 }
 
@@ -676,7 +676,7 @@ public class Grok implements Serializable {
          * @param text text
          * @return string
          */
-        private String getPart(Match m, String text) {
+        private static String getPart(Match m, String text) {
 
             if (m == null || text == null) {
                 return "";
@@ -1073,7 +1073,7 @@ public class Grok implements Serializable {
          * @param value string to pure: "my/text"
          * @return unquoted string: my/text
          */
-        private String cleanString(String value) {
+        private static String cleanString(String value) {
             if (value == null) {
                 return null;
             }

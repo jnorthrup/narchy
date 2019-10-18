@@ -38,18 +38,22 @@ public class I4Kopter extends Applet {
 
     private BufferedImage bufferImage;
     private BufferedImage backgroundImage;
-    private BufferedImage helicopterImage1, helicopterImage2;
-    private final int w = 800;
-    private final int h = 400;                   
+    private BufferedImage helicopterImage1;
+    private BufferedImage helicopterImage2;
+    private static final int w = 800;
+    private static final int h = 400;
     private final Random random = new Random();
-    private boolean keyPressed, paused;
-    private int heliY, heliX;                       
-    private double speed, gravity = 1.6;
+    private boolean keyPressed;
+    private boolean paused;
+    private int heliY;
+    private int heliX;
+    private double speed;
+    private double gravity = 1.6;
     private Point[] obstacles;                      
-    private final int pathHeight = 250;                   
-    private final int backgroundLength = 17*this.w;       
-    private final int widthBar = 20;                      
-    private final int oheight  = 59;                      
+    private static final int pathHeight = 250;
+    private static final int backgroundLength = 17* w;
+    private static final int widthBar = 20;
+    private static final int oheight  = 59;
     private long lasted;                       
 
     public I4Kopter(){
@@ -58,19 +62,19 @@ public class I4Kopter extends Applet {
 
     @Override
     public void init(){
-        this.setSize(this.w, this.h);
-        this.enableEvents(AWTEvent.KEY_EVENT_MASK);
-        this.setVisible(true);
+        setSize(w, h);
+        enableEvents(AWTEvent.KEY_EVENT_MASK);
+        setVisible(true);
     }
 
     @Override
     public void start(){
 
-        this.heliY = this.h /2;
-        this.heliX = this.w /5;
+        heliY = h /2;
+        heliX = w /5;
 
-        bufferImage = new BufferedImage(this.w, this.h, BufferedImage.TYPE_INT_RGB);
-        backgroundImage = new BufferedImage(backgroundLength, this.h, BufferedImage.TYPE_INT_RGB);
+        bufferImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        backgroundImage = new BufferedImage(backgroundLength, h, BufferedImage.TYPE_INT_RGB);
 
         /* ******* start draw helicopters ********* */
 
@@ -110,15 +114,13 @@ public class I4Kopter extends Applet {
         Graphics2D backgroundBuffer = backgroundImage.createGraphics();
 
         backgroundBuffer.setColor(Color.YELLOW);
-        backgroundBuffer.fillRect(0,0, backgroundLength, this.h);
+        backgroundBuffer.fillRect(0,0, backgroundLength, h);
 
-        boolean up = false;
-        int currentY = 80;
-        int ocounter = 0;
         obstacles = new Point[ backgroundLength / widthBar ];
 
-        
-        for(int i =0; i < this.w; i += widthBar){
+
+        int ocounter = 0;
+        for(int i = 0; i < w; i += widthBar){
             obstacles[ocounter++] = new Point(-1,-1);
         }
 
@@ -129,11 +131,13 @@ public class I4Kopter extends Applet {
         headingG.fillRect(0,0, 100,50);
         headingG.setColor(Color.WHITE);
         headingG.drawString("I4KOPTER",32,20);
-        backgroundBuffer.drawImage(heading,0,0,this.w,this.h,null);
+        backgroundBuffer.drawImage(heading,0,0, w, h,null);
         backgroundBuffer.setColor(Color.BLACK);
-        
 
-        for(int i = this.w; i < (backgroundLength - (2*this.w)); i += widthBar){
+
+        int currentY = 80;
+        boolean up = false;
+        for(int i = w; i < (backgroundLength - (2* w)); i += widthBar){
 
             currentY += (up)? -10 : 10;
 
@@ -160,7 +164,7 @@ public class I4Kopter extends Applet {
         }
 
         
-        for(int i = (backgroundLength - (2*this.w)); i < backgroundLength; i += widthBar){
+        for(int i = (backgroundLength - (2* w)); i < backgroundLength; i += widthBar){
             obstacles[ocounter++] = new Point(-1,-1);
         }
 
@@ -171,7 +175,7 @@ public class I4Kopter extends Applet {
         headingG.fillRect(0,0, 200,50);
         headingG.setColor(Color.WHITE);
         headingG.drawString("The end",75,20);
-        backgroundBuffer.drawImage(heading, backgroundLength - (2*this.w),0,2*this.w,this.h, null);
+        backgroundBuffer.drawImage(heading, backgroundLength - (2* w),0,2* w, h, null);
 
         /* ******* end draw background ********* */
 
@@ -179,10 +183,10 @@ public class I4Kopter extends Applet {
         while(true){
             speed = 0.0;
             gravity = 1.6;
-            heliY = this.h/2;
+            heliY = h /2;
             lasted = 0;
             loop();
-            Graphics g =  this.getGraphics();
+            Graphics g = getGraphics();
             g.setColor(Color.YELLOW);
             g.drawString(" you lasted: "+ lasted /1000+" seconds ", heliX+200, 200);
             try{ Thread.sleep(1400); }catch(Exception e){}
@@ -242,10 +246,8 @@ public class I4Kopter extends Applet {
 
     void loop(){
 
-        BufferedImage tmp;
-        Graphics frameGraphics, bufferGraphics;
-        int dx = 12, offset = 0, levelLength = this.w*2;
-        int maxLen = backgroundLength - this.w;
+        int dx = 12, offset = 0, levelLength = w *2;
+        int maxLen = backgroundLength - w;
 
         
         while(offset < maxLen){
@@ -254,24 +256,23 @@ public class I4Kopter extends Applet {
 
                 if(! paused){
 
-                    bufferGraphics = bufferImage.getGraphics();
-                    bufferGraphics.drawImage(backgroundImage,0,0,this.w,this.h,
-                                             offset, 0, (offset + this.w),this.h, null);
+                    Graphics bufferGraphics = bufferImage.getGraphics();
+                    bufferGraphics.drawImage(backgroundImage,0,0, w, h,
+                                             offset, 0, (offset + w), h, null);
 
                     updateHeliY(); 
 
-                    bufferGraphics.setClip(heliX, heliY, 57, 57); 
+                    bufferGraphics.setClip(heliX, heliY, 57, 57);
 
-                    tmp = (keyPressed)? helicopterImage2 : helicopterImage1; 
+                    BufferedImage tmp = (keyPressed) ? helicopterImage2 : helicopterImage1;
 
-                    if(collides(offset, tmp)){ 
-
-                        int oldOffset, newOffset;
+                    Graphics frameGraphics;
+                    if(collides(offset, tmp)){
 
                         for(int i = 1; i < 1000; i++){
-                            oldOffset = (i-1)*2 /2;
-                            newOffset = i*2 /2;
-                            frameGraphics = this.getGraphics();
+                            int oldOffset = (i - 1) * 2 / 2;
+                            int newOffset = i * 2 / 2;
+                            frameGraphics = getGraphics();
                             frameGraphics.setColor(Color.YELLOW);
                             frameGraphics.drawOval(heliX - newOffset, heliY - newOffset, i*2, i*2);
                             frameGraphics.setColor(Color.BLACK);
@@ -289,8 +290,8 @@ public class I4Kopter extends Applet {
 
                     }
                     
-                    frameGraphics = this.getGraphics();
-                    frameGraphics.drawImage(bufferImage,0,0,this.w,this.h, this);
+                    frameGraphics = getGraphics();
+                    frameGraphics.drawImage(bufferImage,0,0, w, h, this);
 
                     
                     frameGraphics.dispose();
@@ -308,7 +309,7 @@ public class I4Kopter extends Applet {
             
             dx++;
             gravity += .17;
-            levelLength += 2*this.w;
+            levelLength += 2* w;
         }
 
     }

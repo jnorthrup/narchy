@@ -44,7 +44,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      *
      * @param value  the initial value to store
      */
-    public MutableFloat(final float value) {
+    public MutableFloat(float value) {
         super();
         set(value);
     }
@@ -55,7 +55,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      * @param value  the initial value to store, not null
      * @throws NullPointerException if the object is null
      */
-    public MutableFloat(final Number value) {
+    public MutableFloat(Number value) {
         super();
         set(value.floatValue());
     }
@@ -87,7 +87,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      *
      * @param value  the value to setAt
      */
-    public void set(final float value) {
+    public void set(float value) {
         this.value = value;
     }
 
@@ -97,7 +97,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      * @param value  the value to setAt, not null
      * @throws NullPointerException if the object is null
      */
-    public final void set(final Number value) {
+    public final void set(Number value) {
         set(value.floatValue());
     }
 
@@ -209,7 +209,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      * @throws NullPointerException if the object is null
      * @since Commons Lang 2.2
      */
-    public final void add(final Number operand) {
+    public final void add(Number operand) {
         add(operand.floatValue());
     }
 
@@ -346,7 +346,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      * @see java.lang.Float#floatToIntBits(float)
      */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         return obj instanceof NumberX
                 && Float.floatToIntBits(((MutableFloat) obj).value) == Float.floatToIntBits(value);
     }

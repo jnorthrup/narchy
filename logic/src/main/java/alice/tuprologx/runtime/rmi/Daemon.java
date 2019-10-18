@@ -5,6 +5,7 @@ import java.rmi.Naming;
 import java.rmi.RMISecurityManager;
 import java.rmi.registry.LocateRegistry;
 import java.util.Arrays;
+import java.util.Optional;
 
 public class Daemon {
 
@@ -50,7 +51,12 @@ public class Daemon {
     }
 
     static String getOpt(String[] args,String prefix){
-        return Arrays.stream(args).filter(arg -> arg.startsWith(prefix)).findFirst().map(arg -> arg.substring(prefix.length())).orElse(null);
+        for (String s : args) {
+            if (s.startsWith(prefix)) {
+                return Optional.of(s).map(arg -> arg.substring(prefix.length())).orElse(null);
+            }
+        }
+        return Optional.<String>empty().map(arg -> arg.substring(prefix.length())).orElse(null);
     }
 }
 

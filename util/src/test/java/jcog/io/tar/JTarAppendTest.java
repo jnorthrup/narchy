@@ -79,12 +79,12 @@ class JTarAppendTest {
 		assertInEqualsOut();
 	}
 
-	private void copyFileToStream(File file, OutputStream out) throws IOException {
-		final byte[] buffer = new byte[BUFFER];
-		int length = 0;
+	private static void copyFileToStream(File file, OutputStream out) throws IOException {
 
-		try (FileInputStream in = new FileInputStream(file)) {
-			while ((length = in.read(buffer)) > 0) {
+        try (FileInputStream in = new FileInputStream(file)) {
+            int length = 0;
+            byte[] buffer = new byte[BUFFER];
+            while ((length = in.read(buffer)) > 0) {
 				out.write(buffer, 0, length);
 			}
 		}
@@ -105,10 +105,10 @@ class JTarAppendTest {
 			TarEntry entry;
 
 			while ((entry = in.getNextEntry()) != null) {
-				int count;
-				byte data[] = new byte[2048];
-				try (BufferedOutputStream dest = new BufferedOutputStream(new FileOutputStream(outDir + "/" + entry.getName()))) {
-					while ((count = in.read(data)) != -1) {
+                try (BufferedOutputStream dest = new BufferedOutputStream(new FileOutputStream(outDir + "/" + entry.getName()))) {
+                    byte[] data = new byte[2048];
+                    int count;
+                    while ((count = in.read(data)) != -1) {
 						dest.write(data, 0, count);
 					}
 				}

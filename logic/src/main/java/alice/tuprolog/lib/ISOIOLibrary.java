@@ -496,12 +496,14 @@ public class ISOIOLibrary extends PrologLib {
 
         switch (propertyName) {
             case "input": {
-                resultList = inputStreams.keySet().stream().map(stringTermHashtable -> new Struct(stringTermHashtable.toString())).collect(Collectors.toList());
+                List<Struct> list1 = inputStreams.keySet().stream().map(stringTermHashtable -> new Struct(stringTermHashtable.toString())).collect(Collectors.toList());
+                resultList = list1;
                 Struct result = new Struct(resultList.toArray(new Struct[1]));
                 return unify(list, result);
             }
             case "output":
-                resultList = outputStreams.keySet().stream().map(stringTermHashtable -> new Struct(stringTermHashtable.toString())).collect(Collectors.toList());
+                List<Struct> list1 = outputStreams.keySet().stream().map(stringTermHashtable -> new Struct(stringTermHashtable.toString())).collect(Collectors.toList());
+                resultList = list1;
                 Struct result = new Struct(resultList.toArray(new Struct[1]));
                 return unify(list, result);
             default:
@@ -1440,10 +1442,8 @@ public class ISOIOLibrary extends PrologLib {
                 for(Term t:variables_list){
                     temporanyList.remove(t);
                     flag = 0;
-                    for(Term temp:temporanyList){
-                        if(temp.equals(t)){
-                            flag = 1;
-                        }
+                    if (temporanyList.stream().anyMatch(temp -> temp.equals(t))) {
+                        flag = 1;
                     }
                     if(flag == 0){
                         if(!((t.toString()).startsWith("_"))){
@@ -2069,7 +2069,8 @@ public class ISOIOLibrary extends PrologLib {
     
     
     private String get_output_name(OutputStream output){
-        Term file_name = outputStreams.entrySet().stream().filter(element -> (element.getKey().toString()).equals(output.toString())).map(Map.Entry::getValue).findFirst().map(properties -> properties.get("file_name")).orElse(null);
+        Optional<Hashtable<String, Term>> found = outputStreams.entrySet().stream().filter(element -> (element.getKey().toString()).equals(output.toString())).map(Map.Entry::getValue).findFirst();
+        Term file_name = found.map(properties -> properties.get("file_name")).orElse(null);
 
 
         Struct returnElement = (Struct)file_name;

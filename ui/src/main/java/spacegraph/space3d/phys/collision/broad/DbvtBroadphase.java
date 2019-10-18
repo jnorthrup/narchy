@@ -111,10 +111,10 @@ public class DbvtBroadphase extends Broadphase {
 		return list;
 	}
 
-	private static DbvtProxy listremove(final DbvtProxy item, DbvtProxy list) {
+	private static DbvtProxy listremove(DbvtProxy item, DbvtProxy list) {
 		DbvtProxy[] itemLinks = item.links;
-		final DbvtProxy i0 = itemLinks[0];
-		final DbvtProxy i1 = itemLinks[1];
+		DbvtProxy i0 = itemLinks[0];
+		DbvtProxy i1 = itemLinks[1];
 		if (i0 != null) {
 			i0.links[1] = i1;
 		}

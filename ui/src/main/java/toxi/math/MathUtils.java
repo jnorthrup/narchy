@@ -195,7 +195,7 @@ public final class MathUtils {
         return a;
     }
 
-    public static double cos(final double theta) {
+    public static double cos(double theta) {
         return sin(theta + HALF_PI);
     }
 
@@ -208,7 +208,7 @@ public final class MathUtils {
      *            angle in radians.
      * @return cosine of theta.
      */
-    public static float cos(final float theta) {
+    public static float cos(float theta) {
         return sin(theta + HALF_PI);
     }
 
@@ -232,7 +232,7 @@ public final class MathUtils {
      *            angle in -PI/2 .. +PI/2 interval
      * @return cosine
      */
-    public static double fastCos(final double x) {
+    public static double fastCos(double x) {
         return fastSin(x + ((x > HALF_PI) ? -THREE_HALVES_PI : HALF_PI));
     }
 
@@ -570,7 +570,7 @@ public final class MathUtils {
     public static double reduceAngle(double theta) {
         theta %= TWO_PI;
         if (abs(theta) > PI) {
-            theta = theta - TWO_PI;
+            theta -= TWO_PI;
         }
         if (abs(theta) > HALF_PI) {
             theta = PI - theta;
@@ -592,7 +592,7 @@ public final class MathUtils {
     public static float reduceAngle(float theta) {
         theta %= TWO_PI;
         if (abs(theta) > PI) {
-            theta = theta - TWO_PI;
+            theta -= TWO_PI;
         }
         if (abs(theta) > HALF_PI) {
             theta = PI - theta;

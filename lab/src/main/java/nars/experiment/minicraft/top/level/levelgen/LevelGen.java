@@ -135,7 +135,6 @@ public class LevelGen {
         LevelGen noise2 = new LevelGen(w, h, 32);
 
         byte[] map = new byte[w * h];
-        byte[] data = new byte[w * h];
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
                 int i = x + y * w;
@@ -201,6 +200,7 @@ public class LevelGen {
             }
         }
 
+        byte[] data = new byte[w * h];
         for (int i = 0; i < w * h / 400; i++) {
             int x = random.nextInt(w);
             int y = random.nextInt(h);
@@ -263,7 +263,6 @@ public class LevelGen {
         LevelGen noise2 = new LevelGen(w, h, 32);
 
         byte[] map = new byte[w * h];
-        byte[] data = new byte[w * h];
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
                 int i = x + y * w;
@@ -333,6 +332,7 @@ public class LevelGen {
             }
         }
 
+        byte[] data = new byte[w * h];
         return new byte[][]{map, data};
     }
 
@@ -341,7 +341,6 @@ public class LevelGen {
         LevelGen noise2 = new LevelGen(w, h, 8);
 
         byte[] map = new byte[w * h];
-        byte[] data = new byte[w * h];
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
                 int i = x + y * w;
@@ -395,6 +394,7 @@ public class LevelGen {
             if (count == 2) break;
         }
 
+        byte[] data = new byte[w * h];
         return new byte[][]{map, data};
     }
 

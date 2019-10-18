@@ -8,21 +8,21 @@ public class Mat {
     public final int d;
     public final int n;
 
-    Mat(final int n, final int d) {
+    Mat(int n, int d) {
         this.n = n;
         this.d = d;
         this.w = new double[n * d];
         this.dw = new double[n * d];
     }
 
-    Mat(final int n, final int d, final double[] arr) {
+    Mat(int n, int d, double[] arr) {
         this.n = n;
         this.d = d;
         this.w = arr; assert(arr.length == n*d);
         this.dw = new double[n * d];
     }
 
-    void update(final double alpha) {
+    void update(double alpha) {
         double[] w = this.w, dw = this.dw;
         for (int i = 0; i < w.length; i++)
             w[i] += -alpha * dw[i];

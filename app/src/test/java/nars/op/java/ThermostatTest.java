@@ -19,9 +19,6 @@ public class ThermostatTest {
 
         final int DUR = 3;
 
-        final int subTrainings = 1;
-        final int thinkDurs = 1;
-
         NAR n = NARS.tmp();
 
         //new ArithmeticIntroduction(4, n);
@@ -38,14 +35,13 @@ public class ThermostatTest {
         n.goalPriDefault.pri(0.5f);
         //n.emotion.want(MetaGoal.Believe, -0.1f);
 
-        float exeThresh = 0.51f;
-
 
 //        n.start(new ConjClustering(n, BELIEF, 2, 8, (t) -> true));
 
 
         boolean[] training = {true};
 
+        final int thinkDurs = 1;
         Opjects op = new Opjects(n) {
 
 
@@ -83,6 +79,8 @@ public class ThermostatTest {
         n.log(System.out);
 
         boolean stupid = true;
+        float exeThresh = 0.51f;
+        final int subTrainings = 1;
         training:
         do {
 
@@ -95,7 +93,7 @@ public class ThermostatTest {
                     System.out.println("EPISODE START");
                     n.clear();
 
-                    env.teach("down", condition, (Thermostat x) -> {
+                    env.teach("down", condition, x -> {
 
 
                         n.run(1);

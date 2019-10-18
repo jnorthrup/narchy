@@ -12,7 +12,8 @@ public enum Base122 { ;
     private static final byte kShortened = 0b111; // Uses the illegal index to signify the last two-byte char encodes <= 7 bits.
 
     private static final MetalBitSet illegal = MetalBitSet.bits(128);
-    private static ImmutableByteByteMap illegalFwd, illegalRev;
+    private static ImmutableByteByteMap illegalFwd;
+    private static ImmutableByteByteMap illegalRev;
 
     static {
         ByteByteHashMap ILLEGAL_BYTES_fwd = new ByteByteHashMap(16), ILLEGAL_BYTES_rev = new ByteByteHashMap(16);
@@ -93,7 +94,6 @@ public enum Base122 { ;
                     byte nextSevenBits = next7Bit();
 
                     byte b1 = (byte) 0b11000010;
-                    byte b2 = (byte) 0b10000000;
                     if (nextSevenBits == STOP_BYTE) {
                         b1 |= (0b111 & kShortened) << 2;
                         nextSevenBits = sevenBits; // Encode these bits after the shortened signifier.
@@ -104,6 +104,7 @@ public enum Base122 { ;
                     // Push first bit onto first byte, remaining 6 onto second.
                     byte firstBit = (byte) ((nextSevenBits & 0b01000000) > 0 ? 1 : 0);
                     b1 |= firstBit;
+                    byte b2 = (byte) 0b10000000;
                     b2 |= nextSevenBits & 0b00111111;
                     outputStream.write(b1);
                     outputStream.write(b2);

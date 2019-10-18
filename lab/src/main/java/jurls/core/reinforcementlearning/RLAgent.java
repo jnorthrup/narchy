@@ -11,7 +11,9 @@ import jurls.core.approximation.ParameterizedFunctionGenerator;
 import jurls.core.utils.ActionValuePair;
 import jurls.core.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -41,7 +43,7 @@ public class RLAgent extends LearnerAndActor {
     private double factor2 = 0;
     private double rSum = 0;
     private double epsilon = 0;
-    private final double factor1ComponentDivisor = 1000;
+    private static final double factor1ComponentDivisor = 1000;
 
     public RLAgent(
             ParameterizedFunctionGenerator parameterizedFunctionGenerator,
@@ -99,7 +101,10 @@ public class RLAgent extends LearnerAndActor {
             memoryIndex = 0;
         }
 
-        double nextFactor1 = Arrays.stream(memory).mapToDouble(m -> IntStream.range(0, m.length).mapToDouble(j -> normalizedState[j] - m[j]).map(d -> d * d).sum()).map(sum2 -> 1 / (1 + sum2 * factor1ComponentDivisor)).sum();
+        double nextFactor1 = Arrays.stream(memory).mapToDouble(m -> {
+            double sum = IntStream.range(0, m.length).mapToDouble(j -> normalizedState[j] - m[j]).map(d -> d * d).sum();
+            return sum;
+        }).map(sum2 -> 1 / (1 + sum2 * factor1ComponentDivisor)).sum();
         nextFactor1 /= memory.length;
 
         if (reward > rewardMax) {
@@ -138,7 +143,8 @@ public class RLAgent extends LearnerAndActor {
     }
 
     public ActionValuePair[] getActionProbabilities(double[] state) {
-        ActionValuePair[] actionValuePairs = IntStream.range(0, numActions).mapToObj(i -> new ActionValuePair(
+        int bound = numActions;
+        ActionValuePair[] actionValuePairs = IntStream.range(0, bound).mapToObj(i -> new ActionValuePair(
                 i,
                 Utils.q(parameterizedFunction, stateAction, state, i)
         )).toArray(ActionValuePair[]::new);
@@ -148,7 +154,7 @@ public class RLAgent extends LearnerAndActor {
 
     public int chooseAction(double[] state) {
         ActionValuePair[] actionProbabilityPairs = getActionProbabilities(state);
-        Arrays.sort(actionProbabilityPairs, (ActionValuePair o1, ActionValuePair o2) -> (int) Math.signum(o1.getV() - o2.getV()));
+        Arrays.sort(actionProbabilityPairs, (o1, o2) -> (int) Math.signum(o1.getV() - o2.getV()));
 
         
         int i = actionProbabilityPairs.length-1; 

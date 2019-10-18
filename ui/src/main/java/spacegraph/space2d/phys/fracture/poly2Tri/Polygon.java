@@ -124,14 +124,15 @@ class Polygon {
      * @param vertices              ---{ CLEAR }---
      */
     private void initPolygon(int numContours, int[] numVerticesInContours, v2[] vertices) {
-        int i, j;
-        int nextNumber = 1;
 
         /**
          * Was unsigned int!
          * Number of contours.
          */
         _nVertices = new int[numContours];
+        int nextNumber = 1;
+        int j;
+        int i;
         for (i = 0; i < numContours; ++i) {
             for (j = 0; j < numVerticesInContours[i]; ++j) {
                 _points.put(nextNumber, new Pointbase(nextNumber, vertices[nextNumber - 1].x, vertices[nextNumber - 1].y, Poly2TriUtils.INPUT));
@@ -145,9 +146,9 @@ class Polygon {
         i = 0;
         j = 1;
         int first = 1;
-        Linebase edge;
 
         while (i < numContours) {
+            Linebase edge;
             for (; j + 1 <= _nVertices[i]; ++j) {
                 edge = new Linebase((Pointbase) _points.get(j), (Pointbase) _points.get(j + 1), Poly2TriUtils.INPUT);
                 _edges.put(Poly2TriUtils.l_id.get(), edge);
@@ -220,9 +221,8 @@ class Polygon {
 
     public boolean is_exist(double x, double y) {
         MutableIntIterator iter = _points.keySet().intIterator();
-        Pointbase pb;
         while (iter.hasNext()) {
-            pb = getPoint(iter.next());
+            Pointbase pb = getPoint(iter.next());
             if ((pb.x == x) && (pb.y == y)) return true;
         }
         return false;
@@ -234,13 +234,14 @@ class Polygon {
      * was all UNSIGNED (ints)
      */
     private int prev(int i) {
-        int j = 0, prevLoop = 0, currentLoop = 0;
+        int prevLoop = 0, currentLoop = 0;
 
         while (i > _nVertices[currentLoop]) {
             prevLoop = currentLoop;
             currentLoop++;
         }
 
+        int j = 0;
         if (i == 1 || (i == _nVertices[prevLoop] + 1)) j = _nVertices[currentLoop];
         else if (i <= _nVertices[currentLoop]) j = i - 1;
 
@@ -252,13 +253,14 @@ class Polygon {
      * was all UNSIGNED!
      */
     private int next(int i) {
-        int j = 0, prevLoop = 0, currentLoop = 0;
+        int prevLoop = 0, currentLoop = 0;
 
         while (i > _nVertices[currentLoop]) {
             prevLoop = currentLoop;
             currentLoop++;
         }
 
+        int j = 0;
         if (i < _nVertices[currentLoop]) j = i + 1;
         else if (i == _nVertices[currentLoop]) {
             if (currentLoop == 0) j = 1;
@@ -318,25 +320,21 @@ class Polygon {
     private void initializate() {
         initializePointsKeys();
 
-        int id, idp, idn;
-        Pointbase p, pnext, pprev; 
-        double area;
-
         for (int _pointsKey : _pointsKeys) {
-            id = _pointsKey;
-            idp = prev(id);
-            idn = next(id);
+            int id = _pointsKey;
+            int idp = prev(id);
+            int idn = next(id);
 
-            p = getPoint(id);
-            pnext = getPoint(idn);
-            pprev = getPoint(idp);
+            Pointbase p = getPoint(id);
+            Pointbase pnext = getPoint(idn);
+            Pointbase pprev = getPoint(idp);
 
             if ((p.compareTo(pnext) > 0) && (pprev.compareTo(p) > 0))
                 p.type = Poly2TriUtils.REGULAR_DOWN;
             else if ((p.compareTo(pprev) > 0) && (pnext.compareTo(p) > 0))
                 p.type = Poly2TriUtils.REGULAR_UP;
             else {
-                area = Poly2TriUtils.orient2d(new double[]{pprev.x, pprev.y},
+                double area = Poly2TriUtils.orient2d(new double[]{pprev.x, pprev.y},
                         new double[]{p.x, p.y},
                         new double[]{pnext.x, pnext.y});
 
@@ -598,11 +596,10 @@ class Polygon {
             return false;
         }
 
-        int id;
         while (!_qpoints.isEmpty()) {
             Pointbase vertex = qpointsPop();
 
-            id = vertex.id;
+            int id = vertex.id;
 
             if (_debug) {
                 String stype;
@@ -708,24 +705,24 @@ class Polygon {
             
 
             int nexte_ccw = 0, nexte_cw = 0;
-            double max = -2.0, min = 2.0; 
-            Linebase iEdge;
+            double max = -2.0, min = 2.0;
 
             IntIterator iter = edges.toSortedList().intIterator();
-            int it;
             while (iter.hasNext()) {
-                it = iter.next();
+                int it = iter.next();
                 if (it == edge.id()) continue;
 
-                iEdge = getEdge(it);
+                Linebase iEdge = getEdge(it);
 
-                double[] A = {0, 0}, B = {0, 0}, C = {0, 0};
+                double[] A = {0, 0};
                 A[0] = edge.endPoint(0).x;
                 A[1] = edge.endPoint(0).y;
+                double[] B = {0, 0};
                 B[0] = edge.endPoint(1).x;
                 B[1] = edge.endPoint(1).y;
 
                 if (!edge.endPoint(1).equals(iEdge.endPoint(0))) iEdge.reverse();
+                double[] C = {0, 0};
                 C[0] = iEdge.endPoint(1).x;
                 C[1] = iEdge.endPoint(1).y;
 
@@ -758,29 +755,21 @@ class Polygon {
 
         IntObjectHashMap<Linebase> edges = new IntObjectHashMap(_edges);
 
-        ArrayList poly;
-        int[] edgesKeys;
         int i;
-        int it;
-        Linebase itEdge;
-
-        Pointbase startp, endp;
-        Linebase next;
-        int nexte;
 
         while (edges.size() > _diagonals.size()) {
             loop++;
-            
-            poly = new ArrayList();
 
-            edgesKeys = edges.keySet().toSortedArray();
+            ArrayList poly = new ArrayList();
 
-            it = edgesKeys[0];
-            itEdge = edges.get(it);
+            int[] edgesKeys = edges.keySet().toSortedArray();
 
-            
-            startp = itEdge.endPoint(0);
-            next = itEdge;
+            int it = edgesKeys[0];
+            Linebase itEdge = edges.get(it);
+
+
+            Pointbase startp = itEdge.endPoint(0);
+            Linebase next = itEdge;
 
             poly.add(startp.id);
 
@@ -791,7 +780,7 @@ class Polygon {
 
             for (; ; ) {
 
-                endp = next.endPoint(1);
+                Pointbase endp = next.endPoint(1);
 
                 if (next.type() != Poly2TriUtils.INSERT) {
                     edges.remove(next.id());
@@ -800,9 +789,8 @@ class Polygon {
                 if (endp == startp) break;
                 poly.add(endp.id);
 
-                
 
-                nexte = selectNextEdge(next);
+                int nexte = selectNextEdge(next);
 
                 if (nexte == 0) {
                     System.out.println("Please check your input polygon:\n");
@@ -829,33 +817,23 @@ class Polygon {
      */
     private void triangulateMonotone(ArrayList mpoly) {
         PriorityQueue qvertex = new PriorityQueue(30, new PointbaseComparatorCoordinatesReverse());
-        
 
-        int i, it, itnext;
-        Pointbase point;     
-        Pointbase pointnext; 
-        for (it = 0; it < mpoly.size(); it++) {
-            itnext = it + 1;
+
+        for (int it = 0; it < mpoly.size(); it++) {
+            int itnext = it + 1;
             if (itnext == mpoly.size()) itnext = 0;
-            point = new Pointbase(getPoint((Integer) mpoly.get(it)));
-            pointnext = new Pointbase(getPoint((Integer) mpoly.get(itnext)));
+            Pointbase point = new Pointbase(getPoint((Integer) mpoly.get(it)));
+            Pointbase pointnext = new Pointbase(getPoint((Integer) mpoly.get(itnext)));
             point.left = point.compareTo(pointnext) > 0;
             qvertex.add(point);
         }
 
         Stack spoint = new Stack();
 
-        for (i = 0; i < 2; i++) spoint.push(qvertex.poll());
-
-        Pointbase topQueuePoint; 
-        Pointbase topStackPoint; 
-        Pointbase p1, p2;          
-        Pointbase stack1Point, stack2Point; 
+        for (int i = 0; i < 2; i++) spoint.push(qvertex.poll());
 
         double[] pa = {0, 0}, pb = {0, 0}, pc = {0, 0};
-        double area;
-        boolean left;
-        int[] v; 
+        int[] v;
 
         
         
@@ -863,18 +841,18 @@ class Polygon {
         
         while (qvertex.size() > 1) {
 
-            topQueuePoint = (Pointbase) qvertex.peek();
-            topStackPoint = (Pointbase) spoint.peek();
+            Pointbase topQueuePoint = (Pointbase) qvertex.peek();
+            Pointbase topStackPoint = (Pointbase) spoint.peek();
 
             if (topQueuePoint.left != topStackPoint.left) {
 
                 while (spoint.size() > 1) {
 
-                    p1 = (Pointbase) spoint.peek();
+                    Pointbase p1 = (Pointbase) spoint.peek();
                     spoint.pop();
-                    p2 = (Pointbase) spoint.peek();
+                    Pointbase p2 = (Pointbase) spoint.peek();
 
-                    
+
                     v = new int[]{
                             (topQueuePoint.id - 1),
                             (p1.id - 1),
@@ -892,9 +870,9 @@ class Polygon {
 
                 while (spoint.size() > 1) {
 
-                    stack1Point = (Pointbase) spoint.peek();
+                    Pointbase stack1Point = (Pointbase) spoint.peek();
                     spoint.pop();
-                    stack2Point = (Pointbase) spoint.peek();
+                    Pointbase stack2Point = (Pointbase) spoint.peek();
                     spoint.push(stack1Point);
 
                     pa[0] = topQueuePoint.x;
@@ -905,13 +883,8 @@ class Polygon {
                     pc[1] = stack1Point.y;
 
 
-
-
-
-
-
-                    area = Poly2TriUtils.orient2d(pa, pb, pc);
-                    left = stack1Point.left;
+                    double area = Poly2TriUtils.orient2d(pa, pb, pc);
+                    boolean left = stack1Point.left;
 
                     if ((area > 0 && left) || (area < 0 && !left)) {
                         v = new int[]{
@@ -930,11 +903,10 @@ class Polygon {
         }
 
         Pointbase lastQueuePoint = (Pointbase) qvertex.peek();
-        Pointbase topPoint, top2Point; 
         while (spoint.size() != 1) {
-            topPoint = (Pointbase) spoint.peek();
+            Pointbase topPoint = (Pointbase) spoint.peek();
             spoint.pop();
-            top2Point = (Pointbase) spoint.peek();
+            Pointbase top2Point = (Pointbase) spoint.peek();
 
             _triangles.add(v = new int[]{lastQueuePoint.id - 1, topPoint.id - 1, top2Point.id - 1});
 

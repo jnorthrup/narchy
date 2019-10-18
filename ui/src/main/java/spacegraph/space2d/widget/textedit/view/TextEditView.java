@@ -16,7 +16,9 @@ public class TextEditView implements BufferListener {
     protected TextEditView(Buffer buffer) {
         this.document = buffer;
         this.cursor = new CursorView(buffer.cursor());
-        document.lines.forEach(this::_addLine);
+        for (BufferLine line : document.lines) {
+            _addLine(line);
+        }
         buffer.addListener(this);
     }
 
@@ -25,10 +27,10 @@ public class TextEditView implements BufferListener {
         //float charAspect = 1.4f;
         float charsWide = v.w;
         float charsHigh = v.h;
-        float dx = 0;
         float vx = v.x, vy = v.y, vw = v.w, vh = v.h;
 
         g.glPushMatrix();
+        float dx = 0;
         g.glTranslatef(dx, 1f - (0.5f / charsHigh) + vy, 0);
         g.glScalef(1f / charsWide, 1f / charsHigh, 1f);
 
@@ -66,9 +68,9 @@ public class TextEditView implements BufferListener {
         if (document.isLineStart()) {
 //            x = (float) lv.getChars().stream().mapToDouble(cv -> cv.width() / 2).findFirst()
 //                    .orElse(cursor.getWidth() / 2);
-            x = cursor.getWidth()/2; //lv.getChars().get(0).width()/2;
+            x = CursorView.getWidth()/2; //lv.getChars().get(0).width()/2;
         } else if (c.getCol() >= lineChars) {
-            x = lv.getWidth() + (cursor.getWidth() / 2);
+            x = lv.getWidth() + (CursorView.getWidth() / 2);
         } else {
             x = lv.getChars().get(c.getCol()).position.x;
         }
@@ -100,7 +102,7 @@ public class TextEditView implements BufferListener {
 
     @Override
     public void moveChar(BufferLine fromLine, BufferLine toLine, BufferChar c) {
-        final int[] k = {0};
+        int[] k = {0};
         lines.stream().filter(l -> l.getBufferLine() == fromLine).findFirst().ifPresent(
                 (from) -> lines.stream().filter(l -> l.getBufferLine() == toLine).
                         findFirst().ifPresent((to) -> {

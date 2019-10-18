@@ -29,6 +29,7 @@ package toxi.geom;
 
 import toxi.math.MathUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -58,15 +59,18 @@ public class Rect implements Shape2D {
      * @since 0021
      */
     public static Rect getBoundingRect(List<? extends Vec2D> points) {
-        final Vec2D first = points.get(0);
-        final Rect bounds = new Rect(first.x, first.y, 0, 0);
+        Vec2D first = points.get(0);
+        Rect bounds = new Rect(first.x, first.y, 0, 0);
         for (int i = 1, num = points.size(); i < num; i++) {
             bounds.growToContainPoint(points.get(i));
         }
         return bounds;
     }
 
-    public float x, y, width, height;
+    public float x;
+    public float y;
+    public float width;
+    public float height;
 
     /**
      * Constructs an empty rectangle at point 0,0 with no dimensions.

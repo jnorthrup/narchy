@@ -119,7 +119,7 @@ public class Taskify extends ProxyTerm {
         long[] occ = timing.getTwo();
         assertOccValid(d, occ);
 
-        final Term y = timing.getOne();
+        Term y = timing.getOne();
 
         if (NAL.derive.DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.punc == BELIEF || d.punc == GOAL)) {
             if (DerivationFailure.failure(y, d.punc)) {
@@ -174,7 +174,7 @@ public class Taskify extends ProxyTerm {
      */
     private @Nullable Task task(Term x0, long start, long end, Derivation d) {
 
-        final byte punc = d.punc;
+        byte punc = d.punc;
         if (punc == 0)
             throw new RuntimeException("no punctuation assigned");
 
@@ -299,7 +299,7 @@ public class Taskify extends ProxyTerm {
         return t;
     }
 
-    private boolean same(Derivation d, NAR nar) {
+    private static boolean same(Derivation d, NAR nar) {
         nar.emotion.deriveFailParentDuplicate.increment();
         return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_SAME);
     }

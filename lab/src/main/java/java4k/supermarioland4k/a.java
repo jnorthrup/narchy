@@ -51,48 +51,9 @@ public class a extends JPanel implements Runnable {
   @Override
   public void run() {
 
-    final int VK_LEFT = 0x25;
-    final int VK_RIGHT = 0x27;
-    final int VK_JUMP = 0x44;
+      final int FADE_SPEED = 8;
 
-    final float GRAVITY = 0.18f;
-    final float MARIO_ACCELERATION = 0.2f;
-    final float MARIO_MAX_SPEED = 1.5f;
-    final float MARIO_JUMP_SPEED = -2f;
-    final float MARIO_BOUNCE_SPEED = -2f;
-    final int MARIO_JUMP_EXTENSION_SLOW = 15;
-    final int MARIO_JUMP_EXTENSION_FAST = 20;
-    final float DYING_MARIO_GRAVITY = 0.06f;
-    final float DYING_MARIO_JUMP_SPEED = -2f;
-    final float CHIBIBO_SPEED = 0.3f;
-    final float NOKOBON_SPEED = 0.3f;
-
-    final int FADE_SPEED = 8;
-
-    final int OBJ_X = 0;
-    final int OBJ_Y = 1;
-    final int OBJ_SPRITE = 2;
-    final int OBJ_FLIPPED = 3;
-    final int OBJ_SPRITE_INDEX = 4;
-    final int OBJ_SPRITE_COUNTER = 5;
-    final int OBJ_X1 = 6;
-    final int OBJ_X2 = 7;
-    final int OBJ_Y1 = 8;
-    final int OBJ_Y2 = 9;
-    final int OBJ_TYPE = 10;
-    final int OBJ_VX = 11;
-    final int OBJ_VY = 12;
-    final int OBJ_SUPPORTED = 13;
-    final int OBJ_OBSTRUCTED = 14;
-    final int OBJ_DIRECTION = 15;
-    final int OBJ_SQUASHED = 16;
-    final int OBJ_MIRRORED = 17;
-    final int OBJ_WEIGHTLESS = 18;
-    final int OBJ_NOT_SQUASHABLE = 19;
-    final int OBJ_BEHIND_TILES = 20;
-    final int OBJ_COUNTER = 21;
-
-    final int SPRITE_COUNT = 34;
+      final int SPRITE_COUNT = 34;
 
     final int SPRITE_COIN = 0;
     final int SPRITE_DOOR_TOP = 1;
@@ -103,81 +64,21 @@ public class a extends JPanel implements Runnable {
     final int SPRITE_PIPE_MIDDLE_RIGHT = 6;
     final int SPRITE_PLATFORM = 7;
     final int SPRITE_WALL = 8;
-    final int SPRITE_MARIO_0 = 9;
-    final int SPRITE_MARIO_1 = 10;
-    final int SPRITE_MARIO_2 = 11;
-    final int SPRITE_MARIO_3 = 12;
-    final int SPRITE_MARIO_4 = 13; 
-    final int SPRITE_MARIO_HEAD = 13;
-    final int SPRITE_NOKOBON_0 = 14;
-    final int SPRITE_NOKOBON_1 = 15;
-    final int SPRITE_CHIBIBO = 16;
-    final int SPRITE_SQUASHED_CHIBIBO = 17;
-    final int SPRITE_MARIO_DEAD = 18;
-    final int SPRITE_BOMB_0 = 19;
-    final int SPRITE_BOMB_1 = 20;
-    final int SPRITE_EXPLOSION_0 = 21;
-    final int SPRITE_EXPLOSION_1 = 22;
-    final int SPRITE_PAKKUN_FLOWER_0 = 23;
-    final int SPRITE_PAKKUN_FLOWER_1 = 24;
-    final int SPRITE_GIRA_0 = 25;
-    final int SPRITE_GIRA_1 = 26;
-    final int SPRITE_TREE = 27;
-    final int SPRITE_FIGHTER_FLY_0 = 28;
-    final int SPRITE_FIGHTER_FLY_1 = 29;
-    final int SPRITE_BUNBUN_0 = 30;
-    final int SPRITE_BUNBUN_1 = 31;
-    final int SPRITE_SPEAR = 32;
-    final int SPRITE_DAISY = 33;
-    final int SPRITE_PYRAMID = 34;
+      final int SPRITE_BOMB_1 = 20;
+      final int SPRITE_EXPLOSION_1 = 22;
+      final int SPRITE_PAKKUN_FLOWER_1 = 24;
 
-    final int TYPE_MARIO = 0;
-    final int TYPE_CHIBIBO = 1;
-    final int TYPE_NOKOBON = 2;
-    final int TYPE_EXPLOSION = 3;
-    final int TYPE_PAKKUN_FLOWER = 4;
-    final int TYPE_GIRA = 5;
-    final int TYPE_FIGHTER_FLY = 6;
-    final int TYPE_BUNBUN = 7;
-    final int TYPE_SPEAR = 8;
+      final int TYPE_MARIO = 0;
 
-    final int ORIENTATION_ORIGINAL = 0;
-    final int ORIENTATION_FLIPPED = 1;
-    final int ORIENTATION_MIRRORED = 2;
-
-    final int MAP_EMPTY = 0;
-    final int MAP_COIN = 1;
-    final int MAP_DOOR_TOP = 2;
-    final int MAP_DOOR_BOTTOM = 3;
-    final int MAP_PIPE_TOP_LEFT = 4;
-    final int MAP_PIPE_MIDDLE_LEFT = 5;
-    final int MAP_PIPE_TOP_RIGHT = 6;
-    final int MAP_PIPE_MIDDLE_RIGHT = 7;
-    final int MAP_PLATFORM = 8;
-    final int MAP_WALL = 9;
-
-    final int MAP_FLIPPED_EMPTY = 16;
+      final int MAP_FLIPPED_EMPTY = 16;
     final int MAP_FLIPPED_COIN = 17;
-    final int MAP_FLIPPED_DOOR_TOP = 18;
-    final int MAP_FLIPPED_DOOR_BOTTOM = 19;
-    final int MAP_FLIPPED_PIPE_TOP_LEFT = 20;
+      final int MAP_FLIPPED_PIPE_TOP_LEFT = 20;
     final int MAP_FLIPPED_PIPE_MIDDLE_LEFT = 21;
     final int MAP_FLIPPED_PIPE_TOP_RIGHT = 22;
     final int MAP_FLIPPED_PIPE_MIDDLE_RIGHT = 23;
     final int MAP_FLIPPED_PLATFORM = 24;
-    final int MAP_FLIPPED_WALL = 25;
 
-    final int MAP_MASK = 15;
-    final int MAP_EMPTIES = 3;
-
-    final int PAKKUN_FLOWER_SLEEPING = 64;
-    final int PAKKUN_FLOWER_RISING = 80;
-    final int PAKKUN_FLOWER_CHOMPING = 176;
-    final int PAKKUN_FLOWER_SINKING = 191;
-
-    final int PAKKUN_FLOWER_DISTANCE = 20;
-
-    final String S = "\u0808\ufc0f\uf2a3\ucae8\uc8f8\uc8f8\uca28\uf2a3\ufc0f\u0808\u0000\uffc0\uaaf0\u56bc\u01ac\u006c\u006c\u006c\u0808\u006c\u006c\u006c\u006c\u006c\u006c\u006c\uaaac\u0808\u0000\uaaa8\uaaa8\uaaa8\uaaa8\u0000\uaaa3\uaaa3\u0808\uaaa3\uaaa3\uaaa3\uaaa3\u000f\uaaa3\uaaa3\uaaa3\u0808\u0000\u015a\u015a\u015a\u015a\u0000\uc16a\uc16a\u0808\uc16a\uc16a\uc16a\uc16a\uf000\uc16a\uc16a\uc16a\u0808\uc003\u0aa8\u0808\u0a88\u0a88\u02a8\u0000\uc003\u0808\u0000\ufffc\uaaac\ua8ec\ua82c\uaaac\u0000\u0000\u1006\ufff4\u10ff\uff04\u103f\ufe0d\u72bf\ufe95\u56bf\uffc3\uc3ff\uff03\uc0ff\u1007\ufff1\u00ff\ufa81\u00af\ufa07\u03af\ufcf5\u55ff\ufc15\u553f\ufc17\uf43f\uffff\uc0ff\u1007\ufffc\u40ff\ufff0\u403f\uffdd\ue83f\uffd5\u597f\ufff0\u55ff\uffc0\u03ff\ufffc\u03ff\u1006\ufeb1\u00ff\ufea0\u00bf\uffd5\u55af\ufff5\u553f\ufffc\u350f\ufff0\u3fcf\u1006\uffff\uf03f\ufffc\u000f\uffff\u8a03\ufffe\ua820\ufffe\u0aa0\uffff\uaaaf\u080b\uffc3\uff3c\uff30\uff30\uff3c\ufec0\uc083\u308f\u00bf\u82bf\u280f\u080c\uffc3\uff3c\uff30\uff30\uff3c\ufec0\uc08f\u308f\u0083\u82bf\uea3f\u030f\u0808\uf00f\uc003\u0c30\u0c30\u0000\ufaaf\uca83\uc30f\u0805\uf00f\uc003\u0c30\ufaaf\u0ff0\u080b\u0fff\u03bf\u88af\ua02f\u083f\ua8ff\u90ff\u15cf\u740f\u540f\u57ff\u0806\uf00f\uc0c3\uc033\uc033\uc003\uf00f\u0806\ufaaf\ueaeb\ueabb\ueabb\ueaab\ufaaf\u0808\uc3ff\ufcff\ua3cf\uf8cf\u2e3f\ufbbc\u3cb3\u0f8f\u0806\ucfff\uffff\u3f3f\ub3ff\u2fff\uc8cf\u0810\ufc3f\uf28f\uca23\ucaa3\u2aa0\u22a8\u2aa8\u0a88\u2aa8\u0aa0\uc283\uf00f\u3c3c\u0c30\uc003\uf00f\u0810\u3ffc\u3ffc\u0ff0\u0ff0\u23c8\u23c8\u23c8\u23c8\u2008\u2828\ucaa3\uf00f\u3c3c\u0c30\uc003\uf00f\u1006\ufffc\uc00f\ufc3f\u7cf3\uf00c\u40cc\ufc3c\u4000\ufffc\u4003\ufffc\uc00f\u1006\uf0fc\uc00f\ucf3f\u7cf3\u3cfc\u40cc\ucf3c\u4000\uf0fc\u4003\ufffc\uc00f\u1006\uff03\uf03f\ufcfc\ucfcf\uf3f0\u00f3\uf3cf\u0cf3\uff3f\u3f3f\uff3f\u3f3f\u080e\uff0f\ufcf3\uf3f3\u33a3\u8383\u3c0f\u8cff\u00f0\uccc0\ucc0f\u03ff\u8fff\u800f\u3f03\u080b\u3fc3\u833c\u3cfc\u8ce8\u0003\uccff\ucc0f\u0303\u8fff\u00ff\uf03f\u1010\uf03f\uffff\uc3cf\uffff\ucff3\uc00f\ucbf3\u23f3\ucabc\u63c8\uc2ac\u63c8\uf00c\u6828\uffc3\u1aa0\uf000\u02a8\uc1df\u0c03\ucdd7\u0fff\ucdf4\u33cf\uf000\ufcc3\u0000\u003c\uf3fc\ufcc3\uffff\uffcf\u100f\uffff\uc00f\uffff\u23f3\ufffc\u63c8\uc00c\u63c8\u3ff0\u6828\u3fff\u1a80\u0ea0\u023f\uf00f\u0003\ucdd7\u0fff\ucdf4\u33ff\uf000\ufccf\ucff3\ufcc3\u0000\u003c\ucff3\ufcc3\uffff\uffcf\u080f\ufc0f\ufc8f\ufc8f\ufc8f\ufc8f\ufc8f\ufc8f\ufc8f\ufc8f\ufc8f\uc000\ucffc\uf3f3\ufccf\uff3f\u1010\uffc0\u0fff\uff00\u03ff\ufc00\u80ff\ufc0a\ua8ff\uf008\u88ff\uf00a\ua8ff\uc00a\u2bff\uc000\u8fff\uc036\ua7ef\uf0d5\u56af\uffe9\u5aff\uff6a\uafff\ufd55\u5fff\uf555\u57ff\ud555\u57ff\u5555\u57ff";
+      final String S = "\u0808\ufc0f\uf2a3\ucae8\uc8f8\uc8f8\uca28\uf2a3\ufc0f\u0808\u0000\uffc0\uaaf0\u56bc\u01ac\u006c\u006c\u006c\u0808\u006c\u006c\u006c\u006c\u006c\u006c\u006c\uaaac\u0808\u0000\uaaa8\uaaa8\uaaa8\uaaa8\u0000\uaaa3\uaaa3\u0808\uaaa3\uaaa3\uaaa3\uaaa3\u000f\uaaa3\uaaa3\uaaa3\u0808\u0000\u015a\u015a\u015a\u015a\u0000\uc16a\uc16a\u0808\uc16a\uc16a\uc16a\uc16a\uf000\uc16a\uc16a\uc16a\u0808\uc003\u0aa8\u0808\u0a88\u0a88\u02a8\u0000\uc003\u0808\u0000\ufffc\uaaac\ua8ec\ua82c\uaaac\u0000\u0000\u1006\ufff4\u10ff\uff04\u103f\ufe0d\u72bf\ufe95\u56bf\uffc3\uc3ff\uff03\uc0ff\u1007\ufff1\u00ff\ufa81\u00af\ufa07\u03af\ufcf5\u55ff\ufc15\u553f\ufc17\uf43f\uffff\uc0ff\u1007\ufffc\u40ff\ufff0\u403f\uffdd\ue83f\uffd5\u597f\ufff0\u55ff\uffc0\u03ff\ufffc\u03ff\u1006\ufeb1\u00ff\ufea0\u00bf\uffd5\u55af\ufff5\u553f\ufffc\u350f\ufff0\u3fcf\u1006\uffff\uf03f\ufffc\u000f\uffff\u8a03\ufffe\ua820\ufffe\u0aa0\uffff\uaaaf\u080b\uffc3\uff3c\uff30\uff30\uff3c\ufec0\uc083\u308f\u00bf\u82bf\u280f\u080c\uffc3\uff3c\uff30\uff30\uff3c\ufec0\uc08f\u308f\u0083\u82bf\uea3f\u030f\u0808\uf00f\uc003\u0c30\u0c30\u0000\ufaaf\uca83\uc30f\u0805\uf00f\uc003\u0c30\ufaaf\u0ff0\u080b\u0fff\u03bf\u88af\ua02f\u083f\ua8ff\u90ff\u15cf\u740f\u540f\u57ff\u0806\uf00f\uc0c3\uc033\uc033\uc003\uf00f\u0806\ufaaf\ueaeb\ueabb\ueabb\ueaab\ufaaf\u0808\uc3ff\ufcff\ua3cf\uf8cf\u2e3f\ufbbc\u3cb3\u0f8f\u0806\ucfff\uffff\u3f3f\ub3ff\u2fff\uc8cf\u0810\ufc3f\uf28f\uca23\ucaa3\u2aa0\u22a8\u2aa8\u0a88\u2aa8\u0aa0\uc283\uf00f\u3c3c\u0c30\uc003\uf00f\u0810\u3ffc\u3ffc\u0ff0\u0ff0\u23c8\u23c8\u23c8\u23c8\u2008\u2828\ucaa3\uf00f\u3c3c\u0c30\uc003\uf00f\u1006\ufffc\uc00f\ufc3f\u7cf3\uf00c\u40cc\ufc3c\u4000\ufffc\u4003\ufffc\uc00f\u1006\uf0fc\uc00f\ucf3f\u7cf3\u3cfc\u40cc\ucf3c\u4000\uf0fc\u4003\ufffc\uc00f\u1006\uff03\uf03f\ufcfc\ucfcf\uf3f0\u00f3\uf3cf\u0cf3\uff3f\u3f3f\uff3f\u3f3f\u080e\uff0f\ufcf3\uf3f3\u33a3\u8383\u3c0f\u8cff\u00f0\uccc0\ucc0f\u03ff\u8fff\u800f\u3f03\u080b\u3fc3\u833c\u3cfc\u8ce8\u0003\uccff\ucc0f\u0303\u8fff\u00ff\uf03f\u1010\uf03f\uffff\uc3cf\uffff\ucff3\uc00f\ucbf3\u23f3\ucabc\u63c8\uc2ac\u63c8\uf00c\u6828\uffc3\u1aa0\uf000\u02a8\uc1df\u0c03\ucdd7\u0fff\ucdf4\u33cf\uf000\ufcc3\u0000\u003c\uf3fc\ufcc3\uffff\uffcf\u100f\uffff\uc00f\uffff\u23f3\ufffc\u63c8\uc00c\u63c8\u3ff0\u6828\u3fff\u1a80\u0ea0\u023f\uf00f\u0003\ucdd7\u0fff\ucdf4\u33ff\uf000\ufccf\ucff3\ufcc3\u0000\u003c\ucff3\ufcc3\uffff\uffcf\u080f\ufc0f\ufc8f\ufc8f\ufc8f\ufc8f\ufc8f\ufc8f\ufc8f\ufc8f\ufc8f\uc000\ucffc\uf3f3\ufccf\uff3f\u1010\uffc0\u0fff\uff00\u03ff\ufc00\u80ff\ufc0a\ua8ff\uf008\u88ff\uf00a\ua8ff\uc00a\u2bff\uc000\u8fff\uc036\ua7ef\uf0d5\u56af\uffe9\u5aff\uff6a\uafff\ufd55\u5fff\uf555\u57ff\ud555\u57ff\u5555\u57ff";
 
     int i;
     int j;
@@ -185,34 +86,14 @@ public class a extends JPanel implements Runnable {
     int x;
     int y;
     int z;
-    int level = 0;
-    int cameraX = 0;
-    int enemiesX = 0;
-    int jumpCounter = 0;
-    boolean marioDied = false;
-    boolean jumpReleased = true;
-    int giraCountdown = 1;
-    int bunbunCountdown = 1;
-    int fadeDelta = FADE_SPEED;
-    int fadeIntensity = 255;    
-    int[][] map = null;
-    int[][] enemies = null;
-      Random random = null;
-    float[] mario = null;
-    
-    int[] pixels = new int[64];
-    ArrayList<float[]> queue = new ArrayList<>();
-    ArrayList<float[]>[] backgroundPlanes = new ArrayList[4];
-    BufferedImage[][] sprites = new BufferedImage[3][64];
+
+      int[] pixels = new int[64];
+      BufferedImage[][] sprites = new BufferedImage[3][64];
     BufferedImage image = new BufferedImage(160, 144, 1);
     Graphics2D g = (Graphics2D)image.getGraphics();
-        
-    Color BLACK = new Color(0x000000);
-    Color LIGHT_GRAY = new Color(0xA8A8A8);
-    Color WHITE = new Color(0xF8F8F8);
 
-    
-    for(i = 0, k = 0; i < SPRITE_COUNT; i++) {
+
+      for(i = 0, k = 0; i < SPRITE_COUNT; i++) {
       j = S.charAt(k++);
       int width = j >> 8;
       int height = j & 0xFF;
@@ -236,21 +117,29 @@ public class a extends JPanel implements Runnable {
     }
 
 
+      final int ORIENTATION_ORIGINAL = 0;
+      final int SPRITE_MARIO_0 = 9;
       Graphics2D g2 = (Graphics2D) sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_0]
               .getGraphics();
-    g2.drawImage(sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_HEAD], 3, -6, null);
-    g2 = (Graphics2D)sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_1]
+      final int SPRITE_MARIO_HEAD = 13;
+      g2.drawImage(sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_HEAD], 3, -6, null);
+      final int SPRITE_MARIO_1 = 10;
+      g2 = (Graphics2D)sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_1]
         .getGraphics();
     g2.drawImage(sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_HEAD], 4, -7, null);
-    g2 = (Graphics2D)sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_2]
+      final int SPRITE_MARIO_2 = 11;
+      g2 = (Graphics2D)sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_2]
         .getGraphics();
     g2.drawImage(sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_HEAD], 3, -7, null);
-    g2 = (Graphics2D)sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_3]
+      final int SPRITE_MARIO_3 = 12;
+      g2 = (Graphics2D)sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_3]
         .getGraphics();
     g2.drawImage(sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_HEAD], 3, -6, null);
 
-    
-    for(i = 0; i < SPRITE_COUNT; i++) {
+
+      final int ORIENTATION_MIRRORED = 2;
+      final int ORIENTATION_FLIPPED = 1;
+      for(i = 0; i < SPRITE_COUNT; i++) {
       x = sprites[ORIENTATION_ORIGINAL][i].getWidth();
       y = sprites[ORIENTATION_ORIGINAL][i].getHeight();
       sprites[ORIENTATION_FLIPPED][i] = new BufferedImage(x, y, 2);
@@ -268,20 +157,122 @@ public class a extends JPanel implements Runnable {
           null);
     }
 
-    
-    sprites[0][SPRITE_PYRAMID] = new BufferedImage(144, 72, 2);
+
+      final int SPRITE_PYRAMID = 34;
+      sprites[0][SPRITE_PYRAMID] = new BufferedImage(144, 72, 2);
     g2 = (Graphics2D)sprites[0][SPRITE_PYRAMID].getGraphics();
-    g2.setColor(BLACK);
+      Color BLACK = new Color(0x000000);
+      g2.setColor(BLACK);
     g2.drawLine(0, 71, 71, 0);
     g2.drawLine(72, 0, 143, 71);
-    g2.setColor(WHITE);
+      Color WHITE = new Color(0xF8F8F8);
+      g2.setColor(WHITE);
     for(i = 0; i < 71; i++) {
       g2.drawLine(71 - i, i + 1, 72 + i, i + 1);
     }
     g2 = null;
 
     long nextFrameStartTime = System.nanoTime();
-    while(true) {
+      Color LIGHT_GRAY = new Color(0xA8A8A8);
+      ArrayList<float[]>[] backgroundPlanes = new ArrayList[4];
+      ArrayList<float[]> queue = new ArrayList<>();
+      float[] mario = null;
+      Random random = null;
+      int[][] enemies = null;
+      int[][] map = null;
+      int fadeIntensity = 255;
+      int fadeDelta = FADE_SPEED;
+      int bunbunCountdown = 1;
+      int giraCountdown = 1;
+      boolean jumpReleased = true;
+      boolean marioDied = false;
+      int jumpCounter = 0;
+      int enemiesX = 0;
+      int cameraX = 0;
+      int level = 0;
+      final int PAKKUN_FLOWER_DISTANCE = 20;
+      final int PAKKUN_FLOWER_SINKING = 191;
+      final int PAKKUN_FLOWER_CHOMPING = 176;
+      final int PAKKUN_FLOWER_RISING = 80;
+      final int PAKKUN_FLOWER_SLEEPING = 64;
+      final int MAP_EMPTIES = 3;
+      final int MAP_MASK = 15;
+      final int MAP_FLIPPED_WALL = 25;
+      final int MAP_FLIPPED_DOOR_BOTTOM = 19;
+      final int MAP_FLIPPED_DOOR_TOP = 18;
+      final int MAP_WALL = 9;
+      final int MAP_PLATFORM = 8;
+      final int MAP_PIPE_MIDDLE_RIGHT = 7;
+      final int MAP_PIPE_TOP_RIGHT = 6;
+      final int MAP_PIPE_MIDDLE_LEFT = 5;
+      final int MAP_PIPE_TOP_LEFT = 4;
+      final int MAP_DOOR_BOTTOM = 3;
+      final int MAP_DOOR_TOP = 2;
+      final int MAP_COIN = 1;
+      final int MAP_EMPTY = 0;
+      final int TYPE_SPEAR = 8;
+      final int TYPE_BUNBUN = 7;
+      final int TYPE_FIGHTER_FLY = 6;
+      final int TYPE_GIRA = 5;
+      final int TYPE_PAKKUN_FLOWER = 4;
+      final int TYPE_EXPLOSION = 3;
+      final int TYPE_NOKOBON = 2;
+      final int TYPE_CHIBIBO = 1;
+      final int SPRITE_DAISY = 33;
+      final int SPRITE_SPEAR = 32;
+      final int SPRITE_BUNBUN_1 = 31;
+      final int SPRITE_BUNBUN_0 = 30;
+      final int SPRITE_FIGHTER_FLY_1 = 29;
+      final int SPRITE_FIGHTER_FLY_0 = 28;
+      final int SPRITE_TREE = 27;
+      final int SPRITE_GIRA_1 = 26;
+      final int SPRITE_GIRA_0 = 25;
+      final int SPRITE_PAKKUN_FLOWER_0 = 23;
+      final int SPRITE_EXPLOSION_0 = 21;
+      final int SPRITE_BOMB_0 = 19;
+      final int SPRITE_MARIO_DEAD = 18;
+      final int SPRITE_SQUASHED_CHIBIBO = 17;
+      final int SPRITE_CHIBIBO = 16;
+      final int SPRITE_NOKOBON_1 = 15;
+      final int SPRITE_NOKOBON_0 = 14;
+      final int SPRITE_MARIO_4 = 13;
+      final int OBJ_COUNTER = 21;
+      final int OBJ_BEHIND_TILES = 20;
+      final int OBJ_NOT_SQUASHABLE = 19;
+      final int OBJ_WEIGHTLESS = 18;
+      final int OBJ_MIRRORED = 17;
+      final int OBJ_SQUASHED = 16;
+      final int OBJ_DIRECTION = 15;
+      final int OBJ_OBSTRUCTED = 14;
+      final int OBJ_SUPPORTED = 13;
+      final int OBJ_VY = 12;
+      final int OBJ_VX = 11;
+      final int OBJ_TYPE = 10;
+      final int OBJ_Y2 = 9;
+      final int OBJ_Y1 = 8;
+      final int OBJ_X2 = 7;
+      final int OBJ_X1 = 6;
+      final int OBJ_SPRITE_COUNTER = 5;
+      final int OBJ_SPRITE_INDEX = 4;
+      final int OBJ_FLIPPED = 3;
+      final int OBJ_SPRITE = 2;
+      final int OBJ_Y = 1;
+      final int OBJ_X = 0;
+      final float NOKOBON_SPEED = 0.3f;
+      final float CHIBIBO_SPEED = 0.3f;
+      final float DYING_MARIO_JUMP_SPEED = -2f;
+      final float DYING_MARIO_GRAVITY = 0.06f;
+      final int MARIO_JUMP_EXTENSION_FAST = 20;
+      final int MARIO_JUMP_EXTENSION_SLOW = 15;
+      final float MARIO_BOUNCE_SPEED = -2f;
+      final float MARIO_JUMP_SPEED = -2f;
+      final float MARIO_MAX_SPEED = 1.5f;
+      final float MARIO_ACCELERATION = 0.2f;
+      final float GRAVITY = 0.18f;
+      final int VK_JUMP = 0x44;
+      final int VK_RIGHT = 0x27;
+      final int VK_LEFT = 0x25;
+      while(true) {
 
       do {
         nextFrameStartTime += 16666667;
@@ -1095,22 +1086,22 @@ public class a extends JPanel implements Runnable {
 
   @Override
   public void processKeyEvent(KeyEvent keyEvent) {
-    final int VK_LEFT = 0x25;
-    final int VK_RIGHT = 0x27;
-    final int VK_DOWN = 0x28;
-    final int VK_JUMP = 0x44;
-    final int VK_A = 0x41;
-    final int VK_D = 0x44;
-    final int VK_S = 0x53;
 
-    int k = keyEvent.getKeyCode();
+      int k = keyEvent.getKeyCode();
     if (k > 0) {
-      if (k == VK_A) {
+        final int VK_D = 0x44;
+        final int VK_A = 0x41;
+        final int VK_RIGHT = 0x27;
+        final int VK_LEFT = 0x25;
+        if (k == VK_A) {
         k = VK_LEFT;
       } else if (k == VK_D) {
         k = VK_RIGHT;
       }
-      a[(k == VK_LEFT || k == VK_RIGHT || k == VK_DOWN || k == VK_S)
+        final int VK_S = 0x53;
+        final int VK_JUMP = 0x44;
+        final int VK_DOWN = 0x28;
+        a[(k == VK_LEFT || k == VK_RIGHT || k == VK_DOWN || k == VK_S)
           ? k : VK_JUMP] = keyEvent.getID() != 402;
     }
   }

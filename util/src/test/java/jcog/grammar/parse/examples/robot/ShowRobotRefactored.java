@@ -17,7 +17,7 @@ public class ShowRobotRefactored {
 	 * as methods.
 	 */
 	public static void main(String[] args) {
-		Parser p = new RobotRefactored().command();
+		Parser p = RobotRefactored.command();
 		String s = "place carrier at WB500_IN";
 		System.out.println(p.bestMatch(new TokenAssembly(s)));
 	}

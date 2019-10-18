@@ -50,12 +50,11 @@ class BaseMusic_FastFourierTransform {
     }
 
     
-    private int bitrev( int pJ, int pNu ) {
+    private static int bitrev(int pJ, int pNu) {
         int j1 = pJ;
-        int j2;
         int k = 0;
         for( int i = 0; i < pNu; i++ ) {
-            j2 = j1 >> 1;
+            int j2 = j1 >> 1;
             k  = ( k << 1 ) + j1 - ( j2 << 1 );
             j1 = j2;
         }
@@ -69,8 +68,7 @@ class BaseMusic_FastFourierTransform {
      * @return         The results of the calculation, normalized between 0.0 and 1.0. 
      */
     public float[] calculate( float[] pSample ) {
-        int n2 = ss2;
-        
+
         for ( int a = 0; a < pSample.length; a++ ) {
             xre[ a ] = pSample[ a ];
             xim[ a ] = 0.0f;
@@ -80,16 +78,17 @@ class BaseMusic_FastFourierTransform {
             xre[ a ] = 0.0f;
             xim[ a ] = 0.0f;
         }
-        float tr, ti, c, s;
-        int   k, kn2, x = 0;
-        for ( int l = 0; l < nu; l++ ) {
+        float tr, ti;
+        int   k, x = 0;
+        int n2 = ss2;
+        for (int l = 0; l < nu; l++ ) {
             k = 0;
             while ( k < ss ) {
                 for ( int i = 0; i < n2; i++ ) {
-                    
-                    c = fftCos[ x ]; 
-                    s = fftSin[ x ]; 
-                    kn2 = k + n2;
+
+                    float c = fftCos[x];
+                    float s = fftSin[x];
+                    int kn2 = k + n2;
                     tr = xre[ kn2 ] * c + xim[ kn2 ] * s;
                     ti = xim[ kn2 ] * c - xre[ kn2 ] * s;
                     xre[ kn2 ] = xre[ k ] - tr;
@@ -103,11 +102,10 @@ class BaseMusic_FastFourierTransform {
             }
             n2 >>= 1; 
         }
-        int r;
-        
+
         for( k = 0; k < ss; k++ ) {
-            
-            r = fftBr[ k ]; 
+
+            int r = fftBr[k];
             if ( r > k ) {
                 tr = xre[ k ];
                 xre[ k ] = xre[ r ];
@@ -179,15 +177,14 @@ class BaseMusic_FastFourierTransform {
     private void prepareTables() {
         int n2 = ss2;
         int nu1 = nu - 1;
-        float p, arg;
         int   k = 0, x = 0;
         
         for ( int l = 0; l < nu; l++ ) {
             k = 0;
             while ( k < ss ) {
                 for ( int i = 0; i < n2; i++ ) {
-                    p = bitrev( k >> nu1, nu );
-                    arg = 2 * (float)Math.PI * p / ss;
+                    float p = bitrev(k >> nu1, nu);
+                    float arg = 2 * (float) Math.PI * p / ss;
                     fftSin[ x ] = (float)Math.sin( arg );
                     fftCos[ x ] = (float)Math.cos( arg );
                     k++;

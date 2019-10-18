@@ -68,7 +68,7 @@ public class RLAgent extends AbstractAgent {
         
         learner.setAlpha(0.01 / featureMap.numFeatures());
         
-        int requiredHistoryLength = featureMap.historyLength();
+        int requiredHistoryLength = FeatureMap.historyLength();
         
         history = new FrameHistory(requiredHistoryLength);
 

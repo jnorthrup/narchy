@@ -10,7 +10,8 @@ import java.util.Random;
 
 public class Entity {
     protected final Random random = new Random();
-    public int x, y;
+    public int x;
+    public int y;
     public int xr = 6;
     public int yr = 6;
     public boolean removed;

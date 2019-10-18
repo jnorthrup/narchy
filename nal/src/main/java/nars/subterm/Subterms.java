@@ -171,8 +171,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
     @Override
     default int structure() {
         //return intifyShallow((s, x) -> s | x.structure(), 0);
-        int s, n = subs();
-        s = IntStream.range(0, n).map(i -> sub(i).structure()).reduce(0, (a, b) -> a | b);
+        int n = subs();
+        int acc = IntStream.range(0, n).map(i -> sub(i).structure()).reduce(0, (a, b) -> a | b);
+        int s = acc;
         return s;
     }
 
@@ -221,7 +222,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         int commonStructure = aa.structure() & bb.structure();
         if (excludeVariables)
-            commonStructure = commonStructure & ~(Op.Variable) & AtomicConstant;
+            commonStructure &= ~(Op.Variable) & AtomicConstant;
 
         if (commonStructure == 0)
             return false;
@@ -360,9 +361,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return u;
     }
 
+    @SuppressWarnings("LambdaUnfriendlyMethodOverload")
     default /*@NotNull*/ SortedSet<Term> toSetSorted(Function<Term,Term> map) {
         MetalTreeSet<Term> u = new MetalTreeSet();
-        forEach(z -> u.add(map.apply(z)));
+        for (Term z : this) {
+            u.add(map.apply(z));
+        }
         return u;
     }
 
@@ -388,9 +392,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
             List<Term> u = new FasterList<>(s);
-            forEach(x -> {
+            for (Term x : this) {
                 if (t.test(x)) u.add(x);
-            });
+            }
             int us = u.size();
             if (us == s) {
                 if (this instanceof TermVector)
@@ -447,7 +451,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
         int s = subs();
         UnifiedSet<Term> u = new UnifiedSet(s, 0.99f);
         if (s > 0) {
-            forEach(u::add);
+            for (Term term : this) {
+                u.add(term);
+            }
         }
         return u;
     }
@@ -529,7 +535,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     /*@NotNull*/
     default boolean recurseSubtermsToSet(int inStructure, /*@NotNull*/ Collection<Term> t, boolean untilAddedORwhileNotRemoved) {
-        final boolean[] r = {false};
+        boolean[] r = {false};
         Predicate<Term> selector = s -> {
 
             if (!untilAddedORwhileNotRemoved && r[0])
@@ -587,11 +593,15 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default void addAllTo(Collection target) {
-        forEach(target::add);
+        for (Term term : this) {
+            target.add(term);
+        }
     }
     default void addAllTo(FasterList target) {
         target.ensureCapacity(subs());
-        forEach(target::addFast);
+        for (Term term : this) {
+            target.addFast(term);
+        }
     }
 
     default /* final */ boolean impossibleSubStructure(int structure) {
@@ -646,7 +656,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default int count(Predicate<Term> match) {
         //return intifyShallow((c, sub) -> match.test(sub) ? c + 1 : c, 0);
         int n = subs();
-        int c = (int) IntStream.range(0, n).filter(i -> match.test(sub(i))).count();
+        long count = IntStream.range(0, n).filter(i -> match.test(sub(i))).count();
+        int c = (int) count;
         return c;
     }
     default boolean countEquals(Predicate<Term> match, int n) {

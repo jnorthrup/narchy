@@ -104,7 +104,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
 
         shadow.writeUnsignedByte(o.ordinal());
         shadow.writeUnsignedByte(subs);
-        final byte[] numAtoms = {0};
+        byte[] numAtoms = {0};
         ByteFunction0 nextUniqueAtom = () -> numAtoms[0]++;
         int structure = o.bit, hashCode = 1;
         byte volume = 1;
@@ -129,22 +129,19 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         hashCode = Util.hashCombine(hashCode, o.id);
 
         assert (volume < 127);
-        boolean normalized = false;
-
-
-        FastCompound y;
 
 
         Term[] a = new Term[atoms.size()];
         for (ObjectBytePair<Term> p : atoms.keyValuesView()) {
             a[p.getTwo()] = p.getOne();
         }
-        y = new FastCompoundInstancedAtoms(a, shadow.toByteArray(), structure, hashCode, volume, normalized);
+        boolean normalized = false;
+        FastCompound y = new FastCompoundInstancedAtoms(a, shadow.toByteArray(), structure, hashCode, volume, normalized);
 
         return y;
     }
 
-    public void print() {
+    public static void print() {
         System.out.println();
     }
 
@@ -200,7 +197,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
             return at + 2;
         }
 
-        final int[] o = new int[1];
+        int[] o = new int[1];
         subtermOffsets(at, (sub, offset) -> {
             if (sub == subterm) {
                 o[0] = offset;
@@ -221,12 +218,12 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         if (subterms == 0)
             return;
 
-        byte depth = 0;
         byte[] stack = new byte[MAX_LAYERS];
         stack[0] = subterms;
 
         at += 2;
 
+        byte depth = 0;
         for (byte i = 0; i < subterms; ) {
             if (depth == 0) {
                 if (!each.test(i, at) || i == subterms - 1)
@@ -353,7 +350,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         @Override
         public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
             int o = offset;
-            final int[] vv = {v};
+            int[] vv = {v};
             c.subtermOffsets(o, (subterm, at) -> {
                 Term t = c.term(at);
 

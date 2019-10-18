@@ -227,7 +227,7 @@ public class UDPeer extends UDP {
 
             byte[] bytes = o.arrayCompactDirect();
 
-            final int[] remain = {Math.round(them.size() * pri)};
+            int[] remain = {Math.round(them.size() * pri)};
             them.sample(rng, (Predicate<UDProfile>) ((to) -> {
                 if (o.id() != to.id /*&& (pri >= 1 || rng.nextFloat() <= pri)*/)
                     sendRaw(bytes, to.addr);
@@ -439,7 +439,7 @@ public class UDPeer extends UDP {
         //nothing
     }
 
-    protected boolean share(Msg m, @Nullable UDProfile from) {
+    protected static boolean share(Msg m, @Nullable UDProfile from) {
         return from!=null; //default: only share from known peers
     }
 
@@ -449,7 +449,9 @@ public class UDPeer extends UDP {
 
     private RecycledSummaryStatistics latencyAvg() {
         RecycledSummaryStatistics r = new RecycledSummaryStatistics();
-        them.forEach(x -> r.accept(x.latency()));
+        for (UDProfile x : them) {
+            r.accept(x.latency());
+        }
         return r;
     }
 
@@ -823,9 +825,8 @@ public class UDPeer extends UDP {
 
         public @Nullable InetSocketAddress origin() {
             int port = this.port();
-            InetAddress aa = null;
             try {
-                aa = InetAddress.getByAddress(Arrays.copyOfRange(bytes, ORIGIN_BYTE, ORIGIN_BYTE + 16));
+                InetAddress aa = InetAddress.getByAddress(Arrays.copyOfRange(bytes, ORIGIN_BYTE, ORIGIN_BYTE + 16));
                 return new InetSocketAddress(aa, port);
             } catch (UnknownHostException e) {
                 return null;
@@ -877,8 +878,8 @@ public class UDPeer extends UDP {
         byte[] addrBytes;
         long lastMessage = Long.MIN_VALUE;
         HashMapTagSet
-                can = HashMapTagSet.EMPTY,
-                need = HashMapTagSet.EMPTY;
+                can = HashMapTagSet.EMPTY;
+        HashMapTagSet need = HashMapTagSet.EMPTY;
 
         public UDProfile(int id, InetSocketAddress addr, long initialPingTime) {
             this.id = id;

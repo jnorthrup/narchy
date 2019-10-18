@@ -8,7 +8,7 @@ import java.util.List;
 public abstract class ListModel<X> implements GridModel<X> {
 
     /** orientation, dynamically changeable. true=vertical, false=horizontal. default=vertical */
-    private final boolean vertical = true;
+    private static final boolean vertical = true;
 
     private DynGrid<X> surface;
 
@@ -61,7 +61,7 @@ public abstract class ListModel<X> implements GridModel<X> {
     protected abstract int size();
 
     /** thickenss of the table, one by default */
-    private int depth() {
+    private static int depth() {
         return 1;
     }
 

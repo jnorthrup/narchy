@@ -117,12 +117,10 @@ public final class Jake2 {
 
 
         int oldtime = Timer.Milliseconds();
-        int newtime;
-        int time;
         while (true) {
-            
-            newtime = Timer.Milliseconds();
-            time = newtime - oldtime;
+
+            int newtime = Timer.Milliseconds();
+            int time = newtime - oldtime;
 
             if (time > 0)
                 Qcommon.Frame(time);

@@ -182,7 +182,8 @@ public class M extends Applet implements Runnable {
 
 	private final boolean[] keyboard = new boolean[0x10000]; 
 	private boolean mouse; 
-	private volatile int mouseX, mouseY; 
+	private volatile int mouseX;
+    private volatile int mouseY;
 
 	@Override
 	public void start() {
@@ -192,22 +193,18 @@ public class M extends Applet implements Runnable {
 	@Override
     public void run() {
 
-		
-		int i, j, k, m;
-		int x1 = 0, y1, z1 = 0;
-		float x, y, z;
-		float dx, dy, dz;
-		long time;
 
-		
 		while (!isActive())
 			Thread.yield();
+		long time;
+		int y1;
+		int x1 = 0;
+		int k;
+		int j;
+		int i;
 		if (receiveThread) {
-			
-			
-			
 
-			int[] LANvars;
+
 			do {
 				try {
 					socket.receive(rxPacket); 
@@ -250,7 +247,7 @@ public class M extends Applet implements Runnable {
 						
 						
 						for (i = 0; i < ENTITIES; i++) {
-							LANvars = LANbuffer[x1][i];
+							int[] LANvars = LANbuffer[x1][i];
 							for (j = 0; j < VARIABLES; j++) {
 								k = IDSIZE + 4 * (i * VARIABLES + j);
 								LANvars[j] = ((rxMsg[k + 3] & 0xff) << 24) + ((rxMsg[k + 2] & 0xff) << 16) + ((rxMsg[k + 1] & 0xff) << 8) + (rxMsg[k] & 0xff);
@@ -296,42 +293,10 @@ public class M extends Applet implements Runnable {
 		
 		receiveThread = true;
 		new Thread(this).start();
-		long sendTime = 0;
 
-		
-		
-		
 
-		
-		float[][] drawList1 = new float[PLAYERS * (ENEMIES + 1)][];
-		float[][] drawList2 = new float[PLAYERS * (ENEMIES + 1)][];
-		int drawCount1, drawCount2;
-
-		
-		int[] LANentity; 
-		float[] entity1 = null, entity2; 
-
-		
-		int[] cMap = new int[8]; 
-		int colour; 
-
-		
-		int tileType; 
-		int dst; 
-		int sx, sy; 
-		float rx, rz; 
-		float radius, depth; 
-		float rayAngle = 0, cosRayAngle, sinRayAngle; 
-		int ray, angle;
-
-		
-		float m1, m2; 
-		float p1, p2; 
-
-		
 		BufferedImage screen = new BufferedImage(SCREENWIDTH, SCREENHEIGHT, BufferedImage.TYPE_INT_RGB);
 		int[] screenData = ((DataBufferInt) screen.getRaster().getDataBuffer()).getData();
-		float[] zBuffer = new float[SCREENHEIGHT * SCREENWIDTH];
 		Graphics gs = getGraphics();
 
 		
@@ -347,7 +312,8 @@ public class M extends Applet implements Runnable {
 			
 			zMap[i] = DEPTH * DEPTHRATIO / (DEPTH * DEPTHRATIO - i) - 1f;
 
-		
+
+		int[] cMap = new int[8];
 		for (i = 0; i < 8; i++) {
 			cMap[i] = 0x3fc000 * (i & 4) + 0x7f80 * (i & 2) + 0xff * (i & 1);
 		}
@@ -366,16 +332,18 @@ public class M extends Applet implements Runnable {
 			}
 		}
 
-		
+
+		float z;
+		float y;
 		for (i = 0; i < TILESIZE; i++) {
-			p1 = (float) Math.cos(i / (float) TILESIZE * 2 * (float) Math.PI);
-			m1 = (2f * i) / TILESIZE - 1f;
+			float p1 = (float) Math.cos(i / (float) TILESIZE * 2 * (float) Math.PI);
+			float m1 = (2f * i) / TILESIZE - 1f;
 			if (m1 < 0)
 				m1 = -m1;
 			m1 = 3f * (1f - m1);
 			for (j = 0; j < TILESIZE; j++) {
-				p2 = (float) Math.cos(j / (float) TILESIZE * 2 * (float) Math.PI);
-				m2 = (2f * j) / TILESIZE - 1f;
+				float p2 = (float) Math.cos(j / (float) TILESIZE * 2 * (float) Math.PI);
+				float m2 = (2f * j) / TILESIZE - 1f;
 				if (m2 < 0)
 					m2 = -m2;
 				m2 = 3f * (1f - m2);
@@ -420,39 +388,32 @@ public class M extends Applet implements Runnable {
 			}
 		}
 
-		
-		
-		
 
-		
-		float playerX = 0, playerY = 0, playerZ = 0; 
-		float angleY = 0, sinAngleY, cosAngleY; 
+		LANdata[0][0][T] = 7;
 
-		
-		int mapX, mapZ; 
-		int tileX, tileZ; 
 
-		
-		int[] health = new int[ENEMIES + 1];
-		LANdata[0][0][T] = 7; 
-		boolean allowSpawn = false;
-
-		
-		
-		
-
-		
 		requestFocus();
 		setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 
-		
-		long lastTime; 
-		long LANdeltaTime; 
-		time = System.nanoTime();
-		
 
+		time = System.nanoTime();
+
+
+		boolean allowSpawn = false;
+		int[] health = new int[ENEMIES + 1];
+		float angleY = 0;
+		float playerZ = 0;
+		float playerY = 0;
+		float playerX = 0;
+		float[] zBuffer = new float[SCREENHEIGHT * SCREENWIDTH];
+		float rayAngle = 0;
+		float[] entity1 = null;
+		float[][] drawList2 = new float[PLAYERS * (ENEMIES + 1)][];
+		float[][] drawList1 = new float[PLAYERS * (ENEMIES + 1)][];
+		long sendTime = 0;
+		int z1 = 0;
 		do {
-			lastTime = time;
+			long lastTime = time;
 			time = System.nanoTime();
 			long deltaTime = time - lastTime;
 			/*            if (printTime+1000000000<time) {
@@ -483,7 +444,7 @@ public class M extends Applet implements Runnable {
 				for (i = 0; i < ENTITIES; i++) {
 					for (j = 0; j < VARIABLES; j++) {
 						k = IDSIZE + 4 * (i * VARIABLES + j);
-						m = LANdata[0][i][j];
+						int m = LANdata[0][i][j];
 						txMsg[k + 3] = (byte) ((m >> 24) & 0xff);
 						txMsg[k + 2] = (byte) ((m >> 16) & 0xff);
 						txMsg[k + 1] = (byte) ((m >> 8) & 0xff);
@@ -496,21 +457,15 @@ public class M extends Applet implements Runnable {
 				}
 			}
 
-			
-			
-			
 
-			
-			
-			
-
+			int[] LANentity;
 			for (i = 0; i < PLAYERS; i++) {
 				if (timestamp[i] + TIMEOUT > time) { 
 					for (j = 0; j < ENTITIES; j++) {
 						LANentity = LANdata[i][j];
 						entity1 = localData[i][j];
-						if ((entity1[T] = LANentity[T]) != 0) { 
-							LANdeltaTime = time - timestamp[i];
+						if ((entity1[T] = LANentity[T]) != 0) {
+							long LANdeltaTime = time - timestamp[i];
 							for (k = X; k <= Z; k++) {
 								
 								entity1[k] = (LANentity[k] + LANdeltaTime * TRANSLATERATE * LANentity[VX + k]) / SCALEXYZ;
@@ -521,11 +476,10 @@ public class M extends Applet implements Runnable {
 				}
 			}
 
-			
-			
-			
-			
 
+			float[] entity2;
+			float dz;
+			float dx;
 			for (i = 0; i < PLAYERS; i++) {
 				if (timestamp[i] + TIMEOUT > time) { 
 					for (j = 0; j <= ENEMIES; j++) {
@@ -598,9 +552,12 @@ public class M extends Applet implements Runnable {
 				}
 			}
 
-			
-			
-			
+
+			int tileZ;
+			int tileX;
+			int mapZ;
+			int mapX;
+			int tileType;
 			for (i = ENEMIES + 1; i < ENTITIES; i++) {
 				entity1 = localData[0][i];
 				
@@ -631,12 +588,12 @@ public class M extends Applet implements Runnable {
 			if (keyboard[Event.RIGHT] || keyboard['d']) 
 				angleY -= ROTATERATE * deltaTime;
 			angleY = (angleY + 2f * (float) Math.PI) % (2f * (float) Math.PI);
-			sinAngleY = sin[(int) (DEGREES * angleY)];
-			cosAngleY = cos[(int) (DEGREES * angleY)];
+			float sinAngleY = sin[(int) (DEGREES * angleY)];
+			float cosAngleY = cos[(int) (DEGREES * angleY)];
 
-			
-			rx = 0;
-			rz = 0;
+
+			float rx = 0;
+			float rz = 0;
 			if (keyboard[Event.UP] || keyboard['w']) { 
 				rx = -sinAngleY;
 				rz = -cosAngleY;
@@ -647,8 +604,8 @@ public class M extends Applet implements Runnable {
 				rz = cosAngleY;
 			}
 
-			
-			x = playerX + TRANSLATERATE * deltaTime * rx;
+
+			float x = playerX + TRANSLATERATE * deltaTime * rx;
 			z = playerZ + TRANSLATERATE * deltaTime * rz;
 			mapX = (int) (x + 1000) - 1000;
 			mapZ = (int) (z + 1000) - 1000;
@@ -685,12 +642,14 @@ public class M extends Applet implements Runnable {
 			
 			
 			
-			entity2 = localData[0][0]; 
+			entity2 = localData[0][0];
+			int angle;
+			float depth;
 			for (j = 1; j <= ENEMIES; j++) {
 				entity1 = localData[0][j];
 				if (entity1[T] != 0) { 
 					dx = entity1[X] - entity2[X];
-					dy = entity1[Y] - entity2[Y];
+					float dy = entity1[Y] - entity2[Y];
 					dz = entity1[Z] - entity2[Z];
 					depth = dx * dx + dz * dz;
 
@@ -781,9 +740,9 @@ public class M extends Applet implements Runnable {
 				}
 			}
 
-			
-			
-			
+
+			float sinRayAngle;
+			float cosRayAngle;
 			if (mouse) {
 				for (i = ENEMIES + 1; i <= ENEMIES + PLAYERFIREBALLS; i++) {
 					if (localData[0][i][T] == 0) {
@@ -920,12 +879,8 @@ public class M extends Applet implements Runnable {
 				allowSpawn = false; 
 			}
 
-			
-			
-			
 
-			
-			drawCount1 = 0;
+			int drawCount1 = 0;
 			for (i = 0; i < PLAYERS; i++) {
 				if (timestamp[i] + TIMEOUT > time) { 
 					for (j = (i == 0) ? 1 : 0; j <= ENEMIES; j++) {
@@ -942,14 +897,18 @@ public class M extends Applet implements Runnable {
 				}
 			}
 
-			for (ray = 0; ray < SCREENWIDTH; ray += 2) {
+			float radius;
+			int sy;
+			int dst;
+			int colour;
+			for (int ray = 0; ray < SCREENWIDTH; ray += 2) {
 				rayAngle = angleY + rayAngleFix[ray];
 				rayAngle = (rayAngle + 2f * (float) Math.PI) % (2f * (float) Math.PI);
 				cosRayAngle = cos[(int) (DEGREES * rayAngle)] / cosRayAngleFix[ray];
 				sinRayAngle = sin[(int) (DEGREES * rayAngle)] / cosRayAngleFix[ray];
 
-				
-				drawCount2 = 0;
+
+				int drawCount2 = 0;
 				for (i = 0; i < drawCount1; i++) {
 					
 					dx = drawList1[i][X] - playerX;
@@ -1108,7 +1067,7 @@ public class M extends Applet implements Runnable {
 
 							
 							if (dx * dx + dz * dz < ENTITYDEPTH && rz < 0) {
-								sx = SCREENWIDTH / 2 - (int) (SCREENDEPTH * rx / rz);
+								int sx = SCREENWIDTH / 2 - (int) (SCREENDEPTH * rx / rz);
 								sy = SCREENHEIGHT / 2 + (int) (20f * (entity1[Y] - playerY - PLAYERHEIGHT) / rz);
 								
 								drawCount1 = (int) (50 / (rz * rz));

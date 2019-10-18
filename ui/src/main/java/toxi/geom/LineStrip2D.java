@@ -222,8 +222,9 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public List<Line2D> getSegments() {
-        final int num = vertices.size();
-        List<Line2D> segments = IntStream.range(1, num).mapToObj(i -> new Line2D(vertices.get(i - 1), vertices.get(i))).collect(Collectors.toCollection(() -> new ArrayList<>(num - 1)));
+        int num = vertices.size();
+        int bound = num;
+        List<Line2D> segments = IntStream.range(1, bound).mapToObj(i -> new Line2D(vertices.get(i - 1), vertices.get(i))).collect(Collectors.toCollection(() -> new ArrayList<>(num - 1)));
         return segments;
     }
 

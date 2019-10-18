@@ -73,7 +73,7 @@ public class AStarGoalFind<F extends Solution> {
      */
     F search(Problem<F> problem,  F initialNode, F goalNode) {
 
-        final Comparator<F> SEARCH_COMPARATOR = Comparator.comparingDouble((x)->
+        Comparator<F> SEARCH_COMPARATOR = Comparator.comparingDouble((x)->
                 x.g() + problem.cost(x, goalNode));
 
         IOpenSet<F> openSet = new OpenSet(SEARCH_COMPARATOR);
@@ -101,7 +101,6 @@ public class AStarGoalFind<F extends Solution> {
             
             Iterable<F> successorNodes = problem.next(currentNode);
             for (F successorNode : successorNodes) {
-                boolean inOpenSet;
                 if (closedSet.contains(successorNode))
                     continue;
                 /* Special rule for nodes that are generated within other nodes:
@@ -109,6 +108,7 @@ public class AStarGoalFind<F extends Solution> {
                  * its g value from the openSet if its already discovered
                  */
                 F discSuccessorNode = openSet.getNode(successorNode);
+                boolean inOpenSet;
                 if (discSuccessorNode != null) {
                     successorNode = discSuccessorNode;
                     inOpenSet = true;

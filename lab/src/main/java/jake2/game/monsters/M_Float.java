@@ -571,10 +571,6 @@ public class M_Float {
         public String getID() { return "floater_fire_blaster"; }
         @Override
         public boolean think(edict_t self) {
-            float[] start = { 0, 0, 0 };
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-            float[] end = { 0, 0, 0 };
-            float[] dir = { 0, 0, 0 };
             int effect;
 
             if ((self.s.frame == FRAME_attak104)
@@ -582,13 +578,18 @@ public class M_Float {
                 effect = Defines.EF_HYPERBLASTER;
             else
                 effect = 0;
+            float[] right = {0, 0, 0};
+            float[] forward = {0, 0, 0};
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[Defines.MZ2_FLOAT_BLASTER_1],
                     forward, right, start);
 
+            float[] end = {0, 0, 0};
             Math3D.VectorCopy(self.enemy.s.origin, end);
             end[2] += self.enemy.viewheight;
+            float[] dir = {0, 0, 0};
             Math3D.VectorSubtract(end, start, dir);
 
             Monster.monster_fire_blaster(self, start, dir, 1, 1000,
@@ -849,17 +850,18 @@ public class M_Float {
         public String getID() { return "floater_zap"; }
         @Override
         public boolean think(edict_t self) {
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-            float[] origin = { 0, 0, 0 };
             float[] dir = { 0, 0, 0 };
-            float[] offset = { 0, 0, 0 };
 
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, dir);
 
+            float[] right = {0, 0, 0};
+            float[] forward = {0, 0, 0};
             Math3D.AngleVectors(self.s.angles, forward, right, null);
-            
-            
+
+
+            float[] offset = {0, 0, 0};
             Math3D.VectorSet(offset, 18.5f, -0.9f, 10f);
+            float[] origin = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin, offset, forward, right,
                     origin);
             

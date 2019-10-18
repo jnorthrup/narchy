@@ -29,6 +29,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -348,7 +349,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
 
     public E edge(V s, V p, E ifMissing) {
         @Nullable E existing = edge(s, p);
-        return existing != null ? existing : ifMissing;
+        return Optional.ofNullable(existing).orElse(ifMissing);
     }
 
     public E edge(int s, int p, E ifMissing) {
@@ -395,9 +396,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
      * returns true if modified
      */
     private void each(TriConsumer<V, V, E> edge) {
-        eachNode((an, bn, e) -> {
-            edge.accept(an.v, bn.v, e);
-        });
+        eachNode((an, bn, e) -> edge.accept(an.v, bn.v, e));
     }
 
 
@@ -408,12 +407,12 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     private AdjGraph<V, E> compact(TriFunction<V, V, E, E> retain) {
         AdjGraph g = new AdjGraph(directed);
         each((a, b, e) -> {
-            
-            e = retain.apply(a, b, e);
-            if (e != null) {
+
+            E e1 = retain.apply(a, b, e);
+            if (e1 != null) {
                 int aa = g.addNode(a);
                 int bb = g.addNode(b);
-                g.setEdge(aa, bb, e);
+                g.setEdge(aa, bb, e1);
             }
         });
         return g;
@@ -431,11 +430,9 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
             out.println("node [ id " + k.id + " label \"" +
                     k.v.toString().replace('\"','\'') + "\" ]");
 
-        eachNode((a, b, e) -> {
-            out.println(
-                    "edge [ source " + a.id + " target " + b.id + " label \"" +
-                            e.toString().replace('\"','\'') + "\" ]");
-        });
+        eachNode((a, b, e) -> out.println(
+                "edge [ source " + a.id + " target " + b.id + " label \"" +
+                        e.toString().replace('\"','\'') + "\" ]"));
 
         out.println("]");
     }

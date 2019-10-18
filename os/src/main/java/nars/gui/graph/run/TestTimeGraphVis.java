@@ -12,7 +12,7 @@ import static nars.time.Tense.ETERNAL;
 public class TestTimeGraphVis extends SimpleGraph3D<TimeGraph.Event> {
 
     public TestTimeGraphVis() {
-        super((SpaceWidget<TimeGraph.Event> n)->{
+        super(n ->{
             defaultVis.each(n);
 
             if (n.id instanceof TimeGraph.Absolute) {

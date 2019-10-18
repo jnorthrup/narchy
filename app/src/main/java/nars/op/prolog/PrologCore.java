@@ -334,7 +334,7 @@ public class PrologCore extends Prolog implements Consumer<Task> {
         return new Struct("--", p);
     }
 
-    public static alice.tuprolog.Term[] psubterms(final Subterms s) {
+    public static alice.tuprolog.Term[] psubterms(Subterms s) {
         return s.array(PrologCore::pterm, alice.tuprolog.Term[]::new);
     }
 
@@ -343,7 +343,7 @@ public class PrologCore extends Prolog implements Consumer<Task> {
 //    }
 
 
-    public static alice.tuprolog.Term pterm(final Term term) {
+    public static alice.tuprolog.Term pterm(Term term) {
         if (term instanceof Compound) {
             Op op = term.op();
             alice.tuprolog.Term[] st = psubterms(term.subterms());

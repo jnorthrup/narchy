@@ -37,7 +37,10 @@ public class KellyLochbaumFilter /*implements Filter*/ {
     protected float srate;
 
     /** State of filter. */
-    protected double[] li,lo,gi,go;
+    protected double[] li;
+    protected double[] lo;
+    protected double[] gi;
+    protected double[] go;
 
     /** This many cylinder segments */
     protected int nTubeSections;
@@ -183,7 +186,9 @@ public class KellyLochbaumFilter /*implements Filter*/ {
 
 		protected float speedQuotient = 4f;
 
-		private float T, Tp,Tn;
+		private float T;
+        private float Tp;
+        private float Tn;
 
 		public GlottalWave(float srate,int bufferSize) {
 			//super(bufferSize);
@@ -246,8 +251,8 @@ public class KellyLochbaumFilter /*implements Filter*/ {
 
 		protected void computeBuffer(float[] buf, int bufsz) {
 			//int bufsz = getBufferSize();
-			float y;
 			for(int i=0;i<bufsz;i++) {
+				float y;
 				if(phase > (Tn+Tp)) {
 					y=0;
 				} else if(phase<Tp) {

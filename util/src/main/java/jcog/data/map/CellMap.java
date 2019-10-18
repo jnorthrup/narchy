@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.*;
 
 /**
@@ -85,8 +86,10 @@ public class CellMap<K, V> {
     }
 
     public void removeAll(Iterable<K> x) {
-        final boolean[] changed = {false};
-        x.forEach(xx -> changed[0] |= removeSilently(xx));
+        boolean[] changed = {false};
+        for (K xx : x) {
+            changed[0] |= removeSilently(xx);
+        }
         if (changed[0])
             invalidated();
     }
@@ -172,11 +175,21 @@ public class CellMap<K, V> {
 
     /** find first corresponding key to the provided value */
     public @Nullable K first(Predicate v) {
-        return Arrays.stream(map.valueArray()).filter(c -> v.test(c.value)).findFirst().map(c -> c.key).orElse(null);
+        for (CacheCell<K, V> kvCacheCell : map.valueArray()) {
+            if (v.test(kvCacheCell.value)) {
+                return Optional.of(kvCacheCell).map(c -> c.key).orElse(null);
+            }
+        }
+        return Optional.<CacheCell<K, V>>empty().map(c -> c.key).orElse(null);
     }
 
     public @Nullable K firstByIdentity(V x) {
-        return Arrays.stream(map.valueArray()).filter(c -> c.value == x).findFirst().map(c -> c.key).orElse(null);
+        for (CacheCell<K, V> kvCacheCell : map.valueArray()) {
+            if (kvCacheCell.value == x) {
+                return Optional.of(kvCacheCell).map(c -> c.key).orElse(null);
+            }
+        }
+        return Optional.<CacheCell<K, V>>empty().map(c -> c.key).orElse(null);
     }
 
     /**
@@ -208,7 +221,7 @@ public class CellMap<K, V> {
 
         public void update(K nextKey, BiFunction<K, V, V> update) {
 
-            final V prev = value;
+            V prev = value;
 
             V next = update.apply(nextKey, prev);
             if (next == prev) {

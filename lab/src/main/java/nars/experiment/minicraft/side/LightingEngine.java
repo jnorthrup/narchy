@@ -89,6 +89,7 @@ public class LightingEngine implements Serializable {
             for (int i = 0; i < height; i++) {
                 if (tiles[x][i].type.lightBlocking != 0) {
                     sun = false;
+                    break;
                 }
                 if (sun) {
                     lightFlow[x][i] = Direction.SOURCE;
@@ -125,7 +126,6 @@ public class LightingEngine implements Serializable {
         boolean bufferLeft = (left > 0);
         boolean bufferRight = (right < width - 1);
         boolean bufferTop = (top > 0);
-        boolean bufferBottom = (bottom < height - 1);
         if (bufferTop) {
             if (bufferLeft) {
                 sources.add(getLightingPoint(left - 1, top - 1));
@@ -140,6 +140,7 @@ public class LightingEngine implements Serializable {
                 zeroLightValue(i, top - 1);
             }
         }
+        boolean bufferBottom = (bottom < height - 1);
         if (bufferBottom) {
             if (bufferLeft) {
                 sources.add(getLightingPoint(left - 1, bottom + 1));
@@ -220,7 +221,6 @@ public class LightingEngine implements Serializable {
         public List<LightingPoint> getExactNeighbors(int width, int height, int lightingValue) {
             LinkedList<LightingPoint> neighbors = new LinkedList<>();
 
-            boolean bufferLeft = (x > 0);
             boolean bufferRight = (x < width - 1);
             boolean bufferUp = (y > 0);
             boolean bufferDown = (y < height - 1);
@@ -236,6 +236,7 @@ public class LightingEngine implements Serializable {
                             lightingValue));
                 }
             }
+            boolean bufferLeft = (x > 0);
             if (bufferLeft) {
                 neighbors.add(new LightingPoint(x - 1, y, Direction.LEFT, lightingValue));
                 if (bufferUp) {

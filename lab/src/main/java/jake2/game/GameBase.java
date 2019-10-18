@@ -131,8 +131,6 @@ public class GameBase {
      */
     public static int ClipVelocity(float[] in, float[] normal, float[] out,
             float overbounce) {
-        float change;
-        int i;
 
         int blocked = 0;
         if (normal[2] > 0)
@@ -142,8 +140,8 @@ public class GameBase {
 
         float backoff = Math3D.DotProduct(in, normal) * overbounce;
 
-        for (i = 0; i < 3; i++) {
-            change = normal[i] * backoff;
+        for (int i = 0; i < 3; i++) {
+            float change = normal[i] * backoff;
             out[i] = in[i] - change;
             if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
                 out[i] = 0;
@@ -201,15 +199,13 @@ public class GameBase {
      */
     public static EdictIterator findradius(EdictIterator from, float[] org,
             float rad) {
-        float[] eorg = { 0, 0, 0 };
-        int j;
 
         if (from == null)
             from = new EdictIterator(0);
         else
             from.i++;
 
-        for (; from.i < num_edicts; from.i++) {
+        for (float[] eorg = {0, 0, 0}; from.i < num_edicts; from.i++) {
             from.o = g_edicts[from.i];
             if (!from.o.inuse)
                 continue;
@@ -217,7 +213,7 @@ public class GameBase {
             if (from.o.solid == Defines.SOLID_NOT)
                 continue;
 
-            for (j = 0; j < 3; j++)
+            for (int j = 0; j < 3; j++)
                 eorg[j] = org[j]
                         - (from.o.s.origin[j] + (from.o.mins[j] + from.o.maxs[j]) * 0.5f);
 
@@ -240,8 +236,6 @@ public class GameBase {
     public static final int MAXCHOICES = 8;
 
     public static edict_t G_PickTarget(String targetname) {
-        int num_choices = 0;
-        edict_t[] choice = new edict_t[MAXCHOICES];
 
         if (targetname == null) {
             game_import_t.dprintf("G_PickTarget called with null targetname\n");
@@ -250,6 +244,8 @@ public class GameBase {
 
         EdictIterator es = null;
 
+        edict_t[] choice = new edict_t[MAXCHOICES];
+        int num_choices = 0;
         while ((es = G_Find(es, findByTarget, targetname)) != null) {
             choice[num_choices++] = es.o;
             if (num_choices == MAXCHOICES)
@@ -295,10 +291,8 @@ public class GameBase {
     static final edict_t[] touch = new edict_t[Defines.MAX_EDICTS];
 
     public static void G_TouchTriggers(edict_t ent) {
-        int i;
-        edict_t hit;
 
-        
+
         if ((ent.client != null || (ent.svflags & Defines.SVF_MONSTER) != 0)
                 && (ent.health <= 0))
             return;
@@ -308,8 +302,8 @@ public class GameBase {
 
         
         
-        for (i = 0; i < num; i++) {
-            hit = touch[i];
+        for (int i = 0; i < num; i++) {
+            edict_t hit = touch[i];
 
             if (!hit.inuse)
                 continue;
@@ -331,7 +325,8 @@ public class GameBase {
 
     public static edict_t obstacle;
 
-    public static int c_yes, c_no;
+    public static int c_yes;
+    public static int c_no;
 
     public static final int STEPSIZE = 18;
 
@@ -374,11 +369,9 @@ public class GameBase {
     }
 
     public static void AddPointToBounds(float[] v, float[] mins, float[] maxs) {
-        int i;
-        float val;
 
-        for (i = 0; i < 3; i++) {
-            val = v[i];
+        for (int i = 0; i < 3; i++) {
+            float val = v[i];
             if (val < mins[i])
                 mins[i] = val;
             if (val > maxs[i])
@@ -410,13 +403,10 @@ public class GameBase {
      * ClientEndServerFrames.
      */
     public static void ClientEndServerFrames() {
-        int i;
-        edict_t ent;
 
-        
-        
-        for (i = 0; i < maxclients.value; i++) {
-            ent = g_edicts[1 + i];
+
+        for (int i = 0; i < maxclients.value; i++) {
+            edict_t ent = g_edicts[1 + i];
             if (!ent.inuse || null == ent.client)
                 continue;
             PlayerView.ClientEndServerFrame(ent);
@@ -440,13 +430,8 @@ public class GameBase {
      * The timelimit or fraglimit has been exceeded.
      */
     public static void EndDMLevel() {
-        edict_t ent;
-        
-        
-        String s, t, f;
-        String seps = " ,\n\r";
 
-        
+
         if (((int) dmflags.value & Defines.DF_SAME_LEVEL) != 0) {
             PlayerHud.BeginIntermission(CreateTargetChangeLevel(level.mapname));
             return;
@@ -454,15 +439,16 @@ public class GameBase {
 
         
         if (sv_maplist.string.length() > 0) {
-            s = sv_maplist.string;
-            f = null;
+            String s = sv_maplist.string;
+            String f = null;
+            String seps = " ,\n\r";
             StringTokenizer tk = new StringTokenizer(s, seps);
             
             while (tk.hasMoreTokens()){
-            	t = tk.nextToken();
-     
-            	
-            	if (f == null)
+                String t = tk.nextToken();
+
+
+                if (f == null)
             		f = t;
             	
                 if (t.equalsIgnoreCase(level.mapname)) {
@@ -492,7 +478,7 @@ public class GameBase {
                 PlayerHud.BeginIntermission(CreateTargetChangeLevel(level.mapname));
                 return;
             }
-            ent = edit.o;
+            edict_t ent = edit.o;
             PlayerHud.BeginIntermission(ent);
         }
     }
@@ -501,14 +487,12 @@ public class GameBase {
      * CheckNeedPass.
      */
     public static void CheckNeedPass() {
-        int need;
 
-        
-        
+
         if (password.modified || spectator_password.modified) {
             password.modified = spectator_password.modified = false;
 
-            need = 0;
+            int need = 0;
 
             if ((password.string.length() > 0)
                     && 0 != Lib.Q_stricmp(password.string, "none"))
@@ -525,8 +509,6 @@ public class GameBase {
      * CheckDMRules.
      */
     public static void CheckDMRules() {
-        int i;
-        gclient_t cl;
 
         if (level.intermissiontime != 0)
             return;
@@ -543,8 +525,8 @@ public class GameBase {
         }
 
         if (fraglimit.value != 0) {
-            for (i = 0; i < maxclients.value; i++) {
-                cl = game.clients[i];
+            for (int i = 0; i < maxclients.value; i++) {
+                gclient_t cl = game.clients[i];
                 if (!g_edicts[i + 1].inuse)
                     continue;
 
@@ -561,8 +543,6 @@ public class GameBase {
      * Exits a level.
      */
     public static void ExitLevel() {
-        int i;
-        edict_t ent;
 
         String command = "gamemap \"" + level.changemap + "\"\n";
         game_import_t.AddCommandString(command);
@@ -572,8 +552,8 @@ public class GameBase {
         ClientEndServerFrames();
 
         
-        for (i = 0; i < maxclients.value; i++) {
-            ent = g_edicts[1 + i];
+        for (int i = 0; i < maxclients.value; i++) {
+            edict_t ent = g_edicts[1 + i];
             if (!ent.inuse)
                 continue;
             if (ent.health > ent.client.pers.max_health)
@@ -587,8 +567,6 @@ public class GameBase {
      * Advances the world by Defines.FRAMETIME (0.1) seconds.
      */
     public static void G_RunFrame() {
-        int i;
-        edict_t ent;
 
         level.framenum++;
         level.time = level.framenum * Defines.FRAMETIME;
@@ -608,8 +586,8 @@ public class GameBase {
         
         
 
-        for (i = 0; i < num_edicts; i++) {
-            ent = g_edicts[i];
+        for (int i = 0; i < num_edicts; i++) {
+            edict_t ent = g_edicts[i];
             if (!ent.inuse)
                 continue;
 

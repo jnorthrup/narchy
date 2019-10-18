@@ -76,10 +76,10 @@ public class GrammarTransformer {
         List<List<Character>> characterChecks = new ArrayList<>();
         for (int i = 0; i < example.length(); i++) {
             List<Character> characterOption = new ArrayList<>();
-            List<Character> characterCheck = new ArrayList<>();
             char curC = example.charAt(i);
             Context curContext = new Context(context, example.substring(0, i), example.substring(i + 1), example.substring(0, i), example.substring(i + 1));
             characterOption.add(curC);
+            List<Character> characterCheck = new ArrayList<>();
             characterCheck.add(curC);
             for (CharacterUtils.CharacterGeneralization generalization : CharacterUtils.getGeneralizations()) {
                 if (generalization.triggers.contains(curC)) {
@@ -127,8 +127,8 @@ public class GrammarTransformer {
     }
 
     private static Node generalizeMultiAlternationConstant(MultiAlternationNode node, GrammarUtils.MultivalueMap<MultiAlternationNode, ConstantNode> multiAlternationNodeConstantChildren, Predicate<String> oracle) {
-        List<MultiConstantNode> curConsts = new ArrayList<>();
         Log.info("GENERALIZING MULTI ALT: " + node.getData().example);
+        List<MultiConstantNode> curConsts = new ArrayList<>();
         for (Node child : multiAlternationNodeConstantChildren.get(node)) {
             if (!isContained(child.getData().example, curConsts)) {
                 curConsts.add(generalizeConstant(child, oracle));

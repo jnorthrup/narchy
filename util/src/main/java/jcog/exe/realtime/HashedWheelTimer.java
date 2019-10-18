@@ -102,17 +102,15 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 		long deadline = System.nanoTime();
 
-		final int w = wheels;
+		int w = wheels;
 //        IntUnaryOperator updater = (cc) -> (cc + 1) % w;
 
-		int empties;
-
-		do {
+        do {
 
 			int c = cursor();
-			empties = 0;
+            int empties = 0;
 
-			//while ((c = cursor.getAndAccumulate(wheels, (cc, w) -> (cc + 1) % w)) >= 0) {
+            //while ((c = cursor.getAndAccumulate(wheels, (cc, w) -> (cc + 1) % w)) >= 0) {
 			while ((cursor.compareAndSet(c, c = (c + 1) % w))) {
 
 				if (model.run(c, this) != 0) {
@@ -192,7 +190,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		return r;
 	}
 
-	protected <X> void reject(TimedFuture<X> r) {
+	protected static <X> void reject(TimedFuture<X> r) {
 		r.cancel(false);
 		logger.error("reject {}", r);
 	}

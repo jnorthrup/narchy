@@ -13,6 +13,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Vector;
 import java.util.stream.Stream;
 
@@ -38,7 +39,8 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     /**
      * flag: playing midi or audio file
      */
-    private boolean midiEOM, audioEOM;
+    private boolean midiEOM;
+    private boolean audioEOM;
     /**
      * channel objects for playing midi
      */
@@ -74,7 +76,10 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     /**
      * control buttons
      */
-    JButton startB, pauseB, prevB, nextB;
+    JButton startB;
+    JButton pauseB;
+    JButton prevB;
+    JButton nextB;
 
     /**
      * Construct a sound player with directory name of music files.
@@ -201,8 +206,8 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     private void addSound(File file) {
         String s = file.getName();
         /** if the file has right extension */
+        /** add the file */
         if (Stream.of(".au", ".rmf", ".mid", ".wav", ".aif", ".aiff").anyMatch(s::endsWith)) {
-            /** add the file */
             sounds.add(file);
         }
     }
@@ -226,8 +231,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
                     /** try to create a midi sound object */
                     currentSound = MidiSystem.getSequence((URL) object);
                 }
-                /** if it's not a midi sound object neither */ catch (InvalidMidiDataException e1) {
-                } catch (Exception e2) {
+                /** if it's not a midi sound object neither */ catch (Exception e1) {
                 }
             }
         }
@@ -317,9 +321,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
                     /** set the stream to the sequencer */
                     sequencer.setSequence((BufferedInputStream) currentSound);
                 }
-            } catch (InvalidMidiDataException imde) {
-                return false;
-            } catch (Exception ex) {
+            } catch (Exception imde) {
                 return false;
             }
         }

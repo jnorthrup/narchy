@@ -66,26 +66,20 @@ public class GjkConvexCast extends ConvexCast {
 		linVelA.sub(toA, fromA);
 		linVelB.sub(toB, fromB);
 
-		float radius = 0.001f;
-		float lambda = 0f;
-		v3 v = new v3();
+        v3 v = new v3();
 		v.set(1f, 0f, 0f);
 
-		int maxIter = MAX_ITERATIONS;
-
-		v3 n = new v3();
+        v3 n = new v3();
 		n.set(0f, 0f, 0f);
         v3 c = new v3();
 		v3 r = new v3();
 		r.sub(linVelA, linVelB);
 
-		float lastLambda = lambda;
-		
+        float lambda = 0f;
+        float lastLambda = lambda;
 
-		int numIter = 0;
-		
 
-		Transform identityTrans = new Transform();
+        Transform identityTrans = new Transform();
 		identityTrans.setIdentity();
 
 		
@@ -109,7 +103,10 @@ public class GjkConvexCast extends ConvexCast {
             float dist = pointCollector.distance;
             n.set(pointCollector.normalOnBInWorld);
 
-            
+
+            int numIter = 0;
+            int maxIter = MAX_ITERATIONS;
+            float radius = 0.001f;
             while (dist > radius) {
                 numIter++;
                 if (numIter > maxIter) {
@@ -120,7 +117,7 @@ public class GjkConvexCast extends ConvexCast {
 
                 float dLambda = dist / (projectedLinearVelocity);
 
-                lambda = lambda - dLambda;
+                lambda -= dLambda;
 
                 if (lambda > 1f) {
                     return false;

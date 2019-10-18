@@ -64,7 +64,7 @@ class OperatorTest {
     @Test
     void testAtomicExec() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
-        final int[] count = {0};
+        int[] count = {0};
 
         n.setOp(Atomic.atom("x"), new AtomicOperations((x, nar) -> {
             System.err.println("INVOKE " + x);
@@ -156,7 +156,7 @@ class OperatorTest {
 
     @Test
     void testCommandDefault() throws Narsese.NarseseException {
-        final NAR t = NARS.shell();
+        NAR t = NARS.shell();
         Task a = t.input("(a, b, c);").get(0);
         assertNotNull(a);
         assertTrue(a.isCommand());

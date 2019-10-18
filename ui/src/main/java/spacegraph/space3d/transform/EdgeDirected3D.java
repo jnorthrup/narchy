@@ -4,6 +4,7 @@ import spacegraph.space3d.SimpleSpatial;
 import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.broad.Broadphase;
+import spacegraph.space3d.widget.EDraw;
 import spacegraph.space3d.widget.SpaceWidget;
 
 import java.util.List;
@@ -20,8 +21,7 @@ public class EdgeDirected3D extends ForceDirected3D {
 
 
             if (A instanceof SpaceWidget) {
-                ((SpaceWidget<?>) A).edges().forEach(e -> {
-
+                for (EDraw<?> e : ((SpaceWidget<?>) A).edges()) {
                     float attraction = e.attraction;
                     if (attraction > 0) {
                         SimpleSpatial B = e.tgt();
@@ -32,7 +32,7 @@ public class EdgeDirected3D extends ForceDirected3D {
                         }
                     }
 
-                });
+                }
             }
 
 

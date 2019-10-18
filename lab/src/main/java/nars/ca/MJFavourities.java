@@ -47,14 +47,14 @@ public class MJFavourities extends Dialog implements ActionListener {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void InitList() {
-        int i, iGame;
+        int iGame;
 
 		LstFiles.clear();
 
         Vector vLines = new Vector();
         MJTools mjT = new MJTools();
-		if (mjT.LoadResTextFile("fav.txt", vLines)) {
-			for (i = 0; i < vLines.size(); i++) {
+		if (MJTools.LoadResTextFile("fav.txt", vLines)) {
+			for (int i = 0; i < vLines.size(); i++) {
 				if (!((String) vLines.elementAt(i)).startsWith("//"))
 					LstFiles.add((String) vLines.elementAt(i));
 			}
@@ -65,14 +65,14 @@ public class MJFavourities extends Dialog implements ActionListener {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	private void LoadCurrentPattern() {
-		String sGameName = "";
-		String sRuleName = "";
-		String sPattName = "";
 
-		if (LstFiles.getSelectedIndex() >= 0) {
+        if (LstFiles.getSelectedIndex() >= 0) {
 			String sItem = LstFiles.getSelectedItem();
 			int whereSlash = sItem.lastIndexOf('/');
-			if (whereSlash > 0) {
+            String sPattName = "";
+            String sRuleName = "";
+            String sGameName = "";
+            if (whereSlash > 0) {
 				sPattName = sItem.substring(whereSlash + 1); 
 
 				sItem = sItem.substring(0, whereSlash); 
@@ -81,7 +81,7 @@ public class MJFavourities extends Dialog implements ActionListener {
 					sGameName = sItem.substring(0, whereSep); 
 					sRuleName = sItem.substring(whereSep + 1); 
 
-					sGameName = mjUI.mjr.GetGameName(mjUI.mjr
+					sGameName = MJRules.GetGameName(MJRules
 							.GetGameIndex(sGameName));
 					mjUI.ActivateGame(sGameName);
 					mjUI.ActivateRule(sRuleName);

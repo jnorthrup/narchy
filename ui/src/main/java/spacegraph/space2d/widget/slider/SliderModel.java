@@ -178,11 +178,11 @@ public class SliderModel extends PaintSurface {
         @Override
         public void paint(float p, GL2 gl) {
             float W = 1;
-            float H = 1;
-            float barSize = W * p;
 
 
             gl.glColor4f(0f, 0f, 0f, 0.5f);
+            float barSize = W * p;
+            float H = 1;
             Draw.rect(barSize, 0, W - barSize, H, gl);
 
 

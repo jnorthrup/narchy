@@ -35,7 +35,7 @@ public class MovieGenerator {
     protected int pngIndex = 0;
 
     /** How many digits to use in generating the filename */
-    protected final int indexDigits = 6;
+    protected static final int indexDigits = 6;
 
     /** Create a new MovieGenerator that saves images to /tmp/frames/atari_xxxxxx.png
      * 

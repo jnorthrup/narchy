@@ -6,6 +6,8 @@ import nars.$;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static nars.Op.SETe;
@@ -33,7 +35,7 @@ public enum JsonTerm { ;
             }
         } else if (j.isObject()) {
             Term[] s = new Term[j.size()];
-            final int[] i = {0};
+            int[] i = {0};
             j.fields().forEachRemaining(f -> {
                 Atomic k = $.quote(f.getKey());
                 Term v = the(f.getValue());

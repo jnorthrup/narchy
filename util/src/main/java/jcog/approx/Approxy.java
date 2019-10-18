@@ -104,12 +104,9 @@ import java.util.function.Function;
                     new MLPMap.Layer(1, null)
             ).randomize(new XoRoShiRo128PlusRandom());
 
-            experience.forEach(xy -> {
-                //TODO m.put(xEncoded,yEncoded..)
-            });
-            approx = (x)->{
-                return experience.get(null /*encode(x)*/);
-            };
+            for (ActualExecution xy : experience) {//TODO m.put(xEncoded,yEncoded..)
+            }
+            approx = (x)-> experience.get(null /*encode(x)*/);
         }
 
         protected void learn(Object x, Object y) {
@@ -225,7 +222,7 @@ import java.util.function.Function;
 
 
     public static class TestClass1 {
-        public float compute(float x, float y) {
+        public static float compute(float x, float y) {
             return x * y;
         }
     }
@@ -240,7 +237,7 @@ import java.util.function.Function;
         for (int i = 0; i < 100; i++) {
             float x = Util.round(rng.nextFloat(), 0.1f);
             float y = Util.round(rng.nextFloat(), 0.1f);
-            float z = c.compute(x, y);
+            float z = TestClass1.compute(x, y);
         }
     }
 }

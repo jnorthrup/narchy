@@ -15,7 +15,8 @@ class NodeHM {
     /**
      * Susedny vrchol mnohostenu
      */
-    NodeHM prev, next;
+    NodeHM prev;
+    NodeHM next;
 
     /**
      * Inicializuje uzol vrcholu.

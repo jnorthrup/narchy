@@ -76,15 +76,16 @@ public class PremiseRuleSet {
 
         return lines.map(String::trim).filter(s -> !s.isEmpty() && !s.startsWith("//")).map(s -> {
 
-            if (s.contains("..")) {
-                s = s.replace("A..", "%A.."); //add var pattern manually to ellipsis
+            String s1 = s;
+            if (s1.contains("..")) {
+                s1 = s1.replace("A..", "%A.."); //add var pattern manually to ellipsis
                 //s = s.replace("%A..B=_", "%A..%B=_"); //add var pattern manually to ellipsis
-                s = s.replace("B..", "%B.."); //add var pattern manually to ellipsis
+                s1 = s1.replace("B..", "%B.."); //add var pattern manually to ellipsis
                 //s = s.replace("%A.._=B", "%A.._=%B"); //add var pattern manually to ellipsis
             }
 
 
-            return s;
+            return s1;
 
         });
 

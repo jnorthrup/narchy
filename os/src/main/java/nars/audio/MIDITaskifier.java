@@ -61,7 +61,7 @@ public class MIDITaskifier {
 
 
 
-        final List<Concept> keys = $.newArrayList();
+        List<Concept> keys = $.newArrayList();
         for (int i = 36; i <= 51; i++) {
             Term key =
                     channelKey(9, i);
@@ -116,9 +116,7 @@ public class MIDITaskifier {
 
 
 
-            s.listen(c, (k) -> {
-                return new SineWave((float) (100 + Math.random() * 1000));
-            });
+            s.listen(c, (k) -> new SineWave((float) (100 + Math.random() * 1000)));
 
         }
 
@@ -152,8 +150,7 @@ public class MIDITaskifier {
     }
 
     public MidiInReceiver MIDI(Timed timed) {
-        
-        MidiDevice device;
+
         MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
 
 
@@ -161,7 +158,7 @@ public class MIDITaskifier {
             try {
                 MidiDevice.Info ii = infos[i];
 
-                device = MidiSystem.getMidiDevice(ii);
+                MidiDevice device = MidiSystem.getMidiDevice(ii);
 
                 System.out.println(device + "\t" + device.getClass());
                 System.out.println("\t" + device.getDeviceInfo());

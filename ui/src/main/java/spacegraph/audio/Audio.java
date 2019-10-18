@@ -39,10 +39,10 @@ public class Audio implements Runnable {
 
     private final SourceDataLine sdl;
 
-    private final int rate = 44100;
+    private static final int rate = 44100;
 
     /** TODO make dynamically reconfigurable */
-    private final int bufferSize = rate /
+    private static final int bufferSize = rate /
             20 /* = 50ms */
             //10 /* = 100ms */
     ;
@@ -53,7 +53,8 @@ public class Audio implements Runnable {
     private final ByteBuffer soundBuffer = ByteBuffer.allocate(bufferSize * 4);
     //private final ShortBuffer soundBufferShort = soundBuffer.asShortBuffer();
 
-    private final float[] leftBuf, rightBuf;
+    private final float[] leftBuf;
+    private final float[] rightBuf;
     
     
     private boolean alive = true;
@@ -75,13 +76,12 @@ public class Audio implements Runnable {
 //                AudioSystem.getMixer(null);
                 //AudioSystem.getMixer(mixers[2]);
 
-        int bufferBytes = bufferSize * 2 * 2;
-
         try {
             AudioFormat format = new AudioFormat(rate, 16, 2, true, false);
             sdl = AudioSystem.getSourceDataLine(format);
             //sdl = (SourceDataLine) AudioSystem.getMixer(null).getLine(new Line.Info(SourceDataLine.class));
 
+            int bufferBytes = bufferSize * 2 * 2;
             sdl.open(format, bufferBytes);
             soundBuffer.order(ByteOrder.LITTLE_ENDIAN);
             sdl.start();
@@ -160,7 +160,7 @@ public class Audio implements Runnable {
         alive = false;
     }
 
-    public int bufferSizeInFrames() {
+    public static int bufferSizeInFrames() {
         return bufferSize;
     }
 

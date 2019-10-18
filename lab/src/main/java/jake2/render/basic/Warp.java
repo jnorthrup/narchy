@@ -102,14 +102,12 @@ public abstract class Warp extends Model {
     static final int SUBDIVIDE_SIZE = 64;
 
     static void BoundPoly(int numverts, float[][] verts, float[] mins, float[] maxs) {
-        int i, j;
-        float[] v;
 
         mins[0] = mins[1] = mins[2] = 9999;
         maxs[0] = maxs[1] = maxs[2] = -9999;
-        for (i = 0; i < numverts; i++) {
-            v = verts[i];
-            for (j = 0; j < 3; j++) {
+        for (int i = 0; i < numverts; i++) {
+            float[] v = verts[i];
+            for (int j = 0; j < 3; j++) {
                 if (v[j] < mins[j])
                     mins[j] = v[j];
                 if (v[j] > maxs[j])
@@ -119,35 +117,30 @@ public abstract class Warp extends Model {
     }
 
     void SubdividePolygon(int numverts, float[][] verts) {
-        int i, j, k;
-        float[] mins = { 0, 0, 0 };
-        float[] maxs = { 0, 0, 0 };
-        float m;
-        float[] v = { 0, 0, 0 };
-        float[][] front = new float[64][3];
-        float[][] back = new float[64][3];
-
-        int f, b;
-        float[] dist = new float[64];
-        float frac;
-        float s, t;
-        float[] total = { 0, 0, 0 };
 
         if (numverts > 60)
             Com.Error(Defines.ERR_DROP, "numverts = " + numverts);
 
+        float[] maxs = {0, 0, 0};
+        float[] mins = {0, 0, 0};
         BoundPoly(numverts, verts, mins, maxs);
 
-        
+
+        float[] dist = new float[64];
+        float[][] back = new float[64][3];
+        float[][] front = new float[64][3];
+        float[] v = {0, 0, 0};
+        int i;
         for (i = 0; i < 3; i++) {
-            m = (mins[i] + maxs[i]) * 0.5f;
+            float m = (mins[i] + maxs[i]) * 0.5f;
             m = SUBDIVIDE_SIZE * (float) Math.floor(m / SUBDIVIDE_SIZE + 0.5f);
             if (maxs[i] - m < 8)
                 continue;
             if (m - mins[i] < 8)
                 continue;
 
-            
+
+            int j;
             for (j = 0; j < numverts; j++) {
                 dist[j] = verts[j][i] - m;
             }
@@ -157,7 +150,8 @@ public abstract class Warp extends Model {
 
             Math3D.VectorCopy(verts[0], verts[numverts]);
 
-            f = b = 0;
+            int b;
+            int f = b = 0;
             for (j = 0; j < numverts; j++) {
                 v = verts[j];
                 if (dist[j] >= 0) {
@@ -172,9 +166,9 @@ public abstract class Warp extends Model {
                     continue;
 
                 if ((dist[j] > 0) != (dist[j + 1] > 0)) {
-                    
-                    frac = dist[j] / (dist[j] - dist[j + 1]);
-                    for (k = 0; k < 3; k++)
+
+                    float frac = dist[j] / (dist[j] - dist[j + 1]);
+                    for (int k = 0; k < 3; k++)
                         front[f][k] = back[b][k] = v[k] + frac
                                 * (verts[j + 1][k] - v[k]);
 
@@ -199,6 +193,7 @@ public abstract class Warp extends Model {
 
         poly.next = warpface.polys;
         warpface.polys = poly;
+        float[] total = {0, 0, 0};
         Math3D.VectorClear(total);
         float total_s = 0;
         float total_t = 0;
@@ -206,8 +201,8 @@ public abstract class Warp extends Model {
             poly.x(i + 1, verts[i][0]);
             poly.y(i + 1, verts[i][1]);
             poly.z(i + 1, verts[i][2]);
-            s = Math3D.DotProduct(verts[i], warpface.texinfo.vecs[0]);
-            t = Math3D.DotProduct(verts[i], warpface.texinfo.vecs[1]);
+            float s = Math3D.DotProduct(verts[i], warpface.texinfo.vecs[0]);
+            float t = Math3D.DotProduct(verts[i], warpface.texinfo.vecs[1]);
 
             total_s += s;
             total_t += t;
@@ -244,7 +239,6 @@ public abstract class Warp extends Model {
     @Override
     void GL_SubdivideSurface(msurface_t fa) {
         float[][] verts = tmpVerts;
-        float[] vec;
         warpface = fa;
         
         
@@ -253,6 +247,7 @@ public abstract class Warp extends Model {
         for (int i = 0; i < fa.numedges; i++) {
             int lindex = loadmodel.surfedges[fa.firstedge + i];
 
+            float[] vec;
             if (lindex > 0)
                 vec = loadmodel.vertexes[loadmodel.edges[lindex].v[0]].position;
             else
@@ -279,11 +274,6 @@ public abstract class Warp extends Model {
      */
     @Override
     void EmitWaterPolys(msurface_t fa) {
-        glpoly_t p, bp;
-        int i;
-        float s = 0;
-        float t = 0;
-        float os, ot;
         float scroll;
         float rdt = r_newrefdef.time;
 
@@ -292,13 +282,15 @@ public abstract class Warp extends Model {
                     * ((r_newrefdef.time * 0.5f) - (int) (r_newrefdef.time * 0.5f));
         else
             scroll = 0;
-        for (bp = fa.polys; bp != null; bp = bp.next) {
-            p = bp;
+        float t = 0;
+        float s = 0;
+        for (glpoly_t bp = fa.polys; bp != null; bp = bp.next) {
+            glpoly_t p = bp;
 
             gl.glBegin(GL_TRIANGLE_FAN);
-            for (i = 0; i < p.numverts; i++) {
-                os = p.s1(i);
-                ot = p.t1(i);
+            for (int i = 0; i < p.numverts; i++) {
+                float os = p.s1(i);
+                float ot = p.t1(i);
 
                 s = os
                         + Warp.SIN[(int) ((ot * 0.125f + r_newrefdef.time) * TURBSCALE) & 255];
@@ -345,24 +337,24 @@ public abstract class Warp extends Model {
 
     final float[][] skymaxs = new float[2][6];
 
-    float sky_min, sky_max;
+    float sky_min;
+    float sky_max;
 
     void DrawSkyPolygon(int nump, float[][] vecs) {
-        int i, j;
-        float[] v = { 0, 0, 0 };
-        float[] av = { 0, 0, 0 };
-        float s, t, dv;
-        int axis;
-        
+
         c_sky++;
-        
+
+        float[] v = {0, 0, 0};
         Math3D.VectorCopy(Globals.vec3_origin, v);
+        int i;
         for (i = 0; i < nump; i++) {
             Math3D.VectorAdd(vecs[i], v, v);
         }
+        float[] av = {0, 0, 0};
         av[0] = Math.abs(v[0]);
         av[1] = Math.abs(v[1]);
         av[2] = Math.abs(v[2]);
+        int axis;
         if (av[0] > av[1] && av[0] > av[2]) {
             if (v[0] < 0)
                 axis = 1;
@@ -382,7 +374,8 @@ public abstract class Warp extends Model {
 
         
         for (i = 0; i < nump; i++) {
-            j = vec_to_st[axis][2];
+            int j = vec_to_st[axis][2];
+            float dv;
             if (j > 0)
                 dv = vecs[i][j - 1];
             else
@@ -390,11 +383,13 @@ public abstract class Warp extends Model {
             if (dv < 0.001f)
                 continue; 
             j = vec_to_st[axis][0];
+            float s;
             if (j < 0)
                 s = -vecs[i][-j - 1] / dv;
             else
                 s = vecs[i][j - 1] / dv;
             j = vec_to_st[axis][1];
+            float t;
             if (j < 0)
                 t = -vecs[i][-j - 1] / dv;
             else
@@ -428,11 +423,6 @@ public abstract class Warp extends Model {
     final float[][][][] newv = new float[6][2][MAX_CLIP_VERTS][3];
 
     void ClipSkyPolygon(int nump, float[][] vecs, int stage) {
-        float[] v;
-        boolean front, back;
-        float d, e;
-        int[] newc = { 0, 0 };
-        int i, j;
 
         if (nump > MAX_CLIP_VERTS - 2)
             Com.Error(Defines.ERR_DROP, "ClipSkyPolygon: MAX_CLIP_VERTS");
@@ -441,8 +431,11 @@ public abstract class Warp extends Model {
             return;
         }
 
-        front = back = false;
+        boolean back;
+        boolean front = back = false;
         float[] norm = skyclip[stage];
+        int i;
+        float d;
         for (i = 0; i < nump; i++) {
             d = Math3D.DotProduct(vecs[i], norm);
             if (d > ON_EPSILON) {
@@ -465,10 +458,11 @@ public abstract class Warp extends Model {
         sides[i] = sides[0];
         dists[i] = dists[0];
         Math3D.VectorCopy(vecs[0], vecs[i]);
+        int[] newc = {0, 0};
         newc[0] = newc[1] = 0;
 
         for (i = 0; i < nump; i++) {
-            v = vecs[i];
+            float[] v = vecs[i];
             switch (sides[i]) {
             case SIDE_FRONT:
                 Math3D.VectorCopy(v, newv[stage][0][newc[0]]);
@@ -491,8 +485,8 @@ public abstract class Warp extends Model {
                 continue;
 
             d = dists[i] / (dists[i] - dists[i + 1]);
-            for (j = 0; j < 3; j++) {
-                e = v[j] + d * (vecs[i + 1][j] - v[j]);
+            for (int j = 0; j < 3; j++) {
+                float e = v[j] + d * (vecs[i + 1][j] - v[j]);
                 newv[stage][0][newc[0]][j] = e;
                 newv[stage][1][newc[1]][j] = e;
             }
@@ -528,25 +522,23 @@ public abstract class Warp extends Model {
      */
     @Override
     void R_ClearSkyBox() {
-        int i;
 
-        for (i = 0; i < 6; i++) {
+        for (int i = 0; i < 6; i++) {
             skymins[0][i] = skymins[1][i] = 9999;
             skymaxs[0][i] = skymaxs[1][i] = -9999;
         }
     }
 
     void MakeSkyVec(float s, float t, int axis) {
-        float[] v = { 0, 0, 0 };
         float[] b = { 0, 0, 0 };
-        int j, k;
 
         b[0] = s * 2300;
         b[1] = t * 2300;
         b[2] = 2300;
 
-        for (j = 0; j < 3; j++) {
-            k = st_to_vec[axis][j];
+        float[] v = {0, 0, 0};
+        for (int j = 0; j < 3; j++) {
+            int k = st_to_vec[axis][j];
             if (k < 0)
                 v[j] = -b[-k - 1];
             else
@@ -627,20 +619,19 @@ public abstract class Warp extends Model {
     @Override
     public void R_SetSky(String name, float rotate, float[] axis) {
         assert (axis.length == 3) : "vec3_t bug";
-        int i;
-        String pathname;
 
-        
+
         skyname = name;
 
         skyrotate = rotate;
         Math3D.VectorCopy(axis, skyaxis);
 
-        for (i = 0; i < 6; i++) {
+        for (int i = 0; i < 6; i++) {
             
             if (gl_skymip.value != 0 || skyrotate != 0)
                 gl_picmip.value++;
 
+            String pathname;
             if (qglColorTableEXT && gl_ext_palettedtexture.value != 0) {
                 
                 

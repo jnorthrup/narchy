@@ -56,7 +56,7 @@ public class SmoothValue {
         this.value = value;
     }
 
-    private void set(final double nextValue, int delayTime, Interpolator interpolator, int numOfDiv) {
+    private void set(double nextValue, int delayTime, Interpolator interpolator, int numOfDiv) {
         this.interpolator = interpolator;
 
         double delta = nextValue - this.value;

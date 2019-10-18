@@ -162,11 +162,13 @@ public class StackProfiler2 implements InternalProfiler {
 
                 int stackLines = 12;
                 StackRecord lines = new StackRecord(stackLines);
-                Stream.of(info.getStackTrace())
-                        .filter(f -> !exclude(f.getClassName()))
-                        .limit(stackLines)
-                        .forEach(lines::add)
-                ;
+                long limit = stackLines;
+                for (StackTraceElement f : info.getStackTrace()) {
+                    if (!exclude(f.getClassName())) {
+                        if (limit-- == 0) break;
+                        lines.add(f);
+                    }
+                }
 
 
                 if (!lines.isEmpty()) {
@@ -257,7 +259,8 @@ public class StackProfiler2 implements InternalProfiler {
     public static class StackResult extends Result<StackResult> {
 
         private final Map<Thread.State, HashBag<StackRecord>> calleeSum;
-        private final int topStacks, topCallees;
+        private final int topStacks;
+        private final int topCallees;
         private final HashBag<Pair<String, IntObjectPair<String>>> calledSum;
 
         StackResult(Map<Thread.State, HashBag<StackRecord>> calleeSum, HashBag<Pair<String, IntObjectPair<String>>> calledSum, int topStacks) {
@@ -289,25 +292,23 @@ public class StackProfiler2 implements InternalProfiler {
         }
 
 
-        String toString(final Map<Thread.State, HashBag<StackRecord>> stacks) {
+        static String toString(Map<Thread.State, HashBag<StackRecord>> stacks) {
 
             int top = 32;
 
             StringBuilder sb = new StringBuilder(16 * 1024);
 
-            stacks.entrySet().forEach(e -> {
+            for (Map.Entry<Thread.State, HashBag<StackRecord>> e : stacks.entrySet()) {
                 HashBag<StackRecord> cc = e.getValue();
                 MutableList<ObjectIntPair<StackRecord>> dd = cc.topOccurrences(top);
 
                 Thread.State state = e.getKey();
                 float totalHundredths = cc.size() / 100f;
                 sb.append(state).append(" (").append(totalHundredths + " recorded)\n");
-                dd.forEach(x -> {
-                    sb.append('\t').append(Texts.n4(x.getTwo() / totalHundredths)).append("%\t").append(x.getOne()).append('\n');
-                });
+                dd.forEach(x -> sb.append('\t').append(Texts.n4(x.getTwo() / totalHundredths)).append("%\t").append(x.getOne()).append('\n'));
 
                 sb.append("\n");
-            });
+            }
 
             return sb.toString();
 
@@ -318,9 +319,7 @@ public class StackProfiler2 implements InternalProfiler {
             StringBuilder sb = new StringBuilder(16 * 1024).append("CALlEES\n");
 
             float totalHundredths = calleeSum.size() / 100f;
-            calleeSum.topOccurrences(topCallees).forEach((x) -> {
-                sb.append('\t').append(Texts.n4(x.getTwo() / totalHundredths)).append("%\t").append(x.getOne()).append('\n');
-            });
+            calleeSum.topOccurrences(topCallees).forEach((x) -> sb.append('\t').append(Texts.n4(x.getTwo() / totalHundredths)).append("%\t").append(x.getOne()).append('\n'));
 
             return sb.toString();
 
@@ -334,14 +333,16 @@ public class StackProfiler2 implements InternalProfiler {
             Map<Thread.State, HashBag<StackRecord>> calleeSum = new EnumMap<>(Thread.State.class);
             HashBag<Pair<String, IntObjectPair<String>>> calledSum = new HashBag();
             for (StackResult r : results) {
-                r.calleeSum.forEach((key, value) -> {
+                for (Map.Entry<Thread.State, HashBag<StackRecord>> entry : r.calleeSum.entrySet()) {
+                    Thread.State key = entry.getKey();
+                    HashBag<StackRecord> value = entry.getValue();
                     HashBag<StackRecord> sumSet = calleeSum.computeIfAbsent(key, (x) -> new HashBag<>());
                     value.forEachWithOccurrences((x, o) -> {
                         sumSet.addOccurrences(x, o);
                         calledSum.addOccurrences(x.getFirst(), o);
                     });
 
-                });
+                }
                 topStacks = r.topStacks;
             }
             return new StackResult(calleeSum, calledSum, topStacks);

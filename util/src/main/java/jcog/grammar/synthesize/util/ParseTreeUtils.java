@@ -17,6 +17,7 @@ package jcog.grammar.synthesize.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -44,7 +45,12 @@ public class ParseTreeUtils {
             this.start = start;
             this.rep = rep;
             this.end = end;
-            String sb = rep.stream().map(ParseTreeNode::getExample).collect(Collectors.joining("", start.getExample(), end.getExample()));
+            StringJoiner joiner = new StringJoiner("", start.getExample(), end.getExample());
+            for (ParseTreeNode parseTreeNode : rep) {
+                String parseTreeNodeExample = parseTreeNode.getExample();
+                joiner.add(parseTreeNodeExample);
+            }
+            String sb = joiner.toString();
             this.example = sb;
         }
 

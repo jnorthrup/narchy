@@ -97,7 +97,7 @@ public class NewtKeyboard extends Finger implements KeyListener {
 
         //search neighborhood for what can be focused in the provided direction
         //TODO abstract to multi-level bfs/dfs graph search with early termination and heuristics etc
-        TopN<Surface> next = new TopN<>(new Surface[1], (Surface s) -> {
+        TopN<Surface> next = new TopN<>(new Surface[1], s -> {
             v2 c = s.bounds.center();
             double dAngle = Math.abs(angleInRadians - Math.atan2(c.y - xc.y, c.x - xc.x));
             if (dAngle < Math.PI / 4 /* +-45deg */){

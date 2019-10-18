@@ -130,7 +130,7 @@ public class ScreenDisplay extends JPanel {
      * @param xFactor 
      * @param yFactor
      */
-    private void rescale(Graphics g, double xFactor, double yFactor) {
+    private static void rescale(Graphics g, double xFactor, double yFactor) {
         if (g instanceof Graphics2D) {
             Graphics2D g2d = (Graphics2D) g;
             g2d.scale(xFactor, yFactor);

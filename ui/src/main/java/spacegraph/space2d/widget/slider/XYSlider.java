@@ -73,11 +73,11 @@ public class XYSlider extends PaintSurface  {
         return summaryX(knob.x) + ", " + summaryY(knob.y);
     }
 
-    public String summaryX(float x) {
+    public static String summaryX(float x) {
         return n4(x);
     }
 
-    public String summaryY(float y) {
+    public static String summaryY(float y) {
         return n4(y);
     }
 

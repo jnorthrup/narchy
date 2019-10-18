@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static jcog.pri.ScalarValue.EPSILON;
@@ -92,7 +93,7 @@ public class HashMapTagSet implements TagSet, Serializable {
         if (pri <= EPSILON)
             return false;
 
-        final boolean[] mod = {true};
+        boolean[] mod = {true};
         data.merge(tag, pri, (existing, added) -> {
             float next = Util.unitize(existing + added );
             mod[0] = !Util.equals(existing,next, EPSILON);
@@ -108,10 +109,12 @@ public class HashMapTagSet implements TagSet, Serializable {
     public boolean add(HashMapTagSet tag, float pri) {
         float p = Util.unitize(pri);
 
-        final boolean[] modified = {false};
-        tag.data.forEach((k, v) -> {
+        boolean[] modified = {false};
+        for (Map.Entry<String, Float> entry : tag.data.entrySet()) {
+            String k = entry.getKey();
+            Float v = entry.getValue();
             modified[0] |= add(k, v * p);
-        });
+        }
 
         return modified[0];
     }

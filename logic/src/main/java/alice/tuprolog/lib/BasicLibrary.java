@@ -870,8 +870,10 @@ public class BasicLibrary extends PrologLib {
             }
             for(int i=0; i<numAfter; i++)
             {
-            	if ((st2.charAt(i)!='E' || (st2.charAt(i)!='E' && (st2.charAt(i+1)!='+' || st2.charAt(i+1)!='-'))) && st2.charAt(i)!='.' && (st2.charAt(i)!='e' || (st2.charAt(i)!='e' && (st2.charAt(i+1)!='+' || st2.charAt(i+1)!='-'))))
-            		st3="";
+                if ((st2.charAt(i) != 'E' || (st2.charAt(i) != 'E' && (st2.charAt(i + 1) != '+' || st2.charAt(i + 1) != '-'))) && st2.charAt(i) != '.' && (st2.charAt(i) != 'e' || (st2.charAt(i) != 'e' && (st2.charAt(i + 1) != '+' || st2.charAt(i + 1) != '-')))) {
+                    st3 = "";
+                    break;
+                }
             }
             if (st3!=null)
             	st2=st3;

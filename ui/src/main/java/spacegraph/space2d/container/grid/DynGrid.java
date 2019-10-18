@@ -16,8 +16,14 @@ import static jcog.Util.short2Int;
  */
 public class DynGrid<X> extends MutableMapContainer<Integer, X> implements ScrollXY.ScrolledXY {
 
-    volatile int x1 = 0, y1 = 0, x2 = 1, y2 = 1;
-    private transient float dx, dy, cw, ch;
+    volatile int x1 = 0;
+    volatile int y1 = 0;
+    volatile int x2 = 1;
+    volatile int y2 = 1;
+    private transient float dx;
+    private transient float dy;
+    private transient float cw;
+    private transient float ch;
 
     private final GridModel<X> model;
     private final GridRenderer<X> render;
@@ -158,7 +164,7 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
     }
 
 
-    void cellVisible(Surface s, float cw, float ch, float cx, float cy) {
+    static void cellVisible(Surface s, float cw, float ch, float cx, float cy) {
         s.pos(RectFloat.XYWH(cx, cy, cw, ch));
     }
 

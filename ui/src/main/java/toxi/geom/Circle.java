@@ -93,11 +93,11 @@ public class Circle extends Ellipse {
 
     public static Circle newBoundingCircle(Collection<Vec2D> vertices) {
         Vec2D origin = new Vec2D();
-        float maxD = 0;
         for (Vec2D v : vertices) {
             origin.addSelf(v);
         }
         origin.scaleSelf(1f / vertices.size());
+        float maxD = 0;
         for (Vec2D v : vertices) {
             float d = origin.distanceToSquared(v);
             if (d > maxD) {

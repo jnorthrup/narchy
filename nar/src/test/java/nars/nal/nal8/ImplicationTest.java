@@ -19,7 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ImplicationTest {
 
-    private static final Term x = $.the("x"), y = $.the("y");
+    private static final Term x = $.the("x");
+    private static final Term y = $.the("y");
     private static final boolean[] B = {true, false};
     private static final int CYCLES = 150;
     private static final int TERM_VOL_MAX = 5;

@@ -14,7 +14,8 @@ public class Screen {
     public static final int BIT_MIRROR_X = 0x01;
     public static final int BIT_MIRROR_Y = 0x02;
 
-    public final int w, h;
+    public final int w;
+    public final int h;
     public int[] pixels;
 
     private final SpriteSheet sheet;
@@ -50,8 +51,8 @@ public class Screen {
      */
 
     public void render(int _xp, int _yp, int tile, int colors, int bits) {
-        final int xp = _xp - xOffset;
-        final int yp = _yp - yOffset;
+        int xp = _xp - xOffset;
+        int yp = _yp - yOffset;
         boolean mirrorX = (bits & BIT_MIRROR_X) > 0;
         boolean mirrorY = (bits & BIT_MIRROR_Y) > 0;
 
@@ -108,15 +109,15 @@ public class Screen {
         int x1 = x + r;
         int y0 = y - r;
         int y1 = y + r;
-        int rr = r * r;
         if (x0 < 0) x0 = 0;
         if (y0 < 0) y0 = 0;
         if (x1 > w) x1 = w;
         if (y1 > h) y1 = h;
 
+        int rr = r * r;
         for (int yy = y0; yy < y1; yy++) {
             int yd = yy - y;
-            yd = yd * yd;
+            yd *= yd;
             for (int xx = x0; xx < x1; xx++) {
                 int xd = xx - x;
                 int dist = xd * xd + yd;

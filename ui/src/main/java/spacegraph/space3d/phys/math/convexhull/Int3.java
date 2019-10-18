@@ -81,7 +81,7 @@ class Int3 {
 		return (x == i.x && y == i.y && z == i.z);
 	}
 	
-	IntRef getRef(final int coord) {
+	IntRef getRef(int coord) {
 		return new MyIntRef(coord);
 	}
 

@@ -90,11 +90,11 @@ public class GameAI {
      * Strafe sideways, but stay at aproximately the same range.
      */
     public static void ai_run_slide(edict_t self, float distance) {
-        float ofs;
 
         self.ideal_yaw = enemy_yaw;
         M.M_ChangeYaw(self);
 
+        float ofs;
         if (self.monsterinfo.lefty != 0)
             ofs = 90;
         else
@@ -131,7 +131,6 @@ public class GameAI {
      * walkmove(angle, speed) primitive is all or nothing
      */
     public static boolean ai_checkattack(edict_t self, float dist) {
-        float[] temp = {0, 0, 0};
 
 
         if (self.goalentity != null) {
@@ -211,6 +210,7 @@ public class GameAI {
 
         enemy_infront = GameUtil.infront(self, self.enemy);
         enemy_range = GameUtil.range(self, self.enemy);
+        float[] temp = {0, 0, 0};
         Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, temp);
         enemy_yaw = Math3D.vectoyaw(temp);
 
@@ -264,7 +264,6 @@ public class GameAI {
      * In coop games, sight_client will cycle between the clients.
      */
     static void AI_SetSightClient() {
-        edict_t ent;
         int start;
 
         if (GameBase.level.sight_client == null)
@@ -277,8 +276,8 @@ public class GameAI {
             check++;
             if (check > GameBase.game.maxclients)
                 check = 1;
-            ent = GameBase.g_edicts[check];
-    
+            edict_t ent = GameBase.g_edicts[check];
+
             if (ent.inuse && ent.health > 0
                     && (ent.flags & Defines.FL_NOTARGET) == 0) {
                 GameBase.level.sight_client = ent;
@@ -304,13 +303,13 @@ public class GameAI {
      * Decides running or standing according to flag AI_STAND_GROUND.
      */
     static void HuntTarget(edict_t self) {
-        float[] vec = { 0, 0, 0 };
-    
+
         self.goalentity = self.enemy;
         if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
             self.monsterinfo.stand.think(self);
         else
             self.monsterinfo.run.think(self);
+        float[] vec = {0, 0, 0};
         Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, vec);
         self.ideal_yaw = Math3D.vectoyaw(vec);
         
@@ -495,13 +494,13 @@ public class GameAI {
         public String getID() { return "ai_stand";}
         @Override
         public void ai(edict_t self, float dist) {
-            float[] v = { 0, 0, 0 };
 
             if (dist != 0)
                 M.M_walkmove(self, self.s.angles[Defines.YAW], dist);
 
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0) {
                 if (self.enemy != null) {
+                    float[] v = {0, 0, 0};
                     Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, v);
                     self.ideal_yaw = Math3D.vectoyaw(v);
                     if (self.s.angles[Defines.YAW] != self.ideal_yaw
@@ -565,21 +564,14 @@ public class GameAI {
         public String getID() { return "ai_run";}
         @Override
         public void ai(edict_t self, float dist) {
-            float[] v = { 0, 0, 0 };
 
-            edict_t marker;
-            float d2;
-            trace_t tr; 
-            float[] v_forward = { 0, 0, 0 }, v_right = { 0, 0, 0 };
-            float left, center, right;
-            float[] left_target = { 0, 0, 0 }, right_target = { 0, 0, 0 };
 
-            
             if ((self.monsterinfo.aiflags & Defines.AI_COMBAT_POINT) != 0) {
                 M.M_MoveToGoal(self, dist);
                 return;
             }
 
+            float[] v = {0, 0, 0};
             if ((self.monsterinfo.aiflags & Defines.AI_SOUND_TARGET) != 0) {
                 Math3D.VectorSubtract(self.s.origin, self.enemy.s.origin, v);
                 
@@ -664,6 +656,7 @@ public class GameAI {
                 
                 self.monsterinfo.search_time = GameBase.level.time + 5;
 
+                edict_t marker;
                 if ((self.monsterinfo.aiflags & Defines.AI_PURSUE_TEMP) != 0) {
                     
                     self.monsterinfo.aiflags &= ~Defines.AI_PURSUE_TEMP;
@@ -699,31 +692,35 @@ public class GameAI {
             Math3D.VectorCopy(self.monsterinfo.last_sighting, self.goalentity.s.origin);
 
             if (new1) {
-                
 
-                tr = game_import_t.trace(self.s.origin, self.mins, self.maxs,
+
+                trace_t tr = game_import_t.trace(self.s.origin, self.mins, self.maxs,
                         self.monsterinfo.last_sighting, self,
                         Defines.MASK_PLAYERSOLID);
                 if (tr.fraction < 1) {
                     Math3D.VectorSubtract(self.goalentity.s.origin, self.s.origin, v);
                     d1 = Math3D.VectorLength(v);
-                    center = tr.fraction;
-                    d2 = d1 * ((center + 1) / 2);
+                    float center = tr.fraction;
+                    float d2 = d1 * ((center + 1) / 2);
                     self.s.angles[Defines.YAW] = self.ideal_yaw = Math3D.vectoyaw(v);
+                    float[] v_right = {0, 0, 0};
+                    float[] v_forward = {0, 0, 0};
                     Math3D.AngleVectors(self.s.angles, v_forward, v_right, null);
 
                     Math3D.VectorSet(v, d2, -16, 0);
+                    float[] left_target = {0, 0, 0};
                     Math3D.G_ProjectSource(self.s.origin, v, v_forward, v_right, left_target);
                     tr = game_import_t.trace(self.s.origin, self.mins, self.maxs,
                             left_target, self, Defines.MASK_PLAYERSOLID);
-                    left = tr.fraction;
+                    float left = tr.fraction;
 
                     Math3D.VectorSet(v, d2, 16, 0);
+                    float[] right_target = {0, 0, 0};
                     Math3D.G_ProjectSource(self.s.origin, v, v_forward,
                             v_right, right_target);
                     tr = game_import_t.trace(self.s.origin, self.mins, self.maxs,
                             right_target, self, Defines.MASK_PLAYERSOLID);
-                    right = tr.fraction;
+                    float right = tr.fraction;
 
                     center = (d1 * center) / d2;
                     if (left >= center && left > right) {

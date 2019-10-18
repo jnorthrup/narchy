@@ -24,8 +24,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.client;
 
 public class refdef_t {
-	public int		x, y, width, height;
-	public float		fov_x, fov_y;
+	public int		x;
+    public int y;
+    public int width;
+    public int height;
+	public float		fov_x;
+    public float fov_y;
     public float[] vieworg = {0, 0, 0};
     public float[] viewangles = {0, 0, 0};
     public float[] blend = {0, 0, 0, 0};

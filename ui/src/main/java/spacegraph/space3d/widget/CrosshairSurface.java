@@ -15,7 +15,8 @@ public class CrosshairSurface extends PaintSurface implements MouseListener {
 
     private final JoglWindow space;
     private boolean mouseEnabled;
-    private float smx, smy;
+    private float smx;
+    private float smy;
     private short[] pressed;
 
 

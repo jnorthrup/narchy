@@ -28,7 +28,7 @@ public class AgentMenu extends RLMenu {
     public AgentMenu soulMenu = null;
 
     
-    private ActionSelector getActionSelector() {
+    private static ActionSelector getActionSelector() {
         return new EpsilonGreedyActionSelector();
         
     }

@@ -96,10 +96,10 @@ class Licence {
      */
     private static void save_licence(RdpPacket_Localised data, int length) {
         logger.debug("save_licence");
-        int len;
         int startpos = data.getPosition();
         data.incrementPosition(2); 
         /* Skip three strings */
+        int len;
         for (int i = 0; i < 3; i++) {
             len = data.getLittleEndian32();
             data.incrementPosition(len);
@@ -205,7 +205,6 @@ class Licence {
     private void process_demand(RdpPacket_Localised data)
             throws RdesktopException,
             IOException, CryptoException {
-        byte[] null_data = new byte[Secure.SEC_MODULUS_SIZE];
         byte[] server_random = new byte[Secure.SEC_RANDOM_SIZE];
         byte[] host = Options.hostname.getBytes(StandardCharsets.US_ASCII);
         byte[] user = Options.username.getBytes(StandardCharsets.US_ASCII);
@@ -216,6 +215,7 @@ class Licence {
         data.incrementPosition(server_random.length);
 
         /* Null client keys are currently used */
+        byte[] null_data = new byte[Secure.SEC_MODULUS_SIZE];
         this.generate_keys(null_data, server_random, null_data);
 
         if (!Options.built_in_licence && Options.load_licence) {
@@ -230,10 +230,10 @@ class Licence {
                 /* now crypt the hwid */
                 RC4 rc4_licence = new RC4();
                 byte[] crypt_key = new byte[this.licence_key.length];
-                byte[] crypt_hwid = new byte[LICENCE_HWID_SIZE];
                 System.arraycopy(this.licence_key, 0, crypt_key, 0,
                         this.licence_key.length);
                 rc4_licence.engineInitEncrypt(crypt_key);
+                byte[] crypt_hwid = new byte[LICENCE_HWID_SIZE];
                 rc4_licence.crypt(hwid, 0, LICENCE_HWID_SIZE, crypt_hwid, 0);
 
                 present(null_data, null_data, licence_data,
@@ -389,17 +389,13 @@ class Licence {
             throws RdesktopException,
             IOException, CryptoException {
 
-        byte[] out_token = new byte[LICENCE_TOKEN_SIZE];
-        byte[] decrypt_token = new byte[LICENCE_TOKEN_SIZE];
-
-        byte[] crypt_hwid = new byte[LICENCE_HWID_SIZE];
-        byte[] sealed_buffer = new byte[LICENCE_TOKEN_SIZE + LICENCE_HWID_SIZE];
         RC4 rc4_licence = new RC4();
 
         /* parse incoming packet and save encrypted token */
         if (parse_authreq(data) != true) {
             throw new RdesktopException("Authentication Request was corrupt!");
         }
+        byte[] out_token = new byte[LICENCE_TOKEN_SIZE];
         System.arraycopy(this.in_token, 0, out_token, 0, LICENCE_TOKEN_SIZE);
 
         /* decrypt token. It should read TEST in Unicode */
@@ -407,6 +403,7 @@ class Licence {
         System.arraycopy(this.licence_key, 0, crypt_key, 0,
                 this.licence_key.length);
         rc4_licence.engineInitDecrypt(crypt_key);
+        byte[] decrypt_token = new byte[LICENCE_TOKEN_SIZE];
         rc4_licence.crypt(this.in_token, 0, LICENCE_TOKEN_SIZE, decrypt_token,
                 0);
 
@@ -414,6 +411,7 @@ class Licence {
         byte[] hwid = Licence.generate_hwid();
 
         /* generate signature for a buffer of token and HWId */
+        byte[] sealed_buffer = new byte[LICENCE_TOKEN_SIZE + LICENCE_HWID_SIZE];
         System
                 .arraycopy(decrypt_token, 0, sealed_buffer, 0,
                         LICENCE_TOKEN_SIZE);
@@ -432,6 +430,7 @@ class Licence {
         System.arraycopy(this.licence_key, 0, crypt_key, 0,
                 this.licence_key.length);
         rc4_licence.engineInitEncrypt(crypt_key);
+        byte[] crypt_hwid = new byte[LICENCE_HWID_SIZE];
         rc4_licence.crypt(hwid, 0, LICENCE_HWID_SIZE, crypt_hwid, 0);
 
         this.send_authresp(out_token, crypt_hwid, out_sig);

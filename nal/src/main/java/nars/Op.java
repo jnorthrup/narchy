@@ -51,7 +51,7 @@ public enum Op {
 
     NEG("--", 1, Args.One) {
         @Override public Term the(Term u) {
-            return Op.terms.neg(u);
+            return TermBuilder.neg(u);
         }
 
         @Override public Term the(TermBuilder b, int dt, Term[] u) {
@@ -331,7 +331,7 @@ public enum Op {
                 NALLevelEqualAndAbove[i] |= o.bit;
         }
 
-        final Map<String, Op> _stringToOperator = new HashMap<>(values().length * 2);
+        Map<String, Op> _stringToOperator = new HashMap<>(values().length * 2);
         for (Op r : Op.values())
             _stringToOperator.put(r.toString(), r);
 
@@ -349,8 +349,10 @@ public enum Op {
      * negation is an exception to this, being unconceptualizable itself
      * but it will have conceptualizable=true.
      */
-    public final boolean conceptualizable, taskable;
-    public final boolean beliefable, goalable;
+    public final boolean conceptualizable;
+    public final boolean taskable;
+    public final boolean beliefable;
+    public final boolean goalable;
     /**
      * string representation
      */
@@ -363,7 +365,8 @@ public enum Op {
      * arity limits, range is inclusive >= <=
      * TODO replace with an IntPredicate
      */
-    public final int minSubs, maxSubs;
+    public final int minSubs;
+    public final int maxSubs;
     /**
      * minimum NAL level required to use this operate, or 0 for N/A
      */
@@ -459,7 +462,6 @@ public enum Op {
 
         boolean isBool = "B".equals(str);
         boolean isInt = "+".equals(str);
-        boolean isNeg = "--".equals(str);
         boolean isImg = "/".equals(str);
         //boolean isSect = str.equals("|") || str.equals("&");
         boolean isFrag = "`".equals(str);
@@ -474,6 +476,7 @@ public enum Op {
         //!isNeg && //<- HACK technically NEG cant be conceptualized but in many cases this is assumed. so NEG must not be included in conceptualizable for it to work currently
         ;
 
+        boolean isNeg = "--".equals(str);
         taskable = conceptualizable && !isInt && !isNeg;
 
         eventable = taskable || isNeg || var;

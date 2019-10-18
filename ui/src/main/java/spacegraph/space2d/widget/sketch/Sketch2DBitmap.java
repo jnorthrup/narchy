@@ -30,11 +30,14 @@ public class Sketch2DBitmap extends PaintSurface implements MenuSupplier {
     public final int[] pix;
     private final Tex bmp = new Tex();
     private final BufferedImage buf;
-    private final int pw, ph;
+    private final int pw;
+    private final int ph;
     private final MersenneTwister rng = new MersenneTwister();
     private float brushWidth = 0.2f;
     private float brushAlpha = 0.5f;
-    private float paintR = 0.75f, paintG = 0.75f, paintB = 0.75f;
+    private float paintR = 0.75f;
+    private float paintG = 0.75f;
+    private float paintB = 0.75f;
 
 
     public Sketch2DBitmap(int w, int h) {

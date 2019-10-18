@@ -72,10 +72,8 @@ public class SubsimplexConvexCast extends ConvexCast {
 		v3 linVelB = new v3();
 		linVelA.sub(toA, fromA);
 		linVelB.sub(toB, fromB);
-		
-		float lambda = 0f;
-		
-		Transform interpolatedTransA = new Transform(fromA);
+
+        Transform interpolatedTransA = new Transform(fromA);
 		Transform interpolatedTransB = new Transform(fromB);
 
 		
@@ -94,15 +92,14 @@ public class SubsimplexConvexCast extends ConvexCast {
 		fromB.transform(supVertexB);
 		
 		v.sub(supVertexA, supVertexB);
-		
-		int maxIter = MAX_ITERATIONS;
 
-		v3 n = new v3();
+        v3 n = new v3();
 		n.set(0f, 0f, 0f);
 		boolean hasResult = false;
 		v3 c = new v3();
 
-		float lastLambda = lambda;
+        float lambda = 0f;
+        float lastLambda = lambda;
 
 		float dist2 = v.lengthSquared();
 		
@@ -111,9 +108,9 @@ public class SubsimplexConvexCast extends ConvexCast {
 		float epsilon = 0.0001f;
 		
 		v3 w = new v3(), p = new v3();
-		float VdotR;
 
-		while ((dist2 > epsilon) && (maxIter--) != 0) {
+        int maxIter = MAX_ITERATIONS;
+        while ((dist2 > epsilon) && (maxIter--) != 0) {
 			tmp.negated(v);
 			MatrixUtil.transposeTransform(tmp, tmp, interpolatedTransA.basis);
 			convexA.localGetSupportingVertex(tmp, supVertexA);
@@ -132,13 +129,13 @@ public class SubsimplexConvexCast extends ConvexCast {
 			}
 			
 			if (VdotW > 0f) {
-				VdotR = v.dot(r);
+                float VdotR = v.dot(r);
 
-				if (VdotR >= -(BulletGlobals.FLT_EPSILON * BulletGlobals.FLT_EPSILON)) {
+                if (VdotR >= -(BulletGlobals.FLT_EPSILON * BulletGlobals.FLT_EPSILON)) {
 					return false;
 				}
 				else {
-					lambda = lambda - VdotW / VdotR;
+                    lambda -= VdotW / VdotR;
 					
 					
 					

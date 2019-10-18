@@ -20,9 +20,7 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Clob;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -824,7 +822,8 @@ public class ExtendedCastGraph extends CastGraph {
         @Override
         public Object apply(Object from) {
             Character[] ca = (Character[]) from;
-            String sb = Arrays.stream(ca).map(String::valueOf).collect(Collectors.joining());
+            String result = Arrays.stream(ca).map(String::valueOf).collect(Collectors.joining());
+            String sb = result;
             return sb;
         }
 
@@ -855,7 +854,8 @@ public class ExtendedCastGraph extends CastGraph {
         @Override
         public Object apply(Object from) {
             String str = ((String) from);
-            Character[] arr = IntStream.range(0, str.length()).mapToObj(str::charAt).toArray(Character[]::new);
+            int bound = str.length();
+            Character[] arr = IntStream.range(0, bound).mapToObj(str::charAt).toArray(Character[]::new);
             return arr;
         }
 
@@ -1296,8 +1296,6 @@ public class ExtendedCastGraph extends CastGraph {
 
         byte[] ba = ArrayUtil.EMPTY_BYTE_ARRAY;
         Byte[] Ba = ArrayUtil.EMPTY_BYTE_OBJECT_ARRAY;
-        char[] ca = ArrayUtil.EMPTY_CHAR_ARRAY;
-        Character[] Ca = ArrayUtil.EMPTY_CHARACTER_OBJECT_ARRAY;
 
         // TODO use proj text
         addEdge(String.class, String2byteArr, ba.getClass());
@@ -1309,7 +1307,9 @@ public class ExtendedCastGraph extends CastGraph {
         // TODO use proj text
 //        setAt( String.class, Ba.getClass(), String2ByteArr );
 
+        char[] ca = ArrayUtil.EMPTY_CHAR_ARRAY;
         addEdge(ca.getClass(), charArr2String, String.class);
+        Character[] Ca = ArrayUtil.EMPTY_CHARACTER_OBJECT_ARRAY;
         addEdge(Ca.getClass(), CharArr2String, String.class);
 
         addEdge(String.class, String2charArr, ca.getClass());

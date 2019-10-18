@@ -58,18 +58,17 @@ class FNMatch {
      * @param flags   Behavior modifiers.
      * @return Constant int value FNM_MATCH or FNM_NOMATCH.
      */
-    private static boolean fnmatch(final String pattern, final String string,
+    private static boolean fnmatch(String pattern, String string,
                                    int flags) {
         boolean result = FNM_NOMATCH;
         boolean finished = false;
-        char c;
-        char c1;
 
-                                       int len = pattern.length();
+        int len = pattern.length();
                                        int n = 0;
                                        for (int p = 0; p < len; p++) {
-                                           c = pattern.charAt(p);
+                                           char c = pattern.charAt(p);
                                            c = fold(c, flags);
+                                           char c1;
                                            switch (c) {
                                                case '?':
                                                    if (string.length() == n) {

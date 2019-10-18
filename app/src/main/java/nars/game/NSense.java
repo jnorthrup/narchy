@@ -331,7 +331,7 @@ public interface NSense {
         float deadZoneFreqRadius =
                 1 / 6f;
 
-        return actionBipolar(cc, false, (float f) -> {
+        return actionBipolar(cc, false, f -> {
 
             int s;
             if (f > deadZoneFreqRadius)
@@ -367,7 +367,7 @@ public interface NSense {
 //        return g;
     }
     default void actionBipolarSteering(Term s, FloatConsumer act) {
-        final float[] amp = new float[1];
+        float[] amp = new float[1];
         float dt = 0.1f;
         float max = 1f;
         float decay = 0.9f;

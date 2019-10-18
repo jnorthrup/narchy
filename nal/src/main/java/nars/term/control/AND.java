@@ -62,7 +62,8 @@ public abstract class AND<X> extends AbstractPred<X> {
     }
     private static final class AND2<X> extends AND<X> {
         /*@Stable*/
-        private final PREDICATE<X> a, b;
+        private final PREDICATE<X> a;
+        private final PREDICATE<X> b;
 
         private AND2(PREDICATE<X> a, PREDICATE<X> b) {
             super(new PREDICATE[]{ a, b });
@@ -94,7 +95,9 @@ public abstract class AND<X> extends AbstractPred<X> {
         private final PREDICATE<X> a;
         private final PREDICATE<X> c;
 
-        final MethodHandle A, B, C;
+        final MethodHandle A;
+        final MethodHandle B;
+        final MethodHandle C;
         private AND3_MH(PREDICATE<X> a, PREDICATE<X> b, PREDICATE<X> c) {
             super(new PREDICATE[] { a, b, c });
             this.a = a;
@@ -125,7 +128,9 @@ public abstract class AND<X> extends AbstractPred<X> {
     }
     private static final class AND3<X> extends AND<X> {
         /*@Stable*/
-        private final PREDICATE<X> a, b, c;
+        private final PREDICATE<X> a;
+        private final PREDICATE<X> b;
+        private final PREDICATE<X> c;
 
         private AND3(PREDICATE<X> a, PREDICATE<X> b, PREDICATE<X> c) {
             super(new PREDICATE[] { a, b, c });
@@ -212,7 +217,7 @@ public abstract class AND<X> extends AbstractPred<X> {
     }
     public static @Nullable <X> PREDICATE<X>  first(AND<X>  b, Predicate<PREDICATE<X> > test) {
         int s = b.subs();
-        return IntStream.range(0, s).mapToObj(i -> (PREDICATE<X>) b.sub(i)).filter(test).findFirst().orElse(null);
+        return IntStream.range(0, s).mapToObj(i -> (PREDICATE<X>) b.sub(i)).filter(test::test).findFirst().orElse(null);
     }
 
     /** recursive */

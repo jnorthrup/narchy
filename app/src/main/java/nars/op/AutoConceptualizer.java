@@ -98,7 +98,7 @@ public class AutoConceptualizer extends VectorSensor {
         }
     }
 
-    protected SignalTask onFeature(Term feature, Truth truth, long now, long start, long end, long[] evi) {
+    protected static SignalTask onFeature(Term feature, Truth truth, long now, long start, long end, long[] evi) {
         if (feature instanceof Neg) {
             feature = feature.unneg();
             truth = truth.neg();

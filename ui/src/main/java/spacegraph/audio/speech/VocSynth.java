@@ -113,7 +113,9 @@ class WaveDraw extends Canvas
 // draws input and output pulse
 {
 	Container parent;
-	int w, h, len;
+	int w;
+	int h;
+	int len;
 	Dimension size;
 	boolean trueSizeKnown = true;
 	double buf[];
@@ -246,7 +248,8 @@ class CPanel extends Panel
 class WPanel extends Panel
 // frame for two wavediplayareas
 {
-	WaveDraw inw, outw;
+	WaveDraw inw;
+	WaveDraw outw;
 
 	public WPanel(double input[], int lenin, double output[], int lenout) {
 		inw = new WaveDraw(this, 200, 64, input, lenin);
@@ -292,7 +295,8 @@ class VocSynthApplet extends Applet implements ActionListener {
 	//TubeCanvas tubecan;
 	WPanel wpan;
 	CPanel pan;
-	SPanel glotslider, lipslider;
+	SPanel glotslider;
+	SPanel lipslider;
 
 	public void init() {
 		sample = new byte[length];
@@ -418,7 +422,19 @@ class VocSynthApplet extends Applet implements ActionListener {
 		outwave[0] += dif * 0.4;
 		outwave[length - 1] -= dif * 0.4;
 		// Normalize to 0.9 amplitude to prevent clipping
-		double max = IntStream.range(0, length).mapToDouble(i -> Math.abs(outwave[i])).filter(i -> i >= 0).max().orElse(0);
+        boolean seen = false;
+        double best = 0;
+        int bound = length;
+        for (int i1 = 0; i1 < bound; i1++) {
+            double abs = Math.abs(outwave[i1]);
+            if (abs >= 0) {
+                if (!seen || Double.compare(abs, best) > 0) {
+                    seen = true;
+                    best = abs;
+                }
+            }
+        }
+        double max = seen ? best : 0;
         for (int i = 0; i < length; i++) {
 			outwave[i] = outwave[i] * 0.9 / max;
 		}

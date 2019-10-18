@@ -48,8 +48,6 @@ public class CL_view {
      */
     static void PrepRefresh() {
         int i;
-        String name;
-        float[] axis = new float[3];
 
         if ((i = Globals.cl.configstrings[Defines.CS_MODELS + 1].length()) == 0)
             return; 
@@ -81,7 +79,7 @@ public class CL_view {
 
         for (i = 1; i < Defines.MAX_MODELS
                 && Globals.cl.configstrings[Defines.CS_MODELS + i].length() != 0; i++) {
-            name = Globals.cl.configstrings[Defines.CS_MODELS + i];
+            String name = Globals.cl.configstrings[Defines.CS_MODELS + i];
             if (name.length() > 37)
                 name = name.substring(0, 36);
 
@@ -142,6 +140,7 @@ public class CL_view {
                 .parseFloat(Globals.cl.configstrings[Defines.CS_SKYROTATE]);
         StringTokenizer st = new StringTokenizer(
                 Globals.cl.configstrings[Defines.CS_SKYAXIS]);
+        float[] axis = new float[3];
         axis[0] = Float.parseFloat(st.nextToken());
         axis[1] = Float.parseFloat(st.nextToken());
         axis[2] = Float.parseFloat(st.nextToken());
@@ -161,14 +160,12 @@ public class CL_view {
     }
 
     public static void AddNetgraph() {
-        int i;
-        int ping;
 
-        
-        
+
         if (SCR.scr_debuggraph.value == 0.0f || SCR.scr_timegraph.value == 0.0f)
             return;
 
+        int i;
         for (i = 0; i < Globals.cls.netchan.dropped; i++)
             SCR.DebugGraph(30, 0x40);
 
@@ -178,7 +175,7 @@ public class CL_view {
 
         int in = Globals.cls.netchan.incoming_acknowledged
                 & (Defines.CMD_BACKUP - 1);
-        ping = Globals.cls.realtime - Globals.cl.cmd_time[in];
+        int ping = Globals.cls.realtime - Globals.cl.cmd_time[in];
         ping /= 30;
         if (ping > 30)
             ping = 30;

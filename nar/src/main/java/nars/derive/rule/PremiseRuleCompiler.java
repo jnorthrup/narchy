@@ -41,14 +41,14 @@ public enum PremiseRuleCompiler {
 
         /** indexed by local (deriver-specific) id */
         int s = rr.size();
-        short i = 0;
         assert(s > 0);
 
         How[] roots = new How[s];
-        final TermPerfectTrie<PREDICATE<PreDerivation>, How> paths = new TermPerfectTrie<>();
+        TermPerfectTrie<PREDICATE<PreDerivation>, How> paths = new TermPerfectTrie<>();
 
         Map<String,RuleCause> tags = new HashMap();
 
+        short i = 0;
         for (PremiseRule r : rr) {
 
             How added = paths.put(
@@ -129,7 +129,16 @@ public enum PremiseRuleCompiler {
         }
 
         if (!conds.isEmpty()) {
-            SubCond fx = conds.values().stream().max(Comparator.comparingDouble(SubCond::costIfBranch)).get();
+            boolean seen = false;
+            SubCond best = null;
+            Comparator<SubCond> comparator = Comparator.comparingDouble(SubCond::costIfBranch);
+            for (SubCond subCond : conds.values()) {
+                if (!seen || comparator.compare(subCond, best) > 0) {
+                    seen = true;
+                    best = subCond;
+                }
+            }
+            SubCond fx = (seen ? Optional.of(best) : Optional.<SubCond>empty()).get();
             if (fx.size() < 2) {
 
             } else {
@@ -269,12 +278,13 @@ public enum PremiseRuleCompiler {
                 return;
 
             conds.compute(p, (xx, e) -> {
-                if (e == null) {
-                    e = new SubCond(xx, branch);
+                SubCond e1 = e;
+                if (e1 == null) {
+                    e1 = new SubCond(xx, branch);
                 } else {
-                    e.bump(branch);
+                    e1.bump(branch);
                 }
-                return e;
+                return e1;
             });
         }
 

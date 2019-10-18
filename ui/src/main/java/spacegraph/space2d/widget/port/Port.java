@@ -72,13 +72,13 @@ public class Port<X> extends Widget implements Wiring.Wireable {
 
     public static boolean canConnect(Port a, Port b) {
         //synchronized (this) {
-        return a.canConnect(b) && b.canConnect(a);
+        return Port.canConnect(b) && Port.canConnect(a);
         //}
     }
 
 
     public Port<X> on(Consumer<? super X> i) {
-        return on((Wire w, X x) -> i.accept(x));
+        return on((w, x) -> i.accept(x));
     }
 
     public Port<X> on(Runnable i) {
@@ -122,7 +122,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         return enabled;
     }
 
-    final boolean canConnect(Port other) {
+    static boolean canConnect(Port other) {
 //        if (other.specifyHow != null) {
 //
 //            if (specifyHow != null) {
@@ -198,7 +198,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     }
 
 
-    protected boolean acceptWiring(Wiring w) {
+    protected static boolean acceptWiring(Wiring w) {
         return true;
     }
 

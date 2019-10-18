@@ -147,7 +147,8 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
                             v = rgb[3];
                             break;
                         case RGB:
-                            v = (IntStream.of(1, 2, 3).map(i -> rgb[i]).sum()) / 3f;
+                            int sum = IntStream.of(1, 2, 3).map(i -> rgb[i]).sum();
+                            v = (sum) / 3f;
                             break;
                         default:
                             throw new UnsupportedOperationException();
@@ -164,7 +165,8 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
                             v = rgb[2];
                             break;
                         case RGB:
-                            v = (IntStream.of(0, 1, 2).map(i -> rgb[i]).sum()) / 3f;
+                            int sum = IntStream.of(0, 1, 2).map(i -> rgb[i]).sum();
+                            v = (sum) / 3f;
                             break;
                         default:
                             throw new UnsupportedOperationException();

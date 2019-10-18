@@ -7,7 +7,8 @@ import jcog.data.MutableFloat;
 
 public class FloatRange extends MutableFloat /*AtomicFloat*/ {
 
-    public final float max, min;
+    public final float max;
+    public final float min;
 
     public FloatRange(float value, float min, float max) {
         this.min = min;
@@ -55,7 +56,7 @@ public class FloatRange extends MutableFloat /*AtomicFloat*/ {
     }
 
 
-    public FloatRange mapRange(float mapMin, float mapMax) {
+    public static FloatRange mapRange(float mapMin, float mapMax) {
         throw new TODO();
     }
 

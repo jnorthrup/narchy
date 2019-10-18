@@ -152,7 +152,7 @@ public class Gain extends UGen implements DataBeadReceiver {
                 float[] bi = bufIn[channel];
                 float[] bo = bufOut[channel];
 
-                final float gain = this.gain;
+                float gain = this.gain;
                 for (int i = 0; i < bufferSize; ++i) {
                     bo[i] = gain * bi[i];
                 }
@@ -160,7 +160,7 @@ public class Gain extends UGen implements DataBeadReceiver {
         } else {
             gainUGen.update();
             for (int i = 0; i < bufferSize; ++i) {
-                final float gain = this.gain = gainUGen.getValue(0, i);
+                float gain = this.gain = gainUGen.getValue(0, i);
                 for (int channel = 0; channel < ins; channel++) {
                     bufOut[channel][i] = gain * bufIn[channel][i];
                 }

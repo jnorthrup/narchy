@@ -37,7 +37,6 @@ public enum ConjMatch { ;
      * TODO configurable dtTolerance for matches
      */
     public static Term beforeOrAfter(Term conj, Term event, boolean includeBefore, boolean includeMatched, boolean includeAfter,  UnifyTransform s, int ttl /*, unifyOrEquals, includeMatchedEvent */) {
-        int varBits = ConjMatch.varBits;
         if (!(conj instanceof Compound) || conj.opID() != CONJ.id || conj.dt()==XTERNAL || conj.equals(event))
             return Null;
 
@@ -46,6 +45,7 @@ public enum ConjMatch { ;
 
         event = Image.imageNormalize(event);
 
+        int varBits = ConjMatch.varBits;
         if (!Term.commonStructure( event.structure()&(~varBits), conj.subStructure()&(~varBits)))
             return Null;
 

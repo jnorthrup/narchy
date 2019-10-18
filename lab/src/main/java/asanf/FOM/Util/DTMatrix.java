@@ -2,6 +2,8 @@ package asanf.FOM.Util;
 
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -162,9 +164,8 @@ public class DTMatrix<E> {
 	}
 	
 	protected void normalizeBy(double value){
-		int i,j;
-		for(i = 0; i < values.length; i++)
-			for(j = 0; j < values[i].length; j++){
+        for(int i = 0; i < values.length; i++)
+			for(int j = 0; j < values[i].length; j++){
 				values[i][j] /= value;
 			}
 	}

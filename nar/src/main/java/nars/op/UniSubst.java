@@ -15,6 +15,8 @@ import nars.term.util.TermException;
 import nars.term.util.transform.InlineFunctor;
 import nars.unify.UnifyTransform;
 
+import java.util.Map;
+
 import static nars.Op.VAR_DEP;
 import static nars.Op.VAR_INDEP;
 import static nars.term.atom.Bool.Null;
@@ -187,7 +189,12 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
 
         /** commit substitutions to the premise */
         public void commitSubst() {
-            this.xy.forEach(parent.retransform::put);
+            Map<Term, Term> termTermMap = parent.retransform;
+            for (Map.Entry<Variable, Term> entry : this.xy.entrySet()) {
+                Variable key = entry.getKey();
+                Term value = entry.getValue();
+                termTermMap.put(key, value);
+            }
         }
 
     }

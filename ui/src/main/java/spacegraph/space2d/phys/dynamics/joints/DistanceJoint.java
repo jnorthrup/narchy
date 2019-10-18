@@ -85,7 +85,7 @@ public class DistanceJoint extends Joint {
     private float m_invIB;
     private float m_mass;
 
-    DistanceJoint(IWorldPool argWorld, final DistanceJointDef def) {
+    DistanceJoint(IWorldPool argWorld, DistanceJointDef def) {
         super(argWorld, def);
         m_localAnchorA = new v2(def.localAnchorA);
         m_localAnchorB = new v2(def.localAnchorB);
@@ -158,7 +158,7 @@ public class DistanceJoint extends Joint {
     }
 
     @Override
-    public void initVelocityConstraints(final SolverData data) {
+    public void initVelocityConstraints(SolverData data) {
 
         m_indexA = A.island;
         m_indexB = B.island;
@@ -179,8 +179,8 @@ public class DistanceJoint extends Joint {
         v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
-        final Rot qA = pool.popRot();
-        final Rot qB = pool.popRot();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
 
         qA.set(aA);
         qB.set(aB);
@@ -260,14 +260,14 @@ public class DistanceJoint extends Joint {
     }
 
     @Override
-    public void solveVelocityConstraints(final SolverData data) {
+    public void solveVelocityConstraints(SolverData data) {
         v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
         v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
-        final v2 vpA = pool.popVec2();
-        final v2 vpB = pool.popVec2();
+        v2 vpA = pool.popVec2();
+        v2 vpB = pool.popVec2();
 
         
         v2.crossToOutUnsafe(wA, m_rA, vpA);
@@ -299,15 +299,15 @@ public class DistanceJoint extends Joint {
     }
 
     @Override
-    public boolean solvePositionConstraints(final SolverData data) {
+    public boolean solvePositionConstraints(SolverData data) {
         if (m_frequencyHz > 0.0f) {
             return true;
         }
-        final Rot qA = pool.popRot();
-        final Rot qB = pool.popRot();
-        final v2 rA = pool.popVec2();
-        final v2 rB = pool.popVec2();
-        final v2 u = pool.popVec2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 rA = pool.popVec2();
+        v2 rB = pool.popVec2();
+        v2 u = pool.popVec2();
 
         v2 cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;

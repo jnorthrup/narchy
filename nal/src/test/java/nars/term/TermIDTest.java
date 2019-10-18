@@ -91,7 +91,8 @@ class TermIDTest {
     
 
 
-    private @NotNull Term testBytesRepresentation(@NotNull String expectedCompactOutput, int expectedLength) {
+    private @NotNull
+    static Term testBytesRepresentation(@NotNull String expectedCompactOutput, int expectedLength) {
         try {
             return testBytesRepresentation(
                     null,
@@ -103,7 +104,8 @@ class TermIDTest {
         }
     }
 
-    private @NotNull Term testBytesRepresentation(@Nullable String expectedCompactOutput, @NotNull String expectedPrettyOutput, int expectedLength) throws Narsese.NarseseException {
+    private @NotNull
+    static Term testBytesRepresentation(@Nullable String expectedCompactOutput, @NotNull String expectedPrettyOutput, int expectedLength) throws Narsese.NarseseException {
         
         Termed i = $.$(expectedPrettyOutput);
         

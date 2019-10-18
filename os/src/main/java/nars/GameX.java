@@ -624,26 +624,24 @@ public abstract class GameX extends Game {
     static final Atom FRAME = Atomic.atom("frame");
 
     private static void addClock(NAR n) {
-        n.parts(Game.class).forEach(g -> {
-            g.onFrame(()->{
-                long now = n.time();
-                int X = g.frame();
-                int radix = 16;
-                Term x =
-                    //Int.the(X);
-                    //$.pRadix(X, 8, Integer.MAX_VALUE);
-                    //$.p( $.radixArray(X, radix, Integer.MAX_VALUE));
-                    $.pRecurse(false, $.radixArray(X, radix, Integer.MAX_VALUE));
+        n.parts(Game.class).forEach(g -> g.onFrame(()->{
+            long now = n.time();
+            int X = g.frame();
+            int radix = 16;
+            Term x =
+                //Int.the(X);
+                //$.pRadix(X, 8, Integer.MAX_VALUE);
+                //$.p( $.radixArray(X, radix, Integer.MAX_VALUE));
+                $.pRecurse(false, $.radixArray(X, radix, Integer.MAX_VALUE));
 
-                Term f = $.funcImg(FRAME, g.id, x);
-                Task t = new SignalTask(f, BELIEF, $.t(1f, n.confDefault(BELIEF)),
-                    now, now, Math.round(now + g.durLoop()),
-                    new long[]{n.time.nextStamp()});
-                t.pri(n.priDefault(BELIEF)*g.what().pri());
-                //System.out.println(t);
-                g.what().accept(t);
-            });
-        });
+            Term f = $.funcImg(FRAME, g.id, x);
+            Task t = new SignalTask(f, BELIEF, $.t(1f, n.confDefault(BELIEF)),
+                now, now, Math.round(now + g.durLoop()),
+                new long[]{n.time.nextStamp()});
+            t.pri(n.priDefault(BELIEF)*g.what().pri());
+            //System.out.println(t);
+            g.what().accept(t);
+        }));
     }
     private static void addFuelInjection(NAR n) {
         //                //TODO use AgentBuilder
@@ -698,70 +696,13 @@ public abstract class GameX extends Game {
         //                    b.valve.add(0.005f * (b.load() - ideal)); //simple proportional control
         //                });
         n.parts(What.class).filter(w -> w.inBuffer instanceof PriBuffer.BagTaskBuffer).map(w -> (PriBuffer.BagTaskBuffer) w.inBuffer).forEach(b -> {
-            float ideal = 0.5f;
             MiniPID pid = new MiniPID(0.007f, 0.005, 0.0025, 0);
             pid.outLimit(0, 1);
             pid.setOutMomentum(0.1);
-            n.onDur(() -> {
-                b.valve.set(pid.out(ideal - b.load(), 0));
-            });
+            float ideal = 0.5f;
+            n.onDur(() -> b.valve.set(pid.out(ideal - b.load(), 0)));
         });
 
-    }
-
-    @Override
-    protected void starting(NAR nar) {
-        super.starting(nar);
-        //if (NAL.DEBUG) {
-//        what().onTask((t) -> {
-//            //if (t instanceof DerivedTask && t.isEternal() && t.isBeliefOrGoal()) {
-//            if (t.isGoal()) {
-//                Term tt = t.term();
-//                for (Reward r : rewards) {
-//                    Term rt = r.term();
-//                    if (tt.equals(rt) || tt.containsRecursively(rt)) {
-//                        nar.proofPrint(t);
-//                        System.out.println();
-//                    }
-//                }
-//            }
-////            if (t.isGoal())
-////                nar.proofPrint(t);
-////            //}
-//        });
-        //}
-
-//        ((TaskLinkWhat) what()).links.pri(new Predicate<TaskLink>() {
-//
-//            //behavior overdrive
-//            ImmutableSet<Term> stimSet = Sets.immutable.ofAll(Streams.concat(
-//                    rewards.stream().flatMap(r -> Streams.stream(r.components())),
-//                    actions().stream().flatMap(x -> Streams.stream(x.components())))
-//                    .map(Termed::term).collect(toSet()));
-//
-//            float drive = 0.5f;
-//            float happiness;
-//
-//            {
-//                happiness = 0.5f; //initial neutral
-//                onFrame((a) -> {
-//                    happiness = happiness();
-////                     System.out.println(happiness);
-//                });
-//            }
-//
-//            @Override
-//            public boolean test(TaskLink tl) {
-//                float d = (1 - happiness) * drive;
-//
-//                if (!stimSet.contains(tl.to())) //&& !stimSet.contains(tl.from()))
-//                    tl.priMult(1 / (1 + d/2));
-////              else
-////                    tl.priMult(1/(1 - d/2));
-//
-//                return true;
-//            }
-//        });
     }
 
     //    static void inputInjectionQ(NAR n) {
@@ -998,7 +939,8 @@ public abstract class GameX extends Game {
 
     protected static class SpaceGraphPart extends NARPart {
         private final Supplier<Surface> surface;
-        private final int w, h;
+        private final int w;
+        private final int h;
         private OrthoSurfaceGraph win;
 
         SpaceGraphPart(Supplier<Surface> surface, int w, int h) {

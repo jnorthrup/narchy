@@ -3,6 +3,7 @@ package nars.term.var.ellipsis;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.term.Term;
 import nars.term.Variable;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
@@ -44,7 +45,13 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
             return null;
 
         int xsize = x.subs();
-        return (Ellipsislike) IntStream.range(0, xsize).mapToObj(x::sub).filter(xi -> xi instanceof Ellipsislike).findFirst().orElse(null);
+        for (int i = 0; i < xsize; i++) {
+            Term xi = x.sub(i);
+            if (xi instanceof Ellipsislike) {
+                return (Ellipsislike) xi;
+            }
+        }
+        return (Ellipsislike) null;
     }
 
 

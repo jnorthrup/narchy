@@ -57,7 +57,7 @@ public class StringSimilarity {
          * be used.
          * Set threshold to a negative value to get the Jaro distance.
          */
-        public JaroWinkler(final double threshold) {
+        public JaroWinkler(double threshold) {
             this.threshold = threshold;
         }
 
@@ -74,7 +74,7 @@ public class StringSimilarity {
         /**
          * Compute JW similarity.
          */
-        public final double similarity(final String s1, final String s2) {
+        public final double similarity(String s1, String s2) {
             int[] mtp = matches(s1, s2);
             float m = mtp[0];
             if (m == 0) {
@@ -94,11 +94,11 @@ public class StringSimilarity {
         /**
          * Return 1 - similarity.
          */
-        public final double distance(final String s1, final String s2) {
+        public final double distance(String s1, String s2) {
             return 1.0 - similarity(s1, s2);
         }
 
-        private int[] matches(final String s1, final String s2) {
+        private static int[] matches(String s1, String s2) {
             String max, min;
             if (s1.length() > s2.length()) {
                 max = s1;
@@ -138,7 +138,8 @@ public class StringSimilarity {
                     si++;
                 }
             }
-            int transpositions = (int) IntStream.range(0, ms1.length).filter(mi -> ms1[mi] != ms2[mi]).count();
+            long count = IntStream.range(0, ms1.length).filter(i -> ms1[i] != ms2[i]).count();
+            int transpositions = (int) count;
             int prefix = 0;
             for (int mi = 0; mi < min.length(); mi++) {
                 if (s1.charAt(mi) == s2.charAt(mi)) {

@@ -11,6 +11,7 @@ import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.graph.NodeGraphRenderer;
 import spacegraph.space2d.container.layout.ForceDirected2D;
 
+import java.util.Map;
 import java.util.function.Function;
 
 public enum Graph2DTest {;
@@ -68,10 +69,12 @@ public enum Graph2DTest {;
 
         SystemEnvironmentMatrix env = Matrix.Factory.systemEnvironment();
         h.addNode("env");
-        env.forEach((k,v)->{
+        for (Map.Entry<String, String> entry : env.entrySet()) {
+            String k = entry.getKey();
+            String v = entry.getValue();
             h.addNode(v);
-            h.addEdgeIfNodesExist("env",k,v);
-        });
+            h.addEdgeIfNodesExist("env", k, v);
+        }
 
 
         return new Graph2D<Node<Object, Object>>()

@@ -10,9 +10,14 @@ public class ItemEntity extends Entity {
     protected int walkDist;
     protected int dir;
     public int hurtTime;
-    protected int xKnockback, yKnockback;
-    public double xa, ya, za;
-    public double xx, yy, zz;
+    protected int xKnockback;
+    protected int yKnockback;
+    public double xa;
+    public double ya;
+    public double za;
+    public double xx;
+    public double yy;
+    public double zz;
     public Item item;
     private int time;
 

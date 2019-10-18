@@ -136,10 +136,9 @@ public class A extends GamePanel {
 		while (think >= 10000000L) {
 			think -= 10000000L;
 
-			if (IntStream.of(KeyEvent.VK_SPACE, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN).anyMatch(v -> (pressed[v]))) {
-				if (boolValues[1]) {
-					boolValues[0] = true;
-				} else {
+			boolean b = IntStream.of(KeyEvent.VK_SPACE, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN).anyMatch(v -> (pressed[v]));
+			if (b) {
+				if (!boolValues[1]) {
 					boolValues[1] = true;
 					boolValues[3] = boolValues[2] = false;
 					p[0] = 10;
@@ -150,6 +149,8 @@ public class A extends GamePanel {
 					c[0] = Color.WHITE;
 					p[6] = 1.4f;
 					pressed = new boolean[256];
+				} else {
+					boolValues[0] = true;
 				}
 			}
 			if ((pressed[KeyEvent.VK_P]) && (boolValues[1])) {
@@ -224,11 +225,10 @@ public class A extends GamePanel {
 					boolValues[2] = false;
 					boolValues[0] = false;
 				}
-				
-				int lev = (int) (p[2]);
-				for (int i = 0; i < l[lev].length; i += 4) {
+
+				for (int  lev = (int) (p[2]), i = 0; i < l[lev].length; i += 4) {
 					if ((p[0] + 30 >= l[lev][i]) && (p[1] + 30 >= l[lev][i + 1]) && (p[0] <= l[lev][i] + l[lev][i + 2]) && (p[1] <= l[lev][i + 1] + l[lev][i + 3])) {
-						
+
 						p[3] += 1;
 						ex = new float[5 * (int) (Math.random() * 15 + 20)];
 						for (int z = 0; z < ex.length; z += 5) {

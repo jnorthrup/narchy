@@ -70,7 +70,7 @@ public class UndirectedGraph implements Graph {
     public IntHashSet neighborsOut(int i) {
 
         IntHashSet result = new IntHashSet(g.neighborsOut(i));
-        final int max = g.size();
+        int max = g.size();
         for (int j = 0; j < max; ++j) {
             if (i!=j && g.isEdge(j, i))
                 result.add(j);

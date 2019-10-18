@@ -139,8 +139,7 @@ public class BoofSwingUtil {
 
 		String []fileNames = encodedString.split("\n");
 
-		java.util.List<String> output = new ArrayList<>();
-		output.addAll(Arrays.asList(fileNames));
+		java.util.List<String> output = new ArrayList<>(Arrays.asList(fileNames));
 		return output;
 	}
 

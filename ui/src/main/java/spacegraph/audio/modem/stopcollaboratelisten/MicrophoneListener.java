@@ -44,13 +44,13 @@ public class MicrophoneListener implements Runnable {
              * if it's not tuned, samples will be lost.
              */
             int buffSize = 32000;
-            int buffSizeFraction = 8;
             TargetDataLine line = AudioUtils.getTargetDataLine(AudioUtils.kDefaultFormat);
             line.open(AudioUtils.kDefaultFormat, buffSize);
 
             //System.out.println(Thread.currentThread().getName() + "> bufferSize = " + line.getBufferSize());
 
 
+            int buffSizeFraction = 8;
             byte[] data = new byte[line.getBufferSize() / buffSizeFraction];
 
             listen(line, data);
@@ -62,10 +62,9 @@ public class MicrophoneListener implements Runnable {
     }
 
     private void listen(TargetDataLine line, byte[] data) {
-        int numBytesRead;
         line.start();
         while(running){
-            numBytesRead =  line.read(data, 0, data.length);
+            int numBytesRead = line.read(data, 0, data.length);
             //		    System.out.println(Thread.currentThread().getName() + "> bytesRead = " + numBytesRead);
             buffer.write(data, 0, numBytesRead);
         }

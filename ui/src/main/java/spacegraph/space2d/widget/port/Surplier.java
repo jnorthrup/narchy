@@ -17,7 +17,7 @@ public class Surplier<T> extends ConstantPort<T> {
         CheckBox toggle;
         set(toggle = new CheckBox(label));
         toggle.set(false);
-        toggle.on((boolean tb)->{
+        toggle.on(tb ->{
             if (tb) {
                 toggle.enabled(false);
                 Exe.run(()->{

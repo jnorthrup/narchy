@@ -9,8 +9,12 @@ public class TextParticle extends Entity {
     private final String msg;
     private final int col;
     private int time;
-    public double xa, ya, za;
-    public double xx, yy, zz;
+    public double xa;
+    public double ya;
+    public double za;
+    public double xx;
+    public double yy;
+    public double zz;
 
     public TextParticle(String msg, int x, int y, int col) {
         this.msg = msg;

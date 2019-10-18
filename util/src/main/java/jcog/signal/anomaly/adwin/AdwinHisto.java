@@ -13,9 +13,12 @@ class AdwinHisto {
     private final BucketContainer head;
     private BucketContainer tail;
 
-    private int numBucketContainers, numBuckets, numElements;
+    private int numBucketContainers;
+    private int numBuckets;
+    private int numElements;
 
-    private double sum, variance;
+    private double sum;
+    private double variance;
 
     /**
      * Creates a new empty Histogram
@@ -37,7 +40,7 @@ class AdwinHisto {
      * Private copy constructor. Used in the copy method.
      * @param original
      */
-    private AdwinHisto(final AdwinHisto original) {
+    private AdwinHisto(AdwinHisto original) {
         this.capacity = original.capacity;
 
         this.numBucketContainers = original.numBucketContainers;

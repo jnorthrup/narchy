@@ -1371,7 +1371,6 @@ public class M_Actor {
         public String getID() { return "actor_use";}
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
-            float[] v = {0, 0, 0};
 
             self.goalentity = self.movetarget = GameBase
                     .G_PickTarget(self.target);
@@ -1387,6 +1386,7 @@ public class M_Actor {
                 return;
             }
 
+            float[] v = {0, 0, 0};
             Math3D.VectorSubtract(self.goalentity.s.origin, self.s.origin, v);
             self.ideal_yaw = self.s.angles[Defines.YAW] = Math3D.vectoyaw(v);
             self.monsterinfo.walk.think(self);
@@ -1414,7 +1414,6 @@ public class M_Actor {
         @Override
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
-            float[] v = {0, 0, 0};
 
             if (other.movetarget != self)
                 return;
@@ -1425,11 +1424,9 @@ public class M_Actor {
             other.goalentity = other.movetarget = null;
 
             if (self.message != null) {
-                int n;
-                edict_t ent;
 
-                for (n = 1; n <= GameBase.game.maxclients; n++) {
-                    ent = GameBase.g_edicts[n];
+                for (int n = 1; n <= GameBase.game.maxclients; n++) {
+                    edict_t ent = GameBase.g_edicts[n];
                     if (!ent.inuse)
                         continue;
                     game_import_t.cprintf(ent, Defines.PRINT_CHAT,
@@ -1487,6 +1484,7 @@ public class M_Actor {
                 other.monsterinfo.pausetime = GameBase.level.time + 100000000;
                 other.monsterinfo.stand.think(other);
             } else if (other.movetarget == other.goalentity) {
+                float[] v = {0, 0, 0};
                 Math3D.VectorSubtract(other.movetarget.s.origin,
                         other.s.origin, v);
                 other.ideal_yaw = Math3D.vectoyaw(v);
@@ -1495,19 +1493,19 @@ public class M_Actor {
     };
 
     static void actorMachineGun(edict_t self) {
-        float[] start = {0, 0, 0};
-        float[] target = {0, 0, 0};
 
         float[] forward = {0, 0, 0};
         float[] right = {0, 0, 0};
 
         Math3D.AngleVectors(self.s.angles, forward, right, null);
 
+        float[] start = {0, 0, 0};
         Math3D.G_ProjectSource(self.s.origin,
                 M_Flash.monster_flash_offset[Defines.MZ2_ACTOR_MACHINEGUN_1],
                 forward, right, start);
 
         if (self.enemy != null) {
+            float[] target = {0, 0, 0};
             if (self.enemy.health > 0) {
                 Math3D.VectorMA(self.enemy.s.origin, -0.2f,
                         self.enemy.velocity, target);

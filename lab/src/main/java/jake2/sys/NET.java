@@ -62,7 +62,8 @@ public final class NET {
 
         final loopmsg_t[] msgs;
 
-        int get, send;
+        int get;
+        int send;
     }
 
     public static final loopback_t[] loopbacks = new loopback_t[2];

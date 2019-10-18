@@ -156,9 +156,13 @@ public class PoleCart extends GameX {
 	Graphics offGraphics;
 
 
-	double pos, posDot, angle, angleDot;
+	double pos;
+	double posDot;
+	double angle;
+	double angleDot;
 
-	final float posMin = -2f, posMax = +2f;
+	static final float posMin = -2f;
+	static final float posMax = +2f;
 	float velMax = 10;
 	boolean manualOverride;
 
@@ -190,7 +194,9 @@ public class PoleCart extends GameX {
 	DigitizedScalar angVel;
 
 
-	volatile double action, actionLeft, actionRight;
+	volatile double action;
+	volatile double actionLeft;
+	volatile double actionRight;
 
 	public PoleCart(Term id, NAR nar, float tau) {
 		this(id, nar);
@@ -255,8 +261,6 @@ public class PoleCart extends GameX {
 			public void update(Graphics g) {
 				action = -actionLeft + actionRight;
 				Dimension d = panel.getSize();
-				Color cartColor = Color.ORANGE;
-				Color trackColor = Color.GRAY;
 
 
 				if (offGraphics == null
@@ -281,10 +285,12 @@ public class PoleCart extends GameX {
 					pixxs[i] = pixX(d, xs[i]);
 					pixys[i] = pixY(d, ys[i]);
 				}
+				Color trackColor = Color.GRAY;
 				offGraphics.setColor(trackColor);
 				offGraphics.fillPolygon(pixxs, pixys, 8);
 
 
+				Color cartColor = Color.ORANGE;
 				offGraphics.setColor(cartColor);
 				offGraphics.fillRect(pixX(d, pos - 0.2), pixY(d, 0), pixDX(d, 0.4), pixDY(d, -0.2));
 
@@ -410,8 +416,6 @@ public class PoleCart extends GameX {
 			- fricPole * angleDot / poleMassLength) /
 			(halfPole * (fourthirds - poleMass * cosangle * cosangle /
 				totalMass));
-		double posDDot = common - poleMassLength * angleDDot * cosangle /
-			totalMass;
 
 
 		float tau = this.tau.floatValue();
@@ -428,6 +432,8 @@ public class PoleCart extends GameX {
 
 		}
 
+		double posDDot = common - poleMassLength * angleDDot * cosangle /
+				totalMass;
 		posDot += posDDot * tau;
 		posDot = Math.min(+velMax, Math.max(-velMax, posDot));
 
@@ -450,20 +456,20 @@ public class PoleCart extends GameX {
 	}
 
 
-	int pixX(Dimension d, double v) {
+	static int pixX(Dimension d, double v) {
 		return (int) Math.round((v + 2.5) / 5.0 * d.width);
 	}
 
 
-	int pixDX(Dimension d, double v) {
+	static int pixDX(Dimension d, double v) {
 		return (int) Math.round(v / 5.0 * d.width);
 	}
 
-	int pixY(Dimension d, double v) {
+	static int pixY(Dimension d, double v) {
 		return (int) Math.round(d.height - (v + 0.5f) / 2.0 * d.height);
 	}
 
-	public int pixDY(Dimension d, double v) {
+	public static int pixDY(Dimension d, double v) {
 		return (int) Math.round(-v / 2.0 * d.height);
 	}
 

@@ -52,7 +52,7 @@ public class Versioning<X> {
         if (s <= 0)
             return;
 
-        final Versioned<X>[] i = this.items;
+        Versioned<X>[] i = this.items;
 
         while (s>0) {
             each.accept(i[--s]);
@@ -90,12 +90,12 @@ public class Versioning<X> {
 
     protected final boolean revert(int when, @Nullable Consumer each) {
 
-        final int sizePrev;
+        int sizePrev;
         if ((sizePrev = size) <= when)
             return false;
 
         int sizeNext = sizePrev;
-        final Versioned[] i = this.items;
+        Versioned[] i = this.items;
 
         if (each!=null) {
             while (sizeNext > when) {

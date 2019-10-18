@@ -456,7 +456,9 @@ class TimeGraphTest {
 
     @AfterEach
     void test() {
-        afterEach.forEach(Runnable::run);
+        for (Runnable runnable : afterEach) {
+            runnable.run();
+        }
     }
 
     private ExpectSolutions assertSolved(String inputTerm, TimeGraph t, boolean equalsOrContains, String... solutions) {

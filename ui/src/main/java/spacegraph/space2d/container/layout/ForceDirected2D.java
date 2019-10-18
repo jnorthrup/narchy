@@ -53,7 +53,6 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
             return;
 
         float gRad = g.radius();
-        float gRadPerSec = gRad / dtS;
 
         float AUTOSCALE = (float) (nodeScale.floatValue() * gRad / Math.sqrt(1f + n));
         assert (AUTOSCALE == AUTOSCALE);
@@ -66,6 +65,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
         int iterations1 = 1;
         int iterations = iterations1;
+        float gRadPerSec = gRad / dtS;
         float repelSpeed = this.repelSpeed.floatValue() * gRadPerSec / iterations / gRad;
         float attractSpeed = this.attractSpeed.floatValue() / iterations / gRad;
 
@@ -93,7 +93,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
                 attract(a, attractSpeed);
 
-                final float ar = a.radius();
+                float ar = a.radius();
 
                 for (int y = aa + 1; y < n; y++)
                     repel(a, ar, nodes.get(y), repelSpeed);
@@ -127,8 +127,8 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         ConcurrentFastIteratingHashMap<X, EdgeVis<X>> read = from.outs;
         //int neighbors = read.size();
 
-        final double[] dx = {0};
-        final double[] dy = { 0 };
+        double[] dx = {0};
+        double[] dy = { 0 };
 
         read.forEachValue(edge -> {
             if (edge == null)
@@ -169,7 +169,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         a.move((float) dx[0], (float) dy[0]);
     }
 
-    private float weightToVelocity(float weight) {
+    private static float weightToVelocity(float weight) {
         //return 1;
         return weight;
         //return weight * weight;

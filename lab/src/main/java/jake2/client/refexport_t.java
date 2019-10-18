@@ -94,7 +94,7 @@ public interface refexport_t {
 	** video mode and refresh state management entry points
 	*/
 	/* 256 r,g,b values;	null = game palette, size = 768 bytes */
-	void CinematicSetPalette(final byte[] palette);
+	void CinematicSetPalette(byte[] palette);
 	boolean BeginFrame(float camera_separation);
 	void EndFrame();
 

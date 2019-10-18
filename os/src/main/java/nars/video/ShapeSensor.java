@@ -159,7 +159,7 @@ public class ShapeSensor extends NARPart {
         GrayU8 filteredShown = filtered.clone();
         byte[] data = filteredShown.data;
         for (int i = 0, dataLength = data.length; i < dataLength; i++) {
-            data[i] = (byte) (data[i] * 255);
+            data[i] *= 255;
         }
         filteredRGB = filteredTex.set(filteredShown, filteredRGB);
 
@@ -217,10 +217,14 @@ public class ShapeSensor extends NARPart {
 //    }
 
     static class Grid {
-        public final int gx, gy, w, h;
+        public final int gx;
+        public final int gy;
+        public final int w;
+        public final int h;
         final Set<Term> image = new LinkedHashSet();
         private final Term id;
-        float sx, sy;
+        float sx;
+        float sy;
 
         public Grid(Term id, int gx, int gy, int w, int h) {
             this.id = id;
@@ -288,7 +292,9 @@ public class ShapeSensor extends NARPart {
 
 
     private static class ScaleOffset {
-        double scale, offsetX, offsetY;
+        double scale;
+        double offsetX;
+        double offsetY;
     }
 
     class ShapeSensorControl extends Gridding {
@@ -306,10 +312,8 @@ public class ShapeSensor extends NARPart {
         protected void paint(GL2 gl, ReSurface reSurface) {
 
             if (grid != null) {
-                final int[] i = {0};
-                grid.image.forEach(pSet -> {
-
-
+                int[] i = {0};
+                for (Term pSet : grid.image) {
                     float scale = Math.max(w(), h()) / Math.max(grid.gx, grid.gy);
 
                     float dx = x();
@@ -329,7 +333,7 @@ public class ShapeSensor extends NARPart {
                     i[0]++;
 
 
-                });
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package jcog.learn.deep;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.function.DoubleFunction;
 import java.util.stream.IntStream;
@@ -55,7 +56,8 @@ public class HiddenLayer {
     }
 
     public double output(double[] input, double[] w, double b) {
-        double linear_output = IntStream.range(0, n_in).mapToDouble(j -> w[j] * input[j]).sum();
+        int bound = n_in;
+        double linear_output = IntStream.range(0, bound).mapToDouble(j -> w[j] * input[j]).sum();
         linear_output += b;
 
         return activation.apply(linear_output);
@@ -91,8 +93,15 @@ public class HiddenLayer {
         }
     }
 
-    public double[] dropout(int size, double p, Random rng) {
-        double[] mask = IntStream.range(0, size).mapToDouble(i -> binomial(1, p, rng)).toArray();
+    public static double[] dropout(int size, double p, Random rng) {
+        double[] mask = new double[10];
+        int count = 0;
+        for (int i = 0; i < size; i++) {
+            double binomial = binomial(1, p, rng);
+            if (mask.length == count) mask = Arrays.copyOf(mask, count * 2);
+            mask[count++] = binomial;
+        }
+        mask = Arrays.copyOfRange(mask, 0, count);
 
         return mask;
     }

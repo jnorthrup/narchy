@@ -34,14 +34,13 @@ public class RuleCyclic {
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void InitFromString(String sStr) {
 
-        String sTok;
-		ResetToDefaults();
+        ResetToDefaults();
 
         StringTokenizer st = new StringTokenizer(sStr, ",/", true);
 		while (st.hasMoreTokens()) {
-			sTok = st.nextToken().toUpperCase();
-			
-			if (sTok.length() > 0 && sTok.charAt(0) == 'R')
+            String sTok = st.nextToken().toUpperCase();
+
+            if (sTok.length() > 0 && sTok.charAt(0) == 'R')
 				iRng = Integer.valueOf(sTok.substring(1));
 			else if (sTok.length() > 0 && sTok.charAt(0) == 'T')
 				iThr = Integer.valueOf(sTok.substring(1));
@@ -75,19 +74,18 @@ public class RuleCyclic {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public String GetAsString() {
-		String sBff;
 
-		
-		Validate();
 
-		
-		sBff = 'R' + String.valueOf(iRng) + "/T" + iThr + "/C"
-				+ iClo;
+        Validate();
 
-		sBff = sBff + (iNgh == MJRules.NGHTYP_NEUM ? "/NN" : "/NM");
+
+        String sBff = 'R' + String.valueOf(iRng) + "/T" + iThr + "/C"
+                + iClo;
+
+        sBff += (iNgh == MJRules.NGHTYP_NEUM ? "/NN" : "/NM");
 
 		if (fGH)
-			sBff = sBff + "/GH"; 
+            sBff += "/GH";
 
 		return sBff;
 	}
@@ -96,7 +94,6 @@ public class RuleCyclic {
 	
 	
 	public void Validate() {
-		int i;
 
         if (iClo < 2)
 			iClo = 2;
@@ -109,9 +106,9 @@ public class RuleCyclic {
 			iRng = MAX_RANGE;
 
         int iMax = 0;
-		for (i = 1; i <= iRng; i++)
-			
-			iMax = iMax + i * 8;
+		for (int i = 1; i <= iRng; i++)
+
+            iMax += i * 8;
 
 		if (iThr < 1)
 			iThr = 1;
@@ -126,47 +123,43 @@ public class RuleCyclic {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 					   short[][] crrState, short[][] tmpState) {
-		short bOldVal, bNewVal;
-		int modCnt = 0;
-		int i, j, iCnt;
-		int[] xVector = new int[21]; 
-		int[] yVector = new int[21]; 
-		int colL, colR, rowT, rowB;
-		int ic, ir, iTmp;
-		short nxtStt;
+        int modCnt = 0;
+        int[] xVector = new int[21];
+		int[] yVector = new int[21];
 
         boolean fMoore = (iNgh == MJRules.NGHTYP_MOOR);
 
-		for (i = 0; i < sizX; i++) {
-			for (j = 0; j < sizY; j++) {
+		for (int i = 0; i < sizX; i++) {
+			for (int j = 0; j < sizY; j++) {
 				
 				
 				xVector[10] = i;
 				yVector[10] = j;
-				for (iTmp = 1; iTmp <= iRng; iTmp++) {
-					colL = i - iTmp;
-					xVector[10 - iTmp] = colL >= 0 ? colL : sizX + colL;
+				for (int iTmp = 1; iTmp <= iRng; iTmp++) {
+                    int colL = i - iTmp;
+                    xVector[10 - iTmp] = colL >= 0 ? colL : sizX + colL;
 
-					colR = i + iTmp;
-					xVector[10 + iTmp] = colR < sizX ? colR : colR - sizX;
+                    int colR = i + iTmp;
+                    xVector[10 + iTmp] = colR < sizX ? colR : colR - sizX;
 
-					rowT = j - iTmp;
-					yVector[10 - iTmp] = rowT >= 0 ? rowT : sizY + rowT;
+                    int rowT = j - iTmp;
+                    yVector[10 - iTmp] = rowT >= 0 ? rowT : sizY + rowT;
 
-					rowB = j + iTmp;
-					yVector[10 + iTmp] = rowB < sizY ? rowB : rowB - sizY;
+                    int rowB = j + iTmp;
+                    yVector[10 + iTmp] = rowB < sizY ? rowB : rowB - sizY;
 				}
-				bOldVal = crrState[i][j];
-				nxtStt = bOldVal >= (iClo - 1) ? 0 : (short) (bOldVal + 1);
+                short bOldVal = crrState[i][j];
+                short nxtStt = bOldVal >= (iClo - 1) ? 0 : (short) (bOldVal + 1);
 
-				if ((!fGH) || (bOldVal == 0)) {
+                short bNewVal;
+                if ((!fGH) || (bOldVal == 0)) {
 					bNewVal = bOldVal; 
 					if (bNewVal >= iClo)
 						bNewVal = (short) (iClo - 1);
 
-					iCnt = 0; 
-					for (ic = 10 - iRng; ic <= 10 + iRng; ic++) {
-						for (ir = 10 - iRng; ir <= 10 + iRng; ir++) {
+                    int iCnt = 0;
+                    for (int ic = 10 - iRng; ic <= 10 + iRng; ic++) {
+						for (int ir = 10 - iRng; ir <= 10 + iRng; ir++) {
 							if ((fMoore)
 									|| ((Math.abs(ic - 10) + Math.abs(ir - 10)) <= iRng)) {
 								if (crrState[xVector[ic]][yVector[ir]] == nxtStt) {

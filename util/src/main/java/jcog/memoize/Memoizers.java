@@ -24,11 +24,8 @@ public class Memoizers {
 
 
     public static final int DEFAULT_HIJACK_REPROBES = 4;
-    public static final int DEFAULT_MEMOIZE_CAPACITY;
-    static {
-        //1gb -> 64k?
-        DEFAULT_MEMOIZE_CAPACITY = (int) (Runtime.getRuntime().maxMemory()/(8*1024));
-    }
+    //1gb -> 64k?
+    public static final int DEFAULT_MEMOIZE_CAPACITY = (int) (Runtime.getRuntime().maxMemory()/(8*1024));
 
     /** static instance */
     public static final Memoizers the = new Memoizers();
@@ -46,7 +43,7 @@ public class Memoizers {
 
     public <X,B extends ByteKeyExternal,Y> Function<X,Y> memoizeByte(String id, Function<X,B> byter, Function<B,Y> computation, int capacity) {
         Function<B, Y> c = memoizeByte(id, capacity, computation);
-        return (X x) -> c.apply(byter.apply(x));
+        return x -> c.apply(byter.apply(x));
     }
 
     /** registers a new memoizer with a default memoization implementation */
@@ -67,7 +64,7 @@ public class Memoizers {
     }
 
     /** provides default memoizer implementation */
-    private <X, Y> Memoize<X,Y> memoizer(Function<X, Y> computation, int capacity) {
+    private static <X, Y> Memoize<X,Y> memoizer(Function<X, Y> computation, int capacity) {
         return new HijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES);
 
         //return new CollisionMemoize<>(capacity, computation);

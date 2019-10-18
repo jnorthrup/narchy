@@ -56,15 +56,14 @@ public class JRdpLoader {
 
         String launchFile = args[0];
 
-        String server = "";
-        String port = "";
-
         try {
             String outArgs = "";
 
             
             FileInputStream fstream = new FileInputStream(launchFile);
             DataInputStream in = new DataInputStream(fstream);
+            String port = "";
+            String server = "";
             while (in.available() != 0) {
                 String line = in.readLine();
                 StringTokenizer stok = new StringTokenizer(line);

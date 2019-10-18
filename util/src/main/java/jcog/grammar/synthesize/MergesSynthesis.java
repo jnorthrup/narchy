@@ -74,13 +74,13 @@ public class MergesSynthesis {
             return;
         }
         Collection<String> firstExamplesSimple = new ArrayList<>();
-        Collection<String> secondExamplesSimple = new ArrayList<>();
         firstExamplesSimple.add(secondRep.getData().example + secondRep.getData().example);
+        Collection<String> secondExamplesSimple = new ArrayList<>();
         secondExamplesSimple.add(firstRep.getData().example + firstRep.getData().example);
         if (!GrammarSynthesis.getCheck(oracle, firstRep.getData().context, firstExamplesSimple) || !GrammarSynthesis.getCheck(oracle, secondRep.getData().context, secondExamplesSimple)) {
             return;
         }
-        Collection<String> firstExamples = secondExampleMap.get(secondRep).stream().map(example -> example + example).collect(Collectors.toList());
+        Collection<String> firstExamples = secondExampleMap.get(secondRep).stream().map(example1 -> example1 + example1).collect(Collectors.toList());
         Collection<String> secondExamples = firstExampleMap.get(firstRep).stream().map(example -> example + example).collect(Collectors.toList());
         if ((isStructuredExample(firstRep) && isStructuredExample(secondRep))
                 || (GrammarSynthesis.getCheck(oracle, firstRep.getData().context, firstExamples) && GrammarSynthesis.getCheck(oracle, secondRep.getData().context, secondExamples))) {

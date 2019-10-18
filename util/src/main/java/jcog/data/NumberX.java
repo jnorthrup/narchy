@@ -10,8 +10,8 @@ public abstract class NumberX extends Number {
     public abstract void set(float v);
 
     public float getAndSet(float r) {
-        float p = floatValue();
         set(r);
+        float p = floatValue();
         return p;
     }
 
@@ -19,7 +19,7 @@ public abstract class NumberX extends Number {
         add(-x);
     }
 
-    public final void subtract(final Number operand) {
+    public final void subtract(Number operand) {
         add(-operand.floatValue());
     }
 }

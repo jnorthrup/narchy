@@ -25,7 +25,7 @@ public class TaskIO {
 
         Term preterm = TermIO.the.read(in);
 
-        final Term term = preterm.normalize();
+        Term term = preterm.normalize();
         if (term == null)
             throw new IOException("un-normalizable task target");
 

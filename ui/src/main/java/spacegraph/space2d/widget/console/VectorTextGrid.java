@@ -21,7 +21,8 @@ import java.awt.*;
         static final float[] WHITE = { 1, 1, 1};
 
         public char c;
-        public float[] fgColor, bgColor;
+        public float[] fgColor;
+        public float[] bgColor;
 
         public TextCharacter(char c) {
             this.c = c;
@@ -54,16 +55,13 @@ import java.awt.*;
          * percent of each grid cell width filled with the character
          */
         float charScaleX1 = 0.85f;
-        float charScaleX = charScaleX1;
         /**
          * percent of each grid cell height filled with the character
          */
         float charScaleY1 = 0.85f;
-        float charScaleY = charScaleY1;
 
 
-        long t = System.currentTimeMillis(); 
-        float dz = 0f;
+        long t = System.currentTimeMillis();
 
 
         gl.glPushMatrix();
@@ -81,6 +79,9 @@ import java.awt.*;
         
         bg = null;
 
+        float dz = 0f;
+        float charScaleY = charScaleY1;
+        float charScaleX = charScaleX1;
         for (int row = 0; row < rows; row++) {
 
             gl.glPushMatrix();
@@ -139,9 +140,9 @@ import java.awt.*;
 
         
         float p = (1f + (float) Math.sin(t / 100.0)) * 0.5f;
-        float m = (p);
         gl.glColor4f(1f, 0.7f, 0f, 0.4f + p * 0.4f);
 
+        float m = (p);
         Draw.rect(gl,
                 (curx) + m / 2f,
                 (rows - 1 - cury),

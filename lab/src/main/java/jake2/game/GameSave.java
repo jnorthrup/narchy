@@ -256,11 +256,9 @@ public class GameSave {
 
     public static void ReadGame(String filename) {
 
-        QuakeFile f = null;
-
         try {
 
-            f = new QuakeFile(filename, "r");
+            QuakeFile f = new QuakeFile(filename, "r");
             CreateEdicts();
 
             GameBase.game.load(f);
@@ -283,8 +281,6 @@ public class GameSave {
      */
     public static void WriteLevel(String filename) {
         try {
-            int i;
-            edict_t ent;
 
             QuakeFile f = new QuakeFile(filename, "rw");
             if (f == null)
@@ -293,9 +289,10 @@ public class GameSave {
             
             GameBase.level.write(f);
 
-            
+
+            int i;
             for (i = 0; i < GameBase.num_edicts; i++) {
-                ent = GameBase.g_edicts[i];
+                edict_t ent = GameBase.g_edicts[i];
                 if (!ent.inuse)
                     continue;
                 f.writeInt(i);
@@ -326,7 +323,6 @@ public class GameSave {
      */
     public static void ReadLevel(String filename) {
         try {
-            edict_t ent;
 
             QuakeFile f = new QuakeFile(filename, "r");
 
@@ -341,7 +337,8 @@ public class GameSave {
             
             GameBase.level.read(f);
 
-            
+
+            edict_t ent;
             while (true) {
                 int entnum = f.readInt();
                 if (entnum == -1)

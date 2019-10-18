@@ -45,38 +45,40 @@ public class CL_pred {
      * =================== CL_CheckPredictionError ===================
      */
     static void CheckPredictionError() {
-        int frame;
-        int[] delta = new int[3];
-        int i;
 
         if (Globals.cl_predict.value == 0.0f
                 || (Globals.cl.frame.playerstate.pmove.pm_flags & pmove_t.PMF_NO_PREDICTION) != 0)
             return;
 
-        
-        frame = Globals.cls.netchan.incoming_acknowledged;
+
+        int frame = Globals.cls.netchan.incoming_acknowledged;
         frame &= (Defines.CMD_BACKUP - 1);
 
-        
+
+        int[] delta = new int[3];
         Math3D.VectorSubtract(Globals.cl.frame.playerstate.pmove.origin,
                 Globals.cl.predicted_origins[frame], delta);
 
 
         int len = IntStream.of(0, 1, 2).map(i2 -> Math.abs(delta[i2])).sum();
-        if (len > 640) 
+        if (len > 640)
         { 
             Math3D.VectorClear(Globals.cl.prediction_error);
         } else {
-            if (Globals.cl_showmiss.value != 0.0f
-                    && (IntStream.of(0, 1, 2).anyMatch(i1 -> delta[i1] != 0)))
-                Com.Printf("prediction miss on " + Globals.cl.frame.serverframe
-                        + ": " + (IntStream.of(0, 1, 2).map(v -> delta[v]).sum()) + '\n');
+            if (Globals.cl_showmiss.value != 0.0f) {
+                boolean b = IntStream.of(0, 1, 2).anyMatch(i11 -> delta[i11] != 0);
+                if (b) {
+                    int sum = IntStream.of(0, 1, 2).map(v -> delta[v]).sum();
+                    Com.Printf("prediction miss on " + Globals.cl.frame.serverframe
+                            + ": " + (sum) + '\n');
+                }
+            }
 
             Math3D.VectorCopy(Globals.cl.frame.playerstate.pmove.origin,
                     Globals.cl.predicted_origins[frame]);
 
             
-            for (i = 0; i < 3; i++)
+            for (int i = 0; i < 3; i++)
                 Globals.cl.prediction_error[i] = delta[i] * 0.125f;
         }
     }
@@ -88,20 +90,13 @@ public class CL_pred {
      */
     static void ClipMoveToEntities(float[] start, float[] mins, float[] maxs,
             float[] end, trace_t tr) {
-        int i, x, zd, zu;
-        trace_t trace;
-        int headnode;
-        float[] angles;
-        entity_state_t ent;
-        int num;
-        cmodel_t cmodel;
         float[] bmins = new float[3];
         float[] bmaxs = new float[3];
 
-        for (i = 0; i < Globals.cl.frame.num_entities; i++) {
-            num = (Globals.cl.frame.parse_entities + i)
+        for (int i = 0; i < Globals.cl.frame.num_entities; i++) {
+            int num = (Globals.cl.frame.parse_entities + i)
                     & (Defines.MAX_PARSE_ENTITIES - 1);
-            ent = Globals.cl_parse_entities[num];
+            entity_state_t ent = Globals.cl_parse_entities[num];
 
             if (ent.solid == 0)
                 continue;
@@ -109,16 +104,18 @@ public class CL_pred {
             if (ent.number == Globals.cl.playernum + 1)
                 continue;
 
-            if (ent.solid == 31) { 
-                cmodel = Globals.cl.model_clip[ent.modelindex];
+            float[] angles;
+            int headnode;
+            if (ent.solid == 31) {
+                cmodel_t cmodel = Globals.cl.model_clip[ent.modelindex];
                 if (cmodel == null)
                     continue;
                 headnode = cmodel.headnode;
                 angles = ent.angles;
-            } else { 
-                x = 8 * (ent.solid & 31);
-                zd = 8 * ((ent.solid >>> 5) & 31);
-                zu = 8 * ((ent.solid >>> 10) & 63) - 32;
+            } else {
+                int x = 8 * (ent.solid & 31);
+                int zd = 8 * ((ent.solid >>> 5) & 31);
+                int zu = 8 * ((ent.solid >>> 10) & 63) - 32;
 
                 bmins[0] = bmins[1] = -x;
                 bmaxs[0] = bmaxs[1] = x;
@@ -132,7 +129,7 @@ public class CL_pred {
             if (tr.allsolid)
                 return;
 
-            trace = CM.TransformedBoxTrace(start, end, mins, maxs, headnode,
+            trace_t trace = CM.TransformedBoxTrace(start, end, mins, maxs, headnode,
                     Defines.MASK_PLAYERSOLID, ent.origin, angles);
 
             if (trace.allsolid || trace.startsolid
@@ -178,22 +175,18 @@ public class CL_pred {
      * Returns the content identificator of the point. =================
      */
     static int PMpointcontents(float[] point) {
-        int i;
-        entity_state_t ent;
-        int num;
-        cmodel_t cmodel;
 
         int contents = CM.PointContents(point, 0);
 
-        for (i = 0; i < Globals.cl.frame.num_entities; i++) {
-            num = (Globals.cl.frame.parse_entities + i)
+        for (int i = 0; i < Globals.cl.frame.num_entities; i++) {
+            int num = (Globals.cl.frame.parse_entities + i)
                     & (Defines.MAX_PARSE_ENTITIES - 1);
-            ent = Globals.cl_parse_entities[num];
+            entity_state_t ent = Globals.cl_parse_entities[num];
 
             if (ent.solid != 31) 
                 continue;
 
-            cmodel = Globals.cl.model_clip[ent.modelindex];
+            cmodel_t cmodel = Globals.cl.model_clip[ent.modelindex];
             if (cmodel == null)
                 continue;
 
@@ -264,11 +257,10 @@ public class CL_pred {
         
         int frame = 0;
 
-        
-        usercmd_t cmd;
+
         while (++ack < current) {
             frame = ack & (Defines.CMD_BACKUP - 1);
-            cmd = Globals.cl.cmds[frame];
+            usercmd_t cmd = Globals.cl.cmds[frame];
 
             pm.cmd.set(cmd);
 

@@ -31,6 +31,8 @@ import jake2.qcommon.Com;
 import jake2.qcommon.Cvar;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import java.util.stream.IntStream;
 
@@ -226,7 +228,8 @@ public class S {
 	 * Returns a string array containing all sound driver names.
 	 */
 	public static String[] getDriverNames() {
-		String[] names = IntStream.range(0, drivers.size()).mapToObj(i -> ((Sound) drivers.get(i)).getName()).toArray(String[]::new);
+		int bound = drivers.size();
+		String[] names = IntStream.range(0, bound).mapToObj(i -> ((Sound) drivers.get(i)).getName()).toArray(String[]::new);
         return names;
 	}
 	

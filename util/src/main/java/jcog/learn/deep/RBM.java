@@ -4,7 +4,12 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 public class RBM {
-    private final double[] ph_mean, nh_samples, ph_sample, nv_means, nv_samples, nh_means;
+    private final double[] ph_mean;
+    private final double[] nh_samples;
+    private final double[] ph_sample;
+    private final double[] nv_means;
+    private final double[] nv_samples;
+    private final double[] nh_means;
     private final double[] h;
     public int n_visible;
     public int n_hidden;
@@ -101,7 +106,8 @@ public class RBM {
     }
 
     public double propup(double[] v, double[] w, double b) {
-        double pre_sigmoid_activation = IntStream.range(0, n_visible).mapToDouble(j -> w[j] * v[j]).sum();
+        int bound = n_visible;
+        double pre_sigmoid_activation = IntStream.range(0, bound).mapToDouble(j -> w[j] * v[j]).sum();
         pre_sigmoid_activation += b;
         return activate(pre_sigmoid_activation);
     }
@@ -111,7 +117,8 @@ public class RBM {
     }
 
     public double propdown(double[] h, int i, double b) {
-        double pre_sigmoid_activation = IntStream.range(0, n_hidden).mapToDouble(j -> W[j][i] * h[j]).sum();
+        int bound = n_hidden;
+        double pre_sigmoid_activation = IntStream.range(0, bound).mapToDouble(j -> W[j][i] * h[j]).sum();
         pre_sigmoid_activation += b;
         return activate(pre_sigmoid_activation);
     }

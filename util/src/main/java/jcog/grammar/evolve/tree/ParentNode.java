@@ -25,7 +25,9 @@ public abstract class ParentNode extends AbstractNode {
     }
 
     public final void forEach(Consumer<Node> eachChild) {
-        children.forEach(eachChild);
+        for (Node child : children) {
+            eachChild.accept(child);
+        }
     }
 
     public final void add(Node... n) {
@@ -60,7 +62,7 @@ public abstract class ParentNode extends AbstractNode {
 
     @Override
     public int hashCode() {
-        final int hash = this.hash;
+        int hash = this.hash;
         if (hash == 0)
             return this.hash = rehash();
         return hash;

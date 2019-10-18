@@ -18,6 +18,7 @@ import nars.attention.What;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
 import nars.game.Game;
+import nars.game.Reward;
 import nars.game.action.ActionSignal;
 import nars.game.sensor.GameLoop;
 import nars.task.util.signal.SignalTask;
@@ -48,7 +49,8 @@ public class RLBooster  {
     public final Agent agent;
     public final FloatRange conf = new FloatRange(0.1f, 0f, 1f);
     public final float[] input;
-    final int inD, outD;
+    final int inD;
+    final int outD;
     final ActionSignal[] actions;
     private final CauseChannel<Task> in;
     private final List<Term> inputs;
@@ -88,8 +90,13 @@ public class RLBooster  {
 
         List<Term> ii =
             inputs.flatMap((GameLoop s) -> Streams.stream(s.components()) ).map(Termed::term).collect(toList());
-        if (g.rewards.size() > 1)
-            g.rewards.forEach(s -> s.forEach(t -> ii.add(t.term()))); //use individual rewards as sensors if > 1 reward
+        if (g.rewards.size() > 1) {//use individual rewards as sensors if > 1 reward
+            for (Reward s : g.rewards) {
+                for (Concept t : s) {
+                    ii.add(t.term());
+                }
+            }
+        }
 
         this.inputs = ii;
         this.inD = ii.size();
@@ -134,7 +141,7 @@ public class RLBooster  {
         return input;
     }
 
-    private float valueMissing() {
+    private static float valueMissing() {
         return 0.5f;
     }
 
@@ -172,7 +179,7 @@ public class RLBooster  {
         return feedback;
     }
 
-    private float truthFeedback(Truth t) {
+    private static float truthFeedback(Truth t) {
         return t.freq();
         //return t.expectation();
     }

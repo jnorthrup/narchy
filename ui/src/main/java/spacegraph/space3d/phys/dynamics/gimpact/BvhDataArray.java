@@ -47,10 +47,10 @@ class BvhDataArray {
 
 	public void resize(int newSize) {
 		float[] newBound = new float[newSize*6];
-		int[] newData = new int[newSize];
-		
-		System.arraycopy(bound, 0, newBound, 0, size*6);
-		System.arraycopy(data, 0, newData, 0, size);
+
+        System.arraycopy(bound, 0, newBound, 0, size*6);
+        int[] newData = new int[newSize];
+        System.arraycopy(data, 0, newData, 0, size);
 		
 		bound = newBound;
 		data = newData;

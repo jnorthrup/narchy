@@ -9,7 +9,7 @@ public class Float2D implements HyperPoint, Comparable<Float2D> {
     public final float x;
     public final float y;
 
-    public Float2D(final float x, final float y) {
+    public Float2D(float x, float y) {
         this.x = x;
         this.y = y;
     }
@@ -20,7 +20,7 @@ public class Float2D implements HyperPoint, Comparable<Float2D> {
     }
 
     @Override
-    public Float coord(final int d) {
+    public Float coord(int d) {
         if (d == 0) {
             return x;
         } else if (d == 1) {
@@ -31,19 +31,19 @@ public class Float2D implements HyperPoint, Comparable<Float2D> {
     }
 
     @Override
-    public double distance(final HyperPoint p) {
+    public double distance(HyperPoint p) {
         if (p == this) return 0;
-        final Float2D p2 = (Float2D) p;
+        Float2D p2 = (Float2D) p;
 
-        final float dx = p2.x - x;
-        final float dy = p2.y - y;
+        float dx = p2.x - x;
+        float dy = p2.y - y;
         return  Math.sqrt(dx * dx + dy * dy);
     }
 
     @Override
-    public double distance(final HyperPoint p, final int d) {
+    public double distance(HyperPoint p, int d) {
         if (p == this) return 0;
-        final Float2D p2 = (Float2D) p;
+        Float2D p2 = (Float2D) p;
         if (d == 0) {
             return Math.abs(p2.x - x);
         } else if (d == 1) {

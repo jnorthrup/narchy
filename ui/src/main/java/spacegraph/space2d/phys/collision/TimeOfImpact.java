@@ -111,8 +111,8 @@ public class TimeOfImpact {
         output.state = TOIOutputState.UNKNOWN;
         output.t = input.tMax;
 
-        final DistanceProxy proxyA = input.proxyA;
-        final DistanceProxy proxyB = input.proxyB;
+        DistanceProxy proxyA = input.proxyA;
+        DistanceProxy proxyB = input.proxyB;
 
         sweepA.set(input.sweepA);
         sweepB.set(input.sweepB);
@@ -131,17 +131,14 @@ public class TimeOfImpact {
 
         assert (target > tolerance);
 
-        float t1 = 0f;
-        int iter = 0;
-
         cache.count = 0;
         distanceInput.proxyA = input.proxyA;
         distanceInput.proxyB = input.proxyB;
         distanceInput.useRadii = false;
 
-        
-        
-        for (; ; ) {
+
+        int iter = 0;
+        for (float t1 = 0f; ; ) {
             sweepA.getTransform(xfA, t1);
             sweepB.getTransform(xfB, t1);
             
@@ -180,8 +177,7 @@ public class TimeOfImpact {
             
             boolean done = false;
             float t2 = tMax;
-            int pushBackIter = 0;
-            for (; ; ) {
+            for (int pushBackIter = 0; ; ) {
 
                 
                 float s2 = fcn.findMinSeparation(indexes, t2);
@@ -327,8 +323,8 @@ class SeparationFunction {
 
     
 
-    public float initialize(final SimplexCache cache, final DistanceProxy proxyA, final Sweep sweepA,
-                            final DistanceProxy proxyB, final Sweep sweepB, float t1) {
+    public float initialize(SimplexCache cache, DistanceProxy proxyA, Sweep sweepA,
+                            DistanceProxy proxyB, Sweep sweepB, float t1) {
         m_proxyA = proxyA;
         m_proxyB = proxyB;
         int count = cache.count;

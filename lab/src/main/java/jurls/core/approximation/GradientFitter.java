@@ -29,9 +29,9 @@ public class GradientFitter implements ParameterizedFunction {
     @Override
     public void learn(double[] xs, double y) {
         double q = parameterizedFunction.value(xs);
-        double e = y - q;
 
         parameterGradient(gradient, xs);
+        double e = y - q;
         Utils.multiplySelf(gradient,e);
 
         double l = Utils.length(gradient);
@@ -39,8 +39,8 @@ public class GradientFitter implements ParameterizedFunction {
             l = 1;
         }
 
-        final double a = approxParameters.getAlpha();
-        final double m = approxParameters.getMomentum();
+        double a = approxParameters.getAlpha();
+        double m = approxParameters.getMomentum();
         for (int i = 0; i < gradient.length; ++i) {
             previousDeltas[i] = gradient[i] = a * gradient[i] / l + m * previousDeltas[i];
         }
