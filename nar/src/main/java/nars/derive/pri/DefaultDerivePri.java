@@ -43,14 +43,9 @@ public class DefaultDerivePri implements DerivePri {
                     //= factorComplexityRelative2(t, d);
 
         float factor = factorCmpl;
-        if (t.isBeliefOrGoal()) {
-            factor *= factorPolarity(t.freq());
-        } else {
-            factor *=
-                questionGain.floatValue()
-                * factor /* ^2 */
-            ;
-        }
+		/* ^2 */
+		factor *= t.isBeliefOrGoal() ? factorPolarity(t.freq()) : questionGain.floatValue()
+			* factor;
 
         factor *= //factorEviAbsolute(t,d);
                   factorMaintainRangeAndAvgEvi(t,d);
@@ -115,10 +110,8 @@ public class DefaultDerivePri implements DerivePri {
         double rangeRatio = rangeRatio(t, d);
 
         double y;
-        if (t.isBeliefOrGoal())
-            y = t.truth().confDouble() * rangeRatio; //conf integrated
-        else
-            y = rangeRatio * rangeRatio;
+		//conf integrated
+		y = t.isBeliefOrGoal() ? t.truth().confDouble() * rangeRatio : rangeRatio * rangeRatio;
         return (float) Util.lerp(eviImportance.floatValue(), 1f, y);
     }
 

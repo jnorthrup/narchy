@@ -68,10 +68,8 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
 
         Term u = subterm(t, rng);
 
-        if (depthRemain <= 1 || !(u instanceof Compound) /* || !u.op().conceptualizable */)
-            return u;
-        else
-            return sampleDynamic((Compound)u, depthRemain-1, rng);
+        /* || !u.op().conceptualizable */
+        return depthRemain <= 1 || !(u instanceof Compound) ? u : sampleDynamic((Compound) u, depthRemain - 1, rng);
     }
 
     protected Term subterm(Compound t, Random rng) {
@@ -131,10 +129,9 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
             if (rng.nextBoolean() && Conj.isSeq(conj))
                 return subterm(conj, ConjList.events(conj).asSubterms(false), rng);
             else {
-                if (Op.hasAny(conj.subStructure(), CONJ))
-                    return Weighted.decompose(conj, rng); //possibly embedded conj within conj
-                else
-                    return One.decompose(conj, rng); //flat
+                //possibly embedded conj within conj
+                //flat
+                return Op.hasAny(conj.subStructure(), CONJ) ? Weighted.decompose(conj, rng) : One.decompose(conj, rng);
             }
         }
     };
@@ -143,10 +140,7 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
         public @Nullable Term decompose(Compound t, Random rng) {
             Term subjOrPred = subterm(t, rng);
             if (subjOrPred instanceof Compound && rng.nextBoolean()) {
-                if (subjOrPred.opID() == CONJ.id)
-                    return WeightedConjEvent.decompose((Compound) subjOrPred, rng);
-                else
-                    return Weighted.decompose((Compound) subjOrPred, rng);
+                return subjOrPred.opID() == CONJ.id ? WeightedConjEvent.decompose((Compound) subjOrPred, rng) : Weighted.decompose((Compound) subjOrPred, rng);
             } else {
                 return subjOrPred;
             }

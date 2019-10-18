@@ -113,10 +113,7 @@ public enum DynamicStatementTruth { ;
                         //conjoin any constant conditions (which may precipitate from reductions)
 
 
-                        if (constantCondition != null)
-                            constantCondition = CONJ.the(constantCondition, xx);
-                        else
-                            constantCondition = xx;
+                        constantCondition = constantCondition != null ? CONJ.the(constantCondition, xx) : xx;
 
                         if (constantCondition == True)
                             constantCondition = null;
@@ -135,11 +132,8 @@ public enum DynamicStatementTruth { ;
                     return Null; //allow non-Null Bool's?
 
                 long cs = c.shift();
-                if (cs == ETERNAL) {
-                    outerDT = DTERNAL; //temporal information not available or was destroyed
-                } else {
-                    outerDT = Tense.occToDT(subjOrPred ? -cs - sect.eventRange() : cs);
-                }
+                //temporal information not available or was destroyed
+                outerDT = cs == ETERNAL ? DTERNAL : Tense.occToDT(subjOrPred ? -cs - sect.eventRange() : cs);
 
             } else {
 

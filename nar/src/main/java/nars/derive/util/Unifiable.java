@@ -113,15 +113,11 @@ public enum Unifiable { ;
 
             Term x;
             if (xNeg) {
-                if (_x instanceof Neg) {
-                    x = _x.unneg();
-//                    if (conjV <= x.volume())
-//                        return true;
-                } else {
-//                    if (conjV <= _x.volume()+1)
-//                        return true;
-                    x = _x.neg();
-                }
+                //                    if (conjV <= x.volume())
+                //                        return true;
+                //                    if (conjV <= _x.volume()+1)
+                //                        return true;
+                x = _x instanceof Neg ? _x.unneg() : _x.neg();
 
             } else {
                 x = _x;
@@ -139,15 +135,12 @@ public enum Unifiable { ;
             if (!cv && !xv)
                 return !x.hasAny(CONJ) && !Conj.eventOf(conj, x);
 
-            if (x.opID()==CONJ.id) {
-                //TODO
-                return false; //undecided
-            } else {
-                return !conj.eventsOR((when, what) ->
+            //TODO
+            //undecided
+            return x.opID() == CONJ.id ? false : !conj.eventsOR((when, what) ->
                     Terms.possiblyUnifiable(what, x, false, Variable), 0,
-                    true, conj.dt() == XTERNAL
-                );
-            }
+                true, conj.dt() == XTERNAL
+            );
 
 //                    conj.subterms().hasAll(x.structure() & ~(Op.Variables|CONJ.bit));
 

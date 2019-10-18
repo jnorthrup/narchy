@@ -9,7 +9,9 @@ import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.XTERNAL;
 
 /** temporal quantifiers */
-public class TimeFunc {
+public enum TimeFunc {
+	;
+
 	abstract static class TemporalAccessor {
 		/** discovers the 'other' events besides 'relativeTo', and returns as a term (a sequence if necessary) */
 		public abstract Term otherEvents(Term t, Term relativeTo, boolean inclBefore, boolean includeIt, boolean includeAfter);

@@ -31,17 +31,13 @@ public abstract class DeriverExecutor extends Derivation {
 	protected static float pri(Premise p) {
 		Task t = p.task(), b = p.belief();
 		float tPri = t.priElseZero();
-		if (b != null)
-			return
-				Math.max(
-				//Util.or(
-					//Util.min(
-				//Util.mean(
-				//Util.sum(
-					tPri, b.priElseZero()
-				);
-		else
-			return tPri;
+		return b != null ? Math.max(
+			//Util.or(
+			//Util.min(
+			//Util.mean(
+			//Util.sum(
+			tPri, b.priElseZero()
+		) : tPri;
 	}
 
 	/**

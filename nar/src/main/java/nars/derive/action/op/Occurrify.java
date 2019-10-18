@@ -219,10 +219,7 @@ public class Occurrify extends TimeGraph {
 
     @Override
     public long eventOcc(long when) {
-        if (NAL.derive.TIMEGRAPH_DITHER_EVENTS_INTERNALLY)
-            return Tense.dither(when, d.ditherDT);
-        else
-            return when;
+        return NAL.derive.TIMEGRAPH_DITHER_EVENTS_INTERNALLY ? Tense.dither(when, d.ditherDT) : when;
     }
 
     @Override

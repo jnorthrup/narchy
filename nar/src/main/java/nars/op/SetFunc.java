@@ -21,7 +21,8 @@ import java.util.List;
 
 import static nars.term.atom.Bool.Null;
 
-public class SetFunc {
+public enum SetFunc {
+    ;
 
     public static final Functor union = new BinarySetFunctor("union") {
 

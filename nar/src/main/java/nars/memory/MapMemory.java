@@ -33,11 +33,7 @@ public class MapMemory extends Memory {
 
     @Override
     public Concept get(Term x, boolean createIfMissing) {
-        if (createIfMissing) {
-            return map.compute(x, nar.conceptBuilder);
-        } else {
-            return map.get(x);
-        }
+		return createIfMissing ? map.compute(x, nar.conceptBuilder) : map.get(x);
     }
 
     @Override

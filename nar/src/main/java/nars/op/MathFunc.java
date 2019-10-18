@@ -52,10 +52,7 @@ public enum MathFunc {
 
                 @Override
                 protected Term uncompute(int xy, int xx) {
-                    if (xx == 0)
-                        return Null;
-                    else
-                        return Int.the(xy / xx);
+                    return xx == 0 ? Null : Int.the(xy / xx);
                 }
             };
     public static final Functor add = new ArithmeticCommutiveBinaryBidiFunctor("add") {

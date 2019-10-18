@@ -46,11 +46,7 @@ public class Cmp extends SimpleBinaryFunctor {
 
             int c = x.compareTo(y);
             if (e.is(xy, Int.the(c))) {
-                if (c > 0) {
-                    return swap(x, y, c);
-                } else {
-                    return null;
-                }
+                return c > 0 ? swap(x, y, c) : null;
             } else
                 return Null; //conflict with the correct value
         } else {
@@ -59,14 +55,10 @@ public class Cmp extends SimpleBinaryFunctor {
             if (!x.hasVars() && !y.hasVars()) {
                 //check for truth, and canonical ordering
                 int c = x.compareTo(y);
-                if (((Int) xy).i != c)
-                    return False;
-                else {
-//                if (c > 0)
-//                    return swap(x, y, c);
-//                else
-                    return True;
-                }
+                //                if (c > 0)
+                //                    return swap(x, y, c);
+                //                else
+                return ((Int) xy).i != c ? False : True;
 
             } else if (x instanceof Variable || y instanceof Variable) {
                 int c = x.compareTo(y);
@@ -82,10 +74,7 @@ public class Cmp extends SimpleBinaryFunctor {
     protected Term compute(Evaluation e, Term x, Term y) {
         if (x.equals(y))
             return Int.the(0);
-        if (!x.hasVars() && !y.hasVars())
-            return Int.the(x.compareTo(y));
-        else
-            return null;
+        return !x.hasVars() && !y.hasVars() ? Int.the(x.compareTo(y)) : null;
     }
 
 }

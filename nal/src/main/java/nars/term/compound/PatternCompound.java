@@ -206,11 +206,11 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
             //xFixed is effectively sorte unless eMatch!=nulld
 
 
-            SortedSet<Term> yFree = null;
+
             //uc==null ? y.toSetSorted() : y.toSetSorted(yy -> MatchConstraint.valid(yy, uc, u));
             //y.toSetSorted();
             boolean seq = op() == CONJ && dt() == XTERNAL && Conj.isSeq(Y);
-			yFree = seq ? Y.eventSet() : Y.subterms().toSetSorted((Function<Term, Term>) u::resolveTerm);
+            SortedSet<Term> yFree = seq ? Y.eventSet() : Y.subterms().toSetSorted((Function<Term, Term>) u::resolveTerm);
 
             Subterms xx = subterms();
             int s = xx.subs();

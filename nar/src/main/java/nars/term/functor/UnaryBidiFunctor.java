@@ -35,11 +35,7 @@ public abstract class UnaryBidiFunctor extends Functor {
     }
 
     Term apply1(Term x) {
-        if (x.op().var)
-            return null;
-        else {
-            return compute(x);
-        }
+		return x.op().var ? null : compute(x);
     }
 
     protected abstract Term compute(Term x);
@@ -81,11 +77,7 @@ public abstract class UnaryBidiFunctor extends Functor {
                 //else
                     //return Equal.the(y,yActual);
                     //return yActual;
-                if (y.equals(yActual)) {
-                    return True;
-                } else {
-                    return False;
-                }
+				return y.equals(yActual) ? True : False;
             }
         }
     }

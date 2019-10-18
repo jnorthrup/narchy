@@ -74,10 +74,8 @@ public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Der
         @Override
         public boolean test(PreDerivation p) {
             Term x = extractX.apply(p.taskTerm, p.beliefTerm);
-            if (x != null)
-                return constraint.valid(x);
-            else
-                return true; //<- does this happen?
+            //<- does this happen?
+            return x != null ? constraint.valid(x) : true;
         }
     }
 

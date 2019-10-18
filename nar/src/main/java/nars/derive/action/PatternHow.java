@@ -605,10 +605,7 @@ public class PatternHow extends CondHow {
 
 
         if (time == null) {
-            if (!doubleBelief && !doubleGoal)
-                time = Occurrify.solverDefaultSingle;
-            else
-                time = Occurrify.solverDefaultDouble;
+            time = !doubleBelief && !doubleGoal ? Occurrify.solverDefaultSingle : Occurrify.solverDefaultDouble;
         }
 
 

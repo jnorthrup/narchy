@@ -93,12 +93,8 @@ public enum PremiseRuleCompiler {
                 bb.add(branch);
         });
 
-        if (bb.isEmpty())
-            return null;
-        else {
-            //return compileSwitch(bb, 2);
-            return bb.toList();
-        }
+        //return compileSwitch(bb, 2);
+        return bb.isEmpty() ? null : bb.toList();
     }
 
     public static PREDICATE<PreDerivation> factorFork(Collection<PREDICATE<PreDerivation>> _x, Function<List<PREDICATE<PreDerivation>>, PREDICATE<PreDerivation>> builder) {
@@ -304,10 +300,7 @@ public enum PremiseRuleCompiler {
 
         float costIfBranch() {
             int s = size();
-            if (s > 1)
-                return s * p.cost();
-            else
-                return Float.NEGATIVE_INFINITY;
+            return s > 1 ? s * p.cost() : Float.NEGATIVE_INFINITY;
         }
     }
 
