@@ -7,7 +7,6 @@ import jcog.pri.bag.Bag;
 import nars.NAR;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.menu.TabMenu;

@@ -78,14 +78,7 @@ public class AdHocDeriverTiming implements TriFunction<What, Task, Term, long[]>
 //            }
 ////        }
 
-        long[] tt = result;
-//                break;
-//            }
-//            default:
-//                throw new UnsupportedOperationException();
-//        }
-
-        return tt;
+        return result;
     }
 
 

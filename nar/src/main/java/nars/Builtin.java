@@ -4,7 +4,6 @@ import jcog.Texts;
 import nars.op.*;
 import nars.op.data.flat;
 import nars.op.data.reflect;
-import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Variable;
 import nars.term.*;
@@ -24,7 +23,9 @@ import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.TreeSet;
 import java.util.stream.IntStream;
 
 import static nars.Op.*;

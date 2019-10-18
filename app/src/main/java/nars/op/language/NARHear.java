@@ -1,6 +1,5 @@
 package nars.op.language;
 
-import com.google.common.collect.Lists;
 import jcog.event.Off;
 import jcog.exe.Loop;
 import jcog.io.Twokenize;
@@ -21,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;

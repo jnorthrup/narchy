@@ -10,7 +10,6 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.apache.commons.math3.exception.OutOfRangeException;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.IntStream;

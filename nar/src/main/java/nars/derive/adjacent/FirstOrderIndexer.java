@@ -29,8 +29,7 @@ public class FirstOrderIndexer extends AbstractAdjacentIndexer {
 				return xx.opID()==targetOp && xx.hasAny(Op.AtomicConstant) && u.unifies(xx, target);
 			};
 
-			if (subUnifies(subunification, concept))
-				return true;
+			return subUnifies(subunification, concept);
 
 //			if (op.statement) {
 //				for (int i = 0; i < 2; i++) {
@@ -48,13 +47,8 @@ public class FirstOrderIndexer extends AbstractAdjacentIndexer {
 
 	protected static boolean subUnifies(Predicate<Term> u, Term concept) {
 
-		if (concept.opID() == CONJ.id) {
-			if (concept.eventsOR((when,what)-> u.test(what), 0, true, true))
-				return true;
-		} else {
-			if (concept.subterms().OR(u))
-				return true;
-		}
-		return false;
+		return concept.opID() == CONJ.id ?
+			concept.eventsOR((when, what) -> u.test(what), 0, true, true) :
+			concept.subterms().OR(u);
 	}
 }

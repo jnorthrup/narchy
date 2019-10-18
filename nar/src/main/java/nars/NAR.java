@@ -1629,15 +1629,8 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
             if (ConceptBuilder.dynamicModel((Compound) ct) != null) { //HACK
                 //try conceptualizing the dynamic
-
                 if (NAL.CONCEPTUALIZE_DYNAMIC_TRANSIENT) {
-
-                    //create temporary dynamic concept
-                    Concept c = conceptBuilder.construct(ct);
-//                    if (c != null)
-//                        c.delete(this); //flyweight start deleted and unallocated (in-capacit-ated) since it isnt actually in memory
-
-                    return c;
+                    return conceptBuilder.construct(ct); //create temporary dynamic concept
                 } else {
                     return conceptualize(concept);
                 }

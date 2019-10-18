@@ -11,9 +11,7 @@ import jurls.core.approximation.ParameterizedFunctionGenerator;
 import jurls.core.utils.ActionValuePair;
 import jurls.core.utils.Utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.IntStream;
 
 /**

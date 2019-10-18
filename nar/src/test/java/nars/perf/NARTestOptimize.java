@@ -4,7 +4,6 @@ import jcog.lab.DefaultScientist;
 import jcog.lab.Lab;
 import jcog.lab.Opti;
 import jcog.lab.Optilive;
-import nars.NAL;
 import nars.NAR;
 import nars.NARS;
 import nars.nal.nal1.NAL1Test;
@@ -16,7 +15,6 @@ import nars.test.impl.DeductiveMeshTest;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.io.File;
-import java.util.function.Supplier;
 
 class NARTestOptimize {
 

@@ -267,13 +267,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
     @Override
     public final Concept apply(Term x, Concept prev) {
-        if (prev != null) {
-            Concept c = prev;
-            if (!c.isDeleted())
-                return c;
-        }
-
-        return apply(x);
+        return ((prev != null) && !prev.isDeleted()) ? prev : apply(x);
     }
 
 

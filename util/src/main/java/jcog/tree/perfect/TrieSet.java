@@ -97,7 +97,7 @@ public final class TrieSet<E> implements Set<E> {
    {
       boolean acc = false;
       for (E e : collection) {
-         Boolean add = add(e);
+         boolean add = add(e);
          acc = acc || add;
       }
       boolean changed = acc;
@@ -153,7 +153,7 @@ public final class TrieSet<E> implements Set<E> {
    {
       boolean acc = false;
       for (Object o : collection) {
-         Boolean remove = remove(o);
+         boolean remove = remove(o);
          acc = acc || remove;
       }
       boolean changed = acc;

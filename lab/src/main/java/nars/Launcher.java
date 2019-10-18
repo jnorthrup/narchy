@@ -6,7 +6,6 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 

@@ -28,7 +28,6 @@ import tech.tablesaw.columns.numbers.NumberColumnFormatter;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Consumer;

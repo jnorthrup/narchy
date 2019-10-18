@@ -93,7 +93,7 @@ public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
     public boolean addAll(Collection<? extends X> source) {
         boolean acc = false;
         for (X x : source) {
-            Boolean add = add(x);
+            boolean add = add(x);
             acc = acc || add;
         }
         return acc;

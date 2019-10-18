@@ -210,7 +210,7 @@ public class Variation {
 
         boolean acc = true;
         for (Node child : root.children()) {
-            Boolean checkMaxDepth = checkMaxDepth(child, depth + 1);
+            boolean checkMaxDepth = checkMaxDepth(child, depth + 1);
             acc = acc && checkMaxDepth;
         }
         boolean ret = acc;

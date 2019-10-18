@@ -16,7 +16,6 @@ import nars.term.functor.BinaryBidiFunctor;
 import nars.term.functor.UnaryBidiFunctor;
 import nars.term.util.conj.Conj;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
@@ -88,9 +87,9 @@ public enum ListFunc {
             } else {
                 Subterms xys = xy.subterms();
 
-                List<Predicate<Termerator>> list = IntStream.range(-1, l).mapToObj(finalI -> Evaluation.assign(
-                        x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
-                        y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))).collect(toList());
+                List<Predicate<Termerator>> list = IntStream.range(-1, l).mapToObj(finalI -> Termerator.assign(
+                    x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
+                    y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))).collect(toList());
                 e.canBe(list);
 
                 return null;

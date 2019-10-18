@@ -168,11 +168,9 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 		}
 
 		@Override
-		public boolean onRemove(Concept r) {
-
-			Concept c = r;
+		public boolean onRemove(Concept c) {
 			if (removeable(c)) {
-				onRemoval(r);
+				onRemoval(c);
 				return true;
 			} else {
 				return false;

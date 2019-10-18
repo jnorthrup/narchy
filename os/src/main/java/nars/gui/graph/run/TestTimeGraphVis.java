@@ -5,7 +5,6 @@ import nars.$;
 import nars.time.TimeGraph;
 import spacegraph.space3d.SpaceGraph3D;
 import spacegraph.space3d.widget.SimpleGraph3D;
-import spacegraph.space3d.widget.SpaceWidget;
 
 import static nars.time.Tense.ETERNAL;
 

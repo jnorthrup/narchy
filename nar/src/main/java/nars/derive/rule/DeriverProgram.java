@@ -15,9 +15,7 @@ import nars.term.control.PREDICATE;
 import nars.term.control.SWITCH;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Stream;
 
 /**

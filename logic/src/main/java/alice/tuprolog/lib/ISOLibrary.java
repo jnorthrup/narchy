@@ -19,8 +19,6 @@ package alice.tuprolog.lib;
 
 import alice.tuprolog.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 /**

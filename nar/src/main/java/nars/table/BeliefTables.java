@@ -233,7 +233,7 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
                 return (X) beliefTable;
             }
         }
-        return (X) null;
+        return null;
     }
 
     @Override

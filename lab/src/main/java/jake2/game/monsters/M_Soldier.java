@@ -28,7 +28,6 @@ import jake2.qcommon.Com;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 public class M_Soldier {

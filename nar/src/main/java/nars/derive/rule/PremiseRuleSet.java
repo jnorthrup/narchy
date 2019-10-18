@@ -113,7 +113,7 @@ public class PremiseRuleSet {
         return add(r.get());
     }
 
-    private final PremiseRuleSet add(PremiseRule r) {
+    private PremiseRuleSet add(PremiseRule r) {
         this.rules.add(r);
         return this;
     }

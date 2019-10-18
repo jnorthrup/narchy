@@ -16,7 +16,6 @@ import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 import static jcog.Util.assertFinite;
 import static jcog.pri.op.PriReturn.Changed;
@@ -71,12 +70,11 @@ public abstract class AbstractTaskLink implements TaskLink {
 	private static int hash(Term source, Term target) {
 		int s = source.hashCodeShort();
 		int t = source != target ? target.hashCodeShort() : s;
-		int hash = (t << 16) | s;
+		return (t << 16) | s;
 //        if (t!=(hash >>> 16))
 //            throw new WTF();
 //        if (s!=(hash & 0xffff))
 //            throw new WTF();
-		return hash;
 	}
 
 	@Override
@@ -268,9 +266,9 @@ public abstract class AbstractTaskLink implements TaskLink {
 		if (!Util.equals(X, 1)) {
 
 
-			Boolean acc = false;
+			boolean acc = false;
 			for (int i = 0; i < 4; i++) {
-				Boolean aBoolean = apply(i, X, mult, Changed) != 0;
+				boolean aBoolean = apply(i, X, mult, Changed) != 0;
 				acc = acc || aBoolean;
 			}
 			boolean changed = acc;

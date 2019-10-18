@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.TreeSet;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static nars.$.$$;
 import static nars.term.atom.Bool.False;

@@ -4,8 +4,6 @@ import jcog.data.set.ArrayHashSet;
 
 import java.util.Iterator;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /*
  * Copyright (c) 1999 Steven J. Metsker. All Rights Reserved.

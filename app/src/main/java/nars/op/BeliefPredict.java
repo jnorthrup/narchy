@@ -6,7 +6,6 @@ import jcog.data.list.FasterList;
 import jcog.learn.LivePredictor;
 import jcog.learn.Predictor;
 import jcog.math.FloatRange;
-import jcog.pri.AtomicPri;
 import nars.NAR;
 import nars.Op;
 import nars.Task;

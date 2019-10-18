@@ -27,7 +27,6 @@ import jake2.game.monsters.M_Player;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 public class PlayerClient {

@@ -5,7 +5,6 @@ import nars.NAR;
 import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;

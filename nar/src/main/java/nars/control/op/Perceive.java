@@ -9,12 +9,12 @@ import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.Operator;
 import nars.control.MetaGoal;
-import nars.eval.Evaluation;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.TemporalTask;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.buffer.Termerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +65,7 @@ public enum Perceive {
 
 
 
-        if (!(x instanceof TemporalTask.Unevaluated) && Evaluation.evalable(xx)) {
+        if (!(x instanceof TemporalTask.Unevaluated) && Termerator.evalable(xx)) {
             FasterList<Task> rt = (FasterList<Task>) new TaskEvaluation(x, w).result;
             if (rt != null) {
                 //rt.removeInstance(x); //something was eval, remove the input HACK

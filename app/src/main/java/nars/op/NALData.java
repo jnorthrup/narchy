@@ -10,14 +10,11 @@ import nars.Op;
 import nars.Task;
 import nars.task.NALTask;
 import nars.term.Term;
-import nars.term.Variable;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
-import tech.tablesaw.api.Row;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;

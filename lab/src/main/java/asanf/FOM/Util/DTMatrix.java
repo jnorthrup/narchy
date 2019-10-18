@@ -2,8 +2,6 @@ package asanf.FOM.Util;
 
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 /**

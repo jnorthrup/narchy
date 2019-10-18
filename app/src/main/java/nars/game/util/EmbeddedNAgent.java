@@ -7,11 +7,8 @@ import nars.NARS;
 import nars.game.Game;
 import nars.game.action.SwitchAction;
 import nars.game.sensor.GameLoop;
-import nars.game.sensor.Signal;
 import nars.term.Term;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 import static java.lang.System.arraycopy;

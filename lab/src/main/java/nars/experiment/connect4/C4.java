@@ -21,8 +21,6 @@ import spacegraph.space2d.container.Splitting;
 import javax.swing.*;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * connect-4 experiments

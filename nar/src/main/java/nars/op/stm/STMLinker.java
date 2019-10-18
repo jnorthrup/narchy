@@ -17,7 +17,6 @@ import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.BufferOverflowException;
-import java.util.stream.IntStream;
 
 public class STMLinker extends TaskAction {
 
@@ -115,11 +114,10 @@ public class STMLinker extends TaskAction {
 			//TODO test
 			//int i = 0;
 			int h = stm.head();
-			Boolean acc = true;
+			boolean acc = true;
 			int bound = capacity;
 			for (int i = 0; i < bound; i++) {
-				Boolean link = link(x, stm.peek(h, i), factor, why, d);
-				acc = acc && link;
+				acc = acc && link(x, stm.peek(h, i), factor, why, d);
 			}
 			novel= acc;
 		}

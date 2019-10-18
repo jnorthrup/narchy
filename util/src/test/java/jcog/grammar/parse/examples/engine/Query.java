@@ -9,9 +9,7 @@ package jcog.grammar.parse.examples.engine;
  * including the implied warranty of merchantability.
  */
 
-import java.util.Arrays;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 /**
  * A Query is a dynamic rule that stands outside of a program and proves itself

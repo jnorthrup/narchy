@@ -217,7 +217,7 @@ public class AudioTransceiver {
                 boolean acc = true;
                 int bound = synth.identifier.length();
                 for (int i1 = 0; i1 < bound; i1++) {
-                    Boolean aBoolean = synth.identifier.charAt(i1) == (synth.range.chars.charAt(lPacketized[i1]));
+                    boolean aBoolean = synth.identifier.charAt(i1) == (synth.range.chars.charAt(lPacketized[i1]));
                     acc = acc && aBoolean;
                 }
                 boolean lIsValid = acc;

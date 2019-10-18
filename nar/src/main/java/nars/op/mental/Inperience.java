@@ -82,10 +82,7 @@ public class Inperience extends TaskTransformAction {
 		x = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(x);
         x = x.hasAny(VAR_QUERY) ? VariableTransform.queryToDepVar.apply(x) : x;
         if (x instanceof Bool) return Bool.Null;
-        Term y = Image.imageNormalize(x);
-
-        //return Described.apply(y);
-        return y;
+        return Image.imageNormalize(x);
     }
 
     @Override

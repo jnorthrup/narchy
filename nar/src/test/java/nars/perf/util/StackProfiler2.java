@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 /*
  * Copyright (c) 2005, 2013, Oracle and/or its affiliates. All rights reserved.

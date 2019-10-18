@@ -19,7 +19,6 @@ import spacegraph.space2d.container.PaintSurface;
 import spacegraph.video.Draw;
 
 import java.util.function.Consumer;
-import java.util.stream.IntStream;
 
 /**
  * manages reading a camera to a pixel grid of SensorConcepts

@@ -6,7 +6,6 @@ import jcog.learn.lstm.ExpectedVsActual;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Consumer;
-import java.util.stream.IntStream;
 
 public class DistractedSequenceRecall extends AbstractTraining {
 	final int length;

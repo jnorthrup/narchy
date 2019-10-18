@@ -584,7 +584,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         Term[] ii = x.items;
         boolean removed = false;
         for (int i = 0; i < xn; i++) {
-            Boolean remove = remove(ww[i] + f, ii[i]);
+            boolean remove = remove(ww[i] + f, ii[i]);
             removed = removed || remove;
         }
         return removed;

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.v2;
-import jcog.pri.ScalarValue;
 import nars.$;
 import nars.NAR;
 import nars.Task;

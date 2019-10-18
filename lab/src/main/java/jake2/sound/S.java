@@ -31,8 +31,6 @@ import jake2.qcommon.Com;
 import jake2.qcommon.Cvar;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 import java.util.stream.IntStream;
 

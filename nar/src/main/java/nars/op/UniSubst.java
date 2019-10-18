@@ -157,12 +157,11 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
 
         u.setTTL(subTTL);
 
-        Term output = u.unifySubst(x, y, c, var, strict);
+        return u.unifySubst(x, y, c, var, strict);
 
         //int used = subTTL - u.ttl;
         //parent.use(used);
 
-        return output;
     }
 
 //    public boolean transformed() {

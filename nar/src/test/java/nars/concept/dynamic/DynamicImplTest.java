@@ -8,8 +8,6 @@ import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static nars.$.$$;
 import static nars.term.util.TermTest.assertEq;

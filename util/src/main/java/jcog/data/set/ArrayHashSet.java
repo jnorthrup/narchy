@@ -99,7 +99,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         //throw new TODO("optimized bulk addAt");
         boolean acc = false;
         for (X x : c) {
-            Boolean add = add(x);
+            boolean add = add(x);
             acc = acc || add;
         }
         return acc;
@@ -110,7 +110,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         //throw new TODO("optimized bulk addAt");
         boolean acc = false;
         for (X x : c) {
-            Boolean add = add(x);
+            boolean add = add(x);
             acc = acc || add;
         }
         return acc;

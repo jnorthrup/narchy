@@ -2,7 +2,6 @@ package nars.experiment.mario.level;
 
 import java.util.Arrays;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public final class ImprovedNoise {
     public ImprovedNoise(long seed) {

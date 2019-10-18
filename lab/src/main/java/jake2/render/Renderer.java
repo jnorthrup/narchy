@@ -27,8 +27,6 @@ package jake2.render;
 
 import jake2.client.refexport_t;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 /**

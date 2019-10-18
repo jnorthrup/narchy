@@ -22,7 +22,6 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -302,9 +301,7 @@ public class Occurrify extends TimeGraph {
                 imageNormalize(beliefEvent);
         }
 
-        boolean b = Stream.of(taskTerm, beliefTerm, pattern).anyMatch(term -> term.hasAny(NEG));
-        autoneg = (b);
-
+        autoneg = Stream.of(taskTerm, beliefTerm, pattern).anyMatch(term -> term.hasAny(NEG));
 
         //compact(); //TODO compaction removes self-loops which is bad, not sure if it does anything else either
 

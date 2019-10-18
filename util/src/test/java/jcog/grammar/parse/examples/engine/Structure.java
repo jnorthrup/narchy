@@ -8,11 +8,8 @@ package jcog.grammar.parse.examples.engine;
  * including the implied warranty of merchantability.
  */
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**

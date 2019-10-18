@@ -8,9 +8,7 @@ package jcog.grammar.parse.examples.engine;
  * including the implied warranty of merchantability.
  */
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * A Fact is a Structure that contains only other Facts.

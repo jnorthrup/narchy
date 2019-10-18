@@ -51,7 +51,10 @@ import tech.tablesaw.columns.strings.StringColumnType;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;

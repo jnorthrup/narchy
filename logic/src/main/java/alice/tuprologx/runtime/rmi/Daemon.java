@@ -4,7 +4,6 @@ import java.net.InetAddress;
 import java.rmi.Naming;
 import java.rmi.RMISecurityManager;
 import java.rmi.registry.LocateRegistry;
-import java.util.Arrays;
 import java.util.Optional;
 
 public class Daemon {
