@@ -18,10 +18,15 @@ public class Synth {
         JFrame frame = new JFrame("Virtual MIDI Synthesizer");
         frame.setLayout(new BorderLayout());
 
+
         (instrumentControl = new JComboBox()).setFocusable(false);
         (synthesizer = MidiSystem.getSynthesizer()).open();
 
-        System.out.println( MidiSystem.getSequencer().getReceivers());
+        Sequencer seq = MidiSystem.getSequencer();
+        seq.open();
+        seq.addMetaEventListener(metaMessage -> System.out.println(metaMessage));
+        seq.addControllerEventListener(metaMessage -> System.out.println(metaMessage), new int[] { 0 });
+
         for (var x : MidiSystem.getMidiDeviceInfo())
             System.out.println(x.getName() + " " + x.getDescription() + " " + x.getVendor());
 
