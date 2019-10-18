@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class AbstractDynamicTaskTest {
     protected final NAR n = NARS.shell();
 
-    protected final boolean isDynamicTable(String t) {
+    public final boolean isDynamicTable(String t) {
         return isDynamicTable($$(t));
     }
 

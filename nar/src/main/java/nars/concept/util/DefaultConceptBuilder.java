@@ -30,18 +30,6 @@ public class DefaultConceptBuilder extends ConceptBuilder {
         return new NodeConcept(t);
     }
 
-
-
-//    private static Map newBagMap(int volume) {
-//
-//
-//        return new UnifiedMap(0, 0.99f);
-//        //return new UnifiedMap(0);
-//        //return new HashMap(0);
-//
-//    }
-
-
     @Override
     public BeliefTable newTable(Term x, boolean beliefOrGoal, BeliefTable... overlay) {
 
@@ -50,12 +38,13 @@ public class DefaultConceptBuilder extends ConceptBuilder {
             //HACK ImageBeliefTable proxies for all other sub-tables
             if (overlay.length == 1 && overlay[0] instanceof ImageBeliefTable)
                 return overlay[0];
-
-            BeliefTables b = new BeliefTables(overlay.length + 2);
-            b.addAll(overlay);
-            b.add(newTemporalTable(x, beliefOrGoal));
-            b.add(newEternalTable(x));
-            return b;
+            else {
+                BeliefTables b = new BeliefTables(overlay.length + 2);
+                b.addAll(overlay);
+                b.add(newTemporalTable(x, beliefOrGoal));
+                b.add(newEternalTable(x));
+                return b;
+            }
         } else {
             assert(overlay.length == 0);
             return EmptyBeliefTable.Empty;

@@ -5,6 +5,7 @@ import jcog.data.bit.MetalBitSet;
 import jcog.data.set.LongObjectArraySet;
 import nars.subterm.DisposableTermList;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.TermException;
 import nars.term.util.builder.InterningTermBuilder;
@@ -53,10 +54,19 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 //    }
 
     public static ConjList events(Term conj, long occOffset) {
-        occOffset = occOffset == TIMELESS ? 0 : occOffset;
-
         ConjList l = new ConjList();
-        conj.eventsAND(l::add, occOffset, true, false);
+        conj.eventsAND(l::add,
+            occOffset == TIMELESS ? 0 : occOffset,
+            true, false);
+        return l;
+    }
+
+    /** adds directly in case there is a co-negation conflict that would otherwise be caught by ordinary ConjList .add() */
+    public static ConjList eventsXternal(Compound conj, long start) {
+        Subterms ee = conj.subterms();
+        ConjList l = new ConjList(ee.subs());
+        for (Term e : ee)
+            l.addDirect(start, e);
         return l;
     }
 

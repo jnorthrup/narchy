@@ -1,22 +1,25 @@
 package nars.truth.dynamic;
 
-import jcog.util.ArrayUtil;
+import jcog.WTF;
 import jcog.util.ObjectLongLongPredicate;
 import nars.Task;
-import nars.subterm.Subterms;
 import nars.task.util.Revision;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.util.conj.*;
-import nars.time.Tense;
+import nars.term.Variable;
+import nars.term.atom.Bool;
+import nars.term.util.conj.ConjBuilder;
+import nars.term.util.conj.ConjList;
+import nars.term.util.conj.ConjSpans;
 import nars.truth.proj.TruthProjection;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static nars.Op.NEG;
+import static nars.Op.*;
 import static nars.time.Tense.*;
 
 public enum DynamicConjTruth {
@@ -116,105 +119,184 @@ public enum DynamicConjTruth {
         @Override
         public boolean evalComponents(Compound conj, long start, long end, ObjectLongLongPredicate<Term> each) {
 
-            //try to evaluate the eternal component of factored sequence independently
-            //but this can dilute its truth too much if the sequence is sparse. better to evaluate it
-            //piecewise
-            int superDT = conj.dt();
-            boolean seqFactored = superDT == DTERNAL && ConjSeq.isFactoredSeq(conj);
-            if(seqFactored) {
-                //evaluate the eternal components first.
-                // this is more efficient than sequence distribution,
-                // and avoids the evidence overlap problem
-                Term eternal = ConjSeq.seqEternal(conj);
-                Compound temporal = ConjSeq.seqTemporal(conj);
-                if (each.accept(eternal, start, end + temporal.eventRange())) {
-                    //now concentrate on the temporal component:
-                    conj = temporal;
-                } else {
-                    //attempt distributed sequential evaluation
-                }
-            }
+            ConjList c = conj.dt()!=XTERNAL ? ConjList.events(conj, start) : ConjList.eventsXternal(conj, start);
 
-            boolean dternal = !seqFactored && superDT == DTERNAL && !Conj.isSeq(conj);
-            boolean xternal = superDT == XTERNAL;
+            //special cases:
+            //  1. parallel / xternal with co-negated events that need separated in time
+            if (dtSpecial(conj.dt()) && conj.hasAny(NEG)) spreadCoNegations(conj, start, end, c);
 
-            if ((xternal || dternal)) {
-                Subterms ss = conj.subterms();
+            //  2. depvar events that need pre-grouped with other events before evaluating
+            if (conj.hasAny(VAR_DEP) && !pairVars(c)) return false; //give up
 
-                if (xternal && start!=ETERNAL) {
-                    boolean conegOrEquiv = false;
-                    int sss = ss.subs();
-                    if (sss == 2) {
-                        Term a = ss.sub(0), b = ss.sub(1);
-                        //repeat, must be time separated
-                        if (a.equals(b)) {
-                            conegOrEquiv = true;
-                        }
-                    }
-                    if (!conegOrEquiv && ss.hasAny(NEG)) {
-                        //quick test
-                        if (sss ==2) {
-                            Term a = ss.sub(0), b = ss.sub(1);
-                            conegOrEquiv = a.equalsNeg(b);
-                        } else {
-                            conegOrEquiv = ss.OR(x -> x instanceof Neg && ss.contains(x.unneg())); //conj.dt(DTERNAL).volume() < conj.volume(); //collapses will result in reduced volume
-                        }
-                    }
-                    if (conegOrEquiv) {
-                        //HACK randomly assign each component to a partitioned sub-ranges
-
-                        //TODO refine
-                        int subRange = Tense.occToDT( (long)Math.ceil((end - start) / ((double)sss)) );
-
-                        ThreadLocalRandom rng = ThreadLocalRandom.current();
-                        int[] order = new int[sss];
-                        if (sss == 2)
-                            order = rng.nextBoolean() ? new int[] { 0, 1 } : new int[] { 1, 0 };
-                        else {
-                            for (int i = 0; i < sss; i++) order[i] = i;
-                            ArrayUtil.shuffle(order, rng);
-                        }
+            //TODO sort the testing order of sub-events to fail fastest
 
 
-                        long s = start;
-                        for (int i = 0; i < sss; i++) {
-                            Term x = ss.sub(order[i]);
-                            long e = s + subRange;
-                            if (!each.accept(x, s, e))
-                                return false;
-                            s = e+1;
-                        }
-                        return true;
-                    }
-                }
-
-                //propagate start,end to each subterm.  allowing them to match freely inside
-                for (Term x : ss)
-                    if (!each.accept(x, start, end))
-                        return false;
-
-                return true;
-            } else {
-
-                //??subterm refrences a specific point as a result of event time within the target. so start/end range gets collapsed at this point
-                long range = (end - start);
-
-                //TODO group any depvar events with the nearest event
-                return conj.eventsAND(range != 0 ?
-                        //point-like
-                        (when, event) -> each.accept(event, when, when + range) :
-                        //within range
-                        (when, event) -> each.accept(event, when, when),
-                    start,
-                    false, false);
-            }
-
-
-
+            long range = end-start;
+            return c.AND((when,what)-> each.accept(what, when, when + range));
         }
+
+//        @Override
+//        public boolean evalComponents(Compound conj, long start, long end, ObjectLongLongPredicate<Term> each) {
+//
+//            //try to evaluate the eternal component of factored sequence independently
+//            //but this can dilute its truth too much if the sequence is sparse. better to evaluate it
+//            //piecewise
+//            int superDT = conj.dt();
+//            boolean seqFactored = superDT == DTERNAL && ConjSeq.isFactoredSeq(conj);
+//            if(seqFactored) {
+//                //evaluate the eternal components first.
+//                // this is more efficient than sequence distribution,
+//                // and avoids the evidence overlap problem
+//                Term eternal = ConjSeq.seqEternal(conj);
+//                Compound temporal = ConjSeq.seqTemporal(conj);
+//                if (each.accept(eternal, start, end + temporal.eventRange())) {
+//                    //now concentrate on the temporal component:
+//                    conj = temporal;
+//                } else {
+//                    //attempt distributed sequential evaluation
+//                }
+//            }
+//
+//            boolean dternal = !seqFactored && superDT == DTERNAL && !Conj.isSeq(conj);
+//            boolean xternal = superDT == XTERNAL;
+//
+//            if ((xternal || dternal)) {
+//                Subterms ss = conj.subterms();
+//
+//                if (xternal && start!=ETERNAL) {
+//                    boolean conegOrEquiv = false;
+//                    int sss = ss.subs();
+//                    if (sss == 2) {
+//                        Term a = ss.sub(0), b = ss.sub(1);
+//                        //repeat, must be time separated
+//                        if (a.equals(b)) {
+//                            conegOrEquiv = true;
+//                        }
+//                    }
+//                    if (!conegOrEquiv && ss.hasAny(NEG)) {
+//                        //quick test
+//                        if (sss ==2) {
+//                            Term a = ss.sub(0), b = ss.sub(1);
+//                            conegOrEquiv = a.equalsNeg(b);
+//                        } else {
+//                            conegOrEquiv = ss.OR(x -> x instanceof Neg && ss.contains(x.unneg())); //conj.dt(DTERNAL).volume() < conj.volume(); //collapses will result in reduced volume
+//                        }
+//                    }
+//                    if (conegOrEquiv) {
+//                        //HACK randomly assign each component to a partitioned sub-ranges
+//
+//                        //TODO refine
+//                        int subRange = Tense.occToDT( (long)Math.ceil((end - start) / ((double)sss)) );
+//
+//                        ThreadLocalRandom rng = ThreadLocalRandom.current();
+//                        int[] order = new int[sss];
+//                        if (sss == 2)
+//                            order = rng.nextBoolean() ? new int[] { 0, 1 } : new int[] { 1, 0 };
+//                        else {
+//                            for (int i = 0; i < sss; i++) order[i] = i;
+//                            ArrayUtil.shuffle(order, rng);
+//                        }
+//
+//
+//                        long s = start;
+//                        for (int i = 0; i < sss; i++) {
+//                            Term x = ss.sub(order[i]);
+//                            long e = s + subRange;
+//                            if (!each.accept(x, s, e))
+//                                return false;
+//                            s = e+1;
+//                        }
+//                        return true;
+//                    }
+//                }
+//
+//                //propagate start,end to each subterm.  allowing them to match freely inside
+//                for (Term x : ss)
+//                    if (!each.accept(x, start, end))
+//                        return false;
+//
+//                return true;
+//            } else {
+//
+//                //??subterm refrences a specific point as a result of event time within the target. so start/end range gets collapsed at this point
+//                long range = (end - start);
+//
+//                //TODO group any depvar events with the nearest event
+//                return conj.eventsAND(range != 0 ?
+//                        //point-like
+//                        (when, event) -> each.accept(event, when, when + range) :
+//                        //within range
+//                        (when, event) -> each.accept(event, when, when),
+//                    start,
+//                    false, false);
+//            }
+//
+//
+//
+//        }
 
 
     };
+
+    public static void spreadCoNegations(Compound conj, long start, long end, ConjList c) {
+        int cc = c.size();
+        long start2 = end!=start ?
+                end :
+                start+(Math.max(conj.eventRange(), 1)); //HACK TODO use a dur
+
+        for (int i = 0; i < cc; i++) {
+            Term ci = c.get(i);
+            if (ci instanceof Neg) {
+                Term ciu = ci.unneg();
+                for (int j = 0; j < cc; j++) {
+                    if (j == i) continue;
+                    Term cj = c.get(j);
+                    if (!(cj instanceof Neg) && cj.equals(ciu)) {
+                        //conegation between i and j
+                        //push one randomly to different dt
+                        c.when[ ThreadLocalRandom.current().nextBoolean() ? i : j ] = start2;
+                    }
+                }
+            }
+        }
+    }
+
+    static boolean pairVars(ConjList c) {
+        int cc = c.size(), ccs = cc;
+        boolean removed = false;
+        nextEvent: for (int i = 0; i < cc; ) {
+            Term v = c.get(i);
+            if (v instanceof Variable && v.op()==VAR_DEP) {
+                c.setFast(i, null);
+                removed = true;
+                cc--;
+                //choose random other event to pair with
+                if (cc == 0)
+                    throw new WTF(); //nothing remains
+
+                long vWhen = c.when(i);
+                Random rng = ThreadLocalRandom.current();
+                for (int r = 0; r < ccs; r++) { //max tries
+                    int pair = rng.nextInt(ccs);
+                    Term p = c.get(pair);
+                    if (p !=null) {
+                        int dt = (int) (vWhen - c.when(pair));
+                        Term paired = CONJ.the(dt, p, v);
+                        if (!(paired instanceof Bool)) {
+                            c.setFast(pair, paired);
+                            continue nextEvent;
+                        }
+                    }
+                }
+                return false;
+
+            } else
+                i++;
+        }
+        if (removed)
+            c.removeNulls();
+        return true;
+    }
 
     static boolean reconstructSequence(long sequenceStart, long end, DynTaskify d, ConjBuilder b) {
         int n = d.size();
@@ -238,10 +320,31 @@ public enum DynamicConjTruth {
         }
         return true;
     }
+
     static boolean reconstructInterval(DynTaskify d, ConjBuilder b) {
-        ConjBuilder bb = ConjSpans.add(d, d.nar.dtDither(), d.componentPolarity, b);
-        return bb != null;
+        return ConjSpans.add(d, d.nar.dtDither(), d.componentPolarity, b) != null;
     }
+
+	public static boolean decomposeableConj(Term conj) {
+        return !conj.hasVars() || conj.subterms().count(x -> !(x instanceof nars.term.Variable)) > 1;
+	}
+
+    //			if (conjSubterms.hasAny(VAR_DEP)) {
+//
+//				Map<Term, Term> varLocations = new UnifiedMap(conjSubterms.subs());
+//
+//				return conj.eventsAND((when, event) ->
+//								!event.hasAny(VAR_DEP) ||
+//										event.recurseTerms(x -> x.hasAny(VAR_DEP),
+//												(possiblyVar, parent) ->
+//														(possiblyVar.op() != VAR_DEP) ||
+//																varLocations.putIfAbsent(possiblyVar, event) == null
+//												, null)
+//
+//						, 0, true, true);
+//			}
+//			return true;
+
 
 }
 //                if (dternal || xternal || parallel) {

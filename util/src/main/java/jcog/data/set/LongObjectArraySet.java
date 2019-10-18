@@ -295,10 +295,23 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     public void forEachEvent(LongObjectProcedure<X> each) {
-        removeIf((when,what)->{
-            each.value(when,what);
-            return false;
-        });
+        int n = size;
+        for (int i = 0; i < n; i++)
+            each.value(when[i], items[i]);
+    }
+    public boolean AND(LongObjectPredicate<X> each) {
+        int n = size;
+        for (int i = 0; i < n; i++)
+            if (!each.accept(when[i], items[i]))
+                return false;
+        return true;
+    }
+    public boolean OR(LongObjectPredicate<X> each) {
+        int n = size;
+        for (int i = 0; i < n; i++)
+            if (each.accept(when[i], items[i]))
+                return true;
+        return false;
     }
 
     @Override

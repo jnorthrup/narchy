@@ -23,12 +23,9 @@ import nars.truth.dynamic.DynamicConjTruth;
 import nars.truth.dynamic.DynamicImplConjTruth;
 import nars.truth.dynamic.DynamicStatementTruth;
 import org.eclipse.collections.api.block.function.primitive.ObjectBooleanToObjectFunction;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.truth.dynamic.AbstractDynamicTruth.table;
@@ -38,33 +35,6 @@ import static nars.truth.dynamic.AbstractDynamicTruth.table;
  */
 public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concept> {
 
-    private static final Predicate<Term> validDynamicSubterm = x -> Task.validTaskTerm(x.unneg());
-
-    private static boolean validDynamicSubterms(Subterms subterms) {
-        return subterms.AND(validDynamicSubterm);
-    }
-
-    private static boolean validDynamicSubtermsAndNoSharedVars(Term conj) {
-        Subterms conjSubterms = conj.subterms();
-        if (validDynamicSubterms(conjSubterms)) {
-            if (conjSubterms.hasAny(VAR_DEP)) {
-
-                Map<Term, Term> varLocations = new UnifiedMap(conjSubterms.subs());
-
-                return conj.eventsAND((when, event) ->
-                                !event.hasAny(VAR_DEP) ||
-                                        event.recurseTerms(x -> x.hasAny(VAR_DEP),
-                                                (possiblyVar, parent) ->
-                                                        (possiblyVar.op() != VAR_DEP) ||
-                                                                varLocations.putIfAbsent(possiblyVar, event) == null
-                                                , null)
-
-                        , 0, true, true);
-            }
-            return true;
-        }
-        return false;
-    }
 
     /**
      * returns the overlay tables builder for the term, or null if the target is not dynamically truthable
@@ -81,7 +51,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
             case IMPL:
                 return dynamicImpl(t);
             case CONJ:
-                if (validDynamicSubtermsAndNoSharedVars(t))
+                if (DynamicConjTruth.decomposeableConj(t))
                     return table(DynamicConjTruth.ConjIntersection);
                 break;
 
@@ -103,8 +73,6 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
     private static @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> dynamicImpl(Compound t) {
 
         //TODO allow indep var if they are involved in (contained within) either but not both subj and pred
-        if (t.hasAny(Op.VAR_INDEP.bit | Op.VAR_QUERY.bit))
-            return null;
         if (!t.hasAny(AtomicConstant))
             return null;
 
@@ -123,11 +91,11 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
             Op suo = su.op();
             //subject has special negation union case
             boolean subjDyn = (
-                    suo == CONJ && validDynamicSubtermsAndNoSharedVars(su)
+                    suo == CONJ && DynamicConjTruth.decomposeableConj(su)
                             ||
-                            suo == NEG && (su.unneg().op() == CONJ && validDynamicSubtermsAndNoSharedVars(su.unneg()))
+                            suo == NEG && (su.unneg().op() == CONJ && DynamicConjTruth.decomposeableConj(su.unneg()))
             );
-            boolean predDyn = (pu.op() == CONJ && validDynamicSubtermsAndNoSharedVars(pu));
+            boolean predDyn = (pu.op() == CONJ && DynamicConjTruth.decomposeableConj(pu));
 
 
             if (subjDyn && predDyn) {

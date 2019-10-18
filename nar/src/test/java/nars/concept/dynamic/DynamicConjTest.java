@@ -24,7 +24,8 @@ import static nars.time.Tense.XTERNAL;
 import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
 import static org.junit.jupiter.api.Assertions.*;
 
-class DynamicConjTest {
+class DynamicConjTest extends AbstractDynamicTaskTest {
+
     @Test
     void testDynamicConjunction2() throws Narsese.NarseseException {
         NAR n = NARS.shell();
@@ -491,7 +492,13 @@ class DynamicConjTest {
 
     }
 
+    @Test void depVarContent() {
+        assertFalse(isDynamicTable("(x && #1)"), "no way to decompose");
+        assertTrue(isDynamicTable("(&&,x,y,#1)"), "decomposable two ways, paired with either x or y");
+    }
+
     @Test void conjSeqWithDepVar() throws Narsese.NarseseException {
+
             NAR n = NARS.shell();
             n.believe($("(x && #1)"), 0);
             n.believe($("y"), 1);
@@ -509,9 +516,16 @@ class DynamicConjTest {
         //n.believe($("(y && #1)"), 2);
         n.time.dur(8);
 
-        Task t = n.answerBelief($$("((x &&+1 #1) &&+1 y)"), 0);
-        assertNotNull(t);
-
+        Task T = null;
+        //try because there are 2 solutions, one will be null
+        for (int i = 0; i < 16; i++) {
+            Task t = n.answerBelief($$("((x &&+1 #1) &&+1 y)"), 0);
+            if (t!=null) {
+                T = t;
+                break;
+            }
+        }
+        assertNotNull(T);
     }
 
 //    @Test public void testDynamicIntersectionInvalidCommon() throws Narsese.NarseseException {
