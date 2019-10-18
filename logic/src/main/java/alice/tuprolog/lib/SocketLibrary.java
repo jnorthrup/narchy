@@ -492,11 +492,8 @@ public boolean aread_from_socket_2(Term Socket, Struct Options) throws PrologErr
 private static LinkedList<Term> StructToList(Struct s) {
 	Term temp = s;
 	LinkedList<Term> list = new LinkedList<>();
-	while (true) {
-		if (".".equals(((Struct) temp).name())) {
-			list.add(((Struct) temp).sub(0));
-		} else
-			break;
+	while (".".equals(((Struct) temp).name())) {
+		list.add(((Struct) temp).sub(0));
 		temp = ((Struct) temp).sub(1);
 
 	}

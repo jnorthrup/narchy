@@ -186,181 +186,518 @@ public enum Keyboard { ;
 
     /** from: https://github.com/JogAmp/jogl/blob/master/src/newt/classes/jogamp/newt/awt/event/AWTNewtEventFactory.java */
     public static int newtKeyCode2AWTKeyCode(short newtKeyCode) {
+        int result = -1;
         int defAwtKeyCode = 0xFFFF & newtKeyCode;
         switch (newtKeyCode) {
-            case com.jogamp.newt.event.KeyEvent.VK_HOME          : return java.awt.event.KeyEvent.VK_HOME;
-            case com.jogamp.newt.event.KeyEvent.VK_END           : return java.awt.event.KeyEvent.VK_END;
-            case com.jogamp.newt.event.KeyEvent.VK_FINAL         : return java.awt.event.KeyEvent.VK_FINAL;
-            case com.jogamp.newt.event.KeyEvent.VK_PRINTSCREEN   : return java.awt.event.KeyEvent.VK_PRINTSCREEN;
-            case com.jogamp.newt.event.KeyEvent.VK_BACK_SPACE    : return java.awt.event.KeyEvent.VK_BACK_SPACE;
-            case com.jogamp.newt.event.KeyEvent.VK_TAB           : return java.awt.event.KeyEvent.VK_TAB;
-            case com.jogamp.newt.event.KeyEvent.VK_ENTER         : return java.awt.event.KeyEvent.VK_ENTER;
-            case com.jogamp.newt.event.KeyEvent.VK_PAGE_DOWN     : return java.awt.event.KeyEvent.VK_PAGE_DOWN;
-            case com.jogamp.newt.event.KeyEvent.VK_CLEAR         : return java.awt.event.KeyEvent.VK_CLEAR;
-            case com.jogamp.newt.event.KeyEvent.VK_SHIFT         : return java.awt.event.KeyEvent.VK_SHIFT;
-            case com.jogamp.newt.event.KeyEvent.VK_PAGE_UP       : return java.awt.event.KeyEvent.VK_PAGE_UP;
-            case com.jogamp.newt.event.KeyEvent.VK_CONTROL       : return java.awt.event.KeyEvent.VK_CONTROL;
-            case com.jogamp.newt.event.KeyEvent.VK_ALT           : return java.awt.event.KeyEvent.VK_ALT;
+            case com.jogamp.newt.event.KeyEvent.VK_HOME:
+                result = java.awt.event.KeyEvent.VK_HOME;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_END:
+                result = java.awt.event.KeyEvent.VK_END;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_FINAL:
+                result = java.awt.event.KeyEvent.VK_FINAL;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_PRINTSCREEN:
+                result = java.awt.event.KeyEvent.VK_PRINTSCREEN;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_BACK_SPACE:
+                result = java.awt.event.KeyEvent.VK_BACK_SPACE;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_TAB:
+                result = java.awt.event.KeyEvent.VK_TAB;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_ENTER:
+                result = java.awt.event.KeyEvent.VK_ENTER;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_PAGE_DOWN:
+                result = java.awt.event.KeyEvent.VK_PAGE_DOWN;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_CLEAR:
+                result = java.awt.event.KeyEvent.VK_CLEAR;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_SHIFT:
+                result = java.awt.event.KeyEvent.VK_SHIFT;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_PAGE_UP:
+                result = java.awt.event.KeyEvent.VK_PAGE_UP;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_CONTROL:
+                result = java.awt.event.KeyEvent.VK_CONTROL;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_ALT:
+                result = java.awt.event.KeyEvent.VK_ALT;
+                break;
             // FIXME: On X11 it results to 0xff7e w/ AWTRobot, which is wrong. 0xffea Alt_R is expected AFAIK.
-            case com.jogamp.newt.event.KeyEvent.VK_ALT_GRAPH     : return java.awt.event.KeyEvent.VK_ALT_GRAPH;
-            case com.jogamp.newt.event.KeyEvent.VK_CAPS_LOCK     : return java.awt.event.KeyEvent.VK_CAPS_LOCK;
-            case com.jogamp.newt.event.KeyEvent.VK_PAUSE         : return java.awt.event.KeyEvent.VK_PAUSE;
-            case com.jogamp.newt.event.KeyEvent.VK_SCROLL_LOCK   : return java.awt.event.KeyEvent.VK_SCROLL_LOCK;
-            case com.jogamp.newt.event.KeyEvent.VK_CANCEL        : return java.awt.event.KeyEvent.VK_CANCEL;
-            case com.jogamp.newt.event.KeyEvent.VK_INSERT        : return java.awt.event.KeyEvent.VK_INSERT;
-            case com.jogamp.newt.event.KeyEvent.VK_ESCAPE        : return java.awt.event.KeyEvent.VK_ESCAPE;
-            case com.jogamp.newt.event.KeyEvent.VK_CONVERT       : return java.awt.event.KeyEvent.VK_CONVERT;
-            case com.jogamp.newt.event.KeyEvent.VK_NONCONVERT    : return java.awt.event.KeyEvent.VK_NONCONVERT;
-            case com.jogamp.newt.event.KeyEvent.VK_ACCEPT        : return java.awt.event.KeyEvent.VK_ACCEPT;
-            case com.jogamp.newt.event.KeyEvent.VK_MODECHANGE    : return java.awt.event.KeyEvent.VK_MODECHANGE;
-            case com.jogamp.newt.event.KeyEvent.VK_SPACE         : return java.awt.event.KeyEvent.VK_SPACE;
-            case com.jogamp.newt.event.KeyEvent.VK_EXCLAMATION_MARK: return java.awt.event.KeyEvent.VK_EXCLAMATION_MARK;
-            case com.jogamp.newt.event.KeyEvent.VK_QUOTEDBL      : return java.awt.event.KeyEvent.VK_QUOTEDBL;
-            case com.jogamp.newt.event.KeyEvent.VK_NUMBER_SIGN   : return java.awt.event.KeyEvent.VK_NUMBER_SIGN;
-            case com.jogamp.newt.event.KeyEvent.VK_DOLLAR        : return java.awt.event.KeyEvent.VK_DOLLAR;
-            case com.jogamp.newt.event.KeyEvent.VK_PERCENT       :
-            case com.jogamp.newt.event.KeyEvent.VK_PIPE          :
-            case com.jogamp.newt.event.KeyEvent.VK_QUESTIONMARK  :
-                return defAwtKeyCode;
-            case com.jogamp.newt.event.KeyEvent.VK_AMPERSAND     : return java.awt.event.KeyEvent.VK_AMPERSAND;
-            case com.jogamp.newt.event.KeyEvent.VK_QUOTE         : return java.awt.event.KeyEvent.VK_QUOTE;
-            case com.jogamp.newt.event.KeyEvent.VK_LEFT_PARENTHESIS : return java.awt.event.KeyEvent.VK_LEFT_PARENTHESIS;
-            case com.jogamp.newt.event.KeyEvent.VK_RIGHT_PARENTHESIS: return java.awt.event.KeyEvent.VK_RIGHT_PARENTHESIS;
-            case com.jogamp.newt.event.KeyEvent.VK_ASTERISK      : return java.awt.event.KeyEvent.VK_ASTERISK;
-            case com.jogamp.newt.event.KeyEvent.VK_PLUS          : return java.awt.event.KeyEvent.VK_PLUS;
-            case com.jogamp.newt.event.KeyEvent.VK_COMMA         : return java.awt.event.KeyEvent.VK_COMMA;
-            case com.jogamp.newt.event.KeyEvent.VK_MINUS         : return java.awt.event.KeyEvent.VK_MINUS;
-            case com.jogamp.newt.event.KeyEvent.VK_PERIOD        : return java.awt.event.KeyEvent.VK_PERIOD;
-            case com.jogamp.newt.event.KeyEvent.VK_SLASH         : return java.awt.event.KeyEvent.VK_SLASH;
-            case com.jogamp.newt.event.KeyEvent.VK_0             : return java.awt.event.KeyEvent.VK_0;
-            case com.jogamp.newt.event.KeyEvent.VK_1             : return java.awt.event.KeyEvent.VK_1;
-            case com.jogamp.newt.event.KeyEvent.VK_2             : return java.awt.event.KeyEvent.VK_2;
-            case com.jogamp.newt.event.KeyEvent.VK_3             : return java.awt.event.KeyEvent.VK_3;
-            case com.jogamp.newt.event.KeyEvent.VK_4             : return java.awt.event.KeyEvent.VK_4;
-            case com.jogamp.newt.event.KeyEvent.VK_5             : return java.awt.event.KeyEvent.VK_5;
-            case com.jogamp.newt.event.KeyEvent.VK_6             : return java.awt.event.KeyEvent.VK_6;
-            case com.jogamp.newt.event.KeyEvent.VK_7             : return java.awt.event.KeyEvent.VK_7;
-            case com.jogamp.newt.event.KeyEvent.VK_8             : return java.awt.event.KeyEvent.VK_8;
-            case com.jogamp.newt.event.KeyEvent.VK_9             : return java.awt.event.KeyEvent.VK_9;
-            case com.jogamp.newt.event.KeyEvent.VK_COLON         : return java.awt.event.KeyEvent.VK_COLON;
-            case com.jogamp.newt.event.KeyEvent.VK_SEMICOLON     : return java.awt.event.KeyEvent.VK_SEMICOLON;
-            case com.jogamp.newt.event.KeyEvent.VK_LESS          : return java.awt.event.KeyEvent.VK_LESS;
-            case com.jogamp.newt.event.KeyEvent.VK_EQUALS        : return java.awt.event.KeyEvent.VK_EQUALS;
-            case com.jogamp.newt.event.KeyEvent.VK_GREATER       : return java.awt.event.KeyEvent.VK_GREATER;
-            case com.jogamp.newt.event.KeyEvent.VK_AT            : return java.awt.event.KeyEvent.VK_AT;
-            case com.jogamp.newt.event.KeyEvent.VK_A             : return java.awt.event.KeyEvent.VK_A;
-            case com.jogamp.newt.event.KeyEvent.VK_B             : return java.awt.event.KeyEvent.VK_B;
-            case com.jogamp.newt.event.KeyEvent.VK_C             : return java.awt.event.KeyEvent.VK_C;
-            case com.jogamp.newt.event.KeyEvent.VK_D             : return java.awt.event.KeyEvent.VK_D;
-            case com.jogamp.newt.event.KeyEvent.VK_E             : return java.awt.event.KeyEvent.VK_E;
-            case com.jogamp.newt.event.KeyEvent.VK_F             : return java.awt.event.KeyEvent.VK_F;
-            case com.jogamp.newt.event.KeyEvent.VK_G             : return java.awt.event.KeyEvent.VK_G;
-            case com.jogamp.newt.event.KeyEvent.VK_H             : return java.awt.event.KeyEvent.VK_H;
-            case com.jogamp.newt.event.KeyEvent.VK_I             : return java.awt.event.KeyEvent.VK_I;
-            case com.jogamp.newt.event.KeyEvent.VK_J             : return java.awt.event.KeyEvent.VK_J;
-            case com.jogamp.newt.event.KeyEvent.VK_K             : return java.awt.event.KeyEvent.VK_K;
-            case com.jogamp.newt.event.KeyEvent.VK_L             : return java.awt.event.KeyEvent.VK_L;
-            case com.jogamp.newt.event.KeyEvent.VK_M             : return java.awt.event.KeyEvent.VK_M;
-            case com.jogamp.newt.event.KeyEvent.VK_N             : return java.awt.event.KeyEvent.VK_N;
-            case com.jogamp.newt.event.KeyEvent.VK_O             : return java.awt.event.KeyEvent.VK_O;
-            case com.jogamp.newt.event.KeyEvent.VK_P             : return java.awt.event.KeyEvent.VK_P;
-            case com.jogamp.newt.event.KeyEvent.VK_Q             : return java.awt.event.KeyEvent.VK_Q;
-            case com.jogamp.newt.event.KeyEvent.VK_R             : return java.awt.event.KeyEvent.VK_R;
-            case com.jogamp.newt.event.KeyEvent.VK_S             : return java.awt.event.KeyEvent.VK_S;
-            case com.jogamp.newt.event.KeyEvent.VK_T             : return java.awt.event.KeyEvent.VK_T;
-            case com.jogamp.newt.event.KeyEvent.VK_U             : return java.awt.event.KeyEvent.VK_U;
-            case com.jogamp.newt.event.KeyEvent.VK_V             : return java.awt.event.KeyEvent.VK_V;
-            case com.jogamp.newt.event.KeyEvent.VK_W             : return java.awt.event.KeyEvent.VK_W;
-            case com.jogamp.newt.event.KeyEvent.VK_X             : return java.awt.event.KeyEvent.VK_X;
-            case com.jogamp.newt.event.KeyEvent.VK_Y             : return java.awt.event.KeyEvent.VK_Y;
-            case com.jogamp.newt.event.KeyEvent.VK_Z             : return java.awt.event.KeyEvent.VK_Z;
-            case com.jogamp.newt.event.KeyEvent.VK_OPEN_BRACKET  : return java.awt.event.KeyEvent.VK_OPEN_BRACKET;
-            case com.jogamp.newt.event.KeyEvent.VK_BACK_SLASH    : return java.awt.event.KeyEvent.VK_BACK_SLASH;
-            case com.jogamp.newt.event.KeyEvent.VK_CLOSE_BRACKET : return java.awt.event.KeyEvent.VK_CLOSE_BRACKET;
-            case com.jogamp.newt.event.KeyEvent.VK_CIRCUMFLEX    : return java.awt.event.KeyEvent.VK_CIRCUMFLEX;
-            case com.jogamp.newt.event.KeyEvent.VK_UNDERSCORE    : return java.awt.event.KeyEvent.VK_UNDERSCORE;
-            case com.jogamp.newt.event.KeyEvent.VK_BACK_QUOTE    : return java.awt.event.KeyEvent.VK_BACK_QUOTE;
-            case com.jogamp.newt.event.KeyEvent.VK_F1            : return java.awt.event.KeyEvent.VK_F1;
-            case com.jogamp.newt.event.KeyEvent.VK_F2            : return java.awt.event.KeyEvent.VK_F2;
-            case com.jogamp.newt.event.KeyEvent.VK_F3            : return java.awt.event.KeyEvent.VK_F3;
-            case com.jogamp.newt.event.KeyEvent.VK_F4            : return java.awt.event.KeyEvent.VK_F4;
-            case com.jogamp.newt.event.KeyEvent.VK_F5            : return java.awt.event.KeyEvent.VK_F5;
-            case com.jogamp.newt.event.KeyEvent.VK_F6            : return java.awt.event.KeyEvent.VK_F6;
-            case com.jogamp.newt.event.KeyEvent.VK_F7            : return java.awt.event.KeyEvent.VK_F7;
-            case com.jogamp.newt.event.KeyEvent.VK_F8            : return java.awt.event.KeyEvent.VK_F8;
-            case com.jogamp.newt.event.KeyEvent.VK_F9            : return java.awt.event.KeyEvent.VK_F9;
-            case com.jogamp.newt.event.KeyEvent.VK_F10           : return java.awt.event.KeyEvent.VK_F10;
-            case com.jogamp.newt.event.KeyEvent.VK_F11           : return java.awt.event.KeyEvent.VK_F11;
-            case com.jogamp.newt.event.KeyEvent.VK_F12           : return java.awt.event.KeyEvent.VK_F12;
-            case com.jogamp.newt.event.KeyEvent.VK_F13           : return java.awt.event.KeyEvent.VK_F13;
-            case com.jogamp.newt.event.KeyEvent.VK_F14           : return java.awt.event.KeyEvent.VK_F14;
-            case com.jogamp.newt.event.KeyEvent.VK_F15           : return java.awt.event.KeyEvent.VK_F15;
-            case com.jogamp.newt.event.KeyEvent.VK_F16           : return java.awt.event.KeyEvent.VK_F16;
-            case com.jogamp.newt.event.KeyEvent.VK_F17           : return java.awt.event.KeyEvent.VK_F17;
-            case com.jogamp.newt.event.KeyEvent.VK_F18           : return java.awt.event.KeyEvent.VK_F18;
-            case com.jogamp.newt.event.KeyEvent.VK_F19           : return java.awt.event.KeyEvent.VK_F19;
-            case com.jogamp.newt.event.KeyEvent.VK_F20           : return java.awt.event.KeyEvent.VK_F20;
-            case com.jogamp.newt.event.KeyEvent.VK_F21           : return java.awt.event.KeyEvent.VK_F21;
-            case com.jogamp.newt.event.KeyEvent.VK_F22           : return java.awt.event.KeyEvent.VK_F22;
-            case com.jogamp.newt.event.KeyEvent.VK_F23           : return java.awt.event.KeyEvent.VK_F23;
-            case com.jogamp.newt.event.KeyEvent.VK_F24           : return java.awt.event.KeyEvent.VK_F24;
-            case com.jogamp.newt.event.KeyEvent.VK_LEFT_BRACE    : return java.awt.event.KeyEvent.VK_BRACELEFT;
-            case com.jogamp.newt.event.KeyEvent.VK_RIGHT_BRACE   : return java.awt.event.KeyEvent.VK_BRACERIGHT;
-            case com.jogamp.newt.event.KeyEvent.VK_TILDE         : return java.awt.event.KeyEvent.VK_DEAD_TILDE;
-            case com.jogamp.newt.event.KeyEvent.VK_DELETE        : return java.awt.event.KeyEvent.VK_DELETE;
-            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD0       : return java.awt.event.KeyEvent.VK_NUMPAD0;
-            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD1       : return java.awt.event.KeyEvent.VK_NUMPAD1;
-            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD2       : return java.awt.event.KeyEvent.VK_NUMPAD2;
-            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD3       : return java.awt.event.KeyEvent.VK_NUMPAD3;
-            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD4       : return java.awt.event.KeyEvent.VK_NUMPAD4;
-            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD5       : return java.awt.event.KeyEvent.VK_NUMPAD5;
-            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD6       : return java.awt.event.KeyEvent.VK_NUMPAD6;
-            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD7       : return java.awt.event.KeyEvent.VK_NUMPAD7;
-            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD8       : return java.awt.event.KeyEvent.VK_NUMPAD8;
-            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD9       : return java.awt.event.KeyEvent.VK_NUMPAD9;
-            case com.jogamp.newt.event.KeyEvent.VK_DECIMAL       : return java.awt.event.KeyEvent.VK_DECIMAL;
-            case com.jogamp.newt.event.KeyEvent.VK_SEPARATOR     : return java.awt.event.KeyEvent.VK_SEPARATOR;
-            case com.jogamp.newt.event.KeyEvent.VK_ADD           : return java.awt.event.KeyEvent.VK_ADD;
-            case com.jogamp.newt.event.KeyEvent.VK_SUBTRACT      : return java.awt.event.KeyEvent.VK_SUBTRACT;
-            case com.jogamp.newt.event.KeyEvent.VK_MULTIPLY      : return java.awt.event.KeyEvent.VK_MULTIPLY;
-            case com.jogamp.newt.event.KeyEvent.VK_DIVIDE        : return java.awt.event.KeyEvent.VK_DIVIDE;
-            case com.jogamp.newt.event.KeyEvent.VK_NUM_LOCK      : return java.awt.event.KeyEvent.VK_NUM_LOCK;
-            case com.jogamp.newt.event.KeyEvent.VK_LEFT          : return java.awt.event.KeyEvent.VK_LEFT;
-            case com.jogamp.newt.event.KeyEvent.VK_UP            : return java.awt.event.KeyEvent.VK_UP;
-            case com.jogamp.newt.event.KeyEvent.VK_RIGHT         : return java.awt.event.KeyEvent.VK_RIGHT;
-            case com.jogamp.newt.event.KeyEvent.VK_DOWN          : return java.awt.event.KeyEvent.VK_DOWN;
-            case com.jogamp.newt.event.KeyEvent.VK_CONTEXT_MENU  : return java.awt.event.KeyEvent.VK_CONTEXT_MENU;
-            case com.jogamp.newt.event.KeyEvent.VK_WINDOWS       : return java.awt.event.KeyEvent.VK_WINDOWS;
-            case com.jogamp.newt.event.KeyEvent.VK_META          : return java.awt.event.KeyEvent.VK_META;
-            case com.jogamp.newt.event.KeyEvent.VK_HELP          : return java.awt.event.KeyEvent.VK_HELP;
-            case com.jogamp.newt.event.KeyEvent.VK_COMPOSE       : return java.awt.event.KeyEvent.VK_COMPOSE;
-            case com.jogamp.newt.event.KeyEvent.VK_BEGIN         : return java.awt.event.KeyEvent.VK_BEGIN;
-            case com.jogamp.newt.event.KeyEvent.VK_STOP          : return java.awt.event.KeyEvent.VK_STOP;
-            case com.jogamp.newt.event.KeyEvent.VK_INVERTED_EXCLAMATION_MARK: return java.awt.event.KeyEvent.VK_INVERTED_EXCLAMATION_MARK;
-            case com.jogamp.newt.event.KeyEvent.VK_EURO_SIGN     : return java.awt.event.KeyEvent.VK_EURO_SIGN;
-            case com.jogamp.newt.event.KeyEvent.VK_CUT           : return java.awt.event.KeyEvent.VK_CUT;
-            case com.jogamp.newt.event.KeyEvent.VK_COPY          : return java.awt.event.KeyEvent.VK_COPY;
-            case com.jogamp.newt.event.KeyEvent.VK_PASTE         : return java.awt.event.KeyEvent.VK_PASTE;
-            case com.jogamp.newt.event.KeyEvent.VK_UNDO          : return java.awt.event.KeyEvent.VK_UNDO;
-            case com.jogamp.newt.event.KeyEvent.VK_AGAIN         : return java.awt.event.KeyEvent.VK_AGAIN;
-            case com.jogamp.newt.event.KeyEvent.VK_FIND          : return java.awt.event.KeyEvent.VK_FIND;
-            case com.jogamp.newt.event.KeyEvent.VK_PROPS         : return java.awt.event.KeyEvent.VK_PROPS;
-            case com.jogamp.newt.event.KeyEvent.VK_INPUT_METHOD_ON_OFF: return java.awt.event.KeyEvent.VK_INPUT_METHOD_ON_OFF;
-            case com.jogamp.newt.event.KeyEvent.VK_CODE_INPUT    : return java.awt.event.KeyEvent.VK_CODE_INPUT;
-            case com.jogamp.newt.event.KeyEvent.VK_ROMAN_CHARACTERS: return java.awt.event.KeyEvent.VK_ROMAN_CHARACTERS;
-            case com.jogamp.newt.event.KeyEvent.VK_ALL_CANDIDATES: return java.awt.event.KeyEvent.VK_ALL_CANDIDATES;
-            case com.jogamp.newt.event.KeyEvent.VK_PREVIOUS_CANDIDATE: return java.awt.event.KeyEvent.VK_PREVIOUS_CANDIDATE;
-            case com.jogamp.newt.event.KeyEvent.VK_ALPHANUMERIC  : return java.awt.event.KeyEvent.VK_ALPHANUMERIC;
-            case com.jogamp.newt.event.KeyEvent.VK_KATAKANA      : return java.awt.event.KeyEvent.VK_KATAKANA;
-            case com.jogamp.newt.event.KeyEvent.VK_HIRAGANA      : return java.awt.event.KeyEvent.VK_HIRAGANA;
-            case com.jogamp.newt.event.KeyEvent.VK_FULL_WIDTH    : return java.awt.event.KeyEvent.VK_FULL_WIDTH;
-            case com.jogamp.newt.event.KeyEvent.VK_HALF_WIDTH    : return java.awt.event.KeyEvent.VK_HALF_WIDTH;
-            case com.jogamp.newt.event.KeyEvent.VK_JAPANESE_KATAKANA: return java.awt.event.KeyEvent.VK_JAPANESE_KATAKANA;
-            case com.jogamp.newt.event.KeyEvent.VK_JAPANESE_HIRAGANA: return java.awt.event.KeyEvent.VK_JAPANESE_HIRAGANA;
-            case com.jogamp.newt.event.KeyEvent.VK_JAPANESE_ROMAN: return java.awt.event.KeyEvent.VK_JAPANESE_ROMAN;
-            case com.jogamp.newt.event.KeyEvent.VK_KANA_LOCK     : return java.awt.event.KeyEvent.VK_KANA_LOCK;
+            case com.jogamp.newt.event.KeyEvent.VK_ALT_GRAPH:
+                result = java.awt.event.KeyEvent.VK_ALT_GRAPH;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_CAPS_LOCK:
+                result = java.awt.event.KeyEvent.VK_CAPS_LOCK;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_PAUSE:
+                result = java.awt.event.KeyEvent.VK_PAUSE;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_SCROLL_LOCK:
+                result = java.awt.event.KeyEvent.VK_SCROLL_LOCK;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_CANCEL:
+                result = java.awt.event.KeyEvent.VK_CANCEL;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_INSERT:
+                result = java.awt.event.KeyEvent.VK_INSERT;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_ESCAPE:
+                result = java.awt.event.KeyEvent.VK_ESCAPE;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_CONVERT:
+                result = java.awt.event.KeyEvent.VK_CONVERT;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_NONCONVERT:
+                result = java.awt.event.KeyEvent.VK_NONCONVERT;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_ACCEPT:
+                result = java.awt.event.KeyEvent.VK_ACCEPT;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_MODECHANGE:
+                result = java.awt.event.KeyEvent.VK_MODECHANGE;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_SPACE:
+                result = java.awt.event.KeyEvent.VK_SPACE;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_EXCLAMATION_MARK:
+                result = java.awt.event.KeyEvent.VK_EXCLAMATION_MARK;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_QUOTEDBL:
+                result = java.awt.event.KeyEvent.VK_QUOTEDBL;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_NUMBER_SIGN:
+                result = java.awt.event.KeyEvent.VK_NUMBER_SIGN;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_DOLLAR:
+                result = java.awt.event.KeyEvent.VK_DOLLAR;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_PERCENT:
+            case com.jogamp.newt.event.KeyEvent.VK_PIPE:
+            case com.jogamp.newt.event.KeyEvent.VK_QUESTIONMARK:
+                result = defAwtKeyCode;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_AMPERSAND:
+                result = java.awt.event.KeyEvent.VK_AMPERSAND;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_QUOTE:
+                result = java.awt.event.KeyEvent.VK_QUOTE;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_LEFT_PARENTHESIS:
+                result = java.awt.event.KeyEvent.VK_LEFT_PARENTHESIS;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_RIGHT_PARENTHESIS:
+                result = java.awt.event.KeyEvent.VK_RIGHT_PARENTHESIS;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_ASTERISK:
+                result = java.awt.event.KeyEvent.VK_ASTERISK;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_PLUS:
+                result = java.awt.event.KeyEvent.VK_PLUS;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_COMMA:
+                result = java.awt.event.KeyEvent.VK_COMMA;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_MINUS:
+                result = java.awt.event.KeyEvent.VK_MINUS;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_PERIOD:
+                result = java.awt.event.KeyEvent.VK_PERIOD;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_SLASH:
+                result = java.awt.event.KeyEvent.VK_SLASH;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_0:
+                result = java.awt.event.KeyEvent.VK_0;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_1:
+                result = java.awt.event.KeyEvent.VK_1;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_2:
+                result = java.awt.event.KeyEvent.VK_2;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_3:
+                result = java.awt.event.KeyEvent.VK_3;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_4:
+                result = java.awt.event.KeyEvent.VK_4;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_5:
+                result = java.awt.event.KeyEvent.VK_5;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_6:
+                result = java.awt.event.KeyEvent.VK_6;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_7:
+                result = java.awt.event.KeyEvent.VK_7;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_8:
+                result = java.awt.event.KeyEvent.VK_8;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_9:
+                result = java.awt.event.KeyEvent.VK_9;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_COLON:
+                result = java.awt.event.KeyEvent.VK_COLON;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_SEMICOLON:
+                result = java.awt.event.KeyEvent.VK_SEMICOLON;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_LESS:
+                result = java.awt.event.KeyEvent.VK_LESS;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_EQUALS:
+                result = java.awt.event.KeyEvent.VK_EQUALS;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_GREATER:
+                result = java.awt.event.KeyEvent.VK_GREATER;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_AT:
+                result = java.awt.event.KeyEvent.VK_AT;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_A:
+                result = java.awt.event.KeyEvent.VK_A;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_B:
+                result = java.awt.event.KeyEvent.VK_B;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_C:
+                result = java.awt.event.KeyEvent.VK_C;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_D:
+                result = java.awt.event.KeyEvent.VK_D;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_E:
+                result = java.awt.event.KeyEvent.VK_E;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F:
+                result = java.awt.event.KeyEvent.VK_F;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_G:
+                result = java.awt.event.KeyEvent.VK_G;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_H:
+                result = java.awt.event.KeyEvent.VK_H;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_I:
+                result = java.awt.event.KeyEvent.VK_I;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_J:
+                result = java.awt.event.KeyEvent.VK_J;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_K:
+                result = java.awt.event.KeyEvent.VK_K;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_L:
+                result = java.awt.event.KeyEvent.VK_L;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_M:
+                result = java.awt.event.KeyEvent.VK_M;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_N:
+                result = java.awt.event.KeyEvent.VK_N;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_O:
+                result = java.awt.event.KeyEvent.VK_O;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_P:
+                result = java.awt.event.KeyEvent.VK_P;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_Q:
+                result = java.awt.event.KeyEvent.VK_Q;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_R:
+                result = java.awt.event.KeyEvent.VK_R;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_S:
+                result = java.awt.event.KeyEvent.VK_S;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_T:
+                result = java.awt.event.KeyEvent.VK_T;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_U:
+                result = java.awt.event.KeyEvent.VK_U;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_V:
+                result = java.awt.event.KeyEvent.VK_V;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_W:
+                result = java.awt.event.KeyEvent.VK_W;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_X:
+                result = java.awt.event.KeyEvent.VK_X;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_Y:
+                result = java.awt.event.KeyEvent.VK_Y;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_Z:
+                result = java.awt.event.KeyEvent.VK_Z;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_OPEN_BRACKET:
+                result = java.awt.event.KeyEvent.VK_OPEN_BRACKET;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_BACK_SLASH:
+                result = java.awt.event.KeyEvent.VK_BACK_SLASH;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_CLOSE_BRACKET:
+                result = java.awt.event.KeyEvent.VK_CLOSE_BRACKET;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_CIRCUMFLEX:
+                result = java.awt.event.KeyEvent.VK_CIRCUMFLEX;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_UNDERSCORE:
+                result = java.awt.event.KeyEvent.VK_UNDERSCORE;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_BACK_QUOTE:
+                result = java.awt.event.KeyEvent.VK_BACK_QUOTE;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F1:
+                result = java.awt.event.KeyEvent.VK_F1;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F2:
+                result = java.awt.event.KeyEvent.VK_F2;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F3:
+                result = java.awt.event.KeyEvent.VK_F3;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F4:
+                result = java.awt.event.KeyEvent.VK_F4;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F5:
+                result = java.awt.event.KeyEvent.VK_F5;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F6:
+                result = java.awt.event.KeyEvent.VK_F6;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F7:
+                result = java.awt.event.KeyEvent.VK_F7;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F8:
+                result = java.awt.event.KeyEvent.VK_F8;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F9:
+                result = java.awt.event.KeyEvent.VK_F9;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F10:
+                result = java.awt.event.KeyEvent.VK_F10;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F11:
+                result = java.awt.event.KeyEvent.VK_F11;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F12:
+                result = java.awt.event.KeyEvent.VK_F12;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F13:
+                result = java.awt.event.KeyEvent.VK_F13;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F14:
+                result = java.awt.event.KeyEvent.VK_F14;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F15:
+                result = java.awt.event.KeyEvent.VK_F15;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F16:
+                result = java.awt.event.KeyEvent.VK_F16;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F17:
+                result = java.awt.event.KeyEvent.VK_F17;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F18:
+                result = java.awt.event.KeyEvent.VK_F18;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F19:
+                result = java.awt.event.KeyEvent.VK_F19;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F20:
+                result = java.awt.event.KeyEvent.VK_F20;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F21:
+                result = java.awt.event.KeyEvent.VK_F21;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F22:
+                result = java.awt.event.KeyEvent.VK_F22;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F23:
+                result = java.awt.event.KeyEvent.VK_F23;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_F24:
+                result = java.awt.event.KeyEvent.VK_F24;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_LEFT_BRACE:
+                result = java.awt.event.KeyEvent.VK_BRACELEFT;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_RIGHT_BRACE:
+                result = java.awt.event.KeyEvent.VK_BRACERIGHT;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_TILDE:
+                result = java.awt.event.KeyEvent.VK_DEAD_TILDE;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_DELETE:
+                result = java.awt.event.KeyEvent.VK_DELETE;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD0:
+                result = java.awt.event.KeyEvent.VK_NUMPAD0;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD1:
+                result = java.awt.event.KeyEvent.VK_NUMPAD1;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD2:
+                result = java.awt.event.KeyEvent.VK_NUMPAD2;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD3:
+                result = java.awt.event.KeyEvent.VK_NUMPAD3;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD4:
+                result = java.awt.event.KeyEvent.VK_NUMPAD4;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD5:
+                result = java.awt.event.KeyEvent.VK_NUMPAD5;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD6:
+                result = java.awt.event.KeyEvent.VK_NUMPAD6;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD7:
+                result = java.awt.event.KeyEvent.VK_NUMPAD7;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD8:
+                result = java.awt.event.KeyEvent.VK_NUMPAD8;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_NUMPAD9:
+                result = java.awt.event.KeyEvent.VK_NUMPAD9;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_DECIMAL:
+                result = java.awt.event.KeyEvent.VK_DECIMAL;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_SEPARATOR:
+                result = java.awt.event.KeyEvent.VK_SEPARATOR;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_ADD:
+                result = java.awt.event.KeyEvent.VK_ADD;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_SUBTRACT:
+                result = java.awt.event.KeyEvent.VK_SUBTRACT;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_MULTIPLY:
+                result = java.awt.event.KeyEvent.VK_MULTIPLY;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_DIVIDE:
+                result = java.awt.event.KeyEvent.VK_DIVIDE;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_NUM_LOCK:
+                result = java.awt.event.KeyEvent.VK_NUM_LOCK;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_LEFT:
+                result = java.awt.event.KeyEvent.VK_LEFT;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_UP:
+                result = java.awt.event.KeyEvent.VK_UP;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_RIGHT:
+                result = java.awt.event.KeyEvent.VK_RIGHT;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_DOWN:
+                result = java.awt.event.KeyEvent.VK_DOWN;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_CONTEXT_MENU:
+                result = java.awt.event.KeyEvent.VK_CONTEXT_MENU;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_WINDOWS:
+                result = java.awt.event.KeyEvent.VK_WINDOWS;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_META:
+                result = java.awt.event.KeyEvent.VK_META;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_HELP:
+                result = java.awt.event.KeyEvent.VK_HELP;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_COMPOSE:
+                result = java.awt.event.KeyEvent.VK_COMPOSE;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_BEGIN:
+                result = java.awt.event.KeyEvent.VK_BEGIN;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_STOP:
+                result = java.awt.event.KeyEvent.VK_STOP;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_INVERTED_EXCLAMATION_MARK:
+                result = java.awt.event.KeyEvent.VK_INVERTED_EXCLAMATION_MARK;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_EURO_SIGN:
+                result = java.awt.event.KeyEvent.VK_EURO_SIGN;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_CUT:
+                result = java.awt.event.KeyEvent.VK_CUT;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_COPY:
+                result = java.awt.event.KeyEvent.VK_COPY;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_PASTE:
+                result = java.awt.event.KeyEvent.VK_PASTE;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_UNDO:
+                result = java.awt.event.KeyEvent.VK_UNDO;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_AGAIN:
+                result = java.awt.event.KeyEvent.VK_AGAIN;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_FIND:
+                result = java.awt.event.KeyEvent.VK_FIND;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_PROPS:
+                result = java.awt.event.KeyEvent.VK_PROPS;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_INPUT_METHOD_ON_OFF:
+                result = java.awt.event.KeyEvent.VK_INPUT_METHOD_ON_OFF;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_CODE_INPUT:
+                result = java.awt.event.KeyEvent.VK_CODE_INPUT;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_ROMAN_CHARACTERS:
+                result = java.awt.event.KeyEvent.VK_ROMAN_CHARACTERS;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_ALL_CANDIDATES:
+                result = java.awt.event.KeyEvent.VK_ALL_CANDIDATES;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_PREVIOUS_CANDIDATE:
+                result = java.awt.event.KeyEvent.VK_PREVIOUS_CANDIDATE;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_ALPHANUMERIC:
+                result = java.awt.event.KeyEvent.VK_ALPHANUMERIC;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_KATAKANA:
+                result = java.awt.event.KeyEvent.VK_KATAKANA;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_HIRAGANA:
+                result = java.awt.event.KeyEvent.VK_HIRAGANA;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_FULL_WIDTH:
+                result = java.awt.event.KeyEvent.VK_FULL_WIDTH;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_HALF_WIDTH:
+                result = java.awt.event.KeyEvent.VK_HALF_WIDTH;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_JAPANESE_KATAKANA:
+                result = java.awt.event.KeyEvent.VK_JAPANESE_KATAKANA;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_JAPANESE_HIRAGANA:
+                result = java.awt.event.KeyEvent.VK_JAPANESE_HIRAGANA;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_JAPANESE_ROMAN:
+                result = java.awt.event.KeyEvent.VK_JAPANESE_ROMAN;
+                break;
+            case com.jogamp.newt.event.KeyEvent.VK_KANA_LOCK:
+                result = java.awt.event.KeyEvent.VK_KANA_LOCK;
+                break;
         }
-        return defAwtKeyCode;
+        if (result == -1) {
+            result = defAwtKeyCode;
+        }
+        return result;
     }
 
 }

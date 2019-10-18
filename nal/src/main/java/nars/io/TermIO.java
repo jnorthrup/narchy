@@ -72,82 +72,119 @@ public interface TermIO {
 
         @Override
         public Term read(DataInput in) throws IOException {
+            Term result = Null;
+            boolean finished = false;
             byte opByte = in.readByte();
             if (opByte == SPECIAL_BYTE) {
                 try {
-                    return Narsese.term(in.readUTF(), false);
+                    result = Narsese.term(in.readUTF(), false);
+                    finished = true;
                 } catch (Narsese.NarseseException e) {
                     throw new IOException(e);
                 }
             }
-            Op o = Op.the(opByte & OP_MASK);
-            switch (o) {
-                case VAR_DEP:
-                case VAR_INDEP:
-                case VAR_PATTERN:
-                case VAR_QUERY:
-                    return $.v(o, in.readByte());
-                case IMG:
-                    return in.readByte() == ((byte) '/') ? Op.ImgExt : Op.ImgInt;
-                case BOOL:
-                    byte code = in.readByte();
-                    switch (code) {
-                        case -1:
-                            return Null;
-                        case 0:
-                            return Bool.False;
-                        case 1:
-                            return Bool.True;
-                        default:
-                            throw new UnsupportedEncodingException();
+            if (!finished) {
+                Op o = Op.the(opByte & OP_MASK);
+                switch (o) {
+                    case VAR_DEP:
+                    case VAR_INDEP:
+                    case VAR_PATTERN:
+                    case VAR_QUERY:
+                        result = $.v(o, in.readByte());
+                        break;
+                    case IMG:
+                        result = in.readByte() == ((byte) '/') ? Op.ImgExt : Op.ImgInt;
+                        break;
+                    case BOOL:
+                        byte code = in.readByte();
+                        switch (code) {
+                            case -1:
+                                finished = true;
+                                break;
+                            case 0:
+                                result = Bool.False;
+                                finished = true;
+                                break;
+                            case 1:
+                                result = Bool.True;
+                                finished = true;
+                                break;
+                            default:
+                                throw new UnsupportedEncodingException();
+                        }
+                        if (finished) break;
+                        if (finished) break;
+                        if (finished) break;
+                    case ATOM:
+                        switch (encoding(opByte)) {
+                            case 0:
+                                result = Atomic.the(in.readUTF());
+                                finished = true;
+                                break;
+                            case 1:
+                                result = Anom.the(in.readByte());
+                                finished = true;
+                                break;
+                            case 2:
+                                result = AtomBytes.atomBytes(in);
+                                finished = true;
+                                break;
+                            default:
+                                throw new IOException("unknown ATOM encoding: " + encoding(opByte));
+                        }
+                        if (finished) break;
+                        if (finished) break;
+                        if (finished) break;
+                    case INT:
+                        result = Int.the(IntCoding.readZigZagInt(in));
+                        break;
+                    case INTERVAL:
+                        result = Interval.read(in);
+                        break;
+                    case NEG:
+                        result = read(in).neg();
+                        break;
+                    default: {
+
+                        int temporalFlags = (opByte & (TEMPORAL_BIT_0 | TEMPORAL_BIT_1)) >> 5;
+                        int dt = 0;
+                        switch (temporalFlags) {
+                            case 0:
+                                dt = DTERNAL;
+                                break;
+                            case 1:
+                                dt = XTERNAL;
+                                break;
+                            case 2:
+                                dt = 0;
+                                break;
+                            default: /*case 3:*/
+                                dt = IntCoding.readZigZagInt(in);
+                                break;
+                        }
+
+                        int siz = in.readByte();
+
+                        assert (siz < NAL.term.SUBTERMS_MAX);
+
+                        Term[] s = new Term[siz];
+                        for (int i = 0; i < siz; i++) {
+                            Term read = (s[i] = read(in));
+                            if (read == null)
+                                throw new TermException("read invalid", Op.PROD /* consider the termvector as a product */, s);
+                        }
+
+                        Term y = o.the(dt, s);
+                        if (!(y instanceof Compound))
+                            throw new TermException("read invalid compound", o, dt, s);
+
+                        result = y;
+                        break;
                     }
-                case ATOM:
-                    switch (encoding(opByte)) {
-                        case 0:
-                            return Atomic.the(in.readUTF());
-                        case 1:
-                            return Anom.the(in.readByte());
-                        case 2:
-                            return AtomBytes.atomBytes(in);
-                        default:
-                            throw new IOException("unknown ATOM encoding: " + encoding(opByte));
-                    }
-                case INT:
-                    return Int.the(IntCoding.readZigZagInt(in));
-                case INTERVAL:
-                    return Interval.read(in);
-                case NEG:
-                    return read(in).neg();
-                default: {
 
-                    int temporalFlags = (opByte & (TEMPORAL_BIT_0|TEMPORAL_BIT_1)) >> 5;
-                    int dt;
-                    switch (temporalFlags) {
-                        case 0: dt = DTERNAL; break;
-                        case 1: dt = XTERNAL; break;
-                        case 2: dt = 0; break;
-                        default: /*case 3:*/ dt = IntCoding.readZigZagInt(in); break;
-                    }
-
-                    int siz = in.readByte();
-
-                    assert (siz < NAL.term.SUBTERMS_MAX);
-
-                    Term[] s = new Term[siz];
-                    for (int i = 0; i < siz; i++) {
-                        Term read = (s[i] = read(in));
-                        if (read == null)
-                            throw new TermException("read invalid", Op.PROD /* consider the termvector as a product */, s);
-                    }
-
-                    Term y = o.the(dt, s);
-                    if (!(y instanceof Compound))
-                        throw new TermException("read invalid compound", o, dt, s);
-
-                    return y;
                 }
-
             }
+            return result;
         }
 
         @Override

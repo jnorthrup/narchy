@@ -288,172 +288,80 @@ public class edict_t {
     
 
     public boolean setField(String key, String value) {
+        boolean result = true;
 
         if ("classname".equals(key)) {
             classname = GameSpawn.ED_NewString(value);
-            return true;
-        } 
-
-        if ("model".equals(key)) {
+        } else if ("model".equals(key)) {
             model = GameSpawn.ED_NewString(value);
-            return true;
-        } 
-
-        if ("spawnflags".equals(key)) {
+        } else if ("spawnflags".equals(key)) {
             spawnflags = Lib.atoi(value);
-            return true;
-        } 
-
-        if ("speed".equals(key)) {
+        } else if ("speed".equals(key)) {
             speed = Lib.atof(value);
-            return true;
-        } 
-
-        if ("accel".equals(key)) {
+        } else if ("accel".equals(key)) {
             accel = Lib.atof(value);
-            return true;
-        } 
-
-        if ("decel".equals(key)) {
+        } else if ("decel".equals(key)) {
             decel = Lib.atof(value);
-            return true;
-        } 
-
-        if ("target".equals(key)) {
+        } else if ("target".equals(key)) {
             target = GameSpawn.ED_NewString(value);
-            return true;
-        } 
-
-        if ("targetname".equals(key)) {
+        } else if ("targetname".equals(key)) {
             targetname = GameSpawn.ED_NewString(value);
-            return true;
-        } 
-
-        if ("pathtarget".equals(key)) {
+        } else if ("pathtarget".equals(key)) {
             pathtarget = GameSpawn.ED_NewString(value);
-            return true;
-        } 
-
-        if ("deathtarget".equals(key)) {
+        } else if ("deathtarget".equals(key)) {
             deathtarget = GameSpawn.ED_NewString(value);
-            return true;
-        } 
-        if ("killtarget".equals(key)) {
+        } else if ("killtarget".equals(key)) {
             killtarget = GameSpawn.ED_NewString(value);
-            return true;
-        } 
-
-        if ("combattarget".equals(key)) {
+        } else if ("combattarget".equals(key)) {
             combattarget = GameSpawn.ED_NewString(value);
-            return true;
-        } 
-
-        if ("message".equals(key)) {
+        } else if ("message".equals(key)) {
             message = GameSpawn.ED_NewString(value);
-            return true;
-        } 
-
-        if ("team".equals(key)) {
+        } else if ("team".equals(key)) {
             team = GameSpawn.ED_NewString(value);
             Com.dprintln("Monster Team:" + team);
-            return true;
-        } 
-
-        if ("wait".equals(key)) {
+        } else if ("wait".equals(key)) {
             wait = Lib.atof(value);
-            return true;
-        } 
-
-        if ("delay".equals(key)) {
+        } else if ("delay".equals(key)) {
             delay = Lib.atof(value);
-            return true;
-        } 
-
-        if ("random".equals(key)) {
+        } else if ("random".equals(key)) {
             random = Lib.atof(value);
-            return true;
-        } 
-
-        if ("move_origin".equals(key)) {
+        } else if ("move_origin".equals(key)) {
             move_origin = Lib.atov(value);
-            return true;
-        } 
-
-        if ("move_angles".equals(key)) {
+        } else if ("move_angles".equals(key)) {
             move_angles = Lib.atov(value);
-            return true;
-        } 
-
-        if ("style".equals(key)) {
+        } else if ("style".equals(key)) {
             style = Lib.atoi(value);
-            return true;
-        } 
-
-        if ("count".equals(key)) {
+        } else if ("count".equals(key)) {
             count = Lib.atoi(value);
-            return true;
-        } 
-
-        if ("health".equals(key)) {
+        } else if ("health".equals(key)) {
             health = Lib.atoi(value);
-            return true;
-        } 
-
-        if ("sounds".equals(key)) {
+        } else if ("sounds".equals(key)) {
             sounds = Lib.atoi(value);
-            return true;
-        } 
+        } else if (!"light".equals(key)) {
+            if ("dmg".equals(key)) {
+                dmg = Lib.atoi(value);
+            } else if ("mass".equals(key)) {
+                mass = Lib.atoi(value);
+            } else if ("volume".equals(key)) {
+                volume = Lib.atof(value);
+            } else if ("attenuation".equals(key)) {
+                attenuation = Lib.atof(value);
+            } else if ("map".equals(key)) {
+                map = GameSpawn.ED_NewString(value);
+            } else if ("origin".equals(key)) {
+                s.origin = Lib.atov(value);
+            } else if ("angles".equals(key)) {
+                s.angles = Lib.atov(value);
+            } else if ("angle".equals(key)) {
+                s.angles = new float[]{0, Lib.atof(value), 0};
+            } else if ("item".equals(key)) {
+                game_import_t.error("ent.set(\"item\") called.");
+            } else {
+                result = false;
+            }
+        }
 
-        if ("light".equals(key)) {
-            return true;
-        } 
-
-        if ("dmg".equals(key)) {
-            dmg = Lib.atoi(value);
-            return true;
-        } 
-
-        if ("mass".equals(key)) {
-            mass = Lib.atoi(value);
-            return true;
-        } 
-
-        if ("volume".equals(key)) {
-            volume = Lib.atof(value);
-            return true;
-        } 
-
-        if ("attenuation".equals(key)) {
-            attenuation = Lib.atof(value);
-            return true;
-        } 
-
-        if ("map".equals(key)) {
-            map = GameSpawn.ED_NewString(value);
-            return true;
-        } 
-
-        if ("origin".equals(key)) {
-            s.origin = Lib.atov(value);
-            return true;
-        } 
-
-        if ("angles".equals(key)) {
-            s.angles = Lib.atov(value);
-            return true;
-        } 
-
-        if ("angle".equals(key)) {
-            s.angles = new float[] { 0, Lib.atof(value), 0 };
-            return true;
-        } 
-
-        if ("item".equals(key)) {
-            game_import_t.error("ent.set(\"item\") called.");
-            return true;
-        } 
-
-        return false;
+        return result;
     }
 
     /** Writes the entity to the file. */

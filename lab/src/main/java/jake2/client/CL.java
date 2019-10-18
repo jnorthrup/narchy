@@ -908,315 +908,351 @@ public final class CL {
     }
 
     public static void RequestNextDownload() {
+        boolean finished = false;
 
-        if (Globals.cls.state != Defines.ca_connected)
-            return;
-
-        if (SV_MAIN.allow_download.value == 0 && CL.precache_check < ENV_CNT)
-            CL.precache_check = ENV_CNT;
-
-        
-        if (CL.precache_check == Defines.CS_MODELS) { 
-            CL.precache_check = Defines.CS_MODELS + 2; 
-            if (SV_MAIN.allow_download_maps.value != 0)
-                if (!CL_parse
-                        .CheckOrDownloadFile(Globals.cl.configstrings[Defines.CS_MODELS + 1]))
-                    return; 
-        }
-        if (CL.precache_check >= Defines.CS_MODELS
-                && CL.precache_check < Defines.CS_MODELS + Defines.MAX_MODELS) {
-            if (SV_MAIN.allow_download_models.value != 0) {
-                while (CL.precache_check < Defines.CS_MODELS
-                        + Defines.MAX_MODELS
-                        && Globals.cl.configstrings[CL.precache_check].length() > 0) {
-                    if (Globals.cl.configstrings[CL.precache_check].charAt(0) == '*'
-                            || Globals.cl.configstrings[CL.precache_check]
+        if (Globals.cls.state == Defines.ca_connected) {
+            if (SV_MAIN.allow_download.value == 0 && CL.precache_check < ENV_CNT)
+                CL.precache_check = ENV_CNT;
+            if (CL.precache_check == Defines.CS_MODELS) {
+                CL.precache_check = Defines.CS_MODELS + 2;
+                if (SV_MAIN.allow_download_maps.value != 0)
+                    if (!CL_parse
+                            .CheckOrDownloadFile(Globals.cl.configstrings[Defines.CS_MODELS + 1])) {
+                        finished = true;
+                    }
+            }
+            if (!finished) {
+                if (CL.precache_check >= Defines.CS_MODELS
+                        && CL.precache_check < Defines.CS_MODELS + Defines.MAX_MODELS) {
+                    if (SV_MAIN.allow_download_models.value != 0) {
+                        while (CL.precache_check < Defines.CS_MODELS
+                                + Defines.MAX_MODELS
+                                && Globals.cl.configstrings[CL.precache_check].length() > 0) {
+                            if (Globals.cl.configstrings[CL.precache_check].charAt(0) == '*'
+                                    || Globals.cl.configstrings[CL.precache_check]
                                     .charAt(0) == '#') {
-                        CL.precache_check++;
-                        continue;
-                    }
-                    if (CL.precache_model_skin == 0) {
-                        if (!CL_parse
-                                .CheckOrDownloadFile(Globals.cl.configstrings[CL.precache_check])) {
-                            CL.precache_model_skin = 1;
-                            return; 
-                        }
-                        CL.precache_model_skin = 1;
-                    }
+                                CL.precache_check++;
+                                continue;
+                            }
+                            if (CL.precache_model_skin == 0) {
+                                if (!CL_parse
+                                        .CheckOrDownloadFile(Globals.cl.configstrings[CL.precache_check])) {
+                                    CL.precache_model_skin = 1;
+                                    finished = true;
+                                    break;
+                                }
+                                CL.precache_model_skin = 1;
+                            }
 
 
-                    qfiles.dmdl_t pheader;
-                    if (CL.precache_model == null) {
+                            qfiles.dmdl_t pheader = null;
+                            if (CL.precache_model == null) {
 
-                        CL.precache_model = FS
-                                .LoadFile(Globals.cl.configstrings[CL.precache_check]);
-                        if (CL.precache_model == null) {
+                                CL.precache_model = FS
+                                        .LoadFile(Globals.cl.configstrings[CL.precache_check]);
+                                if (CL.precache_model == null) {
+                                    CL.precache_model_skin = 0;
+                                    CL.precache_check++;
+                                    continue;
+                                }
+                                ByteBuffer bb = ByteBuffer.wrap(CL.precache_model);
+                                bb.order(ByteOrder.LITTLE_ENDIAN);
+
+                                int header = bb.getInt();
+
+                                if (header != qfiles.IDALIASHEADER) {
+
+                                    FS.FreeFile(CL.precache_model);
+                                    CL.precache_model = null;
+                                    CL.precache_model_skin = 0;
+                                    CL.precache_check++;
+                                    continue;
+                                }
+                                pheader = new qfiles.dmdl_t(ByteBuffer.wrap(
+                                        CL.precache_model).order(
+                                        ByteOrder.LITTLE_ENDIAN));
+                                if (pheader.version != Defines.ALIAS_VERSION) {
+                                    CL.precache_check++;
+                                    CL.precache_model_skin = 0;
+                                    continue;
+                                }
+                            }
+
+                            pheader = new qfiles.dmdl_t(ByteBuffer.wrap(
+                                    CL.precache_model).order(ByteOrder.LITTLE_ENDIAN));
+
+                            int num_skins = pheader.num_skins;
+
+                            while (CL.precache_model_skin - 1 < num_skins) {
+
+
+                                String name = Lib.CtoJava(CL.precache_model,
+                                        pheader.ofs_skins
+                                                + (CL.precache_model_skin - 1)
+                                                * Defines.MAX_SKINNAME,
+                                        Defines.MAX_SKINNAME * num_skins);
+
+                                if (!CL_parse.CheckOrDownloadFile(name)) {
+                                    CL.precache_model_skin++;
+                                    finished = true;
+                                    break;
+                                }
+                                CL.precache_model_skin++;
+                            }
+                            if (finished) break;
+                            if (CL.precache_model != null) {
+                                FS.FreeFile(CL.precache_model);
+                                CL.precache_model = null;
+                            }
                             CL.precache_model_skin = 0;
                             CL.precache_check++;
-                            continue; 
-                        }
-                        ByteBuffer bb = ByteBuffer.wrap(CL.precache_model);
-                        bb.order(ByteOrder.LITTLE_ENDIAN);
-
-                        int header = bb.getInt();
-
-                        if (header != qfiles.IDALIASHEADER) {
-                            
-                            FS.FreeFile(CL.precache_model);
-                            CL.precache_model = null;
-                            CL.precache_model_skin = 0;
-                            CL.precache_check++;
-                            continue;
-                        }
-                        pheader = new qfiles.dmdl_t(ByteBuffer.wrap(
-                                CL.precache_model).order(
-                                ByteOrder.LITTLE_ENDIAN));
-                        if (pheader.version != Defines.ALIAS_VERSION) {
-                            CL.precache_check++;
-                            CL.precache_model_skin = 0;
-                            continue; 
                         }
                     }
-
-                    pheader = new qfiles.dmdl_t(ByteBuffer.wrap(
-                            CL.precache_model).order(ByteOrder.LITTLE_ENDIAN));
-
-                    int num_skins = pheader.num_skins;
-
-                    while (CL.precache_model_skin - 1 < num_skins) {
-                        
-                        
-
-                        String name = Lib.CtoJava(CL.precache_model,
-                                pheader.ofs_skins
-                                        + (CL.precache_model_skin - 1)
-                                        * Defines.MAX_SKINNAME,
-                                Defines.MAX_SKINNAME * num_skins);
-
-                        if (!CL_parse.CheckOrDownloadFile(name)) {
-                            CL.precache_model_skin++;
-                            return; 
-                        }
-                        CL.precache_model_skin++;
-                    }
-                    if (CL.precache_model != null) {
-                        FS.FreeFile(CL.precache_model);
-                        CL.precache_model = null;
-                    }
-                    CL.precache_model_skin = 0;
-                    CL.precache_check++;
-                }
-            }
-            CL.precache_check = Defines.CS_SOUNDS;
-        }
-        String fn;
-        if (CL.precache_check >= Defines.CS_SOUNDS
-                && CL.precache_check < Defines.CS_SOUNDS + Defines.MAX_SOUNDS) {
-            if (SV_MAIN.allow_download_sounds.value != 0) {
-                if (CL.precache_check == Defines.CS_SOUNDS)
-                    CL.precache_check++; 
-                while (CL.precache_check < Defines.CS_SOUNDS
-                        + Defines.MAX_SOUNDS
-                        && Globals.cl.configstrings[CL.precache_check].length() > 0) {
-                    if (Globals.cl.configstrings[CL.precache_check].charAt(0) == '*') {
-                        CL.precache_check++;
-                        continue;
-                    }
-                    fn = "sound/"
-                            + Globals.cl.configstrings[CL.precache_check++];
-                    if (!CL_parse.CheckOrDownloadFile(fn))
-                        return; 
-                }
-            }
-            CL.precache_check = Defines.CS_IMAGES;
-        }
-        if (CL.precache_check >= Defines.CS_IMAGES
-                && CL.precache_check < Defines.CS_IMAGES + Defines.MAX_IMAGES) {
-            if (CL.precache_check == Defines.CS_IMAGES)
-                CL.precache_check++; 
-
-            while (CL.precache_check < Defines.CS_IMAGES + Defines.MAX_IMAGES
-                    && Globals.cl.configstrings[CL.precache_check].length() > 0) {
-                fn = "pics/" + Globals.cl.configstrings[CL.precache_check++]
-                        + ".pcx";
-                if (!CL_parse.CheckOrDownloadFile(fn))
-                    return; 
-            }
-            CL.precache_check = Defines.CS_PLAYERSKINS;
-        }
-        
-        
-        
-        if (CL.precache_check >= Defines.CS_PLAYERSKINS
-                && CL.precache_check < Defines.CS_PLAYERSKINS
-                        + Defines.MAX_CLIENTS * CL.PLAYER_MULT) {
-            if (SV_MAIN.allow_download_players.value != 0) {
-                while (CL.precache_check < Defines.CS_PLAYERSKINS
-                        + Defines.MAX_CLIENTS * CL.PLAYER_MULT) {
-
-                    int i = (CL.precache_check - Defines.CS_PLAYERSKINS)
-                            / CL.PLAYER_MULT;
-                    int n = (CL.precache_check - Defines.CS_PLAYERSKINS)
-                            % CL.PLAYER_MULT;
-
-                    if (Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i]
-                            .length() == 0) {
-                        CL.precache_check = Defines.CS_PLAYERSKINS + (i + 1)
-                                * CL.PLAYER_MULT;
-                        continue;
-                    }
-
-                    int pos = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf('\\');
-                    
-                    if (pos != -1)
-                        pos++;
-                    else
-                        pos = 0;
-
-                    int pos2 = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf('\\', pos);
-                    
-                    if (pos2 == -1)
-                        pos2 = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf('/', pos);
-
-
-                    String model = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i]
-                            .substring(pos, pos2);
-
-                    String skin = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].substring(pos2 + 1);
-                    
-                    switch (n) {
-                    case 0: 
-                        fn = "players/" + model + "/tris.md2";
-                        if (!CL_parse.CheckOrDownloadFile(fn)) {
-                            CL.precache_check = Defines.CS_PLAYERSKINS + i
-                                    * CL.PLAYER_MULT + 1;
-                            return; 
-                        }
-                        n++;
-                    /* FALL THROUGH */
-
-                    case 1: 
-                        fn = "players/" + model + "/weapon.md2";
-                        if (!CL_parse.CheckOrDownloadFile(fn)) {
-                            CL.precache_check = Defines.CS_PLAYERSKINS + i
-                                    * CL.PLAYER_MULT + 2;
-                            return; 
-                        }
-                        n++;
-                    /* FALL THROUGH */
-
-                    case 2: 
-                        fn = "players/" + model + "/weapon.pcx";
-                        if (!CL_parse.CheckOrDownloadFile(fn)) {
-                            CL.precache_check = Defines.CS_PLAYERSKINS + i
-                                    * CL.PLAYER_MULT + 3;
-                            return; 
-                        }
-                        n++;
-                    /* FALL THROUGH */
-
-                    case 3: 
-                        fn = "players/" + model + '/' + skin + ".pcx";
-                        if (!CL_parse.CheckOrDownloadFile(fn)) {
-                            CL.precache_check = Defines.CS_PLAYERSKINS + i
-                                    * CL.PLAYER_MULT + 4;
-                            return; 
-                        }
-                        n++;
-                    /* FALL THROUGH */
-
-                    case 4: 
-                        fn = "players/" + model + '/' + skin + "_i.pcx";
-                        if (!CL_parse.CheckOrDownloadFile(fn)) {
-                            CL.precache_check = Defines.CS_PLAYERSKINS + i
-                                    * CL.PLAYER_MULT + 5;
-                            return; 
-                        }
-                        
-                        CL.precache_check = Defines.CS_PLAYERSKINS + (i + 1)
-                                * CL.PLAYER_MULT;
+                    if (!finished) {
+                        CL.precache_check = Defines.CS_SOUNDS;
                     }
                 }
-            }
-            
-            CL.precache_check = ENV_CNT;
-        }
+                if (!finished) {
+                    String fn = null;
+                    if (CL.precache_check >= Defines.CS_SOUNDS
+                            && CL.precache_check < Defines.CS_SOUNDS + Defines.MAX_SOUNDS) {
+                        if (SV_MAIN.allow_download_sounds.value != 0) {
+                            if (CL.precache_check == Defines.CS_SOUNDS)
+                                CL.precache_check++;
+                            while (CL.precache_check < Defines.CS_SOUNDS
+                                    + Defines.MAX_SOUNDS
+                                    && Globals.cl.configstrings[CL.precache_check].length() > 0) {
+                                if (Globals.cl.configstrings[CL.precache_check].charAt(0) == '*') {
+                                    CL.precache_check++;
+                                    continue;
+                                }
+                                fn = "sound/"
+                                        + Globals.cl.configstrings[CL.precache_check++];
+                                if (!CL_parse.CheckOrDownloadFile(fn)) {
+                                    finished = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!finished) {
+                            CL.precache_check = Defines.CS_IMAGES;
+                        }
+                    }
+                    if (!finished) {
+                        if (CL.precache_check >= Defines.CS_IMAGES
+                                && CL.precache_check < Defines.CS_IMAGES + Defines.MAX_IMAGES) {
+                            if (CL.precache_check == Defines.CS_IMAGES)
+                                CL.precache_check++;
 
-        if (CL.precache_check == ENV_CNT) {
-            CL.precache_check = ENV_CNT + 1;
+                            while (CL.precache_check < Defines.CS_IMAGES + Defines.MAX_IMAGES
+                                    && Globals.cl.configstrings[CL.precache_check].length() > 0) {
+                                fn = "pics/" + Globals.cl.configstrings[CL.precache_check++]
+                                        + ".pcx";
+                                if (!CL_parse.CheckOrDownloadFile(fn)) {
+                                    finished = true;
+                                    break;
+                                }
+                            }
+                            if (!finished) {
+                                CL.precache_check = Defines.CS_PLAYERSKINS;
+                            }
+                        }
+                        if (!finished) {
+                            if (CL.precache_check >= Defines.CS_PLAYERSKINS
+                                    && CL.precache_check < Defines.CS_PLAYERSKINS
+                                    + Defines.MAX_CLIENTS * CL.PLAYER_MULT) {
+                                if (SV_MAIN.allow_download_players.value != 0) {
+                                    while (CL.precache_check < Defines.CS_PLAYERSKINS
+                                            + Defines.MAX_CLIENTS * CL.PLAYER_MULT) {
 
-            int map_checksum = 0;
-            int[] iw = {map_checksum};
+                                        int i = (CL.precache_check - Defines.CS_PLAYERSKINS)
+                                                / CL.PLAYER_MULT;
+                                        int n = (CL.precache_check - Defines.CS_PLAYERSKINS)
+                                                % CL.PLAYER_MULT;
 
-            CM.CM_LoadMap(Globals.cl.configstrings[Defines.CS_MODELS + 1],
-                    true, iw);
-            map_checksum = iw[0];
+                                        if (Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i]
+                                                .length() == 0) {
+                                            CL.precache_check = Defines.CS_PLAYERSKINS + (i + 1)
+                                                    * CL.PLAYER_MULT;
+                                            continue;
+                                        }
 
-            if ((map_checksum ^ Lib
-                    .atoi(Globals.cl.configstrings[Defines.CS_MAPCHECKSUM])) != 0) {
-                Com
-                        .Error(
-                                Defines.ERR_DROP,
-                                "Local map version differs from server: "
-                                        + map_checksum
-                                        + " != '"
-                                        + Globals.cl.configstrings[Defines.CS_MAPCHECKSUM]
-                                        + "'\n");
-                return;
-            }
-        }
+                                        int pos = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf('\\');
 
-        if (CL.precache_check > ENV_CNT && CL.precache_check < TEXTURE_CNT) {
-            if (SV_MAIN.allow_download.value != 0
-                    && SV_MAIN.allow_download_maps.value != 0) {
-                while (CL.precache_check < TEXTURE_CNT) {
-                    int n = CL.precache_check++ - ENV_CNT - 1;
+                                        if (pos != -1)
+                                            pos++;
+                                        else
+                                            pos = 0;
 
-                    if ((n & 1) != 0)
-                        fn = "env/" + Globals.cl.configstrings[Defines.CS_SKY]
-                                + env_suf[n / 2] + ".pcx";
-                    else
-                        fn = "env/" + Globals.cl.configstrings[Defines.CS_SKY]
-                                + env_suf[n / 2] + ".tga";
-                    if (!CL_parse.CheckOrDownloadFile(fn))
-                        return; 
+                                        int pos2 = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf('\\', pos);
+
+                                        if (pos2 == -1)
+                                            pos2 = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf('/', pos);
+
+
+                                        String model = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i]
+                                                .substring(pos, pos2);
+
+                                        String skin = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].substring(pos2 + 1);
+
+                                        switch (n) {
+                                            case 0:
+                                                fn = "players/" + model + "/tris.md2";
+                                                if (!CL_parse.CheckOrDownloadFile(fn)) {
+                                                    CL.precache_check = Defines.CS_PLAYERSKINS + i
+                                                            * CL.PLAYER_MULT + 1;
+                                                    finished = true;
+                                                    break;
+                                                }
+                                                n++;
+                                                /* FALL THROUGH */
+
+                                            case 1:
+                                                fn = "players/" + model + "/weapon.md2";
+                                                if (!CL_parse.CheckOrDownloadFile(fn)) {
+                                                    CL.precache_check = Defines.CS_PLAYERSKINS + i
+                                                            * CL.PLAYER_MULT + 2;
+                                                    finished = true;
+                                                    break;
+                                                }
+                                                n++;
+                                                /* FALL THROUGH */
+
+                                            case 2:
+                                                fn = "players/" + model + "/weapon.pcx";
+                                                if (!CL_parse.CheckOrDownloadFile(fn)) {
+                                                    CL.precache_check = Defines.CS_PLAYERSKINS + i
+                                                            * CL.PLAYER_MULT + 3;
+                                                    finished = true;
+                                                    break;
+                                                }
+                                                n++;
+                                                /* FALL THROUGH */
+
+                                            case 3:
+                                                fn = "players/" + model + '/' + skin + ".pcx";
+                                                if (!CL_parse.CheckOrDownloadFile(fn)) {
+                                                    CL.precache_check = Defines.CS_PLAYERSKINS + i
+                                                            * CL.PLAYER_MULT + 4;
+                                                    finished = true;
+                                                    break;
+                                                }
+                                                n++;
+                                                /* FALL THROUGH */
+
+                                            case 4:
+                                                fn = "players/" + model + '/' + skin + "_i.pcx";
+                                                if (!CL_parse.CheckOrDownloadFile(fn)) {
+                                                    CL.precache_check = Defines.CS_PLAYERSKINS + i
+                                                            * CL.PLAYER_MULT + 5;
+                                                    finished = true;
+                                                    break;
+                                                }
+
+                                                CL.precache_check = Defines.CS_PLAYERSKINS + (i + 1)
+                                                        * CL.PLAYER_MULT;
+                                        }
+                                        if (finished) break;
+                                        if (finished) break;
+                                        if (finished) break;
+                                        if (finished) break;
+                                        if (finished) break;
+                                    }
+                                }
+                                if (!finished) {
+                                    CL.precache_check = ENV_CNT;
+                                }
+
+                            }
+                            if (!finished) {
+                                if (CL.precache_check == ENV_CNT) {
+                                    CL.precache_check = ENV_CNT + 1;
+
+                                    int map_checksum = 0;
+                                    int[] iw = {map_checksum};
+
+                                    CM.CM_LoadMap(Globals.cl.configstrings[Defines.CS_MODELS + 1],
+                                            true, iw);
+                                    map_checksum = iw[0];
+
+                                    if ((map_checksum ^ Lib
+                                            .atoi(Globals.cl.configstrings[Defines.CS_MAPCHECKSUM])) != 0) {
+                                        Com
+                                                .Error(
+                                                        Defines.ERR_DROP,
+                                                        "Local map version differs from server: "
+                                                                + map_checksum
+                                                                + " != '"
+                                                                + Globals.cl.configstrings[Defines.CS_MAPCHECKSUM]
+                                                                + "'\n");
+                                        finished = true;
+                                    }
+                                }
+                                if (!finished) {
+                                    if (CL.precache_check > ENV_CNT && CL.precache_check < TEXTURE_CNT) {
+                                        if (SV_MAIN.allow_download.value != 0
+                                                && SV_MAIN.allow_download_maps.value != 0) {
+                                            while (CL.precache_check < TEXTURE_CNT) {
+                                                int n = CL.precache_check++ - ENV_CNT - 1;
+
+                                                if ((n & 1) != 0)
+                                                    fn = "env/" + Globals.cl.configstrings[Defines.CS_SKY]
+                                                            + env_suf[n / 2] + ".pcx";
+                                                else
+                                                    fn = "env/" + Globals.cl.configstrings[Defines.CS_SKY]
+                                                            + env_suf[n / 2] + ".tga";
+                                                if (!CL_parse.CheckOrDownloadFile(fn)) {
+                                                    finished = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (!finished) {
+                                            CL.precache_check = TEXTURE_CNT;
+                                        }
+                                    }
+                                    if (!finished) {
+                                        if (CL.precache_check == TEXTURE_CNT) {
+                                            CL.precache_check = TEXTURE_CNT + 1;
+                                            CL.precache_tex = 0;
+                                        }
+                                        if (CL.precache_check == TEXTURE_CNT + 1) {
+
+
+                                            if (SV_MAIN.allow_download.value != 0
+                                                    && SV_MAIN.allow_download_maps.value != 0) {
+                                                while (CL.precache_tex < CM.numtexinfo) {
+
+
+                                                    fn = "textures/" + CM.map_surfaces[CL.precache_tex++].rname
+                                                            + ".wal";
+                                                    if (!CL_parse.CheckOrDownloadFile(fn)) {
+                                                        finished = true;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            if (!finished) {
+                                                CL.precache_check = TEXTURE_CNT + 999;
+                                            }
+                                        }
+                                        if (!finished) {
+                                            CL_parse.RegisterSounds();
+                                            CL_view.PrepRefresh();
+                                            MSG.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
+                                            MSG.WriteString(Globals.cls.netchan.message, "begin "
+                                                    + CL.precache_spawncount + '\n');
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
-            CL.precache_check = TEXTURE_CNT;
         }
 
-        if (CL.precache_check == TEXTURE_CNT) {
-            CL.precache_check = TEXTURE_CNT + 1;
-            CL.precache_tex = 0;
-        }
 
-        
-        if (CL.precache_check == TEXTURE_CNT + 1) {
-            
-            
-            
-
-            if (SV_MAIN.allow_download.value != 0
-                    && SV_MAIN.allow_download_maps.value != 0) {
-                while (CL.precache_tex < CM.numtexinfo) {
-                    
-
-                    fn = "textures/" + CM.map_surfaces[CL.precache_tex++].rname
-                            + ".wal";
-                    if (!CL_parse.CheckOrDownloadFile(fn))
-                        return; 
-                }
-            }
-            CL.precache_check = TEXTURE_CNT + 999;
-        }
-
-        
-        CL_parse.RegisterSounds();
-        CL_view.PrepRefresh();
-
-        MSG.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
-        MSG.WriteString(Globals.cls.netchan.message, "begin "
-                + CL.precache_spawncount + '\n');
     }
 
     /**

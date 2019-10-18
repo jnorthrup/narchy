@@ -496,70 +496,123 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @return the value at the indexed element
      */
     public final float getElement(int row, int column) {
+        float result = 0;
+        boolean finished = false;
         switch (row) {
             case 0:
                 switch (column) {
                     case 0:
-                        return (this.m00);
+                        result = (this.m00);
+                        finished = true;
+                        break;
                     case 1:
-                        return (this.m01);
+                        result = (this.m01);
+                        finished = true;
+                        break;
                     case 2:
-                        return (this.m02);
+                        result = (this.m02);
+                        finished = true;
+                        break;
                     case 3:
-                        return (this.m03);
+                        result = (this.m03);
+                        finished = true;
+                        break;
                     default:
                         break;
                 }
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
                 break;
             case 1:
                 switch (column) {
                     case 0:
-                        return (this.m10);
+                        result = (this.m10);
+                        finished = true;
+                        break;
                     case 1:
-                        return (this.m11);
+                        result = (this.m11);
+                        finished = true;
+                        break;
                     case 2:
-                        return (this.m12);
+                        result = (this.m12);
+                        finished = true;
+                        break;
                     case 3:
-                        return (this.m13);
+                        result = (this.m13);
+                        finished = true;
+                        break;
                     default:
                         break;
                 }
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
                 break;
 
             case 2:
                 switch (column) {
                     case 0:
-                        return (this.m20);
+                        result = (this.m20);
+                        finished = true;
+                        break;
                     case 1:
-                        return (this.m21);
+                        result = (this.m21);
+                        finished = true;
+                        break;
                     case 2:
-                        return (this.m22);
+                        result = (this.m22);
+                        finished = true;
+                        break;
                     case 3:
-                        return (this.m23);
+                        result = (this.m23);
+                        finished = true;
+                        break;
                     default:
                         break;
                 }
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
                 break;
 
             case 3:
                 switch (column) {
                     case 0:
-                        return (this.m30);
+                        result = (this.m30);
+                        finished = true;
+                        break;
                     case 1:
-                        return (this.m31);
+                        result = (this.m31);
+                        finished = true;
+                        break;
                     case 2:
-                        return (this.m32);
+                        result = (this.m32);
+                        finished = true;
+                        break;
                     case 3:
-                        return (this.m33);
+                        result = (this.m33);
+                        finished = true;
+                        break;
                     default:
                         break;
                 }
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
+                if (finished) break;
                 break;
 
             default:
                 break;
         }
-        throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4f1"));
+        if (!finished) {
+            throw new ArrayIndexOutOfBoundsException(VecMathI18N.getString("Matrix4f1"));
+        }
+        return result;
     }
 
     /**

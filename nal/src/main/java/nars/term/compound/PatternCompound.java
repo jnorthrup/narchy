@@ -195,6 +195,8 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
          */
         @Override
         public boolean unifySubterms(Compound Y, Unify u) {
+            boolean result = false;
+            boolean finished = false;
 //            if ((dt != XTERNAL) && Y.op().temporal && !Y.isCommutative())
 //                throw new TODO();
 
@@ -204,9 +206,9 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
             //xFixed is effectively sorte unless eMatch!=nulld
 
 
-            SortedSet<Term> yFree;
-                    //uc==null ? y.toSetSorted() : y.toSetSorted(yy -> MatchConstraint.valid(yy, uc, u));
-                    //y.toSetSorted();
+            SortedSet<Term> yFree = null;
+            //uc==null ? y.toSetSorted() : y.toSetSorted(yy -> MatchConstraint.valid(yy, uc, u));
+            //y.toSetSorted();
             boolean seq = op() == CONJ && dt() == XTERNAL && Conj.isSeq(Y);
             if (seq) {
                 yFree = Y.eventSet();
@@ -231,125 +233,146 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
                     ellipsis = null;
                     if (xxk instanceof Fragment) {
                         for (Term ex : xxk.subterms()) {
-                            if (!include(ex, xMatch, yFree, u))
-                                return false;
+                            if (!include(ex, xMatch, yFree, u)) {
+                                finished = true;
+                                break;
+                            }
                         }
+                        if (finished) break;
                         continue;
                     }
                     //else it is ellipsis that matched a single term, continue below:
 
                 }
 
-                if (!include(xxk, xMatch, yFree, u))
-                    return false;
-
-            }
-
-
-            int xs = xMatch.size();
-            int ys = yFree.size();
-
-            if (ellipsis == null) {
-                //ellipsis assigned already; match the remainder as usual
-                if (xs == ys) {
-                    switch (xs) {
-                        case 0:
-                            return true;
-                        case 1:
-                            return xMatch.getFirst().unify(yFree.first(), u);
-                        default:
-                            xMatch.sortThis();
-                            return Subterms.unifyCommute(xMatch, $.vFast(yFree), u);
-                    }
-                } else {
-                    //arity mismatch
-                    return false;
+                if (!include(xxk, xMatch, yFree, u)) {
+                    finished = true;
+                    break;
                 }
+
             }
+            if (!finished) {
+                int xs = xMatch.size();
+                int ys = yFree.size();
 
-            int numRemainingForEllipsis = ys - xs;
-            if (!ellipsis.validSize(numRemainingForEllipsis))
-                return false;
-
-
-            if (xs > 0 && ys > 0) {
-                //test matches against the one constant target
-                for (Iterator<Term> xi = xMatch.iterator(); xi.hasNext(); ) {
-                    Term ix = xi.next();
-                    if (u.var(ix)) continue;
-
-                    boolean canMatch = false;
-                    Term onlyY = null;
-                    for (Term yy : yFree) {
-                        if (Subterms.possiblyUnifiable(ix, yy, u.varBits)) {
-                            canMatch = true;
-                            if (onlyY == null)
-                                onlyY = yy; //first found and only so far
-                            else {
-                                onlyY = null;
-                                break; //found > 1 so stop
-                            }
-                        }
-                    }
-
-                    if (canMatch) {
-                        if (onlyY != null) {
-                            if (ix.unify(onlyY, u)) {
-                                xi.remove();
-                                yFree.remove(onlyY);
-                                xs--;
-                                ys--;
-                            } else
-                                return false; //impossible
-                        } //else: continue
-
-                    } else {
-                        return false; //nothing from yFree could match xFixed
-                    }
-                }
-            }
-
-
-            switch (xs) {
-                case 0:
-                    return ellipsis.unify(ys > 0 ? Fragment.fragment(yFree) : Fragment.empty, u);
-
-                case 1:
+                if (ellipsis == null) {
+                    //ellipsis assigned already; match the remainder as usual
                     if (xs == ys) {
-                        return xMatch.getFirst().unify(yFree.first(), u) && ellipsis.unify(Fragment.empty, u);
+                        switch (xs) {
+                            case 0:
+                                result = true;
+                                finished = true;
+                                break;
+                            case 1:
+                                result = xMatch.getFirst().unify(yFree.first(), u);
+                                finished = true;
+                                break;
+                            default:
+                                xMatch.sortThis();
+                                result = Subterms.unifyCommute(xMatch, $.vFast(yFree), u);
+                                finished = true;
+                                break;
+                        }
                     } else {
-                        //no matches possible but need one
-                        if (ys >= 1) {
-                            @Nullable Termutator t = Choose1.choose1(ellipsis, xMatch.get(0), yFree, u);
-                            if (t == null)
-                                return false;
-                            else {
-                                if (t!=Termutator.ELIDE)
-                                    u.termute(t);
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-
-                case 2: {
-                    if (ys >= 2) {
-                        @Nullable Termutator t = Choose2.choose2(ellipsis, xMatch, yFree, u);
-                        if (t == null)
-                            return false;
-                        else {
-                            if (t!=Termutator.ELIDE)
-                                u.termute(t);
-                            return true;
-                        }
+                        //arity mismatch
+                        finished = true;
                     }
                 }
+                if (!finished) {
+                    int numRemainingForEllipsis = ys - xs;
+                    if (ellipsis.validSize(numRemainingForEllipsis)) {
+                        if (xs > 0 && ys > 0) {
+                            //test matches against the one constant target
+                            for (Iterator<Term> xi = xMatch.iterator(); xi.hasNext(); ) {
+                                Term ix = xi.next();
+                                if (u.var(ix)) continue;
 
-                default:
-                    throw new RuntimeException("unimpl: " + xs + " arity combination unimplemented");
+                                boolean canMatch = false;
+                                Term onlyY = null;
+                                for (Term yy : yFree) {
+                                    if (Subterms.possiblyUnifiable(ix, yy, u.varBits)) {
+                                        canMatch = true;
+                                        if (onlyY == null)
+                                            onlyY = yy; //first found and only so far
+                                        else {
+                                            onlyY = null;
+                                            break; //found > 1 so stop
+                                        }
+                                    }
+                                }
+
+                                if (canMatch) {
+                                    if (onlyY != null) {
+                                        if (ix.unify(onlyY, u)) {
+                                            xi.remove();
+                                            yFree.remove(onlyY);
+                                            xs--;
+                                            ys--;
+                                        } else {
+                                            finished = true;
+                                            break;//impossible
+                                        }
+                                    } //else: continue
+
+                                } else {
+                                    finished = true;
+                                    break;//nothing from yFree could match xFixed
+                                }
+                            }
+                        }
+                        if (!finished) {
+                            switch (xs) {
+                                case 0:
+                                    result = ellipsis.unify(ys > 0 ? Fragment.fragment(yFree) : Fragment.empty, u);
+                                    break;
+
+                                case 1:
+                                    if (xs == ys) {
+                                        result = xMatch.getFirst().unify(yFree.first(), u) && ellipsis.unify(Fragment.empty, u);
+                                        break;
+                                    } else {
+                                        //no matches possible but need one
+                                        if (ys >= 1) {
+                                            @Nullable Termutator t = Choose1.choose1(ellipsis, xMatch.get(0), yFree, u);
+                                            if (t == null) {
+                                                break;
+                                            } else {
+                                                if (t != Termutator.ELIDE)
+                                                    u.termute(t);
+                                                result = true;
+                                                break;
+                                            }
+                                        }
+                                        break;
+                                    }
+
+                                case 2: {
+                                    if (ys >= 2) {
+                                        @Nullable Termutator t = Choose2.choose2(ellipsis, xMatch, yFree, u);
+                                        if (t == null) {
+                                            break;
+                                        } else {
+                                            if (t != Termutator.ELIDE)
+                                                u.termute(t);
+                                            result = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                default:
+                                    throw new RuntimeException("unimpl: " + xs + " arity combination unimplemented");
+                            }
+                        }
+                    }
+
+
+                }
+
             }
 
 
+            return result;
         }
 
         private static boolean include(Term x, List<Term> xMatch, SortedSet<Term> yFree, Unify u) {

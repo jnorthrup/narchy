@@ -16,82 +16,74 @@ public class ConjUnify {
 
     /** conjunction unfiication when # subterms differ */
     public static boolean unifyConj(Term x, Term y, Subterms xx, Subterms yy, Unify u) {
+        boolean result = false;
+        boolean finished = false;
 
-        if (!Subterms.possiblyUnifiableAssumingNotEqual(xx, yy, u.varBits | (x.hasXternal() || y.hasXternal() ? CONJ.bit : 0)))
-            return false;
+        if (Subterms.possiblyUnifiableAssumingNotEqual(xx, yy, u.varBits | (x.hasXternal() || y.hasXternal() ? CONJ.bit : 0))) {
+            int xdt = x.dt(), ydt = y.dt();
+            boolean var = u.varIn(xx) || u.varIn(yy);
+            if ((xdt == XTERNAL || ydt == XTERNAL)) {
 
-        int xdt = x.dt(), ydt = y.dt();
-
-        boolean var = u.varIn(xx) || u.varIn(yy);
-
-        if ((xdt == XTERNAL || ydt == XTERNAL)) {
-
-            if (((xdt==XTERNAL && !xx.hasAny(CONJ)) || (ydt==XTERNAL && !yy.hasAny(CONJ)))) {
-                //one is a simple XTERNAL (no conj subterms) so will match if equal root
-                if (x.equalsRoot(y))
-                    return true;
-            }
-
-            SortedSet<Term> xe = x.eventSet();
-            SortedSet<Term> ye = y.eventSet();
-            if (xe.equals(ye))
-                return true;
-
-            if (!var)
-                return false;
-            if (xe.size()!=ye.size())
-                return false;
-
-//            if (xe.size()!=ye.size() && Ellipsis.firstEllipsis(xx)==null && Ellipsis.firstEllipsis(yy)==null)
-//                return false; //differing # of events
-
-            try {
-                return Subterms.unifyCommute($.vFast(xe), $.vFast(ye), u);
-            } catch (Throwable t) {
-                System.err.println("unify stack overflow?: " + xe + " " + ye);
-                throw t;
-            }
-
-        } else {
-            if (!var)
-                return false; //TODO allow slightly different constants
-
-            boolean xSeq = Conj.isSeq(x), ySeq = Conj.isSeq(y);
-            if (xSeq!=ySeq)
-                return false;
-
-            if (!xSeq) {
-                //ordinary conjunctive unification
-                return xx.subs()==yy.subs() && Subterms.unifyCommute(xx, yy, u);
-            } else {
-
-                if (x.eventRange() != y.eventRange())
-                    return false; //TODO allow time splicing/shifting
-
-                //TODO test sequences containing vars
-                ConjList xl = ConjList.events(x);
-                ConjList yl = ConjList.events(y);
-                if (xl.size() != yl.size())
-                    return false; //TODO this can possibly work if a raw variable matches a range
-                if (!Arrays.equals(xl.when, yl.when))
-                    return false; //TODO allow time splicing/shifting
-
-                xl.removeIf((when, z) -> {
-                    if (!u.varIn(z)) {
-                        yl.remove(when, z);
-                        return true;
+                if (((xdt == XTERNAL && !xx.hasAny(CONJ)) || (ydt == XTERNAL && !yy.hasAny(CONJ)))) {
+                    //one is a simple XTERNAL (no conj subterms) so will match if equal root
+                    if (x.equalsRoot(y)) {
+                        result = true;
+                        finished = true;
                     }
-                    return false;
-                });
-                int xls = xl.size();
-                if (xls != yl.size())
-                    return false;
-                if (xls > 1)
-                    return Subterms.unifyLinear($.vFast(xl), $.vFast(yl), u);
-                else
-                    return xl.get(0).unify(yl.get(0), u);
+                }
+                if (!finished) {
+                    SortedSet<Term> xe = x.eventSet();
+                    SortedSet<Term> ye = y.eventSet();
+                    if (xe.equals(ye)) {
+                        result = true;
+                    } else if (var) {
+                        if (xe.size() == ye.size()) {//            if (xe.size()!=ye.size() && Ellipsis.firstEllipsis(xx)==null && Ellipsis.firstEllipsis(yy)==null)
+//                return false; //differing # of events
+                            try {
+                                result = Subterms.unifyCommute($.vFast(xe), $.vFast(ye), u);
+                            } catch (Throwable t) {
+                                System.err.println("unify stack overflow?: " + xe + " " + ye);
+                                throw t;
+                            }
+                        }
+                    }
+
+                }
+
+            } else if (var) {
+                boolean xSeq = Conj.isSeq(x), ySeq = Conj.isSeq(y);
+                if (xSeq == ySeq) {
+                    if (!xSeq) {
+                        //ordinary conjunctive unification
+                        result = xx.subs() == yy.subs() && Subterms.unifyCommute(xx, yy, u);
+                    } else if (x.eventRange() == y.eventRange()) {//TODO test sequences containing vars
+                        ConjList xl = ConjList.events(x);
+                        ConjList yl = ConjList.events(y);//TODO this can possibly work if a raw variable matches a range
+                        if (xl.size() == yl.size()) {//TODO allow time splicing/shifting
+                            if (Arrays.equals(xl.when, yl.when)) {
+                                xl.removeIf((when, z) -> {
+                                    if (!u.varIn(z)) {
+                                        yl.remove(when, z);
+                                        return true;
+                                    }
+                                    return false;
+                                });
+                                int xls = xl.size();
+                                if (xls == yl.size()) {
+                                    if (xls > 1) {
+                                        result = Subterms.unifyLinear($.vFast(xl), $.vFast(yl), u);
+                                    } else {
+                                        result = xl.get(0).unify(yl.get(0), u);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
+
+        return result;
     }
 
     /** xx smaller */
