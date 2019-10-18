@@ -1,8 +1,8 @@
 package jcog.learn.ntm.control;
 
-public interface IDifferentiableFunction {
+import org.eclipse.collections.api.block.function.primitive.DoubleToDoubleFunction;
 
-    double value(double x);
+public interface IDifferentiableFunction extends DoubleToDoubleFunction  {
 
     double derivative(double y);
 

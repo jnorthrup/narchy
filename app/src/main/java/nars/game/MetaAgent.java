@@ -1,8 +1,6 @@
 package nars.game;
 
 import jcog.Util;
-import jcog.data.graph.MapNodeGraph;
-import jcog.data.graph.Node;
 import jcog.learn.ql.dqn3.DQN3;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
@@ -12,7 +10,10 @@ import jcog.util.FloatConsumer;
 import nars.$;
 import nars.Emotion;
 import nars.NAR;
-import nars.attention.*;
+import nars.attention.PriAmp;
+import nars.attention.PriSource;
+import nars.attention.TaskLinkWhat;
+import nars.attention.What;
 import nars.control.MetaGoal;
 import nars.game.action.GoalActionConcept;
 import nars.game.sensor.AbstractSensor;
@@ -35,13 +36,12 @@ import static nars.$.$$;
 public abstract class MetaAgent extends Game {
 
 	private static final float PRI_ACTION_RESOLUTION =
-		0.01f;
-		//0.05f;
+		//0.01f;
+		0.05f;
 
 	//private static final Logger logger = Log.logger(MetaAgent.class);
 
 	static final Atomic CURIOSITY =
-
 		/** curiosity rate */
 		Atomic.the("curi");
 
@@ -69,8 +69,11 @@ public abstract class MetaAgent extends Game {
 	static final Atomic input = Atomic.the("input");
 	static final Atomic duration = Atomic.the("dur");
 	static final Atomic happy = Atomic.the("happy");
-	static final Atomic optimistic = Atomic.the("optimistic");
+
 	static final Atomic dex = Atomic.the("dex");
+	static final Atomic now = Atomic.the("now");
+	static final Atomic past = Atomic.the("past");
+	static final Atomic future = Atomic.the("future");
 
 
 //    public final GoalActionConcept forgetAction;
@@ -109,13 +112,13 @@ public abstract class MetaAgent extends Game {
 		return this;
 	}
 
-	void actionCtlPriNodeRecursive(PriNode s, MapNodeGraph<PriNode, Object> g) {
-		if (s instanceof PriAmp)
-			priAction((PriAmp) s);
-		for (Node<PriNode, Object> x : s.node(g).nodes(false, true)) {
-			actionCtlPriNodeRecursive(x.id(), g);
-		}
-	}
+//	void actionCtlPriNodeRecursive(PriNode s, MapNodeGraph<PriNode, Object> g) {
+//		if (s instanceof PriAmp)
+//			priAction((PriAmp) s);
+//		for (Node<PriNode, Object> x : s.node(g).nodes(false, true)) {
+//			actionCtlPriNodeRecursive(x.id(), g);
+//		}
+//	}
 
 	void priAction(PriSource a) {
 		priAction($.inh(a.id,pri), a);
@@ -227,25 +230,27 @@ public abstract class MetaAgent extends Game {
 				nar.freqResolution.set(x1);
 				return y;
 			});
-			actionUnipolar($.inh(SELF, careful), (x) -> {
-				float x1 = x;
-				float y;
-				if (x1 >= 0.75f) {
-					x1 = 0.01f;
-					y = 1f;
-				} else if (x1 >= 0.5f) {
-					x1 = 0.02f;
-					y = 0.66f;
-				} else if (x1 >= 0.25f) {
-					x1 = 0.03f;
-					y = 0.33f;
-				} else {
-					x1 = 0.04f;
-					y = 0;
-				}
-				nar.confResolution.set(x1);
-				return y;
-			});
+
+//			actionUnipolar($.inh(SELF, careful), (x) -> {
+//				float x1 = x;
+//				float y;
+//				if (x1 >= 0.75f) {
+//					x1 = 0.01f;
+//					y = 1f;
+//				} else if (x1 >= 0.5f) {
+//					x1 = 0.02f;
+//					y = 0.66f;
+//				} else if (x1 >= 0.25f) {
+//					x1 = 0.03f;
+//					y = 0.33f;
+//				} else {
+//					x1 = 0.04f;
+//					y = 0;
+//				}
+//				nar.confResolution.set(x1);
+//				return y;
+//			});
+
 //			//potentially dangerous, may become unable to convince itself to un-ignore things
 //			actionUnipolar($.inh(SELF, ignore), (x) -> {
 //				float y;
@@ -281,25 +286,22 @@ public abstract class MetaAgent extends Game {
 //                nar.goalPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
 
 			float emotionalMomentumDurs = 4;
+			float durMeasured = 0;
 
-			reward(happy, () -> {
-				float durMeasured = 0;
-				float dur = dur();
-				long now = nar.time();
-				return (happiness(Math.round(now - dur), now, durMeasured, nar) * 2
-					+
-					//historic happiness ~= gradient momentum / echo effect
-					happiness(Math.round(now - (dur * (emotionalMomentumDurs+1))), Math.round(now - dur), durMeasured, nar)) /3;
+			reward($.inh(SELF, $.p(happy, now)), () -> {
+				return happiness( nowPercept.start, nowPercept.end, durMeasured, nar);
 			});
 
-			/** encourage predicted future happiness */
-			reward(optimistic, () -> {
-				float durMeasured = 0;
-				float dur = dur();
-				long now = nar.time();
-				float h = happiness(now, Math.round(now+(emotionalMomentumDurs * dur)), durMeasured, nar);
-				return h;
+			/** past happiness ~= gradient momentum / echo effect */
+			reward($.inh(SELF, $.p(happy, past)), () -> {
+				return happiness( Math.round(nowPercept.start - dur() * emotionalMomentumDurs), nowPercept.start, durMeasured, nar);
 			});
+
+			/** optimism */
+			reward($.inh(SELF, $.p(happy, future)), () -> {
+				return happiness(  nowPercept.end, Math.round(nowPercept.end + dur() * emotionalMomentumDurs), durMeasured, nar);
+			});
+
 //        ThreadCPUTimeTracker.getCPUTime()
 //        reward("lazy", 1, ()->{
 //            return 1-nar.loop.throttle.floatValue();
@@ -394,10 +396,8 @@ public abstract class MetaAgent extends Game {
 				floatAction($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.inBuffer)).valve);
 
 
-			Reward h = rewardNormalized($.inh(gid, happy), 1, 0, ScalarValue.EPSILON, () -> {
-				//new FloatFirstOrderDifference(nar::time, (() -> {
-				return g.isOn() ? (//(float)((0.01f + g.dexterity()) *
-					g.happiness()) : Float.NaN;
+			Reward h = reward($.inh(gid, happy), () -> {
+				return g.isOn() ? g.happiness(nowPercept.start, nowPercept.end, 0) : Float.NaN;
 			});
 
 

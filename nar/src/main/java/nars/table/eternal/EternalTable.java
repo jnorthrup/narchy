@@ -24,7 +24,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -278,10 +277,17 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         long l = lock.readLock();
         try {
             if (size > 0) {
-
                 //scan list for existing equal task
                 Object[] list = this.items;
-                existing = Arrays.stream(list).takeWhile(Objects::nonNull).map(aList -> (Task) aList).filter(x -> x.equals(input)).findFirst().orElse(null);
+                for (Object x : list) {
+                    if (x == null)
+                        break; //eol
+
+                    if (input.equals(x)) {
+                        existing = (Task) x;
+                        break;
+                    }
+                }
             }
 
             if (existing == null) {

@@ -167,12 +167,9 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 //    }
 
     public final boolean removeFast(X x, int index) {
-        int totalOffset = this.size - index - 1;
-        if (totalOffset < 0)
-            return false;
-
         X[] items = this.items;
         if (items[index] == x) {
+            int totalOffset = this.size - index - 1;
             if (totalOffset > 0)
                 System.arraycopy(items, index + 1, items, index, totalOffset);
             items[SIZE.decrementAndGet(this)] = null;

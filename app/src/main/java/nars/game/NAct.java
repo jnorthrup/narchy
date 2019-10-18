@@ -351,10 +351,10 @@ import static nars.Op.BELIEF;
         NAR n = nar();
         GoalActionConcept LA = action(tl, (b, g) -> {
 
-            float q = Q.q(b,g);
+            float q = Q.q(b,g); float qC = (g!=null ? q * g.conf() : 0);
             boolean xq = q >= thresh.asFloat();
-            boolean y = L.accept(xq && q >= r.floatValue());
-            l.set(xq ? q : 0);
+            boolean y = L.accept(xq && qC >= r.floatValue());
+            l.set(xq ? qC : 0);
 
 
             float feedback =
@@ -365,10 +365,10 @@ import static nars.Op.BELIEF;
 
         });
         GoalActionConcept RA = action(tr, (b, g) -> {
-            float q = Q.q(b,g);
+            float q = Q.q(b,g); float qC = (g!=null ? q * g.conf() : 0);
             boolean xq = q >= thresh.asFloat();
-            boolean y = R.accept(xq && q >= l.floatValue());
-            r.set(xq ? q : 0);
+            boolean y = R.accept(xq && qC >= l.floatValue());
+            r.set(xq ? qC : 0);
 
             float feedback =
                     y ? 1 : 0;

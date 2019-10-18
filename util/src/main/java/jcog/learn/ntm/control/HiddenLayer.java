@@ -78,7 +78,7 @@ public class HiddenLayer {
 		int N = neurons();
 
 		for (int n = 0; n < N; n++) {
-			nv[n] = activation.value(
+			nv[n] = activation.valueOf(
 			    readDataContributionToHiddenLayer(n, d) +
                 inputContributionToHiddenLayer(n, i) +
                 hlt[n]);

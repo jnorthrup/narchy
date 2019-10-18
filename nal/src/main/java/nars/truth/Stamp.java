@@ -466,17 +466,22 @@ public interface Stamp {
      * @noinspection ArrayEquality
      */
     static boolean overlapsAny(long[] a, long[] b) {
-        if (a==b) return true;
+
         int A = a.length; if (A==0) return false;
+
+        if (a==b) return true; //now test for identity after 0-length
+
         int B = b.length; if (B==0) return false;
 
-        if (A == 1 && B == 1)
-            return a[0]==b[0];
+        if (A == 1 && B == 1) return a[0]==b[0];
+        else return
+            LongInterval.intersectsRaw(a[0], a[A - 1], b[0], b[B - 1]) //intervals are completely disjoint
+            &&
+            overlapsAnyExhaustive(a, b, A, B);
+    }
 
-        if (!LongInterval.intersectsRaw(a[0], a[A -1], b[0], b[B -1]))
-            return false; //intervals are completely disjoint
-
-        if (A > B) {
+    private static boolean overlapsAnyExhaustive(long[] a, long[] b, int a2, int b2) {
+        if (a2 > b2) {
             //swap to get the larger stamp in the inner loop
             long[] _a = a;
             a = b;

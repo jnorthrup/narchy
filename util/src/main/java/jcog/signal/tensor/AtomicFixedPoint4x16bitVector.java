@@ -21,8 +21,6 @@ import static jcog.Texts.n4;
  */
 public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 
-
-
     //TODO atomic addAt methods
     private static final int[] QUAD_16_SHAPE = { 4 };
     public static final float SHORT_TO_FLOAT_SCALE = Short.MAX_VALUE*2 + 1;
@@ -57,23 +55,16 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 
     @Override
     public float sumValues() {
-        long x = X.get(this);
-//        float /* double? */ s = 0;
-//        for (int i = 0; i < 4; i++)
-//            s += toFloat(x, i);
-//        return s;
-
-        long s = IntStream.range(0, 4).mapToLong(i -> shortAt(x, i)).sum();
+        long x = X.get(this), s = 0;
+        for (int i = 0; i < 4; i++)
+            s += shortAt(x, i);
         return toFloat(s);
     }
 
     @Override
     public String toString() {
         StringJoiner joiner = new StringJoiner(",");
-        for (int i : new int[]{0, 1, 2, 3}) {
-            String s = toString(i);
-            joiner.add(s);
-        }
+        IntStream.range(0,4).forEach(i-> joiner.add(toString(i)));
         return joiner.toString();
     }
 
@@ -109,7 +100,7 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
     }
 
     @Override
-    public void setAt(int linearCell, float newValue) {
+    public final void setAt(int linearCell, float newValue) {
         int shift = linearCell * 16;
         long mask = ~((((long)('\uffff'))) << shift);
         long b = ((long)toShort(newValue))<<shift;
@@ -132,7 +123,9 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
     public final long data() {
         return X.get(this);
     }
+
     public final void data(long y) {
         X.set(this, y);
     }
+
 }

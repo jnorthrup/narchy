@@ -4,13 +4,11 @@ public class Sigmoid
 {
     /** alpha=1.0 */
     public static double getValue(double x) {
-        return 1.0 / (1.0 + Math.exp(-x));
+        return 1.0 / (1 + Math.exp(-x));
     }
 
     public static double getValue(double x, double alpha) {
-        return 1.0 / (1.0 + Math.exp(-x * alpha));
-
-        
+        return 1.0 / (1 + Math.exp(-x * alpha));
     }
 
     public static double expFast(double val) {

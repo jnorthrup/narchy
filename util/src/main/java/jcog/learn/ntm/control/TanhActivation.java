@@ -8,7 +8,7 @@ public class TanhActivation implements IDifferentiableFunction
     public static final TanhActivation the = new TanhActivation();
 
     @Override
-    public double value(double x) {
+    public double valueOf(double x) {
         return Math.tanh(x);
     }
 

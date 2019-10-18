@@ -86,20 +86,20 @@ public class MLPMap {
         }
 
         /** forward prop */
-        public float[] forward(float[] in) {
-            System.arraycopy(in, 0, this.in, 0, in.length);
+        public float[] forward(float[] x) {
+            float[] in = this.in, W = this.W, out = this.out;
+            System.arraycopy(x, 0, in, 0, x.length);
             if (bias)
-                this.in[this.in.length - 1] = 1; //bias
+                in[in.length - 1] = 1; //bias
             int offs = 0;
-            int il = this.in.length;
+            int il = in.length;
             for (int i = 0; i < out.length; i++) {
-                float o = 0;
+                double o = 0;
                 for (int j = 0; j < il; j++)
-                    o += W[offs + j] * this.in[j];
-
+                    o += W[offs + j] * in[j];
                 if (activation!=null)
-                    o = (float) activation.value(o);
-                out[i] = o;
+                    o = activation.valueOf(o);
+                out[i] = (float) o;
                 offs += il;
             }
             return out;
