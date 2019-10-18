@@ -36,10 +36,10 @@ pre {
            B, (--X ==> C), --is(X,"--"),--is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionRecursiveNN,  Time:TaskEvent)
            (--X ==> C), B, --is(X,"--"),--is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionRecursiveNN,                   Time:BeliefEvent)
 
-        B, (  X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:DeductionRecursiveWeakPP, Time:TaskEvent)
-        B, (--X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:DeductionRecursiveWeakNP, Time:TaskEvent)
-            B, (  X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  --unisubst(C,X,B,"$"),  (Goal:DeductionRecursiveWeakPN, Time:TaskEvent)
-            B, (--X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  --unisubst(C,X,B,"$"),  (Goal:DeductionRecursiveWeakNN, Time:TaskEvent)
+        B, (  X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:DesireWeakPPX, Time:TaskEvent)
+        B, (--X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:DesireWeakNPX, Time:TaskEvent)
+            B, (  X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  --unisubst(C,X,B,"$"),  (Goal:DesireWeakPNX, Time:TaskEvent)
+            B, (--X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  --unisubst(C,X,B,"$"),  (Goal:DesireWeakNNX, Time:TaskEvent)
 
 //        B, (  X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Belief:PrePP, Time:TaskEvent)
 //        B, (--X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Belief:PreNP, Time:TaskEvent)

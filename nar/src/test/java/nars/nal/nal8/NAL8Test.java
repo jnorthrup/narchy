@@ -166,6 +166,18 @@ public class NAL8Test extends NALTest {
         test.input("(pick:t2 ==> hold:t2). %0.50%");
         test.mustBelieve(cycles, "hold:t2", 0.5f, 0.4f, ETERNAL);
     }
+
+    @Test
+    void eternal_deduction_1_maybe_goal_certain_conc() {
+        test.input("pick:t2! %0.50%");
+        test.input("(pick:t2 ==> hold:t2).");
+        test.input("(pick:t2 ==> --donthold:t2).");
+        test.mustGoal(cycles, "hold:t2", 1f, 0.29f, ETERNAL);
+        test.mustGoal(cycles, "donthold:t2", 0f, 0.29f, ETERNAL);
+        test.mustBelieve(cycles, "((--,(t2-->donthold))==>(t2-->hold))", 1f, 0.45f, ETERNAL);
+        test.mustBelieve(cycles, "     ((t2-->hold)==>(t2-->donthold))", 0f, 0.45f, ETERNAL);
+    }
+
     @Test
     void eternal_deduction_1_neg_belief_pos_conc() {
         test.input("--pick:t2.");

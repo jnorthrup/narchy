@@ -175,7 +175,7 @@ public class Gradius extends GameX {
 
             return Util.unitize(r);
             //return r!=0 ? Util.unitize(r) : Float.NaN;
-       }).conf(nar.goalConfDefault.floatValue()/2);
+       }).conf(nar.goalConfDefault.floatValue()*0.75f);
        //destroy.setDefault($.t(0, nar.beliefConfDefault.floatValue()));
 
 

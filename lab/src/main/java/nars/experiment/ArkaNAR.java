@@ -197,6 +197,7 @@ public class ArkaNAR extends GameX {
         });
         //dontDie.addGuard(true,false);
 
+
         reward("score",  () -> {
             return Math.min(1, noid.score - noid.prevScore);
         });
