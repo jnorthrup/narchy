@@ -51,9 +51,7 @@ public class a extends JPanel implements Runnable {
   @Override
   public void run() {
 
-      final int FADE_SPEED = 8;
-
-      final int SPRITE_COUNT = 34;
+    final int SPRITE_COUNT = 34;
 
     final int SPRITE_COIN = 0;
     final int SPRITE_DOOR_TOP = 1;
@@ -181,7 +179,8 @@ public class a extends JPanel implements Runnable {
       int[][] enemies = null;
       int[][] map = null;
       int fadeIntensity = 255;
-      int fadeDelta = FADE_SPEED;
+    final int FADE_SPEED = 8;
+    int fadeDelta = FADE_SPEED;
       int bunbunCountdown = 1;
       int giraCountdown = 1;
       boolean jumpReleased = true;

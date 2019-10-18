@@ -165,7 +165,6 @@ public class KIFParser {
         int mode = this.getParseMode();
         StringBuilder expression = new StringBuilder();
         Formula f = new Formula();
-        String filename = "";
         String errStr = null;
 
         if (r == null) {
@@ -175,6 +174,7 @@ public class KIFParser {
             return warningSet;
         }
         int duplicateCount = 0;
+        String filename = "";
         try {
             count++;
             StreamTokenizer_s st = new StreamTokenizer_s(r);

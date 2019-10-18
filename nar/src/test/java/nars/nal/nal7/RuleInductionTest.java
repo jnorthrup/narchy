@@ -24,8 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class RuleInductionTest {
     @Test
     void test1() {
-        int dur = 2;
-        int period = dur * 4;
 
         NAR n = NARS.shell();
         n.termVolMax.set(8);
@@ -48,10 +46,12 @@ class RuleInductionTest {
         d.program.print();
 
 
+        int dur = 2;
         n.time.dur(dur);
 
         n.log();
 
+        int period = dur * 4;
         int dutyPeriod = period / 2;
         Term aConjB = $$("(a &&+" + dutyPeriod + " --a)");
         Term aConjB_root = aConjB.concept();

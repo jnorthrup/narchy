@@ -285,7 +285,6 @@ public abstract class MetaAgent extends Game {
 //                Math.max(nar.goalPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
 //                nar.goalPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
 
-			float emotionalMomentumDurs = 4;
 			float durMeasured = 0;
 
 			reward($.inh(SELF, $.p(happy, now)), () -> {
@@ -293,6 +292,7 @@ public abstract class MetaAgent extends Game {
 			});
 
 			/** past happiness ~= gradient momentum / echo effect */
+			float emotionalMomentumDurs = 4;
 			reward($.inh(SELF, $.p(happy, past)), () -> {
 				return happiness( Math.round(nowPercept.start - dur() * emotionalMomentumDurs), nowPercept.start, durMeasured, nar);
 			});

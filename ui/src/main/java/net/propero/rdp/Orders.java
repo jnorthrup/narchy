@@ -252,8 +252,7 @@ public class Orders {
     private static void process_bmpcache2(RdpPacket_Localised data, int flags,
                                           boolean compressed) throws RdesktopException, IOException {
 
-        int Bpp = ((flags & MODE_MASK) >> MODE_SHIFT) - 2;
-        Bpp = Options.Bpp;
+        int Bpp = Options.Bpp;
         /* prevent compiler warning */
         byte[] bitmap_id = new byte[8];
         if ((flags & PERSIST) != 0) {

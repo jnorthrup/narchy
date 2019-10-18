@@ -79,14 +79,11 @@ public class a extends Applet implements Runnable {
     final int SPRITE_SMALL_DIGIT_9 = 75;
 
       final int SPRITE_COUNT = 84;
-    final int SPRITE_DOUBLE_COUNT = SPRITE_COUNT * 2;
 
       final int VK_W = 0x57;
     final int VK_S = 0x53;
     final int VK_A = 0x41;
     final int VK_D = 0x44;
-
-    final int MODE_VINES = 0;
 
       final int SCREEN_WIDTH = 152;
     final int SCREEN_HEIGHT = 191;
@@ -97,11 +94,6 @@ public class a extends Applet implements Runnable {
     final int VINE_SPEED = 3;
 
       final int CAMERAX0 = 65457;
-
-      final int HEX_VINE = 0xC3903D;
-      final int HEX_LEAVES_3 = 0x6D762B;
-      final int HEX_LEAVES_1 = 0x328432;
-      final int HEX_WATER = 0x003064;
 
       int i;
 
@@ -126,6 +118,7 @@ public class a extends Applet implements Runnable {
     }
 
 
+      final int SPRITE_DOUBLE_COUNT = SPRITE_COUNT * 2;
       BufferedImage[] sprites = new BufferedImage[SPRITE_DOUBLE_COUNT];
       int u;
       int z;
@@ -176,6 +169,10 @@ public class a extends Applet implements Runnable {
       final int SPRITE_JUMP_2 = 4;
       final int SPRITE_JUMP_1 = 3;
       final int SPRITE_RUN_3 = 2;
+      final int HEX_WATER = 0x003064;
+      final int HEX_LEAVES_1 = 0x328432;
+      final int HEX_LEAVES_3 = 0x6D762B;
+      final int HEX_VINE = 0xC3903D;
       for(k = i = 0; i < SPRITE_COUNT; i++, k += z >> 1) {
 
       
@@ -266,6 +263,7 @@ public class a extends Applet implements Runnable {
       int playerDead = 0;
       int playerSprite2 = 0;
       int playerSprite = 0;
+      final int MODE_VINES = 0;
       int mode = MODE_VINES;
       int lives = 4;
       int time = 5000;
@@ -390,12 +388,12 @@ public class a extends Applet implements Runnable {
 
 
                       int radius = vine[VINE_RADIUS];
-                      int t = 1 - radius;
                       u = 1;
-                      int v = -2 * radius;
                       z = x = 0;
                       y = radius;
 
+                      int v = -2 * radius;
+                      int t = 1 - radius;
                       while (true) {
 
                           if (t >= 0) {

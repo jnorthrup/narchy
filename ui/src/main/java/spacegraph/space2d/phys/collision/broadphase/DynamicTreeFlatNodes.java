@@ -213,10 +213,6 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
         float ry = r.y;
 
 
-        float vx = -1f * ry;
-        float vy = 1f * rx;
-
-
         float maxFraction = input.maxFraction;
 
         
@@ -233,7 +229,9 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
 
         nodeStackIndex = 0;
         nodeStack[nodeStackIndex++] = m_root;
+        float vy = 1f * rx;
         float absVy = Math.abs(vy);
+        float vx = -1f * ry;
         float absVx = Math.abs(vx);
         while (nodeStackIndex > 0) {
             int node = nodeStack[--nodeStackIndex] = m_root;

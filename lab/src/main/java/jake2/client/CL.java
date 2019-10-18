@@ -908,11 +908,11 @@ public final class CL {
     }
 
     public static void RequestNextDownload() {
-        boolean finished = false;
 
         if (Globals.cls.state == Defines.ca_connected) {
             if (SV_MAIN.allow_download.value == 0 && CL.precache_check < ENV_CNT)
                 CL.precache_check = ENV_CNT;
+            boolean finished = false;
             if (CL.precache_check == Defines.CS_MODELS) {
                 CL.precache_check = Defines.CS_MODELS + 2;
                 if (SV_MAIN.allow_download_maps.value != 0)

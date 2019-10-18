@@ -121,7 +121,6 @@ public class RuleLife {
 				lurd[1] = (j > 0) ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
                 short bOldVal = crrState[i][j];
-                short bNewVal = bOldVal;
                 int iCnt = 0;
                 if (crrState[lurd[0]][lurd[1]] != 0)
 					++iCnt;
@@ -140,8 +139,9 @@ public class RuleLife {
 				if (crrState[lurd[2]][lurd[3]] != 0)
 					++iCnt;
 
-				
-				if (bOldVal == 0) 
+
+                short bNewVal = bOldVal;
+                if (bOldVal == 0)
 				{
 					if (RulesB[iCnt]) 
 						bNewVal = ColoringMethod == 1 ? 1 : (short) (mjb.Cycle

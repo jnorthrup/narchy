@@ -315,7 +315,6 @@ public class PlayerClient {
             boolean ff = (GameBase.meansOfDeath & Defines.MOD_FRIENDLY_FIRE) != 0;
             int mod = GameBase.meansOfDeath & ~Defines.MOD_FRIENDLY_FIRE;
             String message = null;
-            String message2 = "";
 
             switch (mod) {
             case Defines.MOD_SUICIDE:
@@ -401,6 +400,7 @@ public class PlayerClient {
 
             self.enemy = attacker;
             if (attacker != null && attacker.client != null) {
+                String message2 = "";
                 switch (mod) {
                 case Defines.MOD_BLASTER:
                     message = "was blasted by";

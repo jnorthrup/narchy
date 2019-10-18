@@ -54,25 +54,24 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
     }
 
     public RectDouble(Double2D p1, Double2D p2) {
-        double minX, maxX;
+        double minX;
 
         if (p1.x < p2.x) {
             minX = p1.x;
 		} else {
             minX = p2.x;
 		}
-		maxX = p2.x;
+        double maxX = p2.x;
 
-		double minY;
-        double maxY;
+        double minY;
         if (p1.y < p2.y) {
             minY = p1.y;
 		} else {
             minY = p2.y;
 		}
-		maxY = p2.y;
+        double maxY = p2.y;
 
-		min = new Double2D(minX, minY);
+        min = new Double2D(minX, minY);
         max = new Double2D(maxX, maxY);
     }
 

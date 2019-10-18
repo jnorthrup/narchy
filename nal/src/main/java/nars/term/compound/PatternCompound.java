@@ -195,9 +195,7 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
          */
         @Override
         public boolean unifySubterms(Compound Y, Unify u) {
-            boolean result = false;
-            boolean finished = false;
-//            if ((dt != XTERNAL) && Y.op().temporal && !Y.isCommutative())
+            //            if ((dt != XTERNAL) && Y.op().temporal && !Y.isCommutative())
 //                throw new TODO();
 
 
@@ -221,6 +219,7 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
             TermList xMatch = new TermList(s);
 
             Ellipsis ellipsis = this.ellipsis;
+            boolean finished = false;
             for (int k = 0; k < s; k++) {
 
                 Term xk = xx.sub(k);
@@ -251,6 +250,7 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
                 }
 
             }
+            boolean result = false;
             if (!finished) {
                 int xs = xMatch.size();
                 int ys = yFree.size();

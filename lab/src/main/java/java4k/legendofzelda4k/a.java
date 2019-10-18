@@ -45,14 +45,6 @@ public class a extends GamePanel {
   @Override
   public void run() {
 
-    final int SPRITE_COUNT = 22;
-    final int SPRITE_FLIPPED = 32;
-
-    final int SPRITE_LINK_LEFT_1 = 3;
-    final int SPRITE_LINK_LEFT_2 = 4;
-    final int SPRITE_LINK_LEFT_LUNGE = 5;
-    final int SPRITE_LINK_UP_1 = 6;
-
     int i;
     int j;
 
@@ -84,6 +76,8 @@ public class a extends GamePanel {
     final int SPRITE_WATER = 18;
     final int SPRITE_CRACKED_ROCK = 10;
     final int SPRITE_ROCK = 9;
+    final int SPRITE_FLIPPED = 32;
+    final int SPRITE_COUNT = 22;
     for(i = 0; i < SPRITE_COUNT; i++) {
       sprites[i] = new BufferedImage(16, 16, 2);
       sprites[i + SPRITE_FLIPPED] = new BufferedImage(16, 16, 2);
@@ -220,10 +214,14 @@ public class a extends GamePanel {
     final int SPRITE_OCTOROC_2 = 12;
     final int SPRITE_OCTOROC_1 = 11;
     final int SPRITE_SWORD = 8;
+    final int SPRITE_LINK_LEFT_LUNGE = 5;
     final int SPRITE_LINK_RIGHT_LUNGE = SPRITE_LINK_LEFT_LUNGE + SPRITE_FLIPPED;
+    final int SPRITE_LINK_LEFT_2 = 4;
     final int SPRITE_LINK_RIGHT_2 = SPRITE_LINK_LEFT_2 + SPRITE_FLIPPED;
+    final int SPRITE_LINK_LEFT_1 = 3;
     final int SPRITE_LINK_RIGHT_1 = SPRITE_LINK_LEFT_1 + SPRITE_FLIPPED;
     final int SPRITE_LINK_UP_LUNGE = 7;
+    final int SPRITE_LINK_UP_1 = 6;
     final int SPRITE_LINK_UP_2 = SPRITE_LINK_UP_1 + SPRITE_FLIPPED;
     final int SPRITE_LINK_DOWN_LUNGE = 2;
     final int SPRITE_LINK_DOWN_2 = 1;

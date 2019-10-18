@@ -225,13 +225,13 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         boolean autoHideScroll = true;
         setScrollBar(true, (!autoHideScroll || w < viewMax.x), true);
 
-        float y1 = y;
         setScrollBar(false, (!autoHideScroll || h < viewMax.y), true);
 
 //        viewMax(new v2(x2-x1, y2-y1)); //HACK
 
         scale.visible(scrollX.visible()||scrollY.visible());
 
+        float y1 = y;
         float y2 = y1 + h;
         float x2 = x + w;
         float x1 = x;

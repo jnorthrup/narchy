@@ -854,9 +854,9 @@ public abstract class Model extends Surf {
 
 		for (int i = 0; i<count ; i++)
 		{
-            int bits = 0;
-            qfiles.dplane_t in = new qfiles.dplane_t(bb);
+			qfiles.dplane_t in = new qfiles.dplane_t(bb);
             out[i] = new cplane_t();
+			int bits = 0;
 			for (int j = 0; j<3 ; j++)
 			{
 				out[i].normal[j] = in.normal[j];

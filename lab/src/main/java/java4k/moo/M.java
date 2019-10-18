@@ -478,10 +478,10 @@ public class M extends GamePanel {
 	}
 
 	int value(int a) {
-		int result = 0;
 		if (a > 19) {
 			a = 4;
 		}
+		int result = 0;
 		switch (a) {
 
 			case -1:

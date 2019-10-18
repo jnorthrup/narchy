@@ -440,10 +440,10 @@ public class BomberPlayer extends Thread {
                 /** set moving to true */
                 moving = true;
                 /** assume can't move */
-                boolean canMove = false;
                 /** make sure a key is down */
                 if (dirKeysDown > 0) {
                     /** if left key is down */
+                    boolean canMove = false;
                     if ((currentDirKeyDown & BLEFT) > 0) {
                         state = LEFT;
                         /** if west slot is empty then it can move */

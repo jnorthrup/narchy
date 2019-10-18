@@ -1428,8 +1428,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 this.removeAll();
                 CheckboxGroup cg = new CheckboxGroup();
                 for (int i = 0; i < FAMILIES; i++) {
-                    boolean enable;
-                    enable = i == currentFamily;
+                    boolean enable = i == currentFamily;
                     logic_select[i] = new Checkbox(familyName[i], cg, enable);
                     this.add(logic_select[i]);
                     logic_select[i].addItemListener(this);

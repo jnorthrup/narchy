@@ -101,8 +101,8 @@ public class MJRules {
 							int whereSep = sBff.indexOf('|');
 							if (whereSep > 0) {
                                 String sNam = sBff.substring(0, whereSep);
-                                String sDef = sBff.substring(whereSep + 1);
-                                sNam = sNam.trim();
+								sNam = sNam.trim();
+								String sDef = sBff.substring(whereSep + 1);
 								sDef = sDef.trim();
 								Rules[iGame].addElement(new CARule(sNam, sDef));
 							}

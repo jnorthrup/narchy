@@ -121,13 +121,12 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         int[] parent = new int[MAX_ALPHA_SIZE * 2];
         int[] heap = new int[MAX_ALPHA_SIZE + 2];
         while (true) {
-            int nNodes = alphaSize;
-            int nHeap = 0;
 
             heap[0] = 0;
             weight[0] = 0;
             parent[0] = -2;
 
+            int nHeap = 0;
             for (i = 1; i <= alphaSize; i++) {
                 parent[i] = -1;
                 nHeap++;
@@ -144,6 +143,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             }
             if (!(nHeap < (MAX_ALPHA_SIZE + 2))) panic();
 
+            int nNodes = alphaSize;
             while (nHeap > 1) {
                 int n1 = heap[1];
                 heap[1] = heap[nHeap];
@@ -600,8 +600,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             for (t = 0; t < nGroups; t++) for (v = 0; v < alphaSize; v++) rfreq[t][v] = 0;
 
             nSelectors = 0;
-            int totc = 0;
             gs = 0;
+            int totc = 0;
             while (gs < nMTF) {
 
                 /* Set group start & end marks. */

@@ -510,7 +510,6 @@ public class Key extends Globals {
 	 * Interactive line editing and console scrollback.
 	 */
 	public static void Console(int key) {
-		boolean finished = false;
 
 		switch (key) {
 			case K_KP_SLASH:
@@ -557,6 +556,7 @@ public class Key extends Globals {
 				break;
 		}
 
+		boolean finished = false;
 		if (key == 'l') {
 			if (Globals.keydown[K_CTRL]) {
 				Cbuf.AddText("clear\n");

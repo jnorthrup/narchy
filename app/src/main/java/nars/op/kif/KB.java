@@ -1514,7 +1514,6 @@ public class KB implements Serializable {
         }
         try { 
             String userAssertionKIF = this.name + _userAssertionsString;
-            String userAssertionTPTP = userAssertionKIF.substring(0, userAssertionKIF.indexOf(".kif")) + ".tptp";
 
             File dir = new File(this.kbDir);
             File kiffile = new File(dir, (userAssertionKIF));
@@ -1552,6 +1551,7 @@ public class KB implements Serializable {
                         if (kiffile.exists()) 
                             
                             kiffile.delete();
+                        String userAssertionTPTP = userAssertionKIF.substring(0, userAssertionKIF.indexOf(".kif")) + ".tptp";
                         File tptpfile = new File(dir, (userAssertionTPTP));
                         if (tptpfile.exists())
                             tptpfile.delete();

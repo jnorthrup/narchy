@@ -4727,11 +4727,11 @@ public final class Menu extends Key {
 
     public static void Menu_DrawStatusBar(String string) {
         if (string != null) {
-            int l = string.length();
             int maxrow = viddef.getHeight() / 8;
             int maxcol = viddef.getWidth() / 8;
 
             re.DrawFill(0, viddef.getHeight() - 8, viddef.getWidth(), 8, 4);
+            int l = string.length();
             int col = maxcol / 2 - l / 2;
             Menu_DrawString(col * 8, viddef.getHeight() - 8, string);
         } else {

@@ -235,7 +235,6 @@ public class KBmanager implements Serializable {
             File baseDir = new File(base);
             File tptpHomeDir = new File(tptpHome);
             File systemsDir = new File(systemsHome);
-            File kbDir = new File(baseDir, "KBs");
             File logDir = new File(baseDir, "logs");
             logDir.mkdirs();
 
@@ -243,6 +242,7 @@ public class KBmanager implements Serializable {
             preferences.put("baseDir",baseDir.getCanonicalPath());
             preferences.put("tptpHomeDir",tptpHomeDir.getCanonicalPath());
             preferences.put("systemsDir",systemsDir.getCanonicalPath());
+            File kbDir = new File(baseDir, "KBs");
             preferences.put("kbDir",kbDir.getCanonicalPath());
             File inferenceTestDir = new File(kbDir, "tests");
             preferences.put("inferenceTestDir",inferenceTestDir.getCanonicalPath());

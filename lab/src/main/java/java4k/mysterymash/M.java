@@ -603,17 +603,14 @@ public class M extends Applet implements Runnable {
 			long lastTime = System.nanoTime();
 
 
-            int p0 = WALL_OBJECT_INST_START_POS;
-
-            int p1 = OBJECT_INST_IMAGE_BASE_START_POS;
-
-
-            y1 = WALL_START_Y;
+			y1 = WALL_START_Y;
 
 
             int[] OBJECT_INST = new int[OBJECT_INST_SIZE];
             int x2;
-            for (x1 = 0; x1 < WALL_TOTAL_COUNT; x1++) {
+			int p1 = OBJECT_INST_IMAGE_BASE_START_POS;
+			int p0 = WALL_OBJECT_INST_START_POS;
+			for (x1 = 0; x1 < WALL_TOTAL_COUNT; x1++) {
 				
 				OBJECT_INST[p0 + OBJECT_INST_RECORD_VISIBLE_INDEX] = VISIBLE_YES;
 				OBJECT_INST[p0 + OBJECT_INST_RECORD_IMAGE_POS_INDEX] = p1;

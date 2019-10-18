@@ -35,13 +35,13 @@ public class Spiral<X> implements SpaceTransform<X> {
         int o = order++;
 
 
-        float angleRate = 0.5f;
-        float baseRad = 40f;
         SimpleSpatial vv = (SimpleSpatial) v;
         vv.body.clearForces();
         vv.body.setLinearVelocity(0,0,0);
         float nodeSpeed = 0.3f;
         /* ~phi */
+        float baseRad = 40f;
+        float angleRate = 0.5f;
         float r = baseRad + o * angleRate * 1.6f;
         float angle = o * angleRate;
         vv.move(
