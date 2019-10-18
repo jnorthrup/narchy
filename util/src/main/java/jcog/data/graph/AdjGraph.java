@@ -157,14 +157,14 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
      * @throws NullPointerException if the size was specified at construction time.
      */
     public int addNode(V o) {
-
-
         int index = node(o);
-        if (index == -1) {
-            return _addNode(o);
+        switch (index) {
+            case -1:
+                return _addNode(o);
+            default:
+                return index;
         }
 
-        return index;
     }
 
     private int _addNode(V o) {
@@ -186,14 +186,15 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     }
 
     public boolean setEdge(V i, V j, E value) {
+        boolean result = false;
         int ii = node(i);
         if (ii != -1) {
             int jj = node(j);
             if (jj != -1) {
-                return setEdge(ii, jj, value);
+                result = setEdge(ii, jj, value);
             }
         }
-        return false;
+        return result;
     }
 
     @Override
@@ -213,18 +214,19 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     }
 
     public @Nullable E edge(V i, V j) {
+        @Nullable E result = null;
         int ii = node(i);
         if (ii != -1) {
             int jj = node(j);
             if (jj != -1) {
-                return edge(ii, jj);
+                result = edge(ii, jj);
             }
         }
-        return null;
+        return result;
     }
 
 
-    
+
 
 
     @Override
