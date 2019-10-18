@@ -16,7 +16,7 @@ public class ShowJoin {
 	 * @return a small database of coffee types.
 	 */
 	private static Program coffee() {
-		Fact[] facts = new Fact[] {
+		Fact[] facts = {
 
 		new Fact("coffee", new Object[] { "Launch Mi", "french", "kenya", new Double(6.95) }),
 
@@ -42,7 +42,7 @@ public class ShowJoin {
 	 * @return a small database of coffee customers.
 	 */
 	private static Program customer() {
-		Fact[] facts = new Fact[] {
+		Fact[] facts = {
 
 		new Fact("customer", new Object[] { "Jim Johnson", new Integer(2024) }),
 
@@ -93,7 +93,7 @@ public class ShowJoin {
 	 * @return a small database of coffee orders.
 	 */
 	private static Program order() {
-		Fact[] facts = new Fact[] {
+		Fact[] facts = {
 
 		new Fact("order", new Object[] { new Integer(2024), "Simple Best", new Integer(1) }),
 

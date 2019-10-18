@@ -350,7 +350,7 @@ public class GameUtil {
         if ((self.monsterinfo.aiflags & Defines.AI_GOOD_GUY) != 0) {
             if (self.goalentity != null && self.goalentity.inuse
                     && self.goalentity.classname != null) {
-                if (self.goalentity.classname.equals("target_actor"))
+                if ("target_actor".equals(self.goalentity.classname))
                     return false;
             }
             
@@ -431,7 +431,7 @@ public class GameUtil {
             
             self.enemy = client;
 
-            if (!self.enemy.classname.equals("player_noise")) {
+            if (!"player_noise".equals(self.enemy.classname)) {
                 self.monsterinfo.aiflags &= ~Defines.AI_SOUND_TARGET;
 
                 if (self.enemy.client == null) {

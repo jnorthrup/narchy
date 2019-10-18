@@ -125,7 +125,7 @@ public final class NET {
      * Creates an netadr_t from an string.
      */
     public static boolean StringToAdr(String s, netadr_t a) {
-        if (s.equalsIgnoreCase("localhost") || s.equalsIgnoreCase("loopback")) {
+        if ("localhost".equalsIgnoreCase(s) || "loopback".equalsIgnoreCase(s)) {
             a.set(net_local_adr);
             return true;
         }
@@ -325,7 +325,7 @@ public final class NET {
             if (ip_channels[sock] == null || !ip_channels[sock].isOpen())
                 ip_channels[sock] = DatagramChannel.open();
 
-            if (ip == null || ip.length() == 0 || ip.equals("localhost")) {
+            if (ip == null || ip.length() == 0 || "localhost".equals(ip)) {
                 if (port == Defines.PORT_ANY) {
                     newsocket = ip_channels[sock].socket();
                     newsocket.bind(new InetSocketAddress(0));

@@ -261,7 +261,7 @@ class DynamicConjTest {
     void testDynamicConceptValid1() throws Narsese.NarseseException {
         Term c =
 
-                Op.CONJ.the(XTERNAL, new Term[]{$.$("(--,($1 ==>+- (((joy-->fz)&&fwd) &&+- $1)))"), $.$("(joy-->fz)"), $.$("fwd")}).normalize();
+                Op.CONJ.the(XTERNAL, $.$("(--,($1 ==>+- (((joy-->fz)&&fwd) &&+- $1)))"), $.$("(joy-->fz)"), $.$("fwd")).normalize();
 
         assertTrue(c instanceof Compound, c::toString);
         assertTrue(Task.validTaskTerm(c), () -> c + " should be a valid task target");
@@ -271,7 +271,7 @@ class DynamicConjTest {
     void testDynamicConceptValid2() throws Narsese.NarseseException {
         Term c =
 
-                Op.CONJ.the(XTERNAL, new Term[]{$.$("(--,((--,#1)&&#2))"), $.$("(--,#2)"), $.varDep(1)}).normalize();
+                Op.CONJ.the(XTERNAL, $.$("(--,((--,#1)&&#2))"), $.$("(--,#2)"), $.varDep(1)).normalize();
 
         assertTrue(c instanceof Compound, c::toString);
         assertTrue(Task.validTaskTerm(c), () -> c + " should be a valid task target");

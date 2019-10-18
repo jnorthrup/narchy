@@ -93,7 +93,7 @@ public class StateRuleSelection extends State {
             int depth = alternative.executionContext.depth;
             ec.choicePointAfterCut = choicePoint.prevChoicePointContext;
             Struct currentGoal = choicePoint.executionContext.currentGoal;
-            while (currentGoal.subs() == 2 && currentGoal.name().equals(";")) {
+            while (currentGoal.subs() == 2 && ";".equals(currentGoal.name())) {
                 if (choicePoint.prevChoicePointContext != null) {
                     int distance;
                     while ((distance = depth - choicePoint.prevChoicePointContext.executionContext.depth) == 0 && choicePoint.prevChoicePointContext != null) {

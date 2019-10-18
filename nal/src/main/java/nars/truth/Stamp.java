@@ -474,7 +474,7 @@ public interface Stamp {
      * @param b evidence stamp in sorted order
      */
     static boolean overlapsAny(long[] a, long[] b) {
-        if (a == b)
+        if (Arrays.equals(a, b))
             return true;
 
         int A = a.length;

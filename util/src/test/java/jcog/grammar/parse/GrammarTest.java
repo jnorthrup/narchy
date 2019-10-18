@@ -189,7 +189,7 @@ class GrammarTest {
     @Test
     void complexScenario() {
         defineTrackRobotGrammar();
-        String[] sentences = new String[]{"pick carrier from LINE_IN", "place carrier at DB101_IN", "scan DB101_OUT"};
+        String[] sentences = {"pick carrier from LINE_IN", "place carrier at DB101_IN", "scan DB101_OUT"};
         for (String sentence : sentences) {
             assertTrue(grammar.parse(sentence).isCompleteMatch());
         }
@@ -202,7 +202,7 @@ class GrammarTest {
     void performanceTest() {
         defineTrackRobotGrammar();
         grammar.check(); 
-        String[] sentences = new String[]{"pick carrier from LINE_IN", "place carrier at DB101_IN", "scan DB101_OUT"};
+        String[] sentences = {"pick carrier from LINE_IN", "place carrier at DB101_IN", "scan DB101_OUT"};
         long before = System.currentTimeMillis();
         for (int i = 0; i < 1000; i++) {
             for (String sentence : sentences) {

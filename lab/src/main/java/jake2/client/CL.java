@@ -774,7 +774,7 @@ public final class CL {
         Com.Println(Globals.net_from + ": " + c);
 
         
-        if (c.equals("client_connect")) {
+        if ("client_connect".equals(c)) {
             if (Globals.cls.state == Defines.ca_connected) {
                 Com.Printf("Dup connect received.  Ignored.\n");
                 return;
@@ -788,13 +788,13 @@ public final class CL {
         }
 
         
-        if (c.equals("info")) {
+        if ("info".equals(c)) {
             ParseStatusMessage();
             return;
         }
 
         
-        if (c.equals("cmd")) {
+        if ("cmd".equals(c)) {
             if (!NET.IsLocalAddress(Globals.net_from)) {
                 Com.Printf("Command packet from remote host.  Ignored.\n");
                 return;
@@ -805,7 +805,7 @@ public final class CL {
             return;
         }
         
-        if (c.equals("print")) {
+        if ("print".equals(c)) {
             s = MSG.ReadString(Globals.net_message);
             if (s.length() > 0)
             	Com.Printf(s);
@@ -813,20 +813,20 @@ public final class CL {
         }
 
         
-        if (c.equals("ping")) {
+        if ("ping".equals(c)) {
             Netchan.OutOfBandPrint(Defines.NS_CLIENT, Globals.net_from, "ack");
             return;
         }
 
         
-        if (c.equals("challenge")) {
+        if ("challenge".equals(c)) {
             Globals.cls.challenge = Lib.atoi(Cmd.Argv(1));
             SendConnectPacket();
             return;
         }
 
         
-        if (c.equals("echo")) {
+        if ("echo".equals(c)) {
             Netchan.OutOfBandPrint(Defines.NS_CLIENT, Globals.net_from, Cmd
                     .Argv(1));
             return;

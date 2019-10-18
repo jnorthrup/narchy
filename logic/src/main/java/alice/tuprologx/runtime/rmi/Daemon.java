@@ -13,7 +13,7 @@ public class Daemon {
         int port=1099;
         String portString="1099";
         if (args.length >0){
-            if (args[0].equals("-?")){
+            if ("-?".equals(args[0])){
                 System.out.println("\nargs: {-N<engine name>} {-P<rmi server port>} \nex: -Nprolog -P1099\n");
                 System.exit(-1);
             }

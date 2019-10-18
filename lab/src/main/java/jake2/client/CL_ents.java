@@ -873,7 +873,7 @@ public class CL_ents {
 				
 				
 				
-				if (Globals.cl.configstrings[Defines.CS_MODELS + (s1.modelindex2)].equalsIgnoreCase("models/items/shell/tris.md2")) {
+				if ("models/items/shell/tris.md2".equalsIgnoreCase(Globals.cl.configstrings[Defines.CS_MODELS + (s1.modelindex2)])) {
 					ent.alpha = 0.32f;
 					ent.flags = Defines.RF_TRANSLUCENT;
 				}

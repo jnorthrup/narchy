@@ -26,6 +26,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class a extends JPanel implements Runnable {
@@ -602,12 +603,12 @@ public class a extends JPanel implements Runnable {
                 }
 
                 
-                if (object != mario) {
+                if (!Arrays.equals(object, mario)) {
                   k = (object[OBJ_VX] < 0) ? x - 1 : x + 1;
                   for(j = queue.size() - 1; j >= 0; j--) {
                     if (j != i) {
                       float[] obj = queue.get(j);
-                      if (obj != mario
+                      if (!Arrays.equals(obj, mario)
                           && obj[OBJ_SQUASHED] == 0
                           && obj[OBJ_X] + obj[OBJ_X1]
                               <= k + object[OBJ_X2]
@@ -631,7 +632,7 @@ public class a extends JPanel implements Runnable {
               object[OBJ_X] += object[OBJ_VX];
 
               
-              if (mario != object
+              if (!Arrays.equals(mario, object)
                   && mario[OBJ_X] + mario[OBJ_X1]
                       <= object[OBJ_X] + object[OBJ_X2]
                   && mario[OBJ_X] + mario[OBJ_X2]
@@ -849,7 +850,7 @@ public class a extends JPanel implements Runnable {
           if (object[OBJ_X] < cameraX - 80 || object[OBJ_Y] > 320) {
             queue.remove(i);
 
-            if (object == mario) {
+            if (Arrays.equals(object, mario)) {
               
               fadeDelta = FADE_SPEED;
             }

@@ -90,9 +90,9 @@ public abstract class AbstractAgent {
      * @return
      */
     protected final ColorPalette makePalette(String paletteName) {
-        if (paletteName.equals("NTSC"))
+        if ("NTSC".equals(paletteName))
             return new NTSCPalette();
-        else if (paletteName.equals("SECAM"))
+        else if ("SECAM".equals(paletteName))
             return new SECAMPalette();
         else
             throw new IllegalArgumentException("Invalid palette: "+paletteName);

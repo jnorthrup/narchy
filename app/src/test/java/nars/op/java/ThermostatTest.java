@@ -44,7 +44,7 @@ public class ThermostatTest {
 //        n.start(new ConjClustering(n, BELIEF, 2, 8, (t) -> true));
 
 
-        boolean[] training = new boolean[]{true};
+        boolean[] training = {true};
 
         Opjects op = new Opjects(n) {
 

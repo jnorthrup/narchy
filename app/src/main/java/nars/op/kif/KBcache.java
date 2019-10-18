@@ -346,13 +346,13 @@ public class KBcache implements Serializable {
 
             if (arguments != null && !arguments.isEmpty()) {
                 int i = 2;
-                if (f.getArgument(0).equals("disjoint")) {
+                if ("disjoint".equals(f.getArgument(0))) {
                     i = 1;
                 }
                 for ( ; i < arguments.size(); i++) {
                     String key = arguments.get(i);
                     int j = 2;
-                    if (f.getArgument(0).equals("disjoint"))
+                    if ("disjoint".equals(f.getArgument(0)))
                         j = 1;
                     for ( ; j < arguments.size(); j++) {
                         if (j != i) {
@@ -446,7 +446,7 @@ public class KBcache implements Serializable {
             ArrayList<Formula> forms = kb.ask("arg", 1, child);
             for (Formula f : forms) {
                 String rel = f.getArgument(0);
-                if (instTransRels.contains(rel) && !rel.equals("subclass")) {
+                if (instTransRels.contains(rel) && !"subclass".equals(rel)) {
                     HashMap<String, HashSet<String>> prentList = parents.get(rel);
                     if (prentList != null) {
                         HashSet<String> prents = prentList.get(f.getArgument(1));
@@ -466,8 +466,8 @@ public class KBcache implements Serializable {
                             }
                         }
                     }
-                } else if (rel.equals("instance")) {
-                    if (child.equals("exhaustiveAttribute"))
+                } else if ("instance".equals(rel)) {
+                    if ("exhaustiveAttribute".equals(child))
                         System.out.println("INFO in KBcache.buildTransInstOf(): f: " + f);
                     String cl = f.getArgument(2);
                     HashMap<String, HashSet<String>> superclasses = parents.get("subclass");

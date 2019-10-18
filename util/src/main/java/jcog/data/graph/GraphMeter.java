@@ -25,6 +25,7 @@ import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.IntIntHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -343,7 +344,7 @@ public class GraphMeter {
 
         dist(g, k);
 
-        for (int i = 0; i < b.length; ++i) b[i] = 0;
+        Arrays.fill(b, 0);
         for (int aD : d) {
             if (aD >= 0 && aD < b.length) b[aD]++;
         }

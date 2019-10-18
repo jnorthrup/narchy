@@ -129,7 +129,7 @@ public class Scale extends SlingFunction {
 	 * Return a string representation of this function.
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("scale(");
 		for (int i = 0; i < 4; i++) {
 			buf.append(source[i]);

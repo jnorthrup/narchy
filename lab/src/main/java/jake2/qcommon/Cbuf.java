@@ -71,7 +71,7 @@ public final class Cbuf {
 
         for (int i = 0; i < Com.Argc(); i++) {
             String s = Com.Argv(i);
-            if (!s.equals("+setAt"))
+            if (!"+setAt".equals(s))
                 continue;
             Cbuf.AddText("setAt " + Com.Argv(i + 1) + ' ' + Com.Argv(i + 2)
                     + '\n');

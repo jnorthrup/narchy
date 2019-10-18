@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class HyperRectFloatTest {
 
     @Test void testFloatNDEquality() {
-        assertEquals(new FloatND(new float[] { 1, 1 }),new FloatND(new float[] { 1, 1 }));
+        assertEquals(new FloatND(1, 1),new FloatND(1, 1));
     }
     @Test
     void testSortBoundingPoints() {

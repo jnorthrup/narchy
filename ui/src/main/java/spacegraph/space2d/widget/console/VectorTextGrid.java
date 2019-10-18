@@ -18,7 +18,7 @@ import java.awt.*;
     @Deprecated
     protected static class TextCharacter {
 
-        static final float[] WHITE = new float[] { 1, 1, 1};
+        static final float[] WHITE = { 1, 1, 1};
 
         public char c;
         public float[] fgColor, bgColor;

@@ -366,7 +366,7 @@ public final class JOALSoundImpl implements Sound {
 			return RegisterSound(sexedFilename);
 		}
 	    
-		if (model.equalsIgnoreCase("female")) {
+		if ("female".equalsIgnoreCase(model)) {
 			String femaleFilename = "player/female/" + base.substring(1);
 			if (FS.FileLength("sound/" + femaleFilename) > 0)
 			    return AliasName(sexedFilename, femaleFilename);

@@ -218,8 +218,7 @@ public class BomberMap extends JPanel {
             for (int i = 0; i < 2; i++)
                 tracker.addImage(bombImages[i], counter++);
             /** load the fire brick images */
-            for (int i = 0; i < 8; i++)
-                fireImages[FIRE_BRICK][i] = fireBrickImages[level][i];
+            System.arraycopy(fireBrickImages[level], 0, fireImages[FIRE_BRICK], 0, 8);
             /** load the fire images */
             for (int i = 0; i < 8; i++)
                 for (int j = 0; j < 8; j++)

@@ -176,8 +176,8 @@ public class CL_parse {
         for (int i = 1; i < Defines.MAX_SOUNDS; i++) {
             if (Globals.cl.configstrings[Defines.CS_SOUNDS + i] == null
                     || Globals.cl.configstrings[Defines.CS_SOUNDS + i].isEmpty()
-                    || Globals.cl.configstrings[Defines.CS_SOUNDS + i]
-                            .equals("\0"))
+                    || "\0"
+                            .equals(Globals.cl.configstrings[Defines.CS_SOUNDS + i]))
                 break;
             Globals.cl.sound_precache[i] = S
                     .RegisterSound(Globals.cl.configstrings[Defines.CS_SOUNDS
@@ -423,7 +423,7 @@ public class CL_parse {
 
             
             
-            if (ci.skin == null && !model_name.equalsIgnoreCase("male")) {
+            if (ci.skin == null && !"male".equalsIgnoreCase(model_name)) {
                 
                 model_name = "male";
                 model_filename = "players/male/tris.md2";
@@ -449,7 +449,7 @@ public class CL_parse {
                 weapon_filename = "players/" + model_name + '/'
                         + CL_view.cl_weaponmodels[i];
                 ci.weaponmodel[i] = Globals.re.RegisterModel(weapon_filename);
-                if (null == ci.weaponmodel[i] && model_name.equals("cyborg")) {
+                if (null == ci.weaponmodel[i] && "cyborg".equals(model_name)) {
                     
                     weapon_filename = "players/male/"
                             + CL_view.cl_weaponmodels[i];

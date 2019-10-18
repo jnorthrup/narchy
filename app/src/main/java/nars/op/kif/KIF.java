@@ -339,7 +339,7 @@ public class KIF implements Iterable<Task> {
                         if (!includePredArgCounts && predExclusions.contains(pred))
                             return null;
 
-                        if (root.equals("instance"))
+                        if ("instance".equals(root))
                             y = $.inst(subj, pred);
                         else
                             y = INH.the(subj, pred);

@@ -138,7 +138,7 @@ public enum Mocker {
             if (declaringClass == Object.class) {
                 return method.invoke(this, args);
 
-            } else if (declaringClass == Closeable.class && method.getName().equals("close")) {
+            } else if (declaringClass == Closeable.class && "close".equals(method.getName())) {
 
                 closeQuietly(closeable);
                 return null;

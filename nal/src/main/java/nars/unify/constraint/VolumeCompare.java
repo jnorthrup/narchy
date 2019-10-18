@@ -10,7 +10,7 @@ import nars.unify.Unify;
 /** TODO impl a generic volume comparison constraint to replace both Bigger and Smaller */
 public final class VolumeCompare extends RelationConstraint {
 
-    static final Term[] ONLY_IF_CONSTANT = new Term[] { Atomic.atom("onlyIfConstants") };
+    static final Term[] ONLY_IF_CONSTANT = { Atomic.atom("onlyIfConstants") };
     static final Atom VOLUME_COMPARE = Atomic.atom(VolumeCompare.class.getSimpleName());
 
     private final boolean onlyIfConstant;

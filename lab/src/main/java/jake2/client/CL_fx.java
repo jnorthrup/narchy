@@ -35,6 +35,8 @@ import jake2.sound.S;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import java.util.Arrays;
+
 /**
  * Client Graphics Effects.
  */
@@ -91,8 +93,7 @@ public class CL_fx {
 
 		void clear() {
 			value[0] = value[1] = value[2] = length = 0;
-			for (int i = 0; i < map.length; i++)
-				map[i] = 0.0f;
+            Arrays.fill(map, 0.0f);
 		}
 	}
 

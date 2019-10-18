@@ -71,7 +71,7 @@ public final class Sys extends Defines {
             findpattern = "*";
         }
 
-        if (findpattern.equals("*.*")) {
+        if ("*.*".equals(findpattern)) {
             findpattern = "*";
         }
 
@@ -179,7 +179,7 @@ public final class Sys extends Defines {
             
             String name = dir.getName();
 
-            return !(name.equals(".") || name.equals(".."));
+            return !(".".equals(name) || "..".equals(name));
 
         }
 

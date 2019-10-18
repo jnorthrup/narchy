@@ -154,15 +154,12 @@ public class RLBooster  {
             float tf = t!=null ? truthFeedback(t) : Float.NaN;
             float y = tf != tf ? noise() : tf;
             //y = (y - 0.5f) * 2; //polarize
-            if (actionDiscretization > 2) {
-                for (int d = 0; d < actionDiscretization-1; d++) {
-                    //float yd = ((((float)d)/(actionDiscretization-1)) - 0.5f)*2;
-                    float yd = ((float)(d))/(actionDiscretization-1);
-                    feedback[k++] = y * Util.sqr(1 - Math.abs(yd - y)); //window
-                }
-            } else {
-                feedback[k++] = y;
+            if (actionDiscretization > 2) for (int d = 0; d < actionDiscretization - 1; d++) {
+                //float yd = ((((float)d)/(actionDiscretization-1)) - 0.5f)*2;
+                float yd = ((float) (d)) / (actionDiscretization - 1);
+                feedback[k++] = y * Util.sqr(1 - Math.abs(yd - y)); //window
             }
+            else feedback[k++] = y;
         }
 
         float feedbackSum = Util.sum(feedback);
@@ -186,7 +183,7 @@ public class RLBooster  {
     public void accept(Game g) {
         NAR nar = env.nar();
 
-        double reward = ((HAPPINESS.valueOf(env.happiness() ) - 0.5f) * 2);
+        double reward = ((HAPPINESS.valueOf(env.happiness()) - 0.5f) * 2);
 
         //System.out.println(reward);
         lastReward = reward;
@@ -203,57 +200,44 @@ public class RLBooster  {
         long start = w.start;
         long end = w.end;
         float[] ii = input(start, end);
-        if (history instanceof TensorRing) {
-            ((TensorRing)history).setSpin(ii).snapshot(ii);
-        } else {
-            ((ArrayTensor)history).set(ii); //TODO just make ArrayTensor wrapping _in
-        }
+        if (history instanceof TensorRing) ((TensorRing) history).setSpin(ii).snapshot(ii);
+        else ((ArrayTensor) history).set(ii); //TODO just make ArrayTensor wrapping _in
 
         int a = agent.act(actionFeedback(w), (float) reward, Util.toFloat(history.doubleArray()));
-        int buttons = (actionDiscretization-1)*actions.length;
-        if (a >= buttons) {
-            //nothing action, or otherwise beyond range of action buttons
-            return ;
-        }
-        int A = a / (actionDiscretization);
-        int level = a % (actionDiscretization);
-
-//        float OFFfreq =
+        int buttons = (actionDiscretization - 1) * actions.length;
+        //nothing action, or otherwise beyond range of action buttons
+        if (a < buttons) {
+            int A = a / (actionDiscretization);
+            int level = a % (actionDiscretization);//        float OFFfreq =
 //                //0f;
 //                Float.NaN;
 //        float ONfreq = 1f;
-
-
-        float conf = this.conf.floatValue();
-//        Truth off = OFFfreq == OFFfreq ? $.t(OFFfreq, conf) : null;
+            float conf = this.conf.floatValue();//        Truth off = OFFfreq == OFFfreq ? $.t(OFFfreq, conf) : null;
 //        long range = end-start;
 //        long nextStart = end;
 //        long nextEnd = nextStart + range;
-        //long nextStart = start, nextEnd = end;
-
-        //TODO modify Agent API to provide a continuous output vector and use that to interpolate across the different states
-
-        List<Task> e = new FasterList(actions.length);
-        for (int o = 0; o < actions.length; o++ ) {
-            float freq;
-            if (o == A) {
-                freq = actionDiscretization > 2 ? (((float)level)/(actionDiscretization-1)) : 1;
-            } else{
+//long nextStart = start, nextEnd = end;
+//TODO modify Agent API to provide a continuous output vector and use that to interpolate across the different states
+            List<Task> e = new FasterList(actions.length);
+            for (int o = 0; o < actions.length; o++) {
+                float freq;
                 //freq = 0;
-                freq = actionDiscretization > 2 ? Float.NaN : 0;
-            }
+                if (o == A) freq = actionDiscretization > 2 ? (((float) level) / (actionDiscretization - 1)) : 1;
+                else freq = actionDiscretization > 2 ? Float.NaN : 0;
 
-            if (freq==freq) {
-                Truth t = $.t(freq, conf);
-                Task tt =
-                    new SignalTask(actions[o].term(), GOAL, t, start, start, end, new long[]{nar.time.nextStamp()});
-                //NALTask.the(actions[o].term(), GOAL, t, now, start, end, new long[]{nar.time.nextStamp()});
-                tt.pri(nar.priDefault(GOAL));
-                e.add(tt);
+                if (freq == freq) {
+                    Truth t = $.t(freq, conf);
+                    Task tt =
+                            new SignalTask(actions[o].term(), GOAL, t, start, start, end, new long[]{nar.time.nextStamp()});
+                    //NALTask.the(actions[o].term(), GOAL, t, now, start, end, new long[]{nar.time.nextStamp()});
+                    tt.pri(nar.priDefault(GOAL));
+                    e.add(tt);
+                }
             }
+            in.acceptAll(e, g.what());
         }
 
-        in.acceptAll(e, g.what());
+
     }
 
     public float[] actionFeedback(When when) {

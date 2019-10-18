@@ -1,5 +1,7 @@
 package net.propero.rdp.crypto;
 
+import java.util.Arrays;
+
 /**
  * This class implements the RC4 (TM) stream cipher.
  * <p>
@@ -149,7 +151,7 @@ public final class RC4 {
             throw new IllegalArgumentException("inLen < 0");
 
         
-        if (in == out
+        if (Arrays.equals(in, out)
                 && (outOffset >= inOffset && outOffset < inOffset + inLen || inOffset >= outOffset
                 && inOffset < outOffset + inLen)) {
             byte[] newin = new byte[inLen];

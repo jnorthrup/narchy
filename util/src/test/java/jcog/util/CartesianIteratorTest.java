@@ -35,7 +35,7 @@ class CartesianIteratorTest {
     @Test
     void test_2() {
         CartesianIterator it = new CartesianIterator(String[]::new,
-                Arrays.asList(new String[]{"a", "b"}));
+                Arrays.asList("a", "b"));
 
         assertTrue(it.hasNext());
         assertEquals("a", Joiner.on("").join(it.next()));
@@ -47,8 +47,8 @@ class CartesianIteratorTest {
     @Test
     void test_2_0() {
         CartesianIterator it = new CartesianIterator(String[]::new,
-                Arrays.asList(new String[]{"a", "b"}),
-                Arrays.asList(new String[]{}));
+                Arrays.asList("a", "b"),
+                Arrays.asList());
 
         assertFalse(it.hasNext());
         try {
@@ -60,8 +60,8 @@ class CartesianIteratorTest {
     @Test
     void test_2_2() {
         CartesianIterator it = new CartesianIterator(String[]::new,
-                Arrays.asList(new String[]{"a", "b"}),
-                Arrays.asList(new String[]{"c", "d"}));
+                Arrays.asList("a", "b"),
+                Arrays.asList("c", "d"));
 
         assertTrue(it.hasNext());
         assertEquals("ac", Joiner.on("").join(it.next()));
@@ -77,9 +77,9 @@ class CartesianIteratorTest {
     @Test
     void test_2_3_4() {
         CartesianIterator it = new CartesianIterator(String[]::new,
-                Arrays.asList(new String[]{"a", "b"}),
-                Arrays.asList(new String[]{"c", "d", "e"}),
-                Arrays.asList(new String[]{"f", "g", "h", "i"}));
+                Arrays.asList("a", "b"),
+                Arrays.asList("c", "d", "e"),
+                Arrays.asList("f", "g", "h", "i"));
 
         assertTrue(it.hasNext());
         assertEquals("acf", Joiner.on("").join(it.next()));

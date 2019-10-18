@@ -21,6 +21,7 @@ import nars.term.util.cache.Intermed.InternedSubterms;
 import nars.term.util.conj.ConjBuilder;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -202,7 +203,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
                     resolve(x) :
                     t[i-1] /* re-use previous if identical */;
             if (y != x) { // && y.equals(x))
-                if (u == t)
+                if (Arrays.equals(u, t))
                     u = t.clone();
                 u[i] = y;
             }

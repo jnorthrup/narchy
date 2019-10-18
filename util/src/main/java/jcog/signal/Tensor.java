@@ -25,11 +25,11 @@ import java.util.Random;
 public interface Tensor  {
 
     /** 2d vectors */
-    int[] v2Shape = new int[] { 2 };
+    int[] v2Shape = { 2 };
     /** 3d vectors */
-    int[] v3Shape = new int[] { 3 };
+    int[] v3Shape = { 3 };
     /** quaternions */
-    int[] v4Shape = new int[] { 4 };
+    int[] v4Shape = { 4 };
     Tensor[] EmptyArray = new Tensor[0];
 
     static Tensor vectorFromTo(int start, int end) {

@@ -398,7 +398,7 @@ public class OOLibrary extends PrologLib {
             	 * On Dalvik VM we can only use the DexClassLoader.
             	 */
 
-                Class<?> the_class = Class.forName(fullClassName, true, System.getProperty("java.vm.name").equals("Dalvik") ? dynamicLoader : new ClassLoader());
+                Class<?> the_class = Class.forName(fullClassName, true, "Dalvik".equals(System.getProperty("java.vm.name")) ? dynamicLoader : new ClassLoader());
 
                 if (bindDynamicObject(id, the_class))
                     return true;
@@ -438,12 +438,12 @@ public class OOLibrary extends PrologLib {
 							.toString()));
 				}
 				Struct sel = (Struct) objId;
-				if (sel.name().equals(".") && sel.subs() == 2
+				if (".".equals(sel.name()) && sel.subs() == 2
 						&& method.subs() == 1) {
-					if (methodName.equals("setAt")) {
+					if ("setAt".equals(methodName)) {
 						return java_set(sel.subResolve(0), sel.subResolve(1), method
 								.subResolve(0));
-					} else if (methodName.equals("get")) {
+					} else if ("get".equals(methodName)) {
 						return java_get(sel.subResolve(0), sel.subResolve(1), method
 								.subResolve(0));
 					}
@@ -481,7 +481,7 @@ public class OOLibrary extends PrologLib {
 				if (objId.isCompound()) {
 					Struct id = (Struct) objId;
 
-					if (id.subs() == 1 && id.name().equals("class")) {
+					if (id.subs() == 1 && "class".equals(id.name())) {
 						try {
 							String clName = alice.util.Tools
 									.removeApostrophes(id.sub(0).toString());
@@ -620,7 +620,7 @@ public class OOLibrary extends PrologLib {
         try {
             Class<?> cl = null;
             Object obj = null;
-            if(objId.isCompound() && ((Struct) objId).name().equals("class"))
+            if(objId.isCompound() && "class".equals(((Struct) objId).name()))
             {
             	String clName = null;
             	
@@ -703,7 +703,7 @@ public class OOLibrary extends PrologLib {
         try {
             Class<?> cl = null;
             Object obj = null;
-            if(objId.isCompound() && ((Struct) objId).name().equals("class"))
+            if(objId.isCompound() && "class".equals(((Struct) objId).name()))
             {
             	String clName = null;
             	if(((Struct) objId).subs() == 1)
@@ -1138,7 +1138,7 @@ public class OOLibrary extends PrologLib {
             } else if (term instanceof Struct) {
                 
                 Struct tc = (Struct) term;
-                if (tc.name().equals("as")) {
+                if ("as".equals(tc.name())) {
                     return parse_as(values, types, i, tc.subResolve(0), tc
                             .subResolve(1));
                 } else {
@@ -1175,13 +1175,13 @@ public class OOLibrary extends PrologLib {
                 String castWhat_name = alice.util.Tools.removeApostrophes(castWhat
                         .term().toString());
                 
-                if (castTo_name.equals("java.lang.String")
-                        && castWhat_name.equals("true")) {
+                if ("java.lang.String".equals(castTo_name)
+                        && "true".equals(castWhat_name)) {
                     values[i] = "true";
                     types[i] = String.class;
                     return true;
-                } else if (castTo_name.equals("java.lang.String")
-                        && castWhat_name.equals("false")) {
+                } else if ("java.lang.String".equals(castTo_name)
+                        && "false".equals(castWhat_name)) {
                     values[i] = "false";
                     types[i] = String.class;
                     return true;
@@ -1218,10 +1218,10 @@ public class OOLibrary extends PrologLib {
                             break;
                     }
                 }
-                if (!castWhat_name.equals("null")) {
+                if (!"null".equals(castWhat_name)) {
                     Object obj_to_cast = currentObjects.get(castWhat_name);
                     if (obj_to_cast == null) {
-                        if (castTo_name.equals("boolean")) {
+                        if ("boolean".equals(castTo_name)) {
                             switch (castWhat_name) {
                                 case "true":
                                     values[i] = Boolean.TRUE;

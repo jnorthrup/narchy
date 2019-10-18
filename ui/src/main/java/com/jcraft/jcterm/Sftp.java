@@ -166,18 +166,18 @@ class Sftp implements Runnable {
                     continue;
 
                 String cmd = (String) cmds.elementAt(0);
-                if (cmd.equals("stop")) {
+                if ("stop".equals(cmd)) {
                     c.quit();
                     break;
                 }
-                if (cmd.equals("exit")) {
+                if ("exit".equals(cmd)) {
                     c.exit();
                     break;
                 }
-                if (cmd.equals("cd") || cmd.equals("lcd")) {
+                if ("cd".equals(cmd) || "lcd".equals(cmd)) {
                     String path = null;
                     if (cmds.size() < 2) {
-                        if (cmd.equals("cd"))
+                        if ("cd".equals(cmd))
                             path = c.getHome();
                         else
                             path = lhome;
@@ -185,7 +185,7 @@ class Sftp implements Runnable {
                         path = (String) cmds.elementAt(1);
                     }
                     try {
-                        if (cmd.equals("cd"))
+                        if ("cd".equals(cmd))
                             c.cd(path);
                         else
                             c.lcd(path);
@@ -221,7 +221,7 @@ class Sftp implements Runnable {
                     }
                     continue;
                 }
-                if (cmd.equals("lmkdir")) {
+                if ("lmkdir".equals(cmd)) {
                     if (cmds.size() < 2)
                         continue;
                     String path = (String) cmds.elementAt(1);
@@ -242,7 +242,7 @@ class Sftp implements Runnable {
                         continue;
                     String path = (String) cmds.elementAt(2);
                     int foo = 0;
-                    if (cmd.equals("chmod")) {
+                    if ("chmod".equals(cmd)) {
                         byte[] bar = ((String) cmds.elementAt(1)).getBytes();
                         int k;
                         for (byte aBar : bar) {
@@ -283,10 +283,10 @@ class Sftp implements Runnable {
                     }
                     continue;
                 }
-                if (cmd.equals("pwd") || cmd.equals("lpwd")) {
-                    str = (cmd.equals("pwd") ? "Remote" : "Local");
+                if ("pwd".equals(cmd) || "lpwd".equals(cmd)) {
+                    str = ("pwd".equals(cmd) ? "Remote" : "Local");
                     str += " working directory: ";
-                    if (cmd.equals("pwd"))
+                    if ("pwd".equals(cmd))
                         str += c.pwd();
                     else
                         str += c.lpwd();
@@ -296,7 +296,7 @@ class Sftp implements Runnable {
                     out.flush();
                     continue;
                 }
-                if (cmd.equals("ls") || cmd.equals("dir")) {
+                if ("ls".equals(cmd) || "dir".equals(cmd)) {
                     String path = ".";
                     if (cmds.size() == 2)
                         path = (String) cmds.elementAt(1);
@@ -319,7 +319,7 @@ class Sftp implements Runnable {
                     }
                     continue;
                 }
-                if (cmd.equals("lls")) {
+                if ("lls".equals(cmd)) {
                     String path = c.lpwd();
                     if (cmds.size() == 2)
                         path = (String) cmds.elementAt(1);
@@ -339,7 +339,7 @@ class Sftp implements Runnable {
                     }
                     continue;
                 }
-                if (cmd.equals("get") || cmd.equals("put")) {
+                if ("get".equals(cmd) || "put".equals(cmd)) {
                     if (cmds.size() != 2 && cmds.size() != 3)
                         continue;
                     String p1 = (String) cmds.elementAt(1);
@@ -349,7 +349,7 @@ class Sftp implements Runnable {
                         p2 = (String) cmds.elementAt(2);
                     try {
                         SftpProgressMonitor monitor = new MyProgressMonitor(out);
-                        if (cmd.equals("get"))
+                        if ("get".equals(cmd))
                             c.get(p1, p2, monitor);
                         else
                             c.put(p1, p2, monitor);
@@ -367,7 +367,7 @@ class Sftp implements Runnable {
                     String p1 = (String) cmds.elementAt(1);
                     String p2 = (String) cmds.elementAt(2);
                     try {
-                        if (cmd.equals("rename"))
+                        if ("rename".equals(cmd))
                             c.rename(p1, p2);
                         else
                             c.symlink(p1, p2);
@@ -379,13 +379,13 @@ class Sftp implements Runnable {
                     }
                     continue;
                 }
-                if (cmd.equals("stat") || cmd.equals("lstat")) {
+                if ("stat".equals(cmd) || "lstat".equals(cmd)) {
                     if (cmds.size() != 2)
                         continue;
                     String p1 = (String) cmds.elementAt(1);
                     SftpATTRS attrs = null;
                     try {
-                        if (cmd.equals("stat"))
+                        if ("stat".equals(cmd))
                             attrs = c.stat(p1);
                         else
                             attrs = c.lstat(p1);
@@ -404,14 +404,14 @@ class Sftp implements Runnable {
                     }
                     continue;
                 }
-                if (cmd.equals("version")) {
+                if ("version".equals(cmd)) {
                     
                     out.write(("SFTP protocol version " + c.version()).getBytes());
                     out.write(lf);
                     out.flush();
                     continue;
                 }
-                if (cmd.equals("help") || cmd.equals("help")) {
+                if ("help".equals(cmd) || "help".equals(cmd)) {
 
                     for (String aHelp : help) {
                         out.write((aHelp).getBytes());

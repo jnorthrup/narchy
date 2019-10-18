@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 /** TODO remote cache invalidation for the tunnel itself, when code changes here */
 public class SimpleTunnelInitiator implements TunnellerInitiator {
 
-    private static final String[] tunnelerArgs = new String[] {
+    private static final String[] tunnelerArgs = {
         //"-Xmx32m", "-Xms32m"
         "-Xmx16m", "-Xms16m"
     };

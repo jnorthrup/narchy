@@ -1168,23 +1168,23 @@ public final class Cmd {
 
         String cmd = game_import_t.argv(0).toLowerCase();
     
-        if (cmd.equals("players")) {
+        if ("players".equals(cmd)) {
             Players_f(ent);
             return;
         }
-        if (cmd.equals("say")) {
+        if ("say".equals(cmd)) {
             Say_f(ent, false, false);
             return;
         }
-        if (cmd.equals("say_team")) {
+        if ("say_team".equals(cmd)) {
             Say_f(ent, true, false);
             return;
         }
-        if (cmd.equals("score")) {
+        if ("score".equals(cmd)) {
             Score_f(ent);
             return;
         }
-        if (cmd.equals("help")) {
+        if ("help".equals(cmd)) {
             Help_f(ent);
             return;
         }

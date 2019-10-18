@@ -117,7 +117,7 @@ public class FPGrow {
                 
                 LinkedList<String> path = new LinkedList<>();
                 FPNode parent = nextNode;
-                while (!(parent = parent.parent).itemName.equals("ROOT")) {
+                while (!"ROOT".equals((parent = parent.parent).itemName)) {
                     path.push(parent.itemName);
                 }
                 if (path.isEmpty()) continue;

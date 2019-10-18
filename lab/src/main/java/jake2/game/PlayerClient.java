@@ -867,7 +867,7 @@ public class PlayerClient {
     }
 
     private static boolean passwdOK(String i1, String i2) {
-        return !(i1.length() != 0 && !i1.equals("none") && !i1.equals(i2));
+        return !(i1.length() != 0 && !"none".equals(i1) && !i1.equals(i2));
     }
 
     /**
@@ -1216,7 +1216,7 @@ public class PlayerClient {
         
         s = Info.Info_ValueForKey(userinfo, "spectator");
         
-        ent.client.pers.spectator = GameBase.deathmatch.value != 0 && !s.equals("0");
+        ent.client.pers.spectator = GameBase.deathmatch.value != 0 && !"0".equals(s);
 
         
         s = Info.Info_ValueForKey(userinfo, "skin");

@@ -45,7 +45,7 @@ public class PoleBalancing2D implements RLEnvironment {
 
     @Override
     public double[] observe() {
-        double[] o = new double[]{
+        double[] o = {
             (agentPoint.x)/(maxX),
             
             (pendulumPoint.x)/(maxX),

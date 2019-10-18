@@ -639,7 +639,7 @@ public class Reflect {
      * their corresponding wrappers.
      */
     private boolean match(Class<?>[] declared, Class<?>[] actual) {
-        if (declared == actual)
+        if (Arrays.equals(declared, actual))
             return true;
 
         if (declared.length == actual.length) {

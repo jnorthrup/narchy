@@ -412,8 +412,8 @@ public class VID extends Globals {
 
 		
 		
-		if ( vid_ref.string.equalsIgnoreCase("soft") ||
-			 vid_ref.string.equalsIgnoreCase("softx") )
+		if ( "soft".equalsIgnoreCase(vid_ref.string) ||
+			 "softx".equalsIgnoreCase(vid_ref.string) )
 		{
 			float gamma = ( 0.8f - ( slider.curvalue/10.0f - 0.5f ) ) + 0.5f;
 

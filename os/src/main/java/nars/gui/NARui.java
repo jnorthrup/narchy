@@ -77,6 +77,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.*;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static com.jogamp.newt.event.KeyEvent.VK_ENTER;
@@ -123,11 +124,7 @@ public class NARui {
     }
 
     public static HashMap<String, Supplier<Surface>> parts(Thing p) {
-        var m = new HashMap<String, Supplier<Surface>>();
-        p.partStream().forEach(s -> {
-            m.put( s.toString(), ()-> new ObjectSurface(s));
-        });
-        return m;
+        return (HashMap<String, Supplier<Surface>>) p.partStream().collect(Collectors.toMap(Object::toString, s -> () -> new ObjectSurface(s), (a, b) -> b, (Supplier<HashMap<String, Supplier<Surface>>>) HashMap::new));
     }
 
     public static HashMap<String, Supplier<Surface>> menu(NAR n) {

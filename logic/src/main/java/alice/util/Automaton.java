@@ -47,14 +47,14 @@ public abstract class Automaton implements Runnable, java.io.Serializable {
     }
 
     protected void become(String s){
-        if (!state.equals("end")){
+        if (!"end".equals(state)){
             state=s;
             arguments=null;
         }
     }
 
     protected void become(String s, Object... args){
-        if (!state.equals("end")){
+        if (!"end".equals(state)){
             state=s;
             arguments=args;
         }
@@ -67,7 +67,7 @@ public abstract class Automaton implements Runnable, java.io.Serializable {
     public void run(){
         while (true){
             try {
-                if (!state.equals("end")){
+                if (!"end".equals(state)){
                     if (arguments==null){
                         this.getClass().getDeclaredMethod(state,(Class<?>[])null).invoke(this,(Object[])null);
                     } else {

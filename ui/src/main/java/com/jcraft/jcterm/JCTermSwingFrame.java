@@ -72,7 +72,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         JCTermSwing.setCR(new ConfigurationRepositoryFS());
 
         String s = System.getProperty("jcterm.config.use_ssh_agent");
-        if (s != null && s.equals("true"))
+        if (s != null && "true".equals(s))
             JSchSession.useSSHAgent(true);
 
         this.configName = configName;
@@ -384,9 +384,9 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         String action = e.getActionCommand();
 
         int _mode = SHELL;
-        if (action.equals("Open SHELL Session...")) {
+        if ("Open SHELL Session...".equals(action)) {
             _mode = SHELL;
-        } else if (action.equals("Open SFTP Session...")) {
+        } else if ("Open SFTP Session...".equals(action)) {
             _mode = SFTP;
         }
 
@@ -491,7 +491,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
 
                 try {
                     String title = "";
-                    if (action.equals("Local Port...")) {
+                    if ("Local Port...".equals(action)) {
                         title += "Local port forwarding";
                     } else {
                         title += "remote port forwarding";
@@ -506,7 +506,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                     String host = foo.substring(0, foo.indexOf(':'));
                     int port2 = Integer.parseInt(foo.substring(foo.indexOf(':') + 1));
 
-                    if (action.equals("Local Port...")) {
+                    if ("Local Port...".equals(action)) {
                         setPortForwardingL(port1, host, port2);
                     } else {
                         setPortForwardingR(port1, host, port2);

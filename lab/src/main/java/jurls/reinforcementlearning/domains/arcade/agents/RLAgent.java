@@ -185,13 +185,13 @@ public class RLAgent extends AbstractAgent {
         
         while (!doneParsing) {
             
-            if (args[argIndex].equals("-nogui")) {
+            if ("-nogui".equals(args[argIndex])) {
                 useGUI = false;
                 argIndex++;
             }
             
             
-            else if (args[argIndex].equals("-named_pipes") && (argIndex + 1) < args.length) {
+            else if ("-named_pipes".equals(args[argIndex]) && (argIndex + 1) < args.length) {
                 namedPipesName = args[argIndex+1];
 
                 argIndex += 2;

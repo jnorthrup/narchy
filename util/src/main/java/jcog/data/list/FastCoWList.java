@@ -215,7 +215,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
             if (copy.compareAndSet(prev, next))
                 return next;
 
-            haveNext = prev == (prev = copy.get());
+            haveNext = Arrays.equals(prev, (prev = copy.get()));
         }
     }
 

@@ -34,8 +34,8 @@ class LuceneMapTest {
         assertFalse(map.containsValue("val"));
 
         assertTrue(map.entrySet().size() == 1);
-        assertTrue(map.entrySet().iterator().next().getKey().equals("key"));
-        assertTrue(map.entrySet().iterator().next().getValue().equals("val2"));
+        assertTrue("key".equals(map.entrySet().iterator().next().getKey()));
+        assertTrue("val2".equals(map.entrySet().iterator().next().getValue()));
 
 
         Random random = new XoRoShiRo128PlusRandom(1);

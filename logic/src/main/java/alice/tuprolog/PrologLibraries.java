@@ -107,7 +107,7 @@ public class PrologLibraries {
              * Dalvik Virtual Machine
              */
             ClassLoader loader = null;
-            if (System.getProperty("java.vm.name").equals("Dalvik")) {
+            if ("Dalvik".equals(System.getProperty("java.vm.name"))) {
                 /*
                  * Only the first path is used. Dex file doesn't contain .class files
                  * and therefore getResource() method can't be used to locate the files at runtime.
@@ -149,7 +149,7 @@ public class PrologLibraries {
                     urls[i] = (file.toURI().toURL());
                 }
 
-                if (!System.getProperty("java.vm.name").equals("IKVM.NET")) {
+                if (!"IKVM.NET".equals(System.getProperty("java.vm.name"))) {
                     loader = URLClassLoader.newInstance(urls, getClass()
                             .getClassLoader());
                     lib = (PrologLib) Class.forName(className, true, loader).getConstructor().newInstance();
@@ -179,7 +179,7 @@ public class PrologLibraries {
          *
          * Dalvik Virtual Machine
          */
-        if (System.getProperty("java.vm.name").equals("Dalvik")) {
+        if ("Dalvik".equals(System.getProperty("java.vm.name"))) {
             try {
                 /*
                  * getResource() can't be used with dex files.

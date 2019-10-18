@@ -3976,14 +3976,14 @@ public final class Menu extends Key {
         /*
          * * sort by male, female, then alphabetical
          */
-        if (a.directory.equals("male"))
+        if ("male".equals(a.directory))
             return -1;
-        else if (b.directory.equals("male"))
+        else if ("male".equals(b.directory))
             return 1;
 
-        if (a.directory.equals("female"))
+        if ("female".equals(a.directory))
             return -1;
-        else if (b.directory.equals("female"))
+        else if ("female".equals(b.directory))
             return 1;
 
         return a.directory.compareTo(b.directory);

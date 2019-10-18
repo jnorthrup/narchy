@@ -49,77 +49,77 @@ public class spawn_temp_t {
 	public float maxpitch;
 
 	public boolean set(String key, String value) {
-		if (key.equals("lip")) {
+		if ("lip".equals(key)) {
 			lip=Lib.atoi(value);
 			return true;
 		} 
 		
-		if (key.equals("distance")) {
+		if ("distance".equals(key)) {
 			distance=Lib.atoi(value);
 			return true;
 		} 
 		
-		if (key.equals("height")) {
+		if ("height".equals(key)) {
 			height=Lib.atoi(value);
 			return true;
 		} 
 		
-		if (key.equals("noise")) {
+		if ("noise".equals(key)) {
 			noise = GameSpawn.ED_NewString(value);
 			return true;
 		} 
 		
-		if (key.equals("pausetime")) {
+		if ("pausetime".equals(key)) {
 			pausetime = Lib.atof(value);
 			return true;
 		} 
 		
-		if (key.equals("item")) {
+		if ("item".equals(key)) {
 			item = GameSpawn.ED_NewString(value);
 			return true;
 		} 
 		
-		if (key.equals("gravity")) {
+		if ("gravity".equals(key)) {
 			 gravity = GameSpawn.ED_NewString(value);
 			return true;
 		} 
 		
-		if (key.equals("sky")) {
+		if ("sky".equals(key)) {
 			sky = GameSpawn.ED_NewString(value);
 			return true;
 		} 
 		
-		if (key.equals("skyrotate")) {
+		if ("skyrotate".equals(key)) {
 			skyrotate=Lib.atof(value);
 			return true;
 		} 
 		
-		if (key.equals("skyaxis")) {
+		if ("skyaxis".equals(key)) {
 			skyaxis=Lib.atov(value);
 			return true;
 		} 
 		
-		if (key.equals("minyaw")) {
+		if ("minyaw".equals(key)) {
 			minyaw=Lib.atof(value);
 			return true;
 		} 
 		
-		if (key.equals("maxyaw")) {
+		if ("maxyaw".equals(key)) {
 			maxyaw=Lib.atof(value);
 			return true;
 		} 
 		
-		if (key.equals("minpitch")) {
+		if ("minpitch".equals(key)) {
 			minpitch = Lib.atof(value);
 			return true;
 		} 
 		
-		if (key.equals("maxpitch")) {
+		if ("maxpitch".equals(key)) {
 			maxpitch = Lib.atof(value);
 			return true;
 		} 
 		
-		if (key.equals("nextmap")) {
+		if ("nextmap".equals(key)) {
 			nextmap  = GameSpawn.ED_NewString(value);
 			return true;
 		} 

@@ -1288,7 +1288,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
     public void actionPerformed(ActionEvent e) {
 
-        if (e.getActionCommand().equals("proof_exit_button")) {
+        if ("proof_exit_button".equals(e.getActionCommand())) {
 
             this.remove(proof_text);
             this.remove(proof_exit_button);
@@ -1308,7 +1308,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
             paint(this.getGraphics());
             // return true;   (actionPerformed returns void)
 
-        } else if (e.getActionCommand().equals("info_exit_button")) {
+        } else if ("info_exit_button".equals(e.getActionCommand())) {
 
             this.setBackground(BACKGROUND_COLOR);
             this.remove(info_exit_button);
@@ -1558,9 +1558,9 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
             /* [sound] */
             if (choice > 0) {
                 /* [sound] */
-                if (axiomArr[choice].label.equals("ax-inf")) audioName = "hypspc";
+                if ("ax-inf".equals(axiomArr[choice].label)) audioName = "hypspc";
                     /* [sound] */
-                else if (axiomArr[choice].label.equals("ax-ac")) audioName = "ni";
+                else if ("ax-ac".equals(axiomArr[choice].label)) audioName = "ni";
                 /* [sound] */
             }
             /* [sound] */ // End sound effects

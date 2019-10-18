@@ -40,13 +40,13 @@ public class BooleanConvertor implements Function<String,Object> {
             throw new IllegalArgumentException("text == null");
         }
 
-        if (text.equalsIgnoreCase("true")) return true;
-        if (text.equalsIgnoreCase("on")) return true;
-        if (text.equalsIgnoreCase("1")) return true;
+        if ("true".equalsIgnoreCase(text)) return true;
+        if ("on".equalsIgnoreCase(text)) return true;
+        if ("1".equalsIgnoreCase(text)) return true;
 
-        if (text.equalsIgnoreCase("false")) return false;
-        if (text.equalsIgnoreCase("off")) return false;
-        if (text.equalsIgnoreCase("0")) return false;
+        if ("false".equalsIgnoreCase(text)) return false;
+        if ("off".equalsIgnoreCase(text)) return false;
+        if ("0".equalsIgnoreCase(text)) return false;
 
         return null;
     }

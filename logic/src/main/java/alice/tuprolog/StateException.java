@@ -20,7 +20,7 @@ public class StateException extends State {
     @Override
     State run(PrologSolve e) {
         String errorType = e.currentContext.currentGoal.name();
-        if (errorType.equals("throw"))
+        if ("throw".equals(errorType))
             prologError(e);
         else
             javaException(e);
@@ -212,7 +212,7 @@ public class StateException extends State {
             if (!nextTerm.isCompound())
                 continue;
             Struct element = (Struct) nextTerm;
-            if (!element.name().equals(","))
+            if (!",".equals(element.name()))
                 continue;
             if (element.subs() != 2)
                 continue;
@@ -233,7 +233,7 @@ public class StateException extends State {
             if (!nextTerm.isCompound())
                 continue;
             Struct element = (Struct) nextTerm;
-            if (!element.name().equals(","))
+            if (!",".equals(element.name()))
                 continue;
             if (element.subs() != 2)
                 continue;

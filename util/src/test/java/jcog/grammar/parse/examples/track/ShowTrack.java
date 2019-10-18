@@ -43,7 +43,7 @@ public class ShowTrack {
 
 		Parser list = list();
 
-		String test[] = new String[] { "()", "(pilfer)", "(pilfer, pinch)", "(pilfer, pinch, purloin)", "(pilfer, pinch,, purloin)", "(", "(pilfer", "(pilfer, ", "(, pinch, purloin)", "pilfer, pinch" };
+		String test[] = { "()", "(pilfer)", "(pilfer, pinch)", "(pilfer, pinch, purloin)", "(pilfer, pinch,, purloin)", "(", "(pilfer", "(pilfer, ", "(, pinch, purloin)", "pilfer, pinch" };
 
 		System.out.println("Using parser: " + list);
 		for (int i = 0; i < test.length; i++) {

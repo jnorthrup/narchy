@@ -778,6 +778,7 @@ public class FZero extends GameX {
                         playerAngle += rotVel;
                     }
                     if (R && !L) {
+                        //noinspection NonAtomicOperationOnVolatileField
                         playerAngle -= rotVel;
                     }
                 }

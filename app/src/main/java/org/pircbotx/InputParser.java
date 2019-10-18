@@ -238,7 +238,7 @@ public class InputParser implements Closeable {
 		if (parsedLine.get(0).charAt(0) == ':') sourceRaw = parsedLine.remove(0);
 		String command = parsedLine.remove(0).toUpperCase(configuration.getLocale());
 		// Check for server pings.
-		if (command.equals("PING")) {
+		if ("PING".equals(command)) {
 			// Respond to the ping and return immediately.
 			configuration.getListenerManager().onEvent(new ServerPingEvent(bot, parsedLine.get(0)));
 			return;
@@ -319,23 +319,23 @@ public class InputParser implements Closeable {
 			ImmutableMap<String, String> autoConnectChannels = bot.reconnectChannels();
 			if (autoConnectChannels == null) if (configuration.isNickservDelayJoin()) autoConnectChannels = ImmutableMap.of(); else autoConnectChannels = configuration.getAutoJoinChannels();
 			for (Map.Entry<String, String> channelEntry : autoConnectChannels.entrySet()) bot.sendIRC().joinChannel(channelEntry.getKey(), channelEntry.getValue());
-		} else if (code.equals("439")) 
+		} else if ("439".equals(code))
 		//EXAMPLE: PircBotX: Target change too fast. Please wait 104 seconds
 		// No action required.
 		//TODO: Should we delay joining channels here or something?
-		log.warn("Ignoring too fast error"); else if (configuration.isCapEnabled() && code.equals("421") && parsedLine.get(1).equals("CAP")) 
+		log.warn("Ignoring too fast error"); else if (configuration.isCapEnabled() && "421".equals(code) && "CAP".equals(parsedLine.get(1)))
 		//EXAMPLE: 421 you CAP :Unknown command
-		log.warn("Ignoring unknown command error, server does not support CAP negotiation"); else if (configuration.isCapEnabled() && code.equals("451") && target.equals("CAP")) {
+		log.warn("Ignoring unknown command error, server does not support CAP negotiation"); else if (configuration.isCapEnabled() && "451".equals(code) && "CAP".equals(target)) {
 			//EXAMPLE: 451 CAP :You have not registered
 			//Ignore, this is from servers that don't support CAP
 			log.warn("Ignoring not registered error, server does not support CAP negotiation");
-		} else if (configuration.isCapEnabled() && code.equals("410") && rawLine.contains("CAP")) {
+		} else if (configuration.isCapEnabled() && "410".equals(code) && rawLine.contains("CAP")) {
 			//EXAMPLE: 410 :Invalid CAP command
 			//Ignore, Twitch.tv uses this code for some reason
 			log.warn("Ignoring invalid command error, server does not support CAP negotiation");
-		} else if ((code.startsWith("5") || code.startsWith("4")) && !code.equals("433")) 
+		} else if ((code.startsWith("5") || code.startsWith("4")) && !"433".equals(code))
 		//Ignore 433 NickAlreadyInUse, handled later
-		throw new IrcException(IrcException.Reason.CannotLogin, "Received error: " + rawLine); else if (code.equals("670")) {
+		throw new IrcException(IrcException.Reason.CannotLogin, "Received error: " + rawLine); else if ("670".equals(code)) {
 			//Server is saying that we can upgrade to TLS
 			log.debug("Upgrading to TLS connection");
 			SSLSocketFactory sslSocketFactory = ((SSLSocketFactory)SSLSocketFactory.getDefault());
@@ -345,20 +345,20 @@ public class InputParser implements Closeable {
 			bot.changeSocket(sslSocket);
 			//Notify CAP Handlers
 			for (CapHandler curCapHandler : configuration.getCapHandlers()) if (curCapHandler.handleUnknown(bot, rawLine)) addCapHandlerFinished(curCapHandler);
-		} else if (code.equals("CAP") && configuration.isCapEnabled()) {
+		} else if ("CAP".equals(code) && configuration.isCapEnabled()) {
 			//Handle CAP Code; remove extra from params
 			String capCommand = parsedLine.get(1);
 			ImmutableList<String> capParams = ImmutableList.copyOf(StringUtils.split(parsedLine.get(2)));
-			if (capCommand.equals("LS")) {
+			if ("LS".equals(capCommand)) {
 				log.debug("Starting Cap Handlers {}", getCapHandlersRemaining());
 				for (CapHandler curCapHandler : getCapHandlersRemaining()) {
 					if (curCapHandler.handleLS(bot, capParams)) addCapHandlerFinished(curCapHandler);
 				}
-			} else if (capCommand.equals("ACK")) {
+			} else if ("ACK".equals(capCommand)) {
 				//Server is enabling a capability, store that
 				bot.getEnabledCapabilities().addAll(capParams);
 				for (CapHandler curCapHandler : getCapHandlersRemaining()) if (curCapHandler.handleACK(bot, capParams)) addCapHandlerFinished(curCapHandler);
-			} else if (capCommand.equals("NAK")) {
+			} else if ("NAK".equals(capCommand)) {
 				for (CapHandler curCapHandler : getCapHandlersRemaining()) if (curCapHandler.handleNAK(bot, capParams)) addCapHandlerFinished(curCapHandler);
 			} else {
 				//Maybe the CapHandlers know how to use it
@@ -392,18 +392,18 @@ public class InputParser implements Closeable {
 		//Try to load the source user if it exists
 		User sourceUser = bot.getUserChannelDao().containsUser(source) ? bot.getUserChannelDao().getUser(source) : null;
 		// Check for CTCP requests.
-		if (command.equals("PRIVMSG") && message.startsWith("\001") && message.endsWith("\001")) {
+		if ("PRIVMSG".equals(command) && message.startsWith("\001") && message.endsWith("\001")) {
 			sourceUser = createUserIfNull(sourceUser, source);
 			String request = message.substring(1, message.length() - 1);
-			if (request.equals("VERSION")) 
+			if ("VERSION".equals(request))
 			// VERSION request
 			configuration.getListenerManager().onEvent(new VersionEvent(bot, source, sourceUser, channel)); else if (request.startsWith("ACTION ")) 
 			// ACTION request
 			configuration.getListenerManager().onEvent(new ActionEvent(bot, source, sourceUser, channel, target, request.substring(7))); else if (request.startsWith("PING ")) 
 			// PING request
-			configuration.getListenerManager().onEvent(new PingEvent(bot, source, sourceUser, channel, request.substring(5))); else if (request.equals("TIME")) 
+			configuration.getListenerManager().onEvent(new PingEvent(bot, source, sourceUser, channel, request.substring(5))); else if ("TIME".equals(request))
 			// TIME request
-			configuration.getListenerManager().onEvent(new TimeEvent(bot, channel, source, sourceUser)); else if (request.equals("FINGER")) 
+			configuration.getListenerManager().onEvent(new TimeEvent(bot, channel, source, sourceUser)); else if ("FINGER".equals(request))
 			// FINGER request
 			configuration.getListenerManager().onEvent(new FingerEvent(bot, source, sourceUser, channel)); else if (request.startsWith("DCC ")) {
 				// This is a DCC request.
@@ -414,17 +414,17 @@ public class InputParser implements Closeable {
 			} else 
 			// An unknown CTCP message - ignore it.
 			configuration.getListenerManager().onEvent(new UnknownEvent(bot, line));
-		} else if (command.equals("PRIVMSG") && channel != null) {
+		} else if ("PRIVMSG".equals(command) && channel != null) {
 			// This is a normal message to a channel.
 			sourceUser = createUserIfNull(sourceUser, source);
 			configuration.getListenerManager().onEvent(new MessageEvent(bot, channel, target, source, sourceUser, message, tags));
-		} else if (command.equals("PRIVMSG")) {
+		} else if ("PRIVMSG".equals(command)) {
 			// This is a private message to us.
 			//Add to private message
 			sourceUser = createUserIfNull(sourceUser, source);
 			bot.getUserChannelDao().addUserToPrivate(sourceUser);
 			configuration.getListenerManager().onEvent(new PrivateMessageEvent(bot, source, sourceUser, message));
-		} else if (command.equals("JOIN")) {
+		} else if ("JOIN".equals(command)) {
 			// Someone is joining a channel.
 			if (source.getNick().equalsIgnoreCase(bot.getNick())) {
 				//Its us, get channel info
@@ -436,7 +436,7 @@ public class InputParser implements Closeable {
 			sourceUser = createUserIfNull(sourceUser, source);
 			bot.getUserChannelDao().addUserToChannel(sourceUser, channel);
 			configuration.getListenerManager().onEvent(new JoinEvent(bot, channel, source, sourceUser));
-		} else if (command.equals("PART")) {
+		} else if ("PART".equals(command)) {
 			// Someone is parting from a channel.
 			UserChannelDaoSnapshot daoSnapshot;
 			ChannelSnapshot channelSnapshot;
@@ -456,7 +456,7 @@ public class InputParser implements Closeable {
 			//Just remove the user from memory
 			bot.getUserChannelDao().removeUserFromChannel(sourceUser, channel);
 			configuration.getListenerManager().onEvent(new PartEvent(bot, daoSnapshot, channelSnapshot, source, sourceSnapshot, message));
-		} else if (command.equals("NICK")) {
+		} else if ("NICK".equals(command)) {
 			// Somebody is changing their nick.
 			sourceUser = createUserIfNull(sourceUser, source);
 			String newNick = target;
@@ -465,10 +465,10 @@ public class InputParser implements Closeable {
 			// Update our nick if it was us that changed nick.
 			bot.setNick(newNick);
 			configuration.getListenerManager().onEvent(new NickChangeEvent(bot, source.getNick(), newNick, source, sourceUser));
-		} else if (command.equals("NOTICE")) {
+		} else if ("NOTICE".equals(command)) {
 			// Someone is sending a notice.
 			configuration.getListenerManager().onEvent(new NoticeEvent(bot, source, sourceUser, channel, target, message));
-		} else if (command.equals("QUIT")) {
+		} else if ("QUIT".equals(command)) {
 			UserChannelDaoSnapshot daoSnapshot;
 			UserSnapshot sourceSnapshot;
 			if (configuration.isSnapshotsEnabled()) {
@@ -485,7 +485,7 @@ public class InputParser implements Closeable {
 			//Someone else
 			bot.getUserChannelDao().removeUser(sourceUser);
 			configuration.getListenerManager().onEvent(new QuitEvent(bot, daoSnapshot, source, sourceSnapshot, reason));
-		} else if (command.equals("KICK")) {
+		} else if ("KICK".equals(command)) {
 			// Somebody has been kicked from a channel.
 			UserHostmask recipientHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, message);
 			User recipient = bot.getUserChannelDao().getUser(message);
@@ -495,7 +495,7 @@ public class InputParser implements Closeable {
 			//Someone else
 			bot.getUserChannelDao().removeUserFromChannel(recipient, channel);
 			configuration.getListenerManager().onEvent(new KickEvent(bot, channel, source, sourceUser, recipientHostmask, recipient, parsedLine.get(2)));
-		} else if (command.equals("MODE")) {
+		} else if ("MODE".equals(command)) {
 			// Somebody is changing the mode on a channel or user (Use long form since mode isn't after a : )
 			String mode = line.substring(line.indexOf(target, 2) + target.length() + 1);
 			if (mode.startsWith(":")) mode = mode.substring(1);
@@ -505,7 +505,7 @@ public class InputParser implements Closeable {
 			//if (sourceModeUser == null)
 			//	sourceModeUser = bot.getUserChannelDao().getUser(source);
 			processMode(source, sourceUser, target, mode);
-		} else if (command.equals("TOPIC")) {
+		} else if ("TOPIC".equals(command)) {
 			// Someone is changing the topic.
 			long currentTime = System.currentTimeMillis();
 			String oldTopic = channel.getTopic();
@@ -513,10 +513,10 @@ public class InputParser implements Closeable {
 			channel.setTopicSetter(source);
 			channel.setTopicTimestamp(currentTime);
 			configuration.getListenerManager().onEvent(new TopicEvent(bot, channel, oldTopic, message, source, currentTime, true));
-		} else if (command.equals("INVITE")) {
+		} else if ("INVITE".equals(command)) {
 			// Somebody is inviting somebody else into a channel.
 			configuration.getListenerManager().onEvent(new InviteEvent(bot, source, sourceUser, message));
-		} else if (command.equals("AWAY")) 
+		} else if ("AWAY".equals(command))
 		//IRCv3 AWAY notify
 		if (parsedLine.isEmpty()) sourceUser.setAwayMessage(""); else sourceUser.setAwayMessage(parsedLine.get(0)); else 
 		// If we reach this point, then we've found something that the PircBotX
@@ -550,7 +550,7 @@ public class InputParser implements Closeable {
 			//Ignore cases where we already have a valid nick but changed to a used one
 			if (parsedResponse.size() == 3) {
 				usedNick = parsedResponse.get(1);
-				if (parsedResponse.get(0).equals("*")) {
+				if ("*".equals(parsedResponse.get(0))) {
 					doAutoNickChange = true;
 				}
 			} //For spec-compilant servers, if were not logged in its safe to assume we don't have a valid nick on connect

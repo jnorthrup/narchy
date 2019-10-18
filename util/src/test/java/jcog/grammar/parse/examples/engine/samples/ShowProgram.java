@@ -14,7 +14,7 @@ public class ShowProgram {
 	 * Return a small database of cities and their altitudes.
 	 */
 	public static Program altitudes() {
-		Fact[] facts = new Fact[] { new Fact("city", "abilene", new Integer(1718)), new Fact("city", "addis ababa", new Integer(8000)), new Fact("city", "denver", new Integer(5280)), new Fact("city", "flagstaff", new Integer(6970)),
+		Fact[] facts = { new Fact("city", "abilene", new Integer(1718)), new Fact("city", "addis ababa", new Integer(8000)), new Fact("city", "denver", new Integer(5280)), new Fact("city", "flagstaff", new Integer(6970)),
 				new Fact("city", "jacksonville", new Integer(8)), new Fact("city", "leadville", new Integer(10200)), new Fact("city", "madrid", new Integer(1305)), new Fact("city", "richmond", new Integer(19)),
 				new Fact("city", "spokane", new Integer(1909)), new Fact("city", "wichita", new Integer(1305)) };
 

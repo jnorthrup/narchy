@@ -137,7 +137,7 @@ public class RTree<X> implements Space<X> {
         if (!root.bounds().contains(bx))
             return false;
 
-        int[] removed = new int[] { 0 };
+        int[] removed = { 0 };
         @Nullable RNode<X> nextRoot = root.remove(x, bx, model, removed);
         if (removed[0] > 0) {
 

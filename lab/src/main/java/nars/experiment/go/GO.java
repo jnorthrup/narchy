@@ -177,9 +177,7 @@ public class GO extends JPanel implements MouseListener {
             System.out.println(x + "," + y);
             board = new int[DIM][DIM];
             for (int r = 0; r < boardHist.get(turn).length; r++) {
-                for (int c = 0; c < boardHist.get(turn).length; c++) {
-                    board[r][c] = boardHist.get(turn)[r][c];
-                }
+                System.arraycopy(boardHist.get(turn)[r], 0, board[r], 0, boardHist.get(turn).length);
             }
             boolean matches = true;
 

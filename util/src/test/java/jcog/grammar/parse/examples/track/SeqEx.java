@@ -85,7 +85,7 @@ public class SeqEx extends Seq {
 
 		Assembly best = best(new HashSet<>(previousState));
 		String after = best.consumed(" ");
-		if (after.equals("")) {
+		if ("".equals(after)) {
 			after = "-nothing-";
 		}
 

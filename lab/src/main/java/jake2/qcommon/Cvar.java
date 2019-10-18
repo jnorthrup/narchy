@@ -257,7 +257,7 @@ public class Cvar extends Globals {
                 } else {
                     var.string = value;
                     var.value = Lib.atof(var.string);
-                    if (var.name.equals("game")) {
+                    if ("game".equals(var.name)) {
                         FS.SetGamedir(var.string);
                         FS.ExecAutoexec();
                     }
@@ -366,7 +366,7 @@ public class Cvar extends Globals {
             theVar.string = theVar.latched_string;
             theVar.latched_string = null;
             theVar.value = Lib.atof(theVar.string);
-            if (theVar.name.equals("game")) {
+            if ("game".equals(theVar.name)) {
                 FS.SetGamedir(theVar.string);
                 FS.ExecAutoexec();
             }

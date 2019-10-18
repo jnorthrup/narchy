@@ -27,7 +27,7 @@ class NARTestOptimize {
         public static void main(String[] args) {
 
             boolean parallel = true;
-            Class[] testClasses = new Class[] {
+            Class[] testClasses = {
                     NAL1Test.class,
 //                    NAL2Test.class,
                     NAL3Test.class,

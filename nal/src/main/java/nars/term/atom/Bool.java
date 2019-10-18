@@ -74,8 +74,8 @@ public abstract class Bool extends Keyword {
 
     };
 
-    public static final Term[] Null_Array = new Term[] { Null };
-    public static final Term[] False_Array = new Term[] { False };
+    public static final Term[] Null_Array = { Null };
+    public static final Term[] False_Array = { False };
 
 
     private Bool(String label, byte code) {

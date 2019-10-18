@@ -60,7 +60,7 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test void embeddedSetDontFlatten() {
         Term a = $$("1"), b = $$("2"), c = $$("3");
-        assertEq("{{1,2},3}", SETe.the(SETe.the(new Term[] {a, b}), c));
+        assertEq("{{1,2},3}", SETe.the(SETe.the(a, b), c));
     }
 
     @Test
@@ -558,7 +558,7 @@ public class TermReductionsTest extends NarseseTest {
     void testConjImplReduction() throws Narsese.NarseseException {
         Term a = $("((a,b) ==>+1 (b,c))");
         Term b = $("(c,d)");
-        Term x = Op.CONJ.the(4, new Term[]{a, b});
+        Term x = Op.CONJ.the(4, a, b);
 
         assertEquals(
 
@@ -570,7 +570,7 @@ public class TermReductionsTest extends NarseseTest {
     void testConjImplNonReductionNegConj() throws Narsese.NarseseException {
         Term a = $("((a,b) ==>+1 (b,c))");
         Term b = $("(c,d)");
-        Term x = Op.CONJ.the(-4, new Term[]{a, b});
+        Term x = Op.CONJ.the(-4, a, b);
 
         assertEquals(
                 "((c,d) &&+4 ((a,b) ==>+1 (b,c)))",
@@ -582,7 +582,7 @@ public class TermReductionsTest extends NarseseTest {
     void testConjImplReductionNegConj2() throws Narsese.NarseseException {
         Term b = $("(c,d)");
         Term a = $("((a,b) ==>+1 (b,c))");
-        Term x = Op.CONJ.the(4, new Term[]{b, a});
+        Term x = Op.CONJ.the(4, b, a);
 
         assertEquals(
 
@@ -594,7 +594,7 @@ public class TermReductionsTest extends NarseseTest {
     void testConjImplNonReductionNegConj2() throws Narsese.NarseseException {
         Term a = $("((a,b) ==>+1 (b,c))");
         Term b = $("(c &&+1 d)");
-        Term x = Op.CONJ.the(-4, new Term[]{a, b});
+        Term x = Op.CONJ.the(-4, a, b);
 
         assertEquals(
 
@@ -606,7 +606,7 @@ public class TermReductionsTest extends NarseseTest {
     void testConjImplNonReductionNegConj3() throws Narsese.NarseseException {
         Term a = $("((a,b) ==>+1 (b,c))");
         Term b = $("(c &&+1 d)");
-        Term x = Op.CONJ.the(+4, new Term[]{a, b});
+        Term x = Op.CONJ.the(+4, a, b);
 
         assertEquals(
 
@@ -621,7 +621,7 @@ public class TermReductionsTest extends NarseseTest {
     void testConjImplReductionNegConj2b() throws Narsese.NarseseException {
         Term b = $("(c,d)");
         Term a = $("((a,b) ==>-1 (b,c))");
-        Term x = Op.CONJ.the(4, new Term[]{b, a});
+        Term x = Op.CONJ.the(4, b, a);
 
         assertEquals(
 
@@ -633,7 +633,7 @@ public class TermReductionsTest extends NarseseTest {
     void testConjImplReductionNegImpl() throws Narsese.NarseseException {
         Term a = $("((a,b) ==>-1 (b,c))");
         Term b = $("(c,d)");
-        Term x = Op.CONJ.the(4, new Term[]{a, b});
+        Term x = Op.CONJ.the(4, a, b);
 
         assertEquals(
 
@@ -645,7 +645,7 @@ public class TermReductionsTest extends NarseseTest {
     void testConjImplReductionWithVars() throws Narsese.NarseseException {
         Term a = $("((a,#1) ==>+1 (#1,c))");
         Term b = $("(c,d)");
-        Term x = Op.CONJ.the(4, new Term[]{a, b});
+        Term x = Op.CONJ.the(4, a, b);
 
         assertEquals(
 

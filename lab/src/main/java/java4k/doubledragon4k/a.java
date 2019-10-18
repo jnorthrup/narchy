@@ -28,6 +28,7 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class a extends GamePanel {
@@ -501,7 +502,7 @@ public class a extends GamePanel {
 								if (--object[OBJ_FADE] < 0) {
 
 									queue.remove(i);
-									if (object == player) {
+									if (Arrays.equals(object, player)) {
 										
 										fadeRed = true;
 										fadeState = FADE_OUT;

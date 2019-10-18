@@ -145,7 +145,7 @@ public class RdpApplet extends Applet {
     private boolean isSet(String parameter) {
         String s = this.getParameter(parameter);
         if (s != null) {
-            return s.equalsIgnoreCase("yes");
+            return "yes".equalsIgnoreCase(s);
         }
         return false;
     }
@@ -153,7 +153,7 @@ public class RdpApplet extends Applet {
     private int genArgF(String flag, String parameter, String[] args, int i) {
         String s = this.getParameter(parameter);
         if (s != null) {
-            if (s.equalsIgnoreCase("yes")) {
+            if ("yes".equalsIgnoreCase(s)) {
                 args[i] = flag;
                 i++;
             }

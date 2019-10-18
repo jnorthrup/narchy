@@ -995,7 +995,7 @@ public class M_Flyer {
         }
 
         
-        if (GameBase.level.mapname.equalsIgnoreCase("jail5")
+        if ("jail5".equalsIgnoreCase(GameBase.level.mapname)
                 && (self.s.origin[2] == -104)) {
             self.targetname = self.target;
             self.target = null;

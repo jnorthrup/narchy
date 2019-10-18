@@ -46,7 +46,7 @@ public class ConnectFour {
      */
     public static class ConnectFourState {
 
-        private static final String[] players = new String[]{"red", "yellow"};
+        private static final String[] players = {"red", "yellow"};
 
         public final int cols;
         final int rows;
@@ -178,10 +178,10 @@ public class ConnectFour {
          * and analyzes the vicinity with respect to win positions.
          */
         private void analyzeWinPositions(int moveRow, int moveCol) {
-            final int[] rowIncr = new int[]{1, 0, 1, 1};
-            final int[] colIncr = new int[]{0, 1, -1, 1};
+            final int[] rowIncr = {1, 0, 1, 1};
+            final int[] colIncr = {0, 1, -1, 1};
             int playerNum = get(moveRow, moveCol);
-            WinPositionInfo[] wInfo = new WinPositionInfo[]{
+            WinPositionInfo[] wInfo = {
                     new WinPositionInfo(), new WinPositionInfo()};
             for (int i = 0; i < 4; i++) {
                 int rIncr = rowIncr[i];
@@ -431,7 +431,7 @@ public class ConnectFour {
             if (!game.isTerminal()) {
                 String toMove = ConnectFourState.players[game.moving() - 1];
                 statusText = "Next move: " + toMove;
-                statusBar.setForeground(toMove.equals("red") ? Color.RED
+                statusBar.setForeground("red".equals(toMove) ? Color.RED
                         : Color.YELLOW);
             } else {
                 String winner = null;

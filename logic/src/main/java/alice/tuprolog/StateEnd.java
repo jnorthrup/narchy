@@ -143,14 +143,14 @@ public class StateEnd extends State {
         Term query = e.query;
 
 
-        if (((Struct) query).name().equals(";")) {
+        if (";".equals(((Struct) query).name())) {
             Struct query_temp = (Struct) ((Struct) query).sub(0);
-            if (query_temp.name().equals("setof") && setOfCounter == 0) {
+            if ("setof".equals(query_temp.name()) && setOfCounter == 0) {
                 query = query_temp;
                 this.setOfCounter++;
             } else {
                 query_temp = (Struct) ((Struct) query).sub(1);
-                if (query_temp.name().equals("setof"))
+                if ("setof".equals(query_temp.name()))
                     query = query_temp;
             }
         }
@@ -220,7 +220,7 @@ public class StateEnd extends State {
 
 
                 ArrayList<Term> initGoalBagListOrdered = new ArrayList<>();
-                if (((Struct) query).name().equals("setof")) {
+                if ("setof".equals(((Struct) query).name())) {
                     ArrayList<String> initGoalBagListVar = initGoalBagList.stream().filter(anInitGoalBagList -> anInitGoalBagList instanceof Var).map(anInitGoalBagList -> ((Var) anInitGoalBagList).name()).collect(Collectors.toCollection(ArrayList::new));
 
                     List<Term> left = new ArrayList<>();

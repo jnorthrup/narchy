@@ -336,7 +336,7 @@ public class Parser {
 			int FX = ops.opPrio(f.seq, "fx");
 			int FY = ops.opPrio(f.seq, "fy");
 
-			if (f.seq.equals("-")) {
+			if ("-".equals(f.seq)) {
 				Tokenizer.Token t = tokenizer.readToken();
 				if (t.isNumber())
 					/*Michele Castagna 06/2011*/

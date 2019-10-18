@@ -193,7 +193,7 @@ public class BomberMenu extends JPanel {
                 Object selection = pane.getValue();
 
                 /** if user clicked on yes */
-                if (selection != null && selection.toString().equals("0"))
+                if (selection != null && "0".equals(selection.toString()))
                 /** terminate the program */
                     System.exit(0);
         }

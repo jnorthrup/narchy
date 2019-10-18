@@ -109,7 +109,7 @@ public final class JSchSession {
     }
 
     private static boolean isAuthenticationFailure(JSchException ee) {
-        return ee.getMessage().equals("Auth fail");
+        return "Auth fail".equals(ee.getMessage());
     }
 
     public static void setSessionFactory(SessionFactory sf) {

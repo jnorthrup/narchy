@@ -26,15 +26,15 @@ public class XYSlider extends PaintSurface  {
     private final v2 knob = new v2(0.5f, 0.5f);
 
     private FloatFloatProcedure change = null;
-    private final float[] knobColor = new float[]{0.75f, 0.75f, 0.75f};
+    private final float[] knobColor = {0.75f, 0.75f, 0.75f};
 
 
     private static final float _low = 0.2f;
     private static final float _HIH = 0.8f;
-    private static final float[] lefAlphaCorners = new float[]{_low, _HIH, _HIH, _low};
-    private static final float[] rihAlphaCorners = new float[]{_HIH, _low, _low, _HIH};
-    private static final float[] topAlphaCorners = new float[]{_HIH, _HIH, _low, _low};
-    private static final float[] botAlphaCorners = new float[]{_low, _low, _HIH, _HIH};
+    private static final float[] lefAlphaCorners = {_low, _HIH, _HIH, _low};
+    private static final float[] rihAlphaCorners = {_HIH, _low, _low, _HIH};
+    private static final float[] topAlphaCorners = {_HIH, _HIH, _low, _low};
+    private static final float[] botAlphaCorners = {_low, _low, _HIH, _HIH};
     private boolean pressing;
 
 

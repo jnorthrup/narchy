@@ -100,7 +100,7 @@ public class ArrayTensor extends AbstractMutableTensor
     }
 
     public void set(float[] raw) {
-        if (data == raw)
+        if (Arrays.equals(data, raw))
             return;
         int d = data.length;
         assert (d == raw.length);

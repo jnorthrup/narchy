@@ -55,7 +55,7 @@ public abstract class NAL8DecomposeTest extends NALTest {
                     .input("a. %0.80;0.9%")
                     .mustBelieve(cycles, "b", 0.60f, 0.49f)
                     .must(BELIEF, true, (t)->{
-                        if (t.term().toString().equals("b")) {
+                        if ("b".equals(t.term().toString())) {
                             float f = t.freq();
                             return !Util.equals(f, 0.60f, 0.05f) || t.conf() < 0.2f;
                         }
@@ -72,7 +72,7 @@ public abstract class NAL8DecomposeTest extends NALTest {
                     .input("a. %0.20;0.9%")
                     .mustBelieve(cycles, "b", 0.60f, 0.49f)
                     .must(BELIEF, true, (t)->{
-                        if (t.term().toString().equals("b")) {
+                        if ("b".equals(t.term().toString())) {
                             float f = t.freq();
                             return !Util.equals(f, 0.60f, 0.05f) || t.conf() < 0.2f;
                         }

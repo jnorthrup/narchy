@@ -112,7 +112,7 @@ public class GameCombat {
                 if (GameBase.coop.value != 0 && attacker.client != null)
                     attacker.client.resp.score++;
                 
-                if (attacker.classname.equals("monster_medic"))
+                if ("monster_medic".equals(attacker.classname))
                     targ.owner = attacker;
             }
         }
@@ -303,10 +303,10 @@ public class GameCombat {
         
         if (((targ.flags & (Defines.FL_FLY | Defines.FL_SWIM)) == (attacker.flags & (Defines.FL_FLY | Defines.FL_SWIM)))
                 && (!(targ.classname.equals(attacker.classname)))
-                && (!(attacker.classname.equals("monster_tank")))
-                && (!(attacker.classname.equals("monster_supertank")))
-                && (!(attacker.classname.equals("monster_makron")))
-                && (!(attacker.classname.equals("monster_jorg")))) {
+                && (!("monster_tank".equals(attacker.classname)))
+                && (!("monster_supertank".equals(attacker.classname)))
+                && (!("monster_makron".equals(attacker.classname)))
+                && (!("monster_jorg".equals(attacker.classname)))) {
             if (targ.enemy != null && targ.enemy.client != null)
                 targ.oldenemy = targ.enemy;
             targ.enemy = attacker;

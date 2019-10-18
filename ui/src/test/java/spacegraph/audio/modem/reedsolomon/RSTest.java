@@ -143,9 +143,7 @@ class RSTest implements Settings {
         while (bytes[t] == 0)
             t -= 1;
         byte[] trimmed = new byte[(t + 1) - Settings.kParityBytes];
-        for (int i = 0; i < trimmed.length; i++) {
-            trimmed[i] = bytes[i];
-        }
+        System.arraycopy(bytes, 0, trimmed, 0, trimmed.length);
         return trimmed;
     }
 

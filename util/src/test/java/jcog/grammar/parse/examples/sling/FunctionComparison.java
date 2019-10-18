@@ -59,22 +59,22 @@ public class FunctionComparison extends Gateway implements BooleanTerm {
 		double d0 = eval0.f(0).y;
 		double d1 = eval1.f(0).y;
 
-		if (operator.equals(">")) {
+		if (">".equals(operator)) {
 			return d0 > d1;
 		}
-		if (operator.equals("<")) {
+		if ("<".equals(operator)) {
 			return d0 < d1;
 		}
-		if (operator.equals("=")) {
+		if ("=".equals(operator)) {
 			return d0 == d1;
 		}
-		if (operator.equals(">=")) {
+		if (">=".equals(operator)) {
 			return d0 >= d1;
 		}
-		if (operator.equals("<=")) {
+		if ("<=".equals(operator)) {
 			return d0 <= d1;
 		}
-		if (operator.equals("!=")) {
+		if ("!=".equals(operator)) {
 			return d0 != d1;
 		}
 		return false;

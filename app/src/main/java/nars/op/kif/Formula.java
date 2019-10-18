@@ -321,7 +321,7 @@ public class Formula implements Comparable, Serializable {
             System.out.println("Error in Formula.compareTo(): null formula");
             throw new ClassCastException("Error in Formula.compareTo(): null formula");
         }
-        if (!f.getClass().getName().equalsIgnoreCase("com.articulate.sigma.Formula"))
+        if (!"com.articulate.sigma.Formula".equalsIgnoreCase(f.getClass().getName()))
             throw new ClassCastException("Error in Formula.compareTo(): "
                     + "Class cast exception for argument of class: "
                     + f.getClass().getName());
@@ -686,7 +686,7 @@ public class Formula implements Comparable, Serializable {
             System.out.println("Error in KB.append(): attempt to append to non-list: " + theFormula);
             return this;
         }
-        if (f == null || f.theFormula == null || f.theFormula.isEmpty() || f.theFormula.equals("()"))
+        if (f == null || f.theFormula == null || f.theFormula.isEmpty() || "()".equals(f.theFormula))
             return newFormula;
         f.theFormula = f.theFormula.trim();
         if (!f.atom())
@@ -777,7 +777,7 @@ public class Formula implements Comparable, Serializable {
             Formula argF = new Formula();
             argF.read(arg);
             String result = validArgsRecurse(argF, filename, lineNo);
-            if (!result.equals(""))
+            if (!"".equals(result))
                 return result;
             restF.theFormula = restF.cdr();
         }
@@ -953,7 +953,7 @@ public class Formula implements Comparable, Serializable {
         Formula sform = new Formula();
         sform.read(s);
 
-        if (form.car().intern().equals("and") || form.car().intern().equals("or")) {
+        if ("and".equals(form.car().intern()) || "or".equals(form.car().intern())) {
             if (!sform.car().intern().equals(sform.car().intern()))
                 return false;
             form.read(form.cdr());
@@ -1500,7 +1500,7 @@ public class Formula implements Comparable, Serializable {
         int index = start;
         ArrayList<String> result = new ArrayList<>();
         String arg = getArgument(index);
-        while (arg != null && !arg.equals("") && !arg.isEmpty()) {
+        while (arg != null && !"".equals(arg) && !arg.isEmpty()) {
             result.add(arg.intern());
             index++;
             arg = getArgument(index);
@@ -1520,7 +1520,7 @@ public class Formula implements Comparable, Serializable {
         int index = start;
         ArrayList<String> result = new ArrayList<>();
         String arg = getArgument(index);
-        while (arg != null && !arg.equals("") && !arg.isEmpty()) {
+        while (arg != null && !"".equals(arg) && !arg.isEmpty()) {
             result.add(arg.intern());
             index++;
             arg = getArgument(index);
@@ -1536,10 +1536,10 @@ public class Formula implements Comparable, Serializable {
      */
     private static String translateInequalities(String s) {
 
-        if (s.equalsIgnoreCase("greaterThan")) return ">";
-        if (s.equalsIgnoreCase("greaterThanOrEqualTo")) return ">=";
-        if (s.equalsIgnoreCase("lessThan")) return "<";
-        if (s.equalsIgnoreCase("lessThanOrEqualTo")) return "<=";
+        if ("greaterThan".equalsIgnoreCase(s)) return ">";
+        if ("greaterThanOrEqualTo".equalsIgnoreCase(s)) return ">=";
+        if ("lessThan".equalsIgnoreCase(s)) return "<";
+        if ("lessThanOrEqualTo".equalsIgnoreCase(s)) return "<=";
         return "";
     }
 
@@ -1780,7 +1780,7 @@ public class Formula implements Comparable, Serializable {
         else {
             Formula f = new Formula();
             f.read(theFormula);
-            while (!f.empty() && f.theFormula != null && !f.theFormula.equals("")) {
+            while (!f.empty() && f.theFormula != null && !"".equals(f.theFormula)) {
                 Formula f2 = new Formula();
                 f2.read(f.car());
                 resultSet.addAll(f2.collectTerms());
@@ -2098,10 +2098,10 @@ public class Formula implements Comparable, Serializable {
             return false;
 
         Formula antecedent = cdrAsFormula().carAsFormula();
-        if (!antecedent.isSimpleClause(kb) && !antecedent.car().equals("and"))
+        if (!antecedent.isSimpleClause(kb) && !"and".equals(antecedent.car()))
             return false;
         Formula consequent = cdrAsFormula().cdrAsFormula().carAsFormula();
-        return consequent.isSimpleClause(kb) || consequent.car().equals("and");
+        return consequent.isSimpleClause(kb) || "and".equals(consequent.car());
     }
 
     /** ***************************************************************
@@ -2147,7 +2147,7 @@ public class Formula implements Comparable, Serializable {
             return false;
         Formula f = new Formula();
         f.read(theFormula);
-        if (f.car().equals("not")) {
+        if ("not".equals(f.car())) {
             f.read(f.cdr());
             if (Formula.empty(f.cdr())) {
                 f.read(f.car());

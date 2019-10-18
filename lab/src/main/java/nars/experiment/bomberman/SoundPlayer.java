@@ -566,7 +566,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         /** pause the sound for a mili second */
         bump = true;
         /** if no sound is playing */
-        if (startB.getText().equals("Start"))
+        if ("Start".equals(startB.getText()))
         /** play the sound */
             startB.doClick();
     }
@@ -614,7 +614,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
      * @return whether something is playing or not
      */
     public boolean isPlaying() {
-        return (!startB.getText().equals("Start"));
+        return (!"Start".equals(startB.getText()));
     }
 
     /**
@@ -627,7 +627,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         /** get source of event */
         JButton button = (JButton) e.getSource();
         /** if the start button is clicked */
-        if (button.getText().equals("Start")) {
+        if ("Start".equals(button.getText())) {
             /** not paused */
             paused = false;
             /** if offset is out of range than set it to 0 */
@@ -640,7 +640,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
             setComponentsEnabled(true);
         }
         /** if the stop button is clicked */
-        else if (button.getText().equals("Stop")) {
+        else if ("Stop".equals(button.getText())) {
             /** not paused */
             paused = false;
             /** stop playing */
@@ -652,7 +652,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
             setComponentsEnabled(false);
         }
         /** if the pause button is clicked */
-        else if (button.getText().equals("Pause")) {
+        else if ("Pause".equals(button.getText())) {
             /** paused */
             paused = true;
             /** if the sound object is a clip */
@@ -668,7 +668,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
             }
             /** change the button text */
             pauseB.setText("Resume");
-        } else if (button.getText().equals("Resume")) {
+        } else if ("Resume".equals(button.getText())) {
             /** not paused anymore */
             paused = false;
             /** if sound is a clip */
@@ -686,7 +686,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
             pauseB.setText("Pause");
         }
         /** if the back button is clicked */
-        else if (button.getText().equals("<<")) {
+        else if ("<<".equals(button.getText())) {
             paused = false;
             /** change button text */
             pauseB.setText("Pause");
@@ -696,7 +696,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
             bump = true;
         }
         /** if the next button is clicked */
-        else if (button.getText().equals(">>")) {
+        else if (">>".equals(button.getText())) {
             paused = false;
             /** change button text */
             pauseB.setText("Pause");

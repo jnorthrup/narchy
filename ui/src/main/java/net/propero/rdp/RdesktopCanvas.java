@@ -40,7 +40,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.MemoryImageSource;
-
+import java.util.Arrays;
 
 
 public abstract class RdesktopCanvas extends Canvas {
@@ -366,8 +366,7 @@ public abstract class RdesktopCanvas extends Canvas {
 
         
         int[] rect = new int[cx * cy];
-        for (int i = 0; i < rect.length; i++)
-            rect[i] = color;
+        Arrays.fill(rect, color);
         
         backstore.setRGB(x, y, cx, cy, rect, 0, cx);
 

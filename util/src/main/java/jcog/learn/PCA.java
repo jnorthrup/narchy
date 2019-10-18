@@ -23,7 +23,7 @@ public class PCA {
 
     public PCA() {
         //create points in a double array
-        double[][] pointsArray = new double[][] {
+        double[][] pointsArray = {
                 new double[] { -1.0, -1.0 },
                 new double[] { -1.0, 1.0 },
                 new double[] { 1.0, 1.0 }

@@ -12,6 +12,7 @@
 
 package nars.experiment.minicraft.side;
 
+import java.util.Arrays;
 import java.util.Random;
 
 
@@ -213,9 +214,9 @@ public class World implements java.io.Serializable {
             return handResult(breakType);
         }
         Tool tool = (Tool) item;
-        if (breakType == breakWood && tool.toolType == Tool.ToolType.Axe) {
+        if (Arrays.equals(breakType, breakWood) && tool.toolType == Tool.ToolType.Axe) {
             return (int) (getSpeed(tool) * 20);
-        } else if (breakType != breakWood && breakType != null
+        } else if (!Arrays.equals(breakType, breakWood) && breakType != null
                 && tool.toolType == Tool.ToolType.Pick) {
             return (int) (getSpeed(tool) * 25);
         } else if (breakType == null && tool.toolType == Tool.ToolType.Shovel) {
@@ -243,7 +244,7 @@ public class World implements java.io.Serializable {
     private int handResult(TileID[] breakType) {
         if (breakType == null) {
             return 50 / 4;
-        } else if (breakType == breakWood) {
+        } else if (Arrays.equals(breakType, breakWood)) {
             return 75 / 4;
         } else {
             return 500 / 4;

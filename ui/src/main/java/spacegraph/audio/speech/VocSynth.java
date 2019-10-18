@@ -407,9 +407,7 @@ class VocSynthApplet extends Applet implements ActionListener {
 					}
 				}
 				//calculate delays towards lips
-				for (int i = 0; i < tlength; i++) {
-					li[i + 1] = lo[i];
-				}
+                System.arraycopy(lo, 0, li, 1, tlength);
 				//Lip output
 				outwave[k] = lo[tlength];
 			}

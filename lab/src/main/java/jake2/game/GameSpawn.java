@@ -359,7 +359,7 @@ public class GameSpawn {
      */
     static void ED_ParseField(String key, String value, edict_t ent) {
 
-        if (key.equals("nextmap"))
+        if ("nextmap".equals(key))
             Com.Println("nextmap: " + value);
         if (!GameBase.st.set(key, value))
             if (!ent.setField(key, value))
@@ -386,7 +386,7 @@ public class GameSpawn {
 
             
             com_token = Com.Parse(ph);
-            if (com_token.equals("}"))
+            if ("}".equals(com_token))
                 break;
 
             if (ph.isEof())
@@ -400,7 +400,7 @@ public class GameSpawn {
             if (ph.isEof())
                 game_import_t.error("ED_ParseEntity: EOF without closing brace");
 
-            if (com_token.equals("}"))
+            if ("}".equals(com_token))
                 game_import_t.error("ED_ParseEntity: closing brace without data");
 
             init = true;

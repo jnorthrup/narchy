@@ -26,12 +26,7 @@ public class Sound {
 
     public void play() {
         try {
-            new Thread() {
-                @Override
-                public void run() {
-                    clip.play();
-                }
-            }.start();
+            new Thread(() -> clip.play()).start();
         } catch (Throwable e) {
             e.printStackTrace();
         }

@@ -580,8 +580,8 @@ public class ExtendedCastGraph extends CastGraph {
         @Override
         public Object apply(Object from) {
             String str = from.toString().trim();
-            if (str.equalsIgnoreCase("true")) return true;
-            if (str.equalsIgnoreCase("false")) return false;
+            if ("true".equalsIgnoreCase(str)) return true;
+            if ("false".equalsIgnoreCase(str)) return false;
             throw new Error("can't cast string(" + str + ") to boolean");
         }
 

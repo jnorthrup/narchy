@@ -100,7 +100,7 @@ public class TextEditView implements BufferListener {
 
     @Override
     public void moveChar(BufferLine fromLine, BufferLine toLine, BufferChar c) {
-        final int[] k = new int[]{0};
+        final int[] k = {0};
         lines.stream().filter(l -> l.getBufferLine() == fromLine).findFirst().ifPresent(
                 (from) -> lines.stream().filter(l -> l.getBufferLine() == toLine).
                         findFirst().ifPresent((to) -> {

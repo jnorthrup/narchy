@@ -59,7 +59,7 @@ public class CommandSequence extends Command {
 	 * @return a string description of this command sequence
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		boolean needLine = false;
 		for (Command each : commands()) {
 			if (needLine) {

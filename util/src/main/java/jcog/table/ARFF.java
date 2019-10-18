@@ -141,7 +141,7 @@ import java.util.stream.IntStream;
      */
     public ARFF(BufferedReader r) throws IOException, ARFFParseError {
         this();
-        int[] state = new int[]{COMMENT};
+        int[] state = {COMMENT};
 
         StringBuilder collectedComment = new StringBuilder();
 
@@ -280,7 +280,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
 
         if (List.of("real", "numeric", "integer").contains(lowertype)) {
             defineNumeric(name);
-        } else if (lowertype.equals("string")) {
+        } else if ("string".equals(lowertype)) {
             defineText(name);
         } else  {
             int a = line.indexOf('{');
@@ -316,7 +316,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
                 //String name = attrName(i);
                 ColumnType t = column(i).type();
                 if (t == DoubleColumnType.instance()) {
-                    if (tokens[i] == null || tokens[i].equals("null"))
+                    if (tokens[i] == null || "null".equals(tokens[i]))
                         datum[i] = valueIfNull;
                     else
                         datum[i] = Double.parseDouble(tokens[i]);

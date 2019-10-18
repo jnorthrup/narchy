@@ -55,35 +55,31 @@ public class NeuroMap {
             functions[i] = g.generate(numInputs);
         }
 
-        new Thread() {
+        new Thread(() -> {
+            while (running) {
+                if (numElements == 0) {
+                    continue;
+                }
 
-            @Override
-            public void run() {
-                while (running) {
-                    if (numElements == 0) {
-                        continue;
-                    }
+                final InputOutput io = randomMemory();
 
-                    final InputOutput io = randomMemory();
+                assert io.output.length == functions.length;
 
-                    assert io.output.length == functions.length;
+                for (int i = 0; i < functions.length; ++i) {
+                    functions[i].learn(io.input, io.output[i]);
+                }
 
-                    for (int i = 0; i < functions.length; ++i) {
-                        functions[i].learn(io.input, io.output[i]);
-                    }
+                iterations++;
+                iterationsPerSecondCounter++;
 
-                    iterations++;
-                    iterationsPerSecondCounter++;
-
-                    long t1 = System.currentTimeMillis();
-                    if (t1 - t0 > 1000) {
-                        t0 = t1;
-                        iterationsPerSecond = iterationsPerSecondCounter;
-                        iterationsPerSecondCounter = 0;
-                    }
+                long t1 = System.currentTimeMillis();
+                if (t1 - t0 > 1000) {
+                    t0 = t1;
+                    iterationsPerSecond = iterationsPerSecondCounter;
+                    iterationsPerSecondCounter = 0;
                 }
             }
-        }.start();
+        }).start();
 
     }
 

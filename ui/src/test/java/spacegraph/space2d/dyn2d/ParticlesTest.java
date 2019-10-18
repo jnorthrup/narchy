@@ -23,7 +23,7 @@ public class ParticlesTest implements Consumer<Dynamics2D> {
         {
             PolygonShape shape = new PolygonShape();
             v2[] vertices =
-                    new v2[]{new Position(-40, -10), new Position(40, -10), new Position(40, 0), new Position(-40, 0)};
+                    {new Position(-40, -10), new Position(40, -10), new Position(40, 0), new Position(-40, 0)};
             shape.set(vertices, 4);
             ground.addFixture(shape, 0.0f);
         }

@@ -34,7 +34,7 @@ public class ConsoleAgent extends GameX {
 
     static final char[] alphabet =
             //new char[] { ' ', 'a', 'b' };
-            new char[]{' ', 'x'};
+            {' ', 'x'};
 
     final int WIDTH;
     final int HEIGHT;

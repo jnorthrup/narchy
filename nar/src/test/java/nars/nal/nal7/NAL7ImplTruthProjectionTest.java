@@ -144,7 +144,7 @@ class NAL7ImplTruthProjectionTest {
 
 
     double[] max(double... xStart) {
-        double[] previous = new double [] { Double.NaN, Double.NEGATIVE_INFINITY };
+        double[] previous = { Double.NaN, Double.NEGATIVE_INFINITY };
         for(double x : xStart) {
             previous = max(x, previous);
         }
@@ -184,7 +184,7 @@ class NAL7ImplTruthProjectionTest {
         double fw = Y;
 
         double[] current
-            = new double[] { X, isMinim ? Y : -Y };
+            = { X, isMinim ? Y : -Y };
         
         double[] best = current;
 

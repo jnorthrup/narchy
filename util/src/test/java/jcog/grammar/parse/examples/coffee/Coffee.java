@@ -213,7 +213,7 @@ public class Coffee implements PubliclyCloneable<Coffee> {
 	 * @return a textual description of this coffee type
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(name);
 		if (formerName != null) {
 			buf.append('(');

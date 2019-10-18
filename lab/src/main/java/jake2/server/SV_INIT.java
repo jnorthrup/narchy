@@ -416,7 +416,7 @@ public class SV_INIT {
         }
 
         
-        if (Cvar.VariableValue("coop") != 0 && level.equals("victory.pcx"))
+        if (Cvar.VariableValue("coop") != 0 && "victory.pcx".equals(level))
             Cvar.Set("nextserver", "gamemap \"*" + firstmap + '"');
 
         
