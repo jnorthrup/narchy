@@ -78,7 +78,7 @@ public class Head
         return vector;
     }
 
-    public Unit get(final int i) {
+    public Unit get(int i) {
         if (i < width)
         {
             return _eraseVector[i];
@@ -89,7 +89,7 @@ public class Head
             return _addVector[i - width];
         }
 
-        final int width3 = width * 3;
+        int width3 = width * 3;
         if (i < width3)
         {
             return _keyVector[i - (2 * width)];

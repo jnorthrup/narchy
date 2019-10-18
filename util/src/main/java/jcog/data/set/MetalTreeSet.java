@@ -38,7 +38,7 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 		this.root = add(root, t);
 	}
 
-	private TreeNode<T> add(final TreeNode<T> n, T y) {
+	private TreeNode<T> add(TreeNode<T> n, T y) {
 		if (n != null) {
 			T x = n.x;
 			int c = x != y ? x.compareTo(y) : 0;
@@ -65,7 +65,7 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 		this.root = remove(root, t);
 	}
 
-	private TreeNode<T> remove(final TreeNode<T> n, Object y) {
+	private TreeNode<T> remove(TreeNode<T> n, Object y) {
 		if (n != null) {
 			T x = n.x;
 			TreeNode<T> nr = n.right, nl = n.left;

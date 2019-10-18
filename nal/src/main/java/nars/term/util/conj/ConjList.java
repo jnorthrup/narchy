@@ -356,7 +356,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
 //        if (x.op() == CONJ && x.dt() != XTERNAL) {
             //remove components
-            final boolean[] removed = {false};
+            boolean[] removed = {false};
             if (x.eventsOR((when, what) -> {
                 if (contains(when, what.negIf(polarity)))
                     return true; //contradiction

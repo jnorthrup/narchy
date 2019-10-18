@@ -102,7 +102,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 		long deadline = System.nanoTime();
 
-		final int w = wheels;
+		int w = wheels;
 //        IntUnaryOperator updater = (cc) -> (cc + 1) % w;
 
 		int empties;

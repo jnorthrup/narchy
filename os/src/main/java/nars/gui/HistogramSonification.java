@@ -28,7 +28,7 @@ public class HistogramSonification extends Gridding {
 //        for (int i = 0; i < sample.length; i++)
 //            sample[i] = (float) Math.sin((i*0.2)/(2*Math.PI)); //TODO tune
 
-        final Random rng = new XoRoShiRo128PlusRandom(1);
+        Random rng = new XoRoShiRo128PlusRandom(1);
 
         this.g = Util.map(d.length, Granulize[]::new, i ->
             new Granulize(SampleLoader.load("/tmp/guitar.wav"), 0.25f, 1f, rng)

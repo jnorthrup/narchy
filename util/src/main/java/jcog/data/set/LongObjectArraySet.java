@@ -192,7 +192,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     @Override
     public String toString() {
         //HACK this could be better
-        final int[] i = {0};
+        int[] i = {0};
         List<String> list = new ArrayList<>();
         for (X n : this) {
             String s = when[i[0]++] + ":" + n;

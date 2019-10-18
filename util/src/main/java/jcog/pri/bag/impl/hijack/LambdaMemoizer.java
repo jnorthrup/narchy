@@ -44,7 +44,7 @@ public class LambdaMemoizer {
                 }
             };
 
-            final Memoize<ArgKey, V> memoizedCalls = m.apply(compute);
+            Memoize<ArgKey, V> memoizedCalls = m.apply(compute);
 
             return args -> memoizedCalls.apply(new ArgKey(methodID, args));
 

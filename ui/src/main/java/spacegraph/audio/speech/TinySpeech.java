@@ -159,7 +159,7 @@ public class TinySpeech {
             float freq = ff * 50f / SAMPLE_FREQUENCY;
 
             float xx = 0, xxx = 0;
-            final float q =
+            float q =
                 1.0f - pw[formant] * (PI * 10/ SAMPLE_FREQUENCY); //adjust 10 to tune resonance
                 //(float) (1 / (pw[formant] * tan(2 * PI * 0.5)));
 

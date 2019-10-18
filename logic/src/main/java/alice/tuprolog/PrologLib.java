@@ -128,7 +128,7 @@ public abstract class PrologLib implements Serializable {
             return null;
         Term val = term.term();
         if (val instanceof Struct) {
-            final Struct t = (Struct) val;
+            Struct t = (Struct) val;
             boolean primitive = t.isPrimitive();
             if (!primitive && term != t) {
                 prolog.prims.identify(t, FUNCTOR);

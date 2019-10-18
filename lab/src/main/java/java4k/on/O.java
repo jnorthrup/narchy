@@ -389,7 +389,7 @@ public class O extends Applet implements Runnable {
 						int templatePos = units[upos + UNIT_IDX_SHIP_TEMPLATE];
 
 						if (templatePos > 0) {
-							final int ai = STATIC[templatePos + SHIP_IDX_AI_HIT];
+							int ai = STATIC[templatePos + SHIP_IDX_AI_HIT];
 
 							if ((ai & SHIP_LIFE_COUNTDOWN) != 0) {
 								units[upos + UNIT_IDX_HP]--;
@@ -972,7 +972,8 @@ public class O extends Applet implements Runnable {
 																for (int j = 0; j < PLASMA_MAX_HITS_COUNT; j++) {
 																	if (plasmaHittingUnitIndex[j] == hitUnitIndex) {
 																		found = true;
-																		
+
+																		break;
 																	}
 																}
 																if (!found) {

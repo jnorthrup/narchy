@@ -104,7 +104,7 @@ public class Theories {
     /**
      * removing from dbase the first clause with head unifying with clause
      */
-    public int retract(final Struct cl, Predicate<ClauseInfo> each) {
+    public int retract(Struct cl, Predicate<ClauseInfo> each) {
         Struct clause = toClause(cl);
         Struct struct = ((Struct) clause.sub(0));
         Deque<ClauseInfo> family = dynamicDBase.clauses(struct.key());
@@ -120,7 +120,7 @@ public class Theories {
         if (family == null)
             return 0;
 
-        final int[] removals = {0};
+        int[] removals = {0};
         family.removeIf(ci -> {
             if (clause.unifiable(ci.clause)) {
                 if (each.test(ci)) {

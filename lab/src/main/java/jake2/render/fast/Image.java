@@ -313,7 +313,7 @@ public abstract class Image extends Main {
     void GL_ImageList_f() {
 
         image_t image;
-        final String[] palstrings = {"RGB", "PAL"};
+        String[] palstrings = {"RGB", "PAL"};
 
         VID.Printf(Defines.PRINT_ALL, "------------------\n");
         int texels = 0;
@@ -1306,7 +1306,7 @@ public abstract class Image extends Main {
 
         
         if (image.type == it_pic && bits == 8 && image.width < 64 && image.height < 64) {
-            final pos_t pos = new pos_t(0, 0);
+            pos_t pos = new pos_t(0, 0);
             int j;
 
             int texnum = Scrap_AllocBlock(image.width, image.height, pos);

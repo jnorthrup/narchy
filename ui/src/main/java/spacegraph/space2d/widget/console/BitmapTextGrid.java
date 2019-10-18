@@ -315,7 +315,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
         g.setColor(foregroundColor);
 
-        final int descent = font.getSize() / 4; //estimate
+        int descent = font.getSize() / 4; //estimate
         if (c != ' ')
             g.drawChars(new char[]{c}, 0, 1, x, y + fontHeight + 1 - descent);
 

@@ -197,7 +197,7 @@ public class Recog2D extends GameX {
 
                 new Gridding(list.toArray(new Surface[0])));
 
-        final int[] frames = {0};
+        int[] frames = {0};
         onFrame(() -> {
 
             if (frames[0]++ % imagePeriod == 0) {

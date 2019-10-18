@@ -119,7 +119,7 @@ public class SimpleLSTM  {
 
 	public double[] learn(double[] input, @Nullable double[] target_output, float learningRate) {
 
-		final int cell_blocks = this.cell_blocks, full_input_dimension = this.full_input_dimension;
+		int cell_blocks = this.cell_blocks, full_input_dimension = this.full_input_dimension;
 
 		
 
@@ -127,7 +127,7 @@ public class SimpleLSTM  {
 		if ((this.in == null) || (this.in.length != full_input_dimension)) {
 			this.in = new double[full_input_dimension];
 		}
-		final double[] full_input = this.in;
+		double[] full_input = this.in;
 
 		int loc = 0;
 		for (int i = 0; i < input.length; ) {
@@ -156,7 +156,7 @@ public class SimpleLSTM  {
 			
 			
 		}
-		final double[] full_hidden = this.full_hidden;
+		double[] full_hidden = this.full_hidden;
 
 		
 		for (int j = 0; j < cell_blocks; j++) {
@@ -164,7 +164,7 @@ public class SimpleLSTM  {
 			double[] wg = weightsG[j];
 			double sf = 0, sg = 0;
 			for (int i = 0; i < full_input_dimension; i++)			{
-				final double fi = full_input[i];
+				double fi = full_input[i];
 				sf += wj[i] * fi;
 				sg += wg[i] * fi;
 			}
@@ -173,8 +173,8 @@ public class SimpleLSTM  {
 		}
 		
 		for (int j = 0; j < cell_blocks; j++) {
-			final double actfj = actF[j] = F.activate(sumF[j]);
-			final double actgj = actG[j] = G.activate(sumG[j]);
+			double actfj = actF[j] = F.activate(sumF[j]);
+			double actgj = actG[j] = G.activate(sumG[j]);
 
 
 			
@@ -212,8 +212,8 @@ public class SimpleLSTM  {
 			double dg = G.derivate(sumG[j]);
 			double h_ = context[j]; 
 
-			final double[] dsg = dSdG[j];
-			final double[] dsf = dSdF[j];
+			double[] dsg = dSdG[j];
+			double[] dsf = dSdF[j];
 
 			for (int i = 0; i < full_input_dimension; i++) {
 				
@@ -240,13 +240,13 @@ public class SimpleLSTM  {
 			}
 
             double SCALE_OUTPUT_DELTA = 1.0;
-            final double outputDeltaScale = SCALE_OUTPUT_DELTA;
+            double outputDeltaScale = SCALE_OUTPUT_DELTA;
 
 			for (int k = 0; k < output_dimension; k++) {
 
-				final double dok  = deltaOut[k] = (target_output[k] - out[k]) * outputDeltaScale;
+				double dok  = deltaOut[k] = (target_output[k] - out[k]) * outputDeltaScale;
 
-				final double[] wk = weightsOut[k];
+				double[] wk = weightsOut[k];
 
 				double[] dh = this.deltaH;
 				double[] ah = this.actH;
@@ -261,7 +261,7 @@ public class SimpleLSTM  {
 			
 			
 			for (int j = 0; j < cell_blocks; j++) {
-				final double dhj = deltaH[j];
+				double dhj = deltaH[j];
 				updateWeights(learningRate * dhj, full_input_dimension, dSdF[j], weightsF[j]);
 				updateWeights(learningRate * dhj, full_input_dimension, dSdG[j], weightsG[j]);
 			}

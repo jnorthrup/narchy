@@ -225,9 +225,9 @@ public class Smasher {
         }
 
 
-        final double[] distance = {Double.MAX_VALUE};
-        final Fragment[] startPolygon = {null};
-        final v2[] kolmicovyBod = {null};
+        double[] distance = {Double.MAX_VALUE};
+        Fragment[] startPolygon = {null};
+        v2[] kolmicovyBod = {null};
         MyList<EdgeDiagram> allEdgesPolygon = new MyList<>();
 
 
@@ -349,7 +349,7 @@ public class Smasher {
     }
 
 
-    private void tryFracture(final Fixture f1, final Fixture f2, final float iml, Contact contact, int i) {
+    private void tryFracture(Fixture f1, Fixture f2, float iml, Contact contact, int i) {
 
 
         Material m = f1.material;

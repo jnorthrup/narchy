@@ -12,7 +12,7 @@ public final class MetalAtomicLongFieldUpdater<T> extends AtomicLongFieldUpdater
 	private final long offset;
     //        private final Class<T> tclass;
 
-	public MetalAtomicLongFieldUpdater(final Class<T> tclass, final String fieldName) {
+	public MetalAtomicLongFieldUpdater(Class<T> tclass, String fieldName) {
 
 //            try {
 //                field = (Field) AccessController.doPrivileged(new PrivilegedExceptionAction<Field>() {

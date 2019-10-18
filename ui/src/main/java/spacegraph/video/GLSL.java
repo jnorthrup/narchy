@@ -89,7 +89,7 @@ public class GLSL extends PaintSurface {
         ShaderCode fp0 = new ShaderCode(GL_FRAGMENT_SHADER, 1, new CharSequence[][]{{fsrc}});
         
         fp0.defaultShaderCustomization(gl, true, true);
-        final ShaderProgram sp0 = new ShaderProgram();
+        ShaderProgram sp0 = new ShaderProgram();
         
         sp0.add(gl, fp0, System.err);
         st.attachShaderProgram(gl, sp0, true);

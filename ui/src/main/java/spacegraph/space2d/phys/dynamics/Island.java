@@ -215,7 +215,7 @@ class Island {
 
 
         if (velocities == null || m_bodyCapacity > velocities.length) {
-            final Velocity[] old = velocities == null ? VELOCITIES : velocities;
+            Velocity[] old = velocities == null ? VELOCITIES : velocities;
             velocities = new Velocity[m_bodyCapacity];
             System.arraycopy(old, 0, velocities, 0, old.length);
             for (int i = old.length; i < velocities.length; i++) {
@@ -225,7 +225,7 @@ class Island {
 
 
         if (positions == null || m_bodyCapacity > positions.length) {
-            final v2[] old = positions == null ? POSITIONS : positions;
+            v2[] old = positions == null ? POSITIONS : positions;
             positions = new Position[m_bodyCapacity];
             System.arraycopy(old, 0, positions, 0, old.length);
             for (int i = old.length; i < positions.length; i++) {
@@ -252,11 +252,11 @@ class Island {
 
 
         for (int i = 0; i < m_bodyCount; ++i) {
-            final Body2D b = bodies[i];
-            final Sweep bm_sweep = b.sweep;
-            final v2 c = bm_sweep.c;
+            Body2D b = bodies[i];
+            Sweep bm_sweep = b.sweep;
+            v2 c = bm_sweep.c;
             float a = bm_sweep.a;
-            final v2 v = b.vel;
+            v2 v = b.vel;
             float w = b.velAngular;
 
 
@@ -336,9 +336,9 @@ class Island {
 
 
         for (int i = 0; i < m_bodyCount; ++i) {
-            final v2 c = positions[i];
+            v2 c = positions[i];
             float a = positions[i].a;
-            final v2 v = velocities[i];
+            v2 v = velocities[i];
             float w = velocities[i].w;
 
 

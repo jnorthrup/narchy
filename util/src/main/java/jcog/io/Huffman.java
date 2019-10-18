@@ -324,11 +324,11 @@ public class Huffman {
             throw new IndexOutOfBoundsException();
         }
 
-        final int end = off + len;
+        int end = off + len;
         long h64;
 
         if (len >= 32) {
-            final int limit = end - 32;
+            int limit = end - 32;
             long v1 = seed + PRIME64_1 + PRIME64_2;
             long v2 = seed + PRIME64_2;
             long v3 = seed + 0;
@@ -444,7 +444,7 @@ public class Huffman {
         byte[] symbol;
         int symbolLen;
         int symbolIdx = 0;
-        final int codesLen = (codes.length * 8) - (byte) (codes[0] & 0b111);
+        int codesLen = (codes.length * 8) - (byte) (codes[0] & 0b111);
         int bitLen;
         while (codeIdx < codesLen) {
             symbolIdx = 0;

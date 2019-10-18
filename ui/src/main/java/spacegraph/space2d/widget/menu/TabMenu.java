@@ -101,7 +101,7 @@ public class TabMenu extends Menu {
 //    }
 
     public Surface toggle(Function<String, ToggleButton> buttonBuilder, String label, Supplier<Surface> creator) {
-        final Surface[] created = {null};
+        Surface[] created = {null};
         ObjectBooleanProcedure<ToggleButton> toggleInside = (button, onOrOff) -> {
 //            Exe.invoke(()->{
                 toggle(button, creator, onOrOff, created, true);

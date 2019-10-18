@@ -60,7 +60,7 @@ public class Evaluator extends HeapTermTransform {
 
                 compoundBuilder.volRemain = Integer.MAX_VALUE; //HACK
                 TermBuffer y = compoundBuilder.append(X);
-                final int[] functors = {0};
+                int[] functors = {0};
                 y.updateMap(g -> {
                     if (g instanceof Functor)
                         functors[0]++;

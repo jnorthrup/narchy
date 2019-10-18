@@ -1031,9 +1031,9 @@ public class Dynamics2D {
     }
 
 
-    private void solveTOI(final TimeStep step) {
+    private void solveTOI(TimeStep step) {
 
-        final Island island = toiIsland;
+        Island island = toiIsland;
         island.init(2 * Settings.maxTOIContacts, Settings.maxTOIContacts, 0,
                 contactManager.contactListener);
         if (stepComplete) {
@@ -1122,7 +1122,7 @@ public class Dynamics2D {
                     int indexB = c.bIndex;
 
 
-                    final TimeOfImpact.TOIInput input = toiInput;
+                    TimeOfImpact.TOIInput input = toiInput;
                     input.proxyA.set(fA.shape(), indexA);
                     input.proxyB.set(fB.shape(), indexB);
                     input.sweepA.set(bA.sweep);

@@ -504,7 +504,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
             incoming.print();
             throw new RuntimeException("schemas differ");
         }
-        final boolean[] changed = {false};
+        boolean[] changed = {false};
         for (Row p : incoming) {
             changed[0] |= add(p);
         }

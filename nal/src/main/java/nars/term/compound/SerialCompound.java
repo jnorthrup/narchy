@@ -112,7 +112,7 @@ public class SerialCompound extends DynBytes implements SameSubtermsCompound, Th
         Op o = op();
         if (o.temporal) {
             int p = this.len;
-            final byte[] b = bytes;
+            byte[] b = bytes;
             return Ints.fromBytes(b[p-3], b[p-2], b[p-1], b[p]);
         } else {
             return DTERNAL;

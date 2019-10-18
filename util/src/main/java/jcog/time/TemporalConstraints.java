@@ -284,10 +284,10 @@ public class TemporalConstraints<E> {
             stack.get(currentEdge.getOne()).set(currentEdge.getTwo(), false);
 
 
-            final int i = currentEdge.getOne();
+            int i = currentEdge.getOne();
             ShortArrayList ci = this.constraintnetwork.get(i);
 
-            final int j = currentEdge.getTwo();
+            int j = currentEdge.getTwo();
             
             for (int k = 0; k < S; k++) {
                 

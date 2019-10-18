@@ -56,7 +56,7 @@ public class MatchBelief extends NativeHow {
 	 */
     private static @Nullable Premise match(Premise p, int var, RuleCause why, Derivation d) {
 
-		final Term beliefTerm = p.beliefTerm();
+		Term beliefTerm = p.beliefTerm();
 		if (!beliefTerm.op().taskable)
 			return null; //HACK some non-taskable / non-conceptualizable beliefTerms op's are invisible to the predicate trie due to being masked in Anom's
 
@@ -151,7 +151,7 @@ public class MatchBelief extends NativeHow {
 
 	private static @Nullable Task match(Task task, Term beliefTerm, Derivation d) {
 
-		final BeliefTable beliefTable = d.nar.tableDynamic(beliefTerm, true);
+		BeliefTable beliefTable = d.nar.tableDynamic(beliefTerm, true);
 
 		return beliefTable != null && !beliefTable.isEmpty() ?
 			match(task, beliefTerm, beliefTable, timeFocus(task, beliefTerm, d), d) : null;

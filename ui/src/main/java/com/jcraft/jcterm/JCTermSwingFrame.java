@@ -112,7 +112,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
     }
 
     public static void main(String[] arg) {
-        final JCTermSwingFrame frame = new JCTermSwingFrame("JCTerm");
+        JCTermSwingFrame frame = new JCTermSwingFrame("JCTerm");
         frame.setVisible(true);
     }
 
@@ -220,9 +220,9 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                     (PipedInputStream) in))).kick();
         }
 
-        final OutputStream fout = out;
-        final InputStream fin = in;
-        final Channel fchannel = channel;
+        OutputStream fout = out;
+        InputStream fin = in;
+        Channel fchannel = channel;
 
         return new Connection() {
             public InputStream getInputStream() {
@@ -579,7 +579,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         m.add(mi);
 
         JMenu mcolor = new JMenu("Color");
-        final ActionListener mcolor_action = e -> setFgBg(e.getActionCommand());
+        ActionListener mcolor_action = e -> setFgBg(e.getActionCommand());
         mcolor.addMenuListener(new MenuListener() {
             public void menuSelected(MenuEvent me) {
                 JMenu jm = (JMenu) me.getSource();
@@ -606,7 +606,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         m.add(mcolor);
 
         JMenu mfsize = new JMenu("Font size");
-        final ActionListener mfsize_action = e -> {
+        ActionListener mfsize_action = e -> {
             String _font_size = e.getActionCommand();
             try {
                 setFontSize(Integer.parseInt(_font_size));

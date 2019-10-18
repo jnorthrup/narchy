@@ -63,18 +63,18 @@ public class ContactID implements Comparable<ContactID> {
         return indexA << 24 | indexB << 16 | typeA << 8 | typeB;
     }
 
-    public boolean isEqual(final ContactID cid) {
+    public boolean isEqual(ContactID cid) {
         return getKey() == cid.getKey();
     }
 
     public ContactID() {
     }
 
-    public ContactID(final ContactID c) {
+    public ContactID(ContactID c) {
         set(c);
     }
 
-    public void set(final ContactID c) {
+    public void set(ContactID c) {
         indexA = c.indexA;
         indexB = c.indexB;
         typeA = c.typeA;

@@ -265,12 +265,18 @@ public class M extends GamePanel {
 			for (int e = 1; e < 5; e++) {
 				e_lost[e] = true;
 				for (int p = 0; p < 24; p++) {
-					if (p_owner[p] == e) { e_lost[e] = false; }
+					if (p_owner[p] == e) {
+						e_lost[e] = false;
+						break;
+					}
 				}
 				if (!e_lost[e]) {
 					e_won[e] = true;
 					for (int p = 0; p < 24; p++) {
-						if (p_owner[p] != e && p_owner[p] != 0) { e_won[e] = false; }
+						if (p_owner[p] != e && p_owner[p] != 0) {
+							e_won[e] = false;
+							break;
+						}
 					}
 					if (e_transcend[e]) {
 						e_won[e] = true;

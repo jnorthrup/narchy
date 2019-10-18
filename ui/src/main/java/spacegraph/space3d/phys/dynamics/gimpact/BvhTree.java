@@ -136,10 +136,10 @@ class BvhTree {
 	}
 
 	private void _build_sub_tree(BvhDataArray primitive_boxes, int startIndex, int endIndex) {
-		final Deque<_build_sub_treeFrame> stack = new ArrayDeque<>();
+		Deque<_build_sub_treeFrame> stack = new ArrayDeque<>();
 		stack.push(new _build_sub_treeFrame(primitive_boxes, startIndex, endIndex));
 		while (!stack.isEmpty()) {
-			final _build_sub_treeFrame frame = stack.peek();
+			_build_sub_treeFrame frame = stack.peek();
 			switch (frame.block) {
 				case 0: {
 					frame.curIndex = num_nodes;

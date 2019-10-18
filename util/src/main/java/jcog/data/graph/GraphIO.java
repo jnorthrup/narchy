@@ -240,11 +240,11 @@ public enum GraphIO { ;
         dis.readByte();
         dis.readByte();
 
-        final int MODE = dis.readInt();
+        int MODE = dis.readInt();
         if (MODE != 1) throw new IOException("Unknown mode " + MODE);
 
-        final int CACHESIZE = dis.readInt();
-        final int GRAPHSIZE = dis.readInt();
+        int CACHESIZE = dis.readInt();
+        int GRAPHSIZE = dis.readInt();
 
 
 

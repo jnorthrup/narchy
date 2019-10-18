@@ -47,13 +47,13 @@ public class MemoryState {
 
     public void backwardErrorPropagation2() {
 
-        final ContentAddressing[] ca = memory.getContentAddressing();
+        ContentAddressing[] ca = memory.getContentAddressing();
 
 
         for (int i = 0; i < read.length; i++) {
 
-            final ReadData readI = read[i];
-            final ContentAddressing cai = ca[i];
+            ReadData readI = read[i];
+            ContentAddressing cai = ca[i];
 
             readI.backwardErrorPropagation();
 
@@ -70,8 +70,8 @@ public class MemoryState {
     }
 
     public MemoryState process(Head[] heads) {
-        final int headCount = heads.length;
-        final int memoryColumnsN = memory.memoryHeight;
+        int headCount = heads.length;
+        int memoryColumnsN = memory.memoryHeight;
         ReadData[] newReadDatas = new ReadData[headCount];
         HeadSetting[] newHeadSettings = new HeadSetting[headCount];
 

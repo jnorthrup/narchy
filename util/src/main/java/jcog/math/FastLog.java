@@ -38,7 +38,7 @@ public class FastLog {
      *             requires 32 KB.
      */
     public FastLog(double base, int q) {
-        final int tabSize = 1 << (24 - q);
+        int tabSize = 1 << (24 - q);
 
         this.q = q;
         qM1 = q - 1;
@@ -66,9 +66,9 @@ public class FastLog {
      */
     public float log(float x) {
         assert (x > 0);
-        final int raw = Float.floatToIntBits(x);
-        final int exp = (raw >> 23) & 0xFF;
-        final int mant = (raw & 0x7FFFFF);
+        int raw = Float.floatToIntBits(x);
+        int exp = (raw >> 23) & 0xFF;
+        int mant = (raw & 0x7FFFFF);
         return (exp + data[exp == 0 ?
                 (mant >> qM1) :
                 ((mant | 0x800000) >> q)]) * korr;

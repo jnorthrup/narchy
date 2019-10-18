@@ -136,7 +136,7 @@ class ArrayBagTest {
     @Disabled
     @Test
     void testInsertOrBoostDoesntCauseSort() {
-        final int[] sorts = {0};
+        int[] sorts = {0};
         @NotNull ArrayBag<PLink<String>, PLink<String>> x = new PLinkArrayBag(PriMerge.plus, 4) {
             @Override
             protected void sort() {

@@ -265,9 +265,9 @@ public class R extends Applet implements Runnable {
 		 */
 		int gravity = 0;
 		int breath = 0;
-		final int[][] level = new int[16][12];
-		final int[][] levelObjects = new int[16][12];
-		final int[][] levelBlocks = new int[32][12];
+		int[][] level = new int[16][12];
+		int[][] levelObjects = new int[16][12];
+		int[][] levelBlocks = new int[32][12];
 		level[1][1] = -1;
 		boolean bChange = false;
 		boolean bFall = true;

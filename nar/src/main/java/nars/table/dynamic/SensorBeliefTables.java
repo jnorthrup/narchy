@@ -139,13 +139,13 @@ public class SensorBeliefTables extends BeliefTables {
      * with respect to how significantly it changed from a previous value,
      * OR the time duration since last received signal
      */
-    static double surprise(final Task prev, final Task next, float dur) {
+    static double surprise(Task prev, Task next, float dur) {
 
-        final boolean NEW = prev == null;
+        boolean NEW = prev == null;
         if (NEW)
             return 1;
 
-        final boolean stretched = prev == next;
+        boolean stretched = prev == next;
         if (stretched)
             return 0;
 

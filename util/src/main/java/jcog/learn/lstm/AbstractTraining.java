@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 public abstract class AbstractTraining {
 
-    public AbstractTraining(Random random, final int inputs, final int outputs) {
+    public AbstractTraining(Random random, int inputs, int outputs) {
         this.random = random;
         this.inputs = inputs;
         this.outputs = outputs;
@@ -20,8 +20,8 @@ public abstract class AbstractTraining {
 
     @Deprecated public double scoreSupervised(SimpleLSTM agent, float learningRate)  {
 
-        final double[] fit = {0};
-        final double[] max_fit = {0};
+        double[] fit = {0};
+        double[] max_fit = {0};
 
         this.interact(inter -> {
             if (inter.forget > 0)

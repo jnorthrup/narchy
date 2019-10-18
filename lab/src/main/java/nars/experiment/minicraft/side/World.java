@@ -193,21 +193,25 @@ public class World implements java.io.Serializable {
         for (TileID element : breakWood) {
             if (element == currentName) {
                 breakType = breakWood;
+                break;
             }
         }
         for (TileID element : breakStone) {
             if (element == currentName) {
                 breakType = breakStone;
+                break;
             }
         }
         for (TileID element : breakMetal) {
             if (element == currentName) {
                 breakType = breakMetal;
+                break;
             }
         }
         for (TileID element : breakDiamond) {
             if (element == currentName) {
                 breakType = breakDiamond;
+                break;
             }
         }
         if (item == null || item.getClass() != Tool.class) {

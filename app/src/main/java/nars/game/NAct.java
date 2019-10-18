@@ -51,7 +51,7 @@ import static nars.Op.BELIEF;
     default void actionToggle(Term t, float thresh, float defaultValue /* 0 or NaN */, float momentumOn, Runnable on, Runnable off) {
 
 
-        final float[] last = {0};
+        float[] last = {0};
         actionUnipolar(t, (f) -> {
 
             float f1 = f;
@@ -340,8 +340,8 @@ import static nars.Op.BELIEF;
 
         assert(!tl.equals(tr));
 
-        final AtomicFloat l = new AtomicFloat(0);
-        final AtomicFloat r = new AtomicFloat(0);
+        AtomicFloat l = new AtomicFloat(0);
+        AtomicFloat r = new AtomicFloat(0);
 
 //        float decay =
 //                //0.5f;
@@ -539,7 +539,7 @@ import static nars.Op.BELIEF;
     
     default BooleanPredicate debounce(BooleanPredicate f, float durations) {
 
-        final long[] last = { Long.MIN_VALUE };
+        long[] last = { Long.MIN_VALUE };
 
         return x->{
             boolean y = false;

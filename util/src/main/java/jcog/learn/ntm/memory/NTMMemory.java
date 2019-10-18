@@ -85,7 +85,7 @@ public class NTMMemory {
             }
         }
 
-        final NTMMemory p = parent();
+        NTMMemory p = parent();
         for (int i = 0; i < memoryHeight; i++) {
 
             Unit[] oldRow = p.data[i];
@@ -123,21 +123,21 @@ public class NTMMemory {
     }
 
     private void memoryGradientUpdate() {
-        final int h = headNum();
+        int h = headNum();
 
-        final NTMMemory p = parent();
+        NTMMemory p = parent();
 
         
-        final HeadSetting[] heading = this.heading;
-        final double[][] erase = this.erase;
+        HeadSetting[] heading = this.heading;
+        double[][] erase = this.erase;
 
-        final int height = this.memoryHeight;
-        final int width = this.memoryWidth;
+        int height = this.memoryHeight;
+        int width = this.memoryWidth;
 
         for (int i = 0; i < height; i++) {
 
-            final Unit[] oldDataVector = p.data[i];
-            final Unit[] newDataVector = data[i];
+            Unit[] oldDataVector = p.data[i];
+            Unit[] newDataVector = data[i];
 
 
             for (int j = 0; j < width; j++) {
@@ -154,9 +154,9 @@ public class NTMMemory {
     private void eraseAndAddGradientUpdate(int headIndex, double[] erase, double[] add, HeadSetting headSetting, Head head) {
         Unit[] addVector = head.getAddVector();
 
-        final int h = headNum();
+        int h = headNum();
 
-        final NTMMemory p = parent();
+        NTMMemory p = parent();
 
         for (int j = 0; j < memoryWidth; j++) {
             double gradientErase = 0.0;
@@ -175,7 +175,7 @@ public class NTMMemory {
 
                 }
 
-                final double gradientAddressing = itemGradient * addressingVectorItemValue;
+                double gradientAddressing = itemGradient * addressingVectorItemValue;
 
                 gradientErase += gradientAddressing * (-gradientErase2);
                 gradientAdd += gradientAddressing;
@@ -190,9 +190,9 @@ public class NTMMemory {
     }
 
     private void headSettingGradientUpdate(int headIndex, double[] erase, double[] add, HeadSetting headSetting) {
-        final int h = headNum();
+        int h = headNum();
 
-        final NTMMemory p = parent();
+        NTMMemory p = parent();
 
         for (int j = 0; j < memoryHeight; j++) {
             
@@ -221,8 +221,8 @@ public class NTMMemory {
     }
 
     public void updateWeights(IWeightUpdater weightUpdater) {
-        for (final BetaSimilarity[] betaSimilarities : oldSimilar) {
-            for (final BetaSimilarity betaSimilarity : betaSimilarities) {
+        for (BetaSimilarity[] betaSimilarities : oldSimilar) {
+            for (BetaSimilarity betaSimilarity : betaSimilarities) {
                 weightUpdater.updateWeight(betaSimilarity);
             }
         }

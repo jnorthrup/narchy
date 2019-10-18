@@ -135,7 +135,7 @@ public class Buffer {
 
 
             //List<BufferChar> nlc = nextLine.getChars();
-            final int[] k = {0};
+            int[] k = {0};
             //nlc.add(c);
             //observer.moveChar(currentLine, nextLine, c);
             for (BufferChar c : nextLineChars) {

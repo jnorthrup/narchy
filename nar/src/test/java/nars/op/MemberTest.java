@@ -107,7 +107,7 @@ public class MemberTest {
 
 		int cycles = 2;
 		final double initPri = 0.5f;
-		final double[] priSum = {0};
+		double[] priSum = {0};
 		n.onTask((x)-> priSum[0] += x.pri());
 
 		String belief = "(member(#x,{a,b}) " + op + " #x)";

@@ -45,7 +45,7 @@ public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implem
 
     @Override
     public void emitAsyncAndWait(V x, Executor executorService) throws InterruptedException {
-        final Consumer[] cc = this.array();
+        Consumer[] cc = this.array();
         if (cc != null) {
             int n = cc.length;
             if (n != 0) {
@@ -70,7 +70,7 @@ public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implem
 
     @Override
     public void emitAsync(V x, Executor exe, Runnable onFinish) {
-        final Consumer[] cc = this.array();
+        Consumer[] cc = this.array();
         int n = cc != null ? cc.length : 0;
         switch (n) {
             case 0:

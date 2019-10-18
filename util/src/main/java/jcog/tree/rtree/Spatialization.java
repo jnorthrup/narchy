@@ -23,7 +23,7 @@ public class Spatialization<X> {
     public final short max;       
 
 
-    public Spatialization(@Deprecated final Function<X, HyperRegion> bounds, final Split<X> split, final int max) {
+    public Spatialization(@Deprecated Function<X, HyperRegion> bounds, Split<X> split, int max) {
         this.max = (short) max;
         this.bounds = bounds;
         this.split = split;

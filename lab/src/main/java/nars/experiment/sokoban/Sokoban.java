@@ -538,7 +538,11 @@ public class Sokoban extends Applet {
                         (Math.abs(xo - x) + 1) * 16, (Math.abs(yo - y) + 1) * 16);
                 drawMove();
                 boolean b = true;
-                for (char aLevel : level) if (aLevel == dollar) b = false;
+                for (char aLevel : level)
+                    if (aLevel == dollar) {
+                        b = false;
+                        break;
+                    }
                 if (b) {
 
                     try {

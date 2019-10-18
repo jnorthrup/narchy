@@ -74,7 +74,7 @@ public class Factorize {
 
     /** returns null if detects no reason to re-process */
     private static @Nullable Term[] distribute(Subterms xx) {
-        final TermList x = xx.toList();
+        TermList x = xx.toList();
 
         //TODO track what subterms (if any) are totally un-involved and exclude them from processing in subsequent stages
         //TODO sort the subterms for optimal processing order
@@ -149,7 +149,7 @@ public class Factorize {
     private static @Nullable Term[] applyConj(Term[] x, Variable f) {
 
         /** shadow target -> replacements */
-        final UnifiedSetMultimap<Term, ObjectBytePair<Term>>[] pp = new UnifiedSetMultimap[]{null};
+        UnifiedSetMultimap<Term, ObjectBytePair<Term>>[] pp = new UnifiedSetMultimap[]{null};
         byte n = (byte) x.length;
         for (int i = 0; i < n; i++) {
             Term s = x[i];

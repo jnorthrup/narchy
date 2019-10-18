@@ -94,7 +94,7 @@ public class NAgentOptimize {
 
         Optilive<NAR, Game> o = l.optilive(n->agent.apply(n.get()),
                 jcog.lab.Optimize.repeat((Game t) -> {
-                    final double[] rewardSum = {0}, dexSum = { 0 };
+                    double[] rewardSum = {0}, dexSum = { 0 };
                     t.onFrame(()-> {
                         rewardSum[0] += t.happiness();
                         dexSum[0] += t.dexterity();

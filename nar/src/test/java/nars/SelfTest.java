@@ -248,7 +248,7 @@ public class SelfTest {
 
     void run(int repeats, int threads) {
 
-        final DataTable all = newTable();
+        DataTable all = newTable();
 
         Runtime.getRuntime().addShutdownHook(new Thread(()->{
             try {

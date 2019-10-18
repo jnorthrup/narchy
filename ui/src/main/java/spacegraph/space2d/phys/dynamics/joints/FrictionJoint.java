@@ -125,7 +125,7 @@ public class FrictionJoint extends Joint {
      * @see Joint#initVelocityConstraints(org.jbox2d.dynamics.TimeStep)
      */
     @Override
-    public void initVelocityConstraints(final SolverData data) {
+    public void initVelocityConstraints(SolverData data) {
         m_indexA = A.island;
         m_indexB = B.island;
         m_localCenterA.set(A.sweep.localCenter);
@@ -144,9 +144,9 @@ public class FrictionJoint extends Joint {
         float wB = data.velocities[m_indexB].w;
 
 
-        final v2 temp = pool.popVec2();
-        final Rot qA = pool.popRot();
-        final Rot qB = pool.popRot();
+        v2 temp = pool.popVec2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
 
         qA.set(aA);
         qB.set(aB);
@@ -167,7 +167,7 @@ public class FrictionJoint extends Joint {
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
 
-        final Mat22 K = pool.popMat22();
+        Mat22 K = pool.popMat22();
         K.ex.x = mA + mB + iA * m_rA.y * m_rA.y + iB * m_rB.y * m_rB.y;
         K.ex.y = -iA * m_rA.x * m_rA.y - iB * m_rB.x * m_rB.y;
         K.ey.x = K.ex.y;
@@ -185,7 +185,7 @@ public class FrictionJoint extends Joint {
             m_linearImpulse.scaled(data.step.dtRatio);
             m_angularImpulse *= data.step.dtRatio;
 
-            final v2 P = pool.popVec2();
+            v2 P = pool.popVec2();
             P.set(m_linearImpulse);
 
             temp.set(P).scaled(mA);
@@ -213,7 +213,7 @@ public class FrictionJoint extends Joint {
     }
 
     @Override
-    public void solveVelocityConstraints(final SolverData data) {
+    public void solveVelocityConstraints(SolverData data) {
         v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
         v2 vB = data.velocities[m_indexB];
@@ -240,19 +240,19 @@ public class FrictionJoint extends Joint {
 
         
         {
-            final v2 Cdot = pool.popVec2();
-            final v2 temp = pool.popVec2();
+            v2 Cdot = pool.popVec2();
+            v2 temp = pool.popVec2();
 
             v2.crossToOutUnsafe(wA, m_rA, temp);
             v2.crossToOutUnsafe(wB, m_rB, Cdot);
             Cdot.added(vB).subbed(vA).subbed(temp);
 
-            final v2 impulse = pool.popVec2();
+            v2 impulse = pool.popVec2();
             Mat22.mulToOutUnsafe(m_linearMass, Cdot, impulse);
             impulse.negated();
 
 
-            final v2 oldImpulse = pool.popVec2();
+            v2 oldImpulse = pool.popVec2();
             oldImpulse.set(m_linearImpulse);
             m_linearImpulse.added(impulse);
 
@@ -286,7 +286,7 @@ public class FrictionJoint extends Joint {
     }
 
     @Override
-    public boolean solvePositionConstraints(final SolverData data) {
+    public boolean solvePositionConstraints(SolverData data) {
         return true;
     }
 }

@@ -197,7 +197,7 @@ public enum Util {
 				return false;
 			};
 		} else {
-			final int[] remain = {max};
+			int[] remain = {max};
 			return (z) -> {
 				boolean next = (--remain[0] > 0);
 				return x.test(z) && next;
@@ -1684,11 +1684,11 @@ public enum Util {
 	/**
 	 * TODO fair random selection when exist equal values
 	 */
-	public static int argmax(final double... vec) {
+	public static int argmax(double... vec) {
 		int result = -1;
 		double max = Double.NEGATIVE_INFINITY;
 		for (int i = 0, l = vec.length; i < l; i++) {
-			final double v = vec[i];
+			double v = vec[i];
 			if (v > max) {
 				max = v;
 				result = i;
@@ -1700,11 +1700,11 @@ public enum Util {
 	/**
 	 * TODO fair random selection when exist equal values
 	 */
-	public static int argmax(final float... vec) {
+	public static int argmax(float... vec) {
 		int result = -1;
 		float max = Float.NEGATIVE_INFINITY;
 		for (int i = 0, l = vec.length; i < l; i++) {
-			final float v = vec[i];
+			float v = vec[i];
 			if (v > max) {
 				max = v;
 				result = i;
@@ -1731,7 +1731,7 @@ public enum Util {
 		int start = random.nextInt(l);
 		for (int i = 0; i < l; i++) {
 			int ii = (i + start) % l;
-			final float v = vec[ii];
+			float v = vec[ii];
 			if (v > max) {
 				max = v;
 				result = ii;
@@ -2052,7 +2052,7 @@ public enum Util {
 		if (nanos <= 0) return;
 
 		long now = System.nanoTime();
-		final long end = now + nanos;
+		long end = now + nanos;
 		while (nanos > 0) {
 
 			if (nanos >= thresholdNS) {
@@ -2851,7 +2851,7 @@ public enum Util {
 		}
 
 		//https://commons.apache.org/proper/commons-math/userguide/fitting.html
-		final List<WeightedObservedPoint> obs = new FasterList(points);
+		List<WeightedObservedPoint> obs = new FasterList(points);
 		int yMin = Integer.MAX_VALUE, yMax = Integer.MIN_VALUE;
 		for (int i = 0; i < pairs.length; ) {
 			int y;

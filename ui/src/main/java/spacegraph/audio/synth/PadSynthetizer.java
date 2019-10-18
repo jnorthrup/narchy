@@ -62,7 +62,7 @@ public class PadSynthetizer {
         You may replace it with any IFFT routine
     */
     private static void IFFT(int N,double[] freq_amp,double[] freq_phase,double[] smp){
-        final int n2 = N/2;
+        int n2 = N/2;
         //FFTwrapper fft(N);
         FFTFREQS fftfreqs = new FFTFREQS(n2);
 

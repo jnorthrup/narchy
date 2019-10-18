@@ -44,7 +44,7 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
 
     @Override
     public Iterator<E> iterator() {
-        final int max = size;
+        int max = size;
         if (max == 0)
             return Util.emptyIterator;
 

@@ -90,7 +90,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
      */
     private int index(int key) {
 
-        final int hash = key & 0x7fffffff;
+        int hash = key & 0x7fffffff;
 
         int[] k = this.keys;
         int len = k.length;
@@ -103,7 +103,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
             return i;
 
 
-        final int c = 1 + (hash % (len - 2));
+        int c = 1 + (hash % (len - 2));
 
         while (true) {
 
@@ -121,8 +121,8 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
             return;
 
 
-        final MetalBitSet oldSatus = status;
-        final int[] oldKeys = keys;
+        MetalBitSet oldSatus = status;
+        int[] oldKeys = keys;
 
         int newSize = getNextPow2TwinPrime(keys.length * 3 / 2);
         alloc(newSize);
@@ -149,7 +149,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
      * @return true if this set did not already contain the specified element
      */
     public boolean add(int e) {
-        final int key = e;
+        int key = e;
         int pair_index = index(key);
 
 
@@ -194,7 +194,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
         if (START == keys.length)
             return Util.emptyIterator;
 
-        final int startPos = START;
+        int startPos = START;
 
         return new IntegerIterator(startPos);
     }
@@ -278,7 +278,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
         @Override
         public Integer next() {
 
-            final int oldPos = prevPos = pos++;
+            int oldPos = prevPos = pos++;
 
             int pos = this.pos;
             MetalBitSet s = SimpleIntSet.this.status;

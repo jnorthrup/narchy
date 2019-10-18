@@ -62,8 +62,8 @@ public class ShellUtils {
         }
     }
 
-    public static String executeForStream(final String command, final boolean isError, long timeoutMillis) {
-        final Process process = executeNoWait(command);
+    public static String executeForStream(String command, boolean isError, long timeoutMillis) {
+        Process process = executeNoWait(command);
         Callable<String> exec = () -> {
             String result = read(isError ? process.getErrorStream() : process.getInputStream());
             try {
@@ -80,8 +80,8 @@ public class ShellUtils {
                 throw new RuntimeException("Error executing command: " + command, e);
             }
         } else {
-            final ExecutorService executor = Executors.newSingleThreadExecutor();
-            final Future<String> future = executor.submit(exec);
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<String> future = executor.submit(exec);
             executor.shutdown();
             String result;
             try {

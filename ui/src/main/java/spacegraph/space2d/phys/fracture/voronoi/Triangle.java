@@ -39,7 +39,7 @@ public class Triangle {
      * @param p Pole vrcholov
      * @param t protilahly trojuholnik
      */
-    final void init(final int i, final int j, final int k, final v2[] p, final Triangle t) {
+    final void init(int i, int j, int k, v2[] p, Triangle t) {
         this.i = i;
         this.j = j;
         this.k = k;
@@ -78,7 +78,7 @@ public class Triangle {
      * @param J
      * @return Vrati index toho vrcholu, ktory nieje v niektorom z parametrov
      */
-    final int get(final int I, final int J) {
+    final int get(int I, int J) {
         return i == I ? j == J ? k : j : i == J ? j == I ? k : j : i;
     }
 
@@ -86,11 +86,11 @@ public class Triangle {
      * @param v
      * @return Vrati true, ak sa bod v nachadza vo vnutri opisanej kruznice
      */
-    final boolean inside(final v2 v) {
+    final boolean inside(v2 v) {
         return dis(v) < r;
     }
 
-    private double dis(final v2 v) {
+    private double dis(v2 v) {
         double x = dX - v.x;
         double y = dY - v.y;
         return x * x + y * y;

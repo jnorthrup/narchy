@@ -58,7 +58,7 @@ public class IntVarImpl extends IntVar {
         this.initMax = initMax;
         this.minT = new TrailedInt(trail, initMin);
         this.maxT = new TrailedInt(trail, initMax);
-        final int size = initMax - initMin + 1;
+        int size = initMax - initMin + 1;
         this.sizeT = new TrailedInt(trail, size);
         this.values = makeInt(size, i -> i + initMin);
         this.positions = makeInt(size, i -> i);
@@ -83,7 +83,7 @@ public class IntVarImpl extends IntVar {
         this.maxT = new TrailedInt(trail, initMax);
 
         
-        final int range = max - min + 1;
+        int range = max - min + 1;
         this.positions = makeInt(range, i -> range);
         for (int i = 0; i < values.length; i++) {
             this.positions[values[i] - initMin] = i;

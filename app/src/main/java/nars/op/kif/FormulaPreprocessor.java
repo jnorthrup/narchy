@@ -142,16 +142,16 @@ public class FormulaPreprocessor {
         HashMap<String, HashSet<String>> varExplicitTypes = findExplicitTypesClassesInAntecedent(kb, form);
 
 
-        Map<String, Set<String>> varmap = new HashMap<>();
+        var varmap = new HashMap<>();
         for (Map.Entry<String, HashSet<String>> entry : varDomainTypes.entrySet()) {
             String var = entry.getKey();
             if (!varExplicitTypes.containsKey(var)) {
 
                 varmap.put(var, entry.getValue());
             } else {
-                 Set<String> domainTypes = entry.getValue();
-                 Set<String> explicitTypes = varExplicitTypes.get(var);
-                var types = new HashSet<>();
+                 var domainTypes = entry.getValue();
+                 var explicitTypes = varExplicitTypes.get(var);
+                 var  types = new HashSet<>();
                 for (String dt : domainTypes) {
                     if (dt.endsWith("+")) {
                         types.add(dt);
@@ -174,7 +174,7 @@ public class FormulaPreprocessor {
         StringBuffer sb = new StringBuffer();
         boolean begin = true;
         for (String unquantifiedV : unquantifiedVariables) {
-            Set<String> types = varmap.get(unquantifiedV);
+            var  types = (Set<String>) varmap.get(unquantifiedV);
             if (types != null && !types.isEmpty()) {
                 for (String t : types) {
                     if (begin) {

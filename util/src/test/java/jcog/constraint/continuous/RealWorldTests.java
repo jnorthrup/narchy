@@ -117,7 +117,7 @@ class RealWorldTests {
     };
 
 
-    private static ConstraintParser.CassowaryVariableResolver createVariableResolver(final ContinuousConstraintSolver solver, final Map<String, HashMap<String, DoubleVar>> nodeHashMap) {
+    private static ConstraintParser.CassowaryVariableResolver createVariableResolver(ContinuousConstraintSolver solver, Map<String, HashMap<String, DoubleVar>> nodeHashMap) {
         ConstraintParser.CassowaryVariableResolver variableResolver = new ConstraintParser.CassowaryVariableResolver() {
 
             private DoubleVar getVariableFromNode(HashMap<String, DoubleVar> node, String variableName) {
@@ -196,8 +196,8 @@ class RealWorldTests {
     @Test
     void testGridLayout() throws DuplicateConstraintException, UnsatisfiableConstraintException, NonlinearExpressionException {
 
-        final ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
-        final Map<String, HashMap<String, DoubleVar>> nodes = new HashMap<>();
+        ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
+        Map<String, HashMap<String, DoubleVar>> nodes = new HashMap<>();
 
         ConstraintParser.CassowaryVariableResolver r = createVariableResolver(solver, nodes);
 

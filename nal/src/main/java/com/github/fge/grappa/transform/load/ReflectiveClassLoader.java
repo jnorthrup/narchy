@@ -31,12 +31,12 @@ public final class ReflectiveClassLoader
      *
      * @param loader the classloader to use
      */
-    public ReflectiveClassLoader(final ClassLoader loader)
+    public ReflectiveClassLoader(ClassLoader loader)
     {
         this.loader = Objects.requireNonNull(loader);
 
         try {
-            final Class<?> loaderClass = Class.forName(CLASSLOADER);
+            Class<?> loaderClass = Class.forName(CLASSLOADER);
             Method fcm = loaderClass.getDeclaredMethod(FIND_LOADED_CLASS,
                 String.class);
             fcm.trySetAccessible();
@@ -48,7 +48,7 @@ public final class ReflectiveClassLoader
                 "unable to find the needed methods", e);
         }
 
-        final ParserTransformException exception = new ParserTransformException(
+        ParserTransformException exception = new ParserTransformException(
             "could not change the necessary access modifiers");
 
 //        try {
@@ -79,7 +79,7 @@ public final class ReflectiveClassLoader
      * @return the class instance, if found
      */
     @Nullable
-    public Class<?> findClass(final String className)
+    public Class<?> findClass(String className)
     {
 //        Objects.requireNonNull(className);
 
@@ -108,7 +108,7 @@ public final class ReflectiveClassLoader
      * @param bytecode the bytecode of the class to load
      * @return the class instance
      */
-    public Class<?> loadClass(final String className, final byte[] bytecode)
+    public Class<?> loadClass(String className, byte[] bytecode)
     {
         Objects.requireNonNull(className);
         Objects.requireNonNull(bytecode);
@@ -125,7 +125,7 @@ public final class ReflectiveClassLoader
     @Override
     public void close()
     {
-        final ParserTransformException exception = new ParserTransformException(
+        ParserTransformException exception = new ParserTransformException(
             "could not close classloader properly");
 //        try {
 //            findClass.setAccessible(false);

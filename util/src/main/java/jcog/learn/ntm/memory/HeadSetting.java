@@ -32,15 +32,15 @@ public class HeadSetting
         double gammaIndex = getGammaIndex();
 
 
-        final int cellCount = getShiftedVector().length;
+        int cellCount = getShiftedVector().length;
 
         addressingVector = new UVector(cellCount);
 
         
 
-        final double[] addr = addressingVector.value;
+        double[] addr = addressingVector.value;
 
-        final Unit[] sv = getShiftedVector();
+        Unit[] sv = getShiftedVector();
         double sum = 0.0;
         int bound = cellCount;
         for (int i = 0; i < bound; i++) {
@@ -58,7 +58,7 @@ public class HeadSetting
 
         addressingVector = new UVector(memoryColumnsN);
 
-        final double[] addr = addressingVector.value;
+        double[] addr = addressingVector.value;
         for (int i = 0;i < memoryColumnsN;i++) {
             addr[i] = contentAddressing.content.value(i);
         }
@@ -66,17 +66,17 @@ public class HeadSetting
 
     public void backwardErrorPropagation() {
 
-        final Unit[] sv = getShiftedVector();
-        final int cells = sv.length;
+        Unit[] sv = getShiftedVector();
+        int cells = sv.length;
 
         double[] lns = new double[cells];
         double[] temps = new double[cells];
 
 
-        final double gammaIndex = getGammaIndex();
+        double gammaIndex = getGammaIndex();
 
-        final double[] addrValue = addressingVector.value;
-        final double[] addrGrad = addressingVector.grad;
+        double[] addrValue = addressingVector.value;
+        double[] addrGrad = addressingVector.grad;
 
         int bound1 = cells;
         for (int i1 = 0; i1 < bound1; i1++) {
@@ -91,8 +91,8 @@ public class HeadSetting
 
             for (int j = 0; j < cells; j++) {
 
-                final double dataWeightValue = addrValue[j];
-                final double dataWeightGradient = addrGrad[j];
+                double dataWeightValue = addrValue[j];
+                double dataWeightGradient = addrGrad[j];
                 if (i1 == j) {
                     gradient += dataWeightGradient * (1.0 - dataWeightValue);
                 } else {
@@ -128,7 +128,7 @@ public class HeadSetting
     }
 
     public static HeadSetting[] getVector(NTMMemory memory) {
-        final int x = memory.headNum();
+        int x = memory.headNum();
 
         List<HeadSetting> list = new ArrayList<>();
         int bound = x;

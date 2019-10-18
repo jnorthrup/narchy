@@ -94,7 +94,7 @@ public class Centroid extends ArrayRealVector {
         this.localError *= alpha;
     }
 
-    public double distanceSq(final double[] x, DistanceFunction distanceSq) {
+    public double distanceSq(double[] x, DistanceFunction distanceSq) {
         double d = distanceSq.distance(getDataRef(), x);
         assert (Double.isFinite(d));
         return d;
@@ -116,16 +116,16 @@ public class Centroid extends ArrayRealVector {
     /**
      * 0 < rate < 1.0
      */
-    public void lerp(final double[] x, final double rate) {
-        final double[] d = getDataRef();
-        final double ir = (1.0 - rate);
+    public void lerp(double[] x, double rate) {
+        double[] d = getDataRef();
+        double ir = (1.0 - rate);
         for (int i = 0; i < d.length; i++) {
             d[i] = (ir * d[i]) + (rate * x[i]);
         }
     }
 
-    public void add(final double[] x) {
-        final double[] d = getDataRef();
+    public void add(double[] x) {
+        double[] d = getDataRef();
         for (int i = 0; i < d.length; i++)
             d[i] += x[i];
     }

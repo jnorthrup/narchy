@@ -253,8 +253,8 @@ public class DataTable extends Table implements Externalizable {
     }
 
     public @Nullable Row maxBy(int column) {
-        final double[] bestScore = {Double.NEGATIVE_INFINITY};
-        final Row[] best = {null};
+        double[] bestScore = {Double.NEGATIVE_INFINITY};
+        Row[] best = {null};
         doWithRows(e -> {
             double s = e.getDouble(column);
             if (s > bestScore[0]) {

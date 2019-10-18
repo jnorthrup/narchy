@@ -122,7 +122,7 @@ public class RLDemo extends javax.swing.JFrame {
                 debugLabel.setText("@" + numPhysicsIterations);
 
                 if (visualize) {
-                    final double r = rLDomain.getReward();
+                    double r = rLDomain.getReward();
 
 
 
@@ -135,8 +135,8 @@ public class RLDemo extends javax.swing.JFrame {
                     if (agent instanceof RLAgent) {
                         double[] d = ((RLAgent)agent).getStateNormalized();
                         int numParam = d.length;
-                        final int cw = (int) Math.ceil(Math.sqrt(numParam));
-                        final int ch = numParam / cw;
+                        int cw = (int) Math.ceil(Math.sqrt(numParam));
+                        int ch = numParam / cw;
 
                         parameterChart.draw(agent.getFunction());
                         

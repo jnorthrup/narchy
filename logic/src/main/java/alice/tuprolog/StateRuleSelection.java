@@ -47,7 +47,7 @@ public class StateRuleSelection extends State {
          * Individuo compatibleGoals e
          * stabilisco se derivo da Backtracking.
          */
-        final ChoicePointContext alternative = e.currentAlternative;
+        ChoicePointContext alternative = e.currentAlternative;
         e.currentAlternative = null;
         ClauseStore clauseStore;
         boolean fromBacktracking;

@@ -367,9 +367,10 @@ public final class B extends GamePanel {
 
 		boolean boxesOnGoal = true;
 		for (int i = 0; i < table.length; i++) {
-			if (table[i] == BOX) {
-				boxesOnGoal = false;
-			}
+            if (table[i] == BOX) {
+                boxesOnGoal = false;
+                break;
+            }
 		}
 		levelSolved = boxesOnGoal;
 

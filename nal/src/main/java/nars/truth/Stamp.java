@@ -422,7 +422,7 @@ public interface Stamp {
     }
 
     /*@NotNull*/
-    static long[] toSetArray(long[] x, final int outputLen) {
+    static long[] toSetArray(long[] x, int outputLen) {
         int l = x.length;
 
 

@@ -80,7 +80,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 //    }
 
     @Override
-    default double cost(final int dim) {
+    default double cost(int dim) {
         switch (dim) {
             case 0:
                 return (range(0)) * TIME_COST;
@@ -95,7 +95,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     }
 
     @Override
-    default double range(final int dim) {
+    default double range(int dim) {
         switch (dim) {
             case 0:
                 return 1 + (end() - start());

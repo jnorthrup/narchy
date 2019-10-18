@@ -104,7 +104,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
 
         shadow.writeUnsignedByte(o.ordinal());
         shadow.writeUnsignedByte(subs);
-        final byte[] numAtoms = {0};
+        byte[] numAtoms = {0};
         ByteFunction0 nextUniqueAtom = () -> numAtoms[0]++;
         int structure = o.bit, hashCode = 1;
         byte volume = 1;
@@ -200,7 +200,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
             return at + 2;
         }
 
-        final int[] o = new int[1];
+        int[] o = new int[1];
         subtermOffsets(at, (sub, offset) -> {
             if (sub == subterm) {
                 o[0] = offset;
@@ -353,7 +353,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         @Override
         public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
             int o = offset;
-            final int[] vv = {v};
+            int[] vv = {v};
             c.subtermOffsets(o, (subterm, at) -> {
                 Term t = c.term(at);
 

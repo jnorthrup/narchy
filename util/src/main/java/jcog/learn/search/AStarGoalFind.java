@@ -73,7 +73,7 @@ public class AStarGoalFind<F extends Solution> {
      */
     F search(Problem<F> problem,  F initialNode, F goalNode) {
 
-        final Comparator<F> SEARCH_COMPARATOR = Comparator.comparingDouble((x)->
+        Comparator<F> SEARCH_COMPARATOR = Comparator.comparingDouble((x)->
                 x.g() + problem.cost(x, goalNode));
 
         IOpenSet<F> openSet = new OpenSet(SEARCH_COMPARATOR);

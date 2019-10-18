@@ -60,7 +60,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     @Override
     public void forEach(Consumer<? super Task> x) {
         lock.read(()-> {
-            for (Task task : super) {
+            for (Task task : this) {
                 x.accept(task);
             }
         });
@@ -321,7 +321,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         Term newTerm = null;
         Term inputTerm = input.term();
         float aProp = Float.NaN;
-        final double ie = input.evi();
+        double ie = input.evi();
 
         NAR nar = r.nar;
         long[] inputStamp = input.stamp();

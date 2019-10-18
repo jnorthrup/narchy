@@ -43,7 +43,7 @@ public class Context {
     private final Configuration configuration;
     private final long seed;
 
-    public Context(EvaluationPhases phase, final Configuration configuration) {
+    public Context(EvaluationPhases phase, Configuration configuration) {
         this.phase = phase;
         this.configuration = configuration;
         this.seed = configuration.getInitialSeed();

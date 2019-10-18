@@ -111,8 +111,8 @@ public class TimeOfImpact {
         output.state = TOIOutputState.UNKNOWN;
         output.t = input.tMax;
 
-        final DistanceProxy proxyA = input.proxyA;
-        final DistanceProxy proxyB = input.proxyB;
+        DistanceProxy proxyA = input.proxyA;
+        DistanceProxy proxyB = input.proxyB;
 
         sweepA.set(input.sweepA);
         sweepB.set(input.sweepB);
@@ -327,8 +327,8 @@ class SeparationFunction {
 
     
 
-    public float initialize(final SimplexCache cache, final DistanceProxy proxyA, final Sweep sweepA,
-                            final DistanceProxy proxyB, final Sweep sweepB, float t1) {
+    public float initialize(SimplexCache cache, DistanceProxy proxyA, Sweep sweepA,
+                            DistanceProxy proxyB, Sweep sweepB, float t1) {
         m_proxyA = proxyA;
         m_proxyB = proxyB;
         int count = cache.count;

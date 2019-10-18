@@ -251,7 +251,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         if (ps < depth)
             throw new RuntimeException("path overflow");
 
-        final Compound src = (Compound) this;
+        Compound src = (Compound) this;
         Subterms css = src.subtermsDirect();
 
         int n = css.subs();
@@ -419,7 +419,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
      * returns DTERNAL if not found
      */
     default int subTimeFirst(Term x) {
-        final int[] time = { DTERNAL };
+        int[] time = { DTERNAL };
         subTimesWhile(x, (w) -> {
             time[0] = w; //got it
             return false; //stop
@@ -432,7 +432,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
      * TODO optimize traversal
      */
     default int subTimeLast(Term x) {
-        final int[] time = { DTERNAL };
+        int[] time = { DTERNAL };
         subTimesWhile(x, (w) -> {
             time[0] = Math.max(time[0], w); //got it
             return true; //keep going

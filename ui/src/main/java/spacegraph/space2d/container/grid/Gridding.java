@@ -182,7 +182,7 @@ public class Gridding extends MutableListContainer {
 
             float px = hm;
 
-            final float py = (((ny-1)-y) * dy) + hm;
+            float py = (((ny-1)-y) * dy) + hm;
             float y1 = py * H;
 
             for (int x = 0; x < nx; x++) {

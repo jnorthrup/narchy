@@ -143,7 +143,7 @@ public class Tetris extends GameX {
         });
 
 
-        final int[] lastRowsFilled = {0};
+        int[] lastRowsFilled = {0};
         SimpleReward lower = reward("lower", 1, () -> {
             int rowsFilled = state.rowsFilled;
             int deltaRows = rowsFilled - lastRowsFilled[0];

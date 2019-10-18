@@ -566,7 +566,7 @@ public enum Draw {
 
         gl.glBegin(GL2ES3.GL_QUADS);
 
-        final float s = repeatScale;
+        float s = repeatScale;
         if (!inverted) {
             gl.glTexCoord2f(0.0f, s);
             gl.glVertex3f(x, y, z);

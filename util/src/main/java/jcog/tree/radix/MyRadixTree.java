@@ -962,7 +962,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
      * because equals() and hashCode() are not specified by the CharSequence API contract.
      */
     @SuppressWarnings("JavaDoc")
-    private Iterable<AbstractBytes> getDescendantKeys(final AbstractBytes startKey, final Node startNode) {
+    private Iterable<AbstractBytes> getDescendantKeys(AbstractBytes startKey, Node startNode) {
         return new DescendantKeys(startKey, startNode);
     }
 
@@ -971,7 +971,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
      * the given key is a prefix.
      */
     @SuppressWarnings("JavaDoc")
-    private static <O> Iterable<O> getDescendantValues(final AbstractBytes startKey, final Node startNode) {
+    private static <O> Iterable<O> getDescendantValues(AbstractBytes startKey, Node startNode) {
         return () -> new LazyIterator<>() {
 
             Iterator<NodeKeyPair> descendantNodes = null;
@@ -1004,7 +1004,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
      * because equals() and hashCode() are not specified by the CharSequence API contract.
      */
     @SuppressWarnings("JavaDoc")
-    private static <O> Iterable<Pair<AbstractBytes, O>> getDescendantKeyValuePairs(final AbstractBytes startKey, final Node startNode) {
+    private static <O> Iterable<Pair<AbstractBytes, O>> getDescendantKeyValuePairs(AbstractBytes startKey, Node startNode) {
         return () -> new LazyIterator<>() {
             Iterator<NodeKeyPair> descendantNodes = null;
 
@@ -1044,8 +1044,8 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
      * @return An iterator which when iterated traverses the tree using depth-first, preordered traversal,
      * starting at the given start node
      */
-    private static Iterable<NodeKeyPair> lazyTraverseDescendants(final AbstractBytes startKey, final Node startNode) {
-        final Deque<NodeKeyPair> stack = new ArrayDeque();
+    private static Iterable<NodeKeyPair> lazyTraverseDescendants(AbstractBytes startKey, Node startNode) {
+        Deque<NodeKeyPair> stack = new ArrayDeque();
         stack.push(new NodeKeyPair(startNode, startKey));
         return () -> new LazyIterator<>() {
 
@@ -1149,7 +1149,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         Node currentNode = root;
         int charsMatched = 0, charsMatchedInNodeFound = 0;
 
-        final int keyLength = key.length();
+        int keyLength = key.length();
         outer_loop:
         while (charsMatched < keyLength) {
             Node nextNode = currentNode.getOutgoingEdge(key.at(charsMatched));

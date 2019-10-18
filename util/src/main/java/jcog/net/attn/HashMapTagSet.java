@@ -93,7 +93,7 @@ public class HashMapTagSet implements TagSet, Serializable {
         if (pri <= EPSILON)
             return false;
 
-        final boolean[] mod = {true};
+        boolean[] mod = {true};
         data.merge(tag, pri, (existing, added) -> {
             float next = Util.unitize(existing + added );
             mod[0] = !Util.equals(existing,next, EPSILON);
@@ -109,7 +109,7 @@ public class HashMapTagSet implements TagSet, Serializable {
     public boolean add(HashMapTagSet tag, float pri) {
         float p = Util.unitize(pri);
 
-        final boolean[] modified = {false};
+        boolean[] modified = {false};
         for (Map.Entry<String, Float> entry : tag.data.entrySet()) {
             String k = entry.getKey();
             Float v = entry.getValue();

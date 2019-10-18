@@ -13,6 +13,7 @@ import nars.nal.nal5.NAL5Test;
 import nars.nal.nal7.NAL7Test;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.io.File;
 import java.util.function.Supplier;
@@ -85,7 +86,7 @@ class NARTestOptimize {
             int suiteIterations = 2;
             Optilive<NAR, TestNARSuite> o = l.optilive(s ->
                             new TestNARSuite(s, testClasses).run(parallel, suiteIterations),
-                    t -> (float) t.score());
+                    (FloatFunction<TestNARSuite>) t -> (float) t.score());
 
 //            o
 ////            .sense("numConcepts",

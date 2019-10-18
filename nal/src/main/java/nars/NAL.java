@@ -386,7 +386,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     protected final Supplier<Random> random;
 
-    protected NAL(final Executor exe, Time time, Supplier<Random> rng) {
+    protected NAL(Executor exe, Time time, Supplier<Random> rng) {
         super();
         this.random = rng;
         (this.time = time).reset();
@@ -437,7 +437,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      *            <p>
      *            TODO integrate with EvidenceEvaluator
      */
-    public static double evi(final double evi, final long dt, final float dur) {
+    public static double evi(double evi, long dt, float dur) {
 
         //assert (dur > 0 && dt > 0);
 
@@ -493,7 +493,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     }
 
-    public static TruthProjection newProjection(final long start, final long end) {
+    public static TruthProjection newProjection(long start, long end) {
         return new LinearTruthProjection(start, end);
     }
 
@@ -513,7 +513,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     @Override
     public abstract long time();
 
-    public final float confDefault(final byte punctuation) {
+    public final float confDefault(byte punctuation) {
 
         switch (punctuation) {
             case BELIEF:
@@ -527,7 +527,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         }
     }
 
-    public final float priDefault(final byte punctuation) {
+    public final float priDefault(byte punctuation) {
         PriNode p;
         switch (punctuation) {
             case BELIEF: p = this.beliefPriDefault; break;

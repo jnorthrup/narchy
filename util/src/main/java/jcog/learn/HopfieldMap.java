@@ -98,7 +98,7 @@ public class HopfieldMap<X> {
 
             X a = x[p];
 
-            final float[] aOut = {0};
+            float[] aOut = {0};
             weight.neighborEdges(a, (b, w) -> {
                 float bIn = in.floatValueOf(b);
 
@@ -115,7 +115,7 @@ public class HopfieldMap<X> {
 
     public HopfieldMap<X> get() {
         for (int i = 0; i < x.length; i++) {
-            final float[] aOut = {0};
+            float[] aOut = {0};
 
             X a = x[i];
 

@@ -105,7 +105,7 @@ public class SideScrollMinicraft {
         }
 
 
-        final SpriteStore ss = SpriteStore.get();
+        SpriteStore ss = SpriteStore.get();
         builderIcon = ss.getSprite("sprites/other/builder.png");
         minerIcon = ss.getSprite("sprites/other/miner.png");
         fullHeart = ss.getSprite("sprites/other/full_heart.png");
@@ -165,8 +165,8 @@ public class SideScrollMinicraft {
             return 0;
         }
 
-        final int screenWidth = GraphicsHandler.getScreenWidth();
-        final int screenHeight = GraphicsHandler.getScreenHeight();
+        int screenWidth = GraphicsHandler.getScreenWidth();
+        int screenHeight = GraphicsHandler.getScreenHeight();
         float cameraX = player.x - screenWidth / tileSize / 2;
         float cameraY = player.y - screenHeight / tileSize / 2;
         float worldMouseX = (cameraX * tileSize + screenMousePos.x) / tileSize;

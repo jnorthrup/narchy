@@ -230,8 +230,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
                     /** try to create a midi sound object */
                     currentSound = MidiSystem.getSequence((URL) object);
                 }
-                /** if it's not a midi sound object neither */ catch (InvalidMidiDataException e1) {
-                } catch (Exception e2) {
+                /** if it's not a midi sound object neither */ catch (Exception e1) {
                 }
             }
         }
@@ -321,9 +320,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
                     /** set the stream to the sequencer */
                     sequencer.setSequence((BufferedInputStream) currentSound);
                 }
-            } catch (InvalidMidiDataException imde) {
-                return false;
-            } catch (Exception ex) {
+            } catch (Exception imde) {
                 return false;
             }
         }

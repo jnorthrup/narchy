@@ -226,7 +226,7 @@ public final class Ansi {
 
   /** @return the index of the first character that's not a tab, or -1 if none is found. */
   private static int indexOfFirstNonTab(String s) {
-    final int length = s.length();
+    int length = s.length();
     int bound = length;
     for (int i = 1; i < bound; i++) {
       if (s.charAt(i) != '\t') {

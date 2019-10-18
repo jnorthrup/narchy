@@ -42,7 +42,7 @@ public class STMLinker extends TaskAction {
 		if (prev == null)
 			return true;
 
-		final Term att = next.term().concept(), btt = prev.term().concept();
+		Term att = next.term().concept(), btt = prev.term().concept();
 		if (att.equals(btt))
 			return false;
 

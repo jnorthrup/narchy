@@ -41,14 +41,14 @@ public class OpjectsTest {
      */
     @Test
     void testEvoke() throws Narsese.NarseseException {
-        final NAR n = NARS.tmp();
+        NAR n = NARS.tmp();
 
         int dur = 1;
 
         n.time.dur(dur);
 
         List<Term> evokes = new FasterList();
-        final Opjects objs = new Opjects(n) {
+        Opjects objs = new Opjects(n) {
             @Override
             protected boolean evoked(Term method, Object instance, Object[] params) {
                 evokes.add(method);
@@ -58,7 +58,7 @@ public class OpjectsTest {
 
         n.run();
 
-        final SimpleClass x = objs.the("x", new SimpleClass());
+        SimpleClass x = objs.the("x", new SimpleClass());
         StringBuilder sb = new StringBuilder();
         n.onTask(sb::append);
 
@@ -82,12 +82,12 @@ public class OpjectsTest {
 
     @Test
     void testObjectMethods() throws Narsese.NarseseException {
-        final NAR n = NARS.tmp();
+        NAR n = NARS.tmp();
 
 
-        final Opjects objs = new Opjects(n);
+        Opjects objs = new Opjects(n);
 
-        final SimpleClass x = objs.a("x", SimpleClass.class);
+        SimpleClass x = objs.a("x", SimpleClass.class);
         StringBuilder sb = new StringBuilder();
         n.onTask(sb::append);
 
@@ -99,13 +99,13 @@ public class OpjectsTest {
     }
     @Test
     void testBoolMethod() {
-        final NAR n = NARS.tmp();
+        NAR n = NARS.tmp();
 //        n.log();
 
 
-        final Opjects objs = new Opjects(n);
+        Opjects objs = new Opjects(n);
 
-        final SimpleClass x = objs.a("x", SimpleClass.class);
+        SimpleClass x = objs.a("x", SimpleClass.class);
         StringBuilder sb = new StringBuilder(1024);
         n.log(sb);
 
@@ -125,10 +125,10 @@ public class OpjectsTest {
      */
     @Test
     void testInvokeInstanced() {
-        final NAR n = NARS.tmp();
+        NAR n = NARS.tmp();
 
 
-        final SimpleClass y = new Opjects(n).a("y", SimpleClass.class);
+        SimpleClass y = new Opjects(n).a("y", SimpleClass.class);
         testInvoke(n, y);
     }
 
@@ -152,10 +152,10 @@ public class OpjectsTest {
 
     @Test
     void testInvokeWrapped() {
-        final NAR n = NARS.tmp();
+        NAR n = NARS.tmp();
 
 
-        final SimpleClass y = new Opjects(n).the("y", new SimpleClass());
+        SimpleClass y = new Opjects(n).the("y", new SimpleClass());
         testInvoke(n, y);
     }
 
@@ -164,12 +164,12 @@ public class OpjectsTest {
     void learnMethodGoal() throws Narsese.NarseseException {
 
 
-        final NAR n = NARS.tmp();
+        NAR n = NARS.tmp();
 
 
-        final Opjects objs = new Opjects(n);
+        Opjects objs = new Opjects(n);
 
-        final SimpleClass x = objs.a("x", SimpleClass.class);
+        SimpleClass x = objs.a("x", SimpleClass.class);
 
 
         n.beliefPriDefault.pri(0.05f);

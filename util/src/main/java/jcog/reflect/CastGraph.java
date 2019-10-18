@@ -269,7 +269,7 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
             throw new ClassCastException("can't cast " + fromType + " to " + targetType + ", can't find start class");
         }
 
-        final List<Path<Class, Function>> p = new FasterList<>();
+        List<Path<Class, Function>> p = new FasterList<>();
 
         for (Class startCls : starts) {
 

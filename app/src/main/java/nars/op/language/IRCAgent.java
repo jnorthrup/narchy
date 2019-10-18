@@ -238,9 +238,7 @@ public class IRCAgent extends IRC {
         new Thread(()-> {
             try {
                 bot.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (IrcException e) {
+            } catch (IOException | IrcException e) {
                 e.printStackTrace();
             }
         }).start();

@@ -16,7 +16,7 @@ class SplitTest {
 
         int entryCount = 32*1024;
 
-        final RectDouble[] rects = RTree2DTest.generateRandomRects(entryCount);
+        RectDouble[] rects = RTree2DTest.generateRandomRects(entryCount);
 
         for (Spatialization.DefaultSplits s : Spatialization.DefaultSplits.values()) {
             /*for (int min : new int[]{2, 3, 4})*/ {
@@ -31,7 +31,7 @@ class SplitTest {
                     int HALF = TOTAL/2;
 
 
-                    final RTree<RectDouble> t = RTree2DTest.createRect2DTree(s, max);
+                    RTree<RectDouble> t = RTree2DTest.createRect2DTree(s, max);
                     int i = 0;
                     for (int i1 = 0; i1 < HALF; i1++) {
                         RectDouble r = rects[i1];
@@ -96,21 +96,21 @@ class SplitTest {
                     assertEquals(TOTAL, t.size());
                     assertEquals(TOTAL, t.stats().size());
 
-                    final int[] andCount = {0};
+                    int[] andCount = {0};
                     assertTrue(t.root().AND(x -> {
                         andCount[0]++;
                         return true;
                     }));
                     assertEquals(TOTAL, andCount[0]);
 
-                    final int[] orCount = {0};
+                    int[] orCount = {0};
                     assertFalse(t.OR(x -> {
                         orCount[0]++;
                         return false;
                     }));
                     assertEquals(TOTAL, orCount[0]);
 
-                    final int[] eachCount= {0};
+                    int[] eachCount= {0};
                     t.forEach(x -> eachCount[0]++);
                     assertEquals(TOTAL, eachCount[0]);
                 }

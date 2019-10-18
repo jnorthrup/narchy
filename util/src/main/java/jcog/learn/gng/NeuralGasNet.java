@@ -207,7 +207,7 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
         short furthest = -1;
 
 
-        final int nodes = maxNodes;
+        int nodes = maxNodes;
 
 
         for (short j = 0; j < nodes; j++) {

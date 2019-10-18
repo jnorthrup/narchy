@@ -167,7 +167,7 @@ public class KIF implements Iterable<Task> {
                 v = $.varDep("R");
                 vt = ArrayUtil.add(vt, v);
             }
-            final int[] k = {1};
+            int[] k = {1};
             Term[] typeConds = Util.map(0, ds, Term[]::new, i ->
                     INH.the($.varDep(1 + i),
                             s.domain.getIfAbsent(1 + i, () -> $.varDep(k[0]++))));
@@ -251,7 +251,7 @@ public class KIF implements Iterable<Task> {
         return formulaToTerm(new Formula(sx.replace("?", "#")), level);
     }
 
-    private Term formulaToTerm(final Formula x, int level) {
+    private Term formulaToTerm(Formula x, int level) {
 
 
         int l = x.listLength();

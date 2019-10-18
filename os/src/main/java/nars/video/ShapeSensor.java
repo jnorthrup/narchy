@@ -306,7 +306,7 @@ public class ShapeSensor extends NARPart {
         protected void paint(GL2 gl, ReSurface reSurface) {
 
             if (grid != null) {
-                final int[] i = {0};
+                int[] i = {0};
                 for (Term pSet : grid.image) {
                     float scale = Math.max(w(), h()) / Math.max(grid.gx, grid.gy);
 

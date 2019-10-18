@@ -38,7 +38,7 @@ public final class CounterRNode<X> implements RNode<X> {
     public static int bboxEvalCount;
     private final RNode<X> node;
 
-    public CounterRNode(final RNode<X> node) {
+    public CounterRNode(RNode<X> node) {
         this.node = node;
     }
 

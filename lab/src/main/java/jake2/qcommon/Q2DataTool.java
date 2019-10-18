@@ -72,8 +72,8 @@ public class Q2DataTool {
     }
 
     void install(int mirrorIdx) {
-        final String mirrorName = mirrorNames.get(mirrorIdx);
-        final String mirror = mirrorLinks.get(mirrorIdx);
+        String mirrorName = mirrorNames.get(mirrorIdx);
+        String mirror = mirrorLinks.get(mirrorIdx);
         InputStream in = null;
         OutputStream out = null;
         File outFile = null;

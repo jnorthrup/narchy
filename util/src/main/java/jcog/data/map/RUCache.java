@@ -20,7 +20,7 @@ public class RUCache<K, V> {
     final Map<K, V> mru;
     final Map<K, V> lru;
 
-    public RUCache(final int capacity) {
+    public RUCache(int capacity) {
         lru = new WeakHashMap<>(capacity);
 
         mru = new MRUMap<>(capacity) {

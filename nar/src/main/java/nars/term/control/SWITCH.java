@@ -57,7 +57,7 @@ public final class SWITCH<D extends PreDerivation> extends AbstractPred<D> {
     @Override
     public PREDICATE<D> transform(Function<PREDICATE<D>, PREDICATE<D>> f) {
         EnumMap<Op, PREDICATE<D>> e2 = cases.clone();
-        final boolean[] changed = {false};
+        boolean[] changed = {false};
         e2.replaceAll(((k, x) -> {
             PREDICATE<D> y = x.transform(f);
             if (y != x)

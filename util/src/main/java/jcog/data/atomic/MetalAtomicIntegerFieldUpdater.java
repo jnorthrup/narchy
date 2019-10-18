@@ -15,7 +15,7 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
     //private final Class<?> cclass;
 //        private final Class<T> tclass;
 
-    public MetalAtomicIntegerFieldUpdater(final Class<T> tclass, final String fieldName) {
+    public MetalAtomicIntegerFieldUpdater(Class<T> tclass, String fieldName) {
 
 //            int modifiers;
         try {

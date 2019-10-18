@@ -22,7 +22,7 @@ public class DirectTangent implements AdjacentConcepts {
 
 		int fromHash = from.hashCodeShort(), toHash = to.hashCodeShort();
 
-		final Term[] T = {null};
+		Term[] T = {null};
 		links.sampleUnique(d.random, y -> {
 			Term z = ((AbstractTaskLink) y).matchReverse(from, fromHash, to, toHash);
 			if (z == null) return true;

@@ -2774,9 +2774,9 @@ public strictfp class FloatFFT {
      * @param a    data to transform
      * @param offa index of the first element in array <code>a</code>
      */
-    private void realForwardFull(final float[] a, final int offa) {
+    private void realForwardFull(float[] a, int offa) {
 
-        final int twon = 2 * n;
+        int twon = 2 * n;
         switch (plan) {
             case SPLIT_RADIX:
                 realForward(a, offa);
@@ -2785,8 +2785,8 @@ public strictfp class FloatFFT {
                     Future<?>[] futures = new Future[nthreads];
                     int k = n / 2 / nthreads;
                     for (int i = 0; i < nthreads; i++) {
-                        final int firstIdx = i * k;
-                        final int lastIdx = (i == (nthreads - 1)) ? n / 2 : firstIdx + k;
+                        int firstIdx = i * k;
+                        int lastIdx = (i == (nthreads - 1)) ? n / 2 : firstIdx + k;
                         futures[i] = ConcurrencyUtils.submit(() -> {
                             int idx1, idx2;
                             for (int k1 = firstIdx; k1 < lastIdx; k1++) {
@@ -2963,8 +2963,8 @@ public strictfp class FloatFFT {
      * @param offa  index of the first element in array <code>a</code>
      * @param scale if true then scaling is performed
      */
-    private void realInverseFull(final float[] a, final int offa, boolean scale) {
-        final int twon = 2 * n;
+    private void realInverseFull(float[] a, int offa, boolean scale) {
+        int twon = 2 * n;
         switch (plan) {
             case SPLIT_RADIX:
                 realInverse2(a, offa, scale);
@@ -2973,8 +2973,8 @@ public strictfp class FloatFFT {
                     Future<?>[] futures = new Future[nthreads];
                     int k = n / 2 / nthreads;
                     for (int i = 0; i < nthreads; i++) {
-                        final int firstIdx = i * k;
-                        final int lastIdx = (i == (nthreads - 1)) ? n / 2 : firstIdx + k;
+                        int firstIdx = i * k;
+                        int lastIdx = (i == (nthreads - 1)) ? n / 2 : firstIdx + k;
                         futures[i] = ConcurrencyUtils.submit(() -> {
                             int idx1, idx2;
                             for (int k1 = firstIdx; k1 < lastIdx; k1++) {
@@ -3091,8 +3091,8 @@ public strictfp class FloatFFT {
         if (n == 1)
             return;
 
-        final int twon = 2 * n;
-        final int fourn = 4 * n;
+        int twon = 2 * n;
+        int fourn = 4 * n;
         int idot, ntry = 0, i;
         float argld;
         int i1, k1, l2, ib;
@@ -3174,8 +3174,8 @@ public strictfp class FloatFFT {
         if (n == 1)
             return;
 
-        final int twon = 2 * n;
-        final int fourn = 4 * n;
+        int twon = 2 * n;
+        int fourn = 4 * n;
         int idot, ntry = 0, i;
         float argld;
         int i1, k1, l2, ib;
@@ -3262,7 +3262,7 @@ public strictfp class FloatFFT {
 
         if (n == 1)
             return;
-        final int twon = 2 * n;
+        int twon = 2 * n;
         int ntry = 0, i;
         float argld;
         int k1, l2, ib;
@@ -3462,8 +3462,8 @@ public strictfp class FloatFFT {
         }
     }
 
-    private void bluestein_complex(final float[] a, final int offa, final int isign) {
-        final float[] ak = new float[2 * nBluestein];
+    private void bluestein_complex(float[] a, int offa, int isign) {
+        float[] ak = new float[2 * nBluestein];
         int nthreads = ConcurrencyUtils.getNumberOfThreads();
         if ((nthreads > 1) && (n > ConcurrencyUtils.getThreadsBeginN_1D_FFT_2Threads())) {
             nthreads = 2;
@@ -3473,8 +3473,8 @@ public strictfp class FloatFFT {
             Future<?>[] futures = new Future[nthreads];
             int k = n / nthreads;
             for (int i = 0; i < nthreads; i++) {
-                final int firstIdx = i * k;
-                final int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
+                int firstIdx = i * k;
+                int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(() -> {
                     if (isign > 0) {
                         for (int i13 = firstIdx; i13 < lastIdx; i13++) {
@@ -3503,8 +3503,8 @@ public strictfp class FloatFFT {
 
             k = nBluestein / nthreads;
             for (int i = 0; i < nthreads; i++) {
-                final int firstIdx = i * k;
-                final int lastIdx = (i == (nthreads - 1)) ? nBluestein : firstIdx + k;
+                int firstIdx = i * k;
+                int lastIdx = (i == (nthreads - 1)) ? nBluestein : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(() -> {
                     if (isign > 0) {
                         for (int i12 = firstIdx; i12 < lastIdx; i12++) {
@@ -3531,8 +3531,8 @@ public strictfp class FloatFFT {
 
             k = n / nthreads;
             for (int i = 0; i < nthreads; i++) {
-                final int firstIdx = i * k;
-                final int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
+                int firstIdx = i * k;
+                int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(() -> {
                     if (isign > 0) {
                         for (int i1 = firstIdx; i1 < lastIdx; i1++) {
@@ -3620,8 +3620,8 @@ public strictfp class FloatFFT {
         }
     }
 
-    private void bluestein_real_full(final float[] a, final int offa, final int isign) {
-        final float[] ak = new float[2 * nBluestein];
+    private void bluestein_real_full(float[] a, int offa, int isign) {
+        float[] ak = new float[2 * nBluestein];
         int nthreads = ConcurrencyUtils.getNumberOfThreads();
         if ((nthreads > 1) && (n > ConcurrencyUtils.getThreadsBeginN_1D_FFT_2Threads())) {
             nthreads = 2;
@@ -3631,8 +3631,8 @@ public strictfp class FloatFFT {
             Future<?>[] futures = new Future[nthreads];
             int k = n / nthreads;
             for (int i = 0; i < nthreads; i++) {
-                final int firstIdx = i * k;
-                final int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
+                int firstIdx = i * k;
+                int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(() -> {
                     if (isign > 0) {
                         for (int i13 = firstIdx; i13 < lastIdx; i13++) {
@@ -3659,8 +3659,8 @@ public strictfp class FloatFFT {
 
             k = nBluestein / nthreads;
             for (int i = 0; i < nthreads; i++) {
-                final int firstIdx = i * k;
-                final int lastIdx = (i == (nthreads - 1)) ? nBluestein : firstIdx + k;
+                int firstIdx = i * k;
+                int lastIdx = (i == (nthreads - 1)) ? nBluestein : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(() -> {
                     if (isign > 0) {
                         for (int i12 = firstIdx; i12 < lastIdx; i12++) {
@@ -3687,8 +3687,8 @@ public strictfp class FloatFFT {
 
             k = n / nthreads;
             for (int i = 0; i < nthreads; i++) {
-                final int firstIdx = i * k;
-                final int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
+                int firstIdx = i * k;
+                int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(() -> {
                     if (isign > 0) {
                         for (int i1 = firstIdx; i1 < lastIdx; i1++) {
@@ -3767,8 +3767,8 @@ public strictfp class FloatFFT {
         }
     }
 
-    private void bluestein_real_forward(final float[] a, final int offa) {
-        final float[] ak = new float[2 * nBluestein];
+    private void bluestein_real_forward(float[] a, int offa) {
+        float[] ak = new float[2 * nBluestein];
         int nthreads = ConcurrencyUtils.getNumberOfThreads();
         if ((nthreads > 1) && (n > ConcurrencyUtils.getThreadsBeginN_1D_FFT_2Threads())) {
             nthreads = 2;
@@ -3778,8 +3778,8 @@ public strictfp class FloatFFT {
             Future<?>[] futures = new Future[nthreads];
             int k = n / nthreads;
             for (int i = 0; i < nthreads; i++) {
-                final int firstIdx = i * k;
-                final int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
+                int firstIdx = i * k;
+                int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(() -> {
                     for (int i12 = firstIdx; i12 < lastIdx; i12++) {
                         int idx1 = 2 * i12;
@@ -3796,8 +3796,8 @@ public strictfp class FloatFFT {
 
             k = nBluestein / nthreads;
             for (int i = 0; i < nthreads; i++) {
-                final int firstIdx = i * k;
-                final int lastIdx = (i == (nthreads - 1)) ? nBluestein : firstIdx + k;
+                int firstIdx = i * k;
+                int lastIdx = (i == (nthreads - 1)) ? nBluestein : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(() -> {
                     for (int i1 = firstIdx; i1 < lastIdx; i1++) {
                         int idx1 = 2 * i1;
@@ -3856,8 +3856,8 @@ public strictfp class FloatFFT {
 
     }
 
-    private void bluestein_real_inverse(final float[] a, final int offa) {
-        final float[] ak = new float[2 * nBluestein];
+    private void bluestein_real_inverse(float[] a, int offa) {
+        float[] ak = new float[2 * nBluestein];
         if (n % 2 == 0) {
             ak[0] = a[offa] * bk1[0];
             ak[1] = a[offa] * bk1[1];
@@ -3923,8 +3923,8 @@ public strictfp class FloatFFT {
             Future<?>[] futures = new Future[nthreads];
             int k = nBluestein / nthreads;
             for (int i = 0; i < nthreads; i++) {
-                final int firstIdx = i * k;
-                final int lastIdx = (i == (nthreads - 1)) ? nBluestein : firstIdx + k;
+                int firstIdx = i * k;
+                int lastIdx = (i == (nthreads - 1)) ? nBluestein : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(() -> {
                     for (int i12 = firstIdx; i12 < lastIdx; i12++) {
                         int idx1 = 2 * i12;
@@ -3941,8 +3941,8 @@ public strictfp class FloatFFT {
 
             k = n / nthreads;
             for (int i = 0; i < nthreads; i++) {
-                final int firstIdx = i * k;
-                final int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
+                int firstIdx = i * k;
+                int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(() -> {
                     for (int i1 = firstIdx; i1 < lastIdx; i1++) {
                         int idx1 = 2 * i1;
@@ -3973,8 +3973,8 @@ public strictfp class FloatFFT {
         }
     }
 
-    private void bluestein_real_inverse2(final float[] a, final int offa) {
-        final float[] ak = new float[2 * nBluestein];
+    private void bluestein_real_inverse2(float[] a, int offa) {
+        float[] ak = new float[2 * nBluestein];
         int nthreads = ConcurrencyUtils.getNumberOfThreads();
         if ((nthreads > 1) && (n > ConcurrencyUtils.getThreadsBeginN_1D_FFT_2Threads())) {
             nthreads = 2;
@@ -3984,8 +3984,8 @@ public strictfp class FloatFFT {
             Future<?>[] futures = new Future[nthreads];
             int k = n / nthreads;
             for (int i = 0; i < nthreads; i++) {
-                final int firstIdx = i * k;
-                final int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
+                int firstIdx = i * k;
+                int lastIdx = (i == (nthreads - 1)) ? n : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(() -> {
                     for (int i12 = firstIdx; i12 < lastIdx; i12++) {
                         int idx1 = 2 * i12;
@@ -4002,8 +4002,8 @@ public strictfp class FloatFFT {
 
             k = nBluestein / nthreads;
             for (int i = 0; i < nthreads; i++) {
-                final int firstIdx = i * k;
-                final int lastIdx = (i == (nthreads - 1)) ? nBluestein : firstIdx + k;
+                int firstIdx = i * k;
+                int lastIdx = (i == (nthreads - 1)) ? nBluestein : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(() -> {
                     for (int i1 = firstIdx; i1 < lastIdx; i1++) {
                         int idx1 = 2 * i1;
@@ -4064,13 +4064,13 @@ public strictfp class FloatFFT {
     /*---------------------------------------------------------
        rfftf1: further processing of Real forward FFT
       --------------------------------------------------------*/
-    private void rfftf(final float[] a, final int offa) {
+    private void rfftf(float[] a, int offa) {
         if (n == 1)
             return;
         int l1, kh, ip, ido, idl1;
 
-        final float[] ch = new float[n];
-        final int twon = 2 * n;
+        float[] ch = new float[n];
+        int twon = 2 * n;
         int nf = (int) wtable_r[1 + twon];
         int na = 1;
         int l2 = n;
@@ -4134,13 +4134,13 @@ public strictfp class FloatFFT {
     /*---------------------------------------------------------
        rfftb1: further processing of Real backward FFT
       --------------------------------------------------------*/
-    private void rfftb(final float[] a, final int offa) {
+    private void rfftb(float[] a, int offa) {
         if (n == 1)
             return;
         int l2, ip, ido, idl1;
 
         float[] ch = new float[n];
-        final int twon = 2 * n;
+        int twon = 2 * n;
         int nf = (int) wtable_r[1 + twon];
         int na = 0;
         int l1 = 1;
@@ -4204,7 +4204,7 @@ public strictfp class FloatFFT {
     /*-------------------------------------------------
        radf2: Real FFT's forward processing of factor 2
       -------------------------------------------------*/
-    private void radf2(final int ido, final int l1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset) {
+    private void radf2(int ido, int l1, float[] in, int in_off, float[] out, int out_off, int offset) {
         int i, ic, idx2, idx3, idx4;
         float t1i, t1r, w1r, w1i;
         int iw1 = offset;
@@ -4273,7 +4273,7 @@ public strictfp class FloatFFT {
     /*-------------------------------------------------
        radb2: Real FFT's backward processing of factor 2
       -------------------------------------------------*/
-    private void radb2(final int ido, final int l1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset) {
+    private void radb2(int ido, int l1, float[] in, int in_off, float[] out, int out_off, int offset) {
         int i, ic;
         float t1i, t1r, w1r, w1i;
         int iw1 = offset;
@@ -4340,7 +4340,7 @@ public strictfp class FloatFFT {
     /*-------------------------------------------------
        radf3: Real FFT's forward processing of factor 3
       -------------------------------------------------*/
-    private void radf3(final int ido, final int l1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset) {
+    private void radf3(int ido, int l1, float[] in, int in_off, float[] out, int out_off, int offset) {
         final float taur = -0.5f;
         final float taui = 0.866025403784438707610604524234076962f;
         int i, ic;
@@ -4425,7 +4425,7 @@ public strictfp class FloatFFT {
     /*-------------------------------------------------
        radb3: Real FFT's backward processing of factor 3
       -------------------------------------------------*/
-    private void radb3(final int ido, final int l1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset) {
+    private void radb3(int ido, int l1, float[] in, int in_off, float[] out, int out_off, int offset) {
         final float taur = -0.5f;
         final float taui = 0.866025403784438707610604524234076962f;
         int i, ic;
@@ -4509,7 +4509,7 @@ public strictfp class FloatFFT {
     /*-------------------------------------------------
        radf4: Real FFT's forward processing of factor 4
       -------------------------------------------------*/
-    private void radf4(final int ido, final int l1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset) {
+    private void radf4(int ido, int l1, float[] in, int in_off, float[] out, int out_off, int offset) {
         final float hsqt2 = 0.707106781186547572737310929369414225f;
         int i, ic;
         float ci2, ci3, ci4, cr2, cr3, cr4, ti1, ti2, ti3, ti4, tr1, tr2, tr3, tr4, w1r, w1i, w2r, w2i, w3r, w3i;
@@ -4644,7 +4644,7 @@ public strictfp class FloatFFT {
     /*-------------------------------------------------
        radb4: Real FFT's backward processing of factor 4
       -------------------------------------------------*/
-    private void radb4(final int ido, final int l1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset) {
+    private void radb4(int ido, int l1, float[] in, int in_off, float[] out, int out_off, int offset) {
         final float sqrt2 = 1.41421356237309514547462185873882845f;
         int i, ic;
         float ci2, ci3, ci4, cr2, cr3, cr4;
@@ -4786,7 +4786,7 @@ public strictfp class FloatFFT {
     /*-------------------------------------------------
        radf5: Real FFT's forward processing of factor 5
       -------------------------------------------------*/
-    private void radf5(final int ido, final int l1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset) {
+    private void radf5(int ido, int l1, float[] in, int in_off, float[] out, int out_off, int offset) {
         final float tr11 = 0.309016994374947451262869435595348477f;
         final float ti11 = 0.951056516295153531181938433292089030f;
         final float tr12 = -0.809016994374947340240566973079694435f;
@@ -4928,7 +4928,7 @@ public strictfp class FloatFFT {
     /*-------------------------------------------------
        radb5: Real FFT's backward processing of factor 5
       -------------------------------------------------*/
-    private void radb5(final int ido, final int l1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset) {
+    private void radb5(int ido, int l1, float[] in, int in_off, float[] out, int out_off, int offset) {
         final float tr11 = 0.309016994374947451262869435595348477f;
         final float ti11 = 0.951056516295153531181938433292089030f;
         final float tr12 = -0.809016994374947340240566973079694435f;
@@ -5069,7 +5069,7 @@ public strictfp class FloatFFT {
     /*---------------------------------------------------------
        radfg: Real FFT's forward processing of general factor
       --------------------------------------------------------*/
-    private void radfg(final int ido, final int ip, final int l1, final int idl1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset) {
+    private void radfg(int ido, int ip, int l1, int idl1, float[] in, int in_off, float[] out, int out_off, int offset) {
         int idij, j2, ic, jc, lc, is;
         float dc2, ai2, ar2, ds2, ar1h, ar2h, w1r, w1i;
         int iw1 = offset;
@@ -5357,7 +5357,7 @@ public strictfp class FloatFFT {
     /*---------------------------------------------------------
        radbg: Real FFT's backward processing of general factor
       --------------------------------------------------------*/
-    private void radbg(final int ido, final int ip, final int l1, final int idl1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset) {
+    private void radbg(int ido, int ip, int l1, int idl1, float[] in, int in_off, float[] out, int out_off, int offset) {
         int idij, j2, ic, jc, lc, is;
         float dc2, ai2, ar2, ds2, w1r, w1i;
         float ar1h, ar2h;
@@ -5656,7 +5656,7 @@ public strictfp class FloatFFT {
         int l2;
         int ip, ido, idl1;
         int[] nac = new int[1];
-        final int twon = 2 * n;
+        int twon = 2 * n;
 
         float[] ch = new float[twon];
 
@@ -5725,7 +5725,7 @@ public strictfp class FloatFFT {
 
     }
 
-    private void passf2(final int ido, final int l1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset, final int isign) {
+    private void passf2(int ido, int l1, float[] in, int in_off, float[] out, int out_off, int offset, int isign) {
         float t1i, t1r;
         int iw1 = offset;
         int idx = ido * l1;
@@ -5779,7 +5779,7 @@ public strictfp class FloatFFT {
        passf3: Complex FFT's forward/backward processing of factor 3;
        isign is +1 for backward and -1 for forward transforms
       ----------------------------------------------------------------------*/
-    private void passf3(final int ido, final int l1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset, final int isign) {
+    private void passf3(int ido, int l1, float[] in, int in_off, float[] out, int out_off, int offset, int isign) {
         final float taur = -0.5f;
         final float taui = 0.866025403784438707610604524234076962f;
         float ci2, ci3, di2, di3, cr2, cr3, dr2, dr3, ti2, tr2;
@@ -5787,7 +5787,7 @@ public strictfp class FloatFFT {
         int iw1 = offset;
         int iw2 = iw1 + ido;
 
-        final int idxt = l1 * ido;
+        int idxt = l1 * ido;
 
         if (ido == 2) {
             for (int k = 1; k <= l1; k++) {
@@ -5869,7 +5869,7 @@ public strictfp class FloatFFT {
        passf4: Complex FFT's forward/backward processing of factor 4;
        isign is +1 for backward and -1 for forward transforms
       ----------------------------------------------------------------------*/
-    private void passf4(final int ido, final int l1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset, final int isign) {
+    private void passf4(int ido, int l1, float[] in, int in_off, float[] out, int out_off, int offset, int isign) {
         float ci2, ci3, ci4, cr2, cr3, cr4, ti1, ti2, ti3, ti4, tr1, tr2, tr3, tr4;
         int iw1 = offset;
         int iw2 = iw1 + ido;
@@ -5979,7 +5979,7 @@ public strictfp class FloatFFT {
        passf5: Complex FFT's forward/backward processing of factor 5;
        isign is +1 for backward and -1 for forward transforms
       ----------------------------------------------------------------------*/
-    private void passf5(final int ido, final int l1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset, final int isign)
+    private void passf5(int ido, int l1, float[] in, int in_off, float[] out, int out_off, int offset, int isign)
     /* isign==-1 for forward transform and+1 for backward transform */ {
         final float tr11 = 0.309016994374947451262869435595348477f;
         final float ti11 = 0.951056516295153531181938433292089030f;
@@ -6129,7 +6129,7 @@ public strictfp class FloatFFT {
        passfg: Complex FFT's forward/backward processing of general factor;
        isign is +1 for backward and -1 for forward transforms
       ----------------------------------------------------------------------*/
-    private void passfg(final int[] nac, final int ido, final int ip, final int l1, final int idl1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset, final int isign) {
+    private void passfg(int[] nac, int ido, int ip, int l1, int idl1, float[] in, int in_off, float[] out, int out_off, int offset, int isign) {
         int idij, idlj, l, jc, lc, idj;
         float w1r, w1i, w2i, w2r;
 
@@ -6377,7 +6377,7 @@ public strictfp class FloatFFT {
         }
     }
 
-    private static void cftrec4_th(final int n, final float[] a, final int offa, final int nw, final float[] w) {
+    private static void cftrec4_th(int n, float[] a, int offa, int nw, float[] w) {
         int i;
         int idx = 0;
         int nthreads = 2;
@@ -6389,9 +6389,9 @@ public strictfp class FloatFFT {
             m >>= 1;
         }
         Future<?>[] futures = new Future[nthreads];
-        final int mf = m;
+        int mf = m;
         for (i = 0; i < nthreads; i++) {
-            final int firstIdx = offa + i * m;
+            int firstIdx = offa + i * m;
             if (i != idiv4) {
                 futures[idx++] = ConcurrencyUtils.submit(() -> {
                     int isplt, j;
@@ -6454,8 +6454,8 @@ public strictfp class FloatFFT {
         }
     }
 
-    private void scale(final float m, final float[] a, int offa, boolean complex) {
-        final float norm = (float) (1.0 / m);
+    private void scale(float m, float[] a, int offa, boolean complex) {
+        float norm = (float) (1.0 / m);
         int n2;
         if (complex) {
             n2 = 2 * n;
@@ -6464,11 +6464,11 @@ public strictfp class FloatFFT {
         }
         int nthreads = ConcurrencyUtils.getNumberOfThreads();
         if ((nthreads > 1) && (n2 >= ConcurrencyUtils.getThreadsBeginN_1D_FFT_2Threads())) {
-            final int k = n2 / nthreads;
+            int k = n2 / nthreads;
             Future<?>[] futures = new Future[nthreads];
             for (int i = 0; i < nthreads; i++) {
-                final int firstIdx = offa + i * k;
-                final int lastIdx = (i == (nthreads - 1)) ? offa + n2 : firstIdx + k;
+                int firstIdx = offa + i * k;
+                int lastIdx = (i == (nthreads - 1)) ? offa + n2 : firstIdx + k;
                 futures[i] = ConcurrencyUtils.submit(() -> {
                     for (int i1 = firstIdx; i1 < lastIdx; i1++) {
                         a[i1] *= norm;

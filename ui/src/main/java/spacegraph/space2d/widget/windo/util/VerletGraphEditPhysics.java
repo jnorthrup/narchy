@@ -122,7 +122,7 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
                 }
             });
 
-            final List<VerletParticle2D> points = chain.getOne();
+            List<VerletParticle2D> points = chain.getOne();
 //        VerletParticle2D first = points.get(0);
 //        VerletParticle2D last = points.get(points.size() - 1);
             VerletParticle2D mid = points.get(points.size() / 2);

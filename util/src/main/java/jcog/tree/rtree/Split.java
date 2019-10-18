@@ -5,8 +5,8 @@ package jcog.tree.rtree;
 
     /** used by linear and quadratic splits */
     default RNode<X> newBranch(X x, RLeaf<X> leaf, Spatialization<X> model, short size, int r1Max, int r2Max, X[] data) {
-        final RLeaf<X> l1Node = model.newLeaf();
-        final RLeaf<X> l2Node = model.newLeaf();
+        RLeaf<X> l1Node = model.newLeaf();
+        RLeaf<X> l2Node = model.newLeaf();
 
         l1Node.insert(data[r1Max], model);
         l2Node.insert(data[r2Max], model);

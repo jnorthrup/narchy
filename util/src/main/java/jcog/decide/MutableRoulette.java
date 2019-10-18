@@ -102,7 +102,7 @@ public class MutableRoulette {
         int n = w.length;
         float s = 0;
 
-        final int nn = n;
+        int nn = n;
         float[] w = this.w;
         for (int i = 0; i < nn; i++) {
             float wi = w[i];

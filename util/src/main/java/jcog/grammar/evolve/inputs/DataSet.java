@@ -714,7 +714,7 @@ public class DataSet implements Serializable {
         @Override
         public boolean equals(Object obj) {
             if (!(obj instanceof Bounds)) return false;
-            final Bounds other = (Bounds) obj;
+            Bounds other = (Bounds) obj;
             return ((this.end == other.end)&&(this.start == other.start));
         }
         

@@ -16,7 +16,7 @@ class BucketContainer {
     private final int numElementsPerBucket;
     private int numBuckets;
 
-    BucketContainer(final BucketContainer prev, final BucketContainer next, final int maxBuckets, final int elementsPerBucket) {
+    BucketContainer(BucketContainer prev, BucketContainer next, int maxBuckets, int elementsPerBucket) {
         this.prev = prev;
         this.next = next;
         this.maxBuckets = maxBuckets;
@@ -26,7 +26,7 @@ class BucketContainer {
         this.numBuckets = 0;
     }
 
-    private BucketContainer(final BucketContainer originalContainer) {
+    private BucketContainer(BucketContainer originalContainer) {
         this.maxBuckets = originalContainer.maxBuckets;
         this.buckets = Arrays.copyOf(originalContainer.buckets, originalContainer.buckets.length);
         this.firstBucket = originalContainer.firstBucket;
@@ -54,7 +54,7 @@ class BucketContainer {
         return this.maxBuckets;
     }
 
-    void setNext(final BucketContainer next) {
+    void setNext(BucketContainer next) {
         this.next = next;
     }
 
@@ -82,9 +82,9 @@ class BucketContainer {
     }
 
     BucketContainer deepCopy() {
-        final BucketContainer copyThis = new BucketContainer(this);
+        BucketContainer copyThis = new BucketContainer(this);
         if(this.next!=null){
-            final BucketContainer nextCopy = this.next.deepCopy();
+            BucketContainer nextCopy = this.next.deepCopy();
             copyThis.next = nextCopy;
             nextCopy.prev = copyThis;
         }

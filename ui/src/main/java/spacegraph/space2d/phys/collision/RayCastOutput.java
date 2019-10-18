@@ -39,7 +39,7 @@ public class RayCastOutput {
         fraction = 0;
     }
 
-    public void set(final RayCastOutput rco) {
+    public void set(RayCastOutput rco) {
         normal.set(rco.normal);
         fraction = rco.fraction;
     }

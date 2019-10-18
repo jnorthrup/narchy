@@ -40,7 +40,7 @@ public enum JsonTerm { ;
             }
         } else if (j.isObject()) {
             Term[] s = new Term[j.size()];
-            final int[] i = {0};
+            int[] i = {0};
             j.fields().forEachRemaining(f -> {
                 Atomic k = $.quote(f.getKey());
                 Term v = the(f.getValue());

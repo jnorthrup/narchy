@@ -163,7 +163,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
 
         int[] c = null;
 
-        final TermList tl = new TermList(2);
+        TermList tl = new TermList(2);
         tl.setSize(2);
         Term[] tll = tl.array();
 

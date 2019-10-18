@@ -336,7 +336,7 @@ public abstract class Image extends Main {
     void GL_ImageList_f() {
 
         image_t image;
-        final String[] palstrings = { "RGB", "PAL" };
+        String[] palstrings = { "RGB", "PAL" };
 
         VID.Printf(Defines.PRINT_ALL, "------------------\n");
         int texels = 0;

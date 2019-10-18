@@ -33,7 +33,7 @@ public class CameraSensorTest {
         n.log();
 
         //check for cause applied
-        final int[] causesDetected = {0};
+        int[] causesDetected = {0};
         Term aPixel = $$("x(0,0)");
         //Term why = c.in.why.why;
 

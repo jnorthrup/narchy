@@ -549,7 +549,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     /*@NotNull*/
     default boolean recurseSubtermsToSet(int inStructure, /*@NotNull*/ Collection<Term> t, boolean untilAddedORwhileNotRemoved) {
-        final boolean[] r = {false};
+        boolean[] r = {false};
         Predicate<Term> selector = s -> {
 
             if (!untilAddedORwhileNotRemoved && r[0])

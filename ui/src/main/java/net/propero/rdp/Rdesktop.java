@@ -492,7 +492,7 @@ public class Rdesktop {
 
         VChannels channels = new VChannels();
 
-        final String[] server = {null};
+        String[] server = {null};
 
         if (g.getOptind() < args.length) {
             int colonat = args[args.length - 1].indexOf(':');

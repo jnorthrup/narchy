@@ -86,7 +86,7 @@ public abstract class Shape {
      * @param xf the shape world transform.
      * @param p  a point in world coordinates.
      */
-    public abstract boolean testPoint(final Transform xf, final v2 p);
+    public abstract boolean testPoint(Transform xf, v2 p);
 
     /**
      * Cast a ray against a child shape.
@@ -107,7 +107,7 @@ public abstract class Shape {
      * @param argAabb returns the axis aligned box.
      * @param argXf   the world transform of the shape.
      */
-    public abstract void computeAABB(final AABB aabb, final Transform xf, int childIndex);
+    public abstract void computeAABB(AABB aabb, Transform xf, int childIndex);
 
     /**
      * Compute the mass properties of this shape using its dimensions and density. The inertia tensor
@@ -116,7 +116,7 @@ public abstract class Shape {
      * @param massData returns the mass data for this shape.
      * @param density  the density in kilograms per meter squared.
      */
-    public abstract void computeMass(final MassData massData, final float density);
+    public abstract void computeMass(MassData massData, float density);
 
     /**
      * Compute the distance from the current shape to the specified point. This only works for convex

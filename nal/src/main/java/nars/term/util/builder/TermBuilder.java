@@ -105,7 +105,7 @@ public abstract class TermBuilder implements TermConstructor {
         return conj(DTERNAL, u);
     }
 
-    public Term conj(final int dt, Term... u) {
+    public Term conj(int dt, Term... u) {
         return conj(false, dt, u);
     }
 

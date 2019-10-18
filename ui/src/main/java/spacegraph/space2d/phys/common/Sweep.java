@@ -89,7 +89,7 @@ public class Sweep implements Serializable {
      * @param xf the result is placed here - must not be null
      * @param t  the normalized time in [0,1].
      */
-    public final void getTransform(final Transform xf, final float beta) {
+    public final void getTransform(Transform xf, float beta) {
         assert (xf != null);
         
         
@@ -101,7 +101,7 @@ public class Sweep implements Serializable {
 
         
         
-        final Rot q = xf;
+        Rot q = xf;
         xf.pos.x -= q.c * localCenter.x - q.s * localCenter.y;
         xf.pos.y -= q.s * localCenter.x + q.c * localCenter.y;
     }
@@ -111,7 +111,7 @@ public class Sweep implements Serializable {
      *
      * @param alpha the new initial time.
      */
-    public final void advance(final float alpha) {
+    public final void advance(float alpha) {
         assert (alpha0 < 1.0f);
         
         

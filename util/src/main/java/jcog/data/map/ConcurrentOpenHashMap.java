@@ -160,7 +160,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
     private Section<K, V> section(long hash) {
         
-        final int sectionIdx = (int) (hash >>> 32) & (sections.length - 1);
+        int sectionIdx = (int) (hash >>> 32) & (sections.length - 1);
         return sections[sectionIdx];
     }
 
@@ -198,7 +198,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
             target = arrayBuilder.apply(s);
         }
 
-        final int[] i = {0};
+        int[] i = {0};
         V[] t = target;
         for (Entry<K, V> entry : this.entrySet()) {
             K k = entry.getKey();

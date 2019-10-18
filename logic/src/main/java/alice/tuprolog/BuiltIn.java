@@ -122,7 +122,7 @@ public final class BuiltIn extends PrologLib {
             throw PrologError.type_error(prolog, 1, "clause", arg0);
     }
 
-    public boolean assertz_1(final Term _arg0) throws PrologError {
+    public boolean assertz_1(Term _arg0) throws PrologError {
         Term arg0 = _arg0.term();
         if (arg0 instanceof Struct) {
             Struct ss = (Struct) arg0;

@@ -98,7 +98,7 @@ public enum TermAppender {
     }
 
     public static void append(Compound c, Appendable p) throws IOException {
-        final Op op = c.op();
+        Op op = c.op();
 
         switch (op) {
 
@@ -174,13 +174,13 @@ public enum TermAppender {
 //        }
 //    }
 
-    static void negAppend(final Compound neg, Appendable p) throws IOException {
+    static void negAppend(Compound neg, Appendable p) throws IOException {
         /**
          * detect a negated conjunction of negated subterms:
          * (--, (&&, --A, --B, .., --Z) )
          */
 
-        final Term sub = neg.unneg();
+        Term sub = neg.unneg();
 
         if ((sub.opID() == CONJ.id) && sub.hasAny(NEG.bit)) {
             int dt;

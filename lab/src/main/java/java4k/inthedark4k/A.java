@@ -297,18 +297,18 @@ public class A extends GamePanel {
 				"\u0005\u0005\u0002\u0000\u0000\u0000\u0035\u0000\u0035\u0000\u0035\u0000\u0000\u0000\u0035\u0035\u0035\u0035\u0035\u0035\u0035\u0000\u0035\u0000\u0035\u0035\u0035\u0035\u0035\u0035\u0035\u0000\u0035\u0000\u0035\u0035\u0035\u0035\u0035\u0035\u0035\u0000\u0035\u0000\u0000\u0000\u0035\u0000\u0035\u0000\u0035\u0000\u0000";
 
 		
-		final byte[][][] box = new byte[WORLD_SIZE_X][WORLD_SIZE_Y][WORLD_SIZE_Z];
+		byte[][][] box = new byte[WORLD_SIZE_X][WORLD_SIZE_Y][WORLD_SIZE_Z];
 		
-		final byte[][][][][] models = new byte[8][][][][];
+		byte[][][][][] models = new byte[8][][][][];
 		
-		final int[] colors = new int[LIGHT_DISTANCE * 16];
+		int[] colors = new int[LIGHT_DISTANCE * 16];
 		
 		byte[][] maze = null;
 
 		
-		final BufferedImage screen = new BufferedImage(SCREEN_WIDTH, SCREEN_HEIGHT, BufferedImage.TYPE_INT_RGB);
-		final int[] pixels = ((DataBufferInt) screen.getRaster().getDataBuffer()).getData();
-		final Graphics gfx = screen.getGraphics();
+		BufferedImage screen = new BufferedImage(SCREEN_WIDTH, SCREEN_HEIGHT, BufferedImage.TYPE_INT_RGB);
+		int[] pixels = ((DataBufferInt) screen.getRaster().getDataBuffer()).getData();
+		Graphics gfx = screen.getGraphics();
 		Graphics appletGraphics = null;
 		
 		

@@ -62,7 +62,7 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
             
 
             if (includeClass(clazz.getComponentType())) {
-                final int len = Array.getLength(x);
+                int len = Array.getLength(x);
 
                 for (int i = 0; i < len; i++) {
                     Object aa = Array.get(x, i);

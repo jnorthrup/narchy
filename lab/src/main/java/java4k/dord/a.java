@@ -890,16 +890,16 @@ public class a extends GamePanel {
     final int APPEARING_BLOCK_DELAY = 50;
     final int YELLOW_RADIUS = 10;
     
-    final Color BACKGROUND_COLOR = new Color(0x7F92FF);
+    Color BACKGROUND_COLOR = new Color(0x7F92FF);
     
-    final ArrayList<int[]> enemies = new ArrayList<>();
+    ArrayList<int[]> enemies = new ArrayList<>();
        
-    final int[][] blocks = new int[10][2];
-    final int[][] map = new int[MAP_HEIGHT][MAP_WIDTH];
-    final BufferedImage[] tiles = new BufferedImage[TILES];
-    final BufferedImage imageBuffer = new BufferedImage(
+    int[][] blocks = new int[10][2];
+    int[][] map = new int[MAP_HEIGHT][MAP_WIDTH];
+    BufferedImage[] tiles = new BufferedImage[TILES];
+    BufferedImage imageBuffer = new BufferedImage(
         FRAME_WIDTH, FRAME_HEIGHT, BufferedImage.TYPE_INT_RGB);
-    final Graphics2D g = imageBuffer.createGraphics();
+    Graphics2D g = imageBuffer.createGraphics();
     Graphics2D g2 = null;
             
     boolean keysReleased = false;

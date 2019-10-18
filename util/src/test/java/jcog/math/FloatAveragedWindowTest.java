@@ -36,7 +36,7 @@ class FloatAveragedWindowTest {
 
     @Test
     void testSynchronous() {
-        final int[] calculations = {0};
+        int[] calculations = {0};
         FloatAveragedWindow f = new FloatAveragedWindow(4, 0.5f) {
             @Override
             protected double calculate() {

@@ -331,7 +331,7 @@ public enum Op {
                 NALLevelEqualAndAbove[i] |= o.bit;
         }
 
-        final Map<String, Op> _stringToOperator = new HashMap<>(values().length * 2);
+        Map<String, Op> _stringToOperator = new HashMap<>(values().length * 2);
         for (Op r : Op.values())
             _stringToOperator.put(r.toString(), r);
 

@@ -27,7 +27,7 @@ public class G extends Applet implements Runnable
         Graphics2D appletG = (Graphics2D)getGraphics();
         appletG.scale( 2, 2 );
 
-        final String[] s_levelData =
+        String[] s_levelData =
         {
             
             "\002\002\002\002\002\002\002\002\002\002\002\002\004\003\003\003" + 

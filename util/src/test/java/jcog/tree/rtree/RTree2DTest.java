@@ -46,7 +46,7 @@ class RTree2DTest {
     @Test
     void pointSearchTest() {
 
-        final RTree<Double2D> pTree = new RTree<>(new Double2D.Builder(), 8, Spatialization.DefaultSplits.AXIAL.get());
+        RTree<Double2D> pTree = new RTree<>(new Double2D.Builder(), 8, Spatialization.DefaultSplits.AXIAL.get());
 
         for(int i=0; i<10; i++) {
             pTree.add(new Double2D(i, i));
@@ -54,10 +54,10 @@ class RTree2DTest {
             assertEquals(i+1, Iterators.size(pTree.iterator()));
         }
 
-        final RectDouble rect = new RectDouble(new Double2D(2,2), new Double2D(8,8));
-        final Double2D[] result = new Double2D[10];
+        RectDouble rect = new RectDouble(new Double2D(2,2), new Double2D(8,8));
+        Double2D[] result = new Double2D[10];
 
-        final int n = pTree.containedToArray(rect, result);
+        int n = pTree.containedToArray(rect, result);
         assertEquals(7, n, ()->Arrays.toString(result));
 
         for(int i=0; i<n; i++) {
@@ -83,7 +83,7 @@ class RTree2DTest {
                 rTree.add(new RectDouble(i, i, i+3, i+3));
             }
 
-            final RectDouble searchRect = new RectDouble(5, 5, 10, 10);
+            RectDouble searchRect = new RectDouble(5, 5, 10, 10);
             List<RectDouble> results = new ArrayList();
 
             rTree.intersectsWhile(searchRect, results::add);
@@ -130,10 +130,10 @@ class RTree2DTest {
                 rTree.add(randomRect);
             }
 
-            final RectDouble searchRect = new RectDouble(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
+            RectDouble searchRect = new RectDouble(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
             RectDouble[] results = new RectDouble[entryCount];
 
-            final int foundCount = rTree.containedToArray(searchRect, results);
+            int foundCount = rTree.containedToArray(searchRect, results);
             long count = 0L;
             for (int i = 0; i < results.length; i++) {
                 if (results[i] != null) {
@@ -187,7 +187,7 @@ class RTree2DTest {
 
         final int entryCount = 5000;
 
-        final RectDouble[] rects = generateRandomRects(entryCount);
+        RectDouble[] rects = generateRandomRects(entryCount);
         for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
             RTree<RectDouble> rTree = createRect2DTree(8, type);
             for (int i = 0; i < rects.length; i++) {
@@ -196,7 +196,7 @@ class RTree2DTest {
 
             rTree.instrumentTree();
 
-            final RectDouble searchRect = new RectDouble(100, 100, 120, 120);
+            RectDouble searchRect = new RectDouble(100, 100, 120, 120);
             RectDouble[] results = new RectDouble[entryCount];
             int foundCount = rTree.containedToArray(searchRect, results);
 
@@ -209,7 +209,7 @@ class RTree2DTest {
 
     @Test
     void treeRemovalTest() {
-        final RTree<RectDouble> rTree = createRect2DTree(Spatialization.DefaultSplits.QUADRATIC);
+        RTree<RectDouble> rTree = createRect2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         RectDouble[] rects = new RectDouble[1000];
         for(int i = 0; i < rects.length; i++){
@@ -233,7 +233,7 @@ class RTree2DTest {
 
     @Test
     void treeSingleRemovalTest() {
-        final RTree<RectDouble> rTree = createRect2DTree(Spatialization.DefaultSplits.QUADRATIC);
+        RTree<RectDouble> rTree = createRect2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         RectDouble rect = new RectDouble(0,0,2,2);
         rTree.add(rect);
@@ -246,7 +246,7 @@ class RTree2DTest {
 
     @Disabled
     static void treeRemoveAndRebalanceTest() {
-        final RTree<RectDouble> rTree = createRect2DTree(Spatialization.DefaultSplits.QUADRATIC);
+        RTree<RectDouble> rTree = createRect2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         RectDouble[] rect = new RectDouble[65];
         for(int i = 0; i < rect.length; i++){
@@ -281,7 +281,7 @@ class RTree2DTest {
 
     @Test
     void treeUpdateTest() {
-        final RTree<RectDouble> rTree = createRect2DTree(Spatialization.DefaultSplits.QUADRATIC);
+        RTree<RectDouble> rTree = createRect2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         RectDouble rect = new RectDouble(0, 1, 2, 3);
         rTree.add(rect);
@@ -303,7 +303,7 @@ class RTree2DTest {
      * @return array of generated rectangles
      */
     public static RectDouble[] generateRandomRects(int count) {
-        final Random rand = new XoRoShiRo128PlusRandom(1);
+        Random rand = new XoRoShiRo128PlusRandom(1);
 
         
         final int minXRange = 500;
@@ -314,12 +314,12 @@ class RTree2DTest {
         //final double hitProb = 1.0 * count * maxXRange * maxYRange / (minXRange * minYRange);
 
         Set<RectDouble> added = new HashSet(count);
-        final RectDouble[] rects = new RectDouble[count];
+        RectDouble[] rects = new RectDouble[count];
         for (int i = 0; i < count; ) {
-            final int x1 = rand.nextInt(minXRange);
-            final int y1 = rand.nextInt(minYRange);
-            final int x2 = x1 + rand.nextInt(maxXRange);
-            final int y2 = y1 + rand.nextInt(maxYRange);
+            int x1 = rand.nextInt(minXRange);
+            int y1 = rand.nextInt(minYRange);
+            int x2 = x1 + rand.nextInt(maxXRange);
+            int y2 = y1 + rand.nextInt(maxYRange);
             RectDouble next = new RectDouble(x1, y1, x2, y2);
             if (added.add(next))
                 rects[i++] = next;
@@ -335,7 +335,7 @@ class RTree2DTest {
      * @return array of generated rectangles
      */
     public static HyperRectFloat[] generateRandomRects(int dimension, int count) {
-        final Random rand = new Random(13);
+        Random rand = new Random(13);
 
         
         final int minX = 500;
@@ -343,7 +343,7 @@ class RTree2DTest {
 
 
 
-        final HyperRectFloat[] rects = new HyperRectFloat[count];
+        HyperRectFloat[] rects = new HyperRectFloat[count];
         for (int i = 0; i < count; i++) {
 
             float[] min = new float[dimension];
@@ -366,7 +366,7 @@ class RTree2DTest {
      * @return array of generated rectangles
      */
     public static HyperRectFloat[] generateRandomRectsWithOneDimensionRandomlyInfinite(int dimension, int count) {
-        final Random rand = new Random(13);
+        Random rand = new Random(13);
 
         
         final int minX = 500;
@@ -374,7 +374,7 @@ class RTree2DTest {
 
 
         Set<HyperRectFloat> s = new HashSet(count);
-        final HyperRectFloat[] rects = new HyperRectFloat[count];
+        HyperRectFloat[] rects = new HyperRectFloat[count];
 
         for (int i = 0; i < count; ) {
 

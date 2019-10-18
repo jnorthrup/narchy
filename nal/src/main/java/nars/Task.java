@@ -137,7 +137,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         merge(pp, tt, merge, null, true);
     }
 
-    static float merge(final Task e, final Task i, PriMerge merge, @Nullable PriReturn returning, boolean updateCreationTime) {
+    static float merge(Task e, Task i, PriMerge merge, @Nullable PriReturn returning, boolean updateCreationTime) {
 
         if (e == i)
             return 0;
@@ -383,7 +383,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         //TODO VAR_QUERY and VAR_INDEP, including non-0th variable id
         if (v > 0 && t.hasAny(NEG.bit)) {
             ShortByteHashMap counts = new ShortByteHashMap(v);
-            final boolean[] skipNext = {false};
+            boolean[] skipNext = {false};
             t.recurseTermsOrdered(Termlike::hasVars, x -> {
                 if (skipNext[0]) {
                     skipNext[0] = false;

@@ -72,9 +72,9 @@ public class MarkovChain<T> {
      * @param phrase to learn
      */
     public MarkovChain learn(Stream<T> phrase, float strength) {
-        final Chain[] current = {START};
+        Chain[] current = {START};
 
-        final List<T>[] tuple = new List[]{new FasterList<T>()};
+        List<T>[] tuple = new List[]{new FasterList<T>()};
         
         phrase.forEach(t -> {
             List<T> tu = tuple[0];
@@ -271,7 +271,7 @@ public class MarkovChain<T> {
          * @param n node to add more weight to
          * @return the node that was learned
          */
-        public Chain<T> learn(final Chain<T> n, float strength) {
+        public Chain<T> learn(Chain<T> n, float strength) {
             NLink<Chain<T>> e = edges.computeIfAbsent(n, nn -> new NLink<>(nn, 0));
             e.priAdd(strength);
             return e.get();

@@ -129,7 +129,7 @@ public class Optimize<S, E> extends Lab<E>  {
     public void run(OptimizationStrategy strategy) {
 
         //initialize numeric or numeric-able variables
-        final int numVars = var.size();
+        int numVars = var.size();
 
         mid = new double[numVars];
         min = new double[numVars];

@@ -194,7 +194,7 @@ public class SLAMTest extends JPanel {
         j.getContentPane().add(guiPointCloud.getComponent());
         j.setVisible(true);
 
-        final Runnable[] running = {null};
+        Runnable[] running = {null};
         MetalConcurrentQueue<BufferedImage> frames = new MetalConcurrentQueue<>(4);
         wc.tensor.on((r) -> {
             if (r.img == null)
@@ -786,7 +786,7 @@ class DemoThreeViewControls extends StandardAlgConfigPanel implements ChangeList
         textInfo.setText("");
     }
 
-    public void addText(final String text) {
+    public void addText(String text) {
         String a = textInfo.getText() + text;
         textInfo.setText(a);
     }

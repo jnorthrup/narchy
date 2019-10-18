@@ -955,10 +955,10 @@ public final class SloppyMath {
 		{
 			
 			
-			final double rSquared = r * r;
+			double rSquared = r * r;
 			return r - rSquared / 2 + rSquared * r / 3;
 		}
-		final double x = (Double.doubleToLongBits(val) >> 32);
+		double x = (Double.doubleToLongBits(val) >> 32);
 		return (x - 1072632447) / 1512775;
 
 	}
@@ -967,15 +967,15 @@ public final class SloppyMath {
 	{
 
 		if (Math.abs(val) < 0.1) return 1 + val;
-		final long tmp = (long) (1512775 * val + (1072693248 - 60801));
+		long tmp = (long) (1512775 * val + (1072693248 - 60801));
 		return Double.longBitsToDouble(tmp << 32);
 
 	}
 
-	public static double approxPow(final double a, final double b)
+	public static double approxPow(double a, double b)
 	{
-		final int tmp = (int) (Double.doubleToLongBits(a) >> 32);
-		final int tmp2 = (int) (b * (tmp - 1072632447) + 1072632447);
+		int tmp = (int) (Double.doubleToLongBits(a) >> 32);
+		int tmp2 = (int) (b * (tmp - 1072632447) + 1072632447);
 		return Double.longBitsToDouble(((long) tmp2) << 32);
 	}
 	

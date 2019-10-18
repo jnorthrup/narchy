@@ -738,7 +738,7 @@ public enum Texts {
 	}
 
 	public static void histogramDecode(DoubleHistogram h, String header, double linearStep, BiConsumer<String, Object> x) {
-		final char[] order = {'a'};
+		char[] order = {'a'};
 		for (DoubleHistogramIterationValue p : h.linearBucketValues(linearStep)) {
 			x.accept(header + ' ' + (order[0]++) +
 							'[' + n4(p.getValueIteratedFrom()) + ".." + n4(p.getValueIteratedTo()) + ']',

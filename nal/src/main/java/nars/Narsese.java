@@ -299,11 +299,11 @@ public final class Narsese {
             return run(new CharSequenceInputBuffer(input));
         }
 
-        public ParsingResult<V> run(final InputBuffer inputBuffer) {
+        public ParsingResult<V> run(InputBuffer inputBuffer) {
             //Objects.requireNonNull(inputBuffer, "inputBuffer");
             resetValueStack();
 
-            final MatcherContext<V> context = createRootContext(inputBuffer, this);
+            MatcherContext<V> context = createRootContext(inputBuffer, this);
 
             return createParsingResult(context.runMatcher(), context);
         }
@@ -315,14 +315,14 @@ public final class Narsese {
 
         @VisibleForTesting
         MatcherContext<V> createRootContext(
-                final InputBuffer inputBuffer, final MatchHandler matchHandler) {
+                InputBuffer inputBuffer, MatchHandler matchHandler) {
             return new DefaultMatcherContext<>(inputBuffer, valueStack,
                     matchHandler, rootMatcher);
         }
 
         @VisibleForTesting
-        ParsingResult<V> createParsingResult(final boolean matched,
-                                             final MatcherContext<V> context) {
+        ParsingResult<V> createParsingResult(boolean matched,
+                                             MatcherContext<V> context) {
             return new ParsingResult<>(matched, valueStack, context);
         }
 
@@ -334,7 +334,7 @@ public final class Narsese {
         final Future<LineCounter> lineCounter = null;
         private final char[] charSequence;
 
-        CharSequenceInputBuffer(final CharSequence charSequence) {
+        CharSequenceInputBuffer(CharSequence charSequence) {
             int length = charSequence.length();
 
             this.charSequence = new char[length];
@@ -344,48 +344,48 @@ public final class Narsese {
         }
 
         @Override
-        public char charAt(final int index) {
+        public char charAt(int index) {
             return charSequence[index];
         }
 
         @SuppressWarnings("ImplicitNumericConversion")
         @Override
-        public int codePointAt(final int index) {
+        public int codePointAt(int index) {
             int length = charSequence.length;
             if (index >= length)
                 return -1;
 
-            final char c = charAt(index);
+            char c = charAt(index);
             if (!Character.isHighSurrogate(c))
                 return c;
             if (index == length - 1)
                 return c;
-            final char c2 = charAt(index + 1);
+            char c2 = charAt(index + 1);
             return Character.isLowSurrogate(c2) ? Character.toCodePoint(c, c2) : c;
         }
 
         @Override
-        public String subSequence(final int start, final int end) {
+        public String subSequence(int start, int end) {
             //return charSequence.subSequence(start, end);
             return end > start ? new String(charSequence, start, (end - start)) : "";
         }
 
         @Override
-        public String extract(final int start, final int end) {
-            final int realStart = Math.max(start, 0);
-            final int realEnd = Math.min(end, charSequence.length);
+        public String extract(int start, int end) {
+            int realStart = Math.max(start, 0);
+            int realEnd = Math.min(end, charSequence.length);
             return subSequence(realStart, realEnd);
         }
 
         @Override
-        public String extract(final IndexRange range) {
+        public String extract(IndexRange range) {
             return extract(range.start, range.end);
         }
 
         static final Position zero = new Position(0, 0);
 
         @Override
-        public Position getPosition(final int index) {
+        public Position getPosition(int index) {
 
 
             return zero; //HACK
@@ -393,7 +393,7 @@ public final class Narsese {
         }
 
         @Override
-        public String extractLine(final int lineNumber) {
+        public String extractLine(int lineNumber) {
             throw new UnsupportedOperationException();
 //            Preconditions.checkArgument(lineNumber > 0, "line number is negative");
 //            final LineCounter counter = lineCounter.get(); //Futures.getUnchecked(lineCounter);
@@ -408,7 +408,7 @@ public final class Narsese {
         }
 
         @Override
-        public IndexRange getLineRange(final int lineNumber) {
+        public IndexRange getLineRange(int lineNumber) {
             throw new UnsupportedOperationException();
 //            final Range<Integer> range
 //                    = Futures.getUnchecked(lineCounter).getLineRange(lineNumber);

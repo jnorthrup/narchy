@@ -1,6 +1,7 @@
 package nars.gui;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Streams;
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.TODO;
 import jcog.Util;
@@ -31,6 +32,7 @@ import nars.op.stm.ConjClustering;
 import nars.task.util.PriBuffer;
 import nars.term.Termed;
 import nars.time.part.DurLoop;
+import nars.truth.Truth;
 import nars.util.MemorySnapshot;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
@@ -75,6 +77,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static com.jogamp.newt.event.KeyEvent.VK_ENTER;
@@ -439,20 +442,6 @@ public class NARui {
                 "actions", () -> NARui.beliefCharts(a.nar(), actions)
         ));
         return LabeledPane.the(a.id.toString(), aa);
-//            .on(Bitmap2DSensor.class, (Bitmap2DSensor b) ->
-//                new PushButton(b.id.toString()).click(()-> {
-//                    window(new AspectAlign(
-//                        new CameraSensorView(b, a.nar()).withControls(),
-//                        AspectAlign.Align.Center, b.width, b.height), 500, 500);
-//                }))
-//            .on(x -> x instanceof Concept,
-//                    (Concept x) -> new MetaFrame(new BeliefTableChart(x.target(), a.nar())))
-//            .on(x -> x instanceof LinkedHashMap, (LinkedHashMap x)->{
-//                return new AutoSurface<>(x.keySet());
-//            })
-
-        //.on(Loop.class, LoopPanel::new),
-
     }
 
     public static Gridding beliefIcons(NAR nar, List<? extends Termed> c) {
@@ -476,7 +465,7 @@ public class NARui {
             ConceptColorIcon conceptColorIcon = new ConceptColorIcon(x.term(), nar, colorize);
             d.add(conceptColorIcon);
         }
-        return grid(d);
+        return grid( (Iterable<ConceptColorIcon>) d.iterator() );
     }
 
     public static TextEdit newNarseseInput(NAR n, Consumer<Task> onTask, Consumer<Exception> onException) {
@@ -612,7 +601,7 @@ public class NARui {
     }
 
     public static Surface attentionUI(What w) {
-        final var m = new Bordering();
+        var m = new Bordering();
         var n = w.nar;
         var attn = ((TaskLinkWhat)w).links;
         m.center(new TabMenu(Map.of(

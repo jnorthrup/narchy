@@ -39,7 +39,7 @@ public class AtomicMetalBitSet extends MetalBitSet {
 
     public boolean compareAndSet(int i, boolean expect, boolean set) {
         int mask = 1 << i;
-        final boolean[] got = {false};
+        boolean[] got = {false};
         X.accumulateAndGet(this, mask, (v,m)->{
             if (((v & m) != 0)==expect) {
                 

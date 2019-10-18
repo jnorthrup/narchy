@@ -70,7 +70,7 @@ class GrammarTest {
                 return this;
             }
         }
-        final MyTarget target = new MyTarget();
+        MyTarget target = new MyTarget();
         assertNull(grammar.getRule("mystart"));
         grammar.addRule("mystart", new Empty());
         grammar.addAssembler("mystart", (IAssembler) a -> a.setTarget(target));
@@ -154,7 +154,7 @@ class GrammarTest {
 
     @Test
     void textualRuleWithGroovyClosure() {
-        final List<Object> expectedMatches = new ArrayList<>();
+        List<Object> expectedMatches = new ArrayList<>();
         expectedMatches.add(new Token("test"));
         String ruleName = grammar.defineRule("mystart = \"test\"", (matches, stack) -> {
             assertEquals(expectedMatches, matches);

@@ -56,7 +56,7 @@ public class Vec2Array {
             v2 v2 = new v2();
             list.add(v2);
         }
-        final v2[] ray = list.toArray(new v2[0]);
+        v2[] ray = list.toArray(new v2[0]);
         return ray;
     }
 }

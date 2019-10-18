@@ -90,7 +90,7 @@ public class MathUtils extends PlatformMathUtils {
 
             x /= Settings.SINCOS_LUT_PRECISION;
 
-            final int index = (int) x;
+            int index = (int) x;
 
             if (index != 0) {
                 x %= index;
@@ -113,7 +113,7 @@ public class MathUtils extends PlatformMathUtils {
         return (x ^ y) - y;
     }
 
-    public static int floor(final float x) {
+    public static int floor(float x) {
         if (Settings.FAST_FLOOR) {
             return fastFloor(x);
         } else {
@@ -121,7 +121,7 @@ public class MathUtils extends PlatformMathUtils {
         }
     }
 
-    private static int fastFloor(final float x) {
+    private static int fastFloor(float x) {
         int y = (int) x;
         if (x < y) {
             return y - 1;
@@ -129,7 +129,7 @@ public class MathUtils extends PlatformMathUtils {
         return y;
     }
 
-    public static int ceil(final float x) {
+    public static int ceil(float x) {
         if (Settings.FAST_CEIL) {
             return fastCeil(x);
         } else {
@@ -137,7 +137,7 @@ public class MathUtils extends PlatformMathUtils {
         }
     }
 
-    private static int fastCeil(final float x) {
+    private static int fastCeil(float x) {
         int y = (int) x;
         if (x > y) {
             return y + 1;
@@ -145,7 +145,7 @@ public class MathUtils extends PlatformMathUtils {
         return y;
     }
 
-    private static int round(final float x) {
+    private static int round(float x) {
         if (Settings.FAST_ROUND) {
             return floor(x + .5f);
         } else {
@@ -167,38 +167,38 @@ public class MathUtils extends PlatformMathUtils {
         return pow2;
     }
 
-    public static float max(final float a, final float b) {
+    public static float max(float a, float b) {
         return a > b ? a : b;
     }
 
-    public static int max(final int a, final int b) {
+    public static int max(int a, int b) {
         return a > b ? a : b;
     }
 
-    public static float min(final float a, final float b) {
+    public static float min(float a, float b) {
         return a < b ? a : b;
     }
 
-    public static int min(final int a, final int b) {
+    public static int min(int a, int b) {
         return a < b ? a : b;
     }
 
-    public static float map(final float val, final float fromMin, final float fromMax,
-                            final float toMin, final float toMax) {
-        final float mult = (val - fromMin) / (fromMax - fromMin);
-        final float res = toMin + mult * (toMax - toMin);
+    public static float map(float val, float fromMin, float fromMax,
+                            float toMin, float toMax) {
+        float mult = (val - fromMin) / (fromMax - fromMin);
+        float res = toMin + mult * (toMax - toMin);
         return res;
     }
 
     /**
      * Returns the closest value to 'a' that is in between 'low' and 'high'
      */
-    public static float clamp(final float a, final float low, final float high) {
+    public static float clamp(float a, float low, float high) {
         return max(low, min(a, high));
     }
 
-    public static v2 clamp(final v2 a, final v2 low, final v2 high) {
-        final v2 min = new v2();
+    public static v2 clamp(v2 a, v2 low, v2 high) {
+        v2 min = new v2();
         min.x = a.x < high.x ? a.x : high.x;
         min.y = a.y < high.y ? a.y : high.y;
         min.x = low.x > min.x ? low.x : min.x;
@@ -206,7 +206,7 @@ public class MathUtils extends PlatformMathUtils {
         return min;
     }
 
-    public static void clampToOut(final v2 a, final v2 low, final v2 high, final v2 dest) {
+    public static void clampToOut(v2 a, v2 low, v2 high, v2 dest) {
         dest.x = a.x < high.x ? a.x : high.x;
         dest.y = a.y < high.y ? a.y : high.y;
         dest.x = low.x > dest.x ? low.x : dest.x;
@@ -228,7 +228,7 @@ public class MathUtils extends PlatformMathUtils {
         return x + 1;
     }
 
-    public static boolean isPowerOfTwo(final int x) {
+    public static boolean isPowerOfTwo(int x) {
         return x > 0 && (x & x - 1) == 0;
     }
 
@@ -239,7 +239,7 @@ public class MathUtils extends PlatformMathUtils {
             return -HALF_PI;
         }
         float atan;
-        final float z = y / x;
+        float z = y / x;
         if (Math.abs(z) < 1.0f) {
             atan = z / (1.0f + 0.28f * z * z);
             if (x < 0.0f) {

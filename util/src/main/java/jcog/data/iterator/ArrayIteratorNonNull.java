@@ -32,7 +32,7 @@ public class ArrayIteratorNonNull<E> implements Iterator<E>, Iterable<E> {
 		E next = null;
 		E[] a = this.array;
 		int index = this.index;
-		final int limit = this.limit;
+		int limit = this.limit;
 		while (++index < limit) {
 			if ((next = a[index])!=null)
 				break;

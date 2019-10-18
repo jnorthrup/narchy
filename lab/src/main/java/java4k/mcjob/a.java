@@ -144,7 +144,7 @@ public class a extends Applet implements Runnable {
 		final int CLR_DARK_BLUE = 13;
 		final int CLR_DARK_BROWN = 14;
 
-		final int[] COLORS = { COLOR_TRANSPARENT, COLOR_RED, COLOR_ORANGE, COLOR_YELLOW, COLOR_GREEN, COLOR_BROWN, COLOR_VANILLA, COLOR_GRAY, COLOR_BLACK, COLOR_WHITE, COLOR_FLESH, COLOR_DARK_GRAY,
+		int[] COLORS = { COLOR_TRANSPARENT, COLOR_RED, COLOR_ORANGE, COLOR_YELLOW, COLOR_GREEN, COLOR_BROWN, COLOR_VANILLA, COLOR_GRAY, COLOR_BLACK, COLOR_WHITE, COLOR_FLESH, COLOR_DARK_GRAY,
 				COLOR_BLUE, COLOR_DARK_BLUE, COLOR_DARK_BROWN, };
 
 		final String S = "aaiiiiaaaijjjjiaijjiijjiijjiijjiijjiijjiijjiijjiaijjjjiaa" + "aiiiiaaaaaiiaaaaaijjiaaaijjjiaaaaijjiaaaaijjiaaaaijjiaaaijjjjiaaaiii"
@@ -257,7 +257,7 @@ public class a extends Applet implements Runnable {
 		boolean[] columnBlinking = new boolean[4];
 		float gameOverScale = 0;
 
-		final Color[] CLRS = new Color[15];
+		Color[] CLRS = new Color[15];
 		for (i = 0; i < 15; i++) {
 			CLRS[i] = new Color(COLORS[i], true);
 		}

@@ -387,7 +387,7 @@ import java.util.Random;
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ReadonlyVec2D) {
-            final ReadonlyVec2D other = (ReadonlyVec2D) obj;
+            ReadonlyVec2D other = (ReadonlyVec2D) obj;
             return Util.equals(x, other.x()) && Util.equals(y, other.y());
 //            if (!((Float) x).equals(other.x())) {
 //                return false;
@@ -423,7 +423,7 @@ import java.util.Random;
      * @return true or false
      */
     public boolean equals(ReadonlyVec2D v) {
-        final ReadonlyVec2D other = v;
+        ReadonlyVec2D other = v;
             if (!((Float) x).equals(other.x())) {
                 return false;
             }
@@ -433,7 +433,7 @@ import java.util.Random;
 
     @Override
     public boolean equalsWithTolerance(ReadonlyVec2D v, float epsilon) {
-        final ReadonlyVec2D other = v;
+        ReadonlyVec2D other = v;
         if (this == other) return true;
         return Util.equals(x, v.x(), epsilon) && Util.equals(y, v.y(), epsilon);
     }

@@ -365,11 +365,11 @@ public class FZero extends GameX {
 
         float powerScale = 0.1f;
         float rotSpeed = 1.0f;
-        final float[] left = new float[1];
-        final float[] right = new float[1];
+        float[] left = new float[1];
+        float[] right = new float[1];
         float fwdSpeed = 75;
 
-        final Atom TANK = Atomic.atom("tank");
+        Atom TANK = Atomic.atom("tank");
 
 
         GoalActionConcept l = actionUnipolar($.inh(id, $.p(TANK,NEG)), (_x) -> {
@@ -459,7 +459,7 @@ public class FZero extends GameX {
 
     public void initBipolarRotateAbsolute(boolean fair) {
 
-        final MiniPID rotFilter = new MiniPID(0.1f, 0.1, 0.1f); //LP filter
+        MiniPID rotFilter = new MiniPID(0.1f, 0.1, 0.1f); //LP filter
         FloatToFloatFunction x = (heading) -> {
 
             fz.playerAngle = (float) rotFilter.out(fz.playerAngle, heading * Math.PI * 2);
@@ -653,6 +653,7 @@ public class FZero extends GameX {
                             for (int j = -1; j < 2; j++) {
                                 if (raceTrack[0x1FF & (i + y)][0x1FF & (j + x)] == -1) {
                                     raceTrack[y][x] = 1;
+                                    break;
                                 }
                             }
                         }

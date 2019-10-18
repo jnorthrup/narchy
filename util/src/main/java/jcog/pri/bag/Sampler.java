@@ -51,7 +51,7 @@ public interface Sampler<X> {
 
     default Sampler<X> sampleOrPop(Random rng, boolean pop, int max, Consumer<? super X> each) {
         if (max > 0) {
-            final int[] count = {max};
+            int[] count = {max};
             sample(rng, (Function<X, SampleReaction>) x -> {
                 each.accept(x);
                 return --count[0] > 0 ? (pop ? Remove : Next) : (pop ? RemoveAndStop : Stop);
@@ -67,7 +67,7 @@ public interface Sampler<X> {
      */
     default Sampler<X> sample(Random rng, int max, Predicate<? super X> kontinue) {
         if (max > 0) {
-            final int[] count = {max};
+            int[] count = {max};
             sample(rng, (Function<X, SampleReaction>)
                     x -> kontinue.test(x) && --count[0] > 0 ? Next : Stop);
         }

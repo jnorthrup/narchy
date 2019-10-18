@@ -27,7 +27,7 @@ public class SilenceDetector  {
 	 *            Normal values are [-70.0,-30.0] dB SPL.
 	 * @param breakProcessingQueueOnSilence 
 	 */
-	public SilenceDetector(final double silenceThreshold,boolean breakProcessingQueueOnSilence){
+	public SilenceDetector(double silenceThreshold, boolean breakProcessingQueueOnSilence){
 		this.threshold = silenceThreshold;
 		this.breakProcessingQueueOnSilence = breakProcessingQueueOnSilence;
 	}
@@ -39,7 +39,7 @@ public class SilenceDetector  {
 	 *            The audio buffer.
 	 * @return The local (linear) energy of an audio buffer.
 	 */
-	private static double localEnergy(final float[] buffer) {
+	private static double localEnergy(float[] buffer) {
 		double power = 0.0D;
 		for (float element : buffer) {
 			power += element * element;
@@ -54,7 +54,7 @@ public class SilenceDetector  {
 	 *            The buffer with audio information.
 	 * @return The dBSPL level for the buffer.
 	 */
-	private static double soundPressureLevel(final float[] buffer) {
+	private static double soundPressureLevel(float[] buffer) {
 		double value = Math.pow(localEnergy(buffer), 0.5);
         value /= buffer.length;
 		return linearToDecibel(value);
@@ -67,7 +67,7 @@ public class SilenceDetector  {
 	 *            The value to convert.
 	 * @return The converted value.
 	 */
-	private static double linearToDecibel(final double value) {
+	private static double linearToDecibel(double value) {
 		return 20.0 * Math.log10(value);
 	}
 	
@@ -86,12 +86,12 @@ public class SilenceDetector  {
 	 * @return True if the audio information in buffer corresponds with silence,
 	 *         false otherwise.
 	 */
-	public boolean isSilence(final float[] buffer, final double silenceThreshold) {
+	public boolean isSilence(float[] buffer, double silenceThreshold) {
 		currentSPL = soundPressureLevel(buffer);
 		return currentSPL < silenceThreshold;
 	}
 
-	public boolean isSilence(final float[] buffer) {
+	public boolean isSilence(float[] buffer) {
 		return isSilence(buffer, threshold);
 	}
 

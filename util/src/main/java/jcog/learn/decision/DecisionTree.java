@@ -258,7 +258,7 @@ public class DecisionTree<K, V> {
      * Finds best feature to split on which is the one whose split results in lowest impurity measure.
      */
     protected Predicate<Function<K, V>> bestSplit(K value, Supplier<Stream<Function<K, V>>> data, Stream<Predicate<Function<K, V>>> features) {
-        final double[] currentImpurity = {Double.POSITIVE_INFINITY};
+        double[] currentImpurity = {Double.POSITIVE_INFINITY};
 
         return features.reduce(null, (bestSplit, feature) -> {
             double calculatedSplitImpurity =

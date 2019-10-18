@@ -204,7 +204,7 @@ public class ContactManager implements PairCallback {
         broadPhase.updatePairs(this);
     }
 
-    public void destroy(final Contact c) {
+    public void destroy(Contact c) {
         Fixture a = c.aFixture;
         Fixture b = c.bFixture;
         Body2D aa = a.getBody();
@@ -333,10 +333,10 @@ public class ContactManager implements PairCallback {
         if (fixtureA.getBody().getType()!=DYNAMIC && fixtureB.getBody().getType()!=DYNAMIC)
             return null;
 
-        final ShapeType type1 = fixtureA.type();
-        final ShapeType type2 = fixtureB.type();
+        ShapeType type1 = fixtureA.type();
+        ShapeType type2 = fixtureB.type();
 
-        final ContactRegister reg = contactStacks[type1.ordinal()][type2.ordinal()];
+        ContactRegister reg = contactStacks[type1.ordinal()][type2.ordinal()];
         if (reg != null) {
             if (reg.primary) {
                 Contact c = reg.creator.pop();

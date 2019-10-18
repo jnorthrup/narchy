@@ -62,7 +62,7 @@ public class CliffWalking extends AbstractAgentTest {
         float reward = 0;
 
         int goals = 0, deaths = 0;
-        final float[] map = new float[shapeX * shapeY];
+        float[] map = new float[shapeX * shapeY];
 
         FloatArrayList episodeReward = new FloatArrayList(2 * cycles/(shapeX*shapeY));
         for (int i = 0; i < cycles; i++) {

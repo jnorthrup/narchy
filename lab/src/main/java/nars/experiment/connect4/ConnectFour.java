@@ -178,8 +178,8 @@ public class ConnectFour {
          * and analyzes the vicinity with respect to win positions.
          */
         private void analyzeWinPositions(int moveRow, int moveCol) {
-            final int[] rowIncr = {1, 0, 1, 1};
-            final int[] colIncr = {0, 1, -1, 1};
+            int[] rowIncr = {1, 0, 1, 1};
+            int[] colIncr = {0, 1, -1, 1};
             int playerNum = get(moveRow, moveCol);
             WinPositionInfo[] wInfo = {
                     new WinPositionInfo(), new WinPositionInfo()};

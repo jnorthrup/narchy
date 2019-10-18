@@ -90,7 +90,7 @@ public abstract class Search<N, E> {
         Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>> n;
         while ((n = q.poll()) != null) {
 
-            final Node<N, E> at = n.getTwo();
+            Node<N, E> at = n.getTwo();
 
             List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path = n.getOne();
 
@@ -153,7 +153,7 @@ public abstract class Search<N, E> {
     }
 
 
-    private boolean dfsNode(final Node<N, E> n, List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path) {
+    private boolean dfsNode(Node<N, E> n, List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path) {
         boolean result = true;
 
         if (visit(n)) {

@@ -227,7 +227,7 @@ public class UDPeer extends UDP {
 
             byte[] bytes = o.arrayCompactDirect();
 
-            final int[] remain = {Math.round(them.size() * pri)};
+            int[] remain = {Math.round(them.size() * pri)};
             them.sample(rng, (Predicate<UDProfile>) ((to) -> {
                 if (o.id() != to.id /*&& (pri >= 1 || rng.nextFloat() <= pri)*/)
                     sendRaw(bytes, to.addr);

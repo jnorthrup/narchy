@@ -90,7 +90,7 @@ public abstract class UDiscover<P> {
 
     public boolean update() {
 
-        final MulticastSocket ms = this.ms;
+        MulticastSocket ms = this.ms;
         if (ms == null)
             return false;
 

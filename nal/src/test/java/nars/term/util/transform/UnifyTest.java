@@ -108,7 +108,7 @@ public class UnifyTest {
         int n1 = vars.size();
 
 
-        final boolean[] termuted = {false};
+        boolean[] termuted = {false};
         AtomicBoolean subbed = new AtomicBoolean(false);
 
         Unify sub = new Unify(type, new XorShift128PlusRandom(rngSeed), NAL.unify.UNIFICATION_STACK_CAPACITY) {
@@ -124,7 +124,7 @@ public class UnifyTest {
             public boolean match() {
 
                 if (shouldSub) {
-                    final int[] matched = {0};
+                    int[] matched = {0};
                     this.xy.forEachVersioned((k, v) -> {
                         if (var(k.op())) {
                             assertNotNull(v);

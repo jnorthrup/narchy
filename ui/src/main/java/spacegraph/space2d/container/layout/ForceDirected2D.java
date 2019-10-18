@@ -93,7 +93,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
                 attract(a, attractSpeed);
 
-                final float ar = a.radius();
+                float ar = a.radius();
 
                 for (int y = aa + 1; y < n; y++)
                     repel(a, ar, nodes.get(y), repelSpeed);
@@ -127,8 +127,8 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         ConcurrentFastIteratingHashMap<X, EdgeVis<X>> read = from.outs;
         //int neighbors = read.size();
 
-        final double[] dx = {0};
-        final double[] dy = { 0 };
+        double[] dx = {0};
+        double[] dy = { 0 };
 
         read.forEachValue(edge -> {
             if (edge == null)

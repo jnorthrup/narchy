@@ -1456,8 +1456,9 @@ public class ISOIOLibrary extends PrologLib {
                     temporanyList.remove(t);
                     flag = 0;
                     for(Term temp:temporanyList){
-                        if(temp.equals(t)){
+                        if (temp.equals(t)) {
                             flag = 1;
+                            break;
                         }
                     }
                     if(flag == 0){

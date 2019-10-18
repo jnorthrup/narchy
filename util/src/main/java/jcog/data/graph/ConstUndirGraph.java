@@ -70,7 +70,7 @@ public class ConstUndirGraph implements Graph {
      */
     void initGraph() {
 
-        final int max = g.size();
+        int max = g.size();
         for (int i = 0; i < max; ++i) in[i] = new IntArrayList();
         for (int i = 0; i < max; ++i) {
             int ii = i;

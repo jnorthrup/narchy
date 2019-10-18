@@ -130,7 +130,7 @@ class NARTest {
     void testCycleScheduling() {
         NAR n = NARS.tmp();
 
-        final int[] runs = {0};
+        int[] runs = {0};
 
         long[] events = {2, 4, 4 /* test repeat */};
         for (long w : events) {
@@ -159,7 +159,7 @@ class NARTest {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream(16384);
 
-        final AtomicInteger count = new AtomicInteger();
+        AtomicInteger count = new AtomicInteger();
 
 
         Set<Task> written = new HashSet();

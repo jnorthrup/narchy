@@ -128,10 +128,10 @@ public class V extends Applet implements Runnable {
 
 		final float CHANGE_DIF = 1.2f;
 
-		final Color downColor = new Color(100, 106, 125);
-		final Color windowColor = new Color(176, 176, 191);
-		final Color darkColor = new Color(53, 53, 61);
-		final Color brightColor = new Color(230, 230, 230);
+		Color downColor = new Color(100, 106, 125);
+		Color windowColor = new Color(176, 176, 191);
+		Color darkColor = new Color(53, 53, 61);
+		Color brightColor = new Color(230, 230, 230);
 
 		float playerY = 240;
 		float playerX = 60;

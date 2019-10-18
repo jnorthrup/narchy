@@ -179,7 +179,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
         this.sensors = new FasterList(states.length);
         int i = 0;
         for (Term s : states) {
-            final int ii = i++;
+            int ii = i++;
             ComponentSignal sc = newComponent(s, () -> {
                 float x = freqer.truth(asFloat(), ii, states.length);
                 return Util.equals(x, defaultFreq) ? Float.NaN : x;

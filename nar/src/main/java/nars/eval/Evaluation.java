@@ -136,7 +136,7 @@ public class Evaluation extends Termerator {
 	}
 
 
-	public boolean eval(Evaluator e, final Term x) {
+	public boolean eval(Evaluator e, Term x) {
 		return eval(e, x, x instanceof Compound ? e.clauses((Compound) x, this) : null);
 	}
 
@@ -155,7 +155,7 @@ public class Evaluation extends Termerator {
 		return eval(e, x, c);
 	}
 
-	private boolean eval(Evaluator e, final Term x, @Nullable ArrayHashSet<Term> clauses) {
+	private boolean eval(Evaluator e, Term x, @Nullable ArrayHashSet<Term> clauses) {
 
 		Term y = x;
 
@@ -182,7 +182,7 @@ public class Evaluation extends Termerator {
                         }
                     }
 
-                    final int vStart = now();
+                    int vStart = now();
 
 					Term b = ((Functor) a.sub(1)).apply(this, a.sub(0).subterms());
 

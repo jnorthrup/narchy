@@ -57,8 +57,8 @@ public class EvolveGovernor {
 		Log.root().setLevel(Level.WARN);
 	}
 
-	public static void main(final String[] args) {
-		final Engine<ProgramGene<Double>, Double> engine = Engine
+	public static void main(String[] args) {
+		Engine<ProgramGene<Double>, Double> engine = Engine
 			.builder(new GovernorProblem())
 			.maximizing()
 			.alterers(
@@ -66,15 +66,15 @@ public class EvolveGovernor {
 				new Mutator<>())
 			.build();
 
-		final EvolutionResult<ProgramGene<Double>, Double> result = engine.stream()
+		EvolutionResult<ProgramGene<Double>, Double> result = engine.stream()
 			.limit(Limits.byFixedGeneration(100))
 			.collect(EvolutionResult.toBestEvolutionResult());
 
-		final ProgramGene<Double> program = result.getBestPhenotype()
+		ProgramGene<Double> program = result.getBestPhenotype()
 			.getGenotype()
 			.getGene();
 
-		final TreeNode<Op<Double>> tree = program.toTreeNode();
+		TreeNode<Op<Double>> tree = program.toTreeNode();
 		MathExpr.rewrite(tree);
 		System.out.println("Generations: " + result.getTotalGenerations());
 		System.out.println("Function:    " + new MathExpr(tree));

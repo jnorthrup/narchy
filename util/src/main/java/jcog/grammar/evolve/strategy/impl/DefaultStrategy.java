@@ -299,7 +299,7 @@ public class DefaultStrategy implements RunStrategy {
 
         double[] f1 = o1.getFitness();
         double[] f2 = o2.getFitness();
-        final int n = f1.length;
+        int n = f1.length;
 
         double balance = 0;
 

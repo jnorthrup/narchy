@@ -14,7 +14,7 @@ public interface PriReference<X> extends Prioritizable, Supplier<X>, FloatSuppli
 
     static float[] histogram(Iterable<? extends Prioritized> pp, float[] x) {
         int bins = x.length;
-        final double[] total = {0};
+        double[] total = {0};
 
         for (Prioritized y : pp) {
             if (y == null)

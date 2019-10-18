@@ -163,7 +163,7 @@ public class EstimatedHistogram {
      * @return a long[] containing the current histogram buckets
      */
     long[] getBuckets(boolean reset) {
-        final int len = buckets.length();
+        int len = buckets.length();
         long[] rv;
 
         if (reset) {

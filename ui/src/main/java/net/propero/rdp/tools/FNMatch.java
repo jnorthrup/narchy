@@ -58,7 +58,7 @@ class FNMatch {
      * @param flags   Behavior modifiers.
      * @return Constant int value FNM_MATCH or FNM_NOMATCH.
      */
-    private static boolean fnmatch(final String pattern, final String string,
+    private static boolean fnmatch(String pattern, String string,
                                    int flags) {
         boolean result = FNM_NOMATCH;
         boolean finished = false;

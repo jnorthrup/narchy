@@ -89,6 +89,7 @@ public class LightingEngine implements Serializable {
             for (int i = 0; i < height; i++) {
                 if (tiles[x][i].type.lightBlocking != 0) {
                     sun = false;
+                    break;
                 }
                 if (sun) {
                     lightFlow[x][i] = Direction.SOURCE;

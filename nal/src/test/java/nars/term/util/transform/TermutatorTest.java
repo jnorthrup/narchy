@@ -148,9 +148,9 @@ class TermutatorTest {
         
 
         Set<String> s = new LinkedHashSet(); 
-        final int[] actual = {0};
+        int[] actual = {0};
         
-        final int[] duplicates = {0};
+        int[] duplicates = {0};
 
         unifier.setTTL(TTL);
         

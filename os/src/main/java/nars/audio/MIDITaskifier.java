@@ -61,7 +61,7 @@ public class MIDITaskifier {
 
 
 
-        final List<Concept> keys = $.newArrayList();
+        List<Concept> keys = $.newArrayList();
         for (int i = 36; i <= 51; i++) {
             Term key =
                     channelKey(9, i);

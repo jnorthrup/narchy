@@ -147,10 +147,10 @@ public abstract class Contact {
      * Get the world manifold.
      */
     public void getWorldManifold(WorldManifold worldManifold) {
-        final Body2D bodyA = aFixture.getBody();
-        final Body2D bodyB = bFixture.getBody();
-        final Shape shapeA = aFixture.shape();
-        final Shape shapeB = bFixture.shape();
+        Body2D bodyA = aFixture.getBody();
+        Body2D bodyB = bFixture.getBody();
+        Shape shapeA = aFixture.shape();
+        Shape shapeB = bFixture.shape();
 
         worldManifold.initialize(m_manifold, bodyA, shapeA.skinRadius,
                 bodyB, shapeB.skinRadius);

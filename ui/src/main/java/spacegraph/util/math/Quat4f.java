@@ -673,17 +673,17 @@ public class Quat4f extends Tuple4f {
         return q;
     }
 
-    public final v3 rotateVector(final v3 vecIn, final v3 vecOut) {
+    public final v3 rotateVector(v3 vecIn, v3 vecOut) {
 
 
 
-            final float vecX = vecIn.x; 
-            final float vecY = vecIn.y; 
-            final float vecZ = vecIn.z; 
-            final float x_x = x*x;
-            final float y_y = y*y;
-            final float z_z = z*z;
-            final float w_w = w*w;
+            float vecX = vecIn.x;
+            float vecY = vecIn.y;
+            float vecZ = vecIn.z;
+            float x_x = x*x;
+            float y_y = y*y;
+            float z_z = z*z;
+            float w_w = w*w;
 
             float ox =   w_w * vecX
                     + x_x * vecX

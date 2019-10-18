@@ -71,7 +71,7 @@ public class Islands {
 
         find.reset(num);
 
-        final int[] i = {0};
+        int[] i = {0};
         for (Collidable collidable : cc) {
             collidable.setIslandTag(i[0]++);
             collidable.setCompanionId(-1);
@@ -141,8 +141,8 @@ public class Islands {
                     int i = find.sz(idx);
 
                     
-                    final Collidable colObj0 = collidables.get(i);
-                    final int tag0 = colObj0.tag();
+                    Collidable colObj0 = collidables.get(i);
+                    int tag0 = colObj0.tag();
 
                     if ((tag0 != islandId) && (tag0 != -1)) {
                         islandError(colObj0);
@@ -164,7 +164,7 @@ public class Islands {
                     for (idx = startIslandIndex; idx < endIslandIndex; idx++) {
                         int i = find.sz(idx);
                         
-                        final Collidable colObj0 = collidables.get(i);
+                        Collidable colObj0 = collidables.get(i);
                         int tag0 = colObj0.tag();
                         if ((tag0 != islandId) && (tag0 != -1)) {
                             islandError(colObj0);

@@ -91,17 +91,7 @@ public class Level {
 	 * @return a list of selected handles
 	 */
 	public  List<Handle> select(Rectangle rect) {
-		var selected = new ArrayList<>();
-		for (LevelObject levelObject : levelObjects) {
-			ArrayList<Handle> handles = levelObject.getHandles();
-			for (Handle handle : handles) {
-				if (handle.intersects(rect)) {
-					selected.add(handle);
-				}
-			}
-		}
-
-		return selected;
+		return levelObjects.stream().map(LevelObject::getHandles).flatMap(Collection::stream).filter(handle -> handle.intersects(rect)).collect(Collectors.toList());
 	}
 	
 	public ArrayList<Handle> select(ArrayList<LevelObject> objects) {

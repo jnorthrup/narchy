@@ -505,7 +505,7 @@ public class Lab<X> {
 
             Boolean.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
                 Function<X, Boolean> get = ObjectGraph.getter(p);
-                final BiConsumer<X, Boolean> set = ObjectGraph.setter(p);
+                BiConsumer<X, Boolean> set = ObjectGraph.setter(p);
                 var(k, 0, 1, 0.5f,
                         (x)->get.apply(x) ? 1f : 0f,
                         (x, v) -> {
@@ -516,7 +516,7 @@ public class Lab<X> {
             },
 
             AtomicBoolean.class, (sample, k, p) -> {
-                final Function<X, AtomicBoolean> get = ObjectGraph.getter(p);
+                Function<X, AtomicBoolean> get = ObjectGraph.getter(p);
                 AtomicBoolean fr = get.apply(sample);
                 var(k, 0, 1, 0.5f, (x, v) -> {
                     boolean b = v >= 0.5f;
@@ -526,12 +526,12 @@ public class Lab<X> {
             },
 
             Integer.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
-                final Function<X, Integer> get = ObjectGraph.getter(p);
-                final BiConsumer<X, Integer> set = ObjectGraph.setter(p);
+                Function<X, Integer> get = ObjectGraph.getter(p);
+                BiConsumer<X, Integer> set = ObjectGraph.setter(p);
                 var(k, get, set::accept);
             },
             IntRange.class, (sample, k, p) -> {
-                final Function<X, IntRange> get = ObjectGraph.getter(p);
+                Function<X, IntRange> get = ObjectGraph.getter(p);
                 IntRange fr = get.apply(sample);
                 var(k, fr.min, fr.max, -1, null /* TODO */, (ObjectIntProcedure<X>) (x, v) -> get.apply(x).set(v));
             },
@@ -540,7 +540,7 @@ public class Lab<X> {
 
             Float.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
                 Function<X, Float> get = ObjectGraph.getter(p);
-                final BiConsumer<X, Float> set = ObjectGraph.setter(p);
+                BiConsumer<X, Float> set = ObjectGraph.setter(p);
                 var(k, Float.NaN, Float.NaN, Float.NaN,
                         get,
                         (x,v)->{ set.accept(x,v); return v; });
@@ -549,7 +549,7 @@ public class Lab<X> {
 
 
             FloatRange.class, (sample, k, p) -> {
-                final Function<X, FloatRange> get = ObjectGraph.getter(p);
+                Function<X, FloatRange> get = ObjectGraph.getter(p);
                 FloatRange fr = get.apply(sample);
                 var(k, fr.min, fr.max, Float.NaN,
                         (x)-> get.apply(x).floatValue(),

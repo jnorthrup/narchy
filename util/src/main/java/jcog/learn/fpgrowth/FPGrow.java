@@ -158,7 +158,7 @@ public class FPGrow {
     }
 
 
-    private static FPNode buildTree(List<List<String>> transactions, final Map<String, Integer> itemCount, final Map<String, FPNode> headerTable) {
+    private static FPNode buildTree(List<List<String>> transactions, Map<String, Integer> itemCount, Map<String, FPNode> headerTable) {
         FPNode root = new FPNode("ROOT");
         root.parent = null;
 

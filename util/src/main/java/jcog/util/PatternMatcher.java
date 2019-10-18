@@ -120,18 +120,18 @@ public class PatternMatcher {
         return false;
     }
     static boolean matchGlobPattern(String pattern, String match) {
-        final int NP = pattern.length();
+        int NP = pattern.length();
         if (NP <= 0) {
             return match.length() <= 0;
         }
-        final int NM = match.length();
+        int NM = match.length();
         int ip = 0, im = 0;
         char nextChar = pattern.charAt(0);
         while ((ip<NP) && (im<NM)) {
             char c = nextChar;
             ip++;
             nextChar = ip < NP ? pattern.charAt(ip) : 0;
-            final boolean escaped = (c == '\\');
+            boolean escaped = (c == '\\');
             if (escaped) {
                 c = nextChar;
                 ip++;
@@ -202,7 +202,7 @@ public class PatternMatcher {
      */
     static synchronized int[] parseAndVerifyAdvancedPattern(String pattern) {
         int ip = 0;
-        final int LP = pattern.length();
+        int LP = pattern.length();
         int it = 0;
         boolean inSet = false;
         boolean inRange = false;
@@ -318,8 +318,8 @@ public class PatternMatcher {
                 String rangeString = pattern.substring(ip, endOfSet);
                 int commaIndex = rangeString.indexOf(',');
                 try {
-                    final int rangeMin;
-                    final int rangeMax;
+                    int rangeMin;
+                    int rangeMax;
                     if (commaIndex < 0) {
                         int parsedRange = Integer.parseInt(rangeString);
                         rangeMin = rangeMax = parsedRange;
@@ -362,7 +362,7 @@ public class PatternMatcher {
         
         int ip = 0, im = 0;
         
-        final int LP = parsedPattern.length, LM = match.length();
+        int LP = parsedPattern.length, LM = match.length();
         
         int patternChar;
         int tokenType;
@@ -391,8 +391,8 @@ public class PatternMatcher {
                     ip++;
                     break;
             }
-            final int minRepetition;
-            final int maxRepetition;
+            int minRepetition;
+            int maxRepetition;
             
             if (ip >= LP) {
                 minRepetition = maxRepetition = 1;
@@ -434,7 +434,7 @@ public class PatternMatcher {
         }
         return ip >= LP && im >= LM; 
     }
-    private static int matchChars(String match, int im, final int lm, int tokenType,
+    private static int matchChars(String match, int im, int lm, int tokenType,
             int minRepetition, int maxRepetition, int[] parsedPattern,
             int tokenStart, int tokenEnd) {
         int matched = 0;
@@ -445,7 +445,7 @@ public class PatternMatcher {
         }
         return matched < minRepetition ? NO_MATCH : matched;
     }
-    private static boolean matchChar(String match, int im, final int lm, int tokenType,
+    private static boolean matchChar(String match, int im, int lm, int tokenType,
             int[] parsedPattern, int tokenStart, int tokenEnd) {
         if (im >= lm) { 
             return false;

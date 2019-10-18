@@ -34,7 +34,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
         max = unbounded;
     }
 
-    public RectLongND(final LongND p) {
+    public RectLongND(LongND p) {
         min = p;
         max = p;
     }
@@ -44,7 +44,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     }
 
 
-    public RectLongND(final LongND a, final LongND b) {
+    public RectLongND(LongND a, LongND b) {
         int dim = a.dim();
 
         long[] min = new long[dim];
@@ -67,8 +67,8 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     }
 
     @Override
-    public boolean contains(final HyperRegion _inner) {
-        final RectLongND inner = (RectLongND) _inner;
+    public boolean contains(HyperRegion _inner) {
+        RectLongND inner = (RectLongND) _inner;
 
         int dim = dim();
         for (int i = 0; i < dim; i++) {
@@ -80,8 +80,8 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     }
 
     @Override
-    public boolean intersects(final HyperRegion r) {
-        final RectLongND x = (RectLongND) r;
+    public boolean intersects(HyperRegion r) {
+        RectLongND x = (RectLongND) r;
 
         int dim = dim();
         /*return !((min.x > r2.max.x) || (r2.min.x > max.x) ||
@@ -105,8 +105,8 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     }
 
     @Override
-    public HyperRegion mbr(final HyperRegion r) {
-        final RectLongND x = (RectLongND) r;
+    public HyperRegion mbr(HyperRegion r) {
+        RectLongND x = (RectLongND) r;
 
         int dim = dim();
         long[] newMin = new long[dim];
@@ -166,7 +166,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     }
 
     @Override
-    public double range(final int dim) {
+    public double range(int dim) {
         float min = this.min.coord[dim];
         float max = this.max.coord[dim];
         if (min == max)
@@ -217,7 +217,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     public static final class Builder<X extends RectLongND> implements Function<X, HyperRegion> {
 
         @Override
-        public X apply(final X rect2D) {
+        public X apply(X rect2D) {
             return rect2D;
         }
 

@@ -45,7 +45,7 @@ public abstract class AbstractAdjacentIndexer extends AdjacentIndexer {
 				//TOO SLOW, impl indexes
 
 				TaskLinkBag bag = ((TaskLinkWhat) (d.x)).links.links;
-				final int[] ttl = {Math.max(4, bag.size() / 8)}; //TODO parameter
+				int[] ttl = {Math.max(4, bag.size() / 8)}; //TODO parameter
 
 				FasterList<Term> l = new FasterList<>(ttl[0]);
 				bag.sampleUnique(d.random, (c -> {

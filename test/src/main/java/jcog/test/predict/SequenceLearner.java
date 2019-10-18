@@ -46,8 +46,8 @@ public abstract class SequenceLearner {
 
         int headUnitSize = Head.getUnitSize(memoryWidth);
 
-        final int outputSize = machine.outputSize();
-        final int inputSize = machine.inputSize();
+        int outputSize = machine.outputSize();
+        int inputSize = machine.inputSize();
 
         int weightsCount = (numHeads * memoryHeight) + (memoryHeight * memoryWidth) + (controllerSize * numHeads * memoryWidth) + (controllerSize * inputSize) + (controllerSize) + (outputSize * (controllerSize + 1)) + (numHeads * headUnitSize * (controllerSize + 1));
 //        System.out.println("# Weights: "  + weightsCount);
@@ -92,15 +92,15 @@ public abstract class SequenceLearner {
 
             if (t < okt) continue;
 
-            final double[] ideal = knownOutput[t];
-            final double[] actual = machines[t].getOutput();
+            double[] ideal = knownOutput[t];
+            double[] actual = machines[t].getOutput();
 
 
             double rowLoss = 0;
             for (int i = 0; i < ideal.length; i++) {
 
-                final double expected = ideal[i];
-                final double real = actual[i];
+                double expected = ideal[i];
+                double real = actual[i];
 
 
                 rowLoss += (expected * (Math.log(real) / log2)) + ((1.0 - expected) * (Math.log(1.0 - real) / log2));
@@ -119,16 +119,16 @@ public abstract class SequenceLearner {
 
             if (t < okt) continue;
 
-            final double[] knownOutputT = knownOutput[t];
-            final double[] actual = machines[t].getOutput();
+            double[] knownOutputT = knownOutput[t];
+            double[] actual = machines[t].getOutput();
 
 
             double rowLoss = 0;
             for (int i = 0; i < knownOutputT.length; i++) {
 
-                final double expected = knownOutputT[i];
-                final double real = actual[i];
-                final double diff = Math.abs(expected - real);
+                double expected = knownOutputT[i];
+                double real = actual[i];
+                double diff = Math.abs(expected - real);
 
                 rowLoss += diff;
             }

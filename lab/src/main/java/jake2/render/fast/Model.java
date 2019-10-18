@@ -1271,7 +1271,7 @@ public abstract class Model extends Surf {
 	static void precompileGLCmds(qfiles.dmdl_t model) {
 		model.textureCoordBuf = globalModelTextureCoordBuf.slice();
 		model.vertexIndexBuf = globalModelVertexIndexBuf.slice();
-		final Vector<Integer> tmp = new Vector<>();
+		Vector<Integer> tmp = new Vector<>();
 			
 		int count = 0;
 		int[] order = model.glCmds;

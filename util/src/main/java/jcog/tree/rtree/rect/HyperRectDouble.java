@@ -57,7 +57,7 @@ public class HyperRectDouble implements HyperRegion, Serializable {
         max = VOID;
     }
 
-    public HyperRectDouble(final DoubleND p) {
+    public HyperRectDouble(DoubleND p) {
         min = p;
         max = p;
     }
@@ -71,7 +71,7 @@ public class HyperRectDouble implements HyperRegion, Serializable {
         return (maxOrMin ? max : min).coord[dimension];
     }
 
-    public HyperRectDouble(final DoubleND a, final DoubleND b) {
+    public HyperRectDouble(DoubleND a, DoubleND b) {
         int dim = a.dim();
 
         double[] min = new double[dim];
@@ -133,8 +133,8 @@ public class HyperRectDouble implements HyperRegion, Serializable {
     }
 
     @Override
-    public HyperRegion mbr(final HyperRegion r) {
-        final HyperRectDouble x = (HyperRectDouble) r;
+    public HyperRegion mbr(HyperRegion r) {
+        HyperRectDouble x = (HyperRectDouble) r;
 
         int dim = dim();
         double[] newMin = new double[dim];
@@ -184,7 +184,7 @@ public class HyperRectDouble implements HyperRegion, Serializable {
     }
 
     @Override
-    public double range(final int dim) {
+    public double range(int dim) {
         double min = this.min.coord[dim];
         double max = this.max.coord[dim];
         if (min == max)
@@ -222,7 +222,7 @@ public class HyperRectDouble implements HyperRegion, Serializable {
     public static final class Builder<X extends HyperRectDouble> implements Function<X, HyperRegion> {
 
         @Override
-        public X apply(final X rect2D) {
+        public X apply(X rect2D) {
             return rect2D;
         }
 

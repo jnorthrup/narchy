@@ -153,25 +153,25 @@ public class ap extends GamePanel {
     final float ORBIT_RADIUS_D = 0.25f;
     final int GAME_RESET_DELAY = 1024;
     
-    final Color[] roadColors = new Color[ROAD_COLORS];
-    final float[][] players = new float[PLAYERS][]; 
-    final ArrayList<float[]>[] shells = new ArrayList[PLAYERS];
-    final float[][] onb = new float[4][3];
-    final float[][] onb2 = new float[4][3];
-    final float[][] onb3 = new float[4][3];
-    final int[] polygonXs = new int[4];
-    final int[] polygonYs = new int[4];
-    final float[][] ps = new float[2][3];
+    Color[] roadColors = new Color[ROAD_COLORS];
+    float[][] players = new float[PLAYERS][];
+    ArrayList<float[]>[] shells = new ArrayList[PLAYERS];
+    float[][] onb = new float[4][3];
+    float[][] onb2 = new float[4][3];
+    float[][] onb3 = new float[4][3];
+    int[] polygonXs = new int[4];
+    int[] polygonYs = new int[4];
+    float[][] ps = new float[2][3];
     
-    final ArrayList<float[]> elements = new ArrayList<>();
-    final BufferedImage[] sprites = new BufferedImage[17];
-    final BufferedImage imageBuffer = new BufferedImage(
+    ArrayList<float[]> elements = new ArrayList<>();
+    BufferedImage[] sprites = new BufferedImage[17];
+    BufferedImage imageBuffer = new BufferedImage(
         800, 600, BufferedImage.TYPE_INT_RGB);
-    final Graphics2D g = imageBuffer.createGraphics();
-    final Font bigFont = g.getFont().deriveFont(Font.BOLD | Font.ITALIC, 90f);
-    final Font smallFont = bigFont.deriveFont(45f);
-    final AffineTransform defaultTransform = new AffineTransform();
-    final AffineTransform transform = new AffineTransform();
+    Graphics2D g = imageBuffer.createGraphics();
+    Font bigFont = g.getFont().deriveFont(Font.BOLD | Font.ITALIC, 90f);
+    Font smallFont = bigFont.deriveFont(45f);
+    AffineTransform defaultTransform = new AffineTransform();
+    AffineTransform transform = new AffineTransform();
     Graphics2D g2 = null;    
     
     int i;

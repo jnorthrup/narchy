@@ -153,9 +153,9 @@ class NAL7ImplTruthProjectionTest {
 
     double[] max(double xStart, double[] previous) {
         final boolean isMinim = false; 
-        final double lo = min;
+        double lo = min;
         
-        final double hi = max;
+        double hi = max;
 
         
 
@@ -191,12 +191,12 @@ class NAL7ImplTruthProjectionTest {
         while (true) {
             
 
-            final double m = 0.5 * (a + b);
-            final double tol1 = relativeThreshold * Math.abs(X) + absoluteThreshold;
-            final double tol2 = 2 * tol1;
+            double m = 0.5 * (a + b);
+            double tol1 = relativeThreshold * Math.abs(X) + absoluteThreshold;
+            double tol2 = 2 * tol1;
 
             
-            final boolean stop = Math.abs(X - m) <= tol2 - 0.5 * (b - a);
+            boolean stop = Math.abs(X - m) <= tol2 - 0.5 * (b - a);
             if (!stop) {
                 double p = 0;
                 double q = 0;

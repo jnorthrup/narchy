@@ -707,10 +707,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 								} else {
 									//chain the events together relatively.  chain to the parent event if it's absolute
-									final Event[] prev =
+									Event[] prev =
 										//{ eventStart!=ETERNAL && eventStart!=TIMELESS ? event : null };
 										{event};
-									final long[] prevTime = {0};
+									long[] prevTime = {0};
 									eventTerm.eventsAND((w, y) -> {
 //                                        if (y.equals(eventTerm))
 //                                            return true;
@@ -870,7 +870,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	private int solveAbsolutes(Subterms xx, List<Absolute>[] subEvents) {
 		int abs = 0;
 		int s = subEvents.length;
-		final FasterList<Absolute> f = new FasterList<>();
+		FasterList<Absolute> f = new FasterList<>();
 		Predicate<Absolute> adder = (se) -> {
 			f.add(se);
 			//return false; //one should be enough
@@ -1446,7 +1446,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 				break;
 			default:
 				List<Pair<Compound, Term[]>> substs = new FasterList();
-				final int[] permutations = {1};
+				int[] permutations = {1};
 				for (Map.Entry<Compound, java.util.Set<Term>> entry : subSolved.entrySet()) {
 					Compound h = entry.getKey();
 					java.util.Set<Term> w = entry.getValue();

@@ -347,7 +347,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         throw e;
     }
 
-    private Task resetBelief(Task nextBelief, final Term nextBeliefTerm) {
+    private Task resetBelief(Task nextBelief, Term nextBeliefTerm) {
 
         if (nextBelief != null) {
             beliefTruth_at_Belief.set( nextBelief.truth() );
@@ -425,7 +425,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         return t!=null && t.evi() >= eviMin ? t : null;
     }
 
-    private Task resetTask(final Task nextTask, Task currentTask) {
+    private Task resetTask(Task nextTask, Task currentTask) {
 
         Term nextTaskTerm = nextTask.term();
 
@@ -635,7 +635,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     }
 
     /** returns appropriate Emotion counter representing the result state  */
-    FastCounter run(Premise p, final int deriveTTL) {
+    FastCounter run(Premise p, int deriveTTL) {
 
         short[] can;
 

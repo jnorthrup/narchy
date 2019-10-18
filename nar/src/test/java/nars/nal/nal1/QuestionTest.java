@@ -84,7 +84,7 @@ class QuestionTest {
     @Test
     void questionDrivesInference() {
 
-        final int[] dims = {3, 2};
+        int[] dims = {3, 2};
         final int timelimit = 2400;
 
 //        TaskStatistics withTasks = new TaskStatistics();

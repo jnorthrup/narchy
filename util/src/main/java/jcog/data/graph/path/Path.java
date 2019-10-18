@@ -36,7 +36,7 @@ import java.util.function.ToDoubleFunction;
  * @author gocha
  */
 public interface Path<N, E> {
-    static <N, E> N firstNode(FromTo<Node<N, E>, E> edge, final Direction d) {
+    static <N, E> N firstNode(FromTo<Node<N, E>, E> edge, Direction d) {
         if (d == null) throw new IllegalArgumentException("d == null");
         if (edge == null) throw new IllegalArgumentException("edge == null");
 
@@ -50,7 +50,7 @@ public interface Path<N, E> {
         return null;
     }
 
-    static <N, E> N secondNode(FromTo<Node<N, E>, E> edge, final Direction d) {
+    static <N, E> N secondNode(FromTo<Node<N, E>, E> edge, Direction d) {
         if (d == null) throw new IllegalArgumentException("d == null");
         if (edge == null) throw new IllegalArgumentException("edge == null");
 

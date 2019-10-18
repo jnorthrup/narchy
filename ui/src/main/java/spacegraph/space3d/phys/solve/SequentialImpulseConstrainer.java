@@ -758,11 +758,11 @@ public class SequentialImpulseConstrainer implements Constrainer {
 
                 for (int j = 0; j < numConstraints; j++) {
                     
-                    final TypedConstraint constraint = constraints.get(constraints_offset + j);
+                    TypedConstraint constraint = constraints.get(constraints_offset + j);
                     
 
-                    final Body3D ca = constraint.getRigidBodyA();
-                    final int cai = ca.getCompanionId();
+                    Body3D ca = constraint.getRigidBodyA();
+                    int cai = ca.getCompanionId();
                     if ((ca.tag() >= 0) && (cai >= 0)) {
                         
                         tmpSolverBodyPool.get(cai).writebackVelocity();
@@ -1005,7 +1005,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
         v3 ftorqueAxis0 = new v3();
         v3 ftorqueAxis1 = new v3();
 
-        final Transform tt1 = new Transform(), tt2 = new Transform();
+        Transform tt1 = new Transform(), tt2 = new Transform();
 
         JacobianEntry jac = new JacobianEntry();
 

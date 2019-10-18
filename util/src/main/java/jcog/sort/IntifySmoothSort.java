@@ -60,7 +60,7 @@ public enum IntifySmoothSort {
 	}
 
 	private static <X> void trinkle(X[] m, int p, int pshift, int head, boolean trusty, ToIntFunction<X> i) {
-		final X val = m[head];
+		X val = m[head];
 		int vval = i.applyAsInt(val);
 
 		while (p != 1) {
@@ -94,7 +94,7 @@ public enum IntifySmoothSort {
 	}
 
 	private static <X> void sift(X[] m, int pshift, int head, ToIntFunction<X> i) {
-		final X val = m[head];
+		X val = m[head];
 		int vval = i.applyAsInt(val);
 
 		while (pshift > 1) {

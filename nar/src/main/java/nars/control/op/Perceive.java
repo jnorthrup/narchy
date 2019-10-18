@@ -29,12 +29,12 @@ public enum Perceive {
 
     static final Logger logger = LoggerFactory.getLogger(Perceive.class);
 
-    public static void perceive(final Task x, What w) {
+    public static void perceive(Task x, What w) {
         //w.link(AtomicTaskLink.link(x.term().concept()).priSet(x.punc(), x.priElseZero()));
 
         NAR n = w.nar;
 
-        final Term xx = x.term();
+        Term xx = x.term();
 
         MetaGoal.Perceive.learn(x, ((float)xx.volume())/Short.MAX_VALUE, n);
 
@@ -165,7 +165,7 @@ public enum Perceive {
 
 
 
-    private static boolean execOperator(final Task x, What w) {
+    private static boolean execOperator(Task x, What w) {
         Term maybeOperator = Functor.func(x.term());
         if (maybeOperator == Bool.Null)
             return false;

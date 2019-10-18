@@ -71,11 +71,11 @@ public class HiddenLayer {
 
 	public void forwardPropagation(double[] i, ReadData[] d) {
 
-		final double[] nv = neurons.value;
+		double[] nv = neurons.value;
 
-		final double[] hlt = hiddenLayerThresholds.value;
+		double[] hlt = hiddenLayerThresholds.value;
 
-		final int N = neurons();
+		int N = neurons();
 
 		for (int n = 0; n < N; n++) {
 			nv[n] = activation.value(
@@ -171,8 +171,8 @@ public class HiddenLayer {
 			g[i] += hiddenLayerGradient * input[i];
 	}
 
-	private void updateHiddenLayerThresholdsGradients(final double[] hiddenLayerGradients) {
-		final double[] hgrad = hiddenLayerThresholds.grad;
+	private void updateHiddenLayerThresholdsGradients(double[] hiddenLayerGradients) {
+		double[] hgrad = hiddenLayerThresholds.grad;
 		int n = neurons();
 		for (int i = 0; i < n; i++)
 			hgrad[i] += hiddenLayerGradients[i];

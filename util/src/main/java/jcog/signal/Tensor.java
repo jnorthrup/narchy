@@ -117,7 +117,7 @@ public interface Tensor  {
     }
 
     static Tensor randomVector(int dimension, float min, float max) {
-        final Random random = new Random();
+        Random random = new Random();
         return forEach(new ArrayTensor(new float[dimension]),
                         d -> (float)random.nextDouble() * (max - min) + min);
     }
@@ -252,7 +252,7 @@ public interface Tensor  {
 
 
     default float maxValue() {
-        final float[] max = {Float.NEGATIVE_INFINITY};
+        float[] max = {Float.NEGATIVE_INFINITY};
         forEach((i, v) -> {
             if (max[0] < v)
                 max[0] = v;
@@ -261,7 +261,7 @@ public interface Tensor  {
     }
 
     default float minValue() {
-        final float[] min = {Float.POSITIVE_INFINITY};
+        float[] min = {Float.POSITIVE_INFINITY};
         forEach((i, v) -> {
             if (min[0] > v)
                 min[0] = v;
@@ -270,7 +270,7 @@ public interface Tensor  {
     }
 
     default float sumValues() {
-        final float[] sum = {0};
+        float[] sum = {0};
         forEach((i,x) -> sum[0] += x);
         return sum[0];
     }

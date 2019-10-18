@@ -134,7 +134,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     protected void resize(int newSpace) {
-        final MetalAtomicReferenceArray<V>[] prev = new MetalAtomicReferenceArray[1];
+        MetalAtomicReferenceArray<V>[] prev = new MetalAtomicReferenceArray[1];
 
         MetalAtomicReferenceArray<V> next = newSpace != 0 ? new MetalAtomicReferenceArray<>(newSpace) : EMPTY_ARRAY;
         if (next == MAP.updateAndGet(this, (x) -> {
@@ -233,7 +233,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
             return null;
 
         int kHash = hash(k);
-        final int start = index(kHash, c);
+        int start = index(kHash, c);
 
         float incomingPri;
         if (mode == PUT) {
@@ -597,7 +597,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
         restart:
         while ((s = size()) > 0) {
-            final MetalAtomicReferenceArray<V> map = this.map;
+            MetalAtomicReferenceArray<V> map = this.map;
             int c = map.length();
             if (c == 0)
                 break;
@@ -607,14 +607,14 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
             boolean direction = random.nextBoolean();
 
-            final int windowCap = Math.min(s,
+            int windowCap = Math.min(s,
 
                     //(1 + reprobes)
                     Math.min(s, 2 * reprobes)
             );
 
-            final float[] wPri = new float[windowCap];
-            final Object[] wVal = new Object[windowCap];
+            float[] wPri = new float[windowCap];
+            Object[] wVal = new Object[windowCap];
 
             /** emergency null counter, in case map becomes totally null avoids infinite loop*/
             int mapNullSeen = 0;
@@ -760,7 +760,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
     @Override
     public Stream<V> stream() {
-        final MetalAtomicReferenceArray<V> map = this.map;
+        MetalAtomicReferenceArray<V> map = this.map;
         return IntStream.range(0, map.length())
                 .mapToObj(map::getFast).filter(Objects::nonNull);
     }
@@ -770,7 +770,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
      * encountered or null if totally empty
      */
     public V next(int offset, Predicate<V> each) {
-        final MetalAtomicReferenceArray<V> map = this.map;
+        MetalAtomicReferenceArray<V> map = this.map;
         int n = map.length();
         V xx = null;
         for (int i = offset; i < n; i++) {

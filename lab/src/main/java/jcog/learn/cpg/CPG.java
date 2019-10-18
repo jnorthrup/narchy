@@ -156,7 +156,7 @@ public class CPG {
     }
 
     public static void main(String[] args) {
-        final AtomicFloat nextInput = new AtomicFloat(), nextOutput = new AtomicFloat();
+        AtomicFloat nextInput = new AtomicFloat(), nextOutput = new AtomicFloat();
         Plot2D p = new Plot2D(4200, Plot2D.Line)
                 .add("input", nextInput::floatValue)
                 .add("output", nextOutput::floatValue)

@@ -67,7 +67,7 @@ public final class EwmaAnomalyzer {
         double weakDelta = params.weakSigmas * stdDev;
         double strongDelta = params.strongSigmas * stdDev;
 
-        final Anomalysis.AnomalyThresholds thresholds = new Anomalysis.AnomalyThresholds(
+        Anomalysis.AnomalyThresholds thresholds = new Anomalysis.AnomalyThresholds(
                 this.mean + strongDelta,
                 this.mean + weakDelta,
                 this.mean - weakDelta,

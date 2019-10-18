@@ -46,7 +46,7 @@ public class Utils {
     /**
      * character to a digit, or -1 if it wasnt a digit
      */
-    public static int i(final char c) {
+    public static int i(char c) {
         if ((c >= '0' && c <= '9'))
             return c - '0';
         return -1;
@@ -56,7 +56,7 @@ public class Utils {
      * fast parse a non-negative int under certain conditions, avoiding Integer.parse if possible
      *
      */
-    public static int i(final String s, int ifMissing) {
+    public static int i(String s, int ifMissing) {
         switch (s.length()) {
             case 0: return ifMissing;
             case 1: return i1(s, ifMissing);
@@ -116,7 +116,7 @@ public class Utils {
     }
 
     public static boolean isAParetoDominateByB(double[] fitnessA, double[] fitnessB) {
-        final int n = fitnessA.length;
+        int n = fitnessA.length;
         boolean dominate = false;
         for (int i = 0; i < n; i++) {
             double a = fitnessA[i];
@@ -237,7 +237,7 @@ public class Utils {
      */
     public static Set<String> subparts(String word, int nMin, int nMax) {
 
-        final int x = word.length() * (nMax-nMin);
+        int x = word.length() * (nMax-nMin);
 
         Set<String> subparts = new HashSet<>(x);
 

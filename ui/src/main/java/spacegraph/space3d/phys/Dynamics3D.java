@@ -197,7 +197,7 @@ public class Dynamics3D<X> extends Collisions<X> {
         List<Collidable> nextCollidables = coll.write();
         nextCollidables.clear();
 
-        final short[] i = {0};
+        short[] i = {0};
         for (Spatial<X> s : spatials) {
             s.order = i[0]++;
 

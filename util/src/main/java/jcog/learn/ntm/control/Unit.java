@@ -42,7 +42,7 @@ public class Unit {
         };
     }
 
-    public final void setDelta(final double target) {
+    public final void setDelta(double target) {
         grad = value - target;
     }
 

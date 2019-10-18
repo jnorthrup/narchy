@@ -339,8 +339,8 @@ public class Plot2D extends Widget {
         synchronized (series) {
 
 
-            final float[] minValue = {Float.POSITIVE_INFINITY};
-            final float[] maxValue = {Float.NEGATIVE_INFINITY};
+            float[] minValue = {Float.POSITIVE_INFINITY};
+            float[] maxValue = {Float.NEGATIVE_INFINITY};
             for (Series s : series) {
                 s.update();
 

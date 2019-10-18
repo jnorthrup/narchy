@@ -80,7 +80,7 @@ class JTarAppendTest {
 	}
 
 	private static void copyFileToStream(File file, OutputStream out) throws IOException {
-		final byte[] buffer = new byte[BUFFER];
+		byte[] buffer = new byte[BUFFER];
 		int length = 0;
 
 		try (FileInputStream in = new FileInputStream(file)) {

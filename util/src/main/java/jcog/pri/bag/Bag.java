@@ -229,7 +229,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 
         Z[] target = _target == null || _target.length < s ? Arrays.copyOf(_target, s) : _target;
 
-        final int[] i = {0}; //HACK this is not good. use a AND predicate iteration or just plain iterator?
+        int[] i = {0}; //HACK this is not good. use a AND predicate iteration or just plain iterator?
 
         forEach(s, (y) -> target[i[0]++] = apply.apply(y));
 

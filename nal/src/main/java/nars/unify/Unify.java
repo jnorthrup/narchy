@@ -163,7 +163,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
     /**
      * completely dereferences a target (usually a variable)
      */
-    public Term resolveVar(final Variable x) {
+    public Term resolveVar(Variable x) {
         int s = this.size;
 
         if (s == 0) return x; //nothing assigned
@@ -446,7 +446,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
      * returns true if the assignment was allowed, false otherwise
      * args should be non-null. the annotations are removed for perf reasons
      */
-    public final boolean putXY(final Variable x, Term y) {
+    public final boolean putXY(Variable x, Term y) {
 
 
 //        Term Y = y;

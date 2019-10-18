@@ -245,13 +245,10 @@ public class FactualEvaluator extends Evaluator {
         /*List<Predicate<VersionMap<Term, Term>>> l = */
         Unify u = new UnifyAny();
         u.commonVariables = false;
-        factResolver.apply(x.normalize()).forEach(y -> {
-
-            Term y1 = y;
+        //TODO neg, temporal
+        factResolver.apply(x.normalize()).forEach(y1 -> {
             boolean neg = y1 instanceof Neg;
             if (neg) y1 = y1.unneg();
-
-            //TODO neg, temporal
             if (y1.op() == IMPL) {
 
 

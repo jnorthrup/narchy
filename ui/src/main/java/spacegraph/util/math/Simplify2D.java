@@ -253,7 +253,7 @@ public class Simplify2D {
 	
 	
 	
-	public static FasterList<v2> reduceByDistance(FasterList<v2> vertices, final float distance) {
+	public static FasterList<v2> reduceByDistance(FasterList<v2> vertices, float distance) {
 		
 		if (vertices.size() < 3) return vertices;
 		float distSq = distance * distance;

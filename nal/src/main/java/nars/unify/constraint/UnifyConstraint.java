@@ -178,7 +178,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 			Arrays.sort(d, PREDICATE.sortByCostIncreasing);
 
 			if (NAL.test.DEBUG_EXTRA) {
-				final Term target = d[0].x;
+				Term target = d[0].x;
 				for (int i = 1; i < d.length; i++)
 					assert (d[i].x.equals(target));
 			}

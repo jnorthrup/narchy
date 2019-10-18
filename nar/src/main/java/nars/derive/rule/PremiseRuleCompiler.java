@@ -45,7 +45,7 @@ public enum PremiseRuleCompiler {
         assert(s > 0);
 
         How[] roots = new How[s];
-        final TermPerfectTrie<PREDICATE<PreDerivation>, How> paths = new TermPerfectTrie<>();
+        TermPerfectTrie<PREDICATE<PreDerivation>, How> paths = new TermPerfectTrie<>();
 
         Map<String,RuleCause> tags = new HashMap();
 

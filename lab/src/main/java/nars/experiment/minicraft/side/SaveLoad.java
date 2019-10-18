@@ -60,10 +60,7 @@ public class SaveLoad {
             game.world = (World) in.readObject();
             game.entities = (ArrayList<Entity>) in.readObject();
             in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return false;
         }

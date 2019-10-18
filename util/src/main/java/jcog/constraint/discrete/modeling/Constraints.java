@@ -78,7 +78,7 @@ public class Constraints {
             min += variables[i].min();
             max += variables[i].max();
         }
-        final IntVar result = solver.intVar(min, max);
+        IntVar result = solver.intVar(min, max);
         solver.add(sum(variables, result, k)); 
         return result;
     }

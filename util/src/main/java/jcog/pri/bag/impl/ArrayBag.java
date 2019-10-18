@@ -213,7 +213,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             return 0;
 
         SortedArray<Y> items = table.items;
-        final Object[] a = items.array();
+        Object[] a = items.array();
 
         float above = Float.POSITIVE_INFINITY;
         boolean sorted = true;
@@ -682,9 +682,9 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 //    }
 
     @Override
-    public Y put(final Y x, final NumberX overflow) {
+    public Y put(Y x, NumberX overflow) {
 
-        final int capacity = this.capacity();
+        int capacity = this.capacity();
         if (capacity == 0)
             return null;
 

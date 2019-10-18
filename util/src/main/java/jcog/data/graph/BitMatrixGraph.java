@@ -87,7 +87,7 @@ public class BitMatrixGraph implements Graph {
 
         IntHashSet result = new IntHashSet();
         BitSet neighb = sets.get(i);
-        final int max = size();
+        int max = size();
         for (int j = 0; j < max; ++j) {
             if (neighb.get(j)) result.add(j);
         }

@@ -45,7 +45,7 @@ class QuestTest {
 
     private static void testQuest(boolean goalFirst, int timeBetween, int timeAfter) throws Narsese.NarseseException {
 
-        final NAR nar = NARS.tmp(1);
+        NAR nar = NARS.tmp(1);
         
 
         AtomicBoolean valid = new AtomicBoolean(false);

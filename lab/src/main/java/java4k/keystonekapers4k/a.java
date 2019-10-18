@@ -125,7 +125,7 @@ public class a extends Applet implements Runnable {
 		final int OBJ_TYPE = 7;
 		final int OBJ_FLOOR = 8;
 
-		final Color[] SKY_COLORS = new Color[36];
+		Color[] SKY_COLORS = new Color[36];
 
 		int i;
 		int j;
@@ -165,9 +165,9 @@ public class a extends Applet implements Runnable {
 		int robberVy = -32;
 
 		int[] object;
-		final int[] pixels = new int[8];
-		final int[] pixels2 = new int[8];
-		final int[][] map = new int[4][8];
+		int[] pixels = new int[8];
+		int[] pixels2 = new int[8];
+		int[][] map = new int[4][8];
 
 		boolean jumping = false;
 		boolean jumpReleased = true;
@@ -185,15 +185,15 @@ public class a extends Applet implements Runnable {
 		float robberX = 524;
 		float robberVx = ROBBER_SPEED;
 
-		final BufferedImage image = new BufferedImage(152, 177, 1);
-		final Graphics2D g = (Graphics2D) image.getGraphics();
+		BufferedImage image = new BufferedImage(152, 177, 1);
+		Graphics2D g = (Graphics2D) image.getGraphics();
 		Graphics2D g2 = null;
-		final ArrayList<int[]> queue = new ArrayList<>();
-		final Random random = new Random();
+		ArrayList<int[]> queue = new ArrayList<>();
+		Random random = new Random();
 
 		
-		final Color[] colors = new Color[26];
-		final int[] colorValues = new int[26];
+		Color[] colors = new Color[26];
+		int[] colorValues = new int[26];
 		for (i = 0; i < 13; i++) {
 			j = S.charAt(i * 3 + 1);
 			colorValues[i << 1] = 0xFF000000 | (S.charAt(i * 3) << 8) | (j >> 8);
@@ -203,7 +203,7 @@ public class a extends Applet implements Runnable {
 		}
 
 		
-		final int[][] palettes = new int[10][];
+		int[][] palettes = new int[10][];
 		for (i = 0, k = 39; i < 10; i++) {
 			palettes[i] = new int[S.charAt(k++)];
 			for (j = 0; j < palettes[i].length; j += 2) {
@@ -214,7 +214,7 @@ public class a extends Applet implements Runnable {
 		}
 
 		
-		final BufferedImage[][] digitSprites = new BufferedImage[4096][10];
+		BufferedImage[][] digitSprites = new BufferedImage[4096][10];
 		for (i = 0; i < 4096; i++) {
 			for (j = 0; j < 10; j++) {
 				digitSprites[i][j] = new BufferedImage(8, 8, 2);
@@ -233,7 +233,7 @@ public class a extends Applet implements Runnable {
 		}
 
 		
-		final BufferedImage[][] sprites = new BufferedImage[2][22];
+		BufferedImage[][] sprites = new BufferedImage[2][22];
 		j = 157;
 		for (i = 0; i < 22; i++) {
 			z = S.charAt(106 + (i >> 1));

@@ -59,7 +59,7 @@ public class RopeJoint extends Joint {
     }
 
     @Override
-    public void initVelocityConstraints(final SolverData data) {
+    public void initVelocityConstraints(SolverData data) {
         indexA = A.island;
         indexB = B.island;
         m_localCenterA.set(A.sweep.localCenter);
@@ -79,9 +79,9 @@ public class RopeJoint extends Joint {
         v2 vB = data.velocities[indexB];
         float wB = data.velocities[indexB].w;
 
-        final Rot qA = new Rot();
-        final Rot qB = new Rot();
-        final v2 temp = new v2();
+        Rot qA = new Rot();
+        Rot qB = new Rot();
+        v2 temp = new v2();
 
         qA.set(aA);
         qB.set(aB);
@@ -157,7 +157,7 @@ public class RopeJoint extends Joint {
 
 
     @Override
-    public void solveVelocityConstraints(final SolverData data) {
+    public void solveVelocityConstraints(SolverData data) {
 
         float targetLength = targetLength();
 
@@ -211,21 +211,21 @@ public class RopeJoint extends Joint {
     }
 
     @Override
-    public boolean solvePositionConstraints(final SolverData data) {
+    public boolean solvePositionConstraints(SolverData data) {
 
-        final float targetLength = targetLength();
+        float targetLength = targetLength();
 
         v2 cA = data.positions[indexA];
         float aA = data.positions[indexA].a;
         v2 cB = data.positions[indexB];
         float aB = data.positions[indexB].a;
 
-        final Rot qA = pool.popRot();
-        final Rot qB = pool.popRot();
-        final v2 u = pool.popVec2();
-        final v2 rA = pool.popVec2();
-        final v2 rB = pool.popVec2();
-        final v2 temp = pool.popVec2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 u = pool.popVec2();
+        v2 rA = pool.popVec2();
+        v2 rB = pool.popVec2();
+        v2 temp = pool.popVec2();
 
         qA.set(aA);
         qB.set(aB);

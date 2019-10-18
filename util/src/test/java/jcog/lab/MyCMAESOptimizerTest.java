@@ -270,20 +270,20 @@ class MyCMAESOptimizerTest {
 
 	@Test
 	void testMath864() {
-		final double[] sigma = {1e-1};
-		final MyCMAESOptimizer optimizer
+		double[] sigma = {1e-1};
+		MyCMAESOptimizer optimizer
 			= new MyCMAESOptimizer(30000, 0, true, 10,
 			0, rng(), false, null, 5, sigma);
-		final MultivariateFunction fitnessFunction = parameters -> {
+		MultivariateFunction fitnessFunction = parameters -> {
             final double target = 1;
-            final double error = target - parameters[0];
+            double error = target - parameters[0];
             return error * error;
         };
 
-		final double[] start = {0};
-		final double[] lower = {-1e6};
-		final double[] upper = {1.5};
-		final double[] result = optimizer.optimize(new MaxEval(10000),
+		double[] start = {0};
+		double[] lower = {-1e6};
+		double[] upper = {1.5};
+		double[] result = optimizer.optimize(new MaxEval(10000),
 			new ObjectiveFunction(fitnessFunction),
 			GoalType.MINIMIZE,
 			new InitialGuess(start),
@@ -302,13 +302,13 @@ class MyCMAESOptimizerTest {
 		MyCMAESOptimizer optimizer
 			= new MyCMAESOptimizer(30000, 0, true, 10,
 			0, rng(), false, null, 5, sigma1);
-		final MultivariateFunction fitnessFunction = parameters -> {
+		MultivariateFunction fitnessFunction = parameters -> {
             final double target = 11.1;
-            final double error = target - parameters[0];
+            double error = target - parameters[0];
             return error * error;
         };
 
-		final double[] start = {1};
+		double[] start = {1};
 
 
 		PointValuePair result = optimizer.optimize(new MaxEval(100000),
@@ -316,12 +316,12 @@ class MyCMAESOptimizerTest {
 			GoalType.MINIMIZE,
 			SimpleBounds.unbounded(1),
 			new InitialGuess(start));
-		final double resNoBound = result.getPoint()[0];
+		double resNoBound = result.getPoint()[0];
 
 
-		final double[] lower = {-20};
-		final double[] upper = {5e16};
-		final double[] sigma2 = {10};
+		double[] lower = {-20};
+		double[] upper = {5e16};
+		double[] sigma2 = {10};
 		optimizer
 			= new MyCMAESOptimizer(30000, 0, true, 10,
 			0, rng(), false, null, 5, sigma2);
@@ -331,7 +331,7 @@ class MyCMAESOptimizerTest {
 			GoalType.MINIMIZE,
 			new InitialGuess(start),
 			new SimpleBounds(lower, upper));
-		final double resNearLo = result.getPoint()[0];
+		double resNearLo = result.getPoint()[0];
 
 
 		lower[0] = -5e16;
@@ -341,7 +341,7 @@ class MyCMAESOptimizerTest {
 			GoalType.MINIMIZE,
 			new InitialGuess(start),
 			new SimpleBounds(lower, upper));
-		final double resNearHi = result.getPoint()[0];
+		double resNearHi = result.getPoint()[0];
 
 
 		assertEquals(resNoBound, resNearLo, 1e-3);

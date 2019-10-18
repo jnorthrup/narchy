@@ -46,7 +46,7 @@ public class ConcurrentMapStream<K, V> extends ConcurrentHashMap<K, ConcurrentMa
     private final AtomicLong size;
     private final AtomicBoolean reachCapacity;
 
-    public ConcurrentMapStream(final int capacity) {
+    public ConcurrentMapStream(int capacity) {
         this.capacity = capacity;
         this.minVal = new AtomicReference<>();
         this.size = new AtomicLong(0);
@@ -115,7 +115,7 @@ public class ConcurrentMapStream<K, V> extends ConcurrentHashMap<K, ConcurrentMa
 
 
     /** returns the existing value or null if it was inserted */
-    public V put(final K key, final V element, final double incrementCount) {
+    public V put(K key, V element, double incrementCount) {
         
         V result;
         RankedItem<V> value = new RankedItem<>(element);

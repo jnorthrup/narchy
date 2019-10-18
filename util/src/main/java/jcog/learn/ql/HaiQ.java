@@ -102,7 +102,7 @@ public class HaiQ extends Agent {
 
         int action = decide ? nextAction(state) : -1;
 
-        final int lastState = this.lastState;
+        int lastState = this.lastState;
 
         float alpha = Alpha.floatValue();
         double deltaSum = 0;

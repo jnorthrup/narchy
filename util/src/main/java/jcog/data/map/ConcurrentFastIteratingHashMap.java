@@ -148,7 +148,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
     @Override
     public Y compute(X key, BiFunction<? super X, ? super Y, ? extends Y> remappingFunction) {
-        final boolean[] changed = {false};
+        boolean[] changed = {false};
         Y v = map.compute(key, (k, pv) -> {
             Y next = remappingFunction.apply(k, pv);
             if (next != pv)
@@ -162,7 +162,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
     @Override
     public Y computeIfAbsent(X key, Function<? super X, ? extends Y> mappingFunction) {
-        final boolean[] changed = {false};
+        boolean[] changed = {false};
         Y v = map.computeIfAbsent(key, (p) -> {
             Y next = mappingFunction.apply(p);
             changed[0] = true;

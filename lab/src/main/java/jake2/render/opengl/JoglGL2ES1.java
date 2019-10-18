@@ -215,7 +215,7 @@ public class JoglGL2ES1 implements QGL {
                 mode=GL.GL_TRIANGLE_FAN;
                 break;
         }
-        final int idxLen = indices.remaining();
+        int idxLen = indices.remaining();
         /** No GL_QUADS used
         if ( GL_QUADS == mode && !gl.isGL2() ) {
             final int idx0 = indices.position();

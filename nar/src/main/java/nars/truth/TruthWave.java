@@ -81,7 +81,7 @@ public class TruthWave {
 
         float[] t = this.truth;
 
-        final int[] size = {0};
+        int[] size = {0};
 
         //long[] st = new long[]{Long.MAX_VALUE}, en = new long[]{Long.MIN_VALUE};
         b.forEachTask(minT, maxT, x -> {
@@ -204,8 +204,8 @@ public class TruthWave {
      * returns 2 element array
      */
     public float[] range() {
-        final float[] min = {Float.POSITIVE_INFINITY};
-        final float[] max = {Float.NEGATIVE_INFINITY};
+        float[] min = {Float.POSITIVE_INFINITY};
+        float[] max = {Float.NEGATIVE_INFINITY};
         forEach((f, c, start, end) -> {
             if (c > max[0]) max[0] = c;
             if (c < min[0]) min[0] = c;

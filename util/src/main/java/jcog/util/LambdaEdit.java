@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  */
 public class LambdaEdit {
     static SerializedLambda getSerializedLambda(Serializable lambda) throws Exception {
-        final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
+        Method method = lambda.getClass().getDeclaredMethod("writeReplace");
         method.setAccessible(true);
         return (SerializedLambda) method.invoke(lambda);
     }

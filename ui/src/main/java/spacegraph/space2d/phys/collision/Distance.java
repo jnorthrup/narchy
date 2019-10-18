@@ -170,7 +170,7 @@ public class Distance {
 
         private final v2 e12 = new v2();
 
-        final void getSearchDirection(final v2 out) {
+        final void getSearchDirection(v2 out) {
             switch (m_count) {
                 case 1:
                     out.set(m_v1.w).negated();
@@ -205,7 +205,7 @@ public class Distance {
          *
          * @return
          */
-        void getClosestPoint(final v2 out) {
+        void getClosestPoint(v2 out) {
             switch (m_count) {
                 case 0:
                     assert (false);
@@ -319,8 +319,8 @@ public class Distance {
             
             
             
-            final v2 w1 = m_v1.w;
-            final v2 w2 = m_v2.w;
+            v2 w1 = m_v1.w;
+            v2 w2 = m_v2.w;
             e12.set(w2).subbed(w1);
 
             
@@ -493,17 +493,17 @@ public class Distance {
          * Initialize the proxy using the given shape. The shape must remain in scope while the proxy is
          * in use.
          */
-        public final void set(final Shape shape, int index) {
+        public final void set(Shape shape, int index) {
             switch (shape.getType()) {
                 case CIRCLE:
-                    final CircleShape circle = (CircleShape) shape;
+                    CircleShape circle = (CircleShape) shape;
                     m_vertices[0].set(circle.center);
                     m_count = 1;
                     m_radius = circle.skinRadius;
 
                     break;
                 case POLYGON:
-                    final PolygonShape poly = (PolygonShape) shape;
+                    PolygonShape poly = (PolygonShape) shape;
                     m_count = poly.vertices;
                     m_radius = poly.skinRadius;
                     for (int i = 0; i < m_count; i++) {
@@ -511,7 +511,7 @@ public class Distance {
                     }
                     break;
                 case CHAIN:
-                    final ChainShape chain = (ChainShape) shape;
+                    ChainShape chain = (ChainShape) shape;
                     assert (0 <= index && index < chain.m_count);
 
                     m_buffer[0] = chain.m_vertices[index];
@@ -544,7 +544,7 @@ public class Distance {
          * @param d
          * @return
          */
-        public final int getSupport(final v2 d) {
+        public final int getSupport(v2 d) {
             int bestIndex = 0;
             float bestValue = v2.dot(m_vertices[0], d);
             for (int i = 1; i < m_count; i++) {
@@ -564,7 +564,7 @@ public class Distance {
          * @param d
          * @return
          */
-        public final v2 getSupportVertex(final v2 d) {
+        public final v2 getSupportVertex(v2 d) {
             int bestIndex = 0;
             float bestValue = v2.dot(m_vertices[0], d);
             for (int i = 1; i < m_count; i++) {
@@ -607,7 +607,7 @@ public class Distance {
     private final v2 temp = new v2();
     private final v2 normal = new v2();
 
-    public final void distance(final DistanceOutput output, final DistanceInput input) {
+    public final void distance(DistanceOutput output, DistanceInput input) {
         distance(output, new SimplexCache(), input);
     }
 
@@ -620,12 +620,12 @@ public class Distance {
      * @param cache
      * @param input
      */
-    public final void distance(final DistanceOutput output, final SimplexCache cache,
-                               final DistanceInput input) {
+    public final void distance(DistanceOutput output, SimplexCache cache,
+                               DistanceInput input) {
         GJK_CALLS++;
 
-        final DistanceProxy proxyA = input.proxyA;
-        final DistanceProxy proxyB = input.proxyB;
+        DistanceProxy proxyA = input.proxyA;
+        DistanceProxy proxyB = input.proxyB;
 
         Transform transformA = input.transformA;
         Transform transformB = input.transformB;

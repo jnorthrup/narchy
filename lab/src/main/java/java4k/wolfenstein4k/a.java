@@ -45,10 +45,10 @@ public class a extends GamePanel {
     public void run() {
 
 		
-		final int[] LEVEL_OFFSETS = { 174, 200, 227, 256, 282, 309 };
+		int[] LEVEL_OFFSETS = { 174, 200, 227, 256, 282, 309 };
 
 		
-		final int[] PALETTE = { 0xFCC4A4, 0xD08050, 0x0000AD, 0xFF4F4F, 0xA8A8A8, 0x2C2C2C, 0xFCF400, 0xFFFFFF, 0xFF0000, 0x4F4F00, 0xE4DA00 };
+		int[] PALETTE = { 0xFCC4A4, 0xD08050, 0x0000AD, 0xFF4F4F, 0xA8A8A8, 0x2C2C2C, 0xFCF400, 0xFFFFFF, 0xFF0000, 0x4F4F00, 0xE4DA00 };
 
 		final int COLOR_TRANSPARENT = -1;
 		final int COLOR_FLESH = 0;

@@ -20,7 +20,7 @@ public class BurrowsWheeler {
 		public CircularSuffixArray(byte[] input)  {
 			this.input = input;
 
-			final int n = input.length;
+			int n = input.length;
 
 			index = new int[n];
 			for (int i = 0; i < n; i++)

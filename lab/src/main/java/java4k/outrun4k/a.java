@@ -94,7 +94,7 @@ public class a extends Applet implements Runnable {
     boolean startReleased = true;
     boolean raceStarted = false;
 
-    final int[] colors = {
+    int[] colors = {
       0xE3BD7C, 
       0x6AC730, 
       0xFF8A68, 

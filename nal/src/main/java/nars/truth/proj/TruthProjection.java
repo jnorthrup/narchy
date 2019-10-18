@@ -88,7 +88,7 @@ public abstract class TruthProjection extends TaskList {
 		return this;
 	}
 
-	public static @Nullable Task merge(Supplier<Task[]> tasks, Term x, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, final long start, final long end, NAL n) {
+	public static @Nullable Task merge(Supplier<Task[]> tasks, Term x, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, NAL n) {
 		Term y = Task.taskTerm(x, beliefOrGoal ? BELIEF : GOAL, !NAL.test.DEBUG_EXTRA);
 		if (y == null)
 			return null;
@@ -386,7 +386,7 @@ public abstract class TruthProjection extends TaskList {
 //		if (us == ue)
 //			return; //all collapse at a point anyway
 
-		final long us = start, ue = end;
+		long us = start, ue = end;
 		if (us == TIMELESS)
 			throw new TODO("compute union here");
 		if (us == ue)

@@ -50,8 +50,8 @@ public class Screen {
      */
 
     public void render(int _xp, int _yp, int tile, int colors, int bits) {
-        final int xp = _xp - xOffset;
-        final int yp = _yp - yOffset;
+        int xp = _xp - xOffset;
+        int yp = _yp - yOffset;
         boolean mirrorX = (bits & BIT_MIRROR_X) > 0;
         boolean mirrorY = (bits & BIT_MIRROR_Y) > 0;
 

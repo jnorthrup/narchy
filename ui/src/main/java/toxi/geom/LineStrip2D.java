@@ -226,7 +226,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public List<Line2D> getSegments() {
-        final int num = vertices.size();
+        int num = vertices.size();
         List<Line2D> segments = new ArrayList<>(num - 1);
         int bound = num;
         for (int i = 1; i < bound; i++) {

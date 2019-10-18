@@ -403,7 +403,7 @@ public abstract class UGen extends Auvent {
 	 * @param destination   the UGen to crossfade towards.
 	 * @param crossoverTime the time taken.
 	 */
-	public synchronized void crossfadeInput(UGen source, final UGen destination, float crossoverTime) {
+	public synchronized void crossfadeInput(UGen source, UGen destination, float crossoverTime) {
 		removeAllConnections(source);
 
 		Envelope fadeOut = new Envelope(context, 1f);
@@ -413,7 +413,7 @@ public abstract class UGen extends Auvent {
 		in(gOut);
 
 		Envelope fadeIn = new Envelope(context, 0f);
-		final Gain gIn = new Gain(context, destination.outs, fadeIn);
+		Gain gIn = new Gain(context, destination.outs, fadeIn);
 		fadeIn.add(1f, crossoverTime, new Auvent() {
 			@Override
 			public void on(Auvent message) {

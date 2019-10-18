@@ -351,10 +351,10 @@ public final class AudioUtils {
      * @param b the exponent.
      * @return the result
      */
-    public static double fastPow01(final double a, final double b) {
+    public static double fastPow01(double a, double b) {
         double realA = Math.max(0, Math.min(1, a));
-        final int x = (int) (Double.doubleToLongBits(realA) >> 32);
-        final int y = (int) (b * (x - 1072632447) + 1072632447);
+        int x = (int) (Double.doubleToLongBits(realA) >> 32);
+        int y = (int) (b * (x - 1072632447) + 1072632447);
         return Math.max(0, Math.min(1, Double.longBitsToDouble(((long) y) << 32)));
     }
 

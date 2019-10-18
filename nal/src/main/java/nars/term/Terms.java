@@ -453,7 +453,7 @@ public enum Terms {
 		if (!canExtractFixedPath(container))
 			return null;
 
-		final byte[][] p = new byte[1][];
+		byte[][] p = new byte[1][];
 		container.pathsTo(subterm,
 
 			Terms::canExtractFixedPath,

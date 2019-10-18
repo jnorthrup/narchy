@@ -145,7 +145,7 @@ public class SubGraphEdges implements Graph {
     @Override
     public int degree(int i) {
 
-        final int[] degree = {0};
+        int[] degree = {0};
         if (nodes.get(i)) {
             g.neighborsOut(i).forEach(j -> {
                 if (nodes.get(j)) degree[0]++;

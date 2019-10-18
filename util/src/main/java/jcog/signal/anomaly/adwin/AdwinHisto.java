@@ -37,7 +37,7 @@ class AdwinHisto {
      * Private copy constructor. Used in the copy method.
      * @param original
      */
-    private AdwinHisto(final AdwinHisto original) {
+    private AdwinHisto(AdwinHisto original) {
         this.capacity = original.capacity;
 
         this.numBucketContainers = original.numBucketContainers;

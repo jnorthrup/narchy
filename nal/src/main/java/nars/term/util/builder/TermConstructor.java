@@ -33,7 +33,7 @@ import static nars.time.Tense.DTERNAL;
     }
 
     static Subterms theSubterms(boolean tryAnon, Term... t) {
-        final int n = t.length;
+        int n = t.length;
         if (n == 0)
             return Op.EmptySubterms;
 

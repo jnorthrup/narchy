@@ -106,14 +106,14 @@ public class Occurrify extends TimeGraph {
 
     private static long[] rangeCombine(Derivation d, OccMerge mode) {
 
-        final long taskEnd = d.taskEnd;
-        final long taskStart = d.taskStart;
-        final long beliefStart = d.beliefStart;
+        long taskEnd = d.taskEnd;
+        long taskStart = d.taskStart;
+        long beliefStart = d.beliefStart;
 
         if (/*d.single ||*/ beliefStart == TIMELESS ||  beliefStart == ETERNAL)
             return new long[] { taskStart, taskEnd};
         else {
-            final long beliefEnd = d.beliefEnd;
+            long beliefEnd = d.beliefEnd;
             if (taskStart == ETERNAL) {
     //            assert(d.beliefStart!=TIMELESS);
                 return new long[]{ beliefStart, beliefEnd};
@@ -282,7 +282,7 @@ public class Occurrify extends TimeGraph {
 
 
 
-        final Term taskTerm = d.retransform(d.taskTerm);
+        Term taskTerm = d.retransform(d.taskTerm);
         Term beliefTerm = d.beliefTerm.equals(d.taskTerm) ? taskTerm : d.retransform(d.beliefTerm);
 
         Event taskEvent = (taskStart != TIMELESS) ?

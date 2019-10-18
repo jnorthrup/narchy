@@ -1217,7 +1217,7 @@ public enum MatrixOps { ;
 	private static double stdev(double[][] matrix) {
 		double m = mean(matrix);
 
-        final int N = matrix.length * matrix[0].length;
+        int N = matrix.length * matrix[0].length;
 
         double total = Arrays.stream(matrix).mapToDouble(aMatrix -> {
 			double sum = 0.0;

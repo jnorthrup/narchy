@@ -116,7 +116,7 @@ public class Mat33 implements Serializable {
     }
 
     public static void mul22ToOut(Mat33 A, v2 v, v2 out) {
-        final float tempx = A.ex.x * v.x + A.ey.x * v.y;
+        float tempx = A.ex.x * v.x + A.ey.x * v.y;
         out.y = A.ex.y * v.x + A.ey.y * v.y;
         out.x = tempx;
     }
@@ -128,8 +128,8 @@ public class Mat33 implements Serializable {
     }
 
     public static void mulToOut(Mat33 A, v3 v, v3 out) {
-        final float tempy = v.x * A.ex.y + v.y * A.ey.y + v.z * A.ez.y;
-        final float tempz = v.x * A.ex.z + v.y * A.ey.z + v.z * A.ez.z;
+        float tempy = v.x * A.ex.y + v.y * A.ey.y + v.z * A.ez.y;
+        float tempz = v.x * A.ex.z + v.y * A.ey.z + v.z * A.ez.z;
         out.x = v.x * A.ex.x + v.y * A.ey.x + v.z * A.ez.x;
         out.y = tempy;
         out.z = tempz;
@@ -163,7 +163,7 @@ public class Mat33 implements Serializable {
      * @return
      */
     public final void solve22ToOut(v2 b, v2 out) {
-        final float a11 = ex.x, a12 = ey.x, a21 = ex.y, a22 = ey.y;
+        float a11 = ex.x, a12 = ey.x, a21 = ex.y, a22 = ey.y;
         float det = a11 * a22 - a12 * a21;
         if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
@@ -202,9 +202,9 @@ public class Mat33 implements Serializable {
             det = 1.0f / det;
         }
         v3.crossToOutUnsafe(ey, ez, out);
-        final float x = det * b.dot(out);
+        float x = det * b.dot(out);
         v3.crossToOutUnsafe(b, ez, out);
-        final float y = det * ex.dot(out);
+        float y = det * ex.dot(out);
         v3.crossToOutUnsafe(ey, b, out);
         out.set(x, y, det * ex.dot(out));
     }

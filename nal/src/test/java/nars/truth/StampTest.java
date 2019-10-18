@@ -95,7 +95,7 @@ class StampTest {
     @Test
     void directionInvariance() {
         
-        final boolean[] both = { false, true };
+        boolean[] both = { false, true };
         for (boolean dir : both) {
             assertArrayEquals(
                     new long[]{1, 2, 3, 4},

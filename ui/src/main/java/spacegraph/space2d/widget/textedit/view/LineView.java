@@ -103,7 +103,7 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 
     CharView leaveChar(BufferChar bc) {
 
-        final CharView[] leaved = new CharView[1];
+        CharView[] leaved = new CharView[1];
         update((chars) -> {
             CharView leave = null;
             for (CharView c : chars) {

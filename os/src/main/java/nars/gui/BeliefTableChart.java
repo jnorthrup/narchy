@@ -251,7 +251,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
         private void renderTasks(GL2 gl, TruthWave wave, Colorize colorize) {
 
-            final float ph = Math.max(taskHeightMin, nar.freqResolution.floatValue());
+            float ph = Math.max(taskHeightMin, nar.freqResolution.floatValue());
 
             wave.forEach((freq, conf, s, e) -> {
 

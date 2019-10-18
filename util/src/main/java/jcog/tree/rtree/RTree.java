@@ -57,7 +57,7 @@ public class RTree<X> implements Space<X> {
         this((x-> (HyperRegion) x), max, splitType);
     }
 
-    public RTree(@Nullable Function<X, HyperRegion> spatialize, final int mMax, final Split<X> splitType) {
+    public RTree(@Nullable Function<X, HyperRegion> spatialize, int mMax, Split<X> splitType) {
         this(new Spatialization<>(spatialize, splitType, mMax));
     }
 
@@ -96,7 +96,7 @@ public class RTree<X> implements Space<X> {
     }
 
 
-    public final RInsertion<X> insert(/*@NotNull*/ final X x) {
+    public final RInsertion<X> insert(/*@NotNull*/ X x) {
         RInsertion<X> i = model.insertion(x, true);
 
 //        i.start(this);
@@ -129,7 +129,7 @@ public class RTree<X> implements Space<X> {
      * @param xBounds - the bounds of t which may not necessarily need to be the same as the bounds as model might report it now; for removing a changing value
      */
     @Override
-    public boolean remove(final X x) {
+    public boolean remove(X x) {
         int before = SIZE.get(this);
         if (before == 0)
             return false;
@@ -151,7 +151,7 @@ public class RTree<X> implements Space<X> {
     }
 
     @Override
-    public boolean replace(final X told, final X tnew) {
+    public boolean replace(X told, X tnew) {
 
         if (told == tnew) {
             return true;
@@ -197,7 +197,7 @@ public class RTree<X> implements Space<X> {
     }
 
     @Override
-    public boolean containsWhile(HyperRegion rect, final Predicate<X> t) {
+    public boolean containsWhile(HyperRegion rect, Predicate<X> t) {
         return root.containing(rect, t, model);
     }
 
@@ -205,8 +205,8 @@ public class RTree<X> implements Space<X> {
      * returns how many items were filled
      */
     @Override
-    @Deprecated public int containedToArray(HyperRegion rect, final X[] t) {
-        final int[] i = {0};
+    @Deprecated public int containedToArray(HyperRegion rect, X[] t) {
+        int[] i = {0};
         root.containing(rect, (x) -> {
             t[i[0]++] = x;
             return i[0] < t.length;

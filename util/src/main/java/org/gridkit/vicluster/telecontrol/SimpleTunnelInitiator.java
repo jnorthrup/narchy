@@ -62,13 +62,13 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
 
         String jarpath = console.cacheFile(Classpath.createBinaryEntry("tunneller.jar", bootJar));
         String cachePath = SimpleTunnelInitiator.detectCachePath(jarpath);
-        final FutureBox<TunnellerConnection> tc = new FutureBox();
+        FutureBox<TunnellerConnection> tc = new FutureBox();
         ProcessHandler th = new ProcessHandler() {
             Link diag;
 
-            public void started(final OutputStream stdIn, final InputStream stdOut, InputStream stdErr) {
+            public void started(OutputStream stdIn, InputStream stdOut, InputStream stdErr) {
                 LineLoggerOutputStream log = new LineLoggerOutputStream("", SimpleTunnelInitiator.this.logger.getLogger("console").warn());
-                final LineLoggerOutputStream dlog = new LineLoggerOutputStream("", SimpleTunnelInitiator.this.logger.getLogger("tunneller").info());
+                LineLoggerOutputStream dlog = new LineLoggerOutputStream("", SimpleTunnelInitiator.this.logger.getLogger("tunneller").info());
                 this.diag = SimpleTunnelInitiator.this.streamCopyService.link(stdErr, log, true);
                 Thread thread = new Thread(() -> {
                     try {
@@ -165,9 +165,9 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
     private String getJavaVersion(HostControlConsole console) {
 
         try {
-            final FutureBox<Void> done = new FutureBox();
-            final ByteArrayOutputStream stdOut = new ByteArrayOutputStream(8*1024);
-            final ByteArrayOutputStream stdErr = new ByteArrayOutputStream(8*1024);
+            FutureBox<Void> done = new FutureBox();
+            ByteArrayOutputStream stdOut = new ByteArrayOutputStream(8*1024);
+            ByteArrayOutputStream stdErr = new ByteArrayOutputStream(8*1024);
             ProcessHandler handler = new ProcessHandler() {
                 Link lout;
                 Link lerr;

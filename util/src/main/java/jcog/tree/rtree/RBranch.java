@@ -90,7 +90,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
      * @param n node to be added (can be leaf or branch)
      * @return position of the added node
      */
-    private void addChild(final RInsertion<X> x) {
+    private void addChild(RInsertion<X> x) {
         RNode<X> n = x.model.newLeaf().insert(x);
         data[this.size++] = n;
         HyperRegion b = this.bounds;
@@ -117,7 +117,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         if (addOrMerge)
             x.addOrMerge = false; //temporarily set to contain/merge mode
 
-        final RNode<X>[] data = this.data;
+        RNode<X>[] data = this.data;
         if (x.maybeContainedBy(bounds)) {
 
             int s = this.size;
@@ -156,8 +156,8 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 
         } else {
 
-            final int bestLeaf = chooseLeaf(x.bounds);
-            final RNode<X> dbf = data[bestLeaf];
+            int bestLeaf = chooseLeaf(x.bounds);
+            RNode<X> dbf = data[bestLeaf];
 
             HyperRegion before = dbf.bounds();
             RNode nextBest = dbf.add(x);
@@ -186,7 +186,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     }
 
     @Override
-    public RNode<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, int[] removed) {
+    public RNode<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, int[] removed) {
 
         int nsize = this.size;
         if (nsize > 1 && !bounds.contains(xBounds))
@@ -345,7 +345,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     }
 
     @Override
-    public RNode<X> replace(final X OLD, HyperRegion oldBounds, final X NEW, Spatialization<X> model) {
+    public RNode<X> replace(X OLD, HyperRegion oldBounds, X NEW, Spatialization<X> model) {
 
         short s = this.size;
         if (s > 0 && oldBounds.intersects(bounds)) {
@@ -369,7 +369,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     }
 
 
-    private int chooseLeaf(final HyperRegion tRect) {
+    private int chooseLeaf(HyperRegion tRect) {
         RNode<X>[] cc = this.data;
         if (size > 0) {
             int bestNode = -1;
@@ -381,7 +381,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
             for (int i = 0; i < s; i++) {
                 HyperRegion cir = cc[i].bounds();
                 HyperRegion childMbr = tRect.mbr(cir);
-                final double nodeEnlargement =
+                double nodeEnlargement =
                         (cir != childMbr ? childMbr.cost() - (cir.cost() /* + tCost*/) : 0);
 
                 int dc = Double.compare(nodeEnlargement, leastEnlargement);
@@ -482,7 +482,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 
 
     @Override
-    public boolean containing(final HyperRegion rect, final Predicate<X> t, Spatialization<X> model) {
+    public boolean containing(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
         HyperRegion b = this.bounds;
         if (b != null && rect.intersects(b)) {
             int s = size;

@@ -34,7 +34,7 @@ class TensorTest {
         assertEquals(2, t.index(0, 1));
         assertEquals(3, t.index(1, 1));
 
-        final String[] s = {""};
+        String[] s = {""};
         t.forEach((i,v)-> s[0] +=v+ " ");
         assertEquals("[0.5 0.25 0.0 0.5 ]", Arrays.toString(s));
 
@@ -65,7 +65,7 @@ class TensorTest {
         assertEquals(1, ab.shape().length);
         assertEquals(6, ab.shape()[0]);
 
-        final String[] s = {""}; ab.forEach((i,v)-> s[0] +=v+ " ");
+        String[] s = {""}; ab.forEach((i,v)-> s[0] +=v+ " ");
         assertEquals("[0.0 0.0 1.0 0.0 2.0 0.0 ]", Arrays.toString(s));
 
     }

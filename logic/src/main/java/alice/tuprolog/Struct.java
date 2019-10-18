@@ -441,7 +441,7 @@ public class Struct extends Term {
         if (!(vMap instanceof IdentityHashMap) && isConstant())
             return this;
 
-        final int arity = this.subs();
+        int arity = this.subs();
         Term[] xx = this.subs, yy = null;
 
         for (int c = 0; c < arity; c++) {
@@ -484,7 +484,7 @@ public class Struct extends Term {
         t.primitive = null;
         Term[] thatArg = t.subs;
         Term[] thisArg = this.subs;
-        final int arity = this.subs();
+        int arity = this.subs();
 
         for (int c = 0; c < arity; c++) {
             Term xc = thisArg[c];
@@ -537,7 +537,7 @@ public class Struct extends Term {
      * @param count start timestamp for variables of this term
      * @return next timestamp for other terms
      */
-    private void resolveTerm(Map<String, Var> vl, final long count) {
+    private void resolveTerm(Map<String, Var> vl, long count) {
 
         if (resolved)
             return;
@@ -734,7 +734,7 @@ public class Struct extends Term {
             if (resolved && yy.resolved && equals(y))
                 return true;
 
-            final int arity = this.subs();
+            int arity = this.subs();
             if (arity == yy.subs() && name.equals(yy.name)) {
                 Term[] xarg = this.subs;
                 Term[] yarg = yy.subs;

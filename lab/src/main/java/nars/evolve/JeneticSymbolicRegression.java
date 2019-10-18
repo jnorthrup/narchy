@@ -86,8 +86,8 @@ public class JeneticSymbolicRegression {
 		Sample.ofDouble(1.0, 2.0000)
 	);
 
-	public static void main(final String[] args) {
-		final Engine<ProgramGene<Double>, Double> engine = Engine
+	public static void main(String[] args) {
+		Engine<ProgramGene<Double>, Double> engine = Engine
 			.builder(REGRESSION)
 			.minimizing()
 			.alterers(
@@ -95,16 +95,16 @@ public class JeneticSymbolicRegression {
 				new Mutator<>())
 			.build();
 
-		final EvolutionResult<ProgramGene<Double>, Double> result = engine.stream()
+		EvolutionResult<ProgramGene<Double>, Double> result = engine.stream()
 			//.limit(Limits.byFitnessThreshold(0.01))
 			.limit(Limits.byFixedGeneration(10))
 			.collect(EvolutionResult.toBestEvolutionResult());
 
-		final ProgramGene<Double> program = result.getBestPhenotype()
+		ProgramGene<Double> program = result.getBestPhenotype()
 			.getGenotype()
 			.getGene();
 
-		final TreeNode<Op<Double>> tree = program.toTreeNode();
+		TreeNode<Op<Double>> tree = program.toTreeNode();
 		MathExpr.rewrite(tree);
 		System.out.println("Generations: " + result.getTotalGenerations());
 		System.out.println("Function:    " + new MathExpr(tree));
@@ -112,8 +112,8 @@ public class JeneticSymbolicRegression {
 
 		System.out.println("x: y, y', error");
 		for (Sample<Double> sample : REGRESSION.samples()) {
-			final double x = sample.argAt(0);
-			final double y = program.eval(x);
+			double x = sample.argAt(0);
+			double y = program.eval(x);
 
 			System.out.println(format(
 				"%2.2f: %2.4f, %2.4f: %2.5f",
@@ -124,7 +124,7 @@ public class JeneticSymbolicRegression {
 	}
 
 	// The function we want to determine.
-	private static double f(final double x) {
+	private static double f(double x) {
 		return 4*x*x*x - 3*x*x + x;
 	}
 

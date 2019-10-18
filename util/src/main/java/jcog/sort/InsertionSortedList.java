@@ -49,7 +49,7 @@ public class InsertionSortedList<E extends Comparable> extends FasterList<E> /* 
      * @param x the object to be added
      */
     @Override
-    public final boolean add(final E x) {
+    public final boolean add(E x) {
 
 
         int s = size;

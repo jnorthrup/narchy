@@ -60,16 +60,16 @@ public class WorldManifold {
     }
 
 
-    public final void initialize(final Manifold manifold, final Transform xfA, float radiusA,
-                                 final Transform xfB, float radiusB) {
+    public final void initialize(Manifold manifold, Transform xfA, float radiusA,
+                                 Transform xfB, float radiusB) {
         if (manifold.pointCount == 0) {
             return;
         }
 
         switch (manifold.type) {
             case CIRCLES: {
-                final v2 pointA = new v2();
-                final v2 pointB = new v2();
+                v2 pointA = new v2();
+                v2 pointB = new v2();
 
                 normal.x = 1;
                 normal.y = 0;
@@ -88,11 +88,11 @@ public class WorldManifold {
                     normal.normalize();
                 }
 
-                final float cAx = normal.x * radiusA + pointA.x;
-                final float cAy = normal.y * radiusA + pointA.y;
+                float cAx = normal.x * radiusA + pointA.x;
+                float cAy = normal.y * radiusA + pointA.y;
 
-                final float cBx = -normal.x * radiusB + pointB.x;
-                final float cBy = -normal.y * radiusB + pointB.y;
+                float cBx = -normal.x * radiusB + pointB.x;
+                float cBy = -normal.y * radiusB + pointB.y;
 
                 points[0].x = (cAx + cBx) * .5f;
                 points[0].y = (cAy + cBy) * .5f;
@@ -100,12 +100,12 @@ public class WorldManifold {
             }
             break;
             case FACE_A: {
-                final v2 planePoint = new v2();
+                v2 planePoint = new v2();
 
                 Rot.mulToOutUnsafe(xfA, manifold.localNormal, normal);
                 Transform.mulToOut(xfA, manifold.localPoint, planePoint);
 
-                final v2 clipPoint = new v2();
+                v2 clipPoint = new v2();
 
                 for (int i = 0; i < manifold.pointCount; i++) {
                     
@@ -121,16 +121,16 @@ public class WorldManifold {
                     
                     
 
-                    final float scalar =
+                    float scalar =
                             radiusA
                                     - ((clipPoint.x - planePoint.x) * normal.x + (clipPoint.y - planePoint.y)
                                     * normal.y);
 
-                    final float cAx = normal.x * scalar + clipPoint.x;
-                    final float cAy = normal.y * scalar + clipPoint.y;
+                    float cAx = normal.x * scalar + clipPoint.x;
+                    float cAy = normal.y * scalar + clipPoint.y;
 
-                    final float cBx = -normal.x * radiusB + clipPoint.x;
-                    final float cBy = -normal.y * radiusB + clipPoint.y;
+                    float cBx = -normal.x * radiusB + clipPoint.x;
+                    float cBy = -normal.y * radiusB + clipPoint.y;
 
                     points[i].x = (cAx + cBx) * .5f;
                     points[i].y = (cAy + cBy) * .5f;
@@ -139,7 +139,7 @@ public class WorldManifold {
             }
             break;
             case FACE_B:
-                final v2 planePoint = new v2();
+                v2 planePoint = new v2();
                 Rot.mulToOutUnsafe(xfB, manifold.localNormal, normal);
                 Transform.mulToOut(xfB, manifold.localPoint, planePoint);
 
@@ -150,7 +150,7 @@ public class WorldManifold {
                 
                 
 
-                final v2 clipPoint = new v2();
+                v2 clipPoint = new v2();
 
                 for (int i = 0; i < manifold.pointCount; i++) {
                     
@@ -174,16 +174,16 @@ public class WorldManifold {
                     
                     
 
-                    final float scalar =
+                    float scalar =
                             radiusB
                                     - ((clipPoint.x - planePoint.x) * normal.x + (clipPoint.y - planePoint.y)
                                     * normal.y);
 
-                    final float cBx = normal.x * scalar + clipPoint.x;
-                    final float cBy = normal.y * scalar + clipPoint.y;
+                    float cBx = normal.x * scalar + clipPoint.x;
+                    float cBy = normal.y * scalar + clipPoint.y;
 
-                    final float cAx = -normal.x * radiusA + clipPoint.x;
-                    final float cAy = -normal.y * radiusA + clipPoint.y;
+                    float cAx = -normal.x * radiusA + clipPoint.x;
+                    float cAy = -normal.y * radiusA + clipPoint.y;
 
                     points[i].set( (cAx + cBx) * .5f, (cAy + cBy) * .5f);
 //                    separations[i] = (cAx - cBx) * normal.x + (cAy - cBy) * normal.y;

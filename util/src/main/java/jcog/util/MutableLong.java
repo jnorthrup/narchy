@@ -50,7 +50,7 @@ public class MutableLong extends Number  {
      *
      * @param value  the initial value to store
      */
-    public MutableLong(final long value) {
+    public MutableLong(long value) {
         super();
         this.value = value;
     }
@@ -61,7 +61,7 @@ public class MutableLong extends Number  {
      * @param value  the initial value to store, not null
      * @throws NullPointerException if the object is null
      */
-    public MutableLong(final Number value) {
+    public MutableLong(Number value) {
         super();
         this.value = value.longValue();
     }
@@ -73,7 +73,7 @@ public class MutableLong extends Number  {
      * @throws NumberFormatException if the string cannot be parsed into a long
      * @since 2.5
      */
-    public MutableLong(final String value) throws NumberFormatException {
+    public MutableLong(String value) throws NumberFormatException {
         super();
         this.value = Long.parseLong(value);
     }
@@ -93,7 +93,7 @@ public class MutableLong extends Number  {
      *
      * @param value  the value to setAt
      */
-    public void set(final long value) {
+    public void set(long value) {
         this.value = value;
     }
 
@@ -103,7 +103,7 @@ public class MutableLong extends Number  {
      * @param value  the value to setAt, not null
      * @throws NullPointerException if the object is null
      */
-    public void set(final Number value) {
+    public void set(Number value) {
         this.value = value.longValue();
     }
 
@@ -125,7 +125,7 @@ public class MutableLong extends Number  {
      * @since 3.5
      */
     public long getAndIncrement() {
-        final long last = value;
+        long last = value;
         value++;
         return last;
     }
@@ -159,7 +159,7 @@ public class MutableLong extends Number  {
      * @since 3.5
      */
     public long getAndDecrement() {
-        final long last = value;
+        long last = value;
         value--;
         return last;
     }
@@ -183,7 +183,7 @@ public class MutableLong extends Number  {
      * @param operand  the value to addAt, not null
      * @since Commons Lang 2.2
      */
-    public void add(final long operand) {
+    public void add(long operand) {
         this.value += operand;
     }
 
@@ -194,7 +194,7 @@ public class MutableLong extends Number  {
      * @throws NullPointerException if the object is null
      * @since Commons Lang 2.2
      */
-    public void add(final Number operand) {
+    public void add(Number operand) {
         this.value += operand.longValue();
     }
 
@@ -204,7 +204,7 @@ public class MutableLong extends Number  {
      * @param operand  the value to subtract, not null
      * @since Commons Lang 2.2
      */
-    public void subtract(final long operand) {
+    public void subtract(long operand) {
         this.value -= operand;
     }
 
@@ -215,7 +215,7 @@ public class MutableLong extends Number  {
      * @throws NullPointerException if the object is null
      * @since Commons Lang 2.2
      */
-    public void subtract(final Number operand) {
+    public void subtract(Number operand) {
         this.value -= operand.longValue();
     }
 
@@ -227,7 +227,7 @@ public class MutableLong extends Number  {
      * @return the value associated with this instance after adding the operand
      * @since 3.5
      */
-    public long addAndGet(final long operand) {
+    public long addAndGet(long operand) {
         this.value += operand;
         return value;
     }
@@ -241,7 +241,7 @@ public class MutableLong extends Number  {
      * @return the value associated with this instance after adding the operand
      * @since 3.5
      */
-    public long addAndGet(final Number operand) {
+    public long addAndGet(Number operand) {
         this.value += operand.longValue();
         return value;
     }
@@ -254,8 +254,8 @@ public class MutableLong extends Number  {
      * @return the value associated with this instance immediately before the operand was added
      * @since 3.5
      */
-    public long getAndAdd(final long operand) {
-        final long last = value;
+    public long getAndAdd(long operand) {
+        long last = value;
         this.value += operand;
         return last;
     }
@@ -269,8 +269,8 @@ public class MutableLong extends Number  {
      * @return the value associated with this instance immediately before the operand was added
      * @since 3.5
      */
-    public long getAndAdd(final Number operand) {
-        final long last = value;
+    public long getAndAdd(Number operand) {
+        long last = value;
         this.value += operand.longValue();
         return last;
     }
@@ -329,7 +329,7 @@ public class MutableLong extends Number  {
      * @return <code>true</code> if the objects are the same; <code>false</code> otherwise.
      */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (obj instanceof MutableLong) {
             return value == ((MutableLong) obj).longValue();
         }

@@ -248,19 +248,13 @@ public class ApproximationDemo2D extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ApproximationDemo2D.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ApproximationDemo2D.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ApproximationDemo2D.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | UnsupportedLookAndFeelException | IllegalAccessException | InstantiationException ex) {
             java.util.logging.Logger.getLogger(ApproximationDemo2D.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        
-        
-        
-        
+
+
+
+
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new ApproximationDemo2D().setVisible(true));

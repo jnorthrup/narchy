@@ -160,8 +160,8 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
      * @param map
      * @return Restituisce una TreeMap
      */
-    static <K, V extends Comparable<V>> Map<K, V> sortByValues(final Map<K, V> map) {
-        final Comparator<K> valueComparator = (k1, k2) -> {
+    static <K, V extends Comparable<V>> Map<K, V> sortByValues(Map<K, V> map) {
+        Comparator<K> valueComparator = (k1, k2) -> {
             int compare = map.get(k2).compareTo(map.get(k1));
             if (compare == 0) {
                 String s1 = (String) k1;

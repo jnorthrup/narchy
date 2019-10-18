@@ -57,7 +57,7 @@ public class MetaFlow {
     public MetaFlow forkIterations(int iterations, Runnable... options) {
         assert(iterations > 0);
 
-        final int[] countDown = {iterations};
+        int[] countDown = {iterations};
         return forkWhile(() -> countDown[0]-- > 0, options);
     }
 

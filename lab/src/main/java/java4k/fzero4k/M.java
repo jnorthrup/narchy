@@ -37,11 +37,11 @@ public class M extends JFrame {
     final double VIEWER_Z = -128;    
     final double GROUND_Y = 207;    
 
-    final int[] screenBuffer = new int[320*240];
-    final int[][][] projectionMap = new int[192][320][2];
-    final int[][][] wiresBitmap = new int[32][256][256];
-    final int[][][] bitmaps = new int[6][32][32];
-    final byte[][] raceTrack = new byte[512][512]; 
+    int[] screenBuffer = new int[320*240];
+    int[][][] projectionMap = new int[192][320][2];
+    int[][][] wiresBitmap = new int[32][256][256];
+    int[][][] bitmaps = new int[6][32][32];
+    byte[][] raceTrack = new byte[512][512];
       
       
       
@@ -50,21 +50,21 @@ public class M extends JFrame {
       
       
     double playerAngle = 0;
-    final double[][] vehicleMetrics = new double[10][9]; 
+    double[][] vehicleMetrics = new double[10][9];
       
       
       
       
       
-    final int[] powerOvalY = new int[2];
+    int[] powerOvalY = new int[2];
     boolean onPowerBar = false;
     boolean playing = false;
 
-    final BufferedImage[] vehicleSprites = new BufferedImage[10];
-    final int[] vehicleSpriteData = new int[64*32];
+    BufferedImage[] vehicleSprites = new BufferedImage[10];
+    int[] vehicleSpriteData = new int[64*32];
     double power = 0;
-    final Color powerColor = new Color(0xFABEF1);
-    final Color darkColor = new Color(0xA7000000, true);
+    Color powerColor = new Color(0xFABEF1);
+    Color darkColor = new Color(0xA7000000, true);
     int wiresBitmapIndex = 0;
     double cos = 0;
     double sin = 0;
@@ -194,6 +194,7 @@ public class M extends JFrame {
             for(int j = -1; j < 2; j++) {
               if (raceTrack[0x1FF & (i + y)][0x1FF & (j + x)] == -1) {
                 raceTrack[y][x] = 1;
+                break;
               }
             }
           }

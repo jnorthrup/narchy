@@ -303,10 +303,10 @@ public class InterpolatingMicrosphere {
             
             
             float[] X = data[i];
-            final float[] diff = ebeSubtract(new float[] { X[0] }, targetPoint);
+            float[] diff = ebeSubtract(new float[] { X[0] }, targetPoint);
             /** effective (minimum) radius of one point, an interval within which distance is zero (co-tangent) */
             float pointRadius = 0f;
-            final float distance = Math.max(0, safeNorm(epsilon, diff) - pointRadius);
+            float distance = Math.max(0, safeNorm(epsilon, diff) - pointRadius);
 
             @Nullable float[] sampleDirection = distance!=0 ? diff : null;
             float evidence = X[2];
@@ -314,13 +314,13 @@ public class InterpolatingMicrosphere {
 
             for (int j = 0; j < vectors; j++) {
 
-                final float[] n = microsphere.get(j);
-                final float cos = (sampleDirection != null) ? cosAngleNormalized(n, sampleDirection) : 1f;
+                float[] n = microsphere.get(j);
+                float cos = (sampleDirection != null) ? cosAngleNormalized(n, sampleDirection) : 1f;
 
                 if (cos > 0) {
-                    final float illumination = cos * focus.focus(distance, evidence);
+                    float illumination = cos * focus.focus(distance, evidence);
                     if (illumination > 0) {
-                        final float[] d = microsphereData.get(j);
+                        float[] d = microsphereData.get(j);
                         d[0] += illumination;
                         d[1] += illumination * X[1] /* 0...1.0 */;
                     }

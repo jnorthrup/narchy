@@ -14,7 +14,7 @@ public class Benchmarks {
     private static void testAddingLotsOfConstraints() throws DuplicateConstraintException, UnsatisfiableConstraintException, NonlinearExpressionException {
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
 
-        final HashMap<String, DoubleVar> variables = new HashMap<>();
+        HashMap<String, DoubleVar> variables = new HashMap<>();
 
         ConstraintParser.CassowaryVariableResolver variableResolver = new ConstraintParser.CassowaryVariableResolver() {
 
@@ -65,11 +65,7 @@ public class Benchmarks {
     public static void main(String [ ] args) {
         try {
             testAddingLotsOfConstraints();
-        } catch (DuplicateConstraintException e) {
-            e.printStackTrace();
-        } catch (UnsatisfiableConstraintException e) {
-            e.printStackTrace();
-        } catch (NonlinearExpressionException e) {
+        } catch (DuplicateConstraintException | NonlinearExpressionException | UnsatisfiableConstraintException e) {
             e.printStackTrace();
         }
     }

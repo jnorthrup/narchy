@@ -19,7 +19,7 @@ public abstract class NumberX extends Number {
         add(-x);
     }
 
-    public final void subtract(final Number operand) {
+    public final void subtract(Number operand) {
         add(-operand.floatValue());
     }
 }

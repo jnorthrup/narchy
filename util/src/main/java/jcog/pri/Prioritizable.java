@@ -58,7 +58,7 @@ public interface Prioritizable extends Prioritized, ScalarValue {
                 return 0; //request*source is insignificant
         }
 
-        final float[] before = new float[1];
+        float[] before = new float[1];
 
         float after = pri((x,a)->{
             float x1 = x;

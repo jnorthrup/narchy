@@ -47,7 +47,7 @@ public class SpinAllocator<T> {
   }
 
   public static class AllocatorDisposeException extends RuntimeException {
-    public AllocatorDisposeException(@NonNls final String message) {
+    public AllocatorDisposeException(@NonNls String message) {
       super(message);
     }
   }

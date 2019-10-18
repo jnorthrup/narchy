@@ -86,7 +86,7 @@ public class CellMap<K, V> {
     }
 
     public void removeAll(Iterable<K> x) {
-        final boolean[] changed = {false};
+        boolean[] changed = {false};
         for (K xx : x) {
             changed[0] |= removeSilently(xx);
         }
@@ -221,7 +221,7 @@ public class CellMap<K, V> {
 
         public void update(K nextKey, BiFunction<K, V, V> update) {
 
-            final V prev = value;
+            V prev = value;
 
             V next = update.apply(nextKey, prev);
             if (next == prev) {

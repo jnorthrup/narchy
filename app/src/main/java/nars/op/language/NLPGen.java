@@ -76,7 +76,7 @@ public class NLPGen {
                 if (Math.abs(t.freq() - freq) < 0.33f) {
                     if (Math.abs(t.conf() - conf) < 0.33f) {
 
-                        final String[] result = {null};
+                        String[] result = {null};
 
                         Unify u = new Unify(VAR_PATTERN, terminal.random(), NAL.unify.UNIFICATION_STACK_CAPACITY, terminal.deriveBranchTTL.intValue()) {
 
@@ -84,7 +84,7 @@ public class NLPGen {
                             public boolean match() {
 
 
-                                final String[] r = {natural};
+                                String[] r = {natural};
                                 for (Map.Entry<Variable, Term> entry : xy.entrySet()) {
                                     Variable x = entry.getKey();
                                     Term y = entry.getValue();

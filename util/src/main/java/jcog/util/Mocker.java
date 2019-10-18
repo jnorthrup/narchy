@@ -61,7 +61,7 @@ public enum Mocker {
         return intercepting(tClass, description, consumer, null);
     }
 
-    public static @NotNull <T> T intercepting(@NotNull Class<T> tClass, final @NotNull String description, @NotNull Consumer<String> consumer, T t) {
+    public static @NotNull <T> T intercepting(@NotNull Class<T> tClass, @NotNull String description, @NotNull Consumer<String> consumer, T t) {
         return intercepting(tClass,
                 (name, args) -> consumer.accept(description + name + (args == null ? "()" : Arrays.toString(args))),
                 t);
@@ -123,7 +123,7 @@ public enum Mocker {
             }
             try {
                 
-                final Field field = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+                Field field = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
                 field.setAccessible(true);
                 return (MethodHandles.Lookup) field.get(null);
             } catch (Exception e) {
@@ -192,7 +192,7 @@ public enum Mocker {
         static MethodHandle methodHandleForProxy(Object proxy, Method m) {
             try {
                 Class<?> declaringClass = m.getDeclaringClass();
-                final MethodHandles.Lookup lookup = PRIVATE_LOOKUP.get(declaringClass);
+                MethodHandles.Lookup lookup = PRIVATE_LOOKUP.get(declaringClass);
                 return lookup
                         .in(declaringClass)
                         .unreflectSpecial(m, declaringClass)

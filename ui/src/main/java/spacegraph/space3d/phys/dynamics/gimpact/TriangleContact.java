@@ -81,7 +81,7 @@ class TriangleContact {
 
 		short[] point_indices = new short[Math.min(pointsPending, MAX_TRI_CLIPPING)];
 
-		final float penetratinDepthMinusEpsilon = penetration_depth - SIMD_EPSILON;
+		float penetratinDepthMinusEpsilon = penetration_depth - SIMD_EPSILON;
 
 		for (short _k = 0; _k < pointsPending; _k++) {
             

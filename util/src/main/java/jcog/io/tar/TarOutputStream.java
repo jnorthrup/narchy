@@ -41,7 +41,7 @@ public class TarOutputStream extends OutputStream {
     /**
      * Opens a file for (over)writing
      */
-    public TarOutputStream(final File fout) throws IOException {
+    public TarOutputStream(File fout) throws IOException {
         this.out = new BufferedOutputStream(Files.newOutputStream(fout.toPath()));
         bytesWritten = 0;
         currentFileSize = 0;
@@ -50,10 +50,10 @@ public class TarOutputStream extends OutputStream {
     /**
      * Opens a file for writing or appending. 
      */
-    public TarOutputStream(final File fout, final boolean append) throws IOException {
+    public TarOutputStream(File fout, boolean append) throws IOException {
         @SuppressWarnings("resource")
         RandomAccessFile raf = new RandomAccessFile(fout, "rw");
-        final long fileSize = fout.length();
+        long fileSize = fout.length();
         if (append && fileSize > TarConstants.EOF_BLOCK) {
             raf.seek(fileSize - TarConstants.EOF_BLOCK);
         }

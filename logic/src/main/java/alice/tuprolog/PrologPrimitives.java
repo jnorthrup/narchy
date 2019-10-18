@@ -134,7 +134,7 @@ public class PrologPrimitives {
         if (t.isPrimitive())
             return; //assume already identified
 
-        final int primType = PRIMITIVE_PREDICATES.contains(t.name()) ? PREDICATE : FUNCTOR;
+        int primType = PRIMITIVE_PREDICATES.contains(t.name()) ? PREDICATE : FUNCTOR;
         int arity = t.subs();
         for (int c = 0; c < arity; c++) {
             identify(t.sub(c), primType);

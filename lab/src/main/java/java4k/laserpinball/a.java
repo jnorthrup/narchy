@@ -135,13 +135,13 @@ public class a extends GamePanel {
 				+ "u0082u1fceu0780u007au2516u1208u007au2516u0408u007au01a6" + "u0048u01f3u0056u0242u0048u028bu0056u0021u0056u0159u0034" + "u00a1u035fu025au026fu0256u035fu00a7u0221u00a7u0261u00a7"
 				+ "u02a1uc896uc8fauc8fau2a2au1030u1710u3939u3939u341b";
 
-		final BufferedImage[] images = new BufferedImage[9];
+		BufferedImage[] images = new BufferedImage[9];
 
-		final float[][] balls = new float[3][8];
-		final float[][][][][] layers = new float[2][48][32][67][2];
-		final int[][][] boxSizes = new int[2][48][32];
+		float[][] balls = new float[3][8];
+		float[][][][][] layers = new float[2][48][32][67][2];
+		int[][][] boxSizes = new int[2][48][32];
 		float[][] box;
-		final Graphics2D[] imageGraphics = new Graphics2D[9];
+		Graphics2D[] imageGraphics = new Graphics2D[9];
 		Graphics2D g = null;
 		Graphics2D g2 = null;
 

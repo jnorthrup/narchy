@@ -156,7 +156,7 @@ public abstract class DurLoop extends NARPart {
             if (!busy.compareAndSet(false, true))
                 return;
 
-            final long atStart = nar.time();
+            long atStart = nar.time();
             try {
 
                 long lastStarted = this.lastStarted;
@@ -189,7 +189,7 @@ public abstract class DurLoop extends NARPart {
 
             long now = nar.time();
 
-            final long idealNext = lastStarted + durCycles;
+            long idealNext = lastStarted + durCycles;
             long lag = now - idealNext;
             if (lag > 0) {
                 /** LAG - compute a correctional shift period, so that it attempts to maintain a steady rhythm and re-synch even if a frame is lagged*/

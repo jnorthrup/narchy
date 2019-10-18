@@ -92,7 +92,7 @@ public class ManifoldPoint {
      *
      * @param cp point to copy from
      */
-    public ManifoldPoint(final ManifoldPoint cp) {
+    public ManifoldPoint(ManifoldPoint cp) {
         localPoint = new v2(cp.localPoint);
         normalImpulse = cp.normalImpulse;
         tangentImpulse = cp.tangentImpulse;
@@ -104,7 +104,7 @@ public class ManifoldPoint {
      *
      * @param cp the point to copy from
      */
-    public void set(final ManifoldPoint cp) {
+    public void set(ManifoldPoint cp) {
         localPoint.set(cp.localPoint);
         normalImpulse = cp.normalImpulse;
         tangentImpulse = cp.tangentImpulse;

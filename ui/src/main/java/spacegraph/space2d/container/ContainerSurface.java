@@ -186,7 +186,7 @@ public abstract class ContainerSurface extends Surface {
 
     /** default implementation */
     public <X extends Surface> X first(Class<? extends X> zoomedClass) {
-        final Surface[] found = {null};
+        Surface[] found = {null};
         whileEach(s -> {
             if (zoomedClass.isInstance(s)) {
                 found[0] = s;

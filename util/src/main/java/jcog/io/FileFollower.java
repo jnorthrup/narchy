@@ -55,22 +55,22 @@ public class FileFollower {
      *                                  contents of the file (this array may be <tt>null</tt>)
      */
     @SafeVarargs
-    public FileFollower(final File file, final int bufferSize, final int latency,
-                        final Consumer<String>... initialOutputDestinations) {
+    public FileFollower(File file, int bufferSize, int latency,
+                        Consumer<String>... initialOutputDestinations) {
         file_ = file;
         bufferSize_ = bufferSize;
         latency_ = latency;
         try {
             encoding_ = Charset.forName(System.getProperty("file.encoding"));
-        } catch (final IllegalCharsetNameException e) {
+        } catch (IllegalCharsetNameException e) {
             try {
                 encoding_ = StandardCharsets.ISO_8859_1;
-            } catch (final IllegalCharsetNameException e1) {
-                final SortedMap m = Charset.availableCharsets();
+            } catch (IllegalCharsetNameException e1) {
+                SortedMap m = Charset.availableCharsets();
                 encoding_ = (Charset) m.get(m.firstKey());
             }
         }
-        final int initOutputDestsSize = (initialOutputDestinations != null) ? initialOutputDestinations.length : 0;
+        int initOutputDestsSize = (initialOutputDestinations != null) ? initialOutputDestinations.length : 0;
         outputDestinations_ = new ArrayList(initOutputDestsSize);
         if (initialOutputDestinations != null) {
 			outputDestinations_.addAll(Arrays.asList(initialOutputDestinations).subList(0, initOutputDestsSize));
@@ -182,14 +182,14 @@ public class FileFollower {
      *
      * @param bufferSize size of the character buffer
      */
-    public void setBufferSize(final int bufferSize) {
+    public void setBufferSize(int bufferSize) {
         bufferSize_ = bufferSize;
     }
 
-    public void setEncoding(final String _s) {
+    public void setEncoding(String _s) {
         try {
             setEncoding(Charset.forName(_s));
-        } catch (final IllegalCharsetNameException e) {
+        } catch (IllegalCharsetNameException e) {
 
         }
     }
@@ -204,7 +204,7 @@ public class FileFollower {
         }
     }
 
-    public void setEncoding(final Charset _s) {
+    public void setEncoding(Charset _s) {
         if (_s != encoding_) {
             if (runnerThread_ != null) {
                 stop();
@@ -234,7 +234,7 @@ public class FileFollower {
      *
      * @param latency latency, in milliseconds
      */
-    public void setLatency(final int latency) {
+    public void setLatency(int latency) {
         latency_ = latency;
     }
 
@@ -264,17 +264,17 @@ public class FileFollower {
             try {
 //                clear();
                 needsRestart_ = false;
-                final long fileSize = file_.length();
-                final char[] byteArray = new char[bufferSize_];
+                long fileSize = file_.length();
+                char[] byteArray = new char[bufferSize_];
                 int numBytesRead = -1;
                 long lastActivityTime = 0;
 
-                try (final FileInputStream fis = new FileInputStream(file_)) {
-                    try (final Reader r = Channels.newReader(fis.getChannel(), encoding_.newDecoder(), bufferSize_)) {
+                try (FileInputStream fis = new FileInputStream(file_)) {
+                    try (Reader r = Channels.newReader(fis.getChannel(), encoding_.newDecoder(), bufferSize_)) {
                         if (fileSize > bufferSize_) {
                             // on lit rapidement le debut
                             if (forceReadBegin_) {
-                                final char[] byteArrayTemp = new char[65536];
+                                char[] byteArrayTemp = new char[65536];
                                 forceReadBegin_ = false;
                                 // tant que c'est trop gros pour le buffer
                                 while (fis.available() > bufferSize_) {
@@ -312,7 +312,7 @@ public class FileFollower {
                                     // on retente
                                     try {
                                         Thread.sleep(latency_);
-                                    } catch (final InterruptedException e) {
+                                    } catch (InterruptedException e) {
                                         Thread.currentThread().interrupt();
                                         // Interrupt may be thrown manually by stop()
                                     }
@@ -326,29 +326,29 @@ public class FileFollower {
                                 }
                             }
 
-                            final boolean noDataLeft = (numBytesRead < byteArray.length);
+                            boolean noDataLeft = (numBytesRead < byteArray.length);
                             if (noDataLeft && !needsRestart_) {
                                 try {
                                     Thread.sleep(latency_);
-                                } catch (final InterruptedException e) {
+                                } catch (InterruptedException e) {
                                     // Interrupt may be thrown manually by stop()
                                 }
                             }
                         }
                     }
                 }
-            } catch (final CharacterCodingException _c) {
+            } catch (CharacterCodingException _c) {
                 badCharset();
-            } catch (final FileNotFoundException e) {
+            } catch (FileNotFoundException e) {
 
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 logger.error(" {}",e);
 //                FuLog.error(e);
                 continueRunning_ = false;
             }
         } /* send the supplied string to all OutputDestinations */
 
-        void print(final String s) {
+        void print(String s) {
             for (Consumer<String> stringConsumer : outputDestinations_) {
                 stringConsumer.accept(s);
             }

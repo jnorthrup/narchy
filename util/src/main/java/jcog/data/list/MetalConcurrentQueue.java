@@ -108,7 +108,7 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
      *
      * @param capacity maximum capacity of this queue
      */
-    public MetalConcurrentQueue(final int capacity) {
+    public MetalConcurrentQueue(int capacity) {
         super(capacity);
     }
 
@@ -134,7 +134,7 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
 
         int cap = capacity();
         while (true) {
-            final int tail = this.tail.get();
+            int tail = this.tail.get();
             // never offer onto the slot that is currently being polled off
 
             // will this sequence exceed the capacity
@@ -187,7 +187,7 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
         int spin = 0;
         int cap = capacity();
         do {
-            final int head = this.head.get();
+            int head = this.head.get();
             // is there data for us to poll
             int tail = this.tail.get();
             int s = tail - head;
@@ -199,7 +199,7 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
             // check if we can update the sequence
             if (canPut(head, 1)) {
 
-                final X pollObj = getAndSetFast(ih, null);
+                X pollObj = getAndSetFast(ih, null);
 
                 put(head, 1);
 
@@ -252,7 +252,7 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
         return i >= 0 ? peek(head,i) : null;
     }
 
-    public int remove(final X[] x) {
+    public int remove(X[] x) {
         return remove(x, x.length);
     }
 
@@ -261,7 +261,7 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
 //
 //    }
 
-    public int remove(final FasterList<X> x, int maxElements, int retries) {
+    public int remove(FasterList<X> x, int maxElements, int retries) {
         if (maxElements == 1) {
             X xx = poll(retries);
             if (xx == null)
@@ -272,7 +272,7 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
             }
         } else {
             int initialSize = x.size();
-            final int[] i = {initialSize};
+            int[] i = {initialSize};
             X[] a = x.array();
             int tryToGet = Math.min(a.length - initialSize, maxElements);
             int drained = clear(y -> a[i[0]++] = y, tryToGet, retries);
@@ -286,7 +286,7 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
      * in a single update.    This could have significant cost savings in comparison
      * with poll
      */
-    public int remove(final X[] x, int maxElements) {
+    public int remove(X[] x, int maxElements) {
 
         throw new TODO("impl with clear(..)");
 
@@ -357,7 +357,7 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
     }
 
     /** TODO clearWith(IntObjectConsumer... */
-    public int clear(final Consumer<X> each, int limit, int retries) {
+    public int clear(Consumer<X> each, int limit, int retries) {
         assert(limit > 0);
 
         int cap = capacity();

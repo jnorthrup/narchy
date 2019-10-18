@@ -1216,7 +1216,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public final NAR outputBinary(File f, boolean append) throws IOException {
-        return outputBinary(f, append, (t -> t));
+        return outputBinary(f, append, Function.identity());
     }
 
     public final NAR outputBinary(File f, boolean append, Predicate<Task> each) throws IOException {

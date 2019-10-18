@@ -138,7 +138,7 @@ public class MouseJoint extends Joint {
     }
 
     @Override
-    public void initVelocityConstraints(final SolverData data) {
+    public void initVelocityConstraints(SolverData data) {
         m_indexB = B.island;
         m_localCenterB.set(B.sweep.localCenter);
         m_invMassB = B.m_invMass;
@@ -149,7 +149,7 @@ public class MouseJoint extends Joint {
         v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
-        final Rot qB = pool.popRot();
+        Rot qB = pool.popRot();
 
         qB.set(aB);
 
@@ -183,7 +183,7 @@ public class MouseJoint extends Joint {
         
         
         
-        final Mat22 K = pool.popMat22();
+        Mat22 K = pool.popMat22();
         K.ex.x = m_invMassB + m_invIB * m_rB.y * m_rB.y + m_gamma;
         K.ex.y = -m_invIB * m_rB.x * m_rB.y;
         K.ey.x = K.ex.y;
@@ -215,23 +215,23 @@ public class MouseJoint extends Joint {
     }
 
     @Override
-    public boolean solvePositionConstraints(final SolverData data) {
+    public boolean solvePositionConstraints(SolverData data) {
         return true;
     }
 
     @Override
-    public void solveVelocityConstraints(final SolverData data) {
+    public void solveVelocityConstraints(SolverData data) {
 
         v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         
-        final v2 Cdot = pool.popVec2();
+        v2 Cdot = pool.popVec2();
         v2.crossToOutUnsafe(wB, m_rB, Cdot);
         Cdot.added(vB);
 
-        final v2 impulse = pool.popVec2();
-        final v2 temp = pool.popVec2();
+        v2 impulse = pool.popVec2();
+        v2 temp = pool.popVec2();
 
         temp.set(m_impulse).scaled(m_gamma).added(m_C).added(Cdot).negated();
         Mat22.mulToOutUnsafe(m_mass, temp, impulse);

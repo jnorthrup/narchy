@@ -415,7 +415,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
 
     protected static boolean intersectsLine(Line2D l, Iterable<Line2D> edges) {
         for (Line2D e : edges) {
-            final Type isec = l.intersectLine(e).getType();
+            Type isec = l.intersectLine(e).getType();
             if (isec == Type.INTERSECTING || isec == Type.COINCIDENT) {
                 return true;
             }
@@ -546,7 +546,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
         Line2D l1 = new Line2D(new Vec2D(x1, y1), new Vec2D(c1, d1));
         Line2D l2 = new Line2D(new Vec2D(c2, d2), new Vec2D(x3, y3));
         LineIntersection isec = l1.intersectLine(l2);
-        final Vec2D ipos = isec.getPos();
+        Vec2D ipos = isec.getPos();
         if (ipos != null) {
             out.set(ipos);
         }

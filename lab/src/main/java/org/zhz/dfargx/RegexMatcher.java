@@ -37,7 +37,7 @@ public class RegexMatcher extends DFA {
     public final boolean match(String str) {
         int s = is;
         int[][] t = this.transitionTable;
-        final int rejected = rs;
+        int rejected = rs;
         for (int i = 0, length = str.length()-1; (length--) >= 0; i++) {
             if ((s = t[s][str.charAt(i)]) == rejected) {
                 return false; 

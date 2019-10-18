@@ -59,8 +59,8 @@ public class Rect implements Shape2D {
      * @since 0021
      */
     public static Rect getBoundingRect(List<? extends Vec2D> points) {
-        final Vec2D first = points.get(0);
-        final Rect bounds = new Rect(first.x, first.y, 0, 0);
+        Vec2D first = points.get(0);
+        Rect bounds = new Rect(first.x, first.y, 0, 0);
         for (int i = 1, num = points.size(); i < num; i++) {
             bounds.growToContainPoint(points.get(i));
         }

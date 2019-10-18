@@ -234,7 +234,7 @@ abstract class HashedWheelTimerTest {
                 1_000_000_000L * 2 /* 2 Sec */, 5);
 
         long start = System.nanoTime();
-        final long[] last = {start};
+        long[] last = {start};
         Runnable task = () -> {
             long now = System.nanoTime();
 
@@ -294,8 +294,8 @@ abstract class HashedWheelTimerTest {
 
     @Test
     void testScheduleTimeoutShouldNotRunBeforeDelay() throws InterruptedException {
-        final CountDownLatch barrier = new CountDownLatch(1);
-        final Future timeout = timer.schedule(() -> {
+        CountDownLatch barrier = new CountDownLatch(1);
+        Future timeout = timer.schedule(() -> {
             fail("This should not have run");
             barrier.countDown();
             fail();
@@ -307,8 +307,8 @@ abstract class HashedWheelTimerTest {
 
     @Test
     void testScheduleTimeoutShouldRunAfterDelay() {
-        final CountDownLatch barrier = new CountDownLatch(1);
-        final Future timeout = timer.schedule(barrier::countDown, 100, TimeUnit.MILLISECONDS);
+        CountDownLatch barrier = new CountDownLatch(1);
+        Future timeout = timer.schedule(barrier::countDown, 100, TimeUnit.MILLISECONDS);
         //assertTrue(barrier.await(2, TimeUnit.SECONDS));
         Util.sleepMS(200);
         assertTrue(timeout.isDone(), "should expire");
@@ -335,7 +335,7 @@ abstract class HashedWheelTimerTest {
 
     @Test
     void testTimerOverflowWheelLength() throws InterruptedException {
-        final AtomicInteger counter = new AtomicInteger();
+        AtomicInteger counter = new AtomicInteger();
 
         timer.schedule(new Runnable() {
             @Override
@@ -360,10 +360,10 @@ abstract class HashedWheelTimerTest {
                 
                 30;
 
-        final SummaryStatistics queue = new SynchronizedSummaryStatistics();
+        SummaryStatistics queue = new SynchronizedSummaryStatistics();
 
         for (int i = 0; i < scheduledTasks; i++) {
-            final long start = System.nanoTime();
+            long start = System.nanoTime();
 
             timer.schedule(() -> {
                 long ms = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);

@@ -51,7 +51,7 @@ public class SlidingDFT {
 
 
         double d1 = (Math.PI * 2 / fftSize);
-        final int binsH = bins / 2;
+        int binsH = bins / 2;
         for (int bin = 0, j = bins, k = binsH, m = binsH; bin < binsH; bin++, j--, k--, m++) {
             float d2 = (float) Math.cos(d1);
             cos[bin] = d2;
@@ -90,8 +90,8 @@ public class SlidingDFT {
         if (inLen == 0 || inBuf.length == 0)
             return;
 
-        final float[] fftBufDC = fftBufD[chan];
-        final float[] timeBufC = timeBuf[chan];
+        float[] fftBufDC = fftBufD[chan];
+        float[] timeBufC = timeBuf[chan];
         int timeBufIdxC = timeBufIdx[chan];
         float delta, re1, im1, re2, im2;
         float f1;

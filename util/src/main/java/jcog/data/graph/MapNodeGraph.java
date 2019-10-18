@@ -101,7 +101,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     }
 
     private MutableNode<N, E> addNode(N key, boolean returnNodeIfExisted) {
-        final boolean[] created = {false};
+        boolean[] created = {false};
         MutableNode<N, E> r = (MutableNode<N, E>) nodes.computeIfAbsent(key, (x) -> {
             created[0] = true;
             return newNode(x);

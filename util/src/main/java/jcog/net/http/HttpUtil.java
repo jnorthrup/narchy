@@ -396,7 +396,7 @@ public final class HttpUtil
              *
              * @throws DateParseException if none of the dataFormats could parse the dateValue
              */
-            public static Date parseDate(final String dateValue, String[] dateFormats)
+            public static Date parseDate(String dateValue, String[] dateFormats)
                     throws DateParseException
             {
                     return parseDate(dateValue, dateFormats, null);

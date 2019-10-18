@@ -11,7 +11,7 @@ class MatrixTransform {
     private final boolean needsBackprop;
     final Deque<Backprop> q;
 
-    MatrixTransform(final boolean needsBackprop) {
+    MatrixTransform(boolean needsBackprop) {
         this.needsBackprop = needsBackprop;
         this.q = new ArrayDeque<>();
     }
@@ -22,27 +22,27 @@ class MatrixTransform {
             next.run();
     }
 
-    Mat tanh(final Mat mat) {
-        final Mat out = new Mat(mat.n, mat.d);
+    Mat tanh(Mat mat) {
+        Mat out = new Mat(mat.n, mat.d);
         Arrays.setAll(out.w, i -> Math.tanh(mat.w[i]));
         if (this.needsBackprop)
             this.q.addLast(new Backprop(Backprop.BackpropMethod.TANH, mat, out));
         return out;
     }
 
-    Mat mul(final Mat m1, final Mat m2) {
-        final int m1d = m1.d;
+    Mat mul(Mat m1, Mat m2) {
+        int m1d = m1.d;
         assert m1d == m2.n;
-        final int m2d = m2.d;
-        final int n = m1.n;
+        int m2d = m2.d;
+        int n = m1.n;
 
         //assert(m1d == m2.n): "matmul dimensions misaligned: " + m1d + " != " + m2.n;
 
-        final int d = m2d;
-        final double[] m1w = m1.w;
-        final double[] m2w = m2.w;
-        final Mat out = new Mat(n, d);
-        final double[] outw = out.w;
+        int d = m2d;
+        double[] m1w = m1.w;
+        double[] m2w = m2.w;
+        Mat out = new Mat(n, d);
+        double[] outw = out.w;
 
             for (int  i = 0; i < n; i++) { // loop over rows of m1
                 int m1i = m1d * i;
@@ -75,10 +75,10 @@ class MatrixTransform {
         return out;
     }
 
-    Mat add(final Mat mat1, final Mat mat2) {
+    Mat add(Mat mat1, Mat mat2) {
         assert mat1.w.length == mat2.w.length;
 
-        final Mat out = new Mat(mat1.n, mat1.d);
+        Mat out = new Mat(mat1.n, mat1.d);
         int bound = mat1.w.length;
         double[] outw = out.w;
         for (int i = 0; i < bound; i++) {
@@ -95,7 +95,7 @@ class MatrixTransform {
         private final BackpropMethod backpropMethod;
         private final Mat[] args;
 
-        private Backprop(final BackpropMethod backpropMethod, final Mat... args) {
+        private Backprop(BackpropMethod backpropMethod, Mat... args) {
             this.backpropMethod = backpropMethod;
             this.args = args;
         }
@@ -115,12 +115,12 @@ class MatrixTransform {
             }
         }
 
-        private static void mulBack(final Mat m1, final Mat m2, final Mat out) {
+        private static void mulBack(Mat m1, Mat m2, Mat out) {
 
 
-            final int n = m1.n;
-            final int m2d = m2.d;
-            final int m1d = m1.d;
+            int n = m1.n;
+            int m2d = m2.d;
+            int m1d = m1.d;
             double[] m1w = m1.w;
             double[] m2w = m2.w;
             double[] m1dw = m1.dw;
@@ -129,11 +129,11 @@ class MatrixTransform {
 
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < m2d; j++) {
-                    final double b = outdw[m2d * i + j];
+                    double b = outdw[m2d * i + j];
                     if (b!=0) {
                         for (int k = 0; k < m1d; k++) {
-                            final int mm1 = m1d * i + k;
-                            final int mm2 = m2d * k + j;
+                            int mm1 = m1d * i + k;
+                            int mm2 = m2d * k + j;
                             m1dw[mm1] += m2w[mm2] * b;
                             m2dw[mm2] += m1w[mm1] * b;
                         }
@@ -142,7 +142,7 @@ class MatrixTransform {
             }
         }
 
-        private static void addBack(final Mat mat1, final Mat mat2, final Mat out) {
+        private static void addBack(Mat mat1, Mat mat2, Mat out) {
             int bound = mat1.w.length;
             for (int i = 0; i < bound; i++) {
                 double dwi = out.dw[i];
@@ -153,7 +153,7 @@ class MatrixTransform {
             }
         }
 
-        private static void tanhBack(final Mat mat, final Mat out) {
+        private static void tanhBack(Mat mat, Mat out) {
             double[] matdw = mat.dw;
             int bound = mat.w.length;
             for (int i = 0; i < bound; i++) {

@@ -176,7 +176,7 @@ public class a extends GamePanel {
 		final int DARKEST_GREEN = 0x143C00; 
 		final int LIGHT_GREEN = 0x5CBA5C; 
 
-		final int[] COLORS = { BROWN, 
+		int[] COLORS = { BROWN,
 				DARK_BROWN, 
 				YELLOW, 
 				LIGHT_ORANGE, 
@@ -197,13 +197,13 @@ public class a extends GamePanel {
 				LIGHT_GREEN, 
 		};
 
-		final Color COLOR_DARK_BROWN = new Color(DARK_BROWN);
-		final Color COLOR_BLACK = new Color(0);
-		final Color COLOR_DARK_GREEN = new Color(DARK_GREEN);
-		final Color COLOR_YELLOW_GREEN = new Color(YELLOW_GREEN);
-		final Color COLOR_GREEN = new Color(GREEN);
-		final Color COLOR_GRAY = new Color(GRAY);
-		final Color COLOR_DARK_YELLOW = new Color(DARK_YELLOW);
+		Color COLOR_DARK_BROWN = new Color(DARK_BROWN);
+		Color COLOR_BLACK = new Color(0);
+		Color COLOR_DARK_GREEN = new Color(DARK_GREEN);
+		Color COLOR_YELLOW_GREEN = new Color(YELLOW_GREEN);
+		Color COLOR_GREEN = new Color(GREEN);
+		Color COLOR_GRAY = new Color(GRAY);
+		Color COLOR_DARK_YELLOW = new Color(DARK_YELLOW);
 
 		final String S = "  nnnn   nn  nn  nn  nn  nn  nn  nn  nn  nn  nn  nn  nn  " + " nnnn     nn     nnn      nn      nn      nn      nn      nn     nnn"
 				+ "n    nnnn   n   nn      nn      nn   nnnn   nn      nn      nnnnnn  " + " nnnn   n   nn      nn     nn      nn       nn  n   nn   nnnn      n"

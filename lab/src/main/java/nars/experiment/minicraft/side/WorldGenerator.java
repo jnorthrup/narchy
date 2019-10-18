@@ -220,6 +220,7 @@ public class WorldGenerator {
                 for (TileID ignore : ignoreTypes) {
                     if (world[currentX][currentY] == ignore) {
                         ignoreThis = true;
+                        break;
                     }
                 }
                 if (ignoreThis) {

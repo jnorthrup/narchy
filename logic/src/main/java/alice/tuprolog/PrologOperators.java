@@ -55,7 +55,7 @@ public class PrologOperators extends ConcurrentHashMap<String, PrologOp> /**/ {
      * it replaces it with the new one
      */
     public void opNew(String name, String type, int prio) {
-        final PrologOp op = new PrologOp(name, type, prio);
+        PrologOp op = new PrologOp(name, type, prio);
         if (prio >= OP_LOW && prio <= OP_HIGH)
             addOperator(op);
     }

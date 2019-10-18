@@ -44,7 +44,7 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
             timer.assertRunning(); //is this necessary?
 
         Queue<TimedFuture<?>> q = wheel[c];
-        final int n = q.size();
+        int n = q.size();
         switch (n) {
             case 0: break; 
             case 1: {

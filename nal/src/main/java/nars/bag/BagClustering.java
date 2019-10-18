@@ -131,7 +131,7 @@ public class BagClustering<X> {
         for (L l : ll)
             l.clear();
 
-        final int[] centroids = {0};
+        int[] centroids = {0};
 //        for (VLink<X> x : bag) {
 //        }
         bag.sampleUnique(ThreadLocalRandom.current(), x ->{

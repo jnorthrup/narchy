@@ -120,7 +120,7 @@ public class WheelJoint extends Joint {
 
     @Override
     public void getReactionForce(float inv_dt, v2 argOut) {
-        final v2 temp = pool.popVec2();
+        v2 temp = pool.popVec2();
         temp.set(m_ay).scaled(m_impulse);
         argOut.set(m_ax).scaled(m_springImpulse).added(temp).scaled(inv_dt);
         pool.pushVec2(1);
@@ -238,9 +238,9 @@ public class WheelJoint extends Joint {
         v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
-        final Rot qA = pool.popRot();
-        final Rot qB = pool.popRot();
-        final v2 temp = pool.popVec2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 temp = pool.popVec2();
 
         qA.set(aA);
         qB.set(aB);
@@ -318,7 +318,7 @@ public class WheelJoint extends Joint {
         }
 
         if (data.step.warmStarting) {
-            final v2 P = pool.popVec2();
+            v2 P = pool.popVec2();
             
             m_impulse *= data.step.dtRatio;
             m_springImpulse *= data.step.dtRatio;
@@ -361,8 +361,8 @@ public class WheelJoint extends Joint {
         v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
-        final v2 temp = pool.popVec2();
-        final v2 P = pool.popVec2();
+        v2 temp = pool.popVec2();
+        v2 P = pool.popVec2();
 
         
         {
@@ -432,9 +432,9 @@ public class WheelJoint extends Joint {
         v2 cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
 
-        final Rot qA = pool.popRot();
-        final Rot qB = pool.popRot();
-        final v2 temp = pool.popVec2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 temp = pool.popVec2();
 
         qA.set(aA);
         qB.set(aB);
@@ -460,7 +460,7 @@ public class WheelJoint extends Joint {
             impulse = 0.0f;
         }
 
-        final v2 P = pool.popVec2();
+        v2 P = pool.popVec2();
         P.x = impulse * ay.x;
         P.y = impulse * ay.y;
         float LA = impulse * sAy;

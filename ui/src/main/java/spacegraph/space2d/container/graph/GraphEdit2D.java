@@ -313,7 +313,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
     /**
      * undirected link
      */
-    public @Nullable Wire addWire(final Wire wire) {
+    public @Nullable Wire addWire(Wire wire) {
 
         Surface aa = wire.a, bb = wire.b;
 

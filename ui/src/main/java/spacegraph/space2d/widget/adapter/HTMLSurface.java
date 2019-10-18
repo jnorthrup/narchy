@@ -35,7 +35,7 @@ public final class HTMLSurface extends AWTSurface {
         HTMLView(String initialURL) {
 
             JLabel lblURL = new JLabel("URL");
-            final JTextField txtURL = new JTextField(initialURL, 30);
+            JTextField txtURL = new JTextField(initialURL, 30);
             JButton btnBrowse = new JButton("Browse");
 
             JPanel panel = new JPanel();

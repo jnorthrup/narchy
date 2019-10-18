@@ -6,11 +6,11 @@ public enum MapSwitch { ;
     /** TODO decide initialization semantics */
     public static <X> ButtonSet the(Map<X,Runnable> x) {
 
-        final int[] initialButton = {-1};
+        int[] initialButton = {-1};
 
         ToggleButton[] b = new ToggleButton[x.size()];
 
-        final int[] i = {0};
+        int[] i = {0};
         for (Map.Entry<X, Runnable> entry : x.entrySet()) {
             X xx = entry.getKey();
             Runnable r = entry.getValue();

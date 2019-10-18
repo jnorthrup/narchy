@@ -11,12 +11,12 @@ import java.util.function.Function;
 /** canonical subterm sorting and permutation wrapping for advanced interning */
 public class SortedSubterms {
 
-    public static Subterms the(final Term[] x, Function<Term[],Subterms> b) {
+    public static Subterms the(Term[] x, Function<Term[],Subterms> b) {
         return the(x, b, false);
     }
 
     /** @noinspection ArrayEquality*/
-    public static Subterms the(final Term[] x, Function<Term[],Subterms> b, boolean dedup) {
+    public static Subterms the(Term[] x, Function<Term[],Subterms> b, boolean dedup) {
 
         switch (x.length) {
             case 1:

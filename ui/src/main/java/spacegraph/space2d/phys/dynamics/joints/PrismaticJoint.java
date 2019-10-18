@@ -319,7 +319,7 @@ public class PrismaticJoint extends Joint {
     }
 
     @Override
-    public void initVelocityConstraints(final SolverData data) {
+    public void initVelocityConstraints(SolverData data) {
         m_indexA = A.island;
         m_indexB = B.island;
         m_localCenterA.set(A.sweep.localCenter);
@@ -339,12 +339,12 @@ public class PrismaticJoint extends Joint {
         v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
-        final Rot qA = pool.popRot();
-        final Rot qB = pool.popRot();
-        final v2 d = pool.popVec2();
-        final v2 temp = pool.popVec2();
-        final v2 rA = pool.popVec2();
-        final v2 rB = pool.popVec2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 d = pool.popVec2();
+        v2 temp = pool.popVec2();
+        v2 rA = pool.popVec2();
+        v2 rB = pool.popVec2();
 
         qA.set(aA);
         qB.set(aB);
@@ -428,7 +428,7 @@ public class PrismaticJoint extends Joint {
             m_impulse.scaled(data.step.dtRatio);
             m_motorImpulse *= data.step.dtRatio;
 
-            final v2 P = pool.popVec2();
+            v2 P = pool.popVec2();
             temp.set(m_axis).scaled(m_motorImpulse + m_impulse.z);
             P.set(m_perp).scaled(m_impulse.x).added(temp);
 
@@ -459,7 +459,7 @@ public class PrismaticJoint extends Joint {
     }
 
     @Override
-    public void solveVelocityConstraints(final SolverData data) {
+    public void solveVelocityConstraints(SolverData data) {
         v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
         v2 vB = data.velocities[m_indexB];
@@ -468,7 +468,7 @@ public class PrismaticJoint extends Joint {
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
 
-        final v2 temp = pool.popVec2();
+        v2 temp = pool.popVec2();
 
         
         if (m_enableMotor && m_limitState != LimitState.EQUAL) {
@@ -480,7 +480,7 @@ public class PrismaticJoint extends Joint {
             m_motorImpulse = MathUtils.clamp(m_motorImpulse + impulse, -maxImpulse, maxImpulse);
             impulse = m_motorImpulse - oldImpulse;
 
-            final v2 P = pool.popVec2();
+            v2 P = pool.popVec2();
             P.set(m_axis).scaled(impulse);
             float LA = impulse * m_a1;
             float LB = impulse * m_a2;
@@ -496,7 +496,7 @@ public class PrismaticJoint extends Joint {
             pool.pushVec2(1);
         }
 
-        final v2 Cdot1 = pool.popVec2();
+        v2 Cdot1 = pool.popVec2();
         temp.set(vB).subbed(vA);
         Cdot1.x = v2.dot(m_perp, temp) + m_s2 * wB - m_s1 * wA;
         Cdot1.y = wB - wA;
@@ -507,12 +507,12 @@ public class PrismaticJoint extends Joint {
             temp.set(vB).subbed(vA);
             float Cdot2 = v2.dot(m_axis, temp) + m_a2 * wB - m_a1 * wA;
 
-            final v3 Cdot = pool.popVec3();
+            v3 Cdot = pool.popVec3();
             Cdot.set(Cdot1.x, Cdot1.y, Cdot2);
 
-            final v3 f1 = pool.popVec3();
+            v3 f1 = pool.popVec3();
 
-            final v3 df = pool.popVec3();
+            v3 df = pool.popVec3();
 
             f1.set(m_impulse);
             Cdot.negated();
@@ -528,8 +528,8 @@ public class PrismaticJoint extends Joint {
 
             
             
-            final v2 b = pool.popVec2();
-            final v2 f2r = pool.popVec2();
+            v2 b = pool.popVec2();
+            v2 f2r = pool.popVec2();
 
             temp.set(m_K.ez.x, m_K.ez.y).scaled(m_impulse.z - f1.z);
             b.set(Cdot1).negated().subbed(temp);
@@ -543,7 +543,7 @@ public class PrismaticJoint extends Joint {
             df.set(m_impulse);
             df.sub(f1);
 
-            final v2 P = pool.popVec2();
+            v2 P = pool.popVec2();
             temp.set(m_axis).scaled(df.z);
             P.set(m_perp).scaled(df.x).added(temp);
 
@@ -562,14 +562,14 @@ public class PrismaticJoint extends Joint {
             pool.pushVec3(3);
         } else {
             
-            final v2 df = pool.popVec2();
+            v2 df = pool.popVec2();
             m_K.solve22ToOut(Cdot1.negated(), df);
             Cdot1.negated();
 
             m_impulse.x += df.x;
             m_impulse.y += df.y;
 
-            final v2 P = pool.popVec2();
+            v2 P = pool.popVec2();
             P.set(m_perp).scaled(df.x);
             float LA = df.x * m_s1 + df.y;
             float LB = df.x * m_s2 + df.y;
@@ -595,19 +595,19 @@ public class PrismaticJoint extends Joint {
 
 
     @Override
-    public boolean solvePositionConstraints(final SolverData data) {
+    public boolean solvePositionConstraints(SolverData data) {
 
-        final Rot qA = pool.popRot();
-        final Rot qB = pool.popRot();
-        final v2 rA = pool.popVec2();
-        final v2 rB = pool.popVec2();
-        final v2 d = pool.popVec2();
-        final v2 axis = pool.popVec2();
-        final v2 perp = pool.popVec2();
-        final v2 temp = pool.popVec2();
-        final v2 C1 = pool.popVec2();
+        Rot qA = pool.popRot();
+        Rot qB = pool.popRot();
+        v2 rA = pool.popVec2();
+        v2 rB = pool.popVec2();
+        v2 d = pool.popVec2();
+        v2 axis = pool.popVec2();
+        v2 perp = pool.popVec2();
+        v2 temp = pool.popVec2();
+        v2 C1 = pool.popVec2();
 
-        final v3 impulse = pool.popVec3();
+        v3 impulse = pool.popVec3();
 
         v2 cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
@@ -679,12 +679,12 @@ public class PrismaticJoint extends Joint {
             float k23 = iA * a1 + iB * a2;
             float k33 = mA + mB + iA * a1 * a1 + iB * a2 * a2;
 
-            final Mat33 K = pool.popMat33();
+            Mat33 K = pool.popMat33();
             K.ex.set(k11, k12, k13);
             K.ey.set(k12, k22, k23);
             K.ez.set(k13, k23, k33);
 
-            final v3 C = pool.popVec3();
+            v3 C = pool.popVec3();
             C.x = C1.x;
             C.y = C1.y;
             C.z = C2;
@@ -701,7 +701,7 @@ public class PrismaticJoint extends Joint {
                 k22 = 1.0f;
             }
 
-            final Mat22 K = pool.popMat22();
+            Mat22 K = pool.popMat22();
             K.ex.set(k11, k12);
             K.ey.set(k12, k22);
 
