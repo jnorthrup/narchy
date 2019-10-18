@@ -405,7 +405,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 		long l = readLock();
 		try {
 
-			FasterList<Task> deleteAfter = new FasterList<>(0);
+			FasterList<Task> deleteAfter = new FasterList<>();
 			tree.intersectsWhile(new TimeRange(s, e), (_t) -> {
 				Task t = (Task) _t;
 				if (remove.test(t)) {
