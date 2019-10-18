@@ -230,12 +230,7 @@ public class NTMMemory {
     }
 
     private static double[][] getTensor2(int x, int y) {
-        List<double[]> list = new ArrayList<>();
-        for (int i = 0; i < x; i++) {
-            double[] doubles = new double[y];
-            list.add(doubles);
-        }
-        double[][] tensor = list.toArray(new double[0][]);
+        double[][] tensor = IntStream.range(0, x).mapToObj(i -> new double[y]).toArray(double[][]::new);
 
 
         return tensor;

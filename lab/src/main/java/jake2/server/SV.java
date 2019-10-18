@@ -674,11 +674,8 @@ public final class SV {
 
         boolean wasonground = groundentity != null;
 
-        for (int v : new int[]{0, 1, 2}) {
-            if (ent.avelocity[v] != 0) {
-                SV_AddRotationalFriction(ent);
-                break;
-            }
+        if (IntStream.of(0, 1, 2).anyMatch(v -> ent.avelocity[v] != 0)) {
+            SV_AddRotationalFriction(ent);
         }
 
 
@@ -717,13 +714,7 @@ public final class SV {
             ent.velocity[2] *= newspeed;
         }
 
-        boolean b = false;
-        for (int i : new int[]{2, 1, 0}) {
-            if (ent.velocity[i] != 0) {
-                b = true;
-                break;
-            }
-        }
+        boolean b = IntStream.of(2, 1, 0).anyMatch(i -> ent.velocity[i] != 0);
         if (b) {
             
             

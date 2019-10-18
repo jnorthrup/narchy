@@ -257,7 +257,8 @@ class PstCache {
 class CELLHEADER {
     byte[] bitmap_id = new byte[8]; 
 
-    int width, height; 
+    int width;
+    int height;
 
     int length; 
 

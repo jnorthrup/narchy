@@ -384,13 +384,7 @@ public class a extends GamePanel {
 
 						restartDelay--;
 					} else {
-						boolean b = false;
-						for (int v : new int[]{VK_JUMP, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT}) {
-							if (a[v]) {
-								b = true;
-								break;
-							}
-						}
+						boolean b = IntStream.of(VK_JUMP, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT).anyMatch(v -> a[v]);
 						if (b) {
 
 

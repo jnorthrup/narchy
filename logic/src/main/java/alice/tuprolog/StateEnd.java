@@ -221,13 +221,7 @@ public class StateEnd extends State {
 
                 ArrayList<Term> initGoalBagListOrdered = new ArrayList<>();
                 if ("setof".equals(((Struct) query).name())) {
-                    ArrayList<String> initGoalBagListVar = new ArrayList<>();
-                    for (Term anInitGoalBagList : initGoalBagList) {
-                        if (anInitGoalBagList instanceof Var) {
-                            String name = ((Var) anInitGoalBagList).name();
-                            initGoalBagListVar.add(name);
-                        }
-                    }
+                    ArrayList<String> initGoalBagListVar = initGoalBagList.stream().filter(anInitGoalBagList -> anInitGoalBagList instanceof Var).map(anInitGoalBagList -> ((Var) anInitGoalBagList).name()).collect(Collectors.toCollection(ArrayList::new));
 
                     List<Term> left = new ArrayList<>();
                     left.add(initGoalBagList.get(0));
@@ -291,12 +285,7 @@ public class StateEnd extends State {
                 initGoalBagTemp = (Struct) initGoalBag;
 
                 Object[] t = initGoalBagListOrdered.toArray();
-                List<Term> result = new ArrayList<>();
-                for (Object item : t) {
-                    Term item1 = (Term) item;
-                    result.add(item1);
-                }
-                Term[] t1 = result.toArray(new Term[0]);
+                Term[] t1 = Arrays.stream(t).map(item -> (Term) item).toArray(Term[]::new);
 
 
                 initGoalBag = new Struct(initGoalBagTemp.name(), t1);
@@ -314,12 +303,7 @@ public class StateEnd extends State {
                 }
 
                 Object[] tNoOrd = initBagList.toArray();
-                List<Term> list = new ArrayList<>();
-                for (Object o : tNoOrd) {
-                    Term term = (Term) o;
-                    list.add(term);
-                }
-                Term[] termNoOrd = list.toArray(new Term[0]);
+                Term[] termNoOrd = Arrays.stream(tNoOrd).map(o -> (Term) o).toArray(Term[]::new);
 
 
                 initBag = new Struct(initGoalBagTemp.name(), termNoOrd);

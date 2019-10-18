@@ -18,7 +18,9 @@ public class AnonWithVarShift extends CachedAnon {
     boolean shifting = false;
 
     /** offsets */
-    int indepShift = 0, depShift = 0, queryShift = 0;
+    int indepShift = 0;
+    int depShift = 0;
+    int queryShift = 0;
 
 
     public AnonWithVarShift(int cap, int variableStructure) {
@@ -125,7 +127,9 @@ public class AnonWithVarShift extends CachedAnon {
     }
 
     private static class Shiftability implements Predicate<Term> {
-        int depShiftMax = 0, indepShiftMax = 0, queryShiftMax = 0;
+        int depShiftMax = 0;
+        int indepShiftMax = 0;
+        int queryShiftMax = 0;
 
         @Override
         public boolean test(Term s) {

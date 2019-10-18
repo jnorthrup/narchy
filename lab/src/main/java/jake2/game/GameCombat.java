@@ -117,13 +117,7 @@ public class GameCombat {
             }
         }
 
-        boolean b = false;
-        for (int i : new int[]{Defines.MOVETYPE_PUSH, Defines.MOVETYPE_STOP, Defines.MOVETYPE_NONE}) {
-            if (targ.movetype == i) {
-                b = true;
-                break;
-            }
-        }
+        boolean b = IntStream.of(Defines.MOVETYPE_PUSH, Defines.MOVETYPE_STOP, Defines.MOVETYPE_NONE).anyMatch(i -> targ.movetype == i);
         if (b) {
                                                              
             targ.die.die(targ, inflictor, attacker, damage, point);

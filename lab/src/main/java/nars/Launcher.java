@@ -65,11 +65,7 @@ public class Launcher {
 
         Set<Class<? extends GameX>> envs = new Reflections("nars").getSubTypesOf(GameX.class);
 
-        List<Experiment> list = new ArrayList<>();
-        for (Class<? extends GameX> env : envs) {
-            Experiment experiment = new Experiment(env);
-            list.add(experiment);
-        }
+        List<Experiment> list = envs.stream().map(Experiment::new).collect(toList());
         Surface m = grid(
                 new ObjectSurface(
                         list

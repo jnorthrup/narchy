@@ -71,8 +71,10 @@ public class WheelJoint extends Joint {
 
     private final v2 m_ax = new v2();
     private final v2 m_ay = new v2();
-    private float m_sAx, m_sBx;
-    private float m_sAy, m_sBy;
+    private float m_sAx;
+    private float m_sBx;
+    private float m_sAy;
+    private float m_sBy;
 
     private float m_mass;
     private float m_motorMass;

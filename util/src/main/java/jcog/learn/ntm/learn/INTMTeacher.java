@@ -24,11 +24,7 @@ public interface INTMTeacher {
     NTM[] trainInternal(double[][] input, double[][] knownOutput);
 
     static List<double[]> getMachineOutputs(NTM[] machines) {
-        List<double[]> realOutputs = new ArrayList<>(machines.length);
-        for (NTM machine : machines) {
-            double[] output = machine.getOutput();
-            realOutputs.add(output);
-        }
+        List<double[]> realOutputs = Arrays.stream(machines).map(NTM::getOutput).collect(Collectors.toCollection(() -> new ArrayList<>(machines.length)));
         return realOutputs;
     }
 }

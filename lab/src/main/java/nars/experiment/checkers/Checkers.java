@@ -16,7 +16,8 @@ public class Checkers {
     private final ArrayList<int[]> movementHistory = new ArrayList<>();
     private final Piece[][] pieces;
     private char turn = TURN_DARK;
-    private int remainingJumpX = -1, remainingJumpY = -1;
+    private int remainingJumpX = -1;
+    private int remainingJumpY = -1;
 
     public Checkers() {
         this(8, 8);
@@ -272,12 +273,7 @@ public class Checkers {
                 } else
                     dsts = canJump() ? pieceCouldJumpToFrom(srcX, srcY) : pieceCouldMoveToFrom(srcX, srcY);
 
-                for (int[] dst : dsts) {
-                    if (dst[0] == dstX && dst[1] == dstY) {
-                        return true;
-                    }
-                }
-                return false;
+                return dsts.stream().anyMatch(dst -> dst[0] == dstX && dst[1] == dstY);
             }
         }
 

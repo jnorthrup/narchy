@@ -11,7 +11,8 @@ import java.util.*;
 public class Level {
     private final Random random = new Random();
 
-    public int w, h;
+    public int w;
+    public int h;
 
     public byte[] tiles;
     public byte[] data;

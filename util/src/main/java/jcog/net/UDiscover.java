@@ -30,7 +30,8 @@ public abstract class UDiscover<P> {
     final AtomicBoolean busy = new AtomicBoolean(false);
     private final P id;
     MulticastSocket ms;
-    private DatagramPacket p, q;
+    private DatagramPacket p;
+    private DatagramPacket q;
     private byte[] myID;
 
 

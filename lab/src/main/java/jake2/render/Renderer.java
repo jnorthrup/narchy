@@ -135,12 +135,7 @@ public class Renderer {
         }
 
         int count = drivers.size();
-        List<String> list = new ArrayList<>();
-        for (Ref driver : drivers) {
-            String name = driver.getName();
-            list.add(name);
-        }
-        String[] names = list.toArray(new String[0]);
+        String[] names = drivers.stream().map(Ref::getName).toArray(String[]::new);
         return names;
     }
 

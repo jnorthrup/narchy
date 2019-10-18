@@ -71,7 +71,8 @@ public abstract class RectDouble1D implements HyperRegion {
     public static class DefaultRect1D extends RectDouble1D {
 
 
-        private final double from, to;
+        private final double from;
+        private final double to;
 
         /**
          * point

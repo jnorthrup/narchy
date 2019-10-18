@@ -96,7 +96,8 @@ public enum Draw {
     @Deprecated
     static final BulletStack stack = new BulletStack();
     private static final float[] glMat = new float[16];
-    private static final v3 a = new v3(), b = new v3();
+    private static final v3 a = new v3();
+    private static final v3 b = new v3();
 
 
     public static void drawCoordSystem(GL gl) {

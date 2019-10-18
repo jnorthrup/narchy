@@ -15,7 +15,8 @@ package nars.time;
 public class When<X> /*extends TimeRange */{
 
     public X x;
-    public long start, end;
+    public long start;
+    public long end;
     public float dur;
 
     public When() {

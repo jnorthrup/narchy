@@ -28,7 +28,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     public final Bitmap2DConcepts<P> concepts;
     public final P src;
 
-    public final int width, height;
+    public final int width;
+    public final int height;
     private FloatFloatToObjectFunction<Truth> mode;
 
     public Bitmap2DSensor(@Nullable Term root, P src, NAR n) {

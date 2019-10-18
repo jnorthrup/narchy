@@ -33,12 +33,15 @@ class ContactPositionConstraint {
     final v2 localPoint = new v2();
     int indexA;
     int indexB;
-    float invMassA, invMassB;
+    float invMassA;
+    float invMassB;
     final v2 localCenterA = new v2();
     final v2 localCenterB = new v2();
-    float invIA, invIB;
+    float invIA;
+    float invIB;
     ManifoldType type;
-    float radiusA, radiusB;
+    float radiusA;
+    float radiusB;
     int pointCount;
 
     public ContactPositionConstraint() {

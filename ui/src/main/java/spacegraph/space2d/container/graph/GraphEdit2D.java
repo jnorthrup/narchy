@@ -445,7 +445,8 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
     class Debugger extends Gridding {
 
-        private final AbstractLabel boundsInfo, children;
+        private final AbstractLabel boundsInfo;
+        private final AbstractLabel children;
 
         {
             add(boundsInfo = new BitmapLabel());
@@ -456,11 +457,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
         void update() {
             boundsInfo.text(GraphEdit2D.this.bounds.toString());
 
-            List<String> list = new ArrayList<>();
-            for (Surface t : GraphEdit2D.this.keySet()) {
-                String info = info(t, getValue(t));
-                list.add(info);
-            }
+            List<String> list = GraphEdit2D.this.keySet().stream().map(t -> info(t, getValue(t))).collect(Collectors.toList());
             children.text(Joiner.on("\n").join(list));
         }
 

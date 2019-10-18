@@ -42,11 +42,13 @@ public class Sweep implements Serializable {
     /**
      * Center world positions
      */
-    public final v2 c0, c;
+    public final v2 c0;
+    public final v2 c;
     /**
      * World angles
      */
-    public float a0, a;
+    public float a0;
+    public float a;
 
     /**
      * Fraction of the current time step in the range [0,1] c0 and a0 are the positions at alpha0.

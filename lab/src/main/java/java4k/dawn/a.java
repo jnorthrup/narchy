@@ -46,7 +46,8 @@ public class a extends GamePanel {
 
     boolean[] key = new boolean[65535];
 	boolean click;
-	int my, mx;
+	int my;
+	int mx;
 	BufferStrategy strategy;
 	
 	static final int TILE_SIZE = 40;

@@ -14,7 +14,8 @@ package nars.experiment.minicraft.side;
 
 public final class Int2 implements java.io.Serializable {
 
-    public int x, y;
+    public int x;
+    public int y;
 
     public Int2(int x, int y) {
         this.x = x;

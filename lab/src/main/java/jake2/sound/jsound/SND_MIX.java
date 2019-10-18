@@ -46,7 +46,8 @@ public class SND_MIX extends SND_JAVA {
     static final int MAX_RAW_SAMPLES = 8192;
 
     static class playsound_t {
-        playsound_t prev, next;
+        playsound_t prev;
+        playsound_t next;
 
         sfx_t sfx;
 

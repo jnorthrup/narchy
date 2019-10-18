@@ -53,7 +53,8 @@ public class Optilive<S,E>  {
     private long currentStart;
 
     Scientist sci = null;
-    private volatile State state = State.Decide, nextState = null;
+    private volatile State state = State.Decide;
+    private volatile State nextState = null;
 
     public Optilive(Supplier<S> subj, Function<Supplier<S>, E> experiment, List<Goal<E>> goals, List<Var<S, ?>> vars, List<Sensor<E, ?>> sensors) {
 

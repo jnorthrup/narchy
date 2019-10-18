@@ -844,13 +844,7 @@ public final class CL {
                 Globals.net_message)) {
 
 
-            boolean b = true;
-            for (int i : new int[]{0, 1, 2, 3}) {
-                if (Globals.net_message.data[i] != -1) {
-                    b = false;
-                    break;
-                }
-            }
+            boolean b = IntStream.of(0, 1, 2, 3).noneMatch(i -> Globals.net_message.data[i] != -1);
             if (b) {
                 
                 ConnectionlessPacket();

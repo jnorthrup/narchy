@@ -398,7 +398,8 @@ public abstract class Image extends Main {
     boolean scrap_dirty;
 
     static class pos_t {
-        int x, y;
+        int x;
+        int y;
 
         pos_t(int x, int y) {
             this.x = x;
@@ -724,7 +725,8 @@ public abstract class Image extends Main {
      */
 
     static class floodfill_t {
-        short x, y;
+        short x;
+        short y;
     }
 
     
@@ -1042,7 +1044,8 @@ public abstract class Image extends Main {
         }
     }
 
-    int upload_width, upload_height;
+    int upload_width;
+    int upload_height;
 
     boolean uploaded_paletted;
 

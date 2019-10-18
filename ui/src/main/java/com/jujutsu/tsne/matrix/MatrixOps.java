@@ -387,10 +387,7 @@ public enum MatrixOps { ;
 	 * @return mean of values in vector
 	 */
 	public static double mean(double [] vector) {
-		double sum = 0.0;
-		for (double v : vector) {
-			sum += v;
-		}
+		double sum = Arrays.stream(vector).sum();
 		return sum/vector.length;
 	}
 
@@ -768,11 +765,7 @@ public enum MatrixOps { ;
 		int cols = matrix[0].length;
 		int rows = matrix.length;
 		double sum = Arrays.stream(matrix).mapToDouble(aMatrix -> {
-			double result = 0.0;
-			for (int i = 0; i < cols; i++) {
-				double v = aMatrix[i];
-				result += v;
-			}
+			double result = Arrays.stream(aMatrix, 0, cols).sum();
 			return result;
 		}).sum();
 
@@ -836,19 +829,12 @@ public enum MatrixOps { ;
 	 * @return sum of all values in the matrix
 	 */
 	public static double sum(double [][] matrix) {
-		double sum = 0.0;
-		for (double[] doubles : matrix) {
-			double v = sum(doubles);
-			sum += v;
-		}
+		double sum = Arrays.stream(matrix).mapToDouble(MatrixOps::sum).sum();
 		return sum;
 	}
 
 	public static double sum(double [] vector) {
-		double res = 0.0;
-		for (double v : vector) {
-			res += v;
-		}
+		double res = Arrays.stream(vector).sum();
 		return res;
 	}
 
@@ -1220,11 +1206,7 @@ public enum MatrixOps { ;
         int N = matrix.length * matrix[0].length;
 
         double total = Arrays.stream(matrix).mapToDouble(aMatrix -> {
-			double sum = 0.0;
-			for (double x : aMatrix) {
-				double v = (x - m) * (x - m);
-				sum += v;
-			}
+			double sum = Arrays.stream(aMatrix).map(x -> (x - m) * (x - m)).sum();
 			return sum;
 		}).sum();
 
@@ -1498,11 +1480,7 @@ public enum MatrixOps { ;
 		if(a.length!=b.length) {
 			throw new IllegalArgumentException("Vectors are not of equal length");
 		}
-		double res = 0.0;
-		for (int i = 0; i < b.length; i++) {
-			double v = a[i] * b[i];
-			res += v;
-		}
+		double res = IntStream.range(0, b.length).mapToDouble(i -> a[i] * b[i]).sum();
 		return res;
 	}
 	
@@ -1611,7 +1589,7 @@ public enum MatrixOps { ;
 		for (int row = 0; row < xs.length; row++) {
 			for (int col = 0; col < xs[0].length; col++) {
 				if(col==0) {
-					xs[row][col] = 1.0;	
+					xs[row][0] = 1.0;
 				} else {
 					xs[row][col] = xstmp[row][col-1];
 				}
@@ -1625,7 +1603,7 @@ public enum MatrixOps { ;
 		for (int i = 0; i < result.length; i++) {
 			for (int j = 0; j < result[0].length; j++) {
 				if(j==0) {
-					result[i][j] = 1.0;
+					result[i][0] = 1.0;
 				} else {
 					result[i][j] = xs[i][j-1];
 				}

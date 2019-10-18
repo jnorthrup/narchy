@@ -49,7 +49,8 @@ public class ArkaNAR extends GameX {
 
     //final int visW = 48, visH = 32;
     //final int visW = 24, visH = 16;
-    static final int visW = 20, visH = 16;
+    static final int visW = 20;
+    static final int visH = 16;
     Bitmap2DSensor<ScaledBitmap2D> cc;
     //final int visW = 8, visH = 6;
 
@@ -265,8 +266,10 @@ public class ArkaNAR extends GameX {
      */
     public class Arkanoid extends Canvas implements KeyListener {
 
-        private int prevScore = 0, prevDie = 0;
-        int score = 0, die = 0;
+        private int prevScore = 0;
+        private int prevDie = 0;
+        int score = 0;
+        int die = 0;
 
 
         public static final int SCREEN_WIDTH = 250;
@@ -345,7 +348,8 @@ public class ArkaNAR extends GameX {
 
         class Rectangle extends GameObject {
 
-            public float x, y;
+            public float x;
+            public float y;
             public float sizeX;
             public float sizeY;
 
@@ -463,7 +467,8 @@ public class ArkaNAR extends GameX {
 
         class Ball extends GameObject {
 
-            public float x, y;
+            public float x;
+            public float y;
             float radius = BALL_RADIUS;
 
 

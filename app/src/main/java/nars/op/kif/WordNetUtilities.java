@@ -66,11 +66,7 @@ public class WordNetUtilities {
     public static  List convertTermList(String termList) {
 
         String[] list = termList.split(" ");
-        List<String> result = new ArrayList<>();
-        for (String s : list) {
-            String bareSUMOTerm = getBareSUMOTerm(s);
-            result.add(bareSUMOTerm);
-        }
+        List<String> result = Arrays.stream(list).map(WordNetUtilities::getBareSUMOTerm).collect(Collectors.toList());
         return result;
     }
 

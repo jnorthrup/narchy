@@ -12,7 +12,8 @@ import java.util.function.Consumer;
 public class IntervalTreeBranch<K extends Comparable<? super K>, V> implements
         IntervalTreeNode<K, V> {
 
-    private IntervalTreeNode<K, V> left, right;
+    private IntervalTreeNode<K, V> left;
+    private IntervalTreeNode<K, V> right;
     private Between<K> key;
 
     public IntervalTreeBranch(IntervalTreeNode<K, V> left, IntervalTreeNode<K, V> right) {

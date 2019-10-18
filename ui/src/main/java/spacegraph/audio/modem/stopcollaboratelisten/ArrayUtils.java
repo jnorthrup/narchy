@@ -40,11 +40,7 @@ import java.util.Arrays;
      */
     public static byte[] concatenate(byte[][] input) {
         //sum the lengths of the columns
-        int totalLength = 0;
-        for (byte[] value : input) {
-            int length = value.length;
-            totalLength += length;
-        }
+        int totalLength = Arrays.stream(input).mapToInt(value -> value.length).sum();
         //create the result array
         byte[] result = new byte[totalLength];
 

@@ -275,13 +275,7 @@ public class NARio extends GameX {
 				//System.out.println(s.mario.x + " " + s.mario.y);
 				byte block = ll.getBlock(Math.round((s.mario.x - 8) / 16f) + dx, Math.round((s.mario.y - 8) / 16f) + dy);
 				byte t = Level.TILE_BEHAVIORS[block & 0xff];
-				boolean breakable = false;
-				for (int i : new int[]{BIT_BREAKABLE, BIT_PICKUPABLE, BIT_BUMPABLE}) {
-					if (((t & i) != 0)) {
-						breakable = true;
-						break;
-					}
-				}
+				boolean breakable = IntStream.of(BIT_BREAKABLE, BIT_PICKUPABLE, BIT_BUMPABLE).anyMatch(i -> ((t & i) != 0));
 				if (breakable)
 					return 2;
 				boolean blocking = ((t & BIT_BLOCK_ALL) != 0);

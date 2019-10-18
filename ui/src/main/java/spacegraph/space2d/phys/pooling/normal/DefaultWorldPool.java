@@ -311,12 +311,7 @@ public class DefaultWorldPool implements IWorldPool {
 
     public final v2[] getVec2Array(int argLength) {
         if (!avecs.containsKey(argLength)) {
-            List<v2> list = new ArrayList<>();
-            for (int i = 0; i < argLength; i++) {
-                v2 v2 = new v2();
-                list.add(v2);
-            }
-            v2[] ray = list.toArray(new v2[0]);
+            v2[] ray = IntStream.range(0, argLength).mapToObj(i -> new v2()).toArray(v2[]::new);
             avecs.put(argLength, ray);
         }
 

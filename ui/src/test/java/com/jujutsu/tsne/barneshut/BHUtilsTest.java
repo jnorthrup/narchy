@@ -46,12 +46,7 @@ public class BHUtilsTest {
         
         Collections.reverse(results);
         DataPoint [] expectedRes = { _items[1], _items[2], _items[0] };
-		List<DataPoint> list = new ArrayList<>();
-		for (int i1 = 0; i1 < expectedRes.length; i1++) {
-			DataPoint dataPoint = results.get(i1);
-			list.add(dataPoint);
-		}
-		DataPoint [] actualRes = list.toArray(new DataPoint[0]);
+		DataPoint [] actualRes = IntStream.range(0, expectedRes.length).mapToObj(results::get).toArray(DataPoint[]::new);
 
         assertArrayEquals(expectedRes, actualRes);
         

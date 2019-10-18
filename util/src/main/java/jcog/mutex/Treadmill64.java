@@ -8,7 +8,8 @@ import java.util.concurrent.atomic.AtomicLongArray;
 public class Treadmill64 implements SpinMutex {
 
     final AtomicLongArray buf;
-    final int size, offset;
+    final int size;
+    final int offset;
     private final AtomicInteger mod = new AtomicInteger(0);
 
 

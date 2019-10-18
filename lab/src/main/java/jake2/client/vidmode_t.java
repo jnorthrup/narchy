@@ -32,7 +32,8 @@ package jake2.client;
  */
 public class vidmode_t {
 	final String description;
-	int width, height;
+	int width;
+    int height;
 	final int mode;
 	
 	vidmode_t (String description, int width, int height, int mode) {

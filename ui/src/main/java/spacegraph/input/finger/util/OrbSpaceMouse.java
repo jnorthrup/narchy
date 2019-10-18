@@ -22,8 +22,10 @@ import static jcog.math.v3.v;
 public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
 
 
-    private int mouseDragPrevX, mouseDragPrevY;
-    private int mouseDragDX, mouseDragDY;
+    private int mouseDragPrevX;
+    private int mouseDragPrevY;
+    private int mouseDragDX;
+    private int mouseDragDY;
     private final v3 gOldPickingPos = v();
 
     private TypedConstraint pickConstraint;

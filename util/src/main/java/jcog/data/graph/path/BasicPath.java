@@ -75,11 +75,7 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
         if (ncnt == 0 || ncnt == 1) return Collections.EMPTY_LIST; //empty
 
 
-        List<E> l = new ArrayList<>();
-        for (FromTo<Node<N, E>, E> nodeEFromTo : fetch(beginIndex, endIndex)) {
-            E id = nodeEFromTo.id();
-            l.add(id);
-        }
+        List<E> l = fetch(beginIndex, endIndex).stream().map(FromTo::id).collect(Collectors.toList());
 
         return l;
     }
@@ -159,12 +155,7 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
     public int count(N n) {
         if (n == null) return 0;
         int s = nodeCount();
-        long count = 0L;
-        for (int ni = 0; ni < s; ni++) {
-            if (n.equals(node(ni))) {
-                count++;
-            }
-        }
+        long count = IntStream.range(0, s).filter(ni -> n.equals(node(ni))).count();
         int cnt = (int) count;
 
         return cnt;

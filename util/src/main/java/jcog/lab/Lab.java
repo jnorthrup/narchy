@@ -157,12 +157,7 @@ public class Lab<X> {
      * @param goal
      */
     public Optimize<X, X> optimize(Consumer<X> procedure, Goal<X> goal) {
-        List<Var<X, ?>> list = new ArrayList<>();
-        for (Var<X, ?> xVar : vars.values()) {
-            if (xVar.ready()) {
-                list.add(xVar);
-            }
-        }
+        List<Var<X, ?>> list = vars.values().stream().filter(Var::ready).collect(toList());
         return optimize(subject, list,(s -> {
                     X ss = s.get();
                     procedure.accept(ss);
@@ -171,12 +166,7 @@ public class Lab<X> {
     }
 
     public <Y> Optimize<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, List<Sensor<Y, ?>> sensors) {
-        List<Var<X, ?>> list = new ArrayList<>();
-        for (Var<X, ?> xVar : vars.values()) {
-            if (xVar.ready()) {
-                list.add(xVar);
-            }
-        }
+        List<Var<X, ?>> list = vars.values().stream().filter(Var::ready).collect(toList());
         return optimize(subject, list, procedure, goal, sensors
         );
     }
@@ -188,11 +178,7 @@ public class Lab<X> {
 
     @SafeVarargs
     public final <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, FloatFunction<Y>... goal) {
-        List<Goal<Y>> list = new ArrayList<>();
-        for (FloatFunction<Y> yFloatFunction : goal) {
-            Goal<Y> yGoal = new Goal<>(yFloatFunction);
-            list.add(yGoal);
-        }
+        List<Goal<Y>> list = Arrays.stream(goal).map(Goal::new).collect(toList());
         return optilive(procedure, list, Collections.EMPTY_LIST);
     }
 
@@ -202,23 +188,13 @@ public class Lab<X> {
     }
 
     public <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, List<Goal<Y>> goal, List<Sensor<Y, ?>> sensors) {
-        List<Var<X, ?>> list = new ArrayList<>();
-        for (Var<X, ?> xVar : vars.values()) {
-            if (xVar.ready()) {
-                list.add(xVar);
-            }
-        }
+        List<Var<X, ?>> list = vars.values().stream().filter(Var::ready).collect(toList());
         return new Optilive<>(subject, procedure, goal,
                 list, sensors);
     }
 
     public <Y> Optimize<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, Lab<Y> sensors) {
-        List<Var<X, ?>> list = new ArrayList<>();
-        for (Var<X, ?> xVar : vars.values()) {
-            if (xVar.ready()) {
-                list.add(xVar);
-            }
-        }
+        List<Var<X, ?>> list = vars.values().stream().filter(Var::ready).collect(toList());
         return optimize(subject, list,
                 procedure, goal, new FasterList(sensors.sensors.values())
         );

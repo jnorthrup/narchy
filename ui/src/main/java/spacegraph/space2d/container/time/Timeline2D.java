@@ -31,8 +31,10 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
     /**
      * viewable range
      */
-    public long start, end;
-    public long startNext, endNext;
+    public long start;
+    public long end;
+    public long startNext;
+    public long endNext;
 
 
     public interface TimeRangeAware {
@@ -373,12 +375,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         @Override
         public Iterable<E> events(long start, long end) {
 
-            List<E> list = new ArrayList<>();
-            for (E x : this) {
-                if (intersects(x, start, end)) {
-                    list.add(x);
-                }
-            }
+            List<E> list = this.stream().filter(x -> intersects(x, start, end)).collect(Collectors.toList());
             return list;
         }
 
@@ -399,7 +396,8 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         int THICKNESS = 2;
         //int DIVISIONS = 10; //TODO
 
-        long start, end;
+        long start;
+        long end;
         private BiConsumer<GL2, ReSurface> paintGrid;
 
         @Override

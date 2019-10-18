@@ -65,13 +65,7 @@ public class PlayerWeapon {
                     }
                     result = true;
                 } else {
-                    boolean b = false;
-                    for (int i : new int[]{29, 34, 39, 48}) {
-                        if ((ent.client.ps.gunframe == i)) {
-                            b = true;
-                            break;
-                        }
-                    }
+                    boolean b = IntStream.of(29, 34, 39, 48).anyMatch(i -> (ent.client.ps.gunframe == i));
                     if (b)
                         if ((Lib.rand() & 15) != 0) result = true;
                     if (!result) {
@@ -154,13 +148,7 @@ public class PlayerWeapon {
                     }
                     result = true;
                 } else {
-                    boolean b = false;
-                    for (int i : new int[]{29, 34, 39, 48}) {
-                        if ((ent.client.ps.gunframe == i)) {
-                            b = true;
-                            break;
-                        }
-                    }
+                    boolean b = IntStream.of(29, 34, 39, 48).anyMatch(i -> (ent.client.ps.gunframe == i));
                     if (b)
                         if ((Lib.rand() & 15) != 0) result = true;
                     if (!result) {

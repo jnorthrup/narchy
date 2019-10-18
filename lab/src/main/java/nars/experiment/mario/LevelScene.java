@@ -22,7 +22,10 @@ public class LevelScene extends Scene implements SpriteContext {
 
     public Level level;
     public final Mario mario;
-    public float xCam, yCam, xCamO, yCamO;
+    public float xCam;
+    public float yCam;
+    public float xCamO;
+    public float yCamO;
     private int tick;
 
     public LevelRenderer layer;

@@ -21,8 +21,12 @@ import net.beadsproject.beads.data.DataBeadReceiver;
 public class ZMap extends UGen implements DataBeadReceiver {
 
     private final int channels;
-    private float a = 1, b;
-    private float o1, o2 = 1, n1, n2 = 1;
+    private float a = 1;
+    private float b;
+    private float o1;
+    private float o2 = 1;
+    private float n1;
+    private float n2 = 1;
     private boolean clip;
     private boolean flipped;
 

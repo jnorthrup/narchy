@@ -181,12 +181,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
                 }
             } else {
                 //replace negative only
-                List<Term> list = new ArrayList<>();
-                for (int i = 0; i < n; i++) {
-                    Term term = (a[i] == fid ? to : term(a[i]));
-                    list.add(term);
-                }
-                tt = list.toArray(new Term[0]);
+                tt = IntStream.range(0, n).mapToObj(i -> (a[i] == fid ? to : term(a[i]))).toArray(Term[]::new);
 
             }
             return new TermList(tt);
@@ -383,12 +378,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
             int s = subterms.length;
             if (ss.subs() != s)
                 return false;
-            for (int i = 0; i < s; i++) {
-                if (!subEquals(i, ss.sub(i))) {
-                    return false;
-                }
-            }
-            return true;
+            return IntStream.range(0, s).allMatch(i -> subEquals(i, ss.sub(i)));
 
         }
         return false;

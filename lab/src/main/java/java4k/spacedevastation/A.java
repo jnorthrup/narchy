@@ -94,9 +94,16 @@ public class A extends Applet implements Runnable {
     private Random rand;
 	private boolean r = true;
 	
-	private int x, y, i, j, k, l;
-	private int dx = 350, dy = 400;
-	private double d1, d2;
+	private int x;
+    private int y;
+    private int i;
+    private int j;
+    private int k;
+    private int l;
+	private int dx = 350;
+    private int dy = 400;
+	private double d1;
+    private double d2;
     private Graphics2D g;
     private Graphics2D[] bg;
     private BufferedImage[] buf;

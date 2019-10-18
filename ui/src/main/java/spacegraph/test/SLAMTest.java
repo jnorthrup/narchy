@@ -113,8 +113,8 @@ public class SLAMTest extends JPanel {
     Se3_F64 leftToRight;
     // Visualized Disparity
     BufferedImage visualDisparity = new BufferedImage(1, 1, TYPE_INT_RGB);
-    BufferedImage visualRect1 = new BufferedImage(1, 1, TYPE_INT_RGB),
-            visualRect2 = new BufferedImage(1, 1, TYPE_INT_RGB);
+    BufferedImage visualRect1 = new BufferedImage(1, 1, TYPE_INT_RGB);
+    BufferedImage visualRect2 = new BufferedImage(1, 1, TYPE_INT_RGB);
     boolean processing = false;
 
     public SLAMTest() {

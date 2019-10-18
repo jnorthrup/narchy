@@ -33,7 +33,8 @@ class JTarTest {
 	private static final int BUFFER = 2048;
 
 	private File dir;
-	static final File tartest, tartestGZ;
+	static final File tartest;
+    static final File tartestGZ;
 
 	static {
 		try {

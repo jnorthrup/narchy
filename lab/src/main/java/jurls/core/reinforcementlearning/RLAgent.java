@@ -102,12 +102,7 @@ public class RLAgent extends LearnerAndActor {
         }
 
         double nextFactor1 = Arrays.stream(memory).mapToDouble(m -> {
-            double sum = 0.0;
-            for (int j = 0; j < m.length; j++) {
-                double d = normalizedState[j] - m[j];
-                double v = d * d;
-                sum += v;
-            }
+            double sum = IntStream.range(0, m.length).mapToDouble(j -> normalizedState[j] - m[j]).map(d -> d * d).sum();
             return sum;
         }).map(sum2 -> 1 / (1 + sum2 * factor1ComponentDivisor)).sum();
         nextFactor1 /= memory.length;
@@ -148,16 +143,11 @@ public class RLAgent extends LearnerAndActor {
     }
 
     public ActionValuePair[] getActionProbabilities(double[] state) {
-        List<ActionValuePair> list = new ArrayList<>();
         int bound = numActions;
-        for (int i = 0; i < bound; i++) {
-            ActionValuePair actionValuePair = new ActionValuePair(
-                    i,
-                    Utils.q(parameterizedFunction, stateAction, state, i)
-            );
-            list.add(actionValuePair);
-        }
-        ActionValuePair[] actionValuePairs = list.toArray(new ActionValuePair[0]);
+        ActionValuePair[] actionValuePairs = IntStream.range(0, bound).mapToObj(i -> new ActionValuePair(
+                i,
+                Utils.q(parameterizedFunction, stateAction, state, i)
+        )).toArray(ActionValuePair[]::new);
 
         return actionSelector.fromQValuesToProbabilities(epsilon, actionValuePairs);
     }

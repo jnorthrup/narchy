@@ -96,11 +96,7 @@ public final class CommonVariable extends UnnormalizedVariable {
         if (cv.length < 2 || cv.length > NAL.unify.UNIFY_COMMON_VAR_MAX)
             return Null;
 
-        MetalTreeSet<Variable> s = new MetalTreeSet<>();
-        for (Object o : cv) {
-            Variable variable = (Variable) o;
-            s.add(variable);
-        }
+        MetalTreeSet<Variable> s = Arrays.stream(cv).map(o -> (Variable) o).collect(Collectors.toCollection(MetalTreeSet::new));
 
         int ss = s.size();
         if (ss < 2 || ss > NAL.unify.UNIFY_COMMON_VAR_MAX)

@@ -47,24 +47,13 @@ public class EmbeddedNAgent extends Agent {
 
         this.env = new Game("agent");
 
-        List<Signal> result = new ArrayList<>();
-        for (int j = 0; j < inputs; j++) {
-            int i1 = j;
-            Signal signal = env.sense($.inh($.the(i1), env.id), () -> senseValue[i1]);
-            result.add(signal);
-        }
-        GameLoop[] sense = result.toArray(new GameLoop[0]);
+        GameLoop[] sense = IntStream.range(0, inputs).mapToObj(i1 -> env.sense($.inh($.the(i1), env.id), () -> senseValue[i1])).toArray(GameLoop[]::new);
 
         SwitchAction act;
-        List<Object> list = new ArrayList<>();
-        for (int i = 0; i < actions; i++) {
-            Object inh = $.inh($.the(i), env.id);
-            list.add(inh);
-        }
         this.env.addSensor(act = new SwitchAction(n, (a) -> {
                 nextAction = a;
                 return true;
-            }, list.toArray(new Term[0]))
+            }, IntStream.range(0, actions).mapToObj(i -> $.inh($.the(i), env.id)).toArray(Term[]::new))
         );
 
         this.env.reward(()->nextReward);

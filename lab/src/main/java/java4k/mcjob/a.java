@@ -315,13 +315,7 @@ public class a extends Applet implements Runnable {
 				nextFrameStartTime += 16666667;
 
 
-				boolean result = true;
-				for (int i1 : new int[]{VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_START, VK_PAUSE}) {
-					if (a[i1]) {
-						result = false;
-						break;
-					}
-				}
+				boolean result = IntStream.of(VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_START, VK_PAUSE).noneMatch(i1 -> a[i1]);
 				if (result) {
 					keysReleased = true;
 				}
@@ -340,13 +334,7 @@ public class a extends Applet implements Runnable {
 					if (showTitle || --gameOver == 0) {
 						gameOver = 1;
 						if (keysReleased) {
-							boolean b = false;
-							for (int v : new int[]{VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_START}) {
-								if (a[v]) {
-									b = true;
-									break;
-								}
-							}
+							boolean b = IntStream.of(VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_START).anyMatch(v -> a[v]);
 							if (b) {
 
 

@@ -57,7 +57,8 @@ public class Mario extends Sprite {
     public int facing;
     private int powerUpTime;
 
-    public int xDeathPos, yDeathPos;
+    public int xDeathPos;
+    public int yDeathPos;
 
     public int deathTime;
     public int winTime;
@@ -583,13 +584,7 @@ public class Mario extends Sprite {
     }
 
     public byte getKeyMask() {
-        int mask = 0;
-        for (int i = 0; i < 7; i++) {
-            if (keys[i]) {
-                int i1 = (1 << i);
-                mask = mask | i1;
-            }
-        }
+        int mask = IntStream.range(0, 7).filter(i -> keys[i]).map(i -> (1 << i)).reduce(0, (a, b) -> a | b);
         return (byte) mask;
     }
 

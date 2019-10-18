@@ -29,9 +29,14 @@ public class CPG {
 
         float input;
 
-        float y, yp, yn;
+        float y;
+        float yp;
+        float yn;
         float gain = 0.05f;//input weight
-        float v1, v2, xp, xn; // state variables
+        float v1;
+        float v2;
+        float xp;
+        float xn; // state variables
 
         float bi =
                 //2.0f;
@@ -45,13 +50,16 @@ public class CPG {
 //        float tau2 = 0.6f; // tau1:tau2 controls shape of osc (stable in range 0.1 - 0.5)
         float tau_R =
                 //0.05f,
-                1f,
-            tau_A = 2f;
+                1f;
+        float tau_A = 2f;
 
         float Si = 0.1f; // controls amplitude of oscillation
 
         //        float dt = 0.005f; // euler step size
-        float dx1, dx2, dv1, dv2; // tmp vars for euler approximation
+        float dx1;
+        float dx2;
+        float dv1;
+        float dv2; // tmp vars for euler approximation
 
 
         // to model periodic input

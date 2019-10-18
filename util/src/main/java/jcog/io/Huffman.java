@@ -941,7 +941,9 @@ public class Huffman {
     }
 
     static class HuffConfig {
-        int maxSymbolLength, maxSymbols, maxTreeDepth;
+        int maxSymbolLength;
+        int maxSymbols;
+        int maxTreeDepth;
         long maxSymbolCacheSize;
         boolean twoPass;
     }
@@ -1015,10 +1017,13 @@ public class Huffman {
     //find out what symbols are really used during compression and add to freqList
     class FUGenerator implements Runnable {
         final Stream<byte[]> workQueue;
-        int startIdx, endIdx, symbIdx;
+        int startIdx;
+        int endIdx;
+        int symbIdx;
         byte[] symbol;
         ByteAry bAry;
-        Integer weight, oldWeight;
+        Integer weight;
+        Integer oldWeight;
 
         FUGenerator(Stream<byte[]> workQueue) {
             this.workQueue = workQueue;
@@ -1089,7 +1094,8 @@ public class Huffman {
     }
 
     static class HuffmanNode extends HuffmanTree {
-        final HuffmanTree left, right;
+        final HuffmanTree left;
+        final HuffmanTree right;
 
         HuffmanNode(HuffmanTree lef, HuffmanTree rit, int nodeID) {
             super(lef.frequency + rit.frequency, nodeID);

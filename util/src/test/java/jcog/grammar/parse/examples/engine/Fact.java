@@ -179,12 +179,7 @@ public class Fact extends Structure implements Axiom, DynamicAxiom {
 	 * Create an array of (atomic) facts from an array of objects.
 	 */
 	static Fact[] facts(Object[] objects) {
-		List<Atom> list = new ArrayList<>();
-		for (Object object : objects) {
-			Atom atom = new Atom(object);
-			list.add(atom);
-		}
-		Fact[] facts = list.toArray(new Fact[0]);
+		Fact[] facts = Arrays.stream(objects).map(Atom::new).toArray(Fact[]::new);
         return facts;
 	}
 

@@ -11,7 +11,8 @@ public class Buffer {
 
     final String bufferName;
 
-    private CursorPosition currentCursor = new CursorPosition(0, 0), mark = new CursorPosition(0, 0);
+    private CursorPosition currentCursor = new CursorPosition(0, 0);
+    private CursorPosition mark = new CursorPosition(0, 0);
 
     public final FastCoWList<BufferLine> lines = new FastCoWList<>(BufferLine[]::new);
 

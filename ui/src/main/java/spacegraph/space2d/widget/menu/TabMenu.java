@@ -42,11 +42,7 @@ public class TabMenu extends Menu {
         super(options, view);
         items.clear();
         Gridding tabs = new Gridding();
-        List<Surface> list = new ArrayList<>();
-        for (Map.Entry<String, Supplier<Surface>> x : options.entrySet()) {
-            Surface toggle = toggle(buttonBuilder, x.getKey(), x.getValue());
-            list.add(toggle);
-        }
+        List<Surface> list = options.entrySet().stream().map(x -> toggle(buttonBuilder, x.getKey(), x.getValue())).collect(toList());
         tabs.set(list);
 
         wrap = new Splitting(tabs, 0, content.view());

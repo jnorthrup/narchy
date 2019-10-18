@@ -42,12 +42,9 @@ public class UVector {
 
     public double sumGradientValueProducts() {
         double[] value = this.value;
-        double s = 0.0;
+        double s;
         int bound = value.length;
-        for (int i = 0; i < bound; i++) {
-            double v = value[i] * grad[i];
-            s += v;
-        }
+        s = IntStream.range(0, bound).mapToDouble(i -> value[i] * grad[i]).sum();
         return s;
     }
 
@@ -79,12 +76,9 @@ public class UVector {
 
         double[] v = this.value;
 
-        double s = 0.0;
+        double s;
         int bound = size();
-        for (int j = 0; j < bound; j++) {
-            double v1 = v[j] * input[j];
-            s += v1;
-        }
+        s = IntStream.range(0, bound).mapToDouble(j -> v[j] * input[j]).sum();
         return s;
     }
 }

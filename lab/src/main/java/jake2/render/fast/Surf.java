@@ -602,13 +602,7 @@ public abstract class Surf extends Draw {
 
         boolean rotated;
         float[] ea = e.angles;
-        boolean b = false;
-        for (int v : new int[]{0, 1, 2}) {
-            if (ea[v] != 0) {
-                b = true;
-                break;
-            }
-        }
+        boolean b = IntStream.of(0, 1, 2).anyMatch(v -> ea[v] != 0);
         if (b) {
             rotated = true;
 

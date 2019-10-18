@@ -144,9 +144,17 @@ public class Z extends GamePanel {
     boolean[] keyboard = new boolean[0x10000];
 
 	
-	int i, j, k, m, n;
-	float x, y, z, r;
-	float dx, dz;
+	int i;
+	int j;
+	int k;
+	int m;
+	int n;
+	float x;
+	float y;
+	float z;
+	float r;
+	float dx;
+	float dz;
 
 	int buildings;
 	int[] buildingX;
@@ -159,20 +167,29 @@ public class Z extends GamePanel {
 	long deadTime; 
 
 	
-	float playerX, playerY, playerZ; 
-	float playerA, sinPlayerA, cosPlayerA; 
-	boolean attacking, lastAttacking; 
+	float playerX;
+	float playerY;
+	float playerZ;
+	float playerA;
+	float sinPlayerA;
+	float cosPlayerA;
+	boolean attacking;
+	boolean lastAttacking;
 	int blood; 
 
 	
-	int px, pz; 
-	int ex, ez; 
-	int tx, tz; 
+	int px;
+	int pz;
+	int ex;
+	int ez;
+	int tx;
+	int tz;
 
 	
 	int c; 
 	int tileType; 
-	float rx, rz; 
+	float rx;
+	float rz;
 	boolean draw; 
 	boolean outside; 
 	boolean drawEntity; 
@@ -186,7 +203,9 @@ public class Z extends GamePanel {
 
 	
 	int dst; 
-	int sy, lsy, msy; 
+	int sy;
+	int lsy;
+	int msy;
 	float[] heightY = new float[DEPTH]; 
 	float[] heightYT = new float[DEPTH]; 
 	int[] heightSY = new int[DEPTH]; 
@@ -194,7 +213,8 @@ public class Z extends GamePanel {
 	
 	int[] drawList1 = new int[ENTITIES];
 	int[] drawList2 = new int[ENTITIES];
-	int drawCount1, drawCount2;
+	int drawCount1;
+	int drawCount2;
 
 	
 	int[] entityS = new int[ENTITIES]; 

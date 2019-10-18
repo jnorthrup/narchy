@@ -143,7 +143,8 @@ public class Evaluator extends HeapTermTransform {
     }
 
     private static final class EvaluationTrueFalseFiltered extends Evaluation {
-        private final boolean includeTrues, includeFalses;
+        private final boolean includeTrues;
+        private final boolean includeFalses;
 
         EvaluationTrueFalseFiltered(Predicate<Term> each, boolean includeTrues, boolean includeFalses) {
             super(each);

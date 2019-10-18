@@ -293,13 +293,7 @@ public class PlayerClient {
             return;
         }
 
-        boolean b = false;
-        for (String s : Arrays.asList("jail2", "jail4", "mine1", "mine2", "mine3", "mine4", "lab", "boss1", "fact3", "biggun", "space", "command", "power2", "strike")) {
-            if ((Lib.Q_stricmp(GameBase.level.mapname, s) == 0)) {
-                b = true;
-                break;
-            }
-        }
+        boolean b = Stream.of("jail2", "jail4", "mine1", "mine2", "mine3", "mine4", "lab", "boss1", "fact3", "biggun", "space", "command", "power2", "strike").anyMatch(s -> (Lib.Q_stricmp(GameBase.level.mapname, s) == 0));
         if (b) {
             
             self.think = PlayerClient.SP_FixCoopSpots;

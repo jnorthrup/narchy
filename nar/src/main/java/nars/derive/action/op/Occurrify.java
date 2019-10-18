@@ -71,7 +71,8 @@ public class Occurrify extends TimeGraph {
     //    int novelPoints = 1;
 //    int sameAsPatternRootPoints = 1;
     private transient boolean decomposeEvents;
-    private transient int patternVolumeMin, patternVolumeMax;
+    private transient int patternVolumeMin;
+    private transient int patternVolumeMax;
 
 
 
@@ -301,13 +302,7 @@ public class Occurrify extends TimeGraph {
                 imageNormalize(beliefEvent);
         }
 
-        boolean b = false;
-        for (Term term : Arrays.asList(taskTerm, beliefTerm, pattern)) {
-            if (term.hasAny(NEG)) {
-                b = true;
-                break;
-            }
-        }
+        boolean b = Stream.of(taskTerm, beliefTerm, pattern).anyMatch(term -> term.hasAny(NEG));
         autoneg = (b);
 
 

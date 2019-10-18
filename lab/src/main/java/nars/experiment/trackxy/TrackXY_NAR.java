@@ -42,10 +42,10 @@ import static spacegraph.SpaceGraph.window;
 public class TrackXY_NAR extends GameX {
 
 	static boolean
-		sourceNumerics = true,
-		targetNumerics = false,
-		targetCam = !targetNumerics,
-		gui = true;
+		sourceNumerics = true;
+	static boolean targetNumerics = false;
+	static boolean targetCam = !targetNumerics;
+	static boolean gui = true;
 
 	//W = 3, H = 1;
 	//W = 5, H = 1;

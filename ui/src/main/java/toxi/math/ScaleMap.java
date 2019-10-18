@@ -47,7 +47,8 @@ public class ScaleMap {
     protected double interval;
     protected double mapRange;
 
-    protected DoubleRange in, out;
+    protected DoubleRange in;
+    protected DoubleRange out;
 
     /**
      * Creates a new instance to map values between the 2 number ranges

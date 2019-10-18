@@ -82,13 +82,9 @@ public class RowVars {
                 String simpleFS = f.theFormula.substring(start, end + 1);
                 Formula simpleF = new Formula();
                 simpleF.read(simpleFS);
-                long count = 0L;
+                long count;
                 int bound = simpleF.listLength();
-                for (int i = 0; i < bound; i++) {
-                    if (simpleF.getArgument(i).startsWith(Formula.V_PREF)) {
-                        count++;
-                    }
-                }
+                count = IntStream.range(0, bound).filter(i -> simpleF.getArgument(i).startsWith(Formula.V_PREF)).count();
                 int nonRowVar = (int) count;
 
                 if (kb.kbCache != null && kb.kbCache.valences != null &&
@@ -287,11 +283,7 @@ public class RowVars {
             result = newresult;
         }
 
-        ArrayList<Formula> formulas = new ArrayList<>();
-        for (String s : result) {
-            Formula formula = new Formula(s);
-            formulas.add(formula);
-        }
+        ArrayList<Formula> formulas = result.stream().map(Formula::new).collect(Collectors.toCollection(ArrayList::new));
         formresult = formulas;
         if (DEBUG)
             System.out.println("Info in RowVars.expandRowVars(): exiting with: " + formresult);

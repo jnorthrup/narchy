@@ -79,7 +79,10 @@ public class SingletonVD {
     private final Edge[] edges = new Edge[0x10000]; 
     private final int[] boundaries = new int[0x200];
     private int boundariesCount = 0;
-    private float maxX, minX, minY, maxY;
+    private float maxX;
+    private float minX;
+    private float minY;
+    private float maxY;
     private final double[] comparer = new double[0x302]; 
     private final boolean[] validCorners = new boolean[4]; 
     private int[] polygon; 

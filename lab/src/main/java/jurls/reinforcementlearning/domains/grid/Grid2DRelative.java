@@ -7,7 +7,8 @@ import java.awt.image.BufferedImage;
 
 public class Grid2DRelative implements World {
 
-    private final int width, height;
+    private final int width;
+    private final int height;
 
     private final double REWARD_MAGNITUDE;
     private final double JUMP_FRACTION;

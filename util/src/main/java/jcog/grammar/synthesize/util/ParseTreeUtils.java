@@ -176,11 +176,7 @@ public class ParseTreeUtils {
     }
 
     public static List<ParseTreeNode> getParseTreeAlt(MultiAlternationNode node) {
-        List<ParseTreeNode> parseTreeNodes = new ArrayList<>();
-        for (Node child : node.getChildren()) {
-            ParseTreeMultiAlternationNode parseTreeMultiAlternationNode = new ParseTreeMultiAlternationNode(node, getParseTreeRepConst(child));
-            parseTreeNodes.add(parseTreeMultiAlternationNode);
-        }
+        List<ParseTreeNode> parseTreeNodes = node.getChildren().stream().map(child -> new ParseTreeMultiAlternationNode(node, getParseTreeRepConst(child))).collect(Collectors.toList());
         return parseTreeNodes;
     }
 
@@ -232,13 +228,8 @@ public class ParseTreeUtils {
     }
 
     public static List<ParseTreeNode>[] getDescendantsByType(ParseTreeNode node) {
-        List<List<ParseTreeNode>> list = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            List<ParseTreeNode> parseTreeNodes = new ArrayList<>();
-            list.add(parseTreeNodes);
-        }
         @SuppressWarnings("unchecked")
-        List<ParseTreeNode>[] descendants = list.toArray(new List[0]);
+        List<ParseTreeNode>[] descendants = IntStream.range(0, 2).<List<ParseTreeNode>>mapToObj(i -> new ArrayList<>()).toArray(List[]::new);
         getDescendantsByTypeHelper(node, descendants);
         return descendants;
     }
@@ -249,11 +240,7 @@ public class ParseTreeUtils {
         } else if (node instanceof ParseTreeRepetitionNode) {
             ParseTreeRepetitionNode repNode = (ParseTreeRepetitionNode) node;
 
-            List<ParseTreeNode> newRep = new ArrayList<>();
-            for (ParseTreeNode rep : repNode.rep) {
-                ParseTreeNode substitute = getSubstitute(rep, cur, sub);
-                newRep.add(substitute);
-            }
+            List<ParseTreeNode> newRep = repNode.rep.stream().map(rep -> getSubstitute(rep, cur, sub)).collect(Collectors.toList());
 
             return new ParseTreeRepetitionNode(repNode.node,
                     getSubstitute(repNode.start, cur, sub),

@@ -26,15 +26,29 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     ArrayList<Debris> explosionList;
     Timer timer;
     int shopSelection;
-    int level, credits, lives;
+    int level;
+    int credits;
+    int lives;
     int numAsteroids;
     int numDebris;
     int bulletDeathCounter;
 
     int starPositionSeed;
-    boolean upKey, downKey, leftKey, rightKey, spaceKey, shiftKey, SKey, DKey, PKey, FKey, escKey, RKey;
+    boolean upKey;
+    boolean downKey;
+    boolean leftKey;
+    boolean rightKey;
+    boolean spaceKey;
+    boolean shiftKey;
+    boolean SKey;
+    boolean DKey;
+    boolean PKey;
+    boolean FKey;
+    boolean escKey;
+    boolean RKey;
     boolean isExplosionShip;
-    boolean isMainInstr, instrSwitched;
+    boolean isMainInstr;
+    boolean instrSwitched;
     boolean pauseKeyActivated;
     boolean selectionMoved;
     boolean spaceKeyActivated;
@@ -472,12 +486,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
             }
         }
         int bound = object2.drawShape.npoints;
-        for (int i = 0; i < bound; i++) {
-            if (object1.drawShape.contains(object2.drawShape.xpoints[i], object2.drawShape.ypoints[i]) && object1.active && object2.active) {
-                return true;
-            }
-        }
-        return false;
+        return IntStream.range(0, bound).anyMatch(i -> object1.drawShape.contains(object2.drawShape.xpoints[i], object2.drawShape.ypoints[i]) && object1.active && object2.active);
 
     }
 

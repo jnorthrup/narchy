@@ -90,12 +90,7 @@ public class QueueWheelModel extends HashedWheelTimer.WheelModel {
 
 	@Override
 	public boolean isEmpty() {
-		for (Queue<TimedFuture> timedFutures : q) {
-			if (!timedFutures.isEmpty()) {
-				return false;
-			}
-		}
-		return true;
+		return Arrays.stream(q).allMatch(Collection::isEmpty);
 	}
 
 

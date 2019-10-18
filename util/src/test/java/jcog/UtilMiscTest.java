@@ -44,12 +44,7 @@ class UtilMiscTest {
     @Test
     void testCurveSawtooth() {
         int N = 32;
-        List<Integer> list = new ArrayList<>();
-        for (int i = 0; i < N; i++) {
-            Integer round = Math.round(Util.sawtoothCurved((float) i / (N - 1)) * N);
-            list.add(round);
-        }
-        Integer[] x = list.toArray(new Integer[0]);
+        Integer[] x = IntStream.range(0, N).mapToObj(i -> Math.round(Util.sawtoothCurved((float) i / (N - 1)) * N)).toArray(Integer[]::new);
         System.out.println(SparkLine.render(x));
     }
     @Test

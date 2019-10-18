@@ -140,11 +140,7 @@ public enum MetaGoal {
             //if (Math.abs(c) > Float.MIN_NORMAL) {
             //valued = true;
             //}
-            double v = 0.0;
-            for (int w = 0; w < want.length; w++) {
-                double v1 = want[w] * credit[w];
-                v += v1;
-            }
+            double v = IntStream.range(0, want.length).mapToDouble(w -> want[w] * credit[w]).sum();
 
             ci.value(
                 //valued ? (float)v : Float.NaN

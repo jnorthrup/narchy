@@ -24,8 +24,11 @@ public class TapOut extends UGen {
     private float delay;
     private final float sampsPerMS;
     private InterpolationType mode;
-    private int sampDelayInt, sampDelayAPInt;
-    private float lastY, sampDelayFloat, g;
+    private int sampDelayInt;
+    private int sampDelayAPInt;
+    private float lastY;
+    private float sampDelayFloat;
+    private float g;
 
     /**
      * The delayed signal will not be interpolated from the memory buffer.

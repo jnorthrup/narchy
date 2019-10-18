@@ -35,7 +35,8 @@ import java.util.Objects;
 public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, MenuSupplier {
 
     private final Term term;
-    private final TruthGrid beliefGrid, goalGrid;
+    private final TruthGrid beliefGrid;
+    private final TruthGrid goalGrid;
 
     public final FloatRange rangeDurs = new FloatRange(32, 0.5f, 2048f);
 
@@ -45,7 +46,8 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
      * (if > 0): draw additional projection wave to show truthpolation values for a set of evenly spaced points on the visible range
      */
 
-    private long start, end;
+    private long start;
+    private long end;
     private long now;
 
     @Override
@@ -134,8 +136,10 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
     class TruthGrid extends PaintSurface {
 
-        private final TruthWave projected, tasks;
-        private final Colorize colorizeLine, colorizeFill;
+        private final TruthWave projected;
+        private final TruthWave tasks;
+        private final Colorize colorizeLine;
+        private final Colorize colorizeFill;
         private static final float taskWidthMin = 0.005f;
         private static final float taskHeightMin = 0.04f;
         private final int projections;

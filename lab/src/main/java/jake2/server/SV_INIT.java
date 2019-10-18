@@ -409,13 +409,7 @@ public class SV_INIT {
         
         if (firstmap.length() == 0)
         {
-            boolean b = true;
-            for (String s : Arrays.asList(".cin", ".pcx", ".dm2")) {
-                if (levelstring.endsWith(s)) {
-                    b = false;
-                    break;
-                }
-            }
+            boolean b = Stream.of(".cin", ".pcx", ".dm2").noneMatch(levelstring::endsWith);
             if (b)
         	{
         		int pos = levelstring.indexOf('+');

@@ -132,7 +132,8 @@ public class CM {
             map_leafs[n] = new cleaf_t();
     }
 
-    static int emptyleaf, solidleaf;
+    static int emptyleaf;
+    static int solidleaf;
 
     static int numleafbrushes;
 
@@ -971,7 +972,8 @@ public class CM {
     }
 
 
-    private static int leaf_count, leaf_maxcount;
+    private static int leaf_count;
+    private static int leaf_maxcount;
 
     private static int[] leaf_list;
 
@@ -1069,13 +1071,7 @@ public class CM {
 
         
         if (headnode != box_headnode) {
-            boolean b = false;
-            for (int i : new int[]{0, 1, 2}) {
-                if (angles[i] != 0) {
-                    b = true;
-                    break;
-                }
-            }
+            boolean b = IntStream.of(0, 1, 2).anyMatch(i -> angles[i] != 0);
             if (b) {
                 Math3D.AngleVectors(angles, forward, right, up);
 

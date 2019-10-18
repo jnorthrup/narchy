@@ -16,9 +16,15 @@ import static jcog.math.v3.v;
  * one retina pixel
  */
 public class RetinaPixel extends Collisions.RayResultCallback {
-    public v3 localPosition, worldPosition;
-    public v3 localDirection, worldTarget, worldHit = v();
-    float r, g, b, a;
+    public v3 localPosition;
+    public v3 worldPosition;
+    public v3 localDirection;
+    public v3 worldTarget;
+    public v3 worldHit = v();
+    float r;
+    float g;
+    float b;
+    float a;
     public float rangeMax;
     private final SimpleSpatial parent;
     private final VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();

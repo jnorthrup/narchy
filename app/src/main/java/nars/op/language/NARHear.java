@@ -118,11 +118,7 @@ public class NARHear extends Loop {
 
 
     public static @NotNull List<Term> tokenize(String msg) {
-        List<Term> list = new ArrayList<>();
-        for (Twokenize.Span span : Twokenize.tokenize(msg)) {
-            Term term = Twenglish.spanToTerm(span);
-            list.add(term);
-        }
+        List<Term> list = Twokenize.tokenize(msg).stream().map(Twenglish::spanToTerm).collect(Collectors.toList());
         return list;
     }
 

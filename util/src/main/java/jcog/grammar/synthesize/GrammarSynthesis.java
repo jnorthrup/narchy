@@ -73,11 +73,7 @@ public class GrammarSynthesis {
     }
 
     public static Grammar getRegularGrammarMultiple(Collection<String> examples, Predicate<String> oracle) {
-        List<Node> roots = new ArrayList<>();
-        for (String example : examples) {
-            Node node = getNode(example, oracle);
-            roots.add(node);
-        }
+        List<Node> roots = examples.stream().map(example -> getNode(example, oracle)).collect(Collectors.toList());
         return getRegularGrammarMultipleFromRoots(roots, oracle);
     }
 

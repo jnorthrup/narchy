@@ -8,7 +8,8 @@ public class CosineSimilarityFunction implements ISimilarityFunction
 {
 
     double uv;
-    double uNorm, vNorm;
+    double uNorm;
+    double vNorm;
 
     @Override
     public Unit calculate(Unit[] u, Unit[] v) {

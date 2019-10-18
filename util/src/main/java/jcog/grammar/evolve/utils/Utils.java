@@ -246,12 +246,8 @@ public class Utils {
 
                 int end = Math.min(i + n, word.length());
 
-                StringBuilder sb = new StringBuilder();
-                for (int c = i; c < end; c++) {
-                    String escape = escape(word.charAt(c));
-                    sb.append(escape);
-                }
-                String builder = sb.toString();
+                String sb = IntStream.range(i, end).mapToObj(c -> escape(word.charAt(c))).collect(Collectors.joining());
+                String builder = sb;
                 /* estimate */
                 subparts.add(builder);
             }

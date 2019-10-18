@@ -52,7 +52,8 @@ public class SV_WORLD {
 
     public static edict_t[] area_list;
 
-    public static int area_count, area_maxcount;
+    public static int area_count;
+    public static int area_maxcount;
 
     public static int area_type;
 

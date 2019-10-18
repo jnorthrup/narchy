@@ -147,11 +147,7 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
                             v = rgb[3];
                             break;
                         case RGB:
-                            int sum = 0;
-                            for (int i : new int[]{1, 2, 3}) {
-                                int i1 = rgb[i];
-                                sum += i1;
-                            }
+                            int sum = IntStream.of(1, 2, 3).map(i -> rgb[i]).sum();
                             v = (sum) / 3f;
                             break;
                         default:
@@ -169,11 +165,7 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
                             v = rgb[2];
                             break;
                         case RGB:
-                            int sum = 0;
-                            for (int i : new int[]{0, 1, 2}) {
-                                int i1 = rgb[i];
-                                sum += i1;
-                            }
+                            int sum = IntStream.of(0, 1, 2).map(i -> rgb[i]).sum();
                             v = (sum) / 3f;
                             break;
                         default:

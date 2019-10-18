@@ -60,12 +60,7 @@ public class ListMatch extends UnaryOperator {
             return false;
         }
 
-        for (Node node : root.children()) {
-            if (!checkValid(node)) {
-                return false;
-            }
-        }
-        return true;
+        return root.children().stream().allMatch(ListMatch::checkValid);
     }
 
     @Override

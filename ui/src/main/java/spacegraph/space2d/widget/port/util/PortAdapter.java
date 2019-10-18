@@ -22,7 +22,8 @@ public class PortAdapter<X,Y> extends Widget {
     public final TypedPort<Y> y; //HACK
 
     /** current enabled strategy (selection index) */
-    volatile int whichXY = -1, whichYX = -1;
+    volatile int whichXY = -1;
+    volatile int whichYX = -1;
 
     public PortAdapter( Class<? super X> xClass, List<Function/*<X,Y>*/> fxy, Class<? super Y> yClass, List<Function/*<Y,X>*/> fyx) {
         super();

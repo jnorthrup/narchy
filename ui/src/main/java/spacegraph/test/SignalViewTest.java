@@ -324,13 +324,7 @@ public class SignalViewTest {
 
 
         private List<SensorStatus> manifest() {
-            List<SensorStatus> list = new ArrayList<>();
-            for (Sensor sensor : sensors.values()) {
-                if (sensor.on()) {
-                    SensorStatus status = sensor.status();
-                    list.add(status);
-                }
-            }
+            List<SensorStatus> list = sensors.values().stream().filter(Sensor::on).map(Sensor::status).collect(toList());
             return list;
         }
 

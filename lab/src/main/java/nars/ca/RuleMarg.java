@@ -110,13 +110,7 @@ public class RuleMarg {
 		int iCnt, iNewCnt;
 
 
-		boolean b = true;
-		for (int i : new int[]{0, 1, 2, 3}) {
-			if ((mgCells[i] >= 2)) {
-				b = false;
-				break;
-			}
-		}
+		boolean b = IntStream.of(0, 1, 2, 3).noneMatch(i -> (mgCells[i] >= 2));
 		if (b) {
 			iCnt = 0;
 			if (mgCells[0] > 0)
@@ -172,11 +166,7 @@ public class RuleMarg {
 				mgCellsOld[2] = mgCells[2] = tmpState[c1][r2] = crrState[c1][r2]; 
 				mgCellsOld[3] = mgCells[3] = tmpState[c2][r2] = crrState[c2][r2];
 
-				int sum = 0;
-				for (int v : new int[]{0, 1, 2, 3}) {
-					int mgCell = mgCells[v];
-					sum += mgCell;
-				}
+				int sum = IntStream.of(0, 1, 2, 3).map(v -> mgCells[v]).sum();
 				if ((sum > 0)
 						|| (swapArray[0] > 0)) {
 					SwapMargCells(mgCells); 

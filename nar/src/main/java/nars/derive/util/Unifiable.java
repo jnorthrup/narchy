@@ -80,7 +80,8 @@ public enum Unifiable { ;
 
     static class EventUnifiability extends RelationConstraint<Derivation.PremiseUnify> {
         private static final Atom U = Atomic.atom(EventUnifiability.class.getSimpleName());
-        private final boolean forward, xNeg;
+        private final boolean forward;
+        private final boolean xNeg;
 
         EventUnifiability(Variable conj, Variable x, boolean xNeg) {
             this(conj, x, xNeg, true);

@@ -9,7 +9,8 @@ import jcog.tree.rtree.point.Long1D;
  */
 public class RectLong1D implements HyperRegion {
 
-    public final long min, max;
+    public final long min;
+    public final long max;
 
     /**
      * point

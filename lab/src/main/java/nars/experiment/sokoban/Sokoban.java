@@ -324,13 +324,24 @@ public class Sokoban extends Applet {
 
 
     char[] level;
-    int currlevel, w, h, push, move;
-    int lastcount, pos1, pos2, pos3;
+    int currlevel;
+    int w;
+    int h;
+    int push;
+    int move;
+    int lastcount;
+    int pos1;
+    int pos2;
+    int pos3;
     Rectangle lastrect;
     boolean uc;
 
     char[] savelevel;
-    int savecurrlevel, savew, saveh, savepush, savemove;
+    int savecurrlevel;
+    int savew;
+    int saveh;
+    int savepush;
+    int savemove;
     boolean gamesaved;
 
     Font font = new Font("Helvetica", Font.PLAIN, 12);

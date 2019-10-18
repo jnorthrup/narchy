@@ -37,12 +37,17 @@ public class image_t {
 	public String name=""; 
 	
 	public int type;
-	public int width, height; 
-	public int upload_width, upload_height; 
+	public int width;
+    public int height;
+	public int upload_width;
+    public int upload_height;
 	public int registration_sequence; 
 	public msurface_t texturechain; 
 	public int texnum; 
-	public float sl, tl, sh, th; 
+	public float sl;
+    public float tl;
+    public float sh;
+    public float th;
 	public boolean scrap;
 	public boolean has_alpha;
 

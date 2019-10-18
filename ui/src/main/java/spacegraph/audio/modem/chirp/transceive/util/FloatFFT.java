@@ -5791,7 +5791,7 @@ public strictfp class FloatFFT {
 
         if (ido == 2) {
             for (int k = 1; k <= l1; k++) {
-                int iidx1 = in_off + (3 * k - 2) * ido;
+                int iidx1 = in_off + (3 * k - 2) * 2;
                 int iidx2 = iidx1 + ido;
                 int iidx3 = iidx1 - ido;
                 float i1r = in[iidx1];
@@ -5878,7 +5878,7 @@ public strictfp class FloatFFT {
         int idx0 = l1 * ido;
         if (ido == 2) {
             for (int k = 0; k < l1; k++) {
-                int idxt1 = k * ido;
+                int idxt1 = k * 2;
                 int iidx1 = in_off + 4 * idxt1 + 1;
                 int iidx2 = iidx1 + ido;
                 int iidx3 = iidx2 + ido;
@@ -5996,7 +5996,7 @@ public strictfp class FloatFFT {
 
         if (ido == 2) {
             for (int k = 1; k <= l1; ++k) {
-                int iidx1 = in_off + (5 * k - 4) * ido + 1;
+                int iidx1 = in_off + (5 * k - 4) * 2 + 1;
                 int iidx2 = iidx1 + ido;
                 int iidx3 = iidx1 - ido;
                 int iidx4 = iidx2 + ido;

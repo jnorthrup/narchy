@@ -844,12 +844,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
             dialog.setVisible(true);
             Object o = pane.getValue();
             if (o != null && (Integer) o == JOptionPane.OK_OPTION) {
-                List<String> list = new ArrayList<>();
-                for (int i = 0; i < prompt.length; i++) {
-                    String text = texts[i].getText();
-                    list.add(text);
-                }
-                String[] response = list.toArray(new String[0]);
+                String[] response = IntStream.range(0, prompt.length).mapToObj(i -> texts[i].getText()).toArray(String[]::new);
                 return response;
             } else {
                 return null;

@@ -722,13 +722,7 @@ public class Distance {
             ++GJK_ITERS;
 
 
-            boolean duplicate = false;
-            for (int i = 0; i < saveCount; i++) {
-                if (vertex.indexA == saveA[i] && vertex.indexB == saveB[i]) {
-                    duplicate = true;
-                    break;
-                }
-            }
+            boolean duplicate = IntStream.range(0, saveCount).anyMatch(i -> vertex.indexA == saveA[i] && vertex.indexB == saveB[i]);
 
 
             if (duplicate) {

@@ -89,12 +89,7 @@ public class ImageTracer {
 
 
     private static int arraycontains(String[] arr, String str) {
-        for (int j = 0; j < arr.length; j++) {
-            if (arr[j].toLowerCase().equals(str)) {
-                return j;
-            }
-        }
-        return -1;
+        return IntStream.range(0, arr.length).filter(j -> arr[j].toLowerCase().equals(str)).findFirst().orElse(-1);
     }
 
 

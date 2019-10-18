@@ -164,12 +164,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     public final boolean contains(long w, X what, int startIndex, int finalIndexExc) {
         long[] longs = this.when;
         X[] ii = this.items;
-        for (int i = startIndex; i < finalIndexExc; i++) {
-            if (longs[i] == w && ii[i].equals(what)) {
-                return true;
-            }
-        }
-        return false;
+        return IntStream.range(startIndex, finalIndexExc).anyMatch(i -> longs[i] == w && ii[i].equals(what));
     }
 
     /** assumes its been sorted */
@@ -193,11 +188,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     public String toString() {
         //HACK this could be better
         int[] i = {0};
-        List<String> list = new ArrayList<>();
-        for (X n : this) {
-            String s = when[i[0]++] + ":" + n;
-            list.add(s);
-        }
+        List<String> list = this.stream().map(n -> when[i[0]++] + ":" + n).collect(Collectors.toList());
         return Joiner.on(',').join(list);
     }
 

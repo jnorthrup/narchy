@@ -14,8 +14,10 @@ import java.util.function.Consumer;
 public class Top2<T> extends AbstractCollection<T> implements Consumer<T> {
 
     private final FloatFunction<T> rank;
-    public T a, b;
-    public float aa = Float.NEGATIVE_INFINITY, bb = Float.NEGATIVE_INFINITY;
+    public T a;
+    public T b;
+    public float aa = Float.NEGATIVE_INFINITY;
+    public float bb = Float.NEGATIVE_INFINITY;
 
     public Top2(FloatFunction<T> rank) {
         this.rank = rank;

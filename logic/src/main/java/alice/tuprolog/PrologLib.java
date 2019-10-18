@@ -205,13 +205,7 @@ public abstract class PrologLib implements Serializable {
                         int arity = Integer.parseInt(name.substring(index + 1));
 
                         if (clist.length == arity) {
-                            boolean valid = true;
-                            for (int j = 0; j < arity; j++) {
-                                if (!Term.class.isAssignableFrom(clist[j])) {
-                                    valid = false;
-                                    break;
-                                }
-                            }
+                            boolean valid = IntStream.range(0, arity).allMatch(j -> Term.class.isAssignableFrom(clist[j]));
                             if (valid) {
                                 String rawName = name.substring(0, index);
                                 String key = rawName + '/' + arity;

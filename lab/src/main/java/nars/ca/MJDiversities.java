@@ -16,11 +16,13 @@ public class MJDiversities {
 	public boolean m_Enabled; 
 
 	public boolean m_BHoleActive;
-	public int m_BHoleCtrX, m_BHoleCtrY;
+	public int m_BHoleCtrX;
+    public int m_BHoleCtrY;
 	public int m_BHoleSize;
 
 	public boolean m_SNovaActive;
-	public int m_SNovaCtrX, m_SNovaCtrY;
+	public int m_SNovaCtrX;
+    public int m_SNovaCtrY;
 	public int m_SNovaSize;
 	public int m_SNovaState;
 

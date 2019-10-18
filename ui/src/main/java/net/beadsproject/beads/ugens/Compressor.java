@@ -35,11 +35,19 @@ public class Compressor extends UGen implements DataBeadReceiver {
     private int index;
     private final float[][] delayMem;
     private BiquadFilter pf;
-    private float downstep = .9998f, upstep = 1.0002f, ratio = .5f,
-            threshold = .5f, knee = 1;
-    private float tok, kt, ikp1, ktrm1, tt1mr;
+    private float downstep = .9998f;
+    private float upstep = 1.0002f;
+    private float ratio = .5f;
+    private float threshold = .5f;
+    private float knee = 1;
+    private float tok;
+    private float kt;
+    private float ikp1;
+    private float ktrm1;
+    private float tt1mr;
 
-    private float attack, decay;
+    private float attack;
+    private float decay;
     private float currval = 1;
     private final int delaySamps;
     private static final int rmsMemorySize = 500;

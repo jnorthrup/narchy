@@ -18,7 +18,8 @@ import static com.jogamp.opengl.GL.*;
  */
 public class GLScreenShot implements Supplier<BufferedImage> {
     Buffer seen;
-    int width, height;
+    int width;
+    int height;
 
     static final int[] rgbBits = {8, 8, 8};
     static final int[] rgbOffsets = {2, 1, 0};

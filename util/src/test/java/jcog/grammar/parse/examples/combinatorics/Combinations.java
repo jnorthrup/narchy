@@ -155,13 +155,8 @@ class Combinations implements Iterator<Object> {
 			return null;
 		}
 
-        List<Object> list = new ArrayList<>();
-        int bound = m;
-        for (int i = 0; i < bound; i++) {
-            Object o = inArray[index[i]];
-            list.add(o);
-        }
-        Object[] out = list.toArray();
+		int bound = m;
+		Object[] out = IntStream.range(0, bound).mapToObj(i -> inArray[index[i]]).toArray();
 
         moveIndex();
 		return out;

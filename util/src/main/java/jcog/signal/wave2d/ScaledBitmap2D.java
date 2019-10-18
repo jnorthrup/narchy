@@ -20,7 +20,8 @@ public class ScaledBitmap2D extends MonoBufImgBitmap2D /* TODO extends ArrayBitm
     /**
      * output pixel width / height
      */
-    public int pw, ph;
+    public int pw;
+    public int ph;
     private Graphics2D outgfx;
 
 

@@ -22,11 +22,21 @@ import java.util.Arrays;
  */
 public class CombFilter extends IIRFilter {
 
-    private float a = 1, g = .2f, h = .2f;
-    private int maxDelay = 1, delay = 1, ind;
-    private UGen aUGen, gUGen, hUGen, delayUGen;
-    private boolean isAStatic, isGStatic, isHStatic, isDelayStatic,
-            areAllStatic;
+    private float a = 1;
+    private float g = .2f;
+    private float h = .2f;
+    private int maxDelay = 1;
+    private int delay = 1;
+    private int ind;
+    private UGen aUGen;
+    private UGen gUGen;
+    private UGen hUGen;
+    private UGen delayUGen;
+    private boolean isAStatic;
+    private boolean isGStatic;
+    private boolean isHStatic;
+    private boolean isDelayStatic;
+    private boolean areAllStatic;
     private final float[] xn;
     private final float[] yn;
     private int bufLen = 1;

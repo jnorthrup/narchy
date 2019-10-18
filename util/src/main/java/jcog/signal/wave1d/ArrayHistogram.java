@@ -15,7 +15,8 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
     private WritableTensor data = AtomicFloatVector.Empty;
 
-    private volatile float lo, hi;
+    private volatile float lo;
+    private volatile float hi;
     private volatile int mass = AtomicFloatFieldUpdater.iZero;
 
     private static final AtomicFloatFieldUpdater<ArrayHistogram> MASS =

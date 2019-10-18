@@ -231,12 +231,7 @@ public class PrincipalComponentAnalysis {
         double[] reproj = eigenToSampleSpace(eig);
 
 
-        double total = 0.0;
-        for (int i = 0; i < reproj.length; i++) {
-            double d = sampleA[i] - reproj[i];
-            double v = d * d;
-            total += v;
-        }
+        double total = IntStream.range(0, reproj.length).mapToDouble(i -> sampleA[i] - reproj[i]).map(d -> d * d).sum();
 
         return Math.sqrt(total);
     }

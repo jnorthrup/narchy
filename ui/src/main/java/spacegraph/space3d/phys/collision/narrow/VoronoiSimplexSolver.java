@@ -708,14 +708,8 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		}
 
 		boolean isValid() {
-            boolean valid = true;
-            for (int i : new int[]{0, 1, 2, 3}) {
-                if ((!(barycentricCoords[i] >= 0f))) {
-                    valid = false;
-                    break;
-                }
-            }
-            return valid;
+            boolean valid = IntStream.of(0, 1, 2, 3).noneMatch(i -> (!(barycentricCoords[i] >= 0f)));
+			return valid;
 		}
 
 		void setBarycentricCoordinates(float a, float b, float c, float d) {

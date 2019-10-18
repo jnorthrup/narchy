@@ -15,8 +15,12 @@ public final class ConceptAllocator implements Consumer<Concept> {
 
 
     private final ToIntFunction<Concept>
-            beliefsEteCapacity, beliefsTempCapacity,
-            goalsEteCapacity, goalsTempCapacity, questionsCapacity, questsCapacity;
+            beliefsEteCapacity;
+    private final ToIntFunction<Concept> beliefsTempCapacity;
+    private final ToIntFunction<Concept> goalsEteCapacity;
+    private final ToIntFunction<Concept> goalsTempCapacity;
+    private final ToIntFunction<Concept> questionsCapacity;
+    private final ToIntFunction<Concept> questsCapacity;
 
 
 

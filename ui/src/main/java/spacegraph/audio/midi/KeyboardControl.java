@@ -9,7 +9,10 @@ import static java.awt.event.KeyEvent.*;
 /** from https://github.com/Xyene/VirtualSynth */
 public class KeyboardControl extends JPanel {
     private static final Font KEY_FONT = new Font("Monospace", Font.BOLD, 18);
-    private static final int KEYS = 14, KEY_WIDTH = 35, KEY_HEIGHT = 140, INTERKEY_SPACE = 9;
+    private static final int KEYS = 14;
+    private static final int KEY_WIDTH = 35;
+    private static final int KEY_HEIGHT = 140;
+    private static final int INTERKEY_SPACE = 9;
     private static final Rectangle[] KEY_BOUNDS = new Rectangle[KEYS];
     private static final char[][] KEY_CHARS = {
             {'\u21C6', 'Q'},

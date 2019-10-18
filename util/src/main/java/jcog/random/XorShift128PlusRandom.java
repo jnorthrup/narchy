@@ -58,7 +58,8 @@ public class XorShift128PlusRandom extends Random {
     /**
      * The internal state of the algorithm.
      */
-    private long s0, s1;
+    private long s0;
+    private long s1;
 
 
     /**

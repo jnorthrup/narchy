@@ -11,7 +11,8 @@ public class RInsertion<X> {
 
     boolean addOrMerge;
 
-    private boolean added, merged;
+    private boolean added;
+    private boolean merged;
 
     /** if merged, whether the merge resulted in stretch (recurse bounds update necessary on return) */
     public boolean stretched = false;

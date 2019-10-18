@@ -626,12 +626,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
 
         public boolean put(X x) {
             int n = columnCount();
-            List<Object> list = new ArrayList<>();
-            for (int i = 0; i < n; i++) {
-                Object apply = extractor[i].apply(x);
-                list.add(apply);
-            }
-            Object[] o = list.toArray();
+            Object[] o = IntStream.range(0, n).mapToObj(i -> extractor[i].apply(x)).toArray();
             return add(o);
         }
     }

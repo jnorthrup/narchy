@@ -244,13 +244,7 @@ public enum $ { ;
         if (t.length == 0) return Op.EmptyProduct;
 
         if (t.length < 31) {
-            int b = 0;
-            for (int i = 0; i < t.length; i++) {
-                if (t[i]) {
-                    int i1 = 1 << i;
-                    b = b | i1;
-                }
-            }
+            int b = IntStream.range(0, t.length).filter(i -> t[i]).map(i -> 1 << i).reduce(0, (a, b1) -> a | b1);
             return Int.the(b);
         } else {
             throw new TODO();
@@ -330,12 +324,7 @@ public enum $ { ;
     }
 
     public static Term p(char[] c, CharToObjectFunction<Term> f) {
-        List<Term> list = new ArrayList<>();
-        for (int i = 0; i < c.length; i++) {
-            Term term = f.valueOf(c[i]);
-            list.add(term);
-        }
-        Term[] x = list.toArray(new Term[0]);
+        Term[] x = IntStream.range(0, c.length).mapToObj(i -> f.valueOf(c[i])).toArray(Term[]::new);
         return $.p(x);
     }
 
@@ -344,12 +333,7 @@ public enum $ { ;
     }
 
     public static <X> Term[] terms(X[] map, Function<X, Term> toTerm) {
-        List<Term> list = new ArrayList<>();
-        for (X x : map) {
-            Term term = toTerm.apply(x);
-            list.add(term);
-        }
-        return list.toArray(new Term[0]);
+        return Arrays.stream(map).map(toTerm::apply).toArray(Term[]::new);
     }
 
     private static Term[] array(Collection<? extends Term> t) {
@@ -482,22 +466,12 @@ public enum $ { ;
 
     public static Term[] ints(short... i) {
         int l = i.length;
-        List<Atomic> list = new ArrayList<>();
-        for (int j = 0; j < l; j++) {
-            Atomic the = the(i[j]);
-            list.add(the);
-        }
-        Term[] x = list.toArray(new Term[0]);
+        Term[] x = IntStream.range(0, l).mapToObj(j -> the(i[j])).toArray(Term[]::new);
         return x;
     }
     public static Term[] ints(int... i) {
         int l = i.length;
-        List<Atomic> list = new ArrayList<>();
-        for (int i1 : i) {
-            Atomic the = the(i1);
-            list.add(the);
-        }
-        Term[] x = list.toArray(new Term[0]);
+        Term[] x = Arrays.stream(i).mapToObj($::the).toArray(Term[]::new);
         return x;
     }
 
@@ -643,12 +617,7 @@ public enum $ { ;
 
         int[] xx = radix(x, radix, maxX);
 
-        List<Int> list = new ArrayList<>();
-        for (int i : xx) {
-            Int the = Int.the(i);
-            list.add(the);
-        }
-        Term[] tt = list.toArray(new Term[0]);
+        Term[] tt = Arrays.stream(xx).mapToObj(Int::the).toArray(Term[]::new);
         //$.the(BinTxt.symbols[xx[i]]);
         return tt;
     }
@@ -794,13 +763,7 @@ public enum $ { ;
             }
             case 3: {
                 Term a = t[0], b = t[1], c = t[2];
-                boolean result = true;
-                for (Term term : Arrays.asList(a, b, c)) {
-                    if (!Intrin.intrin(term.unneg())) {
-                        result = false;
-                        break;
-                    }
-                }
+                boolean result = Stream.of(a, b, c).allMatch(term -> Intrin.intrin(term.unneg()));
                 if (result)
                     return new IntrinSubterms(a, b, c);
                 break;

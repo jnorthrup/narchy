@@ -361,12 +361,7 @@ public class MetaFlow {
 //            urls.addAt(f.toURL());
 //        }
 //
-        List<URL> list = new ArrayList<>();
-        for (ClassPath.ClassInfo classInfo : ClassPath.from(ClassLoader.getSystemClassLoader().getParent()).getAllClasses()) {
-            URL url = classInfo.url();
-            list.add(url);
-        }
-        URL[] urls = list.toArray(new URL[0]);
+        URL[] urls = ClassPath.from(ClassLoader.getSystemClassLoader().getParent()).getAllClasses().stream().map(ClassPath.ResourceInfo::url).toArray(URL[]::new);
         // feed your URLs to a URLClassLoader!
         ClassLoader classloader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader().getParent());
 

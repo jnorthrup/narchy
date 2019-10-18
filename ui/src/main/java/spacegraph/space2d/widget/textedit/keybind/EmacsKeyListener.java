@@ -263,12 +263,7 @@ public class EmacsKeyListener implements TextEditKeys {
         if (cs > keybinding.size()) {
             return false;
         }
-        for (int i = 0; i < cs; i++) {
-            if (current.get(i).equals(keybinding.get(i))) {
-                return true;
-            }
-        }
-        return false;
+        return IntStream.range(0, cs).anyMatch(i -> current.get(i).equals(keybinding.get(i)));
     }
 
 

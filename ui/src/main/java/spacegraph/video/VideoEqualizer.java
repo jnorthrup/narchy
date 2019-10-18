@@ -73,11 +73,7 @@ public class VideoEqualizer extends VideoTransform {
         if (bands == 0)
             return in.getSample(x, y, 0);
         else {
-            int total = 0;
-            for (int i = 0; i < bands; i++) {
-                int sample = in.getSample(x, y, i);
-                total += sample;
-            }
+            int total = IntStream.range(0, bands).map(i -> in.getSample(x, y, i)).sum();
             return (total) / bands;
         }
     }

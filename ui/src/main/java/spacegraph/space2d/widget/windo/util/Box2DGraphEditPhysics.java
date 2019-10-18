@@ -71,7 +71,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             body.setData(surface);
         }
 
-        private transient float prw, prh;
+        private transient float prw;
+        private transient float prh;
         void pre(Dynamics2D physics, RectFloat r) {
             boolean resized = false, moved = false;
 
@@ -201,7 +202,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     /** fence */
     private transient RectFloat clamp;
 
-    private float wMin, hMin;
+    private float wMin;
+    private float hMin;
 
     @Override
     public void update(GraphEdit2D g, float dt) {
@@ -497,7 +499,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         final List<Joint> joints;
         //        private final Surface source;
 //        private final Surface target;
-        private final Body2D sourceBody, targetBody;
+        private final Body2D sourceBody;
+        private final Body2D targetBody;
         private final int n;
 
         private transient float elementLength;
@@ -670,7 +673,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         private class SnakeElementBody extends Body2D {
 
             private final int finalI;
-            float eleLen, eleThick;
+            float eleLen;
+            float eleThick;
 
             SnakeElementBody(v2 center, Dynamics2D w, int finalI) {
                 super(new BodyDef(BodyType.DYNAMIC, center), w);
@@ -971,7 +975,9 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 //    }
 
     private class Dyn2DRenderer extends PaintSurface {
-        final boolean drawJoints, drawBodies, drawParticles;
+        final boolean drawJoints;
+        final boolean drawBodies;
+        final boolean drawParticles;
 
         Dyn2DRenderer(boolean drawJoints, boolean drawBodies, boolean drawParticles) {
             this.drawJoints = drawJoints;

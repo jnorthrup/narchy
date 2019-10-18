@@ -105,13 +105,9 @@ class TermutatorTest {
     @Test
     void testChoose2_4() {
 
-        Set<String> series = new HashSet<>();
-        for (int i = 0; i < 5; i++) {
-            String s = assertTermutatorProducesUniqueResults(
-                    new Choose2(e1, p2p3, ((Compound) p("a", "b", "c", "d")).toSetSorted()
-                    ), 12);
-            series.add(s);
-        }
+        Set<String> series = IntStream.range(0, 5).mapToObj(i -> assertTermutatorProducesUniqueResults(
+                new Choose2(e1, p2p3, ((Compound) p("a", "b", "c", "d")).toSetSorted()
+                ), 12)).collect(Collectors.toSet());
 
         assertTrue(series.size() > 1); 
     }

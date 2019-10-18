@@ -41,14 +41,7 @@ public class Emotion implements Meter, Consumer<NAR> {
     private static final Field[] EmotionFields;
 
     static {
-        List<Field> list = new ArrayList<>();
-        for (Field field : ReflectionUtils.findFields(Emotion.class, (f) -> true, ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)) {
-            if (!Modifier.isPrivate(field.getModifiers())) {
-                list.add(field);
-            }
-        }
-        list.sort(Comparator.comparing(Field::getName));
-        EmotionFields = list.toArray(new Field[0]);
+        EmotionFields = ReflectionUtils.findFields(Emotion.class, (f) -> true, ReflectionUtils.HierarchyTraversalMode.TOP_DOWN).stream().filter(field -> !Modifier.isPrivate(field.getModifiers())).sorted(Comparator.comparing(Field::getName)).toArray(Field[]::new);
     }
 
     /**
@@ -118,8 +111,8 @@ public class Emotion implements Meter, Consumer<NAR> {
      */
     public final float[] want = new float[MetaGoal.values().length];
     public final FloatAveragedWindow
-            busyVol = new FloatAveragedWindow(history, 0.75f, 0f),
-            busyVolPriWeighted = new FloatAveragedWindow(history, 0.75f, 0);
+            busyVol = new FloatAveragedWindow(history, 0.75f, 0f);
+    public final FloatAveragedWindow busyVolPriWeighted = new FloatAveragedWindow(history, 0.75f, 0);
 
     /**
      * count of errors

@@ -19,9 +19,12 @@ import net.beadsproject.beads.data.DataBeadReceiver;
  */
 public class Clip extends UGen implements DataBeadReceiver {
 
-    private float min, max;
-    private UGen minUGen, maxUGen;
-    private boolean isMinStatic, isMaxStatic;
+    private float min;
+    private float max;
+    private UGen minUGen;
+    private UGen maxUGen;
+    private boolean isMinStatic;
+    private boolean isMaxStatic;
 
     /**
      * Constructor for a one-channel Clip.

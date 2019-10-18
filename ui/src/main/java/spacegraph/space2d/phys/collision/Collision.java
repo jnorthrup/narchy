@@ -113,11 +113,8 @@ public class Collision {
             state1[i] = PointState.REMOVE_STATE;
 
             int bound = manifold2.pointCount;
-            for (int j = 0; j < bound; j++) {
-                if (manifold2.points[j].id.isEqual(id)) {
-                    state1[i] = PointState.PERSIST_STATE;
-                    break;
-                }
+            if (IntStream.range(0, bound).anyMatch(j -> manifold2.points[j].id.isEqual(id))) {
+                state1[i] = PointState.PERSIST_STATE;
             }
         }
 
@@ -128,11 +125,8 @@ public class Collision {
             state2[i] = PointState.ADD_STATE;
 
             int bound = manifold1.pointCount;
-            for (int j = 0; j < bound; j++) {
-                if (manifold1.points[j].id.isEqual(id)) {
-                    state2[i] = PointState.PERSIST_STATE;
-                    break;
-                }
+            if (IntStream.range(0, bound).anyMatch(j -> manifold1.points[j].id.isEqual(id))) {
+                state2[i] = PointState.PERSIST_STATE;
             }
         }
     }
@@ -925,7 +919,8 @@ public class Collision {
      * Reference face used for clipping
      */
     static class ReferenceFace {
-        int i1, i2;
+        int i1;
+        int i2;
         final jcog.math.v2 v1 = new v2();
         final jcog.math.v2 v2 = new v2();
         final jcog.math.v2 normal = new v2();
@@ -958,7 +953,8 @@ public class Collision {
         final v2 m_normal2 = new v2();
         final v2 m_normal = new v2();
 
-        VertexType m_type1, m_type2;
+        VertexType m_type1;
+        VertexType m_type2;
 
         final v2 m_lowerLimit = new v2();
         final v2 m_upperLimit = new v2();

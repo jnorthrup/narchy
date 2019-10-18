@@ -201,12 +201,7 @@ public class Builtin {
             Functor.f2("varMask", (x, y) -> {
                 int s = x.subs();
                 if (s > 0) {
-                    List<Term> list = new ArrayList<>();
-                    for (int i = 0; i < s; i++) {
-                        Term term = x.sub(i).equals(y) ? y : $.varDep("z" + i);
-                        list.add(term);
-                    }
-                    Term[] t = list.toArray(new Term[0]);
+                    Term[] t = IntStream.range(0, s).mapToObj(i -> x.sub(i).equals(y) ? y : $.varDep("z" + i)).toArray(Term[]::new);
                     return $.p(t);
                 }
                 return Null;

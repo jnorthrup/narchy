@@ -95,11 +95,7 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
 
     @Override
     public int size() {
-        int sum = 0;
-        for (Queue<TimedFuture<?>> timedFutures : wheel) {
-            int size = timedFutures.size();
-            sum += size;
-        }
+        int sum = Arrays.stream(wheel).mapToInt(Collection::size).sum();
         return sum;
     }
 

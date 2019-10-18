@@ -67,13 +67,7 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
         }
 
 
-        boolean allPerfect = true;
-        for (double fitness : rankings.first().getFitness()) {
-            if (Math.round(fitness * 10000) != 0) {
-                allPerfect = false;
-                break;
-            }
-        }
+        boolean allPerfect = Arrays.stream(rankings.first().getFitness()).noneMatch(fitness -> Math.round(fitness * 10000) != 0);
         if (allPerfect) {
                 return;
             }

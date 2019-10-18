@@ -59,11 +59,7 @@ public class DecisionTree<K, V> {
 
         Map<V, Long> labelCount = data.collect(groupingBy((x) -> x.apply(value), counting()));
 
-        long totalCount = 0L;
-        for (Long x : labelCount.values()) {
-            long l = x;
-            totalCount += l;
-        }
+        long totalCount = labelCount.values().stream().mapToLong(x -> x).sum();
         for (Map.Entry<V, Long> e: labelCount.entrySet()) {
             long nbOfLabels = e.getValue();
             if ((nbOfLabels / (double) totalCount) >= homogenityPercentage) {
@@ -298,13 +294,7 @@ public class DecisionTree<K, V> {
         SortedMap<DecisionNode.LeafNode<V>, List<String>> map = new TreeMap<>();
         for (Map.Entry<DecisionNode.LeafNode<V>, List<ObjectBooleanPair<DecisionNode<V>>>> e : explanations().entrySet()) {
             DecisionNode.LeafNode<V> result = e.getKey();
-            List<String> cond = new ArrayList<>();
-            for (ObjectBooleanPair<DecisionNode<V>> c : e.getValue()) {
-                String x = c.getOne().condition(c.getTwo());
-                if (!"false".equals(x)) {
-                    cond.add(x);
-                }
-            }
+            List<String> cond = e.getValue().stream().map(c -> c.getOne().condition(c.getTwo())).filter(x -> !"false".equals(x)).collect(toList());
             if (!cond.isEmpty())
                 map.put(result, cond);
         }

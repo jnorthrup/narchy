@@ -51,7 +51,8 @@ public class Jake2Agent extends GameX implements Runnable {
     private static final boolean lookPitch = false;
     static float pitchSpeed = 5;
 
-    private final GLScreenShot rgb, depth;
+    private final GLScreenShot rgb;
+    private final GLScreenShot depth;
     private final FreqVectorSensor hear;
 
 

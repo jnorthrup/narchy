@@ -22,7 +22,8 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
     public final FloatRange height = new FloatRange(0.75f, 0.01f, 1f);
     public final FloatRange alpha = new FloatRange(0.75f, 0.01f, 1f);
 
-    private final int w, h;
+    private final int w;
+    private final int h;
 
     @FunctionalInterface
     public interface BitmapEvaluator {
@@ -42,7 +43,8 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
     /**
      * visualization bounds
      */
-    public long start, end;
+    public long start;
+    public long end;
 
     public WaveBitmap(int w, int h, BitmapEvaluator buffer) {
         this.w = w;

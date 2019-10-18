@@ -21,7 +21,8 @@ public class Ghost extends Entity {
     public Point target;
     public boolean free;
     public boolean out;
-    double tilex, tiley;
+    double tilex;
+    double tiley;
     public boolean random;
     public boolean scared;
     public boolean relaxed;
@@ -116,12 +117,7 @@ public class Ghost extends Entity {
 
     ArrayList<Direction> getAvailableDirections() {
 
-        ArrayList<Direction> dirs = new ArrayList<>();
-        for (Direction d : Direction.values()) {
-            if (!walled(d)) {
-                dirs.add(d);
-            }
-        }
+        ArrayList<Direction> dirs = Arrays.stream(Direction.values()).filter(d -> !walled(d)).collect(Collectors.toCollection(ArrayList::new));
 
         dirs.remove(this.dir.opposite());
 
@@ -145,13 +141,7 @@ public class Ghost extends Entity {
 
         ArrayList<Direction> openDirs = getAvailableDirections();
 
-        Optional<Direction> found = Optional.empty();
-        for (Direction direction : dirs) {
-            if (openDirs.contains(direction)) {
-                found = Optional.of(direction);
-                break;
-            }
-        }
+        Optional<Direction> found = Arrays.stream(dirs).filter(openDirs::contains).findFirst();
         dir = found.orElseGet(() -> this.dir);
 
     }

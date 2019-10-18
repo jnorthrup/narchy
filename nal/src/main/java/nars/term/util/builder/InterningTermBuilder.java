@@ -54,7 +54,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private final boolean deep;
     protected final int volInternedMax;
 
-    final Function<InternedSubterms, Subterms> subterms, anonSubterms;
+    final Function<InternedSubterms, Subterms> subterms;
+    final Function<InternedSubterms, Subterms> anonSubterms;
     final Function<InternedCompoundByComponents, Term>[] terms = new Function[ops.length];
 
     private final String id;

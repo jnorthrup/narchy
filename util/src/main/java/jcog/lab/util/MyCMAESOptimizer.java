@@ -301,14 +301,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return a sorted array of indices pointing into doubles.
 	 */
 	private static int[] sortedIndices(double[] x) {
-		List<DoubleIndex> list = new ArrayList<>();
 		int bound1 = x.length;
-		for (int i1 = 0; i1 < bound1; i1++) {
-			DoubleIndex doubleIndex = new DoubleIndex(x[i1], i1);
-			list.add(doubleIndex);
-		}
-		DoubleIndex[] y = list.toArray(new DoubleIndex[0]);
-        Arrays.sort(y);
+		DoubleIndex[] y = IntStream.range(0, bound1).mapToObj(i1 -> new DoubleIndex(x[i1], i1)).sorted().toArray(DoubleIndex[]::new);
 		int[] j = new int[10];
 		int count = 0;
 		int bound = x.length;
@@ -1027,7 +1021,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 		private final boolean isRepairMode;
         public final double[] lB;
         public final double[] uB;
-        public PointValuePair opt,lastResult;
+        public PointValuePair opt;
+        public PointValuePair lastResult;
         public double bestValue;
         final double[] fitness = new double[lambda];
         final MyCMAESOptimizer.ValuePenaltyPair[] valuePenaltyPairs = new MyCMAESOptimizer.ValuePenaltyPair[lambda];
@@ -1108,12 +1103,9 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 		 * @return Penalty value according to the violation of the bounds.
 		 */
 		private double penalty(double[] x, double[] repaired) {
-			double penalty = 0.0;
+			double penalty;
 			int bound = x.length;
-			for (int i = 0; i < bound; i++) {
-				double abs = Math.abs(x[i] - repaired[i]);
-				penalty += abs;
-			}
+			penalty = IntStream.range(0, bound).mapToDouble(i -> Math.abs(x[i] - repaired[i])).sum();
 			return isMinimize ? penalty : -penalty;
 		}
 
@@ -1193,13 +1185,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
             double[] sqrtDiagC = sqrt(diagC).getColumn(0);
             double[] pcCol = pc.getColumn(0);
 			int bound = dimension;
-			for (int i1 = 0; i1 < bound; i1++) {
-				if (sigma * Math.max(Math.abs(pcCol[i1]), sqrtDiagC[i1]) > stopTolX) {
-					break;
-				}
-				if (i1 >= dimension - 1) {
-					return false;
-				}
+			if (IntStream.range(0, bound).takeWhile(i1 -> !(sigma * Math.max(Math.abs(pcCol[i1]), sqrtDiagC[i1]) > stopTolX)).anyMatch(i1 -> i1 >= dimension - 1)) {
+				return false;
 			}
 			for (int i = 0; i < dimension; i++)
                 if (sigma * sqrtDiagC[i] > stopTolUpX)

@@ -383,11 +383,8 @@ public class KBcache implements Serializable {
         int size = typeList.size();
         for (int i = 0; i < size; i++) {
             String rel1 = typeList.get(i);
-            for (int i1 = i + 1; i1 < size; i1++) {
-                String rel2 = typeList.get(i1);
-                if (checkDisjoint(kb, rel1, rel2) == true) {
-                    return true;
-                }
+            if (IntStream.range(i + 1, size).mapToObj(typeList::get).anyMatch(rel2 -> checkDisjoint(kb, rel1, rel2) == true)) {
+                return true;
             }
         }
         return false;
@@ -635,11 +632,7 @@ public class KBcache implements Serializable {
      */
     public static HashSet<String> collectArgFromFormulas(int arg, ArrayList<Formula> forms) {
 
-        HashSet<String> subs = new HashSet<>();
-        for (Formula f : forms) {
-            String argument = f.getArgument(arg);
-            subs.add(argument);
-        }
+        HashSet<String> subs = forms.stream().map(f -> f.getArgument(arg)).collect(Collectors.toCollection(HashSet::new));
         return subs;
     }
    
@@ -1080,13 +1073,7 @@ public class KBcache implements Serializable {
             if (sig == null) {
                 System.out.println("Error in KBcache.buildInstTransRels(): Error " + rel + " not found.");
             } else {
-                boolean b = true;
-                for (String s : sig) {
-                    if (s.endsWith("+")) {
-                        b = false;
-                        break;
-                    }
-                }
+                boolean b = sig.stream().noneMatch(s -> s.endsWith("+"));
                 instrel = b;
                 if (instrel)
                     instTransRels.add(rel);

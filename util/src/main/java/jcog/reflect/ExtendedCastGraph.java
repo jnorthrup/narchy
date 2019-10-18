@@ -822,12 +822,8 @@ public class ExtendedCastGraph extends CastGraph {
         @Override
         public Object apply(Object from) {
             Character[] ca = (Character[]) from;
-            StringBuilder result = new StringBuilder();
-            for (Character character : ca) {
-                String s = String.valueOf(character);
-                result.append(s);
-            }
-            String sb = result.toString();
+            String result = Arrays.stream(ca).map(String::valueOf).collect(Collectors.joining());
+            String sb = result;
             return sb;
         }
 
@@ -858,13 +854,8 @@ public class ExtendedCastGraph extends CastGraph {
         @Override
         public Object apply(Object from) {
             String str = ((String) from);
-            List<Character> list = new ArrayList<>();
             int bound = str.length();
-            for (int i = 0; i < bound; i++) {
-                Character charAt = str.charAt(i);
-                list.add(charAt);
-            }
-            Character[] arr = list.toArray(new Character[0]);
+            Character[] arr = IntStream.range(0, bound).mapToObj(str::charAt).toArray(Character[]::new);
             return arr;
         }
 

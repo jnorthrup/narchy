@@ -5,6 +5,7 @@ import jcog.util.HashCachedPair;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -17,7 +18,8 @@ import java.util.stream.Stream;
 public class QuickMemoize<X, Y> {
 
     protected Pair<X,Y>[] data;
-    protected int mask, shift;
+    protected int mask;
+    protected int shift;
     protected boolean toggle = false;
 
 
@@ -82,12 +84,7 @@ public class QuickMemoize<X, Y> {
     }
 
     public int valueCount() {
-        long count = 0L;
-        for (Pair<X, Y> datum : data) {
-            if (datum != null) {
-                count++;
-            }
-        }
+        long count = Arrays.stream(data).filter(Objects::nonNull).count();
         return (int) count;
     }
 

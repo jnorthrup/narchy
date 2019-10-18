@@ -90,13 +90,7 @@ public class Evaluation extends Termerator {
 
 		Set<Term> tried = null;
 		while (ci.hasNext()) {
-			boolean appliedAll = true;
-			for (Predicate<Termerator> cc : ci.next()) {
-				if (!cc.test(this)) {
-					appliedAll = false;
-					break;
-				}
-			}
+			boolean appliedAll = Arrays.stream(ci.next()).allMatch(cc -> cc.test(this));
 
 			if (appliedAll) {
 				if (tried == null) tried = new UnifiedSet<>(0);

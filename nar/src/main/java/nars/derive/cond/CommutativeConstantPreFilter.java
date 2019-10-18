@@ -19,7 +19,8 @@ import static nars.derive.util.DerivationFunctors.Task;
 
 public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
 
-    private final byte[] ellipsisPath, contentPath;
+    private final byte[] ellipsisPath;
+    private final byte[] contentPath;
     private final boolean ellipsisInTaskOrBelief;
 
     private static final Atom id = Atomic.atom("ellipsisCommutativeConstant");

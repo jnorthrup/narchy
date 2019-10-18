@@ -508,12 +508,7 @@ private static LinkedList<Term> StructToList(Struct s) {
  * Check whether a reader associated to socket s already exists
  */
 private ThreadReader readerExist(Socket s) {
-    for (ThreadReader r : readers) {
-        if (r.compareSocket(s)) {
-            return r;
-        }
-    }
-    return null;
+	return readers.stream().filter(r -> r.compareSocket(s)).findFirst().orElse(null);
 }
 
 

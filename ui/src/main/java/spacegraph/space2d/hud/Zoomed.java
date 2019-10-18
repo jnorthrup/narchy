@@ -114,8 +114,10 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     };
 
 //    float CORNER_RADIUS = 4;
-    private float camXmin = -1, camXmax = +1;
-    private float camYmin = -1, camYmax = +1;
+    private float camXmin = -1;
+    private float camXmax = +1;
+    private float camYmin = -1;
+    private float camYmax = +1;
 
     public Zoomed(JoglDisplay space, NewtKeyboard keyboard, S content) {
         super(content);

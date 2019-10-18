@@ -22,21 +22,11 @@ public abstract class FunctionMeter<M> implements Meters<M>, Serializable {
     private M[] vector;
 
     public static String[] newDefaultSignalIDs(String prefix, int n) {
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            String s1 = prefix + '_' + i;
-            list.add(s1);
-        }
-        String[] s = list.toArray(new String[0]);
+        String[] s = IntStream.range(0, n).mapToObj(i -> prefix + '_' + i).toArray(String[]::new);
         return s;
     }
     public static String[] newDefaultSignalIDs(String prefix, String... prefixes) {
-        List<String> list = new ArrayList<>();
-        for (String item : prefixes) {
-            String s1 = prefix + '_' + item;
-            list.add(s1);
-        }
-        String[] s = list.toArray(new String[0]);
+        String[] s = Arrays.stream(prefixes).map(item -> prefix + '_' + item).toArray(String[]::new);
         return s;
     }
     
@@ -49,12 +39,7 @@ public abstract class FunctionMeter<M> implements Meters<M>, Serializable {
     
     public FunctionMeter(String... ids) {
 
-        List<ScalarColumn> list = new ArrayList<>();
-        for (String n : ids) {
-            ScalarColumn scalarColumn = new ScalarColumn(n, null);
-            list.add(scalarColumn);
-        }
-        signals = Collections.unmodifiableList(list);
+        signals = Arrays.stream(ids).map(n -> new ScalarColumn(n, null)).collect(Collectors.toUnmodifiableList());
     }
     
     public void setUnits(String... units) { 

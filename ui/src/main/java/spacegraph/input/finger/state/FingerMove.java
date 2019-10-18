@@ -5,7 +5,8 @@ import spacegraph.input.finger.Finger;
 
 public abstract class FingerMove extends Dragging {
 
-    private final float xSpeed, ySpeed;
+    private final float xSpeed;
+    private final float ySpeed;
     private final v2 start = new v2();
 
     protected FingerMove(int button) {

@@ -217,10 +217,14 @@ public class ShapeSensor extends NARPart {
 //    }
 
     static class Grid {
-        public final int gx, gy, w, h;
+        public final int gx;
+        public final int gy;
+        public final int w;
+        public final int h;
         final Set<Term> image = new LinkedHashSet();
         private final Term id;
-        float sx, sy;
+        float sx;
+        float sy;
 
         public Grid(Term id, int gx, int gy, int w, int h) {
             this.id = id;
@@ -288,7 +292,9 @@ public class ShapeSensor extends NARPart {
 
 
     private static class ScaleOffset {
-        double scale, offsetX, offsetY;
+        double scale;
+        double offsetX;
+        double offsetY;
     }
 
     class ShapeSensorControl extends Gridding {

@@ -44,10 +44,7 @@ public interface PriReference<X> extends Prioritizable, Supplier<X>, FloatSuppli
         }
 
         for (double[] e : d) {
-            double total = 0.0;
-            for (double v : e) {
-                total += v;
-            }
+            double total = Arrays.stream(e).sum();
             if (total > 0) {
                 for (int i = 0, eLength = e.length; i < eLength; i++) {
                     double f = e[i];

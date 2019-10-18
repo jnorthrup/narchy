@@ -16,13 +16,16 @@ public class TrackXY  {
 
     public final ArrayBitmap2D grid;
 
-    public final int W, H;
+    public final int W;
+    public final int H;
 
     /** target coordinates: to be observed by the experiment */
-    public volatile float tx, ty;
+    public volatile float tx;
+    public volatile float ty;
 
     /** current coordinates: to be moved by the experiment */
-    public volatile float cx, cy;
+    public volatile float cx;
+    public volatile float cy;
 
     public final FloatRange controlSpeed = new FloatRange(0.05f, 0, 0.25f);
 

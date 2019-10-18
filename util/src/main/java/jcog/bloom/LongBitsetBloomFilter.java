@@ -112,13 +112,7 @@ public class LongBitsetBloomFilter {
         int m = this.m;
         MetalBitSet bits = bitSet;
 
-        for (int i = 1; i <= k; i++) {
-            int combinedHash = combineHash(hash1, hash2, i);
-            if (!bits.get( /*pos*/ combinedHash % m)) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.rangeClosed(1, k).map(i -> combineHash(hash1, hash2, i)).allMatch(combinedHash -> bits.get( /*pos*/ combinedHash % m));
     }
 
 

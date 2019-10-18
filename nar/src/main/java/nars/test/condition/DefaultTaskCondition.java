@@ -21,9 +21,12 @@ public class DefaultTaskCondition extends TaskCondition {
 	private final byte punc;
 	private final Term term;
 	private final LongLongPredicate time;
-	private final float freqMin, freqMax;
-	private final float confMin, confMax;
-	private final long creationStart, creationEnd;
+	private final float freqMin;
+    private final float freqMax;
+	private final float confMin;
+    private final float confMax;
+	private final long creationStart;
+    private final long creationEnd;
 
 
 	public DefaultTaskCondition(NAR n, long creationStart, long creationEnd, Term term, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) throws RuntimeException {

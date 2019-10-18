@@ -23,7 +23,8 @@ public class Player {
     public double y;
     public double r;
     public double angle;
-    public double vx, vy;
+    public double vx;
+    public double vy;
     private final World world;
     public final Action[] actions;
     private int currentAction;

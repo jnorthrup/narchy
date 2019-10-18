@@ -862,13 +862,7 @@ public class M_Medic {
                     || (self.s.frame == FRAME_attack12))
                 effect = Defines.EF_BLASTER;
             else {
-                boolean b = false;
-                for (int i : new int[]{FRAME_attack19, FRAME_attack22, FRAME_attack25, FRAME_attack28}) {
-                    if ((self.s.frame == i)) {
-                        b = true;
-                        break;
-                    }
-                }
+                boolean b = IntStream.of(FRAME_attack19, FRAME_attack22, FRAME_attack25, FRAME_attack28).anyMatch(i -> (self.s.frame == i));
                 if (b)
                     effect = Defines.EF_HYPERBLASTER;
                 else

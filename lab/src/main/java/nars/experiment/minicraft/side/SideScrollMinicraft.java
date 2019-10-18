@@ -38,7 +38,11 @@ public class SideScrollMinicraft {
     private Sprite builderIcon;
     private Sprite minerIcon;
     private Sprite[] breakingSprites;
-    private Sprite fullHeart, halfHeart, emptyHeart, bubble, emptyBubble;
+    private Sprite fullHeart;
+    private Sprite halfHeart;
+    private Sprite emptyHeart;
+    private Sprite bubble;
+    private Sprite emptyBubble;
 
     public boolean viewFPS;
     private boolean inMenu = true;

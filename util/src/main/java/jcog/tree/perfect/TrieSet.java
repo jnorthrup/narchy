@@ -127,12 +127,7 @@ public final class TrieSet<E> implements Set<E> {
    public boolean containsAll( Collection<?> collection )
    {
 
-      for (Object o : collection) {
-         if (!trie.containsKey(o)) {
-            return false;
-         }
-      }
-      return true;
+      return collection.stream().allMatch(trie::containsKey);
    }
 
    @Override

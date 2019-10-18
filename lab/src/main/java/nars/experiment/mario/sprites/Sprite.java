@@ -8,12 +8,19 @@ import java.awt.*;
 public class Sprite implements SoundSource {
     public static SpriteContext spriteContext;
 
-    public float xOld, yOld, x, y, xa, ya;
+    public float xOld;
+    public float yOld;
+    public float x;
+    public float y;
+    public float xa;
+    public float ya;
 
-    public int xPic, yPic;
+    public int xPic;
+    public int yPic;
     public int wPic = 32;
     public int hPic = 32;
-    public int xPicO, yPicO;
+    public int xPicO;
+    public int yPicO;
     public boolean xFlipPic;
     public boolean yFlipPic;
     public Image[][] sheet;

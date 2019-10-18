@@ -21,7 +21,8 @@ import java.awt.*;
         static final float[] WHITE = { 1, 1, 1};
 
         public char c;
-        public float[] fgColor, bgColor;
+        public float[] fgColor;
+        public float[] bgColor;
 
         public TextCharacter(char c) {
             this.c = c;

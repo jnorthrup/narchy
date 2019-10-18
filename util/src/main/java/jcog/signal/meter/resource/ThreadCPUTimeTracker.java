@@ -19,6 +19,7 @@ import jcog.signal.meter.event.DoubleMeter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
+import java.util.Arrays;
 import java.util.stream.LongStream;
 
 /**
@@ -37,12 +38,9 @@ public class ThreadCPUTimeTracker extends DoubleMeter {
     }
 
     public static double getCPUTime() {
-        double sum = 0.0;
+        double sum;
         ThreadMXBean threadMXBean1 = getThreadMXBean();
-        for (long l : getThreadMXBean().getAllThreadIds()) {
-            double threadUserTime = threadMXBean1.getThreadUserTime(l);
-            sum += threadUserTime;
-        }
+        sum = Arrays.stream(getThreadMXBean().getAllThreadIds()).mapToDouble(threadMXBean1::getThreadUserTime).sum();
         return sum;
                 //.getCurrentThreadCpuTime();
     }

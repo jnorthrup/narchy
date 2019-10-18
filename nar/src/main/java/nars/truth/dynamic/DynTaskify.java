@@ -42,7 +42,8 @@ public class DynTaskify extends TaskList {
     static class Component implements Function<DynTaskify,Task> {
         final Term term;
         final BeliefTable table;
-        final long start, end;
+        final long start;
+        final long end;
         final int termVolume;
 
         Component(Term term, BeliefTable _c, long start, long end) {

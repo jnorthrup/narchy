@@ -36,12 +36,7 @@ public class ObjectSurface2 extends MutableUnitContainer {
     }
     {
         build(List.class, (List<Object> x) -> {
-            List<Surface> list = new ArrayList<>();
-            for (Object o : x) {
-                Surface build = build(o);
-                list.add(build);
-            }
-            return new Gridding(list.toArray(new Surface[0]));
+            return new Gridding(x.stream().map(this::build).toArray(Surface[]::new));
         });
         build(String.class, VectorLabel::new);
         build(FloatRange.class, FloatRangePort::new);

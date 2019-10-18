@@ -13,7 +13,8 @@ public class BrightnessNormalize implements Bitmap2D {
 //    BufferedImage store = null;
 
     private transient float[] s = null;
-    int W, H;
+    int W;
+    int H;
 
     /** for noise */
     private final SplitMix64Random rng = new SplitMix64Random(1);

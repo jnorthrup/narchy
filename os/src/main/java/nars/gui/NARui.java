@@ -460,11 +460,7 @@ public class NARui {
             }
             color.set(0.5f, 0.5f, 0.5f);
         };
-        var d = new ArrayList<>();
-        for (Termed x : c) {
-            ConceptColorIcon conceptColorIcon = new ConceptColorIcon(x.term(), nar, colorize);
-            d.add(conceptColorIcon);
-        }
+        var d = c.stream().map(x -> new ConceptColorIcon(x.term(), nar, colorize)).collect(Collectors.toCollection(ArrayList::new));
         return grid( (Iterable<ConceptColorIcon>) d.iterator() );
     }
 

@@ -28,12 +28,7 @@ public class OpenSet<F> implements IOpenSet<F> {
 
     @Override
     public F getNode(F node) {
-        for (F openSearchNode : this.Q) {
-            if (openSearchNode.equals(node)) {
-                return openSearchNode;
-            }
-        }
-        return null;
+        return this.Q.stream().filter(openSearchNode -> openSearchNode.equals(node)).findFirst().orElse(null);
     }
 
     @Override

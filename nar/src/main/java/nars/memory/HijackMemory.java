@@ -30,7 +30,8 @@ public class HijackMemory extends Memory {
     /**
      * how many items to visit during update
      */
-    private final float initialTask, initialNode;
+    private final float initialTask;
+    private final float initialNode;
     private final float getBoost;
 
 

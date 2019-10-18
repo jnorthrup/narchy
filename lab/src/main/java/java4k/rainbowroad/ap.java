@@ -834,13 +834,7 @@ public class ap extends GamePanel {
           }
         }
 
-        boolean b = true;
-        for (int v : new int[]{0, 1, 2, 3}) {
-          if (polygonYs[v] <= -128) {
-            b = false;
-            break;
-          }
-        }
+        boolean b = IntStream.of(0, 1, 2, 3).noneMatch(v -> polygonYs[v] <= -128);
         if (b) {
           
           g.setColor(roadColors[

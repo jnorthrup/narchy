@@ -64,7 +64,9 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     private final AtomicBoolean busy = new AtomicBoolean(false);
     public final AtomicBoolean trace = new AtomicBoolean(false);
 
-    private static final Atom ACTION = Atomic.atom("action"), SENSOR = Atomic.atom("sensor"), REWARD = Atomic.atom("reward");
+    private static final Atom ACTION = Atomic.atom("action");
+    private static final Atom SENSOR = Atomic.atom("sensor");
+    private static final Atom REWARD = Atomic.atom("reward");
 
     public final FastCoWList<GameLoop> sensors = new FastCoWList<>(GameLoop[]::new);
     public final FastCoWList<ActionSignal> actions = new FastCoWList<>(ActionSignal[]::new);
@@ -72,7 +74,9 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     public final AtomicInteger iteration = new AtomicInteger(0);
 
-    public PriSource rewardPri, actionPri, sensorPri;
+    public PriSource rewardPri;
+    public PriSource actionPri;
+    public PriSource sensorPri;
 
     /** the context representing the experience of the game */
     @Deprecated private What what;
@@ -82,7 +86,8 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     public volatile long now = ETERNAL;
 
-    public final When<What> nowPercept = new When(), nowLoop = new When();
+    public final When<What> nowPercept = new When();
+    public final When<What> nowLoop = new When();
 
     private final NAgentCycle cycle =
             //Cycles.Biphasic;
@@ -549,7 +554,8 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     }
 
 
-    private transient float _freqRes = Float.NaN, _confRes = Float.NaN;
+    private transient float _freqRes = Float.NaN;
+    private transient float _confRes = Float.NaN;
 
     protected void sense() {
 

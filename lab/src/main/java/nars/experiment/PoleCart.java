@@ -156,9 +156,13 @@ public class PoleCart extends GameX {
 	Graphics offGraphics;
 
 
-	double pos, posDot, angle, angleDot;
+	double pos;
+	double posDot;
+	double angle;
+	double angleDot;
 
-	static final float posMin = -2f, posMax = +2f;
+	static final float posMin = -2f;
+	static final float posMax = +2f;
 	float velMax = 10;
 	boolean manualOverride;
 
@@ -190,7 +194,9 @@ public class PoleCart extends GameX {
 	DigitizedScalar angVel;
 
 
-	volatile double action, actionLeft, actionRight;
+	volatile double action;
+	volatile double actionLeft;
+	volatile double actionRight;
 
 	public PoleCart(Term id, NAR nar, float tau) {
 		this(id, nar);

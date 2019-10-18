@@ -48,13 +48,7 @@ public class DeriverProgram {
 
         this.branch = actions; assert (actions.length > 0);
 
-        List<RuleCause> list = new ArrayList<>();
-        for (How b : actions) {
-            for (RuleCause ruleCause : Arrays.asList(b.why)) {
-                list.add(ruleCause);
-            }
-        }
-        this.cause = list.toArray(new Cause[0]);
+        this.cause = Arrays.stream(actions).flatMap(b -> Stream.of(b.why)).toArray(Cause[]::new);
 
         this.pre = pre;
     }

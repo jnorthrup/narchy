@@ -29,7 +29,8 @@ public class SensorBeliefTables extends BeliefTables {
 
     public final SeriesBeliefTable series;
 
-    private SeriesTask prev = null, current = null;
+    private SeriesTask prev = null;
+    private SeriesTask current = null;
 
     /** priority factor for new tasks which are fully unsurprising */
     private float minSurprise = NAL.signal.SENSOR_SURPRISE_MIN_DEFAULT;

@@ -12,7 +12,8 @@ package jurls.reinforcementlearning.domains;
 public class Connection {
 
     public final double length;
-    public final Point p1, p2;
+    public final Point p1;
+    public final Point p2;
 
     public Connection(double length, Point p1, Point p2) {
         this.length = length;

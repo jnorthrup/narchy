@@ -265,14 +265,9 @@ public class BomberGame extends JPanel
             }
             /** set default game result = draw */
             /** find winner */
-            int found = 4;
+            int found;
             int bound = totalPlayers;
-            for (int i = 0; i < bound; i++) {
-                if (!players[i].isDead()) {
-                    found = i;
-                    break;
-                }
-            }
+            found = IntStream.range(0, bound).filter(i -> !players[i].isDead()).findFirst().orElse(4);
             winner = found;
             gameOver = true;
             map.setGameOver();

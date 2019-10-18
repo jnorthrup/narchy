@@ -68,12 +68,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default boolean containsInstance(Term t) {
         //return ORwith((u, tt) -> tt == u, t);
         int s = subs();
-        for (int i = 0; i < s; i++) {
-            if (sub(i) == t) {
-                return true;
-            }
-        }
-        return false;
+        return IntStream.range(0, s).anyMatch(i -> sub(i) == t);
         //return indexOfInstance(x) != -1;
     }
 
@@ -124,12 +119,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         if (this == x) return true;
         int n = subs();
         if (x.subs()!=n) return false;
-        for (int i = 0; i < n; i++) {
-            if (sub(i) != x.sub(i)) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.range(0, n).noneMatch(i -> sub(i) != x.sub(i));
     }
 
     default @Nullable Term subRoulette(FloatFunction<Term> subValue, Random rng) {
@@ -182,11 +172,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default int structure() {
         //return intifyShallow((s, x) -> s | x.structure(), 0);
         int s, n = subs();
-        int acc = 0;
-        for (int i = 0; i < n; i++) {
-            int structure = sub(i).structure();
-            acc = acc | structure;
-        }
+        int acc = IntStream.range(0, n).map(i -> sub(i).structure()).reduce(0, (a, b) -> a | b);
         s = acc;
         return s;
     }
@@ -596,24 +582,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
         int s = subs();
         if (s != c.subs())
             return false;
-        for (int i = 0; i < s; i++) {
-            if (!sub(i).equals(c.sub(i))) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.range(0, s).allMatch(i -> sub(i).equals(c.sub(i)));
     }
 
     default boolean equalTerms(/*@NotNull*/ Term[] c) {
         int s = subs();
         if (s != c.length)
             return false;
-        for (int i = 0; i < s; i++) {
-            if (!sub(i).equals(c[i])) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.range(0, s).allMatch(i -> sub(i).equals(c[i]));
     }
 
     default void addAllTo(Collection target) {
@@ -680,12 +656,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default int count(Predicate<Term> match) {
         //return intifyShallow((c, sub) -> match.test(sub) ? c + 1 : c, 0);
         int n = subs();
-        long count = 0L;
-        for (int i = 0; i < n; i++) {
-            if (match.test(sub(i))) {
-                count++;
-            }
-        }
+        long count = IntStream.range(0, n).filter(i -> match.test(sub(i))).count();
         int c = (int) count;
         return c;
     }
@@ -826,12 +797,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     static boolean unifyLinearN_Forward(Subterms x, Subterms y, /*@NotNull*/ Unify u) {
         int s = x.subs();
-        for (int i = 0; i < s; i++) {
-            if (!x.sub(i).unify(y.sub(i), u)) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.range(0, s).allMatch(i -> x.sub(i).unify(y.sub(i), u));
     }
 
     static boolean unifyLinearN_TwoPhase(Subterms x, Subterms y, int n, Unify u) {
@@ -871,12 +837,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                     c[k++] = i;
             }
             QuickSort.sort(c, cc -> -(x.sub(cc).volume() + y.sub(cc).volume())); //sorts descending
-            for (int cc : c) {
-                if (!x.sub(cc).unify(y.sub(cc), u)) {
-                    return false;
-                }
-            }
-            return true;
+            return Arrays.stream(c).allMatch(cc -> x.sub(cc).unify(y.sub(cc), u));
         }
     }
 
@@ -1251,23 +1212,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /** supplies the i'th index as 2nd lambda argument. all subterms traversed, incl repeats */
     default boolean ANDi(/*@NotNull*/ ObjectIntPredicate<Term> p) {
         int s = subs();
-        for (int i = 0; i < s; i++) {
-            if (!p.accept(sub(i), i)) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.range(0, s).allMatch(i -> p.accept(sub(i), i));
     }
 
     /** supplies the i'th index as 2nd lambda argument. all subterms traversed, incl repeats */
     default boolean ORi(/*@NotNull*/ ObjectIntPredicate<Term> p) {
         int s = subs();
-        for (int i = 0; i < s; i++) {
-            if (p.accept(sub(i), i)) {
-                return true;
-            }
-        }
-        return false;
+        return IntStream.range(0, s).anyMatch(i -> p.accept(sub(i), i));
     }
 
     /** warning: elides test for repeated subterm */
@@ -1301,12 +1252,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /** visits each, incl repeats */
     default <X> boolean ANDwithOrdered(/*@NotNull*/ BiPredicate<Term,X> p, X param) {
         int s = subs();
-        for (int i = 0; i < s; i++) {
-            if (!p.test(sub(i), param)) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.range(0, s).allMatch(i -> p.test(sub(i), param));
     }
 
     /** warning: elides test for repeated subterm */
@@ -1362,12 +1308,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /** incl repeats */
     default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
         int s = subs();
-        for (int i = 0; i < s; i++) {
-            if (!sub(i).recurseTermsOrdered(inSuperCompound, whileTrue, parent)) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.range(0, s).allMatch(i -> sub(i).recurseTermsOrdered(inSuperCompound, whileTrue, parent));
     }
 
     default Subterms reversed() {

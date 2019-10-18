@@ -6,7 +6,8 @@ import nars.experiment.minicraft.top.item.ResourceItem;
 import nars.experiment.minicraft.top.item.resource.Resource;
 
 public class Zombie extends Mob {
-    private int xa, ya;
+    private int xa;
+    private int ya;
     private final int lvl;
     private int randomWalkTime;
 

@@ -26,7 +26,8 @@ import java.util.function.DoubleFunction;
 public class RawHistogram {
     private final int fractionBits;
     private final int powersOf2;
-    private long totalCount, overRange;
+    private long totalCount;
+    private long overRange;
     private int[] sampleCount;
     private final long floor;
 

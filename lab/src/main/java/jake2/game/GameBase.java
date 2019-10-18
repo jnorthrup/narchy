@@ -331,7 +331,8 @@ public class GameBase {
 
     public static edict_t obstacle;
 
-    public static int c_yes, c_no;
+    public static int c_yes;
+    public static int c_no;
 
     public static final int STEPSIZE = 18;
 

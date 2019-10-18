@@ -37,13 +37,19 @@ public abstract class JoglDisplay extends SpaceGraph {
      */
     public final JoglWindow video;
 
-    public final v3Anim camPos, camFwd, camUp;
+    public final v3Anim camPos;
+    public final v3Anim camFwd;
+    public final v3Anim camUp;
 
 
-    public float zNear = 0.5f, zFar = 1000;
+    public float zNear = 0.5f;
+    public float zFar = 1000;
 
     protected int debug;
-    public double top, bottom, left, right;
+    public double top;
+    public double bottom;
+    public double left;
+    public double right;
 
     public JoglDisplay() {
         video = new MyJoglWindow();

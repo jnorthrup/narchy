@@ -51,12 +51,7 @@ public class Vec2Array {
     }
 
     private static v2[] getInitializedArray(int argLength) {
-        List<v2> list = new ArrayList<>();
-        for (int i = 0; i < argLength; i++) {
-            v2 v2 = new v2();
-            list.add(v2);
-        }
-        v2[] ray = list.toArray(new v2[0]);
+        v2[] ray = IntStream.range(0, argLength).mapToObj(i -> new v2()).toArray(v2[]::new);
         return ray;
     }
 }

@@ -48,13 +48,7 @@ public abstract class AbstractButton extends Widget {
                 result = this;
                 finished = true;
             } else {
-                boolean b = false;
-                for (int i : new int[]{CLICK_BUTTON, 1, 0}) {
-                    if (finger.dragging(i)) {
-                        b = true;
-                        break;
-                    }
-                }
+                boolean b = IntStream.of(CLICK_BUTTON, 1, 0).anyMatch(finger::dragging);
                 if (b) {
                     //allow pass-through for drag actions
                     result = null;

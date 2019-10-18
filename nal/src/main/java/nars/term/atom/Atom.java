@@ -149,12 +149,7 @@ public class Atom extends AbstractAtomic implements The {
         int o = 3; //skip op byte + 2 len bytes
         int P = prefix.length;
         if (b.length - o >= P) {
-            for (int i = 0; i < P; i++) {
-                if (b[i + o] != prefix[i]) {
-                    return false;
-                }
-            }
-            return true;
+            return IntStream.range(0, P).noneMatch(i -> b[i + o] != prefix[i]);
         }
         return false;
     }

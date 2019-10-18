@@ -50,7 +50,9 @@ public class entity_state_t implements Cloneable
 	public float[] old_origin = { 0, 0, 0 }; 
 	public int modelindex;
 	/** weapons, CTF flags, etc. */
-	public int modelindex2, modelindex3, modelindex4; 
+	public int modelindex2;
+    public int modelindex3;
+    public int modelindex4;
 	public int frame;
 	public int skinnum;
 	/** PGM - we're filling it, so it needs to be unsigned. */

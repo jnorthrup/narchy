@@ -28,6 +28,7 @@ public class link_t {
 	public link_t(Object o) {
 		this.o = o;
 	}
-	public link_t prev, next;
+	public link_t prev;
+    public link_t next;
 	public final Object o;
 }

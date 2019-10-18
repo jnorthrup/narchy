@@ -88,14 +88,9 @@ public enum ListFunc {
             } else {
                 Subterms xys = xy.subterms();
 
-                List<Predicate<Termerator>> list = new ArrayList<>();
-                for (int i = -1; i < l; i++) {
-                    int finalI = i;
-                    Predicate<Termerator> assign = Evaluation.assign(
-                            x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
-                            y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)));
-                    list.add(assign);
-                }
+                List<Predicate<Termerator>> list = IntStream.range(-1, l).mapToObj(finalI -> Evaluation.assign(
+                        x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
+                        y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))).collect(toList());
                 e.canBe(list);
 
                 return null;

@@ -42,8 +42,10 @@ public class msurface_t
 	public final short[] texturemins = { 0, 0 };
 	public final short[] extents = { 0, 0 };
 
-	public int light_s, light_t; 
-	public int dlight_s, dlight_t;
+	public int light_s;
+    public int light_t;
+	public int dlight_s;
+    public int dlight_t;
 	
 
 	public glpoly_t polys; 

@@ -32,7 +32,8 @@ import jcog.math.v2;
  */
 public class Rot  {
 
-    public float s = 0, c = 1; 
+    public float s = 0;
+    public float c = 1;
 
     public Rot() {
     }

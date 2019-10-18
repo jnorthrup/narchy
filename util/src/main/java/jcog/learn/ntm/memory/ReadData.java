@@ -64,12 +64,7 @@ public class ReadData  {
     public static ReadData[] getVector(NTMMemory memory, HeadSetting[] h) {
         int x = memory.headNum();
 
-        List<ReadData> list = new ArrayList<>();
-        for (int i = 0; i < x; i++) {
-            ReadData readData = new ReadData(h[i], memory);
-            list.add(readData);
-        }
-        ReadData[] vector = list.toArray(new ReadData[0]);
+        ReadData[] vector = IntStream.range(0, x).mapToObj(i -> new ReadData(h[i], memory)).toArray(ReadData[]::new);
         return vector;
     }
 

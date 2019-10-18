@@ -54,7 +54,8 @@ public class Arithmeticize {
     private static final Function<IntArrayListCached, ArithmeticOp[]> cached = Memoizers.the.memoize(Arithmeticize.class.getSimpleName() + "_mods",
         16 * 1024, Arithmeticize::_mods);
 
-    private static final Variable A = $.varDep("A_"), B = $.varDep("B_");
+    private static final Variable A = $.varDep("A_");
+    private static final Variable B = $.varDep("B_");
     private static final Op Aop = A.op();
 
     private static final Function<Atom, Functor> ArithFunctors = Map.of(
@@ -327,7 +328,8 @@ public class Arithmeticize {
     }
 
     private static class CompareOp extends ArithmeticOp {
-        private final int a, b;
+        private final int a;
+        private final int b;
 
         CompareOp(int smaller, int bigger) {
             super(1);

@@ -1059,13 +1059,7 @@ public class a extends GamePanel {
         
         int px = playerX;
         int py = (int)playerY;
-        boolean b = true;
-        for (int v : new int[]{KEY_X, KEY_R, KEY_N, KEY_P}) {
-          if (a[v]) {
-            b = false;
-            break;
-          }
-        }
+        boolean b = IntStream.of(KEY_X, KEY_R, KEY_N, KEY_P).noneMatch(v -> a[v]);
         if (b) {
           keysReleased = true;
         }

@@ -2,7 +2,8 @@ package nars.task.util.signal;
 
 public class FlatTruthlet extends RangeTruthlet {
 
-    public final float freq, evi;
+    public final float freq;
+    public final float evi;
 
     public FlatTruthlet(long start, long end, float freq, float evi) {
         super(start, end);

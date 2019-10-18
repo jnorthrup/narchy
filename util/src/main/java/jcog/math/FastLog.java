@@ -22,7 +22,8 @@ package jcog.math;
  * @see java.lang.Float#floatToRawIntBits(float)
  */
 public class FastLog {
-    private final int q, qM1;
+    private final int q;
+    private final int qM1;
     private final float[] data;
     private final float korr;
 

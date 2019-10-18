@@ -10,7 +10,9 @@ public final class vv3  {
     public static final vv3 Y_AXIS = new vv3(0, 1, 0);
     public static final vv3 Z_AXIS = new vv3(0, 0, 1);
 
-    public double x, y, z;
+    public double x;
+    public double y;
+    public double z;
 
     public vv3(double x, double y, double z) {
         this.x = x;

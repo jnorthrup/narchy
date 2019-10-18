@@ -39,7 +39,8 @@ final class RayTracer extends JPanel {
 
 
     private Dimension size;
-    private int W, H;
+    private int W;
+    private int H;
     private double A;
 
 
@@ -209,7 +210,10 @@ final class RayTracer extends JPanel {
         };
 
 
-        final float x1, y1, x2, y2;
+        final float x1;
+        final float y1;
+        final float x2;
+        final float y2;
 
         Renderer(float x1, float y1, float x2, float y2) {
             this.x1 = x1;

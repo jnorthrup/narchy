@@ -40,7 +40,8 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
     private float a1;
     private float a2;
     private float b0;
-    private float y1, y2;
+    private float y1;
+    private float y2;
     private final float[] y1m;
     private final float[] y2m;
     private final int channels;

@@ -47,12 +47,7 @@ public abstract class AND<X> extends AbstractPred<X> {
 
         @Override
         public final boolean test(X m) {
-            for (PREDICATE<X> x : cond) {
-                if (!x.test(m)) {
-                    return false;
-                }
-            }
-            return true;
+            return Arrays.stream(cond).allMatch(x -> x.test(m));
         }
 
 
@@ -67,7 +62,8 @@ public abstract class AND<X> extends AbstractPred<X> {
     }
     private static final class AND2<X> extends AND<X> {
         /*@Stable*/
-        private final PREDICATE<X> a, b;
+        private final PREDICATE<X> a;
+        private final PREDICATE<X> b;
 
         private AND2(PREDICATE<X> a, PREDICATE<X> b) {
             super(new PREDICATE[]{ a, b });
@@ -99,7 +95,9 @@ public abstract class AND<X> extends AbstractPred<X> {
         private final PREDICATE<X> a;
         private final PREDICATE<X> c;
 
-        final MethodHandle A, B, C;
+        final MethodHandle A;
+        final MethodHandle B;
+        final MethodHandle C;
         private AND3_MH(PREDICATE<X> a, PREDICATE<X> b, PREDICATE<X> c) {
             super(new PREDICATE[] { a, b, c });
             this.a = a;
@@ -130,7 +128,9 @@ public abstract class AND<X> extends AbstractPred<X> {
     }
     private static final class AND3<X> extends AND<X> {
         /*@Stable*/
-        private final PREDICATE<X> a, b, c;
+        private final PREDICATE<X> a;
+        private final PREDICATE<X> b;
+        private final PREDICATE<X> c;
 
         private AND3(PREDICATE<X> a, PREDICATE<X> b, PREDICATE<X> c) {
             super(new PREDICATE[] { a, b, c });
@@ -139,12 +139,7 @@ public abstract class AND<X> extends AbstractPred<X> {
 
         @Override
         public final boolean test(X x) {
-            for (PREDICATE<X> xpredicate : Arrays.asList(a, b, c)) {
-                if (!xpredicate.test(x)) {
-                    return false;
-                }
-            }
-            return true;
+            return Stream.of(a, b, c).allMatch(xpredicate -> xpredicate.test(x));
         }
 
         public PREDICATE<X> first() {
@@ -172,13 +167,7 @@ public abstract class AND<X> extends AbstractPred<X> {
             case 0: return null;
             case 1: return (PREDICATE<D>) cond[0];
             default:
-                boolean needsFlat = false;
-                for (Term c : cond) {
-                    if (c instanceof AND) {
-                        needsFlat = true;
-                        break;
-                    }
-                }
+                boolean needsFlat = Arrays.stream(cond).anyMatch(c -> c instanceof AND);
                 if (needsFlat || !(cond instanceof PREDICATE[])) {
                     cond = stream(cond).flatMap(
                             x -> x instanceof AND ?
@@ -228,13 +217,7 @@ public abstract class AND<X> extends AbstractPred<X> {
     }
     public static @Nullable <X> PREDICATE<X>  first(AND<X>  b, Predicate<PREDICATE<X> > test) {
         int s = b.subs();
-        for (int i = 0; i < s; i++) {
-            PREDICATE<X> sub = (PREDICATE<X>) b.sub(i);
-            if (test.test(sub)) {
-                return sub;
-            }
-        }
-        return null;
+        return IntStream.range(0, s).mapToObj(i -> (PREDICATE<X>) b.sub(i)).filter(test::test).findFirst().orElse(null);
     }
 
     /** recursive */

@@ -41,12 +41,9 @@ public class HeadSetting
         double[] addr = addressingVector.value;
 
         Unit[] sv = getShiftedVector();
-        double sum = 0.0;
+        double sum;
         int bound = cellCount;
-        for (int i = 0; i < bound; i++) {
-            double v = (addr[i] = Math.pow(sv[i].value, gammaIndex));
-            sum += v;
-        }
+        sum = IntStream.range(0, bound).mapToDouble(i -> (addr[i] = Math.pow(sv[i].value, gammaIndex))).sum();
 
         addressingVector.valueMultiplySelf(1.0/sum);
         
@@ -113,14 +110,9 @@ public class HeadSetting
             s += temps[i];
         }
         double lnexps = lnexp / s;
-        double gradient2 = 0.0;
+        double gradient2;
         int bound = cells;
-        for (int i = 0; i < bound; i++) {
-            if (!(sv[i].value < NTMMemory.EPSILON)) {
-                double v = addrGrad[i] * (addrValue[i] * (lns[i] - lnexps));
-                gradient2 += v;
-            }
-        }
+        gradient2 = IntStream.range(0, bound).filter(i -> !(sv[i].value < NTMMemory.EPSILON)).mapToDouble(i -> addrGrad[i] * (addrValue[i] * (lns[i] - lnexps))).sum();
 
 
         gradient2 /= (1.0 + Math.exp(-gamma.value));
@@ -130,16 +122,11 @@ public class HeadSetting
     public static HeadSetting[] getVector(NTMMemory memory) {
         int x = memory.headNum();
 
-        List<HeadSetting> list = new ArrayList<>();
         int bound = x;
-        for (int i = 0; i < bound; i++) {
-            HeadSetting headSetting = new HeadSetting(
-                    new Unit(0.0),
-                    memory.memoryHeight,
-                    memory.getContentAddressing()[i]);
-            list.add(headSetting);
-        }
-        HeadSetting[] vector = list.toArray(new HeadSetting[0]);
+        HeadSetting[] vector = IntStream.range(0, bound).mapToObj(i -> new HeadSetting(
+                new Unit(0.0),
+                memory.memoryHeight,
+                memory.getContentAddressing()[i])).toArray(HeadSetting[]::new);
 
         return vector;
     }

@@ -206,13 +206,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
         if (s > 0 && bounds.contains(b)) {
 
             X[] data = this.data;
-            for (int i = 0; i < s; i++) {
-                X t = data[i];
-                if (x == t || model.mergeContain(x, t)) {
-                    return true;
-                }
-            }
-            return false;
+            return Arrays.stream(data, 0, s).anyMatch(t -> x == t || model.mergeContain(x, t));
         }
         return false;
     }

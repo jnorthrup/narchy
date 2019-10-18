@@ -60,10 +60,10 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
     // the sequence number of the start of the queue
     // TODO use AtomicCycle ?
     final AtomicInteger
-            head = new AtomicInteger(Integer.MIN_VALUE),
-            nextHead = new AtomicInteger(Integer.MIN_VALUE),
-            tail = new AtomicInteger(Integer.MIN_VALUE),
-            nextTail = new AtomicInteger(Integer.MIN_VALUE)
+            head = new AtomicInteger(Integer.MIN_VALUE);
+    final AtomicInteger nextHead = new AtomicInteger(Integer.MIN_VALUE);
+    final AtomicInteger tail = new AtomicInteger(Integer.MIN_VALUE);
+    final AtomicInteger nextTail = new AtomicInteger(Integer.MIN_VALUE)
     ;
 
 
@@ -482,13 +482,7 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
         if (s > 0) {
             //TODO use fast iteration method
             int h = head();
-            for (int i = 0; i < s; i++) {
-                X b = peek(h, i);
-                if (b != null && b.equals(o)) {
-                    return true;
-                }
-            }
-            return false;
+            return IntStream.range(0, s).mapToObj(i -> peek(h, i)).anyMatch(b -> b != null && b.equals(o));
         }
         return false;
     }

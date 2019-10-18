@@ -29,7 +29,8 @@ public final class TasksRegion extends Longerval implements TaskRegion {
      *
      * a and b are the corners
      */
-    private final int a, b;
+    private final int a;
+    private final int b;
 
     @Deprecated public TasksRegion(long start, long end, float freqMin, float freqMax, float confMin, float confMax) {
         this(start, end,

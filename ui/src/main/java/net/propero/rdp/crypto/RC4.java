@@ -71,7 +71,8 @@ public final class RC4 {
      * The two indices for the S-box computation referred to as i and j in
      * Schneier.
      */
-    private int x, y;
+    private int x;
+    private int y;
     private int state; 
 
     

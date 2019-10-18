@@ -1007,13 +1007,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
     private void qSort3(int loSt, int hiSt, int dSt) {
         int unLo, unHi, ltLo, gtHi, med, n, m;
         int lo, hi, d;
-        List<StackElem> list = new ArrayList<>();
         int bound = QSORT_STACK_SIZE;
-        for (int count = 0; count < bound; count++) {
-            StackElem stackElem = new StackElem();
-            list.add(stackElem);
-        }
-        StackElem[] stack = list.toArray(new StackElem[0]);
+        StackElem[] stack = IntStream.range(0, bound).mapToObj(count -> new StackElem()).toArray(StackElem[]::new);
 
         int sp = 0;
 

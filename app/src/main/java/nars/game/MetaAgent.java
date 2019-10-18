@@ -43,34 +43,34 @@ public abstract class MetaAgent extends Game {
 	static final Atomic CURIOSITY =
 
 		/** curiosity rate */
-		Atomic.the("curi"),
+		Atomic.the("curi");
 
-	/**
+	static final Atomic /**
 	 * tasklink forget factor
 	 */
-	forget = Atomic.the("forget"),
-		grow = Atomic.the("grow"),
+	forget = Atomic.the("forget");
+	static final Atomic grow = Atomic.the("grow");
 
 
-	/**
+	static final Atomic /**
 	 * internal truth frequency precision
 	 */
-	precise = Atomic.the("precise"), //frequency resolution
-	careful = Atomic.the("careful"), //conf resolution
-	ignore = Atomic.the("ignore"), //min conf
+	precise = Atomic.the("precise"); //frequency resolution
+	static final Atomic careful = Atomic.the("careful"); //conf resolution
+	static final Atomic ignore = Atomic.the("ignore"); //min conf
 
-	belief = Atomic.the("belief"),
-		goal = Atomic.the("goal"),
+	static final Atomic belief = Atomic.the("belief");
+	static final Atomic goal = Atomic.the("goal");
 
-	conf = Atomic.the("conf"),
-		pri = Atomic.the("pri"),
+	static final Atomic conf = Atomic.the("conf");
+	static final Atomic pri = Atomic.the("pri");
 
-	play = Atomic.the("play"),
-		input = Atomic.the("input"),
-		duration = Atomic.the("dur"),
-		happy = Atomic.the("happy"),
-		optimistic = Atomic.the("optimistic"),
-		dex = Atomic.the("dex");
+	static final Atomic play = Atomic.the("play");
+	static final Atomic input = Atomic.the("input");
+	static final Atomic duration = Atomic.the("dur");
+	static final Atomic happy = Atomic.the("happy");
+	static final Atomic optimistic = Atomic.the("optimistic");
+	static final Atomic dex = Atomic.the("dex");
 
 
 //    public final GoalActionConcept forgetAction;

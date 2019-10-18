@@ -20,7 +20,8 @@ public interface TruthFunction {
 
     abstract class ProxyTruthFunction implements TruthFunction {
         final TruthFunction o;
-        private final boolean allowOverlap, single;
+        private final boolean allowOverlap;
+        private final boolean single;
 
         ProxyTruthFunction(TruthFunction o) {
             this.o = o;
@@ -63,7 +64,8 @@ public interface TruthFunction {
      * */
     final class RepolarizedTruth extends ProxyTruthFunction {
 
-        final int taskPolarity, beliefPolarity;
+        final int taskPolarity;
+        final int beliefPolarity;
         private final String suffix;
         final boolean swap;
 

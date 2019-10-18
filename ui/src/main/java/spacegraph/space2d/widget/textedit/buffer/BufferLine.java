@@ -34,12 +34,8 @@ public class BufferLine implements Comparable<BufferLine> {
         if (length()==0)
             return "";
 
-        StringBuilder sb = new StringBuilder();
-        for (BufferChar bc : chars) {
-            String s = String.valueOf(bc.getChar());
-            sb.append(s);
-        }
-        String buf = sb.toString();
+        String sb = chars.stream().map(bc -> String.valueOf(bc.getChar())).collect(Collectors.joining());
+        String buf = sb;
         return buf;
     }
 

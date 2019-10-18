@@ -132,57 +132,7 @@ public class Recog2D extends GameX {
 
 //        int history = 256;
 
-        List<VectorLabel> list = new ArrayList<>();
         int bound = tv.concepts.length;
-        for (int j = 0; j < bound; j++) {
-            int i = j;
-            VectorLabel vectorLabel = new VectorLabel(String.valueOf(i)) {
-                @Override
-                protected void paintIt(GL2 gl, ReSurface r) {
-                    Concept c = tv.concepts[i];
-                    BeliefVector.Neuron nn = tv.neurons[i];
-
-                    float freq, conf;
-
-                    Truth t = nar.beliefTruth(c, nar.time());
-                    if (t != null) {
-                        conf = t.conf();
-                        freq = t.freq();
-                    } else {
-//                            conf = nar.confMin.floatValue();
-                        float defaultFreq =
-                                0.5f;
-
-                        freq = defaultFreq;
-                    }
-
-
-                    Draw.colorBipolar(gl,
-                            2f * (freq - 0.5f)
-
-
-                    );
-
-                    //float m = 0.5f * conf;
-
-                    Draw.rect(bounds, gl);
-
-                    if (tv.verify) {
-                        float error = nn.error;
-                        if (error != error) {
-
-
-                        } else {
-
-
-                        }
-                    }
-
-
-                }
-            };
-            list.add(vectorLabel);
-        }
         Gridding g = new Gridding(
 
 //                p = new Plot2D(history, Plot2D.Line).addAt("Reward", () ->
@@ -195,7 +145,51 @@ public class Recog2D extends GameX {
 
                 new Gridding(beliefTableCharts(nar, List.of(tv.concepts), 16)),
 
-                new Gridding(list.toArray(new Surface[0])));
+                new Gridding(IntStream.range(0, bound).mapToObj(i -> new VectorLabel(String.valueOf(i)) {
+                    @Override
+                    protected void paintIt(GL2 gl, ReSurface r) {
+                        Concept c = tv.concepts[i];
+                        BeliefVector.Neuron nn = tv.neurons[i];
+
+                        float freq, conf;
+
+                        Truth t = nar.beliefTruth(c, nar.time());
+                        if (t != null) {
+                            conf = t.conf();
+                            freq = t.freq();
+                        } else {
+//                            conf = nar.confMin.floatValue();
+                            float defaultFreq =
+                                    0.5f;
+
+                            freq = defaultFreq;
+                        }
+
+
+                        Draw.colorBipolar(gl,
+                                2f * (freq - 0.5f)
+
+
+                        );
+
+                        //float m = 0.5f * conf;
+
+                        Draw.rect(bounds, gl);
+
+                        if (tv.verify) {
+                            float error = nn.error;
+                            if (error != error) {
+
+
+                            } else {
+
+
+                            }
+                        }
+
+
+                    }
+                }).toArray(Surface[]::new)));
 
         int[] frames = {0};
         onFrame(() -> {
@@ -229,11 +223,7 @@ public class Recog2D extends GameX {
             btRange[0] = now - window;
             btRange[1] = now + window;
         });
-        List<Surface> list = new ArrayList<>();
-        for (Termed c : terms) {
-            BeliefTableChart beliefTableChart = new BeliefTableChart(c, nar);
-            list.add(beliefTableChart);
-        }
+        List<Surface> list = terms.stream().map(c -> new BeliefTableChart(c, nar)).collect(toList());
         return list;
     }
 
@@ -356,7 +346,8 @@ public class Recog2D extends GameX {
 
         class Neuron {
 
-            public float predictedFreq = 0.5f, predictedConf = 0;
+            public float predictedFreq = 0.5f;
+            public float predictedConf = 0;
 
             public float expectedFreq;
 

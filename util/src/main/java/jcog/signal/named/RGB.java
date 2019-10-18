@@ -7,7 +7,9 @@ import jcog.signal.tensor.ArrayTensor;
  * labeled FloatRange controls underlying ArrayTensor.  useful for UI purposes that rely on reflection for constructing widgets
  */
 public class RGB extends ArrayTensor {
-    public final FloatRange red, green, blue;
+    public final FloatRange red;
+    public final FloatRange green;
+    public final FloatRange blue;
 
     public RGB() {
         this(0, 1);

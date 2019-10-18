@@ -122,12 +122,7 @@ public class Tetris extends GameX {
         if (TETRIS_USE_DENSITY) {
             reward("density", 1, () -> {
 
-                long count = 0L;
-                for (double s : state.grid) {
-                    if (s > 0) {
-                        count++;
-                    }
-                }
+                long count = Arrays.stream(state.grid).filter(s -> s > 0).count();
                 int filled = (int) count;
 
                 int r = state.rowsFilled;
@@ -253,12 +248,7 @@ public class Tetris extends GameX {
     }
 
     private float density() {
-        long count = 0L;
-        for (double s : state.grid) {
-            if (s > 0) {
-                count++;
-            }
-        }
+        long count = Arrays.stream(state.grid).filter(s -> s > 0).count();
         var filled = (int) count;
 
         var r = state.rowsFilled;
@@ -681,13 +671,7 @@ public class Tetris extends GameX {
          */
         public boolean isRow(int y, boolean filledOrClear) {
             int bound = width;
-            for (int x = 0; x < bound; x++) {
-                double s = grid[i(x, y)];
-                if (filledOrClear ? s == 0 : s != 0) {
-                    return false;
-                }
-            }
-            return true;
+            return IntStream.range(0, bound).mapToDouble(x -> grid[i(x, y)]).noneMatch(s -> filledOrClear ? s == 0 : s != 0);
         }
 
         /**

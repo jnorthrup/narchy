@@ -151,7 +151,7 @@ public abstract class TermBuilder implements TermConstructor {
         int aRange = a.eventRange(), bRange = b.eventRange();
 
         if (dt == 0 && aRange == 0 && bRange == 0)
-            return conj(dt, a, b);
+            return conj(0, a, b);
         else
             return (dt >= 0) ?
                     ConjSeq.sequence(a, 0, b, +dt + aRange, this) :
@@ -166,7 +166,7 @@ public abstract class TermBuilder implements TermConstructor {
         int aRange = a.eventRange(), bRange = b.eventRange();
 
         if (dt == 0 && aRange == 0 && bRange == 0)
-            return conj(dt, a, b);
+            return conj(0, a, b);
         else
             return ConjSeq.sequence(a, 0, b, dt, this);
     }

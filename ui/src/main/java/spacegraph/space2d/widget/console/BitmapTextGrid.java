@@ -28,12 +28,15 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     static final int DEFAULT_FONT_SCALE = 32;
     private static final Logger logger = Log.logger(BitmapTextGrid.class);
     private static volatile Font defaultFont;
-    final AtomicBoolean invalidBmp = new AtomicBoolean(false), invalidTex = new AtomicBoolean(false);
+    final AtomicBoolean invalidBmp = new AtomicBoolean(false);
+    final AtomicBoolean invalidTex = new AtomicBoolean(false);
     private final Tex tex = new Tex().mipmap(true);
     @Deprecated
     private final Color cursorColor = new Color(255, 200, 0, 127);
-    protected int cursorCol, cursorRow;
-    protected int fontWidth, fontHeight;
+    protected int cursorCol;
+    protected int cursorRow;
+    protected int fontWidth;
+    protected int fontHeight;
     private BufferedImage backbuffer = null;
     private Font font;
     private Graphics2D backbufferGraphics;

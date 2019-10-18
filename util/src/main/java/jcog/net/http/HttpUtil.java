@@ -140,12 +140,7 @@ public final class HttpUtil
         {
 
                 int bound = buf.limit() - 1;
-                for (int a = offset; a < bound; a++) {
-                        if (isCR(buf.get(a)) && isLF(buf.get(a + 1))) {
-                                return a;
-                        }
-                }
-                return -1;
+                return IntStream.range(offset, bound).filter(a -> isCR(buf.get(a)) && isLF(buf.get(a + 1))).findFirst().orElse(-1);
 
         }
 
@@ -155,14 +150,7 @@ public final class HttpUtil
 
 
                 int bound = buf.limit() - 2;
-                for (int a = offset; a < bound; a++) {
-                        if (isCR(buf.get(a)) && isLF(buf.get(a + 1))) {
-                                if (!isSP(buf.get(a + 2)) && !isHT(buf.get(a + 2))) {
-                                        return a;
-                                }
-                        }
-                }
-                return -1;
+                return IntStream.range(offset, bound).filter(a -> isCR(buf.get(a)) && isLF(buf.get(a + 1))).filter(a -> !isSP(buf.get(a + 2)) && !isHT(buf.get(a + 2))).findFirst().orElse(-1);
 
         }
 
@@ -170,12 +158,7 @@ public final class HttpUtil
         public static int findSP(ByteBuffer buf, int offset)
         {
                 int bound = buf.limit();
-                for (int a = offset; a < bound; a++) {
-                        if (isSP(buf.get(a))) {
-                                return a;
-                        }
-                }
-                return -1;
+                return IntStream.range(offset, bound).filter(a -> isSP(buf.get(a))).findFirst().orElse(-1);
 
         }
 

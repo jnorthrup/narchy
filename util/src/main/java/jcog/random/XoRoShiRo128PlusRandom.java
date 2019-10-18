@@ -61,7 +61,8 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
     /**
      * The internal state of the algorithm.
      */
-    private long a, b;
+    private long a;
+    private long b;
 
 
 

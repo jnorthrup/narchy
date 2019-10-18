@@ -38,7 +38,8 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
      */
     private static final float defaultScrollEdge = 0.12f;
 
-    private final FloatSlider scrollX, scrollY;
+    private final FloatSlider scrollX;
+    private final FloatSlider scrollY;
     private final XYSlider scale;
 
     /**

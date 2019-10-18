@@ -209,7 +209,8 @@ public class OptimizedBvh implements Serializable {
 			this.triangleNodes = triangleNodes;
 		}
 
-		private final v3 aabbMin = new v3(), aabbMax = new v3();
+		private final v3 aabbMin = new v3();
+        private final v3 aabbMax = new v3();
 
 		@Override
         public void internalProcessTriangleIndex(v3[] triangle, int partId, int triangleIndex) {

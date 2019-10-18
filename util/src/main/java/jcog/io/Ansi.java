@@ -228,11 +228,6 @@ public final class Ansi {
   private static int indexOfFirstNonTab(String s) {
     int length = s.length();
     int bound = length;
-    for (int i = 1; i < bound; i++) {
-      if (s.charAt(i) != '\t') {
-        return i;
-      }
-    }
-    return -1;
+    return IntStream.range(1, bound).filter(i -> s.charAt(i) != '\t').findFirst().orElse(-1);
   }
 }

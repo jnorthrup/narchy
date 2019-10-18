@@ -5,7 +5,8 @@ import nars.experiment.minicraft.top.gfx.Screen;
 import nars.experiment.minicraft.top.sound.Sound;
 
 public class AirWizard extends Mob {
-    private int xa, ya;
+    private int xa;
+    private int ya;
     private int randomWalkTime;
     private int attackDelay;
     private int attackTime;

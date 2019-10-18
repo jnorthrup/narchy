@@ -217,13 +217,9 @@ public class PreciseHMM {
 		}
 
 
-        double sum0 = 0.0;
-        for (double[] doubles : help) {
-            double aDouble = doubles[0];
-            sum0 += aDouble;
-        }
+        double sum0 = Arrays.stream(help).mapToDouble(doubles -> doubles[0]).sum();
 
-        for(int i=0; i<scaled.length; i++) {
+		for(int i=0; i<scaled.length; i++) {
 			scaled[i][0] = help[i][0] / sum0;
 		}
 		

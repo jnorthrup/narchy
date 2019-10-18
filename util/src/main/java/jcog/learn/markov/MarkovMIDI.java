@@ -142,12 +142,7 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
 
                 if (mine.length != theirs.length) return false;
 
-                for (int i = 0; i < mine.length; i++) {
-                    if (mine[i] != theirs[i]) {
-                        return false;
-                    }
-                }
-                return true;
+                return IntStream.range(0, mine.length).noneMatch(i -> mine[i] != theirs[i]);
             } catch (Exception e) {
                 return false;
             }

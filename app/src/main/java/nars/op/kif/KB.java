@@ -529,11 +529,7 @@ public class KB implements Serializable {
     public Set<String> instances(String term) {
 
         ArrayList<Formula> forms = askWithRestriction(2, term, 0, "instance");
-        Set<String> result = new HashSet<>();
-        for (Formula f : forms) {
-            String argument = f.getArgument(1);
-            result.add(argument);
-        }
+        Set<String> result = forms.stream().map(f -> f.getArgument(1)).collect(Collectors.toSet());
         return result;
     }
 
@@ -654,12 +650,7 @@ public class KB implements Serializable {
             return true;
         if (kbCache.transInstOf(child, parent))
             return true;
-        for (String s : Arrays.asList("instance", "subclass", "subrelation", "subAttribute")) {
-            if (kbCache.childOfP(s, parent, child)) {
-                return true;
-            }
-        }
-        return false;
+        return Stream.of("instance", "subclass", "subrelation", "subAttribute").anyMatch(s -> kbCache.childOfP(s, parent, child));
     }
 
     /***************************************************************
@@ -913,13 +904,7 @@ public class KB implements Serializable {
         args[1] = "term3 = " + term3;
 
         ArrayList<Formula> result = new ArrayList<>();
-        boolean b = true;
-        for (String s : Arrays.asList(term1, term2, term3)) {
-            if (!StringUtil.isNonEmptyString(s)) {
-                b = false;
-                break;
-            }
-        }
+        boolean b = Stream.of(term1, term2, term3).allMatch(s -> StringUtil.isNonEmptyString(s));
         if (b) {
             
             ArrayList<Formula> partiala = new ArrayList<>();
@@ -1963,13 +1948,7 @@ public class KB implements Serializable {
         forms.addAll(askWithRestriction(0,"instance",1,term));
         forms.addAll(askWithRestriction(0,"subrelation",1,term));
         forms.addAll(askWithRestriction(0,"subAttribute",1,term));
-        HashSet<String> strings = new HashSet<>();
-        for (Formula f : forms) {
-            if (!f.isCached()) {
-                String argument = f.getArgument(2);
-                strings.add(argument);
-            }
-        }
+        HashSet<String> strings = forms.stream().filter(f -> !f.isCached()).map(f -> f.getArgument(2)).collect(Collectors.toCollection(HashSet::new));
         result = strings;
         
         return result;
@@ -2089,12 +2068,7 @@ public class KB implements Serializable {
      */
     public int getCountRules() {
 
-        long result = 0L;
-        for (Formula formula : formulaMap.values()) {
-            if (formula.isRule()) {
-                result++;
-            }
-        }
+        long result = formulaMap.values().stream().filter(Formula::isRule).count();
         int count = (int) result;
         return count;
     }
@@ -2104,11 +2078,7 @@ public class KB implements Serializable {
      */
     private static ArrayList<String> arrayListWithBlanks(int size) {
 
-        ArrayList<String> al = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            String s = "";
-            al.add(s);
-        }
+        ArrayList<String> al = IntStream.range(0, size).mapToObj(i -> "").collect(Collectors.toCollection(() -> new ArrayList<>(size)));
         return al;
     }
 
@@ -2347,13 +2317,7 @@ public class KB implements Serializable {
      */
     public void deleteUserAssertions() {
 
-        String toRemove = null;
-        for (String constituent : constituents) {
-            if (constituent.endsWith(_userAssertionsString)) {
-                toRemove = constituent;
-                break;
-            }
-        }
+        String toRemove = constituents.stream().filter(constituent -> constituent.endsWith(_userAssertionsString)).findFirst().orElse(null);
 
         if (toRemove != null) {
             constituents.remove(toRemove);
@@ -2482,12 +2446,7 @@ public class KB implements Serializable {
 
         List<String> newConstituents;
         synchronized (this.getTerms()) {
-            List<String> list = new ArrayList<>();
-            for (String constituent : constituents) {
-                if (!constituent.endsWith(_cacheFileSuffix)) {
-                    list.add(constituent);
-                }
-            }
+            List<String> list = constituents.stream().filter(constituent -> !constituent.endsWith(_cacheFileSuffix)).collect(Collectors.toList());
             newConstituents = list;
             constituents.clear();
             formulas.clear();

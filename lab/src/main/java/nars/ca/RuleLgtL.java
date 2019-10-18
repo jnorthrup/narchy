@@ -10,8 +10,10 @@ public class RuleLgtL {
 	public int iClo; 
 	public int iRng; 
 	public int iNgh; 
-	public int iSMin, iSMax; 
-	public int iBMin, iBMax; 
+	public int iSMin;
+    public int iSMax;
+	public int iBMin;
+    public int iBMax;
 	public boolean isCentr; 
 
 	public static final int MAX_RANGE = 10;

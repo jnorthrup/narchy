@@ -83,13 +83,7 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
         DataSet dataSet = usedTrainingDataset;
 
 
-        Set<String> phrases = new HashSet<>();
-        for (Example example : dataSet.getExamples()) {
-            if (!example.match.isEmpty()) {
-                String string = example.getString();
-                phrases.add(string);
-            }
-        }
+        Set<String> phrases = dataSet.getExamples().stream().filter(example -> !example.match.isEmpty()).map(Example::getString).collect(Collectors.toSet());
 
         int examples = Math.min(configuration.getEvolutionParameters().getPopulationSize() / 3, phrases.size());
 

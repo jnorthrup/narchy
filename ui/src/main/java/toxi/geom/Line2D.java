@@ -130,7 +130,8 @@ public class Line2D {
         return segments;
     }
 
-    public Vec2D a, b;
+    public Vec2D a;
+    public Vec2D b;
 
     public Line2D(float x1, float y1, float x2, float y2) {
         this.a = new Vec2D(x1, y1);

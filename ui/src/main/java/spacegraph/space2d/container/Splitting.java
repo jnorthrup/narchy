@@ -24,7 +24,8 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
     private float split = Float.NaN;
     private boolean vertical;
     //TODO float marginPct = ...;
-    private float minSplit = 0, maxSplit = 1;
+    private float minSplit = 0;
+    private float maxSplit = 1;
 
     public Splitting() {
         this(null, 0.5f, true, null);

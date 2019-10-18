@@ -145,14 +145,9 @@ public class FPGrow {
         for (int i = 1; i < c; i++) {
 
             String bitmap = Integer.toBinaryString(i);
-            List<FPNode> combine = new ArrayList<>();
+            List<FPNode> combine;
             int bound = bitmap.length();
-            for (int j = 0; j < bound; j++) {
-                if (bitmap.charAt(j) == '1') {
-                    FPNode fpNode = path.get(length - bitmap.length() + j);
-                    combine.add(fpNode);
-                }
-            }
+            combine = IntStream.range(0, bound).filter(j -> bitmap.charAt(j) == '1').mapToObj(j -> path.get(length - bitmap.length() + j)).collect(Collectors.toList());
             combinations.add(combine);
         }
     }

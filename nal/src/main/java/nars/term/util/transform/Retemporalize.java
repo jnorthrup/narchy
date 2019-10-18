@@ -60,7 +60,8 @@ public abstract class Retemporalize extends RecursiveTermTransform.NegObliviousT
 
     public static final class RetemporalizeFromTo extends Retemporalize {
 
-        final int from, to;
+        final int from;
+        final int to;
 
         public RetemporalizeFromTo(int from, int to) {
             this.from = from;

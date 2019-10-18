@@ -91,13 +91,7 @@ public class Terminal extends Parser {
 	 */
 	@Override
 	public Set<Assembly> match(Set<Assembly> in) {
-		Set<Assembly> out = new HashSet<>();
-		for (Assembly assembly : in) {
-			Assembly matchOneAssembly = matchOneAssembly(assembly);
-			if (matchOneAssembly != null) {
-				out.add(matchOneAssembly);
-			}
-		}
+		Set<Assembly> out = in.stream().map(this::matchOneAssembly).filter(Objects::nonNull).collect(Collectors.toSet());
 		return out;
 	}
 

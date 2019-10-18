@@ -61,9 +61,12 @@ public class AutoclassifiedBitmap extends VectorSensor {
     public final float[][] pixRecon;
 
     private final float[] ins;
-    private final int sw, sh;
-    private final int nw, nh;
-    private final int pw, ph;
+    private final int sw;
+    private final int sh;
+    private final int nw;
+    private final int nh;
+    private final int pw;
+    private final int ph;
     private final Game game;
     private final Term[] feature;
 

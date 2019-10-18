@@ -67,7 +67,8 @@ public class PlaySound {
     private long beginTime;
 
     
-    private PlaySound prev, next;
+    private PlaySound prev;
+    private PlaySound next;
 
     private PlaySound() {
         prev = next = null;

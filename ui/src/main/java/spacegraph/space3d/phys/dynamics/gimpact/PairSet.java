@@ -62,13 +62,8 @@ class PairSet {
 	
 	@SuppressWarnings("unchecked")
 	private void expand() {
-		List<Pair> list = new ArrayList<>();
 		int bound = array.length << 1;
-		for (int i = array.length; i < bound; i++) {
-			Pair pair = new Pair();
-			list.add(pair);
-		}
-		Pair[] newArray = list.toArray(new Pair[0]);
+		Pair[] newArray = IntStream.range(array.length, bound).mapToObj(i -> new Pair()).toArray(Pair[]::new);
         System.arraycopy(array, 0, newArray, 0, array.length);
 		array = newArray;
 	}

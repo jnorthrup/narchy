@@ -556,13 +556,7 @@ public class SV_MAIN {
                 Globals.net_message)) {
 
 
-            boolean b = true;
-            for (int v : new int[]{0, 1, 2, 3}) {
-                if ((Globals.net_message.data[v] != -1)) {
-                    b = false;
-                    break;
-                }
-            }
+            boolean b = IntStream.of(0, 1, 2, 3).noneMatch(v -> (Globals.net_message.data[v] != -1));
             if (b) {
                 SV_ConnectionlessPacket();
                 continue;

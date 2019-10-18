@@ -25,7 +25,8 @@ public class SignalInput extends Loop {
      * called when next sample (buffer) frame is ready
      */
     public final TensorTopic<ArrayTensor> wave = new TensorTopic<>(new ArrayTensor(0));
-    private long s, e;
+    private long s;
+    private long e;
 
     public SignalInput() {
         super();
@@ -50,7 +51,8 @@ public class SignalInput extends Loop {
 
     public static class RealTimeTensor extends ArrayTensor {
 
-        public final long start, end;
+        public final long start;
+        public final long end;
 
         public RealTimeTensor(float[] oneD, long start, long end) {
             super(oneD);

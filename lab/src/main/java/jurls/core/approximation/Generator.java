@@ -25,19 +25,13 @@ public class Generator {
 
             for (int i = 0; i < numFeatures; ++i) {
 
-                List<Product> list = new ArrayList<>();
-                for (Scalar input : gc.getInputScalars()) {
-                    Product f = new Product(
-                            gc.newParameter(1),
-                            new Sum(
-                                    gc.newParameter(-1, 0),
-                                    input
-                            )
-                    );
-                    Product product = new Product(f, f);
-                    list.add(product);
-                }
-                DiffableFunctionSource s = new Sum(list.toArray(new DiffableFunctionSource[0]));
+                DiffableFunctionSource s = new Sum(Arrays.stream(gc.getInputScalars()).map(input -> new Product(
+                        gc.newParameter(1),
+                        new Sum(
+                                gc.newParameter(-1, 0),
+                                input
+                        )
+                )).map(f -> new Product(f, f)).toArray(DiffableFunctionSource[]::new));
 
                 DiffableFunctionSource g = new Cosine(new Product(gc.newParameter(50), s));
 
@@ -70,17 +64,13 @@ public class Generator {
             List<DiffableFunctionSource> xs = new ArrayList<>();
 
             for (int i = 0; i < numFeatures; ++i) {
-                List<DiffableFunctionSource> ys = new ArrayList<>();
-                for (Scalar input : gc.getInputScalars()) {
-                    Product product = new Product(
-                            gc.newParameter(0, 10),
-                            new Sum(
-                                    gc.newParameter(-1, 0),
-                                    input
-                            )
-                    );
-                    ys.add(product);
-                }
+                List<DiffableFunctionSource> ys = Arrays.stream(gc.getInputScalars()).map(input -> new Product(
+                        gc.newParameter(0, 10),
+                        new Sum(
+                                gc.newParameter(-1, 0),
+                                input
+                        )
+                )).collect(Collectors.toList());
 
                 ys.add(gc.newParameter(0));
                 xs.add(
@@ -113,17 +103,13 @@ public class Generator {
             List<DiffableFunctionSource> xs = new ArrayList<>();
 
             for (int i = 1; i <= numFeatures; ++i) {
-                List<DiffableFunctionSource> ys = new ArrayList<>();
-                for (Scalar input : gc.getInputScalars()) {
-                    Product product = new Product(
-                            gc.newParameter(0, 1),
-                            new Sum(
-                                    gc.newParameter(-1, 0),
-                                    input
-                            )
-                    );
-                    ys.add(product);
-                }
+                List<DiffableFunctionSource> ys = Arrays.stream(gc.getInputScalars()).map(input -> new Product(
+                        gc.newParameter(0, 1),
+                        new Sum(
+                                gc.newParameter(-1, 0),
+                                input
+                        )
+                )).collect(Collectors.toList());
 
                 ys.add(gc.newParameter(-1,1));
 

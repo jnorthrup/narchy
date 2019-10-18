@@ -33,7 +33,9 @@ public class Weather extends NARPart {
     public final v2 lonLat;
 
     /** current day daylight param */
-    transient Date sunrise, sunset, noon;
+    transient Date sunrise;
+    transient Date sunset;
+    transient Date noon;
 
     /**
      * updated with the latest events

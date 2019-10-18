@@ -121,11 +121,7 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
     }
 
     public SimpleGraph3D<X> commit(MapNodeGraph<X,Object> g) {
-        List<X> list = new ArrayList<>();
-        for (Node<X, Object> xObjectNode : g.nodes()) {
-            X id = xObjectNode.id();
-            list.add(id);
-        }
+        List<X> list = g.nodes().stream().map(Node::id).collect(Collectors.toList());
         return commit(
                 list,
                 x-> StreamSupport.stream(g.node(x).edges(false, true).spliterator(), false).map(zz -> zz.to().id())

@@ -113,12 +113,7 @@ public class PrecisionCharmaskLengthObjective implements Objective {
     
     private static int intersection(Bounds[] extractedRanges, List<Bounds> expectedRanges) {
         int overallNumChars = Arrays.stream(extractedRanges).mapToInt(extractedBounds -> {
-            int sum = 0;
-            for (Bounds expectedBounds : expectedRanges) {
-                int numChars = Math.min(extractedBounds.end, expectedBounds.end) - Math.max(extractedBounds.start, expectedBounds.start);
-                int max = Math.max(0, numChars);
-                sum += max;
-            }
+            int sum = expectedRanges.stream().mapToInt(expectedBounds -> Math.min(extractedBounds.end, expectedBounds.end) - Math.max(extractedBounds.start, expectedBounds.start)).map(numChars -> Math.max(0, numChars)).sum();
             return sum;
         }).sum();
 
@@ -128,12 +123,7 @@ public class PrecisionCharmaskLengthObjective implements Objective {
     
     private static int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
         int identicalRanges = (int) Arrays.stream(rangesA).filter(boundsA -> {
-            for (Bounds bounds : rangesB) {
-                if (boundsA.equals(bounds)) {
-                    return true;
-                }
-            }
-            return false;
+            return rangesB.stream().anyMatch(boundsA::equals);
         }).count();
 
         return identicalRanges;

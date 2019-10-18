@@ -16,7 +16,10 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     public static final RectFloat Unit = XYXY(0, 0, 1, 1);
     public static final RectFloat Zero = XYXY(0, 0, 0, 0);
 
-    public final float x, y, w, h;
+    public final float x;
+    public final float y;
+    public final float w;
+    public final float h;
 
 
     protected RectFloat(RectFloat r) {

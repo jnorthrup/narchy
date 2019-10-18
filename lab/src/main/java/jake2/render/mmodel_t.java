@@ -31,5 +31,6 @@ public class mmodel_t
 	public float radius;
 	public int headnode;
 	public static final int visleafs = 0;
-	public int firstface, numfaces;
+	public int firstface;
+    public int numfaces;
 }

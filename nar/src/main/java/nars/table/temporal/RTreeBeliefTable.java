@@ -72,15 +72,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 		} else {
             //null-terminated
-			for (RNode<TaskRegion> bb : ((RBranch<TaskRegion>) next).data) {
-				if (bb == null) {
-					break;
-				}
-				if (!findEvictable(tree, bb, /*closest, */weakest, mergeableLeaf)) {
-					return false;
-				}
-			}
-			return true;
+			return Arrays.stream(((RBranch<TaskRegion>) next).data).takeWhile(Objects::nonNull).allMatch(bb -> findEvictable(tree, bb, /*closest, */weakest, mergeableLeaf));
 		}
 
 		return true;

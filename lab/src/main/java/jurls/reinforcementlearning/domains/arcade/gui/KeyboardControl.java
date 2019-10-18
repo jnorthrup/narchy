@@ -32,8 +32,10 @@ import java.awt.event.KeyListener;
  */
 public class KeyboardControl implements KeyListener {
     /** Variables used to keep track of which keys are pressed */
-    public boolean up, down;
-    public boolean left, right;
+    public boolean up;
+    public boolean down;
+    public boolean left;
+    public boolean right;
     public boolean fire;
 
     public boolean reset;

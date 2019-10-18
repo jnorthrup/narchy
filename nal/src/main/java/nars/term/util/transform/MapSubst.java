@@ -94,7 +94,10 @@ public enum MapSubst { ;
 
 
     private static final class MapSubst2 extends MapSubstWithStructFilter {
-        final Term ax, ay, bx, by;
+        final Term ax;
+        final Term ay;
+        final Term bx;
+        final Term by;
 
         MapSubst2(Term ax, Term ay, Term bx, Term by) {
             this(ax, ay, bx, by, ax.structure() | bx.structure());

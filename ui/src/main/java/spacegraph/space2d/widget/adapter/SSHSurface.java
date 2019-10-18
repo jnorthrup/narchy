@@ -55,19 +55,26 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
     private OutputStream out;
     private TerminalEmulator emulator = null;
     private Connection connection = null;
-    private BufferedImage img, background;
-    private Graphics2D cursor_graphics, graphics;
+    private BufferedImage img;
+    private BufferedImage background;
+    private Graphics2D cursor_graphics;
+    private Graphics2D graphics;
     private Color defaultbground = Color.black;
     private Color defaultfground = Color.white;
     private Color bground = Color.black;
     private Color fground = Color.white;
 
     private Font font;
-    private boolean bold = false, underline = false, reverse = false;
-    private int term_width = 80, term_height = 24;
+    private boolean bold = false;
+    private boolean underline = false;
+    private boolean reverse = false;
+    private int term_width = 80;
+    private int term_height = 24;
     private int descent = 0;
-    private int x = 0, y = 0;
-    private int char_width, char_height;
+    private int x = 0;
+    private int y = 0;
+    private int char_width;
+    private int char_height;
 
     private int line_space = -2;
     private boolean antialiasing = true;

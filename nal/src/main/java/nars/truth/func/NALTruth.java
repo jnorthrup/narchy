@@ -463,7 +463,8 @@ public enum NALTruth implements TruthFunction {
 
 
 
-    private final boolean single, overlap;
+    private final boolean single;
+    private final boolean overlap;
 
     NALTruth() {
         Field f = Reflect.on(getClass()).field(name()).get();

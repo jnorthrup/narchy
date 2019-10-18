@@ -6,6 +6,7 @@ import jcog.exe.Exe;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,13 +46,7 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
 
         for (Field field : fieldCache.computeIfAbsent(c, (cc) ->
                 {
-                    List<Field> list = new ArrayList<>();
-                    for (Field x : cc.getFields()) {
-                        if (x.getType() == Topic.class) {
-                            list.add(x);
-                        }
-                    }
-                    return list.toArray(new Field[0]);
+                    return Arrays.stream(cc.getFields()).filter(x -> x.getType() == Topic.class).toArray(Field[]::new);
                 }
         )) {
             f.accept(field);

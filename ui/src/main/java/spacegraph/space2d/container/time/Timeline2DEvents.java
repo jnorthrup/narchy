@@ -14,7 +14,8 @@ import java.util.function.Consumer;
  * which can be materialized as arrangeable clips */
 public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRangeAware {
 
-    long start, end;
+    long start;
+    long end;
 
     public final Timeline2D.EventBuffer<E> model;
 

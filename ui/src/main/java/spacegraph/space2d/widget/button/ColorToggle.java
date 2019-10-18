@@ -6,7 +6,9 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.video.Draw;
 
 public class ColorToggle extends ToggleButton {
-    public float r, g, b;
+    public float r;
+    public float g;
+    public float b;
 
     public ColorToggle(float r, float g, float b) {
         this.r = r; this.g = g; this.b = b;

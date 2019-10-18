@@ -27,7 +27,8 @@ public abstract class RealTime extends Time {
 
     private final AtomicLong nextStamp = new AtomicLong(seed);
 
-    private float dur = 1, nextDur = 1;
+    private float dur = 1;
+    private float nextDur = 1;
     private long last;
 
 

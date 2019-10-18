@@ -266,13 +266,7 @@ public class Smasher {
                     jcog.math.v2 centroid = opposite.centroid();
                     opposite.visited = true;
                     if (ic.contains(centroid)) {
-                        boolean intersection = false;
-                        for (EdgeDiagram edge : allEdgesPolygon) {
-                            if (edge.d1 != startPolygon[0] && edge.d2 != startPolygon[0] && edge.intersectAre(centroid, kolmicovyBod[0])) {
-                                intersection = true;
-                                break;
-                            }
-                        }
+                        boolean intersection = allEdgesPolygon.stream().anyMatch(edge -> edge.d1 != startPolygon[0] && edge.d2 != startPolygon[0] && edge.intersectAre(centroid, kolmicovyBod[0]));
 
 
                         if (!intersection) {
@@ -287,12 +281,7 @@ public class Smasher {
         }
 
         Fragment[] fragmentsArray = vysledneFragmenty.toArray(new Fragment[0]);
-        MyList<Fragment> fragmentsBody = new MyList<>();
-        for (Fragment fx : allIntersections) {
-            if (!vysledneFragmenty.contains(fx)) {
-                fragmentsBody.add(fx);
-            }
-        }
+        MyList<Fragment> fragmentsBody = allIntersections.stream().filter(fx -> !vysledneFragmenty.contains(fx)).collect(Collectors.toCollection(MyList::new));
 
         MyList<Polygon> result = zjednotenie(fragmentsBody);
 
@@ -491,13 +480,8 @@ public class Smasher {
 
         List<Fragment> fragmentList = new FasterList<>(focee.length);
 
-        List<v2> list = new ArrayList<>();
         int bound = factory.pCount;
-        for (int i1 = 0; i1 < bound; i1++) {
-            v2 v2 = new v2(factory.points[i1]);
-            list.add(v2);
-        }
-        v2[] pp = list.toArray(new v2[0]);
+        v2[] pp = IntStream.range(0, bound).mapToObj(i1 -> new v2(factory.points[i1])).toArray(v2[]::new);
 
         for (int i = 0; i < focee.length; i++) {
 

@@ -281,17 +281,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
                 //scan list for existing equal task
                 Object[] list = this.items;
-                Task found = null;
-                for (Object aList : list) {
-                    if (aList == null) {
-                        break;
-                    }
-                    Task x = (Task) aList;
-                    if (x.equals(input)) {
-                        found = x;
-                        break;
-                    }
-                }
+                Task found = Arrays.stream(list).takeWhile(Objects::nonNull).map(aList -> (Task) aList).filter(x -> x.equals(input)).findFirst().orElse(null);
                 existing = found;
             }
 

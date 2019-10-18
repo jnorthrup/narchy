@@ -2149,7 +2149,8 @@ public class CL_fx {
 
 	static final int PARTICLE_GRAVITY = 40;
 
-	static cparticle_t active_particles, free_particles;
+	static cparticle_t active_particles;
+    static cparticle_t free_particles;
 
 	/*
 	 * =============== CL_BigTeleportParticles ===============

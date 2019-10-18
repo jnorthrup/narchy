@@ -327,12 +327,7 @@ public class Grok implements Serializable {
         int strLen;
         if (str != null && (strLen = str.length()) != 0) {
 
-            for (int i = 0; i < strLen; i++) {
-                if (!Character.isWhitespace(str.charAt(i))) {
-                    return false;
-                }
-            }
-            return true;
+            return IntStream.range(0, strLen).allMatch(i -> Character.isWhitespace(str.charAt(i)));
         } else {
             return true;
         }

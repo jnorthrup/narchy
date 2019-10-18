@@ -92,12 +92,9 @@ public class HiddenLayer {
 			Unit[] headWeights = readWeightsForEachHead[headIndex];
 			ReadData read = readData[headIndex];
             Unit[] r = read.read;
-            double sum = 0.0;
+            double sum;
             int bound = memoryUnitSizeM;
-            for (int memoryCellIndex = 0; memoryCellIndex < bound; memoryCellIndex++) {
-                double v = headWeights[memoryCellIndex].value * r[memoryCellIndex].value;
-                sum += v;
-            }
+			sum = IntStream.range(0, bound).mapToDouble(memoryCellIndex -> headWeights[memoryCellIndex].value * r[memoryCellIndex].value).sum();
             tempSum += sum;
 		}
 		return tempSum;

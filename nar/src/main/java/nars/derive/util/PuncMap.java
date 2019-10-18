@@ -18,7 +18,8 @@ import static nars.Op.*;
 public final class PuncMap extends AbstractPred<PreDerivation> {
     //private final BytePredicate taskPunc;
 
-    public static final byte FALSE = 0, TRUE = 1;
+    public static final byte FALSE = 0;
+    public static final byte TRUE = 1;
     public static final PuncMap All = new PuncMap(TRUE, TRUE, TRUE, TRUE, TRUE);
 
     final byte belief;

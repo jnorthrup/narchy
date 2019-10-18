@@ -30,7 +30,8 @@ class MJBoard extends Panel implements Runnable {
 	public int Population; 
 	public final int[] Populations = new int[MAX_CLO + 1]; 
 	
-	private int lastX, lastY; 
+	private int lastX;
+    private int lastY;
 	public boolean IsRunning; 
 	public boolean DrawGrid = true; 
 	public int ColoringMethod = 1; 

@@ -33,7 +33,11 @@ import net.beadsproject.beads.data.DataBeadReceiver;
 public class CrossoverFilter extends UGen implements DataBeadReceiver {
 
     
-    private float a0, a1, a2, lb0, lb1;
+    private float a0;
+    private float a1;
+    private float a2;
+    private float lb0;
+    private float lb1;
 
     private static final float SQRT2 = (float) Math.sqrt(2);
     private float freq = 120;
@@ -41,16 +45,23 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
     private UGen freqUGen;
 
     
-    private float x1, x2;
+    private float x1;
+    private float x2;
     private float ly1;
     private float ly2;
-    private float lz1, lz2;
+    private float lz1;
+    private float lz2;
     private float hy1;
     private float hy2;
-    private float hz1, hz2;
+    private float hz1;
+    private float hz2;
 
     
-    private float[][] xms, lyms, lzms, hyms, hzms;
+    private float[][] xms;
+    private float[][] lyms;
+    private float[][] lzms;
+    private float[][] hyms;
+    private float[][] hzms;
 
     private final int channels;
 

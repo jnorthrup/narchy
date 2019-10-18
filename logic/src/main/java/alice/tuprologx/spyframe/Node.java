@@ -11,7 +11,8 @@ public class Node{
   /** The children of this node. No children may be an empty array or <code>null</code>.*/
   public Node[] kids;
   /** Coordinates of the node's upper left edge (including border).*/
-  public float x, y;
+  public float x;
+    public float y;
   /** The node's width including the border.*/
   public float w;
   /** The displayed text of the node.*/

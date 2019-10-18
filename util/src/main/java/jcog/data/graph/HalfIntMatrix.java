@@ -31,7 +31,8 @@ class HalfIntMatrix {
 	/** the array holding the complete triangle matrix */
 	private final int[] matrix;
 
-	private final int size, initialValue;
+	private final int size;
+	private final int initialValue;
 
 	/**
 	 * Creates a new HalfIntMatrix that is an exact copy of the given template

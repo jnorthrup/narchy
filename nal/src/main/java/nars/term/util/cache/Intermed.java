@@ -40,7 +40,8 @@ public enum Intermed  { ;
         }
     }
     public static final class InternedCompoundByComponentPair extends InternedCompoundByComponents {
-        public final transient Term x, y;
+        public final transient Term x;
+        public final transient Term y;
 
         public InternedCompoundByComponentPair(Op o, int dt, Term x, Term y) {
             super(o, dt);

@@ -458,13 +458,7 @@ public class ContinuousConstraintSolver {
      * If no such symbol is present, and Invalid symbol will be returned.
      */
     private static Symbol anyPivotableSymbol(Row row) {
-        Optional<Symbol> found = Optional.empty();
-        for (Symbol k : row.cells.keySet()) {
-            if (k.type == Symbol.Type.SLACK || k.type == Symbol.Type.ERROR) {
-                found = Optional.of(k);
-                break;
-            }
-        }
+        Optional<Symbol> found = row.cells.keySet().stream().filter(k -> k.type == Symbol.Type.SLACK || k.type == Symbol.Type.ERROR).findFirst();
         var symbol =
                 found.orElseGet(() -> new Symbol(Symbol.Type.INVALID));
 
@@ -524,12 +518,7 @@ public class ContinuousConstraintSolver {
      * Test whether a row is composed of all dummy variables.
      */
     private static boolean allDummies(Row row) {
-        for (Symbol x : row.cells.keySet()) {
-            if (x.type != Symbol.Type.DUMMY) {
-                return false;
-            }
-        }
-        return true;
+        return row.cells.keySet().stream().noneMatch(x -> x.type != Symbol.Type.DUMMY);
     }
 
 }

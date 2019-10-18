@@ -16,7 +16,8 @@ public abstract class FingerMoveWindow extends FingerMove {
 //        super(button, xAxis, yAxis);
 //    }
 
-    protected volatile int windowStartX, windowStartY;
+    protected volatile int windowStartX;
+    protected volatile int windowStartY;
 
 
     protected abstract JoglDisplay window();

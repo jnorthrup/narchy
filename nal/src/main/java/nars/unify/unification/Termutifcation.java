@@ -76,19 +76,11 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
                 //HACK could be better
                 /* equals between Term and Unification:
                 Reports calls to .equals() where the target and argument are of incompatible types. While such a call might theoretically be useful, most likely it represents a bug. */
-                List<Term> result = new ArrayList<>();
-                List<Term> list1 = new ArrayList<>();
-                for (DeterministicUnification a : shuffle(this, base.random)) {
-                    Term transform = a.transform(x);
-                    list1.add(transform);
-                }
-                for (Term z : list1) {
-                    if (z != null
-                            &&
-                            z != Unification.Null) {
-                        result.add(z);
-                    }
-                }
+                List<Term> result;
+                List<Term> list1 = shuffle(this, base.random).stream().map(a -> a.transform(x)).collect(Collectors.toList());
+                result = list1.stream().filter(z -> z != null
+                        &&
+                        z != Unification.Null).collect(Collectors.toList());
                 return result;
         }
     }

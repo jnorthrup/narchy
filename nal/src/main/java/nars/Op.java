@@ -349,8 +349,10 @@ public enum Op {
      * negation is an exception to this, being unconceptualizable itself
      * but it will have conceptualizable=true.
      */
-    public final boolean conceptualizable, taskable;
-    public final boolean beliefable, goalable;
+    public final boolean conceptualizable;
+    public final boolean taskable;
+    public final boolean beliefable;
+    public final boolean goalable;
     /**
      * string representation
      */
@@ -363,7 +365,8 @@ public enum Op {
      * arity limits, range is inclusive >= <=
      * TODO replace with an IntPredicate
      */
-    public final int minSubs, maxSubs;
+    public final int minSubs;
+    public final int maxSubs;
     /**
      * minimum NAL level required to use this operate, or 0 for N/A
      */
@@ -500,11 +503,7 @@ public enum Op {
     }
 
     public static int or(/*@NotNull*/ Op... o) {
-        int bits = 0;
-        for (Op n : o) {
-            int i = n.bit;
-            bits = bits | i;
-        }
+        int bits = Arrays.stream(o).mapToInt(n -> n.bit).reduce(0, (a, b) -> a | b);
         return bits;
     }
 
@@ -761,13 +760,7 @@ public enum Op {
     }
     private static int _conceptualizable;
     static {
-        int c = 0;
-        for (Op x : Op.ops) {
-            if (x.conceptualizable) {
-                int i = x.bit;
-                c = c | i;
-            }
-        }
+        int c = Arrays.stream(Op.ops).filter(x -> x.conceptualizable).mapToInt(x -> x.bit).reduce(0, (a, b) -> a | b);
         Op._conceptualizable = c;
     }
     public static final int Conceptualizable = _conceptualizable;

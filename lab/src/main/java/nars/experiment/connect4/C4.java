@@ -188,7 +188,7 @@ public class C4 {
 
 
             if (who == 1) {
-                A.moving(who);
+                A.moving(1);
                 B.moving(who);
             } else {
                 B.moving(who);

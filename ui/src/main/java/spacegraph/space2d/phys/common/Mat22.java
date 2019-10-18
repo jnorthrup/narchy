@@ -33,7 +33,8 @@ import java.io.Serializable;
 public class Mat22 implements Serializable {
     private static final long serialVersionUID = 2L;
 
-    public final v2 ex, ey;
+    public final v2 ex;
+    public final v2 ey;
 
     /**
      * Convert the matrix to printable format.

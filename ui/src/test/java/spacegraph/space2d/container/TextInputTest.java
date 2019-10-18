@@ -35,11 +35,7 @@ public class TextInputTest {
 
 
         List<SourceCodeAnalysis.Suggestion> sugg = js.sourceCodeAnalysis().completionSuggestions("Thre", 3, new int[1]);
-        Set<String> ss = new HashSet<>();
-        for (SourceCodeAnalysis.Suggestion suggestion : sugg) {
-            String continuation = suggestion.continuation();
-            ss.add(continuation);
-        }
+        Set<String> ss = sugg.stream().map(SourceCodeAnalysis.Suggestion::continuation).collect(toSet());
         assertTrue(ss.contains("Thread"));
         assertTrue(ss.contains("ThreadDeath"));
         

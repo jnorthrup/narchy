@@ -7,7 +7,8 @@ import jcog.data.MutableFloat;
 
 public class FloatRange extends MutableFloat /*AtomicFloat*/ {
 
-    public final float max, min;
+    public final float max;
+    public final float min;
 
     public FloatRange(float value, float min, float max) {
         this.min = min;

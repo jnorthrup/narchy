@@ -191,7 +191,8 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 
 	private static final class TreeNode<T> {
 		public final T x;
-		public TreeNode<T> left, right; //<-- TODO type Object and delay instantiation of actual node until it becomes necessary
+		public TreeNode<T> left;
+		public TreeNode<T> right; //<-- TODO type Object and delay instantiation of actual node until it becomes necessary
 
 		public TreeNode(T t) {
 			this.x = t;

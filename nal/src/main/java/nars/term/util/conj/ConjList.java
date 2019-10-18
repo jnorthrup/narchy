@@ -251,12 +251,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     public int eventCount(long w) {
         int s = size;
         long[] when = this.when;
-        long count = 0L;
-        for (int i = 0; i < s; i++) {
-            if (when[i] == w) {
-                count++;
-            }
-        }
+        long count = IntStream.range(0, s).filter(i -> when[i] == w).count();
         int c = (int) count;
         return c;
     }
@@ -287,13 +282,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
         if (B instanceof InterningTermBuilder) {
             long w0 = when[0];
-            boolean allParallel = true;
-            for (int i = 1; i < n; i++) {
-                if (when[i] != w0) {
-                    allParallel = false;
-                    break;
-                }
-            }
+            boolean allParallel = IntStream.range(1, n).noneMatch(i -> when[i] != w0);
             //difference
             //all same time
             if (allParallel) {

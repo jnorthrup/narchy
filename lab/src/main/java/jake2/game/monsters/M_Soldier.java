@@ -1360,13 +1360,7 @@ public class M_Soldier {
                 return true;
             }
 
-            boolean b = false;
-            for (jake2.game.mmove_t mmove_t : Arrays.asList(soldier_move_walk1, soldier_move_walk2, soldier_move_start_run)) {
-                if (self.monsterinfo.currentmove == mmove_t) {
-                    b = true;
-                    break;
-                }
-            }
+            boolean b = Stream.of(soldier_move_walk1, soldier_move_walk2, soldier_move_start_run).anyMatch(mmove_t -> self.monsterinfo.currentmove == mmove_t);
             if (b) {
                 self.monsterinfo.currentmove = soldier_move_run;
             } else {
@@ -1387,11 +1381,8 @@ public class M_Soldier {
 
             if (GameBase.level.time < self.pain_debounce_time) {
                 if ((self.velocity[2] > 100)) {
-                    for (jake2.game.mmove_t mmove_t : Arrays.asList(soldier_move_pain1, soldier_move_pain2, soldier_move_pain3)) {
-                        if ((self.monsterinfo.currentmove == mmove_t)) {
-                            self.monsterinfo.currentmove = soldier_move_pain4;
-                            break;
-                        }
+                    if (Stream.of(soldier_move_pain1, soldier_move_pain2, soldier_move_pain3).anyMatch(mmove_t -> (self.monsterinfo.currentmove == mmove_t))) {
+                        self.monsterinfo.currentmove = soldier_move_pain4;
                     }
                 }
                 return;

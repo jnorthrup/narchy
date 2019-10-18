@@ -54,12 +54,7 @@ public class World {
 			return true;
 		}
         int bound = obstacles.length;
-        for (int i = 0; i < bound; i++) {
-            if (obstacles[i].pointCollides(x, y)) {
-                return true;
-            }
-        }
-        return false;
+		return IntStream.range(0, bound).anyMatch(i -> obstacles[i].pointCollides(x, y));
 	}
 
 	public int getTime() {

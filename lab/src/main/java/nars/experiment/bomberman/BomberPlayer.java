@@ -270,13 +270,7 @@ public class BomberPlayer extends Thread {
     public void keyReleased(KeyEvent evt) {
         /** if a direction key is released */
         if (!isExploding && !isDead) {
-            boolean b = false;
-            for (int i : new int[]{UP, DOWN, LEFT, RIGHT}) {
-                if (evt.getKeyCode() == keys[i]) {
-                    b = true;
-                    break;
-                }
-            }
+            boolean b = IntStream.of(UP, DOWN, LEFT, RIGHT).anyMatch(i -> evt.getKeyCode() == keys[i]);
             if (b) {
                 /** if down key is released */
                 if (evt.getKeyCode() == keys[DOWN]) {

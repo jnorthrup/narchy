@@ -35,7 +35,8 @@ public class miptex_t {
 	
 	String		name="";
 	
-	int		width, height;
+	int		width;
+    int height;
 
 
     int[] offsets = new int[Defines.MIPLEVELS];

@@ -423,14 +423,9 @@ public class M extends GamePanel {
 	}
 
 	boolean inRange() {
-		for (int p2 = 0; p2 < 24; p2++) {
-			if (p_owner[p2] == selE &&
-					((p_x[p2] - p_x[selP]) * (p_x[p2] - p_x[selP]) + (p_y[p2] - p_y[selP]) * (p_y[p2] - p_y[selP])) <=
-							e_range[selE] * e_range[selE]) {
-				return true;
-			}
-		}
-		return false;
+		return IntStream.range(0, 24).anyMatch(p2 -> p_owner[p2] == selE &&
+				((p_x[p2] - p_x[selP]) * (p_x[p2] - p_x[selP]) + (p_y[p2] - p_y[selP]) * (p_y[p2] - p_y[selP])) <=
+						e_range[selE] * e_range[selE]);
 	}
 
 	int value(int a) {
@@ -553,12 +548,7 @@ public class M extends GamePanel {
 	boolean antechamber = true;
 
 	boolean needAntechamber() {
-		long count = 0L;
-		for (int e = 1; e < 5; e++) {
-			if (e_human[e]) {
-				count++;
-			}
-		}
+		long count = IntStream.range(1, 5).filter(e -> e_human[e]).count();
 		int hps = (int) count;
         return hps > 1 && e_human[selE];
 	}

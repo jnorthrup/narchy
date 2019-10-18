@@ -52,12 +52,7 @@ public class ListNotMatch extends UnaryOperator {
             return false;
         }
 
-        for (Node node : root.children()) {
-            if (!checkValid(node)) {
-                return false;
-            }
-        }
-        return true;
+        return root.children().stream().allMatch(ListNotMatch::checkValid);
     }  
     
     @Override

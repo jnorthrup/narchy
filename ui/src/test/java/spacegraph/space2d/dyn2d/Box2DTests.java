@@ -505,13 +505,8 @@ public class Box2DTests extends JComponent implements Runnable {
 
             pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
 
-            List<String> list = new ArrayList<>();
             int bound = cases.length;
-            for (int i = 0; i < bound; i++) {
-                String s = (i + 1) + ". " + cases[i];
-                list.add(s);
-            }
-            String[] caseNames = list.toArray(new String[0]);
+            String[] caseNames = IntStream.range(0, bound).mapToObj(i -> (i + 1) + ". " + cases[i]).toArray(String[]::new);
 
             JComboBox petList = new JComboBox(caseNames);
             pane.add(petList);

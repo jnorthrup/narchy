@@ -39,7 +39,8 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     /**
      * flag: playing midi or audio file
      */
-    private boolean midiEOM, audioEOM;
+    private boolean midiEOM;
+    private boolean audioEOM;
     /**
      * channel objects for playing midi
      */
@@ -75,7 +76,10 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     /**
      * control buttons
      */
-    JButton startB, pauseB, prevB, nextB;
+    JButton startB;
+    JButton pauseB;
+    JButton prevB;
+    JButton nextB;
 
     /**
      * Construct a sound player with directory name of music files.
@@ -203,11 +207,8 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         String s = file.getName();
         /** if the file has right extension */
         /** add the file */
-        for (String s1 : Arrays.asList(".au", ".rmf", ".mid", ".wav", ".aif", ".aiff")) {
-            if (s.endsWith(s1)) {
-                sounds.add(file);
-                break;
-            }
+        if (Stream.of(".au", ".rmf", ".mid", ".wav", ".aif", ".aiff").anyMatch(s::endsWith)) {
+            sounds.add(file);
         }
     }
 

@@ -103,12 +103,7 @@ public class MyList<T> extends AbstractList<T> implements List<T> {
     @Override
     public boolean contains(Object v) {
         int bound = count;
-        for (int i = 0; i < bound; i++) {
-            if (v == array[i]) {
-                return true;
-            }
-        }
-        return false;
+        return IntStream.range(0, bound).anyMatch(i -> v == array[i]);
     }
 
     /**

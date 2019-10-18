@@ -85,7 +85,8 @@ public final class Menu extends Key {
     }
 
     static class menuframework_s {
-        int x, y;
+        int x;
+        int y;
 
         int cursor;
 
@@ -111,7 +112,8 @@ public final class Menu extends Key {
 
         String name = "";
 
-        int x, y;
+        int x;
+        int y;
 
         menuframework_s parent;
 

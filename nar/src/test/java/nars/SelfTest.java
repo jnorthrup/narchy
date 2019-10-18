@@ -164,7 +164,8 @@ public class SelfTest {
     private static class MyTestExecutionListener implements TestExecutionListener {
 
         private final DataTable out;
-        transient long startNS, endNS;
+        transient long startNS;
+        transient long endNS;
         private long startUnixTime;
 //        transient private TestMetrics m;
 
@@ -318,12 +319,7 @@ public class SelfTest {
 
     private void report(DataTable all) {
 
-        List<String> list = new ArrayList<>();
-        for (Column<?> objects : all.columns(0, 1, 2)) {
-            String name = objects.name();
-            list.add(name);
-        }
-        String[] testID = list.toArray(new String[0]);
+        String[] testID = all.columns(0, 1, 2).stream().map(Column::name).toArray(String[]::new);
 
         //https://jtablesaw.github.io/tablesaw/userguide/reducing
         try {

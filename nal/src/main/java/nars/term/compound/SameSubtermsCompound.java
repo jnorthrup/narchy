@@ -38,12 +38,7 @@ public interface SameSubtermsCompound extends Compound {
         //copied from Subterms.java
         if (inSuperCompound.test(this) && whileTrue.test(this)) {
             int s = subs();
-            for (int i = 0; i < s; i++) {
-                if (!sub(i).recurseTermsOrdered(inSuperCompound, whileTrue, parent)) {
-                    return false;
-                }
-            }
-            return true;
+            return IntStream.range(0, s).allMatch(i -> sub(i).recurseTermsOrdered(inSuperCompound, whileTrue, parent));
         } else
             return false;
     }
@@ -53,13 +48,7 @@ public interface SameSubtermsCompound extends Compound {
         //copied from Subterms.java
         int s = subs();
         if (s == 1 || !impossibleSubTerm(x)) {
-            for (int i = 0; i < s; i++) {
-                Term ii = sub(i);
-                if (ii == x || (root ? ii.equalsRoot(x) : ii.equals(x)) || ii.containsRecursively(x, root, subTermOf)) {
-                    return true;
-                }
-            }
-            return false;
+            return IntStream.range(0, s).mapToObj(this::sub).anyMatch(ii -> ii == x || (root ? ii.equalsRoot(x) : ii.equals(x)) || ii.containsRecursively(x, root, subTermOf));
         }
         return false;
     }

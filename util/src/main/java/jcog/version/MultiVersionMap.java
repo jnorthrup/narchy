@@ -10,12 +10,7 @@ public class MultiVersionMap<X,Y> extends VersionMap<X,Y> {
 
     @Override
     public int size() {
-        long result = 0L;
-        for (Versioned<Y> e : map.values()) {
-            if (e.get() != null) {
-                result++;
-            }
-        }
+        long result = map.values().stream().filter(e -> e.get() != null).count();
         int count = (int) result;
         return count;
     }

@@ -4,7 +4,8 @@ import nars.term.Term;
 import nars.util.SoftException;
 
 public class TermTransformException extends SoftException {
-    final Term x, y;
+    final Term x;
+    final Term y;
     public TermTransformException(Term x, Term y, String reason) {
         super(reason);
         this.x = x; this.y = y;

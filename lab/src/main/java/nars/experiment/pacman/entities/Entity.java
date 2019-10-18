@@ -5,7 +5,8 @@ import nars.experiment.pacman.maze.Maze.Direction;
 
 abstract class Entity {
 
-    public double x, y;
+    public double x;
+    public double y;
     public Direction dir;
     double speed;
     double lead;

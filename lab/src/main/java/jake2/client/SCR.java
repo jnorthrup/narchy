@@ -104,7 +104,8 @@ public final class SCR extends Globals {
 
     static String crosshair_pic;
 
-    static int crosshair_width, crosshair_height;
+    static int crosshair_width;
+    static int crosshair_height;
 
     static class dirty_t {
         int x1;

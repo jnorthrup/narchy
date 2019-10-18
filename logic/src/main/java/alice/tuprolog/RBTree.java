@@ -29,7 +29,8 @@ Retrieved from: http:
 */
 
 enum Color { ;
-    static final boolean RED = true, BLACK = false;
+    static final boolean RED = true;
+    static final boolean BLACK = false;
 }
 
 /**

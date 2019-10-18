@@ -134,7 +134,8 @@ public abstract class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 	 */
 	public static class MapTaskBuffer<X extends Task> extends SyncPriBuffer<X> {
 
-		final AtomicLong hit = new AtomicLong(0), miss = new AtomicLong(0);
+		final AtomicLong hit = new AtomicLong(0);
+		final AtomicLong miss = new AtomicLong(0);
 
 		private final Map<X, X> tasks;
 

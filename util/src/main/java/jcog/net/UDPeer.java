@@ -879,8 +879,8 @@ public class UDPeer extends UDP {
         byte[] addrBytes;
         long lastMessage = Long.MIN_VALUE;
         HashMapTagSet
-                can = HashMapTagSet.EMPTY,
-                need = HashMapTagSet.EMPTY;
+                can = HashMapTagSet.EMPTY;
+        HashMapTagSet need = HashMapTagSet.EMPTY;
 
         public UDProfile(int id, InetSocketAddress addr, long initialPingTime) {
             this.id = id;

@@ -13,7 +13,8 @@ import spacegraph.space2d.widget.text.LabeledPane;
 
 public class AudioOutPort extends Gridding  {
 
-    private final Port in, passThru;
+    private final Port in;
+    private final Port passThru;
     private final IconToggleButton enableButton;
 
 

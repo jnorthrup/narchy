@@ -69,12 +69,7 @@ public abstract class MetalBitSet {
      * finds the next bit matching 'what' between from (inclusive) and to (exclusive), or -1 if nothing found
      */
     public int next(boolean what, int from, int to) {
-        for (int i = from; i < to; i++) {
-            if (get(i) == what) {
-                return i;
-            }
-        }
-        return -1;
+        return IntStream.range(from, to).filter(i -> get(i) == what).findFirst().orElse(-1);
     }
 
 
@@ -181,22 +176,13 @@ public abstract class MetalBitSet {
          * number of bits set to true
          */
         public int cardinality() {
-            int sum = 0;
-            for (long datum : data) {
-                int i = Long.bitCount(datum);
-                sum += i;
-            }
+            int sum = Arrays.stream(data).mapToInt(Long::bitCount).sum();
             return sum;
         }
 
         @Override
         public boolean isEmpty() {
-            for (long l : data) {
-                if (l != 0) {
-                    return false;
-                }
-            }
-            return true;
+            return Arrays.stream(data).noneMatch(l -> l != 0);
         }
 
         /**

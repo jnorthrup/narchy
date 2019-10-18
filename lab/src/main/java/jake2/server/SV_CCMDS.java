@@ -618,11 +618,8 @@ public class SV_CCMDS {
 		Com.Printf("Loading game...\n");
 
 		String dir = Cmd.Argv(1);
-		for (String s : Arrays.asList("..", "/", "\\")) {
-			if (dir.contains(s)) {
-				Com.Printf("Bad savedir.\n");
-				break;
-			}
+		if (Stream.of("..", "/", "\\").anyMatch(dir::contains)) {
+			Com.Printf("Bad savedir.\n");
 		}
 
 
@@ -684,11 +681,8 @@ public class SV_CCMDS {
 		}
 
         String dir = Cmd.Argv(1);
-		for (String s : Arrays.asList("..", "/", "\\")) {
-			if (dir.contains(s)) {
-				Com.Printf("Bad savedir.\n");
-				break;
-			}
+		if (Stream.of("..", "/", "\\").anyMatch(dir::contains)) {
+			Com.Printf("Bad savedir.\n");
 		}
 
 		Com.Printf("Saving game...\n");

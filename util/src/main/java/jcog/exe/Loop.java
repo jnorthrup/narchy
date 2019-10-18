@@ -21,8 +21,8 @@ public abstract class Loop extends FixedRateTimedFuture {
      * busy lock
      */
     private final AtomicBoolean
-        running = new AtomicBoolean(false),
-        scheduled = new AtomicBoolean(false); //prevents multiple pending schedulings while waiting for next run
+        running = new AtomicBoolean(false);
+    private final AtomicBoolean scheduled = new AtomicBoolean(false); //prevents multiple pending schedulings while waiting for next run
 
 
     public static Loop of(Runnable iteration) {

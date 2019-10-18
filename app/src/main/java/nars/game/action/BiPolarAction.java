@@ -44,7 +44,8 @@ public class BiPolarAction extends AbstractSensor {
         float update(Truth pos, Truth neg, long prev, long now);
     }
 
-    public final AbstractGoalActionConcept pos, neg;
+    public final AbstractGoalActionConcept pos;
+    public final AbstractGoalActionConcept neg;
 
 //    public BiPolarAction(Term id, Polarization model, FloatToFloatFunction motor, NAR nar) {
 //        this(posOrNeg ->

@@ -627,12 +627,8 @@ public class PolygonShape extends Shape {
             v2 e = pool1.set(vertex[i2]).subbed(p);
 
             int bound = vertices;
-            for (int j = 0; j < bound; j++) {
-                if (j != i1 && j != i2) {
-                    if (v2.cross(e, pool2.set(vertex[j]).subbed(p)) < 0.0f) {
-                        return false;
-                    }
-                }
+            if (IntStream.range(0, bound).filter(j -> j != i1 && j != i2).anyMatch(j -> v2.cross(e, pool2.set(vertex[j]).subbed(p)) < 0.0f)) {
+                return false;
             }
         }
 

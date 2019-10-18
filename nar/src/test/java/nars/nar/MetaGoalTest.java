@@ -43,12 +43,7 @@ class MetaGoalTest {
         assertTrue(tasks.size() > 2);
         Collection<Task> tt = tasks.values();
         Predicate<Task> isDerived = x -> !x.isInput();
-        long count = 0L;
-        for (Task task : tt) {
-            if (isDerived.test(task)) {
-                count++;
-            }
-        }
+        long count = tt.stream().filter(isDerived::test).count();
         assertTrue(count >= 1);
 
         assertTrue(tt.stream().allMatch(x -> {

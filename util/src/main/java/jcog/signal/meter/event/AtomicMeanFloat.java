@@ -23,7 +23,8 @@ public class AtomicMeanFloat extends AtomicFloat implements FloatProcedure {
     public final String id;
 
     private volatile int count = 0;
-    private volatile float sum = 0, mean = 0;
+    private volatile float sum = 0;
+    private volatile float mean = 0;
 
     public AtomicMeanFloat(String id) {
         super(0f);

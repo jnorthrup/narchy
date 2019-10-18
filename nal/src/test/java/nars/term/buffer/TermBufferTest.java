@@ -14,7 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TermBufferTest {
 
-    private static final Term A = $$("a"), B = $$("b"), C = $$("c");
+    private static final Term A = $$("a");
+    private static final Term B = $$("b");
+    private static final Term C = $$("c");
 
     private static class MyTermBuffer extends TermBuffer {
         @Override

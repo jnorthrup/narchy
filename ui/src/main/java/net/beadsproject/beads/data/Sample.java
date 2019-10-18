@@ -46,7 +46,8 @@ public class Sample {
     private String simpleName;
     private String filename;
     private float[][] theSampleData; 
-    private float[] current, next;   
+    private float[] current;
+    private float[] next;
 
     
     private Class<? extends AudioFileReader> audioFileReaderClass;

@@ -17,9 +17,13 @@ public class MJOpen {
 
 	private String m_sGame; 
 	private String m_sRules; 
-	private int m_rectMinX, m_rectMaxX, m_rectMinY, m_rectMaxY;
+	private int m_rectMinX;
+    private int m_rectMaxX;
+    private int m_rectMinY;
+    private int m_rectMaxY;
 	private int m_Speed; 
-	private int m_BSizeX, m_BSizeY; 
+	private int m_BSizeX;
+    private int m_BSizeY;
 	private int m_Wrap; 
 	private int m_CColors; 
 	private int m_Coloring; 
@@ -240,7 +244,8 @@ public class MJOpen {
 	
 	
 	int iRow105;
-	int iBlkX, iBlkY; 
+	int iBlkX;
+    int iBlkY;
 
 	@SuppressWarnings("HardcodedFileSeparator")
 	boolean ProcessOneLIF105Line(String bff) {
@@ -335,7 +340,8 @@ public class MJOpen {
 	
 	
 	private int iIniColMCL;
-	private int iColMCL, iRowMCL;
+	private int iColMCL;
+    private int iRowMCL;
 	private int iNumMCL; 
 
 	private boolean ReadMCL(Vector vLines) {
@@ -503,7 +509,9 @@ public class MJOpen {
 	
 	private boolean fEndFlg; 
 	private boolean fXYFound; 
-	private int iCol, iRow, iniCol;
+	private int iCol;
+    private int iRow;
+    private int iniCol;
 	private int iNum; 
 
 	private boolean ReadRLE(Vector vLines) {

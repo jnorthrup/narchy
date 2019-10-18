@@ -35,7 +35,13 @@ import java.awt.image.BufferedImage;
 
 public class R extends Applet implements Runnable {
 	
-	private boolean left, right, up, down, n, p, r;
+	private boolean left;
+	private boolean right;
+	private boolean up;
+	private boolean down;
+	private boolean n;
+	private boolean p;
+	private boolean r;
 	
 	@Override
     public void start() {

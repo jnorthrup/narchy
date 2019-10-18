@@ -44,11 +44,7 @@ class DecisionTreeGetLabelTest {
     @Test
     void testGetLabelOn95vs5() {
         DecisionTree tree = new DecisionTree();
-        List<Function<Object, Object>> data = new ArrayList<>();
-        for (int i1 = 0; i1 < 95; i1++) {
-            TestValue testValue = new TestValue(TRUE_LABEL);
-            data.add(testValue);
-        }
+        List<Function<Object, Object>> data = IntStream.range(0, 95).mapToObj(i1 -> new TestValue(TRUE_LABEL)).collect(Collectors.toList());
         for (int i = 0; i < 5; i++) {
             data.add(new TestValue(FALSE_LABEL));
         }
@@ -68,11 +64,7 @@ class DecisionTreeGetLabelTest {
     }
 
     private static List<Function<Object,Object>> buildSample(int a, int b) {
-        List<Function<Object, Object>> homogenous = new ArrayList<>();
-        for (int i1 = 0; i1 < a; i1++) {
-            TestValue testValue = new TestValue(TRUE_LABEL);
-            homogenous.add(testValue);
-        }
+        List<Function<Object, Object>> homogenous = IntStream.range(0, a).mapToObj(i1 -> new TestValue(TRUE_LABEL)).collect(Collectors.toList());
         for (int i = 0; i < b; i++)
             homogenous.add(new TestValue(FALSE_LABEL));
         return homogenous;

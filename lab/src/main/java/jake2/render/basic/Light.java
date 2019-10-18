@@ -514,13 +514,7 @@ public abstract class Light extends Warp {
                         scale[i] = gl_modulate.value
                                 * r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[i];
 
-                    boolean result = true;
-                    for (int v : new int[]{0, 1, 2}) {
-                        if (scale[v] != 1.0F) {
-                            result = false;
-                            break;
-                        }
-                    }
+                    boolean result = IntStream.of(0, 1, 2).noneMatch(v -> scale[v] != 1.0F);
                     if (result) {
                         for (i = 0; i < size; i++) {
                             bl[blp++] = lightmap.get(lightmapIndex++) & 0xFF;
@@ -556,13 +550,7 @@ public abstract class Light extends Warp {
                         scale[i] = gl_modulate.value
                                 * r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[i];
 
-                    boolean result = true;
-                    for (int v : new int[]{0, 1, 2}) {
-                        if (scale[v] != 1.0F) {
-                            result = false;
-                            break;
-                        }
-                    }
+                    boolean result = IntStream.of(0, 1, 2).noneMatch(v -> scale[v] != 1.0F);
                     if (result) {
                         for (i = 0; i < size; i++) {
                             bl[blp++] += lightmap.get(lightmapIndex++) & 0xFF;

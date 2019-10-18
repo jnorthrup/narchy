@@ -81,12 +81,7 @@ class AxialSplitTest {
 
         RBranch<RectDouble> root = (RBranch<RectDouble>) rTree.root();
         RNode<RectDouble>[] children = root.data;
-        long count = 0L;
-        for (RNode<RectDouble> child : children) {
-            if (child != null) {
-                count++;
-            }
-        }
+        long count = Arrays.stream(children).filter(Objects::nonNull).count();
         int childCount = (int) count;
         assertEquals(2, root.size);
         assertEquals( 2, childCount, "Expected different number of children after split");

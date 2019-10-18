@@ -20,7 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InterningTermBuilderTest {
 
-    private static final Term a = Atomic.the("a"), b = Atomic.the("b");
+    private static final Term a = Atomic.the("a");
+    private static final Term b = Atomic.the("b");
 
     @Test
     void test1() {

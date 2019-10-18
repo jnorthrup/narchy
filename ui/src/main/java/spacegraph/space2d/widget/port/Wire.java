@@ -13,10 +13,13 @@ public class Wire {
 
     private final int hash;
 
-    private volatile long aLastActive = Long.MIN_VALUE, bLastActive = Long.MIN_VALUE;
-    private volatile int aTypeHash = 0, bTypeHash = 0;
+    private volatile long aLastActive = Long.MIN_VALUE;
+    private volatile long bLastActive = Long.MIN_VALUE;
+    private volatile int aTypeHash = 0;
+    private volatile int bTypeHash = 0;
 
-    public final Surface a, b;
+    public final Surface a;
+    public final Surface b;
 
     public final RunThese offs = new RunThese();
 

@@ -8,7 +8,8 @@ import java.util.Random;
 
 public class GenCursor {
 
-    public int x, y;
+    public int x;
+    public int y;
     Maze maze;
     public Rectangle area;
     ArrayList<Direction> path;

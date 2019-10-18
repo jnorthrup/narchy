@@ -67,7 +67,10 @@ public class Rect implements Shape2D {
         return bounds;
     }
 
-    public float x, y, width, height;
+    public float x;
+    public float y;
+    public float width;
+    public float height;
 
     /**
      * Constructs an empty rectangle at point 0,0 with no dimensions.
@@ -282,11 +285,7 @@ public class Rect implements Shape2D {
 
     @Override
     public List<Line2D> getEdges() {
-        List<Line2D> edges = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            Line2D edge = getEdge(i);
-            edges.add(edge);
-        }
+        List<Line2D> edges = IntStream.range(0, 4).mapToObj(this::getEdge).collect(Collectors.toList());
         return edges;
     }
 

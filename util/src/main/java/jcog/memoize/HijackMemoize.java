@@ -31,7 +31,9 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
     private final Function<X, Y> func;
     private final boolean soft;
 
-    protected float DEFAULT_VALUE, CACHE_HIT_BOOST, CACHE_SURVIVE_COST;
+    protected float DEFAULT_VALUE;
+    protected float CACHE_HIT_BOOST;
+    protected float CACHE_SURVIVE_COST;
 
     public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes) {
         this(f, initialCapacity, reprobes, false);

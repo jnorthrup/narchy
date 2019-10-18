@@ -174,11 +174,7 @@ public class MCS {
      */
     private static int domainParamSize(int max_channels, int max_users,
                                        int max_tokens, int max_pdusize) {
-        int endSize = 0;
-        for (int i : new int[]{max_channels, max_users, max_tokens, 1, 0, 1, max_pdusize, 2}) {
-            int berIntSize = BERIntSize(i);
-            endSize += berIntSize;
-        }
+        int endSize = IntStream.of(max_channels, max_users, max_tokens, 1, 0, 1, max_pdusize, 2).map(MCS::BERIntSize).sum();
         return berHeaderSize(TAG_DOMAIN_PARAMS, endSize) + endSize;
     }
 

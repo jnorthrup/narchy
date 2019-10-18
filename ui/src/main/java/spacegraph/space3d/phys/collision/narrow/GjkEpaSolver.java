@@ -559,15 +559,9 @@ public class GjkEpaSolver {
 			tmp2.cross(b.w, c.w);
 			tmp3.cross(c.w, a.w);
 
-            boolean valid = true;
-            for (jcog.math.v3 v3 : Arrays.asList(tmp1, tmp2, tmp3)) {
-                if ((!(v3.dot(nrm) >= -EPA_inface_eps))) {
-                    valid = false;
-                    break;
-                }
-            }
+            boolean valid = Stream.of(tmp1, tmp2, tmp3).noneMatch(v3 -> (!(v3.dot(nrm) >= -EPA_inface_eps)));
 
-            f.v[0] = a;
+			f.v[0] = a;
 			f.v[1] = b;
 			f.v[2] = c;
 			f.mark = 0;

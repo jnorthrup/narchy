@@ -228,13 +228,8 @@ public class S {
 	 * Returns a string array containing all sound driver names.
 	 */
 	public static String[] getDriverNames() {
-		List<String> list = new ArrayList<>();
 		int bound = drivers.size();
-		for (int i = 0; i < bound; i++) {
-			String name = ((Sound) drivers.get(i)).getName();
-			list.add(name);
-		}
-		String[] names = list.toArray(new String[0]);
+		String[] names = IntStream.range(0, bound).mapToObj(i -> ((Sound) drivers.get(i)).getName()).toArray(String[]::new);
         return names;
 	}
 	

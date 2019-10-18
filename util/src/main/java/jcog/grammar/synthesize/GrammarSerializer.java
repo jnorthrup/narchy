@@ -226,12 +226,7 @@ public class GrammarSerializer {
                     this.nodes.set(index, new AlternationNode(altNodeSerialization.getData(), this.deserialize(altNodeSerialization.first), this.deserialize(altNodeSerialization.second)));
                 } else if (nodeSerialization instanceof MultiAlternationNodeSerialization) {
                     MultiAlternationNodeSerialization maltNodeSerialization = (MultiAlternationNodeSerialization) nodeSerialization;
-                    List<Node> children = new ArrayList<>();
-                    for (Integer childIndex : maltNodeSerialization.children) {
-                        int i = childIndex;
-                        Node deserialize = deserialize(i);
-                        children.add(deserialize);
-                    }
+                    List<Node> children = maltNodeSerialization.children.stream().mapToInt(childIndex -> childIndex).mapToObj(this::deserialize).collect(Collectors.toList());
                     this.nodes.set(index, new MultiAlternationNode(maltNodeSerialization.getData(), children));
                 } else if (nodeSerialization instanceof RepetitionNodeSerialization) {
                     RepetitionNodeSerialization repNodeSerialization = (RepetitionNodeSerialization) nodeSerialization;
@@ -256,11 +251,7 @@ public class GrammarSerializer {
 
     public static Grammar deserializeNodeWithMerges(DataInputStream dis) throws IOException {
         int numNodes = dis.readInt();
-        List<NodeSerialization> nodeSerializations = new ArrayList<>(numNodes);
-        for (int i1 = 0; i1 < numNodes; i1++) {
-            NodeSerialization nodeSerialization = null;
-            nodeSerializations.add(nodeSerialization);
-        }
+        List<NodeSerialization> nodeSerializations = IntStream.range(0, numNodes).<NodeSerialization>mapToObj(i1 -> null).collect(Collectors.toCollection(() -> new ArrayList<>(numNodes)));
         for (int i = 0; i < numNodes; i++) {
             int id = dis.readInt(); 
             NodeData data = deserializeNodeData(dis); 

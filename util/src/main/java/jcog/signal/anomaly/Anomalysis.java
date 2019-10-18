@@ -45,7 +45,10 @@ public class Anomalysis {
      * Weak and strong thresholds to support both one- and two-tailed tests.
      */
     public static class AnomalyThresholds {
-        private final double upperStrong, upperWeak, lowerStrong, lowerWeak;
+        private final double upperStrong;
+        private final double upperWeak;
+        private final double lowerStrong;
+        private final double lowerWeak;
 
         public AnomalyThresholds(double upperStrong, double upperWeak, double lowerStrong, double lowerWeak) {
             this.upperStrong = upperStrong;

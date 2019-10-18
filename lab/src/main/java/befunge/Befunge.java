@@ -35,7 +35,10 @@ public enum Befunge {
      * Created by didrik on 30.12.2014.
      */
     static class Pointer {
-        private int x, y, dx, dy;
+        private int x;
+        private int y;
+        private int dx;
+        private int dy;
         private final Board board;
 
 

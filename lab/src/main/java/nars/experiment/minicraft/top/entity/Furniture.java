@@ -7,7 +7,8 @@ import nars.experiment.minicraft.top.item.PowerGloveItem;
 public class Furniture extends Entity {
     private int pushTime;
     private int pushDir = -1;
-    public int col, sprite;
+    public int col;
+    public int sprite;
     public String name;
     private Player shouldTake;
 

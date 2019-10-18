@@ -53,7 +53,8 @@ public class Audio implements Runnable {
     private final ByteBuffer soundBuffer = ByteBuffer.allocate(bufferSize * 4);
     //private final ShortBuffer soundBufferShort = soundBuffer.asShortBuffer();
 
-    private final float[] leftBuf, rightBuf;
+    private final float[] leftBuf;
+    private final float[] rightBuf;
     
     
     private boolean alive = true;

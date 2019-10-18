@@ -81,11 +81,7 @@ public class Optimize<S, E> extends Lab<E>  {
         this.var = new FasterList(_vars).sortThis();
 
         /* sorted */
-        List<Sensor<S, ?>> list = new ArrayList<>();
-        for (Var<S, ?> sVar : var) {
-            Sensor<S, ?> sense = sVar.sense();
-            list.add(sense);
-        }
+        List<Sensor<S, ?>> list = var.stream().map(Var::sense).collect(toList());
         this.varSensors = list;
 
         this.sensors.addAll( sensors );

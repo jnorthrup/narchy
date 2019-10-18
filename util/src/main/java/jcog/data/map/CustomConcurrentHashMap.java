@@ -1074,13 +1074,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     public final boolean isEmpty() {
         MetalAtomicReferenceArray<Segment> segs = this.segments;
         int ss = segs.length();
-        for (int i = 0; i < ss; i++) {
-            Segment seg = segs.getFast(i);
-            if (seg != null && !seg.isEmpty()) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.range(0, ss).mapToObj(segs::getFast).noneMatch(seg -> seg != null && !seg.isEmpty());
     }
 
     /**
@@ -1094,14 +1088,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     public final int size() {
         MetalAtomicReferenceArray<Segment> segs = this.segments;
         int ss = segs.length();
-        long sum = 0L;
-        for (int i = 0; i < ss; i++) {
-            Segment seg = segs.getFast(i);
-            if (seg != null) {
-                long opaque = seg.count.getOpaque();
-                sum += opaque;
-            }
-        }
+        long sum = IntStream.range(0, ss).mapToObj(segs::getFast).filter(Objects::nonNull).mapToLong(seg -> seg.count.getOpaque()).sum();
         return (sum >= Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) sum;
     }
 
@@ -1665,11 +1652,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * @return the hash code
      */
     public int hashCode() {
-        int h = 0;
-        for (Entry<K, V> kvEntry : entrySet()) {
-            int hashCode = kvEntry.hashCode();
-            h += hashCode;
-        }
+        int h = entrySet().stream().mapToInt(Entry::hashCode).sum();
         return h;
     }
 
@@ -1803,12 +1786,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
          * @return the hash code
          */
         public int hashCode() {
-            int h = 0;
+            int h;
             Equivalence<? super K> equivalence = cchm.keyEquivalence;
-            for (K k : this) {
-                int hash = equivalence.hash(k);
-                h += hash;
-            }
+            h = this.stream().mapToInt(equivalence::hash).sum();
             return h;
         }
     }

@@ -69,12 +69,7 @@ public class Head
     }
 
     public static Head[] getVector(int length, Function<Integer, Integer> constructorParamGetter) {
-        List<Head> list = new ArrayList<>();
-        for (int i = 0; i < length; i++) {
-            Head head = new Head(constructorParamGetter.apply(i));
-            list.add(head);
-        }
-        Head[] vector = list.toArray(new Head[0]);
+        Head[] vector = IntStream.range(0, length).mapToObj(i -> new Head(constructorParamGetter.apply(i))).toArray(Head[]::new);
         return vector;
     }
 

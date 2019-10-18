@@ -35,11 +35,13 @@ public class Quantiler {
     private float[] qileNext;
     private final int nbuf;
     private final int nq;
-    int nt,  nd;
+    int nt;
+    int nd;
     private final float[] pval;
     private final float[] dbuf;
     private float[] qile;
-    private float q0,  qm;
+    private float q0;
+    private float qm;
 
 
     /**

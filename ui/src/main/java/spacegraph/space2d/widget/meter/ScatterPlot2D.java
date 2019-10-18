@@ -91,7 +91,8 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
     final RectAnimator extent =
             new RectAnimator.ExponentialRectAnimator(new MutableRectFloat());
 
-    float[][] coord = new float[0][0], coordOut = null;
+    float[][] coord = new float[0][0];
+    float[][] coordOut = null;
 
 
     public ScatterPlot2D(ScatterPlotModel<X> model) {

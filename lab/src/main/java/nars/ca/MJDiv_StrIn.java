@@ -10,7 +10,8 @@ public class MJDiv_StrIn {
 
 	private String m_Str;
 	public boolean m_Active;
-	public int m_X, m_Y;
+	public int m_X;
+    public int m_Y;
 	public boolean m_Repeat;
 	public final Vector m_Vals = new Vector();
 	public int m_Pos; 

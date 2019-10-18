@@ -17,7 +17,8 @@ public class VoronoiDiagram {
     }
 
     static class VoronoiDiagramTask {
-        float m_x, m_y;
+        float m_x;
+        float m_y;
         int m_i;
         Generator m_generator;
 
@@ -47,7 +48,8 @@ public class VoronoiDiagram {
 
     private final Generator[] m_generatorBuffer;
     private int m_generatorCount;
-    private int m_countX, m_countY;
+    private int m_countX;
+    private int m_countY;
     
     private Generator[] m_diagram;
 

@@ -44,22 +44,12 @@ public abstract class LazyList<X> extends AbstractList<X> {
     public boolean allSatisfy(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
         //return InternalArrayIterate.allSatisfy(this.items, this.size, predicate);
         int s = size();
-        for (int i = 0; i < s; i++) {
-            if (!predicate.test(get(i))) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.range(0, s).allMatch(i -> predicate.test(get(i)));
     }
     public <P> boolean allSatisfyWith(Predicate2<? super X, ? super P> predicate2, P parameter) {
         int s = size();
         if (s > 0) {
-            for (int i = 0; i < s; i++) {
-                if (!predicate2.accept(get(i), parameter)) {
-                    return false;
-                }
-            }
-            return true;
+            return IntStream.range(0, s).allMatch(i -> predicate2.accept(get(i), parameter));
         }
         return true;
     }

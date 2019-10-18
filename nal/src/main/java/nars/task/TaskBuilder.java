@@ -49,7 +49,8 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 	private @Nullable long[] evidence = LongArrays.EMPTY_ARRAY;
 
 	private long creation = ETERNAL;
-	private long start = ETERNAL, end = ETERNAL;
+	private long start = ETERNAL;
+    private long end = ETERNAL;
 
 
 	public TaskBuilder(Term t, byte punct, float freq, NAL nar) throws TaskException {

@@ -939,7 +939,8 @@ public abstract class GameX extends Game {
 
     protected static class SpaceGraphPart extends NARPart {
         private final Supplier<Surface> surface;
-        private final int w, h;
+        private final int w;
+        private final int h;
         private OrthoSurfaceGraph win;
 
         SpaceGraphPart(Supplier<Surface> surface, int w, int h) {

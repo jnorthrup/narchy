@@ -40,7 +40,8 @@ public class Maze {
     }
 
     public Fruit fruit = Fruit.none;
-    public int width, height;
+    public int width;
+    public int height;
     public byte[][] tiles;
     GenCursor[] cursors;
     public boolean[][] dots;
@@ -364,12 +365,7 @@ public class Maze {
 
         int[] check = {x, y};
 
-        for (int[] place : this.bigDots) {
-            if (check[0] == place[0] && check[1] == place[1]) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(this.bigDots).anyMatch(place -> check[0] == place[0] && check[1] == place[1]);
 
     }
 

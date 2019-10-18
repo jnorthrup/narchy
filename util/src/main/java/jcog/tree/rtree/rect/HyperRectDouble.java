@@ -124,11 +124,7 @@ public class HyperRectDouble implements HyperRegion, Serializable {
     @Override
     public double cost() {
         int dim = dim();
-        double sigma = 1f;
-        for (int i = 0; i < dim; i++) {
-            double v = rangeIfFinite(i, 1 /* an infinite dimension can not be compared, so just ignore it */);
-            sigma = sigma * v;
-        }
+        double sigma = IntStream.range(0, dim).mapToDouble(i -> rangeIfFinite(i, 1 /* an infinite dimension can not be compared, so just ignore it */)).reduce(1f, (a, b) -> a * b);
         return sigma;
     }
 

@@ -39,7 +39,8 @@ public class ConjClustering extends TaskAction {
     public final FloatRange termVolumeMaxPct = new FloatRange(1f, 0, 1f);
     public final FloatRange forgetRate = new FloatRange(1f, 0, 1);
 
-    private int inputTermVolMax, stampLenMax;
+    private int inputTermVolMax;
+    private int stampLenMax;
 
     /** collect at most Neach results from each queue */
     int tasksPerIterationPerCentroid = 1;

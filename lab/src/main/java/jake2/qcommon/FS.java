@@ -60,7 +60,8 @@ public final class FS extends Globals {
 
         String name; 
 
-        int filepos, filelen;
+        int filepos;
+        int filelen;
 
         public String toString() {
             return name + " [ length: " + filelen + " pos: " + filepos + " ]";
@@ -681,13 +682,7 @@ public final class FS extends Globals {
     public static void SetGamedir(String dir) {
         searchpath_t next;
 
-        boolean b = false;
-        for (String s : Arrays.asList("..", "/", "\\", ":")) {
-            if (dir.contains(s)) {
-                b = true;
-                break;
-            }
-        }
+        boolean b = Stream.of("..", "/", "\\", ":").anyMatch(dir::contains);
         if (b) {
             Com.Printf("Gamedir should be a single filename, not a path\n");
             return;

@@ -11,7 +11,8 @@ package nars.experiment.bomberman; /**
  */
 public class BomberKeyQueue {
     /** head and tail nodes */
-    private Node head, tail;
+    private Node head;
+    private Node tail;
     /** total nodes */
     private int totalItems;
 
@@ -150,7 +151,8 @@ public class BomberKeyQueue {
         /** the key data */
         public byte data;
         /** pointers / links */
-        public Node prev, next;
+        public Node prev;
+        public Node next;
 
         /**
          * Construct with data

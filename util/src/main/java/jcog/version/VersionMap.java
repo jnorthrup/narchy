@@ -55,12 +55,7 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
             }
         }
         if (!replacements.isEmpty()) {
-            for (Object[] r : replacements) {
-                if (!set((X) r[0], (Y) r[1])) {
-                    return false;
-                }
-            }
-            return true;
+            return replacements.stream().allMatch(r -> set((X) r[0], (Y) r[1]));
         }
         return true;
     }

@@ -125,7 +125,8 @@ public class A extends GamePanel {
 	static final String gameData = "aaagaaagaaagaaagaaaeaabebcasbaasbcarcdalcaascdacdaakdabjdacieeapfabofgcpcdacefbpegcoabafgaamhaaeiaamiaacjaacjaarjabrjacrkmkminkjijiijihfbkeeaaaaeeaaaaaaaaeeaaaaaaaaaaaaaaaaaaeeeeaaaaaeeeeaeaaaeeaeeeaaaaaaaeeaaaaaaaeeeaaaaaaeeaeaaaaaaeaaeeaaaaaeaaaeaaaaeeaaeeaaaaaaeeaaaaaaaaeeaaaaaaaaaaaaaaaaaaeeeeaaaaaeeeeaeaaaeeaeeeaaaaaaaeeaaaaaaaaeeaaaaaaaeaeaaaaaaaeaeaaaaaaaeaeaaaaaaeeeeaaaaaaaaeeaaaaaaaaeeaaaaaaaaaaaaaaaaaeeeeaaaaaeaaeaeaaaeaaeeeaaaaaaaaeaaaaaaaaeeaaaaaaaeaeaaaaaaeaaaeaaaaaeaaaeaaaaeeaaeeaaaaaaaeeaaaaaaaaeeaaaaaaaaaaaaaaaaaeeeeaaaaaeaaeaeaaaeaaeeeaaaaaaaaeaaaaaaaaeeaaaaaaaeaeaaaaaaaeaeaaaaaaaeaeaaaaaaeeeeaaaaaaeaaaaaaeaeaaaaaeaeaaaaaeaeaaaaaeeeaaaaeeeeeaaeeeeeeaaaeeeeeaaaeeeeeaaaeeeeeaaaeeeeeeaaaeeeeeeaaaeeeeeaaaeaaaaaaeaeaaaaaeaeaaaaaeaeaaaaaeeeaaaaeeeeeaaeeeeeeaaaeeeeeaaaeeeeeaaaeeeeeaaaeeeeeeaaeeeeeeaaaeeeeeeaaaaaaaeaaaeaaaaeaeaeaeaeeaaaaaaaeeeeaeaaeaeeeeeaeeaeeeeeaaeeaaaeaeaaaaaaeaaaeaaaaaeaaaeaaaaeaaaaaaaaeaeaaaaeaaaaaeeaeaeaeaeeeeaaaeaeeeeeaeaeaaeeeeeaeaaaeaeaaaeaaeaaaeaaaaaeaaaeaaaeaaeeaeeeeaaeeeaaeaaeeeaaeeaaeaaaeaeeeeeaeaaeeeaaeaaeeeaaaaeeaeaaaaaaaeeaaaeeaeeaaaaeeeaeaaaeeeaeeaaaeaaaeaeeeeeaeeaeeeaaeaaeeeaaeaaeaeeaeaeeaaaeeeaaaaaeeeeeeaaaaaaaeeaaaaaaeeaaaeeeeaaaeeaaaaeaeeaaaeeaaeeeeeaaeeeaaaaaeeeeeeaeaaaaaeeaaaeeeeaaaeeaaaaaaeaaaeeaaeeaaeaaaaeeeeaaaaaaaaaaaaeeeeeeaaeaeeeeeeaeeaaaaaeaeeeeeeeeaeeeeaeeeaeeeeeeeeaaeeeeeeeaeeeeeeeaeeaaaaaeaeaaaaaaeaaeeaaaaaeaeeeeeeeeaeeeeaeeeaeeeeeeeeaaeeeeeeeaaaaeaaeaaeaaaaeaeaaeaeaeaeaaeaeaeaeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
 	private final boolean[] k = new boolean[4];
-	private int v, w;
+	private int v;
+    private int w;
 
 	long nextFrameStart;
 
@@ -178,13 +179,7 @@ public class A extends GamePanel {
 						if (gameData.charAt(g + 140) == 'e')
 							g2d.fillRect(((g - z - j * h) % spriteSize[m]) * n, ((g - z - j * h) / spriteSize[m]) * n, n, n);
 
-					boolean b = false;
-					for (int i1 : new int[]{6, 8, 21}) {
-						if (i == i1) {
-							b = true;
-							break;
-						}
-					}
+					boolean b = IntStream.of(6, 8, 21).anyMatch(i1 -> i == i1);
 					if (b) {
 						g2d.setColor(colorChart[12]); 
 						g2d.fillRect(2, 4, 2, 2);

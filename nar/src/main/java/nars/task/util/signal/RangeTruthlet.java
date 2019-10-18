@@ -2,7 +2,8 @@ package nars.task.util.signal;
 
 public abstract class RangeTruthlet extends Truthlet {
 
-    public final long start, end;
+    public final long start;
+    public final long end;
 
     public RangeTruthlet(long start, long end) {
         assert(start <= end);

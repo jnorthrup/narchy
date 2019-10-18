@@ -18,7 +18,10 @@ import net.beadsproject.beads.data.DataBeadReceiver;
  * @beads.category effect
  */
 public class Reverb extends UGenChain implements DataBeadReceiver {
-    private float size, damping, earlyLevel, lateLevel;
+    private float size;
+    private float damping;
+    private float earlyLevel;
+    private float lateLevel;
     private final Gain earlyGain;
     private final Gain lateGain;
     private final AllpassFilter eAPF1;
@@ -33,7 +36,10 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
     private final OnePoleFilter lpf;
     private final OnePoleFilter src;
     private final RandomPWM delayModulator;
-    private float lateDelay1, lateDelay2, lateDelay3, lateDelay4;
+    private float lateDelay1;
+    private float lateDelay2;
+    private float lateDelay3;
+    private float lateDelay4;
     private final float sampsPerMS;
     private final TapOut earlyTapOut;
 

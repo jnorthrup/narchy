@@ -27,7 +27,10 @@ public class NodeVis<X> extends Windo {
      */
     public final ConcurrentFastIteratingHashMap<X, EdgeVis<X>> outs = new ConcurrentFastIteratingHashMap(new EdgeVis[0]);
 
-    private float r, g, b, a;
+    private float r;
+    private float g;
+    private float b;
+    private float a;
 
     /** general re-purposeable serial integer */
     public transient int i;

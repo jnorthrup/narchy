@@ -13,6 +13,7 @@
 package nars.experiment.minicraft.side;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -216,13 +217,7 @@ public class WorldGenerator {
                 if (currentY < 0 || currentY >= world[0].length) {
                     continue;
                 }
-                boolean ignoreThis = false;
-                for (TileID ignore : ignoreTypes) {
-                    if (world[currentX][currentY] == ignore) {
-                        ignoreThis = true;
-                        break;
-                    }
-                }
+                boolean ignoreThis = Arrays.stream(ignoreTypes).anyMatch(ignore -> world[currentX][currentY] == ignore);
                 if (ignoreThis) {
                     continue;
                 }

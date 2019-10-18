@@ -672,13 +672,7 @@ public class a extends GamePanel {
 								}
 							} else {
 								if (playerStunned == 0) {
-									boolean b = false;
-									for (int v : new int[]{TYPE_FIREBALL, TYPE_BRICK, TYPE_IGOR}) {
-										if (object[OBJ_TYPE] == v) {
-											b = true;
-											break;
-										}
-									}
+									boolean b = IntStream.of(TYPE_FIREBALL, TYPE_BRICK, TYPE_IGOR).anyMatch(v -> object[OBJ_TYPE] == v);
 									if (b) {
 										queue.remove(i);
 										float[] flame = new float[32];
@@ -701,13 +695,7 @@ public class a extends GamePanel {
 						
 						if (playerWhipping > 0 && playerWhipping <= WHIP_EXTENDED && !playerThrowing && whipX2 >= object[OBJ_X] + object[OBJ_X1] && whipX1 <= object[OBJ_X] + object[OBJ_X2]
 								&& whipY2 >= object[OBJ_Y] + object[OBJ_Y1] && whipY1 <= object[OBJ_Y] + object[OBJ_Y2]) {
-							boolean b = false;
-							for (int v : new int[]{TYPE_FIREBALL, TYPE_DRACULA_HEAD, TYPE_IGOR}) {
-								if (object[OBJ_TYPE] == v) {
-									b = true;
-									break;
-								}
-							}
+							boolean b = IntStream.of(TYPE_FIREBALL, TYPE_DRACULA_HEAD, TYPE_IGOR).anyMatch(v -> object[OBJ_TYPE] == v);
 							if (b) {
 								queue.remove(i);
 								float[] flame = new float[32];
@@ -724,13 +712,7 @@ public class a extends GamePanel {
 						}
 
 
-						boolean b = false;
-						for (int v : new int[]{TYPE_FIREBALL, TYPE_DRACULA_HEAD, TYPE_IGOR}) {
-							if (object[OBJ_TYPE] == v) {
-								b = true;
-								break;
-							}
-						}
+						boolean b = IntStream.of(TYPE_FIREBALL, TYPE_DRACULA_HEAD, TYPE_IGOR).anyMatch(v -> object[OBJ_TYPE] == v);
 						if (b) {
 							for (j = 0; j < crosses.size(); j++) {
 								float[] cross = crosses.get(j);

@@ -65,9 +65,12 @@ public class PrismaticJoint extends Joint {
     private float m_invMassB;
     private float m_invIA;
     private float m_invIB;
-    private final v2 m_axis, m_perp;
-    private float m_s1, m_s2;
-    private float m_a1, m_a2;
+    private final v2 m_axis;
+    private final v2 m_perp;
+    private float m_s1;
+    private float m_s2;
+    private float m_a1;
+    private float m_a2;
     private final Mat33 m_K;
     private float m_motorMass; 
 

@@ -641,12 +641,7 @@ public class Body3D<X> extends Collidable<X> {
 			return true;
 		}
 
-		for (TypedConstraint c : constraintRefs) {
-			if (c.getRigidBodyA() == otherRb || c.getRigidBodyB() == otherRb) {
-				return false;
-			}
-		}
-		return true;
+		return constraintRefs.stream().noneMatch(c -> c.getRigidBodyA() == otherRb || c.getRigidBodyB() == otherRb);
 	}
 
 	public void addConstraintRef(TypedConstraint c) {

@@ -132,12 +132,7 @@ public class Structure implements Term {
 	 *         with other structures.
 	 */
 	public Term copyForProof(AxiomSource as, Scope scope) {
-		List<Term> list = new ArrayList<>();
-		for (Term term : terms) {
-			Term copyForProof = term.copyForProof(as, scope);
-			list.add(copyForProof);
-		}
-		Term[] newTerms = list.toArray(new Term[0]);
+		Term[] newTerms = Arrays.stream(terms).map(term -> term.copyForProof(as, scope)).toArray(Term[]::new);
         return new ConsultingStructure(as, functor, newTerms);
 	}
 
@@ -158,12 +153,7 @@ public class Structure implements Term {
 			return false;
 		}
 		int bound = terms.length;
-		for (int i = 0; i < bound; i++) {
-			if (!terms[i].equals(s.terms[i])) {
-				return false;
-			}
-		}
-		return true;
+		return IntStream.range(0, bound).allMatch(i -> terms[i].equals(s.terms[i]));
 	}
 
 	/**

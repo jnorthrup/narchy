@@ -233,12 +233,8 @@ public class HMM implements Serializable{
 	public double getProbability(int[] o) {
         double[][] forward = this.forwardProc(o);
 
-        double prob = 0.0;
-        for (double[] doubles : forward) {
-            double aDouble = doubles[doubles.length - 1];
-            prob += aDouble;
-        }
-        return prob;
+        double prob = Arrays.stream(forward).mapToDouble(doubles -> doubles[doubles.length - 1]).sum();
+		return prob;
 	}
 	
 

@@ -38,7 +38,9 @@ public class Mat33 implements Serializable {
     public static final Mat33 IDENTITY = new Mat33(new Vec3(1, 0, 0), new Vec3(0, 1, 0), new Vec3(0,
             0, 1));
 
-    public final v3 ex, ey, ez;
+    public final v3 ex;
+    public final v3 ey;
+    public final v3 ez;
 
     public Mat33() {
         ex = new Vec3();

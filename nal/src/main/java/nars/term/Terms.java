@@ -477,12 +477,7 @@ public enum Terms {
 
 	public static boolean isSorted(Term[] s) {
 		if (s.length < 2) return true;
-		for (int i = 1; i < s.length; i++) {
-			if (s[(i - 1)].compareTo(s[i]) >= 0) {
-				return false;
-			}
-		}
-		return true;
+		return IntStream.range(1, s.length).noneMatch(i -> s[(i - 1)].compareTo(s[i]) >= 0);
 	}
 
 	public static boolean possiblyUnifiable(Term x, Term y, boolean strict, int var) {

@@ -140,13 +140,8 @@ public interface HyperRegion {
     default boolean contains(HyperRegion x) {
         if (this == x) return true;
         int d = dim();
-        for (int i = 0; i < d; i++) {
-            if (coord(i, false) > x.coord(i, false) ||
-                    coord(i, true) < x.coord(i, true)) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.range(0, d).noneMatch(i -> coord(i, false) > x.coord(i, false) ||
+                coord(i, true) < x.coord(i, true));
     }
 
 
@@ -159,13 +154,8 @@ public interface HyperRegion {
     default boolean intersects(HyperRegion x) {
         if (this == x) return true;
         int d = dim();
-        for (int i = 0; i < d; i++) {
-            if (coord(i, false) > x.coord(i, true) ||
-                    coord(i, true) < x.coord(i, false)) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.range(0, d).noneMatch(i -> coord(i, false) > x.coord(i, true) ||
+                coord(i, true) < x.coord(i, false));
     }
 
 
@@ -177,11 +167,7 @@ public interface HyperRegion {
      */
     default double cost() {
         int n = dim();
-        double a = 1.0;
-        for (int i = 0; i < n; i++) {
-            double cost = cost(i);
-            a = a * cost;
-        }
+        double a = IntStream.range(0, n).mapToDouble(this::cost).reduce(1.0, (a1, b) -> a1 * b);
         return a;
     }
 
@@ -192,12 +178,9 @@ public interface HyperRegion {
      */
     default double perimeter() {
         int n = this.dim();
-        double p = 0.0;
+        double p;
         int bound = n;
-        for (int i = 0; i < bound; i++) {
-            double cost = cost(i);
-            p += cost;
-        }
+        p = IntStream.range(0, bound).mapToDouble(this::cost).sum();
         return p;
     }
 

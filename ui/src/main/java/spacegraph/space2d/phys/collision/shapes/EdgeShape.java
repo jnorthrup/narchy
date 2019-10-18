@@ -56,7 +56,8 @@ public class EdgeShape extends Shape {
      * optional adjacent vertex 2. Used for smooth collision
      */
     public final v2 m_vertex3 = new v2();
-    public boolean m_hasVertex0 = false, m_hasVertex3 = false;
+    public boolean m_hasVertex0 = false;
+    public boolean m_hasVertex3 = false;
 
 
     public EdgeShape() {

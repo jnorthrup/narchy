@@ -30,7 +30,8 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
     /**
      * current estimate
      */
-    protected @Nullable Truth actionTruth, beliefTruth;
+    protected @Nullable Truth actionTruth;
+    protected @Nullable Truth beliefTruth;
 
     /**
      * instantaneous truth (implemented as avg truth integrated over a finite present-moment answer interval)

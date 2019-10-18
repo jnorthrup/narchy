@@ -306,7 +306,7 @@ public class ParticleSystem {
                 int childCount = shape.getChildCount();
                 for (int childIndex = 0; childIndex < childCount; childIndex++) {
                     if (childIndex == 0) {
-                        shape.computeAABB(aabb, identity, childIndex);
+                        shape.computeAABB(aabb, identity, 0);
                     } else {
                         AABB childAABB = temp2;
                         shape.computeAABB(childAABB, identity, childIndex);
@@ -407,13 +407,10 @@ public class ParticleSystem {
         RotateBuffer(groupA.m_firstIndex, groupA.m_lastIndex, groupB.m_firstIndex);
         assert (groupA.m_lastIndex == groupB.m_firstIndex);
 
-        int particleFlags = 0;
+        int particleFlags;
         int[] array = m_flagsBuffer.data;
         int bound = groupB.m_lastIndex;
-        for (int j = groupA.m_firstIndex; j < bound; j++) {
-            int i1 = array[j];
-            particleFlags = particleFlags | i1;
-        }
+        particleFlags = Arrays.stream(array, groupA.m_firstIndex, bound).reduce(0, (a, b) -> a | b);
 
         updateContacts(true);
         if ((particleFlags & k_pairFlags) != 0) {
@@ -1399,7 +1396,9 @@ public class ParticleSystem {
     }
 
     private static class NewIndices {
-        int start, mid, end;
+        int start;
+        int mid;
+        int end;
 
         final int getIndex(int i) {
             if (i < start) {
@@ -1853,7 +1852,8 @@ public class ParticleSystem {
      * Connection between two particles
      */
     static class Pair {
-        int indexA, indexB;
+        int indexA;
+        int indexB;
         int flags;
         float strength;
         float distance;
@@ -1863,11 +1863,18 @@ public class ParticleSystem {
      * Connection between three particles
      */
     static class Triad {
-        int indexA, indexB, indexC;
+        int indexA;
+        int indexB;
+        int indexC;
         int flags;
         float strength;
-        final v2 pa = new v2(), pb = new v2(), pc = new v2();
-        float ka, kb, kc, s;
+        final v2 pa = new v2();
+        final v2 pb = new v2();
+        final v2 pc = new v2();
+        float ka;
+        float kb;
+        float kc;
+        float s;
     }
 
     

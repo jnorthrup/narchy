@@ -22,7 +22,9 @@ import net.beadsproject.beads.data.DataBeadReceiver;
  */
 public class MultiWrapper extends UGenChain implements DataBeadReceiver {
     private UGen[] ugens;
-    private int channels, insPerChannel, outsPerChannel;
+    private int channels;
+    private int insPerChannel;
+    private int outsPerChannel;
 
     /**
      * Constructor for an multi-channel wrapper for 1-in/1-out UGens on each

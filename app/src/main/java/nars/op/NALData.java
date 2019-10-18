@@ -70,14 +70,9 @@ public class NALData {
         List<Term> meta = new FasterList();
 
         int n = a.columnCount();
-        List<nars.term.Variable> list = new ArrayList<>();
-        for (int i1 = 0; i1 < n; i1++) {
-            nars.term.Variable variable = $.varDep(i1 + 1);
-            list.add(variable);
-        }
         Term pattern = pointGenerator.apply(
             name(a),
-                list.toArray(new Term[0])
+                IntStream.range(0, n).mapToObj(i1 -> $.varDep(i1 + 1)).toArray(Term[]::new)
         );
         for (int i = 0; i < n; i++) {
             String ai = a.attrName(i);

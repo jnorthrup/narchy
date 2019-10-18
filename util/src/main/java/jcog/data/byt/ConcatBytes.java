@@ -1,7 +1,8 @@
 package jcog.data.byt;
 
 public class ConcatBytes implements AbstractBytes {
-    final AbstractBytes a, b;
+    final AbstractBytes a;
+    final AbstractBytes b;
 
 
     public ConcatBytes(AbstractBytes a, AbstractBytes b) {

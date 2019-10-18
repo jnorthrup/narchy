@@ -47,9 +47,11 @@ import static nars.unify.constraint.RelationConstraint.*;
 public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 	/** for convenient usage */
-	protected static final VarPattern TheTask = $.varPattern(1), TheBelief = $.varPattern(2);
+	protected static final VarPattern TheTask = $.varPattern(1);
+	protected static final VarPattern TheBelief = $.varPattern(2);
 
-	public Term taskPattern = TheTask, beliefPattern = TheBelief;
+	public Term taskPattern = TheTask;
+	public Term beliefPattern = TheBelief;
 
 
 	protected transient UnifyConstraint<Derivation.PremiseUnify>[] CONSTRAINTS;

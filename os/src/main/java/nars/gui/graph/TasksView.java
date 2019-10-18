@@ -71,7 +71,10 @@ public class TasksView implements Timeline2D.EventBuffer<Task> {
     static class TaskIcon extends PushButton {
         public final Task task;
 
-        float r, g, b, a;
+        float r;
+        float g;
+        float b;
+        float a;
 
         public TaskIcon(Task x) {
             super(x.toStringWithoutBudget());

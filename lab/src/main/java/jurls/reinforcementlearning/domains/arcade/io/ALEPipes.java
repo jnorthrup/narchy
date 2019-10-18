@@ -43,7 +43,9 @@ public class ALEPipes {
     protected final PrintStream out;
 
     /** Flags indicating the kind of data we want to receive from ALE */
-    protected boolean updateScreen, updateRam, updateRLData;
+    protected boolean updateScreen;
+    protected boolean updateRam;
+    protected boolean updateRLData;
     /** We will request that ALE sends data every 'frameskip' frames. */
     protected int frameskip;
 

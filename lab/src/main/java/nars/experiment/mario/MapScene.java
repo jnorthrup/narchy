@@ -19,8 +19,10 @@ public class MapScene extends Scene {
     private int[][] level;
     private int[][] data;
 
-    private int xMario, yMario;
-    private int xMarioA, yMarioA;
+    private int xMario;
+    private int yMario;
+    private int xMarioA;
+    private int yMarioA;
 
     private int tick;
     private final Image staticBg;

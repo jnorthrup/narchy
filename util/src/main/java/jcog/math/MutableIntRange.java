@@ -7,7 +7,8 @@ import jcog.Util;
  */
 public class MutableIntRange {
 
-    int lo, hi;
+    int lo;
+    int hi;
 
 
     public MutableIntRange() {

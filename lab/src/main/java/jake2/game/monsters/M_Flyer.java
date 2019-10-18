@@ -967,13 +967,7 @@ public class M_Flyer {
         float[] dir = { 0, 0, 0 };
         int effect;
 
-        boolean b = false;
-        for (int i : new int[]{FRAME_attak204, FRAME_attak207, FRAME_attak210}) {
-            if ((self.s.frame == i)) {
-                b = true;
-                break;
-            }
-        }
+        boolean b = IntStream.of(FRAME_attak204, FRAME_attak207, FRAME_attak210).anyMatch(i -> (self.s.frame == i));
         if (b)
             effect = Defines.EF_HYPERBLASTER;
         else

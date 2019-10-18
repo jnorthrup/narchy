@@ -259,7 +259,8 @@ public class StackProfiler2 implements InternalProfiler {
     public static class StackResult extends Result<StackResult> {
 
         private final Map<Thread.State, HashBag<StackRecord>> calleeSum;
-        private final int topStacks, topCallees;
+        private final int topStacks;
+        private final int topCallees;
         private final HashBag<Pair<String, IntObjectPair<String>>> calledSum;
 
         StackResult(Map<Thread.State, HashBag<StackRecord>> calleeSum, HashBag<Pair<String, IntObjectPair<String>>> calledSum, int topStacks) {

@@ -38,13 +38,17 @@ public class I4Kopter extends Applet {
 
     private BufferedImage bufferImage;
     private BufferedImage backgroundImage;
-    private BufferedImage helicopterImage1, helicopterImage2;
+    private BufferedImage helicopterImage1;
+    private BufferedImage helicopterImage2;
     private static final int w = 800;
     private static final int h = 400;
     private final Random random = new Random();
-    private boolean keyPressed, paused;
-    private int heliY, heliX;                       
-    private double speed, gravity = 1.6;
+    private boolean keyPressed;
+    private boolean paused;
+    private int heliY;
+    private int heliX;
+    private double speed;
+    private double gravity = 1.6;
     private Point[] obstacles;                      
     private static final int pathHeight = 250;
     private static final int backgroundLength = 17* w;

@@ -289,13 +289,8 @@ public class P extends GamePanel {
 			int animation = 0;
 
 
-			List<Color> list = new ArrayList<>();
 			int bound = str_colors.length() >> 1;
-			for (int i1 = 0; i1 < bound; i1++) {
-				Color color1 = new Color((str_colors.charAt(2 * i1 + 0) << 16) + str_colors.charAt(2 * i1 + 1));
-				list.add(color1);
-			}
-			Color[] color = list.toArray(new Color[0]);
+			Color[] color = IntStream.range(0, bound).mapToObj(i1 -> new Color((str_colors.charAt(2 * i1 + 0) << 16) + str_colors.charAt(2 * i1 + 1))).toArray(Color[]::new);
 
             int i, k;
 			int j = data.length();
@@ -389,7 +384,7 @@ public class P extends GamePanel {
 						if (i == 0) {
 							j = 2 * linesInShape;
 							solids[0][j + X] = solids[0][X];
-							solids[i][j + Y] = solids[i][Y];
+							solids[0][j + Y] = solids[i][Y];
 							
 							
 							j += 4;

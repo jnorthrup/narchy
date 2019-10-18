@@ -21,12 +21,14 @@ class Diagonal {
     /**
      * Prvy a druhy node prveho utvaru - n11-n12 tvoria hranu - zachovane poradie.
      */
-    NodeHM n11, n12;
+    NodeHM n11;
+    NodeHM n12;
 
     /**
      * Prvy a druhy node druheho utvaru - n22-n21 tvoria hranu - zachovane poradie.
      */
-    NodeHM n21, n22;
+    NodeHM n21;
+    NodeHM n22;
 
     /**
      * Inicializuje diagonalu.

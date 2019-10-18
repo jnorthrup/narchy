@@ -945,13 +945,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		} else {
 
-			int w = -1;
-			for (int i = 0; i < s; i++) {
-				if (subEvents[i] != null && !subEvents[i].isEmpty()) {
-					w = i;
-					break;
-				}
-			}
+			int w = IntStream.range(0, s).filter(i -> subEvents[i] != null && !subEvents[i].isEmpty()).findFirst().orElse(-1);
 			//found
             List<Absolute> ss = subEvents[w];
 			for (Absolute e : ss) {
@@ -1094,12 +1088,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 				solveOcc(b, false, bx -> {
 					if ((bx instanceof Absolute) && ae.add(bx)) {
-						for (Event ax : aa) {
-							if (!solveDTAbsolutePair(x, ax, bx, each)) {
-								return false;
-							}
-						}
-						return true;
+						return Arrays.stream(aa).allMatch(ax -> solveDTAbsolutePair(x, ax, bx, each));
 					}
 					return true;
 				});
@@ -1282,12 +1271,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		Collection<Event> ee = events(f.id);
 		if (ee != null) {
-			for (Event e : ee) {
-				if (e instanceof Absolute && !each.test((Absolute) e)) {
-					return false;
-				}
-			}
-			return true;
+			return ee.stream().noneMatch(e -> e instanceof Absolute && !each.test((Absolute) e));
 		}
 
 		return true;
@@ -1593,12 +1577,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		if (!solutions.isEmpty()) {
 			Term t = x.id;
 			/** clone the list because modifying solutions while iterating will cause infinite loop */
-			List<Event> list = new ArrayList<>();
-			for (Event event : solutions.list) {
-				if ((event instanceof Absolute && (event.start() != ETERNAL) && event.id.equals(t) && !event.equals(x))) {
-					list.add(event);
-				}
-			}
+			List<Event> list = solutions.list.stream().filter(event -> (event instanceof Absolute && (event.start() != ETERNAL) && event.id.equals(t) && !event.equals(x))).collect(Collectors.toList());
 			return new FasterList<>(list
 			).allSatisfy(s -> {
 
@@ -1940,7 +1919,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		/**
 		 * enabled layers
 		 */
-		final boolean existing, tangent, tangentNeg;
+		final boolean existing;
+        final boolean tangent;
+        final boolean tangentNeg;
 
 		protected CrossTimeSolver(boolean existing, boolean tangent, boolean tangentNeg) {
 

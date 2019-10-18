@@ -19,15 +19,10 @@ public class ByQActionSelector implements ActionSelector {
 
     @Override
     public ActionValuePair[] fromQValuesToProbabilities(double epsilon, ActionValuePair[] actionValuePairs) {
-        List<ActionValuePair> list = new ArrayList<>();
-        for (ActionValuePair actionValuePair1 : actionValuePairs) {
-            ActionValuePair valuePair1 = new ActionValuePair(
-                    actionValuePair1.getA(),
-                    actionValuePair1.getV()
-            );
-            list.add(valuePair1);
-        }
-        ActionValuePair[] ret = list.toArray(new ActionValuePair[0]);
+        ActionValuePair[] ret = Arrays.stream(actionValuePairs).map(actionValuePair1 -> new ActionValuePair(
+                actionValuePair1.getA(),
+                actionValuePair1.getV()
+        )).toArray(ActionValuePair[]::new);
 
         boolean seen = false;
         double best = 0;
@@ -44,11 +39,7 @@ public class ByQActionSelector implements ActionSelector {
             ret[i].setV(ret[i].getV() + min);
         }
 
-        double sum = 0.0;
-        for (ActionValuePair valuePair : ret) {
-            double actionValuePair1V = valuePair.getV();
-            sum += actionValuePair1V;
-        }
+        double sum = Arrays.stream(ret).mapToDouble(ActionValuePair::getV).sum();
 
         for (int i = 0; i < ret.length; ++i) {
             ret[i].setV(ret[i].getV() / sum);
@@ -63,11 +54,7 @@ public class ByQActionSelector implements ActionSelector {
         }
 
         sum = 0;
-        double result = 0.0;
-        for (ActionValuePair actionValuePair : ret) {
-            double v = actionValuePair.getV();
-            result += v;
-        }
+        double result = Arrays.stream(ret).mapToDouble(ActionValuePair::getV).sum();
         sum += result;
 
         for (int i = 0; i < ret.length; ++i) {

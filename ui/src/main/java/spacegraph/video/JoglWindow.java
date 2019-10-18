@@ -51,7 +51,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     public float dtS = 0;
     public float renderFPS = UI.FPS_default;
     private long lastRenderNS = System.nanoTime();
-    private volatile int nx = -1, ny = -1, nw = -1, nh = -1;
+    private volatile int nx = -1;
+    private volatile int ny = -1;
+    private volatile int nw = -1;
+    private volatile int nh = -1;
 
     JoglWindow() {
 

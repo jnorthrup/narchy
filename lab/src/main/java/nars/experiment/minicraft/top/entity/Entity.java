@@ -10,7 +10,8 @@ import java.util.Random;
 
 public class Entity {
     protected final Random random = new Random();
-    public int x, y;
+    public int x;
+    public int y;
     public int xr = 6;
     public int yr = 6;
     public boolean removed;
@@ -111,12 +112,8 @@ public class Entity {
             e.touchedBy(this);
         }
         isInside.removeAll(wasInside);
-        for (Entity e : isInside) {
-            if (e != this) {
-                if (e.blocks(this)) {
-                    return false;
-                }
-            }
+        if (isInside.stream().filter(e -> e != this).anyMatch(e -> e.blocks(this))) {
+            return false;
         }
 
         x += xa;

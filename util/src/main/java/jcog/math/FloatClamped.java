@@ -3,7 +3,8 @@ package jcog.math;
 import jcog.Util;
 
 public class FloatClamped implements FloatSupplier {
-    final float min, max;
+    final float min;
+    final float max;
     private final FloatSupplier in;
 
     public FloatClamped(FloatSupplier in, float min, float max) {

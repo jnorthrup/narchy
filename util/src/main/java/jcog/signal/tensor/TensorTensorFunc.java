@@ -8,7 +8,8 @@ import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 public class TensorTensorFunc implements Tensor {
 
     public final FloatFloatToFloatFunction func;
-    private final Tensor a, b;
+    private final Tensor a;
+    private final Tensor b;
 
     public TensorTensorFunc(Tensor a, Tensor b, FloatFloatToFloatFunction func) {
         assert(a.equalShape(b));

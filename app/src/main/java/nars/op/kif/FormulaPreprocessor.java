@@ -151,12 +151,7 @@ public class FormulaPreprocessor {
             } else {
                  var domainTypes = entry.getValue();
                  var explicitTypes = varExplicitTypes.get(var);
-                 var  types = new HashSet<>();
-                for (String dt : domainTypes) {
-                    if (dt.endsWith("+")) {
-                        types.add(dt);
-                    }
-                }
+                 var  types = domainTypes.stream().filter(dt -> dt.endsWith("+")).collect(Collectors.toCollection(HashSet::new));
                 for (String et : explicitTypes) {
                     if (et.endsWith("+")) {
                         types.add(et);
@@ -247,14 +242,7 @@ public class FormulaPreprocessor {
                         varmap.remove(v);
                 }
 
-                boolean addSortals = false;
-                for (String quantifiedVariable : quantifiedVariables) {
-                    HashSet<String> strings = varmap.get(quantifiedVariable);
-                    if (strings != null && !strings.isEmpty()) {
-                        addSortals = true;
-                        break;
-                    }
-                }
+                boolean addSortals = quantifiedVariables.stream().map(varmap::get).anyMatch(strings -> strings != null && !strings.isEmpty());
                 if (addSortals) {
                     if (carstr.equals(Formula.EQUANT)) sb.append("(and ");
                     else if (carstr.equals(Formula.UQUANT)) sb.append("(=> (and ");

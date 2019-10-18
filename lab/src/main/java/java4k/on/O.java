@@ -968,14 +968,7 @@ public class O extends Applet implements Runnable {
 																
 																
 																
-																boolean found = false;
-																for (int j = 0; j < PLASMA_MAX_HITS_COUNT; j++) {
-																	if (plasmaHittingUnitIndex[j] == hitUnitIndex) {
-																		found = true;
-
-																		break;
-																	}
-																}
+																boolean found = IntStream.range(0, PLASMA_MAX_HITS_COUNT).anyMatch(j -> plasmaHittingUnitIndex[j] == hitUnitIndex);
 																if (!found) {
 																	for (int j = PLASMA_MAX_HITS_COUNT; --j > i;) {
 																		plasmaHittingUnitIndex[j] = plasmaHittingUnitIndex[j - 1];
@@ -1065,13 +1058,7 @@ public class O extends Applet implements Runnable {
 		
 		
 		
-		boolean down = false;
-		for (int i : new int[]{KEY_PRESS, KEY_ACTION, MOUSE_DOWN}) {
-			if (e.id == i) {
-				down = true;
-				break;
-			}
-		}
+		boolean down = IntStream.of(KEY_PRESS, KEY_ACTION, MOUSE_DOWN).anyMatch(i -> e.id == i);
 
 
 		if (e.id >= KEY_PRESS && e.id <= KEY_ACTION_RELEASE) {

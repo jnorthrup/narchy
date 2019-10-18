@@ -64,7 +64,8 @@ public class PatternHow extends CondHow {
     private final TruthModel truthModel;
 
     protected Occurrify.OccurrenceSolver time;
-    protected Term beliefTruth, goalTruth;
+    protected Term beliefTruth;
+    protected Term goalTruth;
     Truthify truthify;
     public Termify termify;
 
@@ -75,7 +76,13 @@ public class PatternHow extends CondHow {
     @Deprecated protected ByteToByteFunction concPunc = null;
 
     @Deprecated
-    private transient boolean concBelief = false, concQuestion = false, concGoal = false, concQuest = false;
+    private transient boolean concBelief = false;
+    @Deprecated
+    private transient boolean concQuestion = false;
+    @Deprecated
+    private transient boolean concGoal = false;
+    @Deprecated
+    private transient boolean concQuest = false;
 
 
 

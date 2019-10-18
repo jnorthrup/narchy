@@ -29,7 +29,8 @@ public class VectorSprite {
     boolean weaponSwitched;
     boolean invincible;
 
-    Polygon shape, drawShape;
+    Polygon shape;
+    Polygon drawShape;
 
     boolean active;
 

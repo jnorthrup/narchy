@@ -9,7 +9,10 @@ import spacegraph.util.math.Color4f;
  * @author dmurph
  */
 @Deprecated public class ParticleColor {
-    public byte r, g, b, a;
+    public byte r;
+    public byte g;
+    public byte b;
+    public byte a;
 
     public ParticleColor() {
         r = 127;

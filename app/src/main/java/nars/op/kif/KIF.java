@@ -267,16 +267,8 @@ public class KIF implements Iterable<Task> {
             throw new WTF();
         }
 
-        List<String> sargs = new ArrayList<>();
-        for (int i = 1; i < l; i++) {
-            String argument = x.getArgument(i);
-            sargs.add(argument);
-        }
-        List<Term> args = new ArrayList<>();
-        for (String sarg : sargs) {
-            Term formulaToTerm = formulaToTerm(sarg, level + 1);
-            args.add(formulaToTerm);
-        }
+        List<String> sargs = IntStream.range(1, l).mapToObj(x::getArgument).collect(Collectors.toList());
+        List<Term> args = sargs.stream().map(sarg -> formulaToTerm(sarg, level + 1)).collect(Collectors.toList());
 
         if (args.contains(null))
             return Bool.Null;
@@ -403,13 +395,7 @@ public class KIF implements Iterable<Task> {
                     forVar = forVar.substring(1, forVar.length() - 1); 
                 }
                 String[] forVars = forVar.split(" ");
-                boolean missingAParamVar = false;
-                for (String vv : forVars) {
-                    if (!sargs.get(1).contains(vv)) {
-                        missingAParamVar = true;
-                        break;
-                    }
-                }
+                boolean missingAParamVar = Arrays.stream(forVars).anyMatch(vv -> !sargs.get(1).contains(vv));
                 if (!missingAParamVar) {
                     y = args.get(1); 
                 } else {

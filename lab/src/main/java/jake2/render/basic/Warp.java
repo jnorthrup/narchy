@@ -345,7 +345,8 @@ public abstract class Warp extends Model {
 
     final float[][] skymaxs = new float[2][6];
 
-    float sky_min, sky_max;
+    float sky_min;
+    float sky_max;
 
     void DrawSkyPolygon(int nump, float[][] vecs) {
         int i, j;

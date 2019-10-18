@@ -49,7 +49,8 @@ public class RLBooster  {
     public final Agent agent;
     public final FloatRange conf = new FloatRange(0.1f, 0f, 1f);
     public final float[] input;
-    final int inD, outD;
+    final int inD;
+    final int outD;
     final ActionSignal[] actions;
     private final CauseChannel<Task> in;
     private final List<Term> inputs;

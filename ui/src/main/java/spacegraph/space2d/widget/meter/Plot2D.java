@@ -32,7 +32,8 @@ public class Plot2D extends Widget {
     private String title;
     private Off on;
     private volatile boolean invalid = false;
-    private transient float minMinValue, maxMaxValue;
+    private transient float minMinValue;
+    private transient float maxMaxValue;
 
 
     public Plot2D(int history, PlotVis vis) {
@@ -722,7 +723,9 @@ public class Plot2D extends Widget {
         protected int capacity;
         private final float[] color = {1, 1, 1, 0.75f};
         private String name;
-        protected transient float minValue, maxValue, meanValue;
+        protected transient float minValue;
+        protected transient float maxValue;
+        protected transient float meanValue;
 
         @Override
         public abstract float get(int i);

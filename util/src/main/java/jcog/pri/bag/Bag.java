@@ -44,7 +44,9 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 
     private PriMerge merge;
 
-    private volatile int mass, pressure, capacity;
+    private volatile int mass;
+    private volatile int pressure;
+    private volatile int capacity;
 
     protected static <X, Y> void forEachActive(Bag<X, Y> bag, MetalAtomicReferenceArray<Y> map, Consumer<? super Y> e) {
         forEach(map, bag::active, e);

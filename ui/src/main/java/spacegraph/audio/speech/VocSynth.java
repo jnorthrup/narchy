@@ -113,7 +113,9 @@ class WaveDraw extends Canvas
 // draws input and output pulse
 {
 	Container parent;
-	int w, h, len;
+	int w;
+	int h;
+	int len;
 	Dimension size;
 	boolean trueSizeKnown = true;
 	double buf[];
@@ -246,7 +248,8 @@ class CPanel extends Panel
 class WPanel extends Panel
 // frame for two wavediplayareas
 {
-	WaveDraw inw, outw;
+	WaveDraw inw;
+	WaveDraw outw;
 
 	public WPanel(double input[], int lenin, double output[], int lenout) {
 		inw = new WaveDraw(this, 200, 64, input, lenin);
@@ -292,7 +295,8 @@ class VocSynthApplet extends Applet implements ActionListener {
 	//TubeCanvas tubecan;
 	WPanel wpan;
 	CPanel pan;
-	SPanel glotslider, lipslider;
+	SPanel glotslider;
+	SPanel lipslider;
 
 	public void init() {
 		sample = new byte[length];

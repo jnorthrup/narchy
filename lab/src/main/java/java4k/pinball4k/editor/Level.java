@@ -91,7 +91,8 @@ public class Level {
 	 * @return a list of selected handles
 	 */
 	public  List<Handle> select(Rectangle rect) {
-		return levelObjects.stream().map(LevelObject::getHandles).flatMap(Collection::stream).filter(handle -> handle.intersects(rect)).collect(Collectors.toList());
+		List<Handle> list = levelObjects.stream().map(LevelObject::getHandles).flatMap(Collection::stream).filter(handle -> handle.intersects(rect)).collect(Collectors.toList());
+		return list;
 	}
 	
 	public ArrayList<Handle> select(ArrayList<LevelObject> objects) {
@@ -536,12 +537,7 @@ public class Level {
 		for (int groupIdx = 0; groupIdx < groupCnt; groupIdx++) {
 			int objCnt = dataIn.readByte();
 			int firstIdx = dataIn.readByte();
-			ArrayList<LevelObject> group = new ArrayList<>();
-			for (int objIdx = 0; objIdx < objCnt; objIdx++) {
-				int i = firstIdx + objIdx;
-				LevelObject levelObject = levelObjects.get(i);
-				group.add(levelObject);
-			}
+			ArrayList<LevelObject> group = IntStream.range(0, objCnt).map(objIdx -> firstIdx + objIdx).mapToObj(levelObjects::get).collect(Collectors.toCollection(ArrayList::new));
 			groups.add(group);
 		}
 

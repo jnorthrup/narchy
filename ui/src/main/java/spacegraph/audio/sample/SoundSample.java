@@ -5,7 +5,8 @@ public class SoundSample {
 	public final float rate;
 
 	/** range within the buffer to actually play */
-	public final int start, end;
+	public final int start;
+    public final int end;
 
 	public SoundSample(float[] buf, float rate) {
 		this(buf, 0, buf.length, rate);

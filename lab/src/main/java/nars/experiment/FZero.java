@@ -512,7 +512,9 @@ public class FZero extends GameX {
         public static final int FULL_POWER = 80;
         public static final int MAX_VEL = 20;
         private final JPanel panel;
-        public volatile boolean thrust, left, right;
+        public volatile boolean thrust;
+        public volatile boolean left;
+        public volatile boolean right;
         public volatile double playerAngle;
         public BufferedImage image = new BufferedImage(
                 320, 240, BufferedImage.TYPE_INT_RGB);

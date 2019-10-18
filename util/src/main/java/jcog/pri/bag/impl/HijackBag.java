@@ -68,7 +68,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     private final int id;
 
     private volatile int size;
-    private volatile float min, max;
+    private volatile float min;
+    private volatile float max;
 
     /**
      * TODO make non-public
@@ -206,12 +207,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     public float density() {
         MetalAtomicReferenceArray<V> m = map;
         int mm = m.length();
-        long count = 0L;
-        for (int i = 0; i < mm; i++) {
-            if (m.getFast(i) != null) {
-                count++;
-            }
-        }
+        long count = IntStream.range(0, mm).filter(i -> m.getFast(i) != null).count();
         int filled = (int) count;
         return ((float) filled) / mm;
     }
@@ -882,14 +878,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     public static <X> List<X> list(AtomicReferenceArray<X> a) {
-        List<X> list = new ArrayList<>();
+        List<X> list;
         int bound = a.length();
-        for (int i = 0; i < bound; i++) {
-            X x = a.get(i);
-            if (x != null) {
-                list.add(x);
-            }
-        }
+        list = IntStream.range(0, bound).mapToObj(a::get).filter(Objects::nonNull).collect(Collectors.toList());
         return list;
     }
 

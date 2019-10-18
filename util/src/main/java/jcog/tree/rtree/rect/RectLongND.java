@@ -71,12 +71,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
         RectLongND inner = (RectLongND) _inner;
 
         int dim = dim();
-        for (int i = 0; i < dim; i++) {
-            if (min.coord[i] > inner.min.coord[i] || max.coord[i] < inner.max.coord[i]) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.range(0, dim).noneMatch(i -> min.coord[i] > inner.min.coord[i] || max.coord[i] < inner.max.coord[i]);
     }
 
     @Override
@@ -86,12 +81,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
         int dim = dim();
         /*return !((min.x > r2.max.x) || (r2.min.x > max.x) ||
                     (min.y > r2.max.y) || (r2.min.y > max.y));*/
-        for (int i = 0; i < dim; i++) {
-            if (min.coord[i] > x.max.coord[i] || x.min.coord[i] > max.coord[i]) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.range(0, dim).noneMatch(i -> min.coord[i] > x.max.coord[i] || x.min.coord[i] > max.coord[i]);
     }
 
     @Override

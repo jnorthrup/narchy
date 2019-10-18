@@ -85,33 +85,20 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     }
 
     public int size() {
-        long size = 0L;
-        for (Section<K, V> s : sections) {
-            long opaque = s.size.getOpaque();
-            size += opaque;
-        }
+        long size = Arrays.stream(sections).mapToLong(s -> s.size.getOpaque()).sum();
         if (size >= Integer.MAX_VALUE)
             return Integer.MAX_VALUE-1; 
         return (int) size;
     }
 
     public long capacity() {
-        long capacity = 0L;
-        for (Section<K, V> s : sections) {
-            long l = s.capacity;
-            capacity += l;
-        }
+        long capacity = Arrays.stream(sections).mapToLong(s -> s.capacity).sum();
         return capacity;
     }
 
     public boolean isEmpty() {
 
-        for (Section<K, V> s : sections) {
-            if (s.size.getOpaque() != 0) {
-                return false;
-            }
-        }
-        return true;
+        return Arrays.stream(sections).noneMatch(s -> s.size.getOpaque() != 0);
     }
 
     public V get(Object key) {

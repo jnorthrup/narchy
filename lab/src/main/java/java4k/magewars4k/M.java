@@ -182,7 +182,8 @@ public class M extends Applet implements Runnable {
 
 	private final boolean[] keyboard = new boolean[0x10000]; 
 	private boolean mouse; 
-	private volatile int mouseX, mouseY; 
+	private volatile int mouseX;
+    private volatile int mouseY;
 
 	@Override
 	public void start() {

@@ -11,7 +11,8 @@ import java.util.function.Consumer;
  */
 public final class BiSubterm extends TermVector {
 
-    protected final Term x,y;
+    protected final Term x;
+    protected final Term y;
 
     /**
      * uses an array argument so that the input array can be used directly without needing to create a new one when it calls the superclass constructor

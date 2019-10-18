@@ -54,7 +54,10 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
     }
 
     private final QuadtreeIndex parent;
-    private QuadtreeIndex nw, ne, sw, se;
+    private QuadtreeIndex nw;
+    private QuadtreeIndex ne;
+    private QuadtreeIndex sw;
+    private QuadtreeIndex se;
 
     private Type type;
 

@@ -85,13 +85,8 @@ public class ISOLibrary extends PrologLib {
                         "atom", arg0);
             }
             String st = ((Struct) arg0).name();
-            List<Struct> result = new ArrayList<>();
             int bound = st.length();
-            for (int i = 0; i < bound; i++) {
-                Struct struct = new Struct(new String(new char[]{st.charAt(i)}));
-                result.add(struct);
-            }
-            Term[] tlist = result.toArray(new Term[0]);
+            Term[] tlist = IntStream.range(0, bound).mapToObj(i -> new Struct(new String(new char[]{st.charAt(i)}))).toArray(Term[]::new);
             Struct list = new Struct(tlist);
             /*
              * for (int i=0; i<st.length(); i++){ Struct ch=new Struct(new

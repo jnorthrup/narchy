@@ -22,12 +22,7 @@ public enum JsonTerm { ;
 
         if (j.isArray()) {
             int s = j.size();
-            List<Term> list = new ArrayList<>();
-            for (int i = 0; i < s; i++) {
-                Term the = the(j.get(i));
-                list.add(the);
-            }
-            Term[] subterms = list.toArray(new Term[0]);
+            Term[] subterms = IntStream.range(0, s).mapToObj(i -> the(j.get(i))).toArray(Term[]::new);
             return $.p(subterms);
 
         } else if (j.isValueNode()) {

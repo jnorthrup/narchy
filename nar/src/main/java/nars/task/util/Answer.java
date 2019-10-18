@@ -39,7 +39,8 @@ public final class Answer implements Timed, Predicate<Task> {
 
     public final RankedN<Task> tasks;
 
-    public long start = ETERNAL, end = ETERNAL;
+    public long start = ETERNAL;
+    public long end = ETERNAL;
 
     public final Predicate<Task> filter;
 

@@ -121,7 +121,8 @@ public abstract class Main extends Base {
 
     model_t r_worldmodel;
 
-    float gldepthmin, gldepthmax;
+    float gldepthmin;
+    float gldepthmax;
 
     final glconfig_t gl_config = new glconfig_t();
     final glstate_t gl_state = new glstate_t();
@@ -137,7 +138,8 @@ public abstract class Main extends Base {
     int r_visframecount; 
     int r_framecount; 
 
-    int c_brush_polys, c_alias_polys;
+    int c_brush_polys;
+    int c_alias_polys;
 
     final float[] v_blend = { 0, 0, 0, 0 }; 
 
@@ -159,7 +161,10 @@ public abstract class Main extends Base {
     
     refdef_t r_newrefdef = new refdef_t();
 
-    int r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
+    int r_viewcluster;
+    int r_viewcluster2;
+    int r_oldviewcluster;
+    int r_oldviewcluster2;
 
     cvar_t r_norefresh;
     cvar_t r_drawentities;
@@ -241,12 +246,7 @@ public abstract class Main extends Base {
             return false;
 
         cplane_t[] frustum = this.frustum;
-        for (int i = 0; i < 4; i++) {
-            if (Math3D.BoxOnPlaneSide(mins, maxs, frustum[i]) == 2) {
-                return true;
-            }
-        }
-        return false;
+        return IntStream.range(0, 4).anyMatch(i -> Math3D.BoxOnPlaneSide(mins, maxs, frustum[i]) == 2);
     }
 
     /**
@@ -604,13 +604,7 @@ public abstract class Main extends Base {
     static int SignbitsForPlane(cplane_t out) {
 
         float[] n = out.normal;
-        int bits = 0;
-        for (int j = 0; j < 3; j++) {
-            if (n[j] < 0) {
-                int i = (1 << j);
-                bits = bits | i;
-            }
-        }
+        int bits = IntStream.range(0, 3).filter(j -> n[j] < 0).map(j -> (1 << j)).reduce(0, (a, b) -> a | b);
         return bits;
     }
 

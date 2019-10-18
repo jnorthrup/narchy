@@ -166,8 +166,12 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     /**
      * precise time that the task and belief truth are sampled
      */
-    public transient long taskStart, taskEnd, beliefStart, beliefEnd; //TODO taskEnd, beliefEnd
-    public transient boolean overlapDouble, overlapSingle;
+    public transient long taskStart;
+    public transient long taskEnd;
+    public transient long beliefStart;
+    public transient long beliefEnd; //TODO taskEnd, beliefEnd
+    public transient boolean overlapDouble;
+    public transient boolean overlapSingle;
 
     @Deprecated public transient boolean single;
     @Deprecated public final MutableTruth truth = new MutableTruth();
@@ -178,13 +182,16 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
      */
     public transient long time = TIMELESS;
 
-    public transient Task _task, _belief;
+    public transient Task _task;
+    public transient Task _belief;
     public transient Term _beliefTerm;
 
     /** evi avg */
-    private double eviDouble, eviSingle;
+    private double eviDouble;
+    private double eviSingle;
 
-    private transient long[] stampDouble, stampSingle;
+    private transient long[] stampDouble;
+    private transient long[] stampSingle;
     private transient int taskUniqueAnonTermCount;
 
     /**
@@ -194,7 +201,8 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
      * whether to attempt before beginning,
      * or whether to continue deriving during the procedure.
      */
-    private transient float priSingle, priDouble;
+    private transient float priSingle;
+    private transient float priDouble;
     public Term _taskTerm;
     private final ImmutableMap<Atomic, Term> derivationFunctors;
 

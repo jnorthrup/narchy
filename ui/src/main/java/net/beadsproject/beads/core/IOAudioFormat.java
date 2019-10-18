@@ -16,9 +16,12 @@ package net.beadsproject.beads.core;
  */
 public class IOAudioFormat {
 
-    public final int inputs, outputs, bitDepth;
+    public final int inputs;
+    public final int outputs;
+    public final int bitDepth;
     public final float sampleRate;
-    public final boolean bigEndian, signed;
+    public final boolean bigEndian;
+    public final boolean signed;
 
 
     public IOAudioFormat(float sampleRate,

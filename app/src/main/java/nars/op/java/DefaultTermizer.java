@@ -151,11 +151,7 @@ public class DefaultTermizer implements Termizer {
 
 
         if (o instanceof Object[]) {
-            List<Term> arg = new ArrayList<>();
-            for (Object o1 : (Object[]) o) {
-                Term term = term(o1);
-                arg.add(term);
-            }
+            List<Term> arg = Arrays.stream((Object[]) o).map(this::term).collect(Collectors.toList());
             if (arg.isEmpty()) return EMPTY;
             return $.p(arg);
         }
@@ -247,12 +243,7 @@ public class DefaultTermizer implements Termizer {
 
     
     private static Term[] getArgVariables(String prefix, int numParams) {
-        List<nars.term.Variable> list = new ArrayList<>();
-        for (int i = 0; i < numParams; i++) {
-            nars.term.Variable variable = $.varDep(prefix + i);
-            list.add(variable);
-        }
-        Term[] x = list.toArray(new Term[0]);
+        Term[] x = IntStream.range(0, numParams).mapToObj(i -> $.varDep(prefix + i)).toArray(Term[]::new);
         return x;
     }
 

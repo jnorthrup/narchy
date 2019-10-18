@@ -191,7 +191,10 @@ public class ConceptGraph2D extends Graph2D<Term> {
         final Iterable<TaskLink> links;
 
         /** non-volatile cached is this helpful? */
-        private transient boolean _belief, _goal, _question, _quest;
+        private transient boolean _belief;
+        private transient boolean _goal;
+        private transient boolean _question;
+        private transient boolean _quest;
 
 
         private TasklinkVis(Iterable<TaskLink> links) {

@@ -953,13 +953,7 @@ public abstract class Surf extends Draw {
 		currententity = e;
 		gl_state.currenttextures[0] = gl_state.currenttextures[1] = -1;
 
-		boolean b = false;
-		for (int v : new int[]{0, 1, 2}) {
-			if (e.angles[v] != 0) {
-				b = true;
-				break;
-			}
-		}
+		boolean b = IntStream.of(0, 1, 2).anyMatch(v -> e.angles[v] != 0);
 		if (b)
 		{
 			rotated = true;

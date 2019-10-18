@@ -6,7 +6,8 @@ import jcog.signal.wave2d.RGBBufImgBitmap2D;
 import java.awt.image.BufferedImage;
 
 public abstract class VideoSource implements AutoCloseable {
-    public int width, height;
+    public int width;
+    public int height;
     public final TensorTopic<RGBBufImgBitmap2D> tensor = new TensorTopic();
     //@Deprecated public final Topic<WebcamEvent> eventChange = new ListTopic();
     public volatile BufferedImage image;

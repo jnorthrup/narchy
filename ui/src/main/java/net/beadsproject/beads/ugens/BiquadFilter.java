@@ -154,8 +154,12 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     private static final float SQRT2 = (float) Math.sqrt(2);
 
     
-    protected double w, ampResponse, phaseResponse, phaseDelay;
-    protected double frReal, frImag;
+    protected double w;
+    protected double ampResponse;
+    protected double phaseResponse;
+    protected double phaseDelay;
+    protected double frReal;
+    protected double frImag;
 
     
     private final float[] bo1m;

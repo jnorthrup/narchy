@@ -5,7 +5,8 @@ public class TaskJson {
     final String term;
     final String truth; //TODO: final Truth truth;
     final char punc;
-    final long start, end;
+    final long start;
+    final long end;
     float pri;
 
     public TaskJson(String term, String truth, char punc, long start, long end, float pri) {

@@ -175,18 +175,10 @@ public class CodiCA extends CA {
                             }
 
                             int InputSum =
-                                    0;
-                            for (int i21 : new int[]{0, 1, 2, 3, 4, 5}) {
-                                int i3 = caio[i21];
-                                InputSum += i3;
-                            }
+                                    IntStream.of(0, 1, 2, 3, 4, 5).map(i21 -> caio[i21]).sum();
                             if (InputSum == 0) break;
 
-                            int result = 0;
-                            for (int i11 : new int[]{0, 1, 2, 3, 4, 5}) {
-                                int i2 = (caio[i11] & AXON_SIG);
-                                result += i2;
-                            }
+                            int result = IntStream.of(0, 1, 2, 3, 4, 5).map(i11 -> (caio[i11] & AXON_SIG)).sum();
                             InputSum =
                                     result;
                             if (InputSum == AXON_SIG) {
@@ -205,11 +197,7 @@ public class CodiCA extends CA {
                                 break;
                             }
 
-                            int sum = 0;
-                            for (int v : new int[]{0, 1, 2, 3, 4, 5}) {
-                                int i1 = (caio[v] & DEND_SIG);
-                                sum += i1;
-                            }
+                            int sum = IntStream.of(0, 1, 2, 3, 4, 5).map(v -> (caio[v] & DEND_SIG)).sum();
                             InputSum =
                                     sum;
                             if (InputSum == DEND_SIG) {
@@ -289,11 +277,7 @@ public class CodiCA extends CA {
                             break;
                         case DEND: {
                             int InputSum =
-                                    0;
-                            for (int i : new int[]{0, 1, 2, 3, 4, 5}) {
-                                int i1 = caio[i];
-                                InputSum += i1;
-                            }
+                                    IntStream.of(0, 1, 2, 3, 4, 5).map(i -> caio[i]).sum();
                             if (InputSum > 2) InputSum = 2;
                             Arrays.fill(caio, 0);
 

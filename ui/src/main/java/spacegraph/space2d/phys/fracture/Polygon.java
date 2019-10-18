@@ -238,13 +238,8 @@ public class Polygon implements Iterable<v2>, Cloneable {
         }
 
 
-        List<v2> result = new ArrayList<>();
         int bound = vertexCount;
-        for (int i1 = 0; i1 < bound; i1++) {
-            v2 v2 = get(vertexCount - i1 - 1);
-            result.add(v2);
-        }
-        v2[] reverseArray = result.toArray(new v2[0]);
+        v2[] reverseArray = IntStream.range(0, bound).mapToObj(i1 -> get(vertexCount - i1 - 1)).toArray(v2[]::new);
 
         ArrayList<int[]> triangles = Triangulation.triangulate(reverseArray, vertexCount);
 

@@ -228,12 +228,9 @@ public class SPTree {
 	private boolean isCorrect()
 	{
         int bound = size;
-        for (int n = 0; n < bound; n++) {
-            double[] point = MatrixOps.extractRowFromFlatMatrix(data, index[n], dimension);
-            if (!boundary.containsPoint(point)) {
-                return false;
-            }
-        }
+		if (IntStream.range(0, bound).mapToObj(n -> MatrixOps.extractRowFromFlatMatrix(data, index[n], dimension)).anyMatch(point -> !boundary.containsPoint(point))) {
+			return false;
+		}
         if(!is_leaf) {
 			boolean correct = true;
 			for(int i = 0; i < no_children; i++) correct = correct && children[i].isCorrect();

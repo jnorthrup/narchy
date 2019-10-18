@@ -291,14 +291,9 @@ public class SV_ENTS {
             MSG.WriteByte(msg, ps.rdflags);
 
 
-        int statbits = 0;
+        int statbits;
         int bound = Defines.MAX_STATS;
-        for (int i1 = 0; i1 < bound; i1++) {
-            if (ps.stats[i1] != ops.stats[i1]) {
-                int i2 = 1 << i1;
-                statbits = statbits | i2;
-            }
-        }
+        statbits = IntStream.range(0, bound).filter(i1 -> ps.stats[i1] != ops.stats[i1]).map(i1 -> 1 << i1).reduce(0, (a, b) -> a | b);
         MSG.WriteLong(msg, statbits);
         for (int i = 0; i < Defines.MAX_STATS; i++)
             if ((statbits & (1 << i)) != 0)

@@ -38,12 +38,7 @@ public class DTMatrix<E> {
 	 */
 	protected double[][] allocateMatrix(int size)
 	{
-		List<double[]> list = new ArrayList<>();
-		for (int i = 0; i < size; i++) {
-			double[] doubles = new double[i + 1];
-			list.add(doubles);
-		}
-		double[][] tmp = list.toArray(new double[0][]);
+		double[][] tmp = IntStream.range(0, size).mapToObj(i -> new double[i + 1]).toArray(double[][]::new);
         return tmp;
 	}
 	

@@ -416,11 +416,11 @@ public class Formula implements Comparable, Serializable {
                     ch = input.charAt(i);
                     if (!insideQuote) {
                         if (ch == '(') {
-                            sb.append(ch);
+                            sb.append('(');
                             level++;
                         }
                         else if (ch == ')') {
-                            sb.append(ch);
+                            sb.append(')');
                             level--;
                             if (level <= 0)
                                 break;
@@ -1413,11 +1413,7 @@ public class Formula implements Comparable, Serializable {
         if (args == null || args.isEmpty()) {
             return formula;
         }
-        List<String> orderedArgs = new ArrayList<>();
-        for (String s : args) {
-            String normalizeParameterOrder = normalizeParameterOrder(s, kb, varPlaceholders);
-            orderedArgs.add(normalizeParameterOrder);
-        }
+        List<String> orderedArgs = args.stream().map(s -> normalizeParameterOrder(s, kb, varPlaceholders)).collect(Collectors.toList());
 
 
         String head = f.car();
@@ -1930,11 +1926,7 @@ public class Formula implements Comparable, Serializable {
 
         for (String r : relations) {
             int atlen = (MAX_PREDICATE_ARITY + 1);
-            var argtypes = new ArrayList<>();
-            for (int i = 0; i < atlen; i++) {
-                String argType = kb.getArgType(r, i);
-                argtypes.add(argType);
-            }
+            var argtypes = IntStream.range(0, atlen).mapToObj(i -> kb.getArgType(r, i)).collect(Collectors.toCollection(ArrayList::new));
             argtypemap.put(r, argtypes);
         }
         return argtypemap;
@@ -2259,12 +2251,7 @@ public class Formula implements Comparable, Serializable {
         if (!StringUtil.emptyString(term) && !Formula.listP(term) &&
                 Character.isJavaIdentifierStart(term.charAt(0))) {
             int bound = term.length();
-            for (int i = 0; i < bound; i++) {
-                if (!Character.isJavaIdentifierPart(term.charAt(i))) {
-                    return false;
-                }
-            }
-            return true;
+            return IntStream.range(0, bound).allMatch(i -> Character.isJavaIdentifierPart(term.charAt(i)));
         }
         else
             return false;

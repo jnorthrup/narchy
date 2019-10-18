@@ -257,7 +257,9 @@ public enum LZ4 { ;
     }
 
     private static final class Match {
-        int start, ref, len;
+        int start;
+        int ref;
+        int len;
 
         void fix(int correction) {
             start += correction;

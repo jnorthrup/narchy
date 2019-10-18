@@ -468,14 +468,9 @@ public class Key extends Globals {
 			return str.charAt(0);
 
         int bound = keynames.length;
-        for (int i = 0; i < bound; i++) {
-            if (str.equalsIgnoreCase(keynames[i])) {
-                return i;
-            }
-        }
-        return -1;
+		return IntStream.range(0, bound).filter(i -> str.equalsIgnoreCase(keynames[i])).findFirst().orElse(-1);
 
-    }
+	}
 
 	public static void Message(int key) {
 

@@ -55,7 +55,8 @@ public class SignalView extends Gridding {
                 }
             };
 
-            private volatile long selectStart = ETERNAL, selectEnd = ETERNAL;
+            private volatile long selectStart = ETERNAL;
+            private volatile long selectEnd = ETERNAL;
 
 
 

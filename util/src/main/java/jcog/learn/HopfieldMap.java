@@ -66,12 +66,8 @@ public class HopfieldMap<X> {
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
-        for (X xx : x) {
-            String s = Texts.n4(in.floatValueOf(xx)) + ',';
-            result.append(s);
-        }
-        String sb = result.toString();
+        String result = Arrays.stream(x).map(xx -> Texts.n4(in.floatValueOf(xx)) + ',').collect(Collectors.joining());
+        String sb = result;
         return sb;
     }
 
@@ -145,12 +141,7 @@ public class HopfieldMap<X> {
 
     public static void main(String[] args) {
         int n = 8;
-        List<MutableFloat> list = new ArrayList<>();
-        for (int i1 = 0; i1 < n; i1++) {
-            MutableFloat mutableFloat = new MutableFloat();
-            list.add(mutableFloat);
-        }
-        NumberX[] m = list.toArray(new NumberX[0]);
+        NumberX[] m = IntStream.range(0, n).mapToObj(i1 -> new MutableFloat()).toArray(NumberX[]::new);
 
         HopfieldMap<NumberX> h = new HopfieldMap<>(NumberX::floatValue,
                 (v, x) -> x.set(v), m);

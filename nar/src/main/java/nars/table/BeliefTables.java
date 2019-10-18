@@ -19,7 +19,9 @@ import java.util.stream.Stream;
  */
 public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable {
 
-    static final int ORDERED = 0, SHUFFLE_FIRST_COME_FIRST_SERVE = 1, SHUFFLE_ROUND_ROBIN = 2;
+    static final int ORDERED = 0;
+    static final int SHUFFLE_FIRST_COME_FIRST_SERVE = 1;
+    static final int SHUFFLE_ROUND_ROBIN = 2;
 
     protected int matchMode = 2;
 
