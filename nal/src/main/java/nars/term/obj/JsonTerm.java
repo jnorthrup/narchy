@@ -6,8 +6,6 @@ import nars.$;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 import static nars.Op.SETe;

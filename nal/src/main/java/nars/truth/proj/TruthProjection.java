@@ -228,12 +228,7 @@ public abstract class TruthProjection extends TaskList {
 
 	public int active() {
 		int s = this.size;
-		if (s == 0)
-			return 0;
-		double[] evi = this.evi;
-		long count = IntStream.range(0, s).filter(i -> sane(evi[i])).count();
-		int y = (int) count;
-        return y;
+		return s == 0 ? 0 : (int) IntStream.range(0, s).filter(i -> sane(this.evi[i])).count();
 	}
 
 	private int update() {
@@ -243,7 +238,7 @@ public abstract class TruthProjection extends TaskList {
 
 		double[] evi = this.evi;
 		if (evi == null || evi.length < s)
-			evi = this.evi = new double[s];
+			this.evi = new double[s];
 
 		long result = IntStream.range(0, s).filter(this::update).count();
 		int count = (int) result;
@@ -596,9 +591,7 @@ public abstract class TruthProjection extends TaskList {
 
 
 	private double eviSum(@Nullable IntPredicate each) {
-		int n = size;
-		double e = IntStream.range(0, n).filter(i -> each == null || each.test(i)).mapToDouble(i -> evi[i]).filter(TruthProjection::sane).sum();
-		return e;
+		return IntStream.range(0, size).filter(i -> each == null || each.test(i)).mapToDouble(i -> evi[i]).filter(TruthProjection::sane).sum();
 	}
 
 	private boolean commit1() {

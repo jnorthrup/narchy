@@ -333,7 +333,7 @@ public enum $ { ;
     }
 
     public static <X> Term[] terms(X[] map, Function<X, Term> toTerm) {
-        return Arrays.stream(map).map(toTerm::apply).toArray(Term[]::new);
+        return Arrays.stream(map).map(toTerm).toArray(Term[]::new);
     }
 
     private static Term[] array(Collection<? extends Term> t) {

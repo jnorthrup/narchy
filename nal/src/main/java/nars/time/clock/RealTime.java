@@ -208,7 +208,7 @@ public abstract class RealTime extends Time {
 
         @Override
         protected long realtime() {
-            return start + (System.nanoTime() - startNS) / (1 * 1_000_000);
+            return start + (System.nanoTime() - startNS) / (1_000_000);
         }
 
     }

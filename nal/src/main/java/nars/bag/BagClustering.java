@@ -140,8 +140,7 @@ public class BagClustering<X> {
                 L llc = ll[c % cc];
                 llc.add(x.id); //round robin populate the buffer
                 if (llc.size() == minPerCentroid) {
-                    if (++centroids[0] == maxCentroids)
-                        return false;
+                    return ++centroids[0] != maxCentroids;
                 }
             }
             return true;

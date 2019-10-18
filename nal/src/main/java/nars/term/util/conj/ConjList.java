@@ -252,8 +252,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         int s = size;
         long[] when = this.when;
         long count = IntStream.range(0, s).filter(i -> when[i] == w).count();
-        int c = (int) count;
-        return c;
+        return (int) count;
     }
 
     @Override
@@ -583,12 +582,11 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         int xn = x.size;
         long[] ww = x.when;
         Term[] ii = x.items;
-        Boolean acc = false;
+        boolean removed = false;
         for (int i = 0; i < xn; i++) {
             Boolean remove = remove(ww[i] + f, ii[i]);
-            acc = acc || remove;
+            removed = removed || remove;
         }
-        boolean removed = acc;
         return removed;
     }
 

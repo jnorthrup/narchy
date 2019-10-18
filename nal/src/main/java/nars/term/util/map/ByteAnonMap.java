@@ -50,9 +50,8 @@ public class ByteAnonMap {
 
     /** put: returns in range 1..Byte.MAX_VALUE (does not issue 0) */
     public final byte intern(Term x) {
-        byte b = termToId.getIfAbsentPutWithKey(x, idToTerm::addAndGetSizeAsByte);
+        return termToId.getIfAbsentPutWithKey(x, idToTerm::addAndGetSizeAsByte);
         //assert (b >= 0);
-        return b;
     }
 
     /** returns Byte.MIN_VALUE if missing */

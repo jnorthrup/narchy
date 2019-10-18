@@ -971,8 +971,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 					each.test(nu instanceof Absolute ? nu : event(nu.id, start, start + range, false)));
 			} else {
 
-				if (validPotentialSolution(nextKnown) && !each.test(event(nextKnown, start, start + range, false)))
-					return false;
+				return !validPotentialSolution(nextKnown) || each.test(event(nextKnown, start, start + range, false));
 
 			}
 		}
@@ -1334,7 +1333,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 			int ss = s.size();
 			if (ss == 1) {
 				Event z = s.iterator().next();
-				if (!tryRootMatch(x, z, root, each)) return false;
+				return tryRootMatch(x, z, root, each);
 			} else {
 
 				//w/ fair shuffle

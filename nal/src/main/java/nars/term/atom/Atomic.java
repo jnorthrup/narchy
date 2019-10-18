@@ -165,11 +165,8 @@ public abstract class Atomic implements Term {
         if (l <= 0)
             throw new RuntimeException("attempted construction of zero-length Atomic id");
 
-        if (l == 1) {
-            char c = id.charAt(0);
-            Atomic ac = the(c);
-            /*if (ac!=null)*/ return ac;
-        }
+        if (l == 1)
+            return the(id.charAt(0));
 
         switch (id) {
             case "true":

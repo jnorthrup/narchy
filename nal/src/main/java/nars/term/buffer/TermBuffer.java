@@ -333,8 +333,7 @@ public class TermBuffer {
     private static int dt(byte[] ii, int[] range) {
         int p = range[0];
         range[0] += 4;
-        int dt = Ints.fromBytes(ii[p++], ii[p++], ii[p++], ii[p/*++*/]);
-        return dt;
+        return Ints.fromBytes(ii[p++], ii[p++], ii[p++], ii[p/*++*/]);
     }
 
     /** constant propagate matching spans further ahead in the construction process */

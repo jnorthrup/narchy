@@ -539,10 +539,7 @@ public class ConjTree implements ConjBuilder {
         if (terminal != null)
             throw new UnsupportedOperationException();
 
-        boolean removed = false;
-        if (term instanceof Neg) removed = negRemove(term);
-        else removed = posRemove(term);
-        return removed;
+        return term instanceof Neg ? negRemove(term) : posRemove(term);
     }
 
     @Override

@@ -16,7 +16,6 @@ import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static nars.term.atom.Bool.Null;
 
@@ -123,14 +122,12 @@ public final class CommonVariable extends UnnormalizedVariable {
     }
 
     static String key(Op o, IntrinSubterms vars) {
-        int n = vars.subs();
         StringJoiner joiner = new StringJoiner("", String.valueOf(o.ch), "");
-        for (int i = 0; i < n; i++) {
-            String s = String.valueOf(vars.sub(i));
-            joiner.add(s);
-        }
-        String sb = joiner.toString();
-        return sb;
+        int n = vars.subs();
+        for (int i = 0; i < n; i++)
+            joiner.add(String.valueOf(vars.sub(i)));
+
+        return joiner.toString();
     }
 
     public static boolean unify(Variable X, Variable Y, Unify u) {

@@ -151,14 +151,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 
 
 		if (creation() == ETERNAL) {
-			long now = n.time();
-//            long oc = start();
-//            if (oc != ETERNAL)
-//                oc += now;
-
-			this.creation = now;
-//            setStart(oc);
-//            setEnd(oc);
+			this.creation = n.time();
 		}
 
 

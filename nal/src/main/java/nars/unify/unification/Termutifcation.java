@@ -1,6 +1,5 @@
 package nars.unify.unification;
 
-import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
@@ -12,7 +11,6 @@ import nars.unify.mutate.Termutator;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;

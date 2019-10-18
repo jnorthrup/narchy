@@ -10,10 +10,8 @@ import nars.term.anon.Intrin;
 import nars.term.anon.IntrinAtomic;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
@@ -78,8 +76,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
 
     /** since IntrinSubterms is flat, the structureSurface is equal to the structure if no NEG present */
     @Override public final int structureSurface() {
-        int s = structure;
-        if ((s & NEG.bit) == 0)
+        if ((structure & NEG.bit) == 0)
             return structure;
         else {
             int x = 0;
@@ -365,9 +362,8 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
     public boolean equals(Object obj) {
         if (this == obj) return true;
 
-        if (obj instanceof IntrinSubterms) {
+        if (obj instanceof IntrinSubterms)
             return Arrays.equals(subterms, ((IntrinSubterms) obj).subterms);
-        }
 
         if (obj instanceof Subterms) {
 
@@ -376,9 +372,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
             //if (this.hash != ss.hashCodeSubterms()) return false;
 
             int s = subterms.length;
-            if (ss.subs() != s)
-                return false;
-            return IntStream.range(0, s).allMatch(i -> subEquals(i, ss.sub(i)));
+            return ss.subs() == s && IntStream.range(0, s).allMatch(i -> subEquals(i, ss.sub(i)));
 
         }
         return false;

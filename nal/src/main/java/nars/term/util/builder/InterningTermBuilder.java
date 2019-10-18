@@ -102,9 +102,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
             } else if (o.statement) {
                 c = statements;
             } else {
-                int s = cacheSizePerOp;
                 c = newOpCache(o.str,
-                        x -> newCompound(ops[x.op], x.dt, x.subs(), x.key), s);
+                        x -> newCompound(ops[x.op], x.dt, x.subs(), x.key), cacheSizePerOp);
             }
             terms[i] = c;
         }

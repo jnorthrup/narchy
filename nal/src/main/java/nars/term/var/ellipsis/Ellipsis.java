@@ -9,8 +9,6 @@ import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.stream.IntStream;
-
 import static nars.Op.VAR_PATTERN;
 
 public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsislike {
@@ -51,7 +49,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
                 return (Ellipsislike) xi;
             }
         }
-        return (Ellipsislike) null;
+        return null;
     }
 
 

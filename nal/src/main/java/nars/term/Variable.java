@@ -59,8 +59,7 @@ public interface Variable extends /* Atomic - but all implementations are subcla
 
         if (y instanceof Variable) {
             Op yop = y.op();
-            if (u.var(yop) && Unify.canPut(yop, x) && !x.containsRecursively(y) && u.putXY((Variable) y, x))
-                return true;
+            return u.var(yop) && Unify.canPut(yop, x) && !x.containsRecursively(y) && u.putXY((Variable) y, x);
         }
 
         return false;

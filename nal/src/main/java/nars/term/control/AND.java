@@ -217,7 +217,7 @@ public abstract class AND<X> extends AbstractPred<X> {
     }
     public static @Nullable <X> PREDICATE<X>  first(AND<X>  b, Predicate<PREDICATE<X> > test) {
         int s = b.subs();
-        return IntStream.range(0, s).mapToObj(i -> (PREDICATE<X>) b.sub(i)).filter(test::test).findFirst().orElse(null);
+        return IntStream.range(0, s).mapToObj(i -> (PREDICATE<X>) b.sub(i)).filter(test).findFirst().orElse(null);
     }
 
     /** recursive */

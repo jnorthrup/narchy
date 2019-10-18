@@ -266,15 +266,8 @@ public interface Stamp {
     }
 
     static MetalLongSet toMutableSet(long[] ts) {
-        MetalLongSet s = new MetalLongSet(ts);
-        //s.trim();
-        //s.compact();
-        return s;
+        return new MetalLongSet(ts);
     }
-
-//    static ImmutableLongSet toImmutableSet(Stamp task) {
-//        return LongSets.immutable.of(task.stamp());
-//    }
 
     /** unsampled, may exceed expected capacity */
     static MetalLongSet toMutableSet(int expectedCap, IntFunction<long[]> t, int n) {
@@ -701,9 +694,7 @@ public interface Stamp {
         return Util.unitize(((float) common) / denom);
     }
     private static int overlapCount(LongSet aa,  long[] b) {
-        long count = Arrays.stream(b).filter(aa::contains).count();
-        int common = (int) count;
-        return common;
+        return (int) Arrays.stream(b).filter(aa::contains).count();
     }
 
 }

@@ -14,12 +14,8 @@ public class DirectTermBuffer extends TermBuffer {
     @Override
     protected Term newCompound(Op o, int dt, Term[] subterms) {
 
-        Term y = HeapTermBuilder.the.
+        return HeapTermBuilder.the.
                 //newCompound(o, dt, subterms);
                 newCompoundN(o, dt, subterms,null); //more direct
-
-        //assert(y.op()==o);
-
-        return y;
     }
 }

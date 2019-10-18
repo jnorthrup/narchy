@@ -171,10 +171,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     @Override
     default int structure() {
         //return intifyShallow((s, x) -> s | x.structure(), 0);
-        int n = subs();
-        int acc = IntStream.range(0, n).map(i -> sub(i).structure()).reduce(0, (a, b) -> a | b);
-        int s = acc;
-        return s;
+        return IntStream.range(0, subs()).map(i -> sub(i).structure()).reduce(0, (a, b) -> a | b);
     }
 
     static int hash(Term[] term, int n) {
@@ -655,10 +652,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     default int count(Predicate<Term> match) {
         //return intifyShallow((c, sub) -> match.test(sub) ? c + 1 : c, 0);
-        int n = subs();
-        long count = IntStream.range(0, n).filter(i -> match.test(sub(i))).count();
-        int c = (int) count;
-        return c;
+        return (int) IntStream.range(0, subs()).filter(i -> match.test(sub(i))).count();
     }
     default boolean countEquals(Predicate<Term> match, int n) {
         int s = subs();
@@ -1038,8 +1032,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (noTemporal)
                 return xx.equals(yy);
             else {
-                if (((XS & CONJ.bit) == 0 && ((YS & CONJ.bit) == 0)) && (XS != YS || xx.volume() != yy.volume()))
-                    return false;
+                return ((XS & CONJ.bit) != 0 || ((YS & CONJ.bit) != 0)) || (XS == YS && xx.volume() == yy.volume());
             }
 
         }

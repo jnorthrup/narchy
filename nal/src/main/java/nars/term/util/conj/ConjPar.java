@@ -226,7 +226,7 @@ public enum ConjPar {
     public static @Nullable Term disjunctiveFactor(Term[] xx, int dt, TermBuilder B) {
         @Deprecated MetalBitSet cond = null;
         int n = xx.length;
-        for (int i = 0, xxLength = n; i < xxLength; i++) {
+        for (int i = 0; i < n; i++) {
             Term x = xx[i];
             if (x instanceof Neg) {
                 Term xu = x.unneg();

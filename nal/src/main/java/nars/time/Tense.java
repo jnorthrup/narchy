@@ -179,8 +179,8 @@ public enum Tense {
     public static long[] union(Iterator<? extends TaskRegion> t) {
         long start = MAX_VALUE, end = Long.MIN_VALUE;
 
-        for (Iterator<? extends TaskRegion> it = t; it.hasNext(); ) {
-            TaskRegion x = it.next();
+        while (t.hasNext()) {
+            TaskRegion x = t.next();
             //if (x == null) continue;
             long xs = x.start();
             if (xs != ETERNAL) {

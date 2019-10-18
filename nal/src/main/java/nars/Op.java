@@ -502,9 +502,15 @@ public enum Op {
         return ((existing | possiblyIncluded) == existing);
     }
 
+    public static int or(/*@NotNull*/ Op a, Op b) {
+        return a.bit | b.bit;
+    }
+    public static int or(/*@NotNull*/ Op a, Op b, Op c) {
+        return a.bit | b.bit | c.bit;
+    }
+
     public static int or(/*@NotNull*/ Op... o) {
-        int bits = Arrays.stream(o).mapToInt(n -> n.bit).reduce(0, (a, b) -> a | b);
-        return bits;
+        return Arrays.stream(o).mapToInt(n -> n.bit).reduce(0, (a, b) -> a | b);
     }
 
     public static @Nullable Op the(String s) {
@@ -760,8 +766,8 @@ public enum Op {
     }
     private static int _conceptualizable;
     static {
-        int c = Arrays.stream(Op.ops).filter(x -> x.conceptualizable).mapToInt(x -> x.bit).reduce(0, (a, b) -> a | b);
-        Op._conceptualizable = c;
+        Op._conceptualizable = Arrays.stream(Op.ops).filter(x -> x.conceptualizable)
+            .mapToInt(x -> x.bit).reduce(0, (a, b) -> a | b);
     }
     public static final int Conceptualizable = _conceptualizable;
 
