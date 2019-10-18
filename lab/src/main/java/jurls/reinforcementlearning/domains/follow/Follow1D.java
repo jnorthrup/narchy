@@ -35,7 +35,7 @@ public class Follow1D implements RLEnvironment {
 
     static final int historyPoints = 1;
     
-    final int historyInterval = history / (historyPoints+1); 
+    static final int historyInterval = history / (historyPoints+1);
     
     @Override
     public int numActions() {

@@ -39,7 +39,7 @@ public class CliffWalking extends AbstractAgentTest {
 
     int cycles = 2000;
 
-    final int gx = shapeX-1, gy = shapeY-1;
+    static final int gx = shapeX-1, gy = shapeY-1;
     static final int sx = shapeX-1, sy = 0;
 
     int x = sx, y = sy;

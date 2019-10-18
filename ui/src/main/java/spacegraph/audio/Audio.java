@@ -42,7 +42,7 @@ public class Audio implements Runnable {
     private static final int rate = 44100;
 
     /** TODO make dynamically reconfigurable */
-    private final int bufferSize = rate /
+    private static final int bufferSize = rate /
             20 /* = 50ms */
             //10 /* = 100ms */
     ;
