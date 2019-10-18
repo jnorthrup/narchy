@@ -744,10 +744,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 if (//(/* flat: */ x instanceof IntrinSubterms && y instanceof IntrinSubterms) ||
                     u.random.nextFloat() < NAL.SUBTERM_UNIFY_ORDER_RANDOM_PROBABILITY)
                     return unifyRandom(x, y, n, u);
-                if (n == 2)
-                    return unifyLinear2_complexityHeuristic(x, y, u);
-                else
-                    return unifyLinearN_TwoPhase(x, y, n, u);
+				return n == 2 ? unifyLinear2_complexityHeuristic(x, y, u) : unifyLinearN_TwoPhase(x, y, n, u);
         }
     }
 
@@ -767,10 +764,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             int v1 = u.vars(x1) + u.vars(y1);
             boolean forward;
-            if (v1 == v0) {
-                forward = (x0.volume() + y0.volume() <= x1.volume() + y1.volume());
-            } else
-                forward = (v0 < v1);
+			forward = v1 == v0 ? x0.volume() + y0.volume() <= x1.volume() + y1.volume() : v0 < v1;
             return forward ?
                     x0.unify(y0, u) && x1.unify(y1, u) :
                     x1.unify(y1, u) && x0.unify(y0, u);
@@ -936,39 +930,36 @@ public interface Subterms extends Termlike, Iterable<Term> {
         if (xxs == 0)
             return +1; //all eliminated
 
-        if (possiblyUnifiable(xx, yy, u.varBits)) {
-//            if (xxs == 1)
-//                return 0; //one subterm remaining, direct match will be tested by callee
-//            Set<Term> xConst = null;
-//            for (int i = 0; i < xxs; i++) {
-//                Term xxx = xx.get(i);
-//                if (u.constant(xxx)) {
-//                    if (xConst == null) xConst = new UnifiedSet(xxs-i);
-//                    xConst.addAt(xxx);
-//                }
-//            }
-//            if (xConst!=null) {
-//                Set<Term> yConst = null;
-//                for (int i = 0; i < xxs; i++) {
-//                    Term yyy = yy.get(i);
-//                    if (u.constant(yyy)) {
-//                        if (yConst == null) yConst = new UnifiedSet(xxs-i);
-//                        yConst.addAt(yyy);
-//                    }
-//                }
-//                if (yConst!=null) {
-//                    if (xConst.size() == yConst.size()) {
-//                        if (!xConst.equals(yConst))
-//                            return -1; //constant mismatch
-//                    } else {
-//                        //can this be tested
-//                    }
-//                }
-//            }
-
-            return 0;
-        } else
-            return -1; //first layer has no non-variable commonality, no way to unify
+		//            if (xxs == 1)
+		//                return 0; //one subterm remaining, direct match will be tested by callee
+		//            Set<Term> xConst = null;
+		//            for (int i = 0; i < xxs; i++) {
+		//                Term xxx = xx.get(i);
+		//                if (u.constant(xxx)) {
+		//                    if (xConst == null) xConst = new UnifiedSet(xxs-i);
+		//                    xConst.addAt(xxx);
+		//                }
+		//            }
+		//            if (xConst!=null) {
+		//                Set<Term> yConst = null;
+		//                for (int i = 0; i < xxs; i++) {
+		//                    Term yyy = yy.get(i);
+		//                    if (u.constant(yyy)) {
+		//                        if (yConst == null) yConst = new UnifiedSet(xxs-i);
+		//                        yConst.addAt(yyy);
+		//                    }
+		//                }
+		//                if (yConst!=null) {
+		//                    if (xConst.size() == yConst.size()) {
+		//                        if (!xConst.equals(yConst))
+		//                            return -1; //constant mismatch
+		//                    } else {
+		//                        //can this be tested
+		//                    }
+		//                }
+		//            }
+		//first layer has no non-variable commonality, no way to unify
+		return possiblyUnifiable(xx, yy, u.varBits) ? 0 : -1;
 
     }
 
@@ -1034,11 +1025,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         if (XSc == XS && YSc == YS) {
             boolean noTemporal = (XS & Op.Temporal) == 0 && ((YS & Op.Temporal) == 0);
-            if (noTemporal)
-                return xx.equals(yy);
-            else {
-                return ((XS & CONJ.bit) != 0 || ((YS & CONJ.bit) != 0)) || (XS == YS && xx.volume() == yy.volume());
-            }
+			return noTemporal ? xx.equals(yy) : ((XS & CONJ.bit) != 0 || ((YS & CONJ.bit) != 0)) || (XS == YS && xx.volume() == yy.volume());
 
         }
 
@@ -1482,13 +1469,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default boolean containsNeg(Term x) {
-        if (x instanceof Neg)
-            return contains(x.unneg());
-        else {
-            return hasAny(NEG) && !impossibleSubTerm(x.structure()|NEG.bit, x.volume()+1)
-                    &&
-                    ORwith((z,xx) -> z instanceof Neg && xx.equals(z.unneg()), x);
-        }
+		return x instanceof Neg ? contains(x.unneg()) : hasAny(NEG) && !impossibleSubTerm(x.structure() | NEG.bit, x.volume() + 1)
+			&&
+			ORwith((z, xx) -> z instanceof Neg && xx.equals(z.unneg()), x);
     }
 
 }

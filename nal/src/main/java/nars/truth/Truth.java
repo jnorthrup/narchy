@@ -205,15 +205,11 @@ public interface Truth extends Truthed {
     }
 
     static double confSafe(double c, float epsilon) {
-        if (epsilon <= Double.MIN_NORMAL)
-            return c;
-        else {
-            return Util.clampSafe(
+		return epsilon <= Double.MIN_NORMAL ? c : Util.clampSafe(
 
-                    Util.roundSafe(c, epsilon),
+			Util.roundSafe(c, epsilon),
 
-                    0, 1.0 - epsilon);
-        }
+			0, 1.0 - epsilon);
     }
 
     static @Nullable PreciseTruth theDithered(float f, double e, NAL nar) {
@@ -295,11 +291,8 @@ public interface Truth extends Truthed {
         float ff = freqSafe(f, freqRes);
         float c = conf();
         double cc = confSafe(c, confRes);
-        if (Util.equals(f,ff,NAL.truth.TRUTH_EPSILON) && Util.equals(c,cc,NAL.truth.TRUTH_EPSILON))
-            return this;
-        else
-            //return PreciseTruth.byConf(ff, cc);
-            return PreciseTruth.byConfEvi(ff, cc, evi() /* include extra precision */);
+		//return PreciseTruth.byConf(ff, cc);
+		return Util.equals(f, ff, NAL.truth.TRUTH_EPSILON) && Util.equals(c, cc, NAL.truth.TRUTH_EPSILON) ? this : PreciseTruth.byConfEvi(ff, cc, evi() /* include extra precision */);
     }
 
     static Truth dither(Truth in, double eviMin, boolean negate, NAL nar) {
@@ -317,10 +310,7 @@ public interface Truth extends Truthed {
         float fAfter = freq(negate ? 1-fBefore : fBefore, freqRes);
         double cBefore = w2cSafeDouble(e);
         double cAfter = conf(cBefore, confRes);
-        if ((!(in instanceof MutableTruth)) && (Util.equals(fBefore,fAfter, NAL.truth.TRUTH_EPSILON) && Util.equals(cBefore,cAfter, NAL.truth.EVI_MIN)))
-            return in;
-        else
-            return PreciseTruth.byConfEvi(fAfter, cAfter, e /* extra precision */);
+		return (!(in instanceof MutableTruth)) && (Util.equals(fBefore, fAfter, NAL.truth.TRUTH_EPSILON) && Util.equals(cBefore, cAfter, NAL.truth.EVI_MIN)) ? in : PreciseTruth.byConfEvi(fAfter, cAfter, e /* extra precision */);
     }
 
 
@@ -333,11 +323,7 @@ public interface Truth extends Truthed {
             return null;
 
         float f = freq();
-        if (n!=null) {
-            return Truth.theDithered(f, e, n);
-        } else {
-            return PreciseTruth.byEvi(f, e);
-        }
+		return n != null ? Truth.theDithered(f, e, n) : PreciseTruth.byEvi(f, e);
     }
 
 

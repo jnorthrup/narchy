@@ -59,10 +59,8 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
             if (quest!=0) s.add(idTerm(Task.QuestAtom, quest));
             if (command!=0) s.add(idTerm(Task.CommandAtom, command));
             Term tt;
-            if (s.size() == 1)
-                tt = s.iterator().next(); //HACK
-            else
-                tt = SETe.the(s);
+            //HACK
+            tt = s.size() == 1 ? s.iterator().next() : SETe.the(s);
 
             return $.func(PUNC, tt);
         }

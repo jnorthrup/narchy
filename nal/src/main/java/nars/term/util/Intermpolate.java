@@ -237,13 +237,10 @@ public enum Intermpolate {;
         int ab = Util.lerpInt(aProp, bdt, adt);
         int delta = Math.max(Math.abs(ab - adt), Math.abs(ab - bdt));
         float ratio = ((float) delta) / range;
-        if (ratio < 1) { //nar.intermpolationRangeLimit.floatValue()) {
-            return ab;
-        } else {
-//            //invalid
-            return XTERNAL;
-//            //discard temporal information//return DTERNAL;
-        }
+		//nar.intermpolationRangeLimit.floatValue()) {
+		//            //invalid
+		//            //discard temporal information//return DTERNAL;
+		return ratio < 1 ? ab : XTERNAL;
     }
 
     public static Term intermpolate(/*@NotNull*/ Compound a, /*@NotNull*/ Compound b, float aProp, NAL nar) {

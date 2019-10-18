@@ -62,11 +62,8 @@ public abstract class TermBuilder implements TermConstructor {
         assert (o.minSubs <= s || hasEllipsis) :
                 "subterm underflow: " + o + ' ' + Arrays.toString(t);
 
-        if (s == 1 && o!= CONJ /* HACK */ ) {
-            return newCompound1(o, t[0]);
-        } else {
-            return newCompoundN(o, dt, t, key);
-        }
+		/* HACK */
+		return s == 1 && o != CONJ ? newCompound1(o, t[0]) : newCompoundN(o, dt, t, key);
     }
 
     public Compound newCompoundN(Op o, int dt, Term[] t, @Nullable DynBytes key) {
@@ -165,10 +162,7 @@ public abstract class TermBuilder implements TermConstructor {
 
         int aRange = a.eventRange(), bRange = b.eventRange();
 
-        if (dt == 0 && aRange == 0 && bRange == 0)
-            return conj(0, a, b);
-        else
-            return ConjSeq.sequence(a, 0, b, dt, this);
+		return dt == 0 && aRange == 0 && bRange == 0 ? conj(0, a, b) : ConjSeq.sequence(a, 0, b, dt, this);
     }
 
     public Term root(Compound x) {

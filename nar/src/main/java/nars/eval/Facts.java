@@ -74,11 +74,8 @@ public class Facts implements Function<Term, Stream<Term>> {
                                 return null;
 
                             Term ct = c.term();
-                            if (t) {
-                                return ct;
-                            } else /*if (!t && f)*/ {
-                                return ct.neg();
-                            }
+							/*if (!t && f)*/
+							return t ? ct : ct.neg();
 
                         }).filter(Objects::nonNull);
     }

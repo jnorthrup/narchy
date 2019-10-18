@@ -48,11 +48,7 @@ public class Anon extends RecursiveTermTransform.NegObliviousTermTransform {
     }
 
     public final Term put(Term x) {
-        if (x instanceof Compound) {
-            return putCompound((Compound) x);
-        } else {
-            return putAtomic((Atomic)x);
-        }
+        return x instanceof Compound ? putCompound((Compound) x) : putAtomic((Atomic) x);
     }
 
     /** determines what Atomics are considered intrinsic (and thus not internable) */
@@ -88,17 +84,13 @@ public class Anon extends RecursiveTermTransform.NegObliviousTermTransform {
     }
 
     public final Term get(Term x) {
-        if (x instanceof Compound) {
-//            switch (map.termCount()) {
-//                case 1:
-//                    //optimized
-//                    return x.replace(Anom.the(1), map.interned((byte)1));
-//                default:
-            return getCompound((Compound) x);
-//            }
-        } else {
-            return getAtomic((Atomic)x);
-        }
+        //            switch (map.termCount()) {
+        //                case 1:
+        //                    //optimized
+        //                    return x.replace(Anom.the(1), map.interned((byte)1));
+        //                default:
+        //            }
+        return x instanceof Compound ? getCompound((Compound) x) : getAtomic((Atomic) x);
     }
 
     final Term getAtomic(Atomic x) {

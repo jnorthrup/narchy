@@ -48,16 +48,11 @@ public class TermRadixTree<X> extends MyRadixTree<X> {
 
     /** must override if X is not instanceof Termed */
     public static AbstractBytes key(Object k) {
-        if (k instanceof Atomic) {
-            return new ArrayBytes(((Atomic)k).bytes());
-        } else {
-
-//            try (RecycledDynBytes d = RecycledDynBytes.get()) { //termBytesEstimate(t) /* estimate */);
-//                TermIO.the.write(t, d);
-//                return d.arrayCopy();
-//            }
-            return new ArrayBytes(IO.termToBytes(((Term) k).term()));
-        }
+		//            try (RecycledDynBytes d = RecycledDynBytes.get()) { //termBytesEstimate(t) /* estimate */);
+		//                TermIO.the.write(t, d);
+		//                return d.arrayCopy();
+		//            }
+		return k instanceof Atomic ? new ArrayBytes(((Atomic) k).bytes()) : new ArrayBytes(IO.termToBytes(((Term) k).term()));
     }
 
 

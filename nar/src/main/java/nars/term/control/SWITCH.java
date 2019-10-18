@@ -64,10 +64,7 @@ public final class SWITCH<D extends PreDerivation> extends AbstractPred<D> {
                 changed[0] = true;
             return y;
         }));
-        if (!changed[0])
-            return this;
-        else
-            return new SWITCH(taskOrBelief, e2);
+		return !changed[0] ? this : new SWITCH(taskOrBelief, e2);
     }
 
 

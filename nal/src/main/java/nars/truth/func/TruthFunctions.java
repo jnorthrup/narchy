@@ -34,7 +34,8 @@ import static nars.truth.func.TruthFunctions2.weak;
 /**
  * All truth-value (and desire-value) functions used in logic rules
  */
-public final class TruthFunctions {
+public enum TruthFunctions {
+    ;
 
     /* ----- Single argument functions, called in MatchingRules ----- */
 
@@ -209,13 +210,9 @@ public final class TruthFunctions {
 
     /** TODO return double */
     public static float confCompose(double cx, double cy) {
-        if (NAL.nal_truth.STRONG_COMPOSITION) {
-            //convinced
-            return (float) Math.min(cx, cy);
-        } else {
-            //classic
-            return (float) (cx * cy);
-        }
+        //convinced
+        //classic
+        return NAL.nal_truth.STRONG_COMPOSITION ? (float) Math.min(cx, cy) : (float) (cx * cy);
     }
 
 
@@ -412,11 +409,7 @@ public final class TruthFunctions {
 
 
     public static float originality(int evidenceLength) {
-        if (evidenceLength <= 1) {
-            return 1f;
-        } else {
-            return 1f / (1f + (evidenceLength - 1) / (NAL.STAMP_CAPACITY - 1f));
-        }
+        return evidenceLength <= 1 ? 1f : 1f / (1f + (evidenceLength - 1) / (NAL.STAMP_CAPACITY - 1f));
     }
 
     public static double expectation(float frequency, double confidence) {

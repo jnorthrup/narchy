@@ -155,12 +155,8 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
         }
 
 
-        if (xHasVar || yHasVar) {
-            //indeterminable
-            return null;
-        } else {
-            return False;
-        }
+        //indeterminable
+        return xHasVar || yHasVar ? null : False;
 
     }
 

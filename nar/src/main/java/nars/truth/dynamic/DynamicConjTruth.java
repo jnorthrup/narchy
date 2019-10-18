@@ -19,7 +19,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import static nars.Op.NEG;
 import static nars.time.Tense.*;
 
-public class DynamicConjTruth {
+public enum DynamicConjTruth {
+    ;
 
     public static final AbstractDynamicTruth ConjIntersection = new AbstractSectTruth() {
 
@@ -223,10 +224,9 @@ public class DynamicConjTruth {
             long s = t.start();
             long when;
 
-            if (s == ETERNAL || (sequenceStart!=ETERNAL && s<=sequenceStart && t.end()>=end))
-                when = ETERNAL; //spans entire event
-            else
-                when = s; //Tense.dither(s, dtDither);
+            //spans entire event
+            //Tense.dither(s, dtDither);
+            when = s == ETERNAL || (sequenceStart != ETERNAL && s <= sequenceStart && t.end() >= end) ? ETERNAL : s;
 
             Term _x = t.term();
             boolean cp = d.componentPolarity.get(i);

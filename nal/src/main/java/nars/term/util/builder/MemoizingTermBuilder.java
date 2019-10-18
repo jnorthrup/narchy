@@ -37,10 +37,8 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
 //        if (!x.hasVars())
 //            throw new WTF();
 
-        if (varOffset == 0 && internable(x))
-            return normalize.apply(new InternedCompoundTransform(x)); //new LighterCompound(PROD, x, NORMALIZE)));
-        else
-            return super.normalize(x, varOffset);
+		//new LighterCompound(PROD, x, NORMALIZE)));
+		return varOffset == 0 && internable(x) ? normalize.apply(new InternedCompoundTransform(x)) : super.normalize(x, varOffset);
 
     }
 
@@ -52,11 +50,7 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
         if (!t)
             return x;
 
-        if (internable(x)) {
-            return root.apply(new InternedCompoundTransform(x));
-        } else {
-            return _root(x);
-        }
+		return internable(x) ? root.apply(new InternedCompoundTransform(x)) : _root(x);
     }
 
     private boolean internable(Compound x) {

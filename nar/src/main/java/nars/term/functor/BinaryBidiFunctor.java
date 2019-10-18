@@ -36,11 +36,7 @@ public abstract class BinaryBidiFunctor extends Functor implements The {
     }
 
     Term apply2(Evaluation e, Term x, Term y) {
-        if (x.op().var || y.op().var)
-            return null;
-        else {
-            return compute(e, x,y);
-        }
+		return x.op().var || y.op().var ? null : compute(e, x, y);
     }
 
     protected abstract Term compute(Evaluation e, Term x, Term y);
@@ -72,12 +68,9 @@ public abstract class BinaryBidiFunctor extends Functor implements The {
                     return null;
                 //assert(XY!=null): "functor " + this + " " + x + "," + y + ", " + xy + " -> compute=null";
 
-                if (XY.equals(xy)) {
-                    return True; //true, keep
-                } else {
-
-                    return Bool.Null; //false?
-                }
+				//true, keep
+				//false?
+				return XY.equals(xy) ? True : Bool.Null;
             } else {
                 return computeFromXY(e, x, y, xy);
             }

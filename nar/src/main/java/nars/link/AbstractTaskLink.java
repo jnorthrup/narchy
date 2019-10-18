@@ -138,10 +138,8 @@ public abstract class AbstractTaskLink implements TaskLink {
 	@Override
 	public float pri() {
 		float p = this.pri;
-		if (p != p)
-			return this.pri = priSum() / 4; //update cached value
-		else
-			return p;
+		//update cached value
+		return p != p ? (this.pri = priSum() / 4) : p;
 	}
 
 	protected void invalidate() {
@@ -294,14 +292,11 @@ public abstract class AbstractTaskLink implements TaskLink {
 
 	public @Nullable Term matchReverse(Term from, int fromHash, Term to, int toHash) {
 		int f = fromHash();
-		if (f != fromHash &&
+		return f != fromHash &&
 			f != toHash &&
 			toHash() == toHash &&
 			to.equals(this.to) &&
-			!from.equals(this.from))
-			return this.from;
-		else
-			return null;
+			!from.equals(this.from) ? this.from : null;
 	}
 
 //    @Override

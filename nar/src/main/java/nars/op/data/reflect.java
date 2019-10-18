@@ -17,9 +17,10 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author me
  */
-public class reflect {
+public enum reflect {
+	;
 
-    static final Atomic REFLECT_OP = Atomic.the("reflect");
+	static final Atomic REFLECT_OP = Atomic.the("reflect");
 
     /**
      * <(*,subject,object) --> predicate>

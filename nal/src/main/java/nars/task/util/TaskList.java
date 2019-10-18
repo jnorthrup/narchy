@@ -66,10 +66,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
             return s != ETERNAL && s < m ? s : m;
         }, TIMELESS);
 
-        if (start == TIMELESS)
-            return ETERNAL;
-        else
-            return start;
+		return start == TIMELESS ? ETERNAL : start;
     }
 
     @Override
@@ -138,11 +135,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
                         this::stamp,
                         ss); //calculate stamp after filtering and after intermpolation filtering
                     //assert(!stampSet.isEmpty());
-                    if (stampSet.size() > capacity) {
-                        return Stamp.sample(capacity, stampSet, rng);
-                    } else {
-                        return stampSet.toSortedArray();
-                    }
+					return stampSet.size() > capacity ? Stamp.sample(capacity, stampSet, rng) : stampSet.toSortedArray();
                 };
         }
     }

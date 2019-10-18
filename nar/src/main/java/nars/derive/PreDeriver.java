@@ -40,11 +40,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
         @Override
         public short[] apply(PreDerivation d) {
-            if (intern(d)) {
-                return whats.apply(new PremiseKey(d));
-            } else {
-                return PreDeriver.run(d);
-            }
+            return intern(d) ? whats.apply(new PremiseKey(d)) : PreDeriver.run(d);
         }
 
         /** decides what premises can be interned */
@@ -77,10 +73,8 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
             return w1;
         } );
 
-        if (whats!=null)
-            return whats.apply(new PremiseKey(d));
-        else
-            return run(preDerivation); //failsafe
+        //failsafe
+        return whats != null ? whats.apply(new PremiseKey(d)) : run(preDerivation);
     };
 
 }

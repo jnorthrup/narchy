@@ -61,11 +61,8 @@ public class ProxyTask extends AbstractTask {
 
     /** produce a concrete, non-proxy clone */
     public Task the() {
-        if (validated()) {
-            return NALTask.the(term(), punc(), truth(), creation(), start(), end(), stamp());
-        } else {
-            return Task.clone(this); //runs validation first
-        }
+		//runs validation first
+		return validated() ? NALTask.the(term(), punc(), truth(), creation(), start(), end(), stamp()) : Task.clone(this);
     }
 
 

@@ -144,10 +144,7 @@ public abstract class TruthProjection extends TaskList {
 				//else: done in commit()
 			}
 
-		if (commit(tShrink, n)) {
-			return get(eviMin, dither, n);
-		} else
-			return null;
+		return commit(tShrink, n) ? get(eviMin, dither, n) : null;
 	}
 
 	/**

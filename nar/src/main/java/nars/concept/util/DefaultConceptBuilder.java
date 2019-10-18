@@ -74,11 +74,9 @@ public class DefaultConceptBuilder extends ConceptBuilder {
     @Override
     public QuestionTable questionTable(Term term, boolean questionOrQuest) {
         Op o = term.op();
-        if (questionOrQuest ? o.beliefable : o.goalable) {
-            return new HijackQuestionTable(0, 2);
-        } else {
-            return QuestionTable.Empty;
-        }
+		return (questionOrQuest ? o.beliefable : o.goalable) ?
+            new HijackQuestionTable(0, 2) :
+            QuestionTable.Empty;
     }
 
     @Override

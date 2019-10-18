@@ -102,10 +102,8 @@ public enum Conj {
                 break;
         }
 
-        if (!x.op().eventable || container.equals(x))
-            return false;
+        return x.op().eventable && !container.equals(x) && _eventOf(container, x, when);
 
-        return _eventOf(container, x, when);
     }
 
     public static boolean _eventOf(Term conj, Term x, long when) {
@@ -1286,10 +1284,7 @@ public enum Conj {
             }
         } else {
             ConjList c = ConjList.events(conj);
-            if(c.removeAll(y))
-                return c.term();
-            else
-                return conj;
+            return c.removeAll(y) ? c.term() : conj;
         }
     }
 

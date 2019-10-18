@@ -44,7 +44,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * see:
  * https:
  */
-public class Builtin {
+public enum Builtin {
+    ;
     public static final Functor[] statik = {
 
             Equal.equal,
@@ -161,12 +162,7 @@ public class Builtin {
                             indices.add(Int.the(i));
                         }
                     }
-                    if (indices == null)
-                        return Null;
-                    else {
-                        return SETe.the(indices);
-
-                    }
+                    return indices == null ? Null : SETe.the(indices);
                 }
                 return Null;
             }),
@@ -529,10 +525,7 @@ public class Builtin {
                     if (o == INT) {
 
                         int i = ((Int) index).i;
-                        if (i >= 0 && i < len)
-                            return x.sub(i);
-                        else
-                            return False;
+                        return i >= 0 && i < len ? x.sub(i) : False;
 
                     } else if (o == PROD && index.subs() == 2) {
                         Term start = (index).sub(0);

@@ -90,16 +90,13 @@ public class DeriverProgram {
 
             out.println(a.why.id + " ==> {");
             Object aa;
-            if (a instanceof PatternHow.TruthifyDeriveAction) {
-                aa = Arrays.toString(((PatternHow.TruthifyDeriveAction) a).constraints) + " ...";// + ((PremisePatternAction.TruthifyDeriveAction) a).unify;
-                //TODO
-//                out.println(((DirectPremiseUnify)x).taskPat + ", " + ((DirectPremiseUnify)x).beliefPat + " ==> {");
-//                print(((DirectPremiseUnify)x).taskify, out, indent + 2);
-//                Texts.indent(indent);
-//                out.println("}");
-
-            }else
-                aa = a.toString();
+            // + ((PremisePatternAction.TruthifyDeriveAction) a).unify;
+            //TODO
+            //                out.println(((DirectPremiseUnify)x).taskPat + ", " + ((DirectPremiseUnify)x).beliefPat + " ==> {");
+            //                print(((DirectPremiseUnify)x).taskify, out, indent + 2);
+            //                Texts.indent(indent);
+            //                out.println("}");
+            aa = a instanceof PatternHow.TruthifyDeriveAction ? Arrays.toString(((PatternHow.TruthifyDeriveAction) a).constraints) + " ..." : a.toString();
 
             print(aa, out, indent + 2);
 

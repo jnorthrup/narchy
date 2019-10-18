@@ -338,14 +338,12 @@ public abstract class Atomic implements Term {
 
     @Override
     public @Nullable Term subPath(int start, int end, byte... path) {
-        if (start==0 && start==end) return this;
-        else return null;
+        return start == 0 && start == end ? this : null;
     }
 
     @Override
     public @Nullable Term subPath(ByteList path, int start, int end) {
-        if (start==0 && start==end) return this;
-        else return null;
+        return start == 0 && start == end ? this : null;
     }
 
     @Override

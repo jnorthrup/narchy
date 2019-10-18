@@ -12,7 +12,8 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static nars.time.Tense.ETERNAL;
 
-public class TruthIntegration {
+public enum TruthIntegration {
+	;
 
 
 	public static double evi(Task t) {
@@ -45,12 +46,8 @@ public class TruthIntegration {
 			}
 		} else {
 			//range
-			if (tStart == ETERNAL) {
-				//eternal task
-				factor = (qEnd - qStart + 1);
-			} else {
-				factor = eviIntegrate(qStart, qEnd, tStart, t.end(), dur);
-			}
+			//eternal task
+			factor = tStart == ETERNAL ? qEnd - qStart + 1 : eviIntegrate(qStart, qEnd, tStart, t.end(), dur);
 		}
 
 		double e = t.evi();

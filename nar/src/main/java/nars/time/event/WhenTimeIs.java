@@ -12,10 +12,7 @@ public abstract class WhenTimeIs extends ScheduledTask {
     public final long whenOrAfter;
 
     public static WhenTimeIs then(long whenOrAfter, Object then) {
-        if (then instanceof Runnable)
-            return new WhenTimeIs_Run(whenOrAfter, (Runnable)then);
-        else
-            return new WhenTimeIs_Consume(whenOrAfter, (Consumer)then);
+        return then instanceof Runnable ? new WhenTimeIs_Run(whenOrAfter, (Runnable) then) : new WhenTimeIs_Consume(whenOrAfter, (Consumer) then);
     }
 
     private static final class WhenTimeIs_Consume extends WhenTimeIs {

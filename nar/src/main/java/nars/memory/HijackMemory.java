@@ -71,10 +71,7 @@ public class HijackMemory extends Memory {
 
             @Override
             protected boolean replace(float incoming, PLink<Concept> existing, float existingPri) {
-                if (existing.get() instanceof PermanentConcept)
-                    return false;
-                else
-                    return super.replace(incoming, existing, existingPri);
+				return existing.get() instanceof PermanentConcept ? false : super.replace(incoming, existing, existingPri);
             }
 //
 //            @Override

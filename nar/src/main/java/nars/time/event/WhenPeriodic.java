@@ -21,10 +21,7 @@ class WhenPeriodic extends WhenInternal {
         this.run = x;
 
         Object y;
-        if (x instanceof ConsumerAdapter)
-            y = ((ConsumerAdapter)x).r;
-        else
-            y = x;
+        y = x instanceof ConsumerAdapter ? ((ConsumerAdapter) x).r : x;
 
         this.id = $.identity(y);
     }

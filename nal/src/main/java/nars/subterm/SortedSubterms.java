@@ -9,7 +9,8 @@ import java.util.Arrays;
 import java.util.function.Function;
 
 /** canonical subterm sorting and permutation wrapping for advanced interning */
-public class SortedSubterms {
+public enum SortedSubterms {
+    ;
 
     public static Subterms the(Term[] x, Function<Term[],Subterms> b) {
         return the(x, b, false);
@@ -55,13 +56,9 @@ public class SortedSubterms {
                 Arrays.sort(y);
         }
 
-        if (!hadNegs && ArrayUtil.equalsIdentity(x,y)) {
-            //already sorted and has no negatives
-            return b.apply(x);
-        } else {
-            //TODO if (xx.length == 1) return RepeatedSubterms.the(xx[0],x.length);
-            return RemappedSubterms.the(x, b.apply(y));
-        }
+        //already sorted and has no negatives
+        //TODO if (xx.length == 1) return RepeatedSubterms.the(xx[0],x.length);
+        return !hadNegs && ArrayUtil.equalsIdentity(x, y) ? b.apply(x) : RemappedSubterms.the(x, b.apply(y));
     }
 
 }

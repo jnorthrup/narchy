@@ -52,10 +52,8 @@ public enum MapSubst { ;
 
                 if (x.impossibleSubTerm(a)) {
                     return x.replace(b, bb);
-                } if (x.impossibleSubTerm(b))
-                    return x.replace(a, aa);
-                else
-                    return x.transform(new MapSubst2(A.getKey(), aa, B.getKey(), bb));
+                }
+				return x.impossibleSubTerm(b) ? x.replace(a, aa) : x.transform(new MapSubst2(A.getKey(), aa, B.getKey(), bb));
             }
             default: {
                 List<Term> valid = null;

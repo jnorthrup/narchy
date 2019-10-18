@@ -158,11 +158,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	private static boolean atStart(Term subEvent, Term event) {
 		if (event.op() == CONJ && event.dt() != XTERNAL) {
 			boolean seq = Conj.isSeq(event);
-			if (!seq) {
-				return event.contains(subEvent);
-			} else {
-				return event.eventFirst().equals(subEvent);
-			}
+			return !seq ? event.contains(subEvent) : event.eventFirst().equals(subEvent);
 
 		}
 		return false;
@@ -775,11 +771,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		//assert(!xx.hasXternal()): "dont solveDTTrace if subterms have XTERNAL";
 
-		if (x.op() == IMPL) { //x.op() == IMPL || (s == 2 && xx.sub(0).unneg().equals(xx.sub(1).unneg()))) { //s == 2) {
-			return solveDT_2(x, xx, each);
-		} else {
-			return solveDTconj(x, xx, each);
-		}
+		//x.op() == IMPL || (s == 2 && xx.sub(0).unneg().equals(xx.sub(1).unneg()))) { //s == 2) {
+		return x.op() == IMPL ? solveDT_2(x, xx, each) : solveDTconj(x, xx, each);
 
 	}
 
@@ -921,10 +914,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //                        Event e = ii.get(0);
 					long es = e.start();
 					if (es!=ETERNAL) {
-						if (start == ETERNAL)
-							start = es; //override with specific temporal
-						else
-							start = Math.min(es, start);
+						//override with specific temporal
+						start = start == ETERNAL ? es : Math.min(es, start);
 					} else {
 						 if (start == TIMELESS || start == ETERNAL)
 						 	start = es;
@@ -965,15 +956,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		if (nextKnown != False && nextKnown != Null) {
 
-			if (unknown != null) {
-
-				return solveDT_2((Compound) CONJ.the(XTERNAL, nextKnown, unknown), nextKnown, unknown, (nu) ->
-					each.test(nu instanceof Absolute ? nu : event(nu.id, start, start + range, false)));
-			} else {
-
-				return !validPotentialSolution(nextKnown) || each.test(event(nextKnown, start, start + range, false));
-
-			}
+			return unknown != null ? solveDT_2((Compound) CONJ.the(XTERNAL, nextKnown, unknown), nextKnown, unknown, (nu) ->
+				each.test(nu instanceof Absolute ? nu : event(nu.id, start, start + range, false))) : !validPotentialSolution(nextKnown) || each.test(event(nextKnown, start, start + range, false));
 		}
 		return true; //continue
 	}
@@ -1125,11 +1109,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		else {
 			assert (aWhen != TIMELESS && bWhen != TIMELESS);
 			long d;
-			if (o == IMPL || aWhen <= bWhen)
-				d = (bWhen - aWhen) - a.id.eventRange();
-			else {
-				d = (aWhen - bWhen) - b.id.eventRange();
-			}
+			d = o == IMPL || aWhen <= bWhen ? (bWhen - aWhen) - a.id.eventRange() : (aWhen - bWhen) - b.id.eventRange();
 
 			dt = occToDT(d);
 		}
@@ -1137,13 +1117,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		long dur = durMerge(a, b);
 
-		if (o == CONJ) {
-			return solveOcc(terms.conjMerge(a.id, dt, b.id), aWhen, dur, each);
-		} else {
-			//for impl and other types cant assume occurrence corresponds with subject
-
-			return solveDT(x, TIMELESS, dt, dur, null, true, each);
-		}
+		//for impl and other types cant assume occurrence corresponds with subject
+		return o == CONJ ? solveOcc(terms.conjMerge(a.id, dt, b.id), aWhen, dur, each) : solveDT(x, TIMELESS, dt, dur, null, true, each);
 	}
 
 	/**
@@ -1171,10 +1146,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	protected int occToDT(long x) {
 		assert (x != TIMELESS);
 		int idt;
-		if (x == ETERNAL)
-			idt = DTERNAL;
-		else
-			idt = Tense.occToDT(x);
+		idt = x == ETERNAL ? DTERNAL : Tense.occToDT(x);
 		return idt;
 	}
 
@@ -1774,11 +1746,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		Event shift(long dt) {
 			assert (dt != 0 && dt != ETERNAL && dt != TIMELESS);
-			if (this instanceof AbsoluteRange) {
-				return new AbsoluteRange(id, start + dt, end() + dt);
-			} else {
-				return new Absolute(id, start + dt);
-			}
+			return this instanceof AbsoluteRange ? new AbsoluteRange(id, start + dt, end() + dt) : new Absolute(id, start + dt);
 		}
 
 		@Override
@@ -1885,10 +1853,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 				return id + "@ETE";
 			} else {
 				long e = end();
-				if (e == s)
-					return id + "@" + s;
-				else
-					return id + "@" + s + ".." + e;
+				return e == s ? id + "@" + s : id + "@" + s + ".." + e;
 			}
 		}
 
@@ -2066,18 +2031,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 						}
 
 						if (dir) {
-							if (ss instanceof Absolute) {
-								start = SS;
-							} else {
-								start = EE - dt - a.eventRange();
-							}
+							start = ss instanceof Absolute ? SS : EE - dt - a.eventRange();
 						} else {
-							if (ee instanceof Absolute) {
-								start = EE;
-							} else {
-//								long sss = ss.start();
-								start = SS - dt - b.eventRange();
-							}
+							//								long sss = ss.start();
+							start = ee instanceof Absolute ? EE : SS - dt - b.eventRange();
 						}
 					}
 				}

@@ -102,8 +102,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     public final Functor polarizeBelief = new AbstractInstantFunctor1("polarizeBelief") {
         @Override
         protected Term apply1(Term arg) {
-            if (single) return arg.negIf(random.nextBoolean());
-            else return polarize(arg, Derivation.this.beliefTruth_at_Belief);
+            return single ? arg.negIf(random.nextBoolean()) : polarize(arg, Derivation.this.beliefTruth_at_Belief);
         }
     };
 
@@ -497,13 +496,9 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         this.overlapSingle = task.isCyclic();
 
         Task belief = _belief;
-        if (belief != null) {
-            this.overlapDouble =
-                Stamp.overlapAny(task, belief);
-                //Stamp.overlap(this._task, _belief);
-        } else {
-            this.overlapDouble = false; //N/A
-        }
+        //Stamp.overlap(this._task, _belief);
+        //N/A
+        this.overlapDouble = belief != null ? Stamp.overlapAny(task, belief) : false;
 
     }
 
@@ -626,10 +621,8 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
                 return x; //ignore
         }
 
-        if (y != x && !y.op().eventable)
-            return x; //dont bother
-        else
-            return y;
+        //dont bother
+        return y != x && !y.op().eventable ? x : y;
     }
 
     public final boolean remember(Task t) {

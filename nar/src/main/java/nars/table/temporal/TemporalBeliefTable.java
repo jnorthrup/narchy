@@ -34,10 +34,7 @@ public interface TemporalBeliefTable extends BeliefTable {
      */
     default void whileEach(long minT, long maxT, Predicate<? super Task> each) {
         whileEach(x -> {
-            if (!x.isDeleted() && x.intersects(minT, maxT))
-                return each.test(x);
-            else
-                return true;
+			return !x.isDeleted() && x.intersects(minT, maxT) ? each.test(x) : true;
         });
     }
 

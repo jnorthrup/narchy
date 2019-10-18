@@ -165,11 +165,8 @@ public enum Abbreviation { ;
         protected @Nullable Task transform(Task x, Derivation d) {
             Term xx = x.term();
             Term yy = unabbreviateTerm(xx);
-            if (yy!=null) {
-                //TODO volMax test
-                return SpecialTermTask.the(x, yy, true);
-            } else
-                return null;
+            //TODO volMax test
+            return yy != null ? SpecialTermTask.the(x, yy, true) : null;
         }
     }
     /** unabbreviates abbreviated root terms (not recursively contained) */
@@ -194,10 +191,7 @@ public enum Abbreviation { ;
         protected @Nullable Task transform(Task x, Derivation d) {
             Term xx = x.term();
             Term yy = transform.apply(xx).normalize();
-            if (yy.op().taskable && !yy.equals(xx) && yy.volume() <= d.termVolMax) {
-                return SpecialTermTask.the(x, yy, true);
-            } else
-                return null;
+            return yy.op().taskable && !yy.equals(xx) && yy.volume() <= d.termVolMax ? SpecialTermTask.the(x, yy, true) : null;
         }
     }
 //

@@ -14,8 +14,10 @@ import java.io.IOException;
 import static nars.Op.COMMAND;
 
 /** TODO */
-public class TaskIO {
-    static boolean hasTruth(byte punc) {
+public enum TaskIO {
+	;
+
+	static boolean hasTruth(byte punc) {
         return punc == Op.BELIEF || punc == Op.GOAL;
     }
 

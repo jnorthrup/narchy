@@ -66,11 +66,7 @@ public class Evaluation extends Termerator {
 
 		int before = v.size();
 
-		if (termutes.size() == 1) {
-			return termute1(e, y, before);
-		} else {
-			return termuteN(e, y, before);
-		}
+		return termutes.size() == 1 ? termute1(e, y, before) : termuteN(e, y, before);
 	}
 
 	protected static Random random() {
@@ -236,10 +232,8 @@ public class Evaluation extends Termerator {
 			return each.test(bool(x, (Bool) y)); //Terminal Result
 
 		//if termutators, collect all results. otherwise 'cur' is the only result to return
-		if (termutators() > 0)
-			return termute(e, y);
-		else
-			return each.test(y); //Transformed Result (possibly same)
+		//Transformed Result (possibly same)
+		return termutators() > 0 ? termute(e, y) : each.test(y);
 	}
 
 	protected Term bool(Term x, Bool b) {

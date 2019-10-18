@@ -52,10 +52,7 @@ public class CachedAnon extends Anon {
 
     @Override
 	public final Term applyPosCompound(Compound x) {
-        if (!cache(x,putOrGet))
-            return super.applyPosCompound(x);
-        else
-            return applyPosCompoundCached(x);
+        return !cache(x, putOrGet) ? super.applyPosCompound(x) : applyPosCompoundCached(x);
     }
 
     private Term applyPosCompoundCached(Compound x) {

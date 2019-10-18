@@ -68,11 +68,7 @@ public final class Int extends Atomic implements The {
 		if (i >= 0 && i < pos.length) {
 			return pos[i];
 		} else {
-			if (i < 0 && i > -neg.length) {
-				return neg[-i];
-			} else {
-				return new Int(i);
-			}
+			return i < 0 && i > -neg.length ? neg[-i] : new Int(i);
 		}
 	}
 

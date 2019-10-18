@@ -1321,11 +1321,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public NAR output(OutputStream o, boolean binary) {
-        if (binary) {
-            return outputBinary(o, (Task x) -> x.isDeleted() ? null : x);
-        } else {
-            return outputText(o, x -> x.isDeleted() ? null : x);
-        }
+        return binary ? outputBinary(o, (Task x) -> x.isDeleted() ? null : x) : outputText(o, x -> x.isDeleted() ? null : x);
     }
 
     /**
@@ -1629,11 +1625,8 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
             if (ConceptBuilder.dynamicModel((Compound) ct) != null) { //HACK
                 //try conceptualizing the dynamic
-                if (NAL.CONCEPTUALIZE_DYNAMIC_TRANSIENT) {
-                    return conceptBuilder.construct(ct); //create temporary dynamic concept
-                } else {
-                    return conceptualize(concept);
-                }
+                //create temporary dynamic concept
+                return NAL.CONCEPTUALIZE_DYNAMIC_TRANSIENT ? conceptBuilder.construct(ct) : conceptualize(concept);
 
             }
         }
