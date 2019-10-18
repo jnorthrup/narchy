@@ -184,7 +184,7 @@ import java.io.PrintStream;
         }
 
         @Override protected void preAccept(Task x) {
-            if (x instanceof AbstractTask) {
+            if (x instanceof Task) {
                 ((AbstractTask) x).why(uniqueCause);
             } else if (x instanceof Remember) {
                 preAccept(((Remember) x).input); //HACK

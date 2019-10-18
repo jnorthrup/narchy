@@ -17,8 +17,6 @@ public class ProxyTask extends AbstractTask {
 
     private int hash = 0;
 
-    /*volatile*/ long creation;
-    private volatile boolean cyclic = false;
 
 
     protected ProxyTask(Task task) {
@@ -59,10 +57,6 @@ public class ProxyTask extends AbstractTask {
         return appendTo(null).toString();
     }
 
-    @Override
-    public final void setCyclic(boolean c) {
-        this.cyclic = c;
-    }
 
 
     /** produce a concrete, non-proxy clone */
@@ -74,10 +68,6 @@ public class ProxyTask extends AbstractTask {
         }
     }
 
-    @Override
-    public final boolean isCyclic() {
-        return cyclic;
-    }
 
     @Override
     public Term term() {
@@ -103,10 +93,7 @@ public class ProxyTask extends AbstractTask {
         this.creation = next;
         return next;
     }
-    @Override
-    public void setCreation(long creation) {
-        this.creation = creation;
-    }
+
 
     @Override
     public long start() {

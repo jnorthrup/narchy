@@ -1,24 +1,32 @@
 package nars.task;
 
+import jcog.math.LongInterval;
+import nars.NAL;
 import nars.Task;
 import nars.task.util.TaskException;
 import nars.term.Term;
+import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Objects;
+
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 
 /** generic NAL Task with stored start,end time */
-public class TemporalTask extends ActualNALTask {
+public class TemporalTask extends NALTask {
 
-    private final long start;
+	private final long start;
     private final long end;
 
     public TemporalTask(Term term, byte punc, @Nullable Truth truth, long creation, long start, long end, long[] stamp) throws TaskException {
-        super(term, punc, truth, creation, start, end, stamp);
+		super(term, punc, truth, start, end, creation, stamp);
 
-        this.start = start;
+
+		this.start = start;
         this.end = end;
     }
 
@@ -39,7 +47,8 @@ public class TemporalTask extends ActualNALTask {
         return end;
     }
 
-    @Deprecated public static class Unevaluated extends TemporalTask implements UnevaluatedTask {
+
+	@Deprecated public static class Unevaluated extends TemporalTask implements UnevaluatedTask {
 
         public Unevaluated(Term term, byte punc, @Nullable Truth truth, long creation, long start, long end, long[] stamp) {
             super(term, punc, truth, creation, start, end, stamp);

@@ -8,7 +8,8 @@ import nars.Task;
 import nars.attention.What;
 import nars.derive.Derivation;
 import nars.derive.action.TaskTransformAction;
-import nars.task.util.signal.SignalTask;
+import nars.task.TemporalTask;
+import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -200,7 +201,7 @@ public class Inperience extends TaskTransformAction {
 
 
 
-    private static final class InperienceTask extends SignalTask {
+    private static final class InperienceTask extends TemporalTask implements UnevaluatedTask {
 
         InperienceTask(Term r, Truth tr, Task t, long s, long e) {
             super(r, Op.BELIEF, tr, t.creation(), s, e, t.stamp());

@@ -12,7 +12,8 @@ import nars.Task;
 import nars.attention.What;
 import nars.control.NARPart;
 import nars.control.channel.CauseChannel;
-import nars.task.util.signal.SignalTask;
+import nars.task.TemporalTask;
+import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
@@ -188,7 +189,7 @@ public class BeliefPredict extends NARPart {
         };
     }
 
-    private static class PredictionTask extends SignalTask {
+    private static class PredictionTask extends TemporalTask implements UnevaluatedTask {
         public PredictionTask(Term term, PreciseTruth t, long start, long end, long[] evi) {
             super(term, Op.BELIEF, t, start, start, end, evi);
         }

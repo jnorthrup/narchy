@@ -16,7 +16,6 @@ import nars.attention.What;
 import nars.concept.Operator;
 import nars.control.channel.CauseChannel;
 import nars.subterm.Subterms;
-import nars.task.AbstractTask;
 import nars.task.NALTask;
 import nars.term.Functor;
 import nars.term.ProxyTerm;
@@ -283,7 +282,7 @@ public class Opjects extends DefaultTermizer {
             Class<?> methodReturnType = method.getReturnType();
             boolean isVoid = methodReturnType == void.class;
 
-            AbstractTask value;
+            Task value;
 
             if (!isVoid) {
                 Term t = opTerm(instance, method, args, nextValue);
@@ -294,7 +293,7 @@ public class Opjects extends DefaultTermizer {
 
             boolean evokedOrInvoked = evoking.get().getOpaque();
 
-            AbstractTask feedback;
+            Task feedback;
             if (isVoid || evokedOrInvoked) {
                 feedback = feedback(opTerm(instance, method, args, isVoid ? null : $.varDep(1)), start, end, nar);
             } else {
@@ -311,9 +310,9 @@ public class Opjects extends DefaultTermizer {
 
         }
 
-        public AbstractTask feedback(Term nt, long start, long end, NAR nar) {
+        public Task feedback(Term nt, long start, long end, NAR nar) {
 
-            AbstractTask feedback =
+            Task feedback =
 //                new TruthletTask(nt, BELIEF,
 //                    Truthlet.step(
 //                            uninvokeFreq, start,
@@ -330,14 +329,14 @@ public class Opjects extends DefaultTermizer {
         }
 
 
-        public AbstractTask value(Term nextTerm, float freq, long start, long end, NAR nar) {
+        public Task value(Term nextTerm, float freq, long start, long end, NAR nar) {
             Term nt = nextTerm;
             if (nt.op() == NEG) {
                 nt = nt.unneg();
                 freq = 1 - freq;
             }
 
-            AbstractTask value =
+            Task value =
 //                new TruthletTask(nt, BELIEF,
 //                    Truthlet.step(
 //                            doubtFreq, start,

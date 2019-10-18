@@ -8,9 +8,10 @@ import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
 import nars.table.temporal.TemporalBeliefTable;
+import nars.task.TemporalTask;
+import nars.task.UnevaluatedTask;
 import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
-import nars.task.util.signal.SignalTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.time.When;
@@ -242,14 +243,14 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 	 * has special equality and hashcode convention allowing the end to stretch;
 	 * otherwise it would be seen as unique when tested after stretch
 	 */
-	public static final class SeriesTask extends SignalTask {
+	public static final class SeriesTask extends TemporalTask implements UnevaluatedTask {
 
 		/**
 		 * current endpoint
 		 */
 		protected long e;
 
-		SeriesTask(Term term, byte punc, Truth value, long start, long end, long[] stamp) {
+		public SeriesTask(Term term, byte punc, Truth value, long start, long end, long[] stamp) {
 			super(SeriesBeliefTable.taskTerm(term), punc, value, start, start, end, stamp);
 			if (stamp.length != 1)
 				throw new UnsupportedOperationException("requires stamp of length 1 so it can be considered an Input Task and thus have consistent hashing even while its occurrrence time is stretched");

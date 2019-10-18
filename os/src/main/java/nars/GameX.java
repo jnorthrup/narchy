@@ -33,8 +33,8 @@ import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinker;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.util.PriBuffer;
-import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -446,7 +446,7 @@ public abstract class GameX extends Game {
         n.questionPriDefault.pri(0.5f);
         n.questPriDefault.pri(0.5f);
 
-        n.beliefConfDefault.set(0.5f);
+        n.beliefConfDefault.set(0.75f);
         n.goalConfDefault.set(0.5f);
 
 
@@ -635,9 +635,9 @@ public abstract class GameX extends Game {
                 $.pRecurse(false, $.radixArray(X, radix, Integer.MAX_VALUE));
 
             Term f = $.funcImg(FRAME, g.id, x);
-            Task t = new SignalTask(f, BELIEF, $.t(1f, n.confDefault(BELIEF)),
-                now, now, Math.round(now + g.durLoop()),
-                new long[]{n.time.nextStamp()});
+            Task t = new SeriesBeliefTable.SeriesTask(f, BELIEF, $.t(1f, n.confDefault(BELIEF)),
+				now, Math.round(now + g.durLoop()),
+				new long[]{n.time.nextStamp()});
             t.pri(n.priDefault(BELIEF)*g.what().pri());
             //System.out.println(t);
             g.what().accept(t);

@@ -161,7 +161,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
     static void mergeWhy(Task e, Task i) {
-        if (e instanceof AbstractTask)
+        if (e instanceof Task)
             ((AbstractTask) e).why(i.why());
         //else TODO
     }
@@ -298,22 +298,22 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             clone(x, newContent, x.truth(), x.punc());
     }
 
-    static @Nullable AbstractTask clone(Task x, byte newPunc) {
+    static @Nullable Task clone(Task x, byte newPunc) {
         return clone(x, x.term(), x.truth(), newPunc);
     }
 
-    static @Nullable AbstractTask clone(Task x) {
+    static @Nullable Task clone(Task x) {
         return clone(x, x.punc());
     }
 
-    static @Nullable AbstractTask clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
+    static @Nullable Task clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
         return clone(x, newContent, newTruth, newPunc, x.start(), x.end());
     }
 
-    static @Nullable AbstractTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end) {
+    static @Nullable Task clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end) {
         return clone(x, newContent, newTruth, newPunc, start, end, x.stamp());
     }
-    static @Nullable AbstractTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end, long[] stamp) {
+    static @Nullable Task clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end, long[] stamp) {
 
         Term c = Task.taskValid(newContent, newPunc, newTruth, false);
         AbstractTask y = NALTask.the(c, newPunc, newTruth, x.creation(), start, end, stamp);
@@ -600,7 +600,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         y.pri(yp);
 
 
-        if (y instanceof AbstractTask) {
+        if (y instanceof Task) {
             ((AbstractTask)y).why(Why.why(x, NAL.causeCapacity.intValue()));
         }
 

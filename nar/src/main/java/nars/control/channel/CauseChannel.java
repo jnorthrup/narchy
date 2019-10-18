@@ -6,6 +6,7 @@ import nars.control.Cause;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * metered and mixable extension of Cause base class
@@ -34,10 +35,13 @@ public abstract class CauseChannel<X extends Prioritizable>  {
         target.accept(x);
     }
 
+    public final void acceptAll(Stream<? extends X> xx, ConsumerX<? super X> target) {
+        target.acceptAll(xx.peek(this::preAccept));
+    }
+
     public final void acceptAll(Iterable<? extends X> xx, ConsumerX<? super X> target) {
-        for (X x : xx) {
+        for (X x : xx)
             preAccept(x);
-        }
         target.acceptAll(xx);
     }
     public final void acceptAll(Collection<? extends X> xx, ConsumerX<? super X> target) {

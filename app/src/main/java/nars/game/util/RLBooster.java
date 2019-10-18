@@ -3,7 +3,6 @@ package nars.game.util;
 import com.google.common.collect.Streams;
 import jcog.Paper;
 import jcog.Util;
-import jcog.data.list.FasterList;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.Agent;
 import jcog.math.FloatNormalizer;
@@ -21,7 +20,7 @@ import nars.game.Game;
 import nars.game.Reward;
 import nars.game.action.ActionSignal;
 import nars.game.sensor.GameLoop;
-import nars.task.util.signal.SignalTask;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
@@ -31,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -225,23 +225,21 @@ public class RLBooster  {
 //        long nextEnd = nextStart + range;
 //long nextStart = start, nextEnd = end;
 //TODO modify Agent API to provide a continuous output vector and use that to interpolate across the different states
-            List<Task> e = new FasterList(actions.length);
-            for (int o = 0; o < actions.length; o++) {
-                float freq;
-                //freq = 0;
-                if (o == A) freq = actionDiscretization > 2 ? (((float) level) / (actionDiscretization - 1)) : 1;
-                else freq = actionDiscretization > 2 ? Float.NaN : 0;
+
+            in.acceptAll(IntStream.range(0, actions.length).mapToObj(o -> {
+                float freq = (o == A) ?
+                    ((actionDiscretization > 2) ? (((float) level) / (actionDiscretization - 1)) : 1)
+                    :
+                    ((actionDiscretization > 2) ? Float.NaN : 0);
 
                 if (freq == freq) {
-                    Truth t = $.t(freq, conf);
-                    Task tt =
-                            new SignalTask(actions[o].term(), GOAL, t, start, start, end, new long[]{nar.time.nextStamp()});
-                    //NALTask.the(actions[o].term(), GOAL, t, now, start, end, new long[]{nar.time.nextStamp()});
-                    tt.pri(nar.priDefault(GOAL));
-                    e.add(tt);
-                }
-            }
-            in.acceptAll(e, g.what());
+                    return new SeriesBeliefTable.SeriesTask(actions[o].term(), GOAL,
+                        $.t(freq, conf), start, end,
+                        new long[]{nar.time.nextStamp()}
+                    ).pri(nar.priDefault(GOAL));
+                } else
+                    return null;
+            }), g.what());
         }
 
 

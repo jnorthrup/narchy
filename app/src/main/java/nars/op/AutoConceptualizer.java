@@ -10,7 +10,8 @@ import nars.game.Game;
 import nars.game.sensor.ComponentSignal;
 import nars.game.sensor.VectorSensor;
 import nars.table.BeliefTable;
-import nars.task.util.signal.SignalTask;
+import nars.table.dynamic.SeriesBeliefTable;
+import nars.task.TemporalTask;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -92,32 +93,26 @@ public class AutoConceptualizer extends VectorSensor {
             Term feature = conj(order, a /* threshold, etc */, 3 /*a.length/2*/,
                     thresh);
             if (feature != null)
-                w.accept(onFeature(feature, truth, now, start, end, n.evidence()));
+                w.accept(onFeature(feature, truth, start, end, n.evidence()));
 
             b[i] = 0; 
         }
     }
 
-    protected static SignalTask onFeature(Term feature, Truth truth, long now, long start, long end, long[] evi) {
+    protected static TemporalTask onFeature(Term feature, Truth truth, long start, long end, long[] evi) {
         if (feature instanceof Neg) {
             feature = feature.unneg();
             truth = truth.neg();
         }
-        return new SignalTask(feature, BELIEF, truth,
-                now,
-                start,end, evi);
+        return new SeriesBeliefTable.SeriesTask(feature, BELIEF, truth, start, end, evi);
     }
 
     private Term conj(int[] order, float[] a, int maxArity, float threshold) {
 
         
         int n = a.length;
-
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++)
             order[i] = i;
-
-        }
-
 
         float finalMean = 0.5f; 
         QuickSort.sort(order, (i) -> Math.abs(finalMean - a[i]));

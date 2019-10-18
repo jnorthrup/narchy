@@ -2,19 +2,27 @@ package nars.task;
 
 import jcog.math.LongInterval;
 import nars.NAL;
+import nars.Task;
+import nars.task.util.TaskException;
 import nars.term.Term;
+import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-public class EternalTask extends ActualNALTask {
+import java.util.Arrays;
 
-    public EternalTask(Term term, byte punc, @Nullable Truth truth, NAL n) {
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
+
+public class EternalTask extends NALTask {
+
+	public EternalTask(Term term, byte punc, @Nullable Truth truth, NAL n) {
         this(term, punc, truth, n.time.now(), n.evidence());
     }
 
     public EternalTask(Term term, byte punc, @Nullable Truth truth, long creation, long[] stamp) {
-        super(term, punc, truth, creation, LongInterval.ETERNAL, LongInterval.ETERNAL, stamp);
-    }
+		super(term, punc, truth, LongInterval.ETERNAL, LongInterval.ETERNAL, creation, stamp);
+	}
 
 //    @Override
 //    public final boolean intersects(long rangeStart, long rangeEnd) {
