@@ -167,7 +167,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
         //HACK the temporal restriction is until ImageDynamicTruthModel can support dynamic transformation and untransformation of temporal-containing INH, like:
         //  ((believe("-ÈÛWédxÚñB",(y-->$1)) ==>+- (y-->$1))-->(believe,"-ÈÛWédxÚñB",/))
-        if (!ii.hasAny(VAR_INDEP.bit) && (ii.sub(0).op()!=IMPL) && (ii.sub(1).op()!=IMPL)) {
+        if ((ii.sub(0).op()!=IMPL) && (ii.sub(1).op()!=IMPL)) {
 
             Term n = Image.imageNormalize(i);
             if (!i.equals(n) && !(n instanceof Bool)) {
@@ -187,32 +187,30 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
     private static @Nullable AbstractDynamicTruth dynamicInhSect(Subterms ii) {
         if (ii.hasAny(Op.CONJ /*| Op.PROD.bit*/)) {
 
-            Term s = ii.sub(0), p = ii.sub(1);
+            //TODO if both subject and predicate are CONJ
 
-            Op so = s.op();
-            Term su = s.unneg();
-            if (so == Op.CONJ || (so == NEG && su.op() == CONJ)) {
-                if (su.subterms().AND(z -> validDynamicSubterm.test(INH.the(z, p)))) {
-                    switch (so) {
-                        case CONJ:
+            Term s = ii.sub(0);
+            if (s instanceof Compound && s.opID() == Op.CONJ.id) {
+                //if (s.subterms().AND(z -> validDynamicSubterm.test(INH.the(z, p)))) {
+//                    switch (so) {
+//                        case CONJ:
                             return DynamicStatementTruth.SubjInter;
-                        case NEG:
-                            return DynamicStatementTruth.SubjUnion;
-                    }
-                }
+//                        case NEG:
+//                            return DynamicStatementTruth.SubjUnion;
+//                    }
+                //}
             }
 
-            Op po = p.op();
-            Term pu = p.unneg();
-            if (po == Op.CONJ || (po == NEG && pu.op() == CONJ)) {
-                if (pu.subterms().AND(z -> validDynamicSubterm.test(INH.the(s, z)))) {
-                    switch (po) {
-                        case CONJ:
+            Term p = ii.sub(1);
+            if (p instanceof Compound && p.opID() == Op.CONJ.id) {
+                //if (p.subterms().AND(z -> validDynamicSubterm.test(INH.the(s, z)))) {
+//                    switch (po) {
+//                        case CONJ:
                             return DynamicStatementTruth.PredInter;
-                        case NEG:
-                            return DynamicStatementTruth.PredUnion;
-                    }
-                }
+//                        case NEG:
+//                            return DynamicStatementTruth.PredUnion;
+//                    }
+                //}
             }
         }
         return null;

@@ -491,6 +491,29 @@ class DynamicConjTest {
 
     }
 
+    @Test void conjSeqWithDepVar() throws Narsese.NarseseException {
+            NAR n = NARS.shell();
+            n.believe($("(x && #1)"), 0);
+            n.believe($("y"), 1);
+            //n.believe($("(y && #1)"), 2);
+            n.time.dur(8);
+
+            Task t = n.answerBelief($$("((x&&#1) &&+1 y)"), 0);
+            assertNotNull(t);
+
+    }
+    @Test void conjSeqWithDepVarSeq() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+        n.believe($("(x &&+1 #1)"), 0);
+        n.believe($("y"), 2);
+        //n.believe($("(y && #1)"), 2);
+        n.time.dur(8);
+
+        Task t = n.answerBelief($$("((x &&+1 #1) &&+1 y)"), 0);
+        assertNotNull(t);
+
+    }
+
 //    @Test public void testDynamicIntersectionInvalidCommon() throws Narsese.NarseseException {
 //        //TODO
 //        NAR n = NARS.shell();
