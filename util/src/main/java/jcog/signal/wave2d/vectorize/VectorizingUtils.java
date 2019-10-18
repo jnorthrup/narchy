@@ -338,8 +338,8 @@ public class VectorizingUtils {
 		while(pcnt<pathlength){
 
             double segtype1 = path.get(pcnt)[2];
-            double segtype2 = -1;
-            seqend=pcnt+1;
+			seqend=pcnt+1;
+			double segtype2 = -1;
 			while(
 					((path.get(seqend)[2]==segtype1) || (path.get(seqend)[2]==segtype2) || (segtype2==-1))
 					&& (seqend<(pathlength-1))){

@@ -119,7 +119,6 @@ public class LightingEngine implements Serializable {
         int left = Math.max(x - Constants.LIGHT_VALUE_SUN, 0);
         int right = Math.min(x + Constants.LIGHT_VALUE_SUN, width - 1);
         int top = Math.max(y - Constants.LIGHT_VALUE_SUN, 0);
-        int bottom = Math.min(y + Constants.LIGHT_VALUE_SUN, height - 1);
         List<LightingPoint> sources = new LinkedList<>();
 
 
@@ -140,6 +139,7 @@ public class LightingEngine implements Serializable {
                 zeroLightValue(i, top - 1);
             }
         }
+        int bottom = Math.min(y + Constants.LIGHT_VALUE_SUN, height - 1);
         boolean bufferBottom = (bottom < height - 1);
         if (bufferBottom) {
             if (bufferLeft) {

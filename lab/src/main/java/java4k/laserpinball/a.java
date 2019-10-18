@@ -40,10 +40,7 @@ public class a extends GamePanel {
 	@Override
 	public void run() {
 
-        final float BALL_RADIUS = 19.5f;
-		final int MAX_VELOCITY = 32;
-
-        int i;
+		int i;
 
 
         final String S = "ubc1bubcffua829ua81aua81aub127ub127ub1ffu9554" + "u8e66u8e66u9168u9168ua153uaf57u9290u9290u9593u9e9bub1ae" + "u700fu760fu760fu7615u7615u7015u7015u700fu830fu890fu890f"
@@ -268,8 +265,10 @@ public class a extends GamePanel {
         final int VK_LEFT_1 = 113;
         final int VK_LEFT_0 = 97;
         final int VK_SPACE = 32;
-        final float MAX_VELOCITY2 = MAX_VELOCITY * MAX_VELOCITY;
-        final float BALL_RADIUS2 = BALL_RADIUS * BALL_RADIUS;
+		final int MAX_VELOCITY = 32;
+		final float MAX_VELOCITY2 = MAX_VELOCITY * MAX_VELOCITY;
+		final float BALL_RADIUS = 19.5f;
+		final float BALL_RADIUS2 = BALL_RADIUS * BALL_RADIUS;
         final int EXTRA_BALL_BONUS = 15000;
         final int ITEMS = 12;
         final int FLIPPER_VELOCITY = 24;

@@ -74,19 +74,12 @@ public class ap extends GamePanel {
       final int SPRITE_GREEN_SHELL = 9;
       final int SPRITE_FAKE_ITEM_BOX = 13;
 
-      final int GAME_STATE_ENDING = 2;
-    
     final int MAP_O = 0;
 
       final int MAP_X = 0;
       final int MAP_Z = 2;
-    
-    final int SCREEN_WIDTH = 800;
-    final int SCREEN_HEIGHT = 600;
 
-      final int ROAD_COLORS = 8;
-    final int PLAYERS = 8;
-      final int MAP_LENGTH = 707;
+    final int MAP_LENGTH = 707;
 
       BufferedImage imageBuffer = new BufferedImage(
         800, 600, BufferedImage.TYPE_INT_RGB);
@@ -253,7 +246,8 @@ public class ap extends GamePanel {
     long nextFrameStartTime = 0;
       int startingLine = 0;
       int gameReset = 1;
-      int gameState = GAME_STATE_ENDING;
+    final int GAME_STATE_ENDING = 2;
+    int gameState = GAME_STATE_ENDING;
       int lightning = 0;
       boolean flash = true;
       boolean releasedC = true;
@@ -268,9 +262,11 @@ public class ap extends GamePanel {
       float[][] onb3 = new float[4][3];
       float[][] onb2 = new float[4][3];
       float[][] onb = new float[4][3];
-      ArrayList<float[]>[] shells = new ArrayList[PLAYERS];
+    final int PLAYERS = 8;
+    ArrayList<float[]>[] shells = new ArrayList[PLAYERS];
       float[][] players = new float[PLAYERS][];
-      Color[] roadColors = new Color[ROAD_COLORS];
+    final int ROAD_COLORS = 8;
+    Color[] roadColors = new Color[ROAD_COLORS];
       final int GAME_RESET_DELAY = 1024;
       final float ORBIT_RADIUS_D = 0.25f;
       final float ORBIT_RADIUS_X = 0.2f;
@@ -288,8 +284,10 @@ public class ap extends GamePanel {
       final int SCALE = 512;
       final int CAMERA_Z = 800;
       final int CAMERA_Y = 200;
-      final int SCREEN_CENTER_Y = SCREEN_HEIGHT / 2;
-      final int SCREEN_CENTER_X = SCREEN_WIDTH / 2;
+    final int SCREEN_HEIGHT = 600;
+    final int SCREEN_CENTER_Y = SCREEN_HEIGHT / 2;
+    final int SCREEN_WIDTH = 800;
+    final int SCREEN_CENTER_X = SCREEN_WIDTH / 2;
       final int GAME_STATE_PLAYING = 1;
       final int GAME_STATE_ATTRACT_MODE = 0;
       final int SPRITE_NONE = 17;

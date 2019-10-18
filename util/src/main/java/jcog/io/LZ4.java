@@ -216,11 +216,11 @@ public enum LZ4 { ;
 
         if (len > LAST_LITERALS + MIN_MATCH) {
 
-            int limit = end - LAST_LITERALS;
             ht.reset(len);
             int hashLog = ht.hashLog;
             PackedInts.Mutable hashTable = ht.hashTable;
 
+            int limit = end - LAST_LITERALS;
             int matchLimit = limit - MIN_MATCH;
             main:
             while (off <= limit) {
@@ -419,7 +419,6 @@ public enum LZ4 { ;
     public static void compressHC(byte[] src, int srcOff, int srcLen, ByteArrayDataOutput out, LZ4HCTable ht) {
 
         int srcEnd = srcOff + srcLen;
-        int matchLimit = srcEnd - LAST_LITERALS;
 
         int sOff = srcOff;
         int anchor = sOff++;
@@ -430,6 +429,7 @@ public enum LZ4 { ;
         Match match2 = new Match();
         Match match3 = new Match();
 
+        int matchLimit = srcEnd - LAST_LITERALS;
         int mfLimit = matchLimit - MIN_MATCH;
         main:
         while (sOff <= mfLimit) {

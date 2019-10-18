@@ -946,11 +946,11 @@ public abstract class Image extends Main {
             for (int i = 0; i < c; i++) {
                 int color = in[i];
                 int r = (color >> 0) & 0xFF;
-                int g = (color >> 8) & 0xFF;
-                int b = (color >> 16) & 0xFF;
 
                 r = gammatable[r] & 0xFF;
+                int g = (color >> 8) & 0xFF;
                 g = gammatable[g] & 0xFF;
+                int b = (color >> 16) & 0xFF;
                 b = gammatable[b] & 0xFF;
 
                 in[i] = (r << 0) | (g << 8) | (b << 16) | (color & 0xFF000000);
@@ -961,11 +961,11 @@ public abstract class Image extends Main {
             for (int i = 0; i < c; i++) {
                 int color = in[i];
                 int r = (color >> 0) & 0xFF;
-                int g = (color >> 8) & 0xFF;
-                int b = (color >> 16) & 0xFF;
 
                 r = gammatable[intensitytable[r] & 0xFF] & 0xFF;
+                int g = (color >> 8) & 0xFF;
                 g = gammatable[intensitytable[g] & 0xFF] & 0xFF;
+                int b = (color >> 16) & 0xFF;
                 b = gammatable[intensitytable[b] & 0xFF] & 0xFF;
 
                 in[i] = (r << 0) | (g << 8) | (b << 16) | (color & 0xFF000000);

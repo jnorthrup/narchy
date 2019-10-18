@@ -253,7 +253,6 @@ public class KIF implements Iterable<Task> {
 
     private Term formulaToTerm(Formula x, int level) {
         Term result = null;
-        boolean finished = false;
 
 
         int l = x.listLength();
@@ -301,6 +300,7 @@ public class KIF implements Iterable<Task> {
                     String root = xCar;
                     Term y = null;
                     boolean includeDoc = false;
+                    boolean finished = false;
                     switch (root) {
                         case "ListFn":
                             y = $.p(args);

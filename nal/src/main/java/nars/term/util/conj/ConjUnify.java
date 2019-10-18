@@ -18,13 +18,13 @@ public enum ConjUnify {
     /** conjunction unfiication when # subterms differ */
     public static boolean unifyConj(Term x, Term y, Subterms xx, Subterms yy, Unify u) {
         boolean result = false;
-        boolean finished = false;
 
         if (Subterms.possiblyUnifiableAssumingNotEqual(xx, yy, u.varBits | (x.hasXternal() || y.hasXternal() ? CONJ.bit : 0))) {
             int xdt = x.dt(), ydt = y.dt();
             boolean var = u.varIn(xx) || u.varIn(yy);
             if ((xdt == XTERNAL || ydt == XTERNAL)) {
 
+                boolean finished = false;
                 if (((xdt == XTERNAL && !xx.hasAny(CONJ)) || (ydt == XTERNAL && !yy.hasAny(CONJ)))) {
                     //one is a simple XTERNAL (no conj subterms) so will match if equal root
                     if (x.equalsRoot(y)) {

@@ -526,8 +526,6 @@ public class SequentialImpulseConstrainer implements Constrainer {
                             rel_pos1.sub(pos1, colObj0.transform);
                             rel_pos2.sub(pos2, colObj1.transform);
 
-                            float relaxation = 1f;
-
                             int frictionIndex = tmpSolverConstraintPool.size();
 
                             SolverConstraint solverConstraint = new SolverConstraint();
@@ -573,8 +571,9 @@ public class SequentialImpulseConstrainer implements Constrainer {
                                 vec.cross(solverConstraint.angularComponentB, rel_pos2);
                                 denom1 = rb1.getInvMass() + cp.normalWorldOnB.dot(vec);
                             }
-                            
 
+
+                            float relaxation = 1f;
                             float denom = relaxation / (denom0 + denom1);
                             solverConstraint.jacDiagABInv = denom;
 

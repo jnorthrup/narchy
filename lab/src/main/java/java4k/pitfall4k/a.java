@@ -81,27 +81,7 @@ public class a extends GamePanel {
 
 		final int OBJECT_ARRAY_SIZE = 8;
 
-        final int BROWN = 0x69690F;
-		final int DARK_BROWN = 0x484800; 
-		final int YELLOW = 0xFCFC54; 
-		final int LIGHT_ORANGE = 0xECC860; 
-		final int ORANGE = 0xFCBC74; 
-		final int RED = 0xA71A1A; 
-		final int YELLOW_GREEN = 0x86861D; 
-		final int PINK = 0xE46F6F; 
-		final int GREEN = 0x6E9C42; 
-		final int BLUE = 0x2D6D98; 
-		final int BLACK = 0x000000; 
-		final int DARK_GRAY = 0x8E8E8E; 
-		final int WHITE = 0xECECEC; 
-		final int GRAY = 0xD6D6D6; 
-		final int DARK_GREEN = 0x355F18; 
-		final int DARK_YELLOW = 0xBBBB35; 
-		final int DARKEST_GRAY = 0x6F6F6F; 
-		final int DARKEST_GREEN = 0x143C00; 
-		final int LIGHT_GREEN = 0x5CBA5C;
-
-        ArrayList<int[]> queue = new ArrayList<>();
+		ArrayList<int[]> queue = new ArrayList<>();
 
         int[] object = new int[OBJECT_ARRAY_SIZE];
 		queue.add(object);
@@ -166,7 +146,26 @@ public class a extends GamePanel {
                 + "      ooo     oooo    o oo   oo  o   oo o    o  o    o   o   o      " + "  o               aa      hh      hh      h       ss      ss     sss"
                 + "     sss s   sssss   ssss     ss      oo      ooo    ooooo   oo oo  " + "oo   o  oo   o oo    ooo       o                          aa      hh"
                 + "      hh      h       ss      ss s   sssss  sssss   s ss    s ss    " + "  ss      ooo     oooo oo oo o  ooo  o   oo  oo                     " + "                   ";
-        int[] COLORS = {BROWN,
+		final int LIGHT_GREEN = 0x5CBA5C;
+		final int DARKEST_GREEN = 0x143C00;
+		final int DARKEST_GRAY = 0x6F6F6F;
+		final int DARK_YELLOW = 0xBBBB35;
+		final int DARK_GREEN = 0x355F18;
+		final int GRAY = 0xD6D6D6;
+		final int WHITE = 0xECECEC;
+		final int DARK_GRAY = 0x8E8E8E;
+		final int BLACK = 0x000000;
+		final int BLUE = 0x2D6D98;
+		final int GREEN = 0x6E9C42;
+		final int PINK = 0xE46F6F;
+		final int YELLOW_GREEN = 0x86861D;
+		final int RED = 0xA71A1A;
+		final int ORANGE = 0xFCBC74;
+		final int LIGHT_ORANGE = 0xECC860;
+		final int YELLOW = 0xFCFC54;
+		final int DARK_BROWN = 0x484800;
+		final int BROWN = 0x69690F;
+		int[] COLORS = {BROWN,
                 DARK_BROWN,
                 YELLOW,
                 LIGHT_ORANGE,

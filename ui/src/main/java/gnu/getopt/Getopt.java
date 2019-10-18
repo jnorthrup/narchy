@@ -946,12 +946,11 @@ public class Getopt  {
      */
     public int
     getopt() {
-        int res;
-        int result = -1;
-        boolean finished = false;
         optarg = null;
 
+        int result = -1;
         if (!endparse) {
+            boolean finished = false;
             if (nextchar == null || nextchar.isEmpty()) {
 
 
@@ -1190,7 +1189,7 @@ public class Getopt  {
                 }
             }
         }
-        res = result;
+        int res = result;
 
 
         return res;

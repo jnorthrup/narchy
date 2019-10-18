@@ -48,12 +48,8 @@ public class a extends GamePanel {
         final int SPRITE_ATST = 1;
 
         final int SCREEN_SIZE = 362;
-		final int HALF_SCREEN_SIZE = SCREEN_SIZE / 2;
-        final int SKY_Y = 8192;
-        final int LASER_WIDTH = 32;
-        final float MAX_YAW_VELOCITY = 0.02f;
 
-        int i;
+		int i;
 
         AffineTransform transform = new AffineTransform();
 		BufferedImage image = new BufferedImage(362, 362, 1);
@@ -168,7 +164,8 @@ public class a extends GamePanel {
         int laserDelay = 0;
         final int MAX_LEVEL = 6;
         final int MAX_BATTLE_DISTANCE_2 = 268435456;
-        final float ROLL_SCALE = -1f / MAX_YAW_VELOCITY;
+		final float MAX_YAW_VELOCITY = 0.02f;
+		final float ROLL_SCALE = -1f / MAX_YAW_VELOCITY;
         final int HEIGHT_ACCELERATION = 1;
         final int MAX_HEIGHT_VELOCITY = 32;
         final float YAW_ACCELERATION = 0.0005f;
@@ -176,11 +173,14 @@ public class a extends GamePanel {
         final int HIGH_SPEED = 32;
         final int LASER_MAX_COUNT = 64;
         final int LASER_DELAY = 8;
-        final int LASER_HALF_WIDTH = LASER_WIDTH / 2;
+		final int LASER_WIDTH = 32;
+		final int LASER_HALF_WIDTH = LASER_WIDTH / 2;
         final int LASER_LENGTH = 1024;
         final int LASER_SPEED = 512;
-        final int MAX_Y = SKY_Y / 2;
-        final int MIN_Y = HALF_SCREEN_SIZE;
+		final int SKY_Y = 8192;
+		final int MAX_Y = SKY_Y / 2;
+		final int HALF_SCREEN_SIZE = SCREEN_SIZE / 2;
+		final int MIN_Y = HALF_SCREEN_SIZE;
         final int SCREEN_DISTANCE = SCREEN_SIZE;
         final int QUARTER_SCREEN_SIZE = SCREEN_SIZE / 4;
         final int ENEMY_RZ = 7;

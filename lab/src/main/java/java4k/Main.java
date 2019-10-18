@@ -175,8 +175,6 @@ public class Main extends JFrame {
         float rz = uz * Rx + vz * Ry + wz * Rz;
 
         float irx = 1f / rx;
-        float iry = 1f / ry;
-        float irz = 1f / rz;
 
         int dgx = 0;
 
@@ -192,7 +190,8 @@ public class Main extends JFrame {
           float ty = 0;
           int dgy = 0;
           int gy = GY;
-          if (ry > 0) {
+        float iry = 1f / ry;
+        if (ry > 0) {
           dgy = 1;
           ty = ((GRID_SIZE * (gy + 1)) - oy) * iry;
         } else {
@@ -202,7 +201,8 @@ public class Main extends JFrame {
           float tz = 0;
           int dgz = 0;
           int gz = GZ;
-          if (rz > 0) {
+        float irz = 1f / rz;
+        if (rz > 0) {
           dgz = 1;
           tz = ((GRID_SIZE * (gz + 1)) - oz) * irz;
         } else {

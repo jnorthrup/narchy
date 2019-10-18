@@ -344,7 +344,6 @@ public abstract class TerminalEmulator {
         byte b = getChar();
         term.draw_cursor();
 
-        int h;
         int w;
         if ((b & 0x80) != 0) {
             term.clear_area(x, y - char_height, x + char_width * 2, y);
@@ -372,8 +371,8 @@ public abstract class TerminalEmulator {
             x += (char_width * foo);
             w = char_width * foo;
 		}
-		h = char_height;
-		term.redraw(rx, ry - char_height, w, h);
+        int h = char_height;
+        term.redraw(rx, ry - char_height, w, h);
         term.setCursor(x, y);
         term.draw_cursor();
     }

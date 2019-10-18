@@ -430,8 +430,6 @@ public class SV_CCMDS {
 		String filename="";
 		try {
 
-			String mapcmd = "";
-
 			Com.DPrintf("SV_ReadServerFile()\n");
 
 			filename = FS.Gamedir() + "/save/current/server.ssv";
@@ -441,8 +439,8 @@ public class SV_CCMDS {
 			
 			f.readString();
 
-			
-			mapcmd = f.readString();
+
+			String mapcmd = f.readString();
 
 
 			String name = "";

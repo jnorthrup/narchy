@@ -583,13 +583,12 @@ public class Secure {
             flags &= ~SEC_ENCRYPT;
             int datalength = sec_data.getEnd() - sec_data.getPosition() - 8;
             byte[] data = new byte[datalength];
-            byte[] buffer = null;
             sec_data.copyToByteArray(data, 0, sec_data.getPosition() + 8,
                     datalength);
             byte[] signature = this.sign(this.sec_sign_key, 8, this.keylength, data,
                     datalength);
 
-            buffer = this.encrypt(data, datalength);
+            byte[] buffer = this.encrypt(data, datalength);
 
             sec_data.copyFromByteArray(signature, 0, sec_data.getPosition(), 8);
             sec_data.copyFromByteArray(buffer, 0, sec_data.getPosition() + 8,

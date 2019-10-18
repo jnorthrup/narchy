@@ -1233,11 +1233,11 @@ public enum MatrixOps { ;
 		double[] var = new double[n];
 		int degrees = (m - 1);
 		for (int j = 0; j < n; j++) {
-			double c = 0;
-			double s = 0;
+            double s = 0;
 			for (double[] aV1 : v) s += aV1[j];
 			s /= m;
-			for (double[] aV : v) c += (aV[j] - s) * (aV[j] - s);
+            double c = 0;
+            for (double[] aV : v) c += (aV[j] - s) * (aV[j] - s);
 			var[j] = c / degrees;
 		}
 		return var;

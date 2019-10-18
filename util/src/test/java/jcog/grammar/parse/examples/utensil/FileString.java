@@ -37,13 +37,12 @@ class FileString {
 	 */
 	public static String stringFromFileNamed(String fileName) throws IOException {
 
-		final int BUFLEN = 1024;
-
-        FileReader in = new FileReader(fileName);
+		FileReader in = new FileReader(fileName);
 		StringWriter out = new StringWriter();
 
 		try {
-            char[] buf = new char[BUFLEN];
+			final int BUFLEN = 1024;
+			char[] buf = new char[BUFLEN];
             while (true) {
 				int len = in.read(buf, 0, BUFLEN);
 				if (len == -1) {

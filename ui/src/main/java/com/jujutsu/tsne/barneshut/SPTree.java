@@ -320,9 +320,9 @@ public class SPTree {
 			for(int i = row_P[n]; i < row_P[n + 1]; i++) {
 
 
-                double D = 1.0;
                 ind2 = col_P[i] * dimension;
-				for(int d = 0; d < dimension; d++) { 
+                double D = 1.0;
+                for(int d = 0; d < dimension; d++) {
 					buff[d] = data[ind1 + d] - data[ind2 + d];
 					D += buff[d] * buff[d];
 				} 

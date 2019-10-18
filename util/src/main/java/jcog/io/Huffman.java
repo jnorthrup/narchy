@@ -657,8 +657,8 @@ public class Huffman {
         int freqDivide = 1;
         HuffmanTree objectTree;
         while (true) {
-            int longTreeId = 0;
             nodeId = 0;
+            int longTreeId = 0;
             while (trees.size() > 1) {
                 HuffmanTree hf1 = nextTree();
                 HuffmanTree hf2 = nextTree();

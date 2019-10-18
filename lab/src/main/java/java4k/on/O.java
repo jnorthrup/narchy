@@ -676,7 +676,6 @@ public class O extends Applet implements Runnable {
 									
 									
 									int alpha = STATIC[cpos + PART_IDX_COMPONENT_IDX_GRADIENT];
-									int gradient = (alpha & 0xff) + 1;
 
 
 									int startX = partx + ((scaleX * STATIC[cpos + PART_IDX_COMPONENT_IDX_X]) >> SHIP_SCALE_X_SHR);
@@ -725,6 +724,7 @@ public class O extends Applet implements Runnable {
 										if (endY > RENDER_HEIGHT) {
 											endY = RENDER_HEIGHT;
 										}
+										int gradient = (alpha & 0xff) + 1;
 										for (int color = (((gradient * colorR)) & 0xff0000) | (((gradient * colorG) >>> 8) & 0xff00) | (((gradient * colorB) >>> 16) & 0xff); y < endY; y++) {
 											for (int x = startX; x < endX; x++) {
 												

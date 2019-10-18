@@ -282,9 +282,8 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
             int bucket = signSafeMod(keyHash, capacity);
 
 
-            int firstDeletedKey = -1;
-
             try {
+                int firstDeletedKey = -1;
                 while (true) {
                     AtomicReferenceArray table = this.table;
                     K storedKey = (K) table.getOpaque(bucket);

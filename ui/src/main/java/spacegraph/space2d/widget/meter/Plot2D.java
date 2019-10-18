@@ -85,8 +85,6 @@ public class Plot2D extends Widget {
 
             int histSize = s.size(), histCap = s.capacity();
 
-            float dx = (w / histCap);
-
 
             float[] color = s.color();
             float r = color[0], g = color[1], b = color[2];
@@ -99,6 +97,7 @@ public class Plot2D extends Widget {
             float laneOffset = laneHeight * i;
 
             float a = 0;
+            float dx = (w / histCap);
             float x = (histCap - histSize) * dx;
             for (int j = 0; j < histSize; j++) {
 

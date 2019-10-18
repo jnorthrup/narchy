@@ -652,8 +652,8 @@ public class Rdesktop {
                                 
                                 
                                 String msg1 = "The terminal server disconnected before licence negotiation completed.";
-                                String msg2 = "Possible cause: terminal server could not issue a licence.";
                                 logger.warn(msg1);
+                                String msg2 = "Possible cause: terminal server could not issue a licence.";
                                 logger.warn(msg2);
                                 String[] msg = {msg1, msg2};
                                 window.showErrorDialog(msg);

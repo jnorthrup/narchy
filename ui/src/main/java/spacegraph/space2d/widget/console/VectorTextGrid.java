@@ -54,11 +54,9 @@ import java.awt.*;
         /**
          * percent of each grid cell width filled with the character
          */
-        float charScaleX1 = 0.85f;
         /**
          * percent of each grid cell height filled with the character
          */
-        float charScaleY1 = 0.85f;
 
 
         long t = System.currentTimeMillis();
@@ -80,7 +78,9 @@ import java.awt.*;
         bg = null;
 
         float dz = 0f;
+        float charScaleY1 = 0.85f;
         float charScaleY = charScaleY1;
+        float charScaleX1 = 0.85f;
         float charScaleX = charScaleX1;
         for (int row = 0; row < rows; row++) {
 

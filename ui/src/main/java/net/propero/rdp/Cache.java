@@ -327,11 +327,11 @@ public class Cache {
      */
     public int[] getDesktopInt(int offset, int cx, int cy)
             throws RdesktopException {
-        int length = cx * cy;
 
         if (offset > highdeskcache.length)
             offset = 0;
 
+        int length = cx * cy;
         if (offset + length <= highdeskcache.length) {
             int[] data = new int[length];
             int pdata = 0;

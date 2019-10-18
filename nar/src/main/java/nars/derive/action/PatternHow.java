@@ -824,52 +824,52 @@ public class PatternHow extends CondHow {
         /** task,belief or belief,task ordering heuristic
          *  +1 = task first, -1 = belief first, 0 = doesnt matter
          **/
-        protected static int fwd(Term T, Term B) {
+        static int fwd(Term T, Term B) {
 
-            if (T.equals(B))
+            if (!T.equals(B)) {//if one is a variable, match the other since it will be more specific and fail faster
+                if (T instanceof Variable && B instanceof Variable) return 0;
+                if (B instanceof Variable) return +1;
+                if (T instanceof Variable) return -1;
+
+                //match ellipsis-containing term last
+                boolean te = Terms.hasEllipsisRecurse(T), be = Terms.hasEllipsisRecurse(B);
+                if (te || be) {
+                    if (te && !be) return +1;
+                    else if (!te && be) return -1;
+                }
+
+
+                //first if one is contained recursively by the other
+                boolean Tb = T.containsRecursively(B);
+                boolean Bt = B.containsRecursively(T);
+                if (Tb && !Bt) return -1; //belief first as it is a part of Task
+                if (Bt && !Tb) return +1; //task first as it is a part of Belief
+
+                // first which is more specific in its constant structure
+                int taskBits = Integer.bitCount(T.structure() & ~Op.Variable);
+                int belfBits = Integer.bitCount(B.structure() & ~Op.Variable);
+                if (belfBits > taskBits) return -1;
+                if (taskBits > belfBits) return +1;
+
+                //first which has fewer variables
+                if (T.varPattern() > B.varPattern()) return -1;
+                if (B.varPattern() > T.varPattern()) return +1;
+
+                //first which is smaller
+                return Integer.compare(B.volume(), T.volume());
+            } else {
                 return 0;
-
-            //if one is a variable, match the other since it will be more specific and fail faster
-            if (T instanceof Variable && B instanceof Variable) return 0;
-            if (B instanceof Variable) return +1;
-            if (T instanceof Variable) return -1;
-
-            //match ellipsis-containing term last
-            boolean te = Terms.hasEllipsisRecurse(T), be = Terms.hasEllipsisRecurse(B);
-            if (te || be) {
-                if (te && !be) return +1;
-                else if (!te && be) return -1;
             }
-
-
-            //first if one is contained recursively by the other
-            boolean Tb = T.containsRecursively(B);
-            boolean Bt = B.containsRecursively(T);
-            if (Tb && !Bt) return -1; //belief first as it is a part of Task
-            if (Bt && !Tb) return +1; //task first as it is a part of Belief
-
-            // first which is more specific in its constant structure
-            int taskBits = Integer.bitCount(T.structure() & ~Op.Variable);
-            int belfBits = Integer.bitCount(B.structure() & ~Op.Variable);
-            if (belfBits > taskBits) return  -1;
-            if (taskBits > belfBits) return +1;
-
-            //first which has fewer variables
-            if (T.varPattern() > B.varPattern()) return -1;
-            if (B.varPattern() > T.varPattern()) return +1;
-
-            //first which is smaller
-            return Integer.compare(B.volume(), T.volume());
 
         }
 
 
-        protected final boolean unify(Derivation d, boolean dir, boolean finish) {
+        final boolean unify(Derivation d, boolean dir, boolean finish) {
             return d.unify(dir ? taskPat : beliefPat, dir ? d.taskTerm : d.beliefTerm, finish ? taskify : null);
         }
 
         /** true: task first, false: belief first */
-        protected boolean fwd(Derivation d) {
+        boolean fwd(Derivation d) {
             switch (order) {
                 case +1: return true;
                 case -1: return false;

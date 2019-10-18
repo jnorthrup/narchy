@@ -116,14 +116,9 @@ public class A extends GamePanel {
 		
 		final int SCREEN_WIDTH = 672;
 		final int SCREEN_HEIGHT = 600;
-		final int WORLD_SIZE_X = 1024;
-		final int WORLD_SIZE_Y = 29;
-		final int WORLD_SIZE_Z = 1024;
-
-        final int LIGHT_DISTANCE = 84;
 
 
-        BufferedImage screen = new BufferedImage(SCREEN_WIDTH, SCREEN_HEIGHT, BufferedImage.TYPE_INT_RGB);
+		BufferedImage screen = new BufferedImage(SCREEN_WIDTH, SCREEN_HEIGHT, BufferedImage.TYPE_INT_RGB);
 		int[] pixels = ((DataBufferInt) screen.getRaster().getDataBuffer()).getData();
 		Graphics gfx = screen.getGraphics();
 
@@ -138,7 +133,8 @@ public class A extends GamePanel {
 		}
 
 
-        int k = LIGHT_DISTANCE;
+		final int LIGHT_DISTANCE = 84;
+		int k = LIGHT_DISTANCE;
         final String STRING_COLORS = "\u0080\u00FF\u0000" +
                 "\u00EF\u00E4\u00B0" +
                 "\u0000\u0040\u0000" +
@@ -269,7 +265,10 @@ public class A extends GamePanel {
         ArrayList<int[]> entities = null;
         Graphics appletGraphics = null;
         byte[][] maze = null;
-        byte[][][] box = new byte[WORLD_SIZE_X][WORLD_SIZE_Y][WORLD_SIZE_Z];
+		final int WORLD_SIZE_Z = 1024;
+		final int WORLD_SIZE_Y = 29;
+		final int WORLD_SIZE_X = 1024;
+		byte[][][] box = new byte[WORLD_SIZE_X][WORLD_SIZE_Y][WORLD_SIZE_Z];
         final String STRING_LEVELS = "\u0004\u0004\u001C\u001C" +
                 "\u0002\u0003\u0005\u0000" +
                 "\u0000\u0000\u000E\u0001" +

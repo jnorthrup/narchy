@@ -836,10 +836,7 @@ public class a extends GamePanel {
 
       final int ENEMY_TYPE_RED = 0;
 
-      final int MAP_WIDTH = 16;
-    final int MAP_HEIGHT = 12;
-
-      BufferedImage[] tiles = new BufferedImage[TILES];
+    BufferedImage[] tiles = new BufferedImage[TILES];
     BufferedImage imageBuffer = new BufferedImage(
         FRAME_WIDTH, FRAME_HEIGHT, BufferedImage.TYPE_INT_RGB);
     Graphics2D g = imageBuffer.createGraphics();
@@ -922,7 +919,9 @@ public class a extends GamePanel {
       boolean blockClear = false;
       boolean keysReleased = false;
       Graphics2D g2 = null;
-      int[][] map = new int[MAP_HEIGHT][MAP_WIDTH];
+    final int MAP_HEIGHT = 12;
+    final int MAP_WIDTH = 16;
+    int[][] map = new int[MAP_HEIGHT][MAP_WIDTH];
       int[][] blocks = new int[10][2];
       ArrayList<int[]> enemies = new ArrayList<>();
       Color BACKGROUND_COLOR = new Color(0x7F92FF);
