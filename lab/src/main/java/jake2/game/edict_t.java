@@ -290,87 +290,110 @@ public class edict_t {
     public boolean setField(String key, String value) {
         boolean result = true;
 
-        if ("classname".equals(key)) {
-            classname = GameSpawn.ED_NewString(value);
-        } else if ("model".equals(key)) {
-            model = GameSpawn.ED_NewString(value);
-        } else if ("spawnflags".equals(key)) {
-            spawnflags = Lib.atoi(value);
-        } else if ("speed".equals(key)) {
-            speed = Lib.atof(value);
-        } else if ("accel".equals(key)) {
-            accel = Lib.atof(value);
-        } else if ("decel".equals(key)) {
-            decel = Lib.atof(value);
-        } else if ("target".equals(key)) {
-            target = GameSpawn.ED_NewString(value);
-        } else if ("targetname".equals(key)) {
-            targetname = GameSpawn.ED_NewString(value);
-        } else if ("pathtarget".equals(key)) {
-            pathtarget = GameSpawn.ED_NewString(value);
-        } else if ("deathtarget".equals(key)) {
-            deathtarget = GameSpawn.ED_NewString(value);
-        } else if ("killtarget".equals(key)) {
-            killtarget = GameSpawn.ED_NewString(value);
-        } else if ("combattarget".equals(key)) {
-            combattarget = GameSpawn.ED_NewString(value);
-        } else if ("message".equals(key)) {
-            message = GameSpawn.ED_NewString(value);
-        } else if ("team".equals(key)) {
-            team = GameSpawn.ED_NewString(value);
-            Com.dprintln("Monster Team:" + team);
-        } else if ("wait".equals(key)) {
-            wait = Lib.atof(value);
-        } else if ("delay".equals(key)) {
-            delay = Lib.atof(value);
-        } else if ("random".equals(key)) {
-            random = Lib.atof(value);
-        } else if ("move_origin".equals(key)) {
-            move_origin = Lib.atov(value);
-        } else if ("move_angles".equals(key)) {
-            move_angles = Lib.atov(value);
-        } else if ("style".equals(key)) {
-            style = Lib.atoi(value);
-        } else if ("count".equals(key)) {
-            count = Lib.atoi(value);
-        } else if ("health".equals(key)) {
-            health = Lib.atoi(value);
-        } else if ("sounds".equals(key)) {
-            sounds = Lib.atoi(value);
-        } else if (!"light".equals(key)) {
-            switch (key) {
-                case "dmg":
-                    dmg = Lib.atoi(value);
-                    break;
-                case "mass":
-                    mass = Lib.atoi(value);
-                    break;
-                case "volume":
-                    volume = Lib.atof(value);
-                    break;
-                case "attenuation":
-                    attenuation = Lib.atof(value);
-                    break;
-                case "map":
-                    map = GameSpawn.ED_NewString(value);
-                    break;
-                case "origin":
-                    s.origin = Lib.atov(value);
-                    break;
-                case "angles":
-                    s.angles = Lib.atov(value);
-                    break;
-                case "angle":
-                    s.angles = new float[]{0, Lib.atof(value), 0};
-                    break;
-                case "item":
-                    game_import_t.error("ent.set(\"item\") called.");
-                    break;
-                default:
-                    result = false;
-                    break;
-            }
+        switch (key) {
+            case "classname":
+                classname = GameSpawn.ED_NewString(value);
+                break;
+            case "model":
+                model = GameSpawn.ED_NewString(value);
+                break;
+            case "spawnflags":
+                spawnflags = Lib.atoi(value);
+                break;
+            case "speed":
+                speed = Lib.atof(value);
+                break;
+            case "accel":
+                accel = Lib.atof(value);
+                break;
+            case "decel":
+                decel = Lib.atof(value);
+                break;
+            case "target":
+                target = GameSpawn.ED_NewString(value);
+                break;
+            case "targetname":
+                targetname = GameSpawn.ED_NewString(value);
+                break;
+            case "pathtarget":
+                pathtarget = GameSpawn.ED_NewString(value);
+                break;
+            case "deathtarget":
+                deathtarget = GameSpawn.ED_NewString(value);
+                break;
+            case "killtarget":
+                killtarget = GameSpawn.ED_NewString(value);
+                break;
+            case "combattarget":
+                combattarget = GameSpawn.ED_NewString(value);
+                break;
+            case "message":
+                message = GameSpawn.ED_NewString(value);
+                break;
+            case "team":
+                team = GameSpawn.ED_NewString(value);
+                Com.dprintln("Monster Team:" + team);
+                break;
+            case "wait":
+                wait = Lib.atof(value);
+                break;
+            case "delay":
+                delay = Lib.atof(value);
+                break;
+            case "random":
+                random = Lib.atof(value);
+                break;
+            case "move_origin":
+                move_origin = Lib.atov(value);
+                break;
+            case "move_angles":
+                move_angles = Lib.atov(value);
+                break;
+            case "style":
+                style = Lib.atoi(value);
+                break;
+            case "count":
+                count = Lib.atoi(value);
+                break;
+            case "health":
+                health = Lib.atoi(value);
+                break;
+            case "sounds":
+                sounds = Lib.atoi(value);
+            case "light":
+                break;
+            case "dmg":
+                dmg = Lib.atoi(value);
+                break;
+            case "mass":
+                mass = Lib.atoi(value);
+                break;
+            case "volume":
+                volume = Lib.atof(value);
+                break;
+            case "attenuation":
+                attenuation = Lib.atof(value);
+                break;
+            case "map":
+                map = GameSpawn.ED_NewString(value);
+                break;
+            case "origin":
+                s.origin = Lib.atov(value);
+                break;
+            case "angles":
+                s.angles = Lib.atov(value);
+                break;
+            case "angle":
+                s.angles = new float[]{0, Lib.atof(value), 0};
+                break;
+            case "item":
+                game_import_t.error("ent.set(\"item\") called.");
+                break;
+            default:
+                result = false;
+                break;
         }
+
 
         return result;
     }
