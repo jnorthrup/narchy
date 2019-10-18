@@ -264,13 +264,18 @@ public enum DynamicConjTruth {
     static boolean pairVars(ConjList c) {
         int cc = c.size(), ccs = cc;
         boolean removed = false;
-        nextEvent: for (int i = 0; i < cc; ) {
+        nextEvent: for (int i = 0; i < ccs; i++) {
             Term v = c.get(i);
-            if (v instanceof Variable && v.op()==VAR_DEP) {
+            if (v == null) continue;
+            Term vu = v.unneg();
+            if (vu instanceof Variable && vu.op()==VAR_DEP) {
                 c.setFast(i, null);
                 removed = true;
                 cc--;
                 //choose random other event to pair with
+
+                //TODO prefer smaller non-conj, non-disj event
+
                 if (cc == 0)
                     throw new WTF(); //nothing remains
 
@@ -278,6 +283,7 @@ public enum DynamicConjTruth {
                 Random rng = ThreadLocalRandom.current();
                 for (int r = 0; r < ccs; r++) { //max tries
                     int pair = rng.nextInt(ccs);
+                    if (pair == i) continue;
                     Term p = c.get(pair);
                     if (p !=null) {
                         int dt = (int) (vWhen - c.when(pair));
@@ -289,9 +295,7 @@ public enum DynamicConjTruth {
                     }
                 }
                 return false;
-
-            } else
-                i++;
+            }
         }
         if (removed)
             c.removeNulls();
