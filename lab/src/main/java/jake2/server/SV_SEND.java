@@ -45,15 +45,17 @@ public class SV_SEND {
 	public static final StringBuffer sv_outputbuf = new StringBuffer();
 
 	public static void SV_FlushRedirect(int sv_redirected, byte[] outputbuf) {
-		if (sv_redirected == Defines.RD_PACKET) {
-			String s = ("print\n" + Lib.CtoJava(outputbuf));
-			Netchan.Netchan_OutOfBand(Defines.NS_SERVER, Globals.net_from, s.length(), Lib.stringToBytes(s));
+		switch (sv_redirected) {
+			case Defines.RD_PACKET:
+				String s = ("print\n" + Lib.CtoJava(outputbuf));
+				Netchan.Netchan_OutOfBand(Defines.NS_SERVER, Globals.net_from, s.length(), Lib.stringToBytes(s));
+				break;
+			case Defines.RD_CLIENT:
+				MSG.WriteByte(SV_MAIN.sv_client.netchan.message, Defines.svc_print);
+				MSG.WriteByte(SV_MAIN.sv_client.netchan.message, Defines.PRINT_HIGH);
+				MSG.WriteString(SV_MAIN.sv_client.netchan.message, outputbuf);
+				break;
 		}
-		else if (sv_redirected == Defines.RD_CLIENT) {
-			MSG.WriteByte(SV_MAIN.sv_client.netchan.message, Defines.svc_print);
-			MSG.WriteByte(SV_MAIN.sv_client.netchan.message, Defines.PRINT_HIGH);
-			MSG.WriteString(SV_MAIN.sv_client.netchan.message, outputbuf);
-        }
 	}
 	/*
 	=============================================================================

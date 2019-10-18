@@ -319,11 +319,14 @@ public class I4Kopter extends Applet {
 
         int keyID = k.getID();
 
-        if(keyID == KeyEvent.KEY_PRESSED){
-            keyPressed = true;
-            paused=false;
-        }else if(keyID == KeyEvent.KEY_RELEASED){
-            keyPressed=false;
+        switch (keyID) {
+            case KeyEvent.KEY_PRESSED:
+                keyPressed = true;
+                paused = false;
+                break;
+            case KeyEvent.KEY_RELEASED:
+                keyPressed = false;
+                break;
         }
 
         

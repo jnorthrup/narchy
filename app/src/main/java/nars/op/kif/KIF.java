@@ -257,131 +257,134 @@ public class KIF implements Iterable<Task> {
 
 
         int l = x.listLength();
-        if (l == -1) {
+        switch (l) {
+            case -1:
 //            if (x.theFormula.contains("(")) {
 //                if (!x.listP())
 //                    return null;
 //            } else
-            result = atomic(x.theFormula);
-        } else if (l == 1) {
-            result = $.p(formulaToTerm(x.getArgument(0), level + 1));
-        } else {
-            if (l == 0) {
-                throw new WTF();
-            }
-            List<String> sargs = IntStream.range(1, l).mapToObj(x::getArgument).collect(Collectors.toList());
-            List<Term> args = sargs.stream().map(sarg -> formulaToTerm(sarg, level + 1)).collect(Collectors.toList());
-            if (args.contains(null)) {
-                result = Bool.Null;
-            } else if (args.isEmpty()) {
-                result = Bool.Null;
-            } else { /**
-             *
-             *
-             * https:
-             * def special_link_type(predicate):
-             mapping = {
-             '=>':types.ImplicationLink,
-             '<=>':types.EquivalenceLink,
-             'and':types.AndLink,
-             'or':types.OrLink,
-             'not':types.NotLink,
-             'instance':types.MemberLink,
-             'attribute':types.InheritanceLink,
-             'member':types.MemberLink,
-             'subclass':types.InheritanceLink,
-             'exists':types.ExistsLink,
-             'forall':types.ForAllLink,
-             'causes':types.PredictiveImplicationLink
-             *
-             */String xCar = x.car();
-                String root = xCar;
-                Term y = null;
-                boolean includeDoc = false;
-                switch (root) {
-                    case "ListFn":
-                        y = $.p(args);
-                        break;
+                result = atomic(x.theFormula);
+                break;
+            case 1:
+                result = $.p(formulaToTerm(x.getArgument(0), level + 1));
+                break;
+            default:
+                if (l == 0) {
+                    throw new WTF();
+                }
+                List<String> sargs = IntStream.range(1, l).mapToObj(x::getArgument).collect(Collectors.toList());
+                List<Term> args = sargs.stream().map(sarg -> formulaToTerm(sarg, level + 1)).collect(Collectors.toList());
+                if (args.contains(null)) {
+                    result = Bool.Null;
+                } else if (args.isEmpty()) {
+                    result = Bool.Null;
+                } else { /**
+                 *
+                 *
+                 * https:
+                 * def special_link_type(predicate):
+                 mapping = {
+                 '=>':types.ImplicationLink,
+                 '<=>':types.EquivalenceLink,
+                 'and':types.AndLink,
+                 'or':types.OrLink,
+                 'not':types.NotLink,
+                 'instance':types.MemberLink,
+                 'attribute':types.InheritanceLink,
+                 'member':types.MemberLink,
+                 'subclass':types.InheritanceLink,
+                 'exists':types.ExistsLink,
+                 'forall':types.ForAllLink,
+                 'causes':types.PredictiveImplicationLink
+                 *
+                 */String xCar = x.car();
+                    String root = xCar;
+                    Term y = null;
+                    boolean includeDoc = false;
+                    switch (root) {
+                        case "ListFn":
+                            y = $.p(args);
+                            break;
 
 
-                    case "exhaustiveAttribute": {
-                        y = INH.the(args.get(0), Op.SETi.the(args.subList(1, args.size())));
-                        break;
-                    }
-
-
-                    case "subclass":
-                    case "instance":
-                    case "attribute":
-                    case "subrelation":
-                    case "subAttribute":
-
-                        if (args.size() != 2) {
-                            throw new RuntimeException("instance expects 2 arguments");
-                        } else {
-                            Term pred = args.get(1);
-
-                            Term subj = args.get(0);
-
-                            if (symmetricRelations.contains(pred)) {
-                                symmetricRelations.add(subj);
-                            }
-
-                            if (pred.equals(SYMMETRIC_RELATION) && !subj.hasVars()) {
-                                finished = true;
-                                break;
-                            }
-
-                            if (!includePredArgCounts && predExclusions.contains(pred)) {
-                                finished = true;
-                                break;
-                            }
-
-                            if ("instance".equals(root))
-                                y = $.inst(subj, pred);
-                            else
-                                y = INH.the(subj, pred);
-
-                            if (y instanceof Bool) {
-                                result = y;
-                                finished = true;
-                                break;
-                            }
+                        case "exhaustiveAttribute": {
+                            y = INH.the(args.get(0), Op.SETi.the(args.subList(1, args.size())));
+                            break;
                         }
 
-                        break;
 
-                    case "relatedInternalConcept":
-                        /*(documentation relatedInternalConcept EnglishLanguage "Means that the two arguments are related concepts within the SUMO, i.e. there is a significant similarity of meaning between them. To indicate a meaning relation between a SUMO concept and a concept from another source, use the Predicate relatedExternalConcept.")            */
-                        boolean includeRelatedInternalConcept = true;
-                        if (includeRelatedInternalConcept) {
+                        case "subclass":
+                        case "instance":
+                        case "attribute":
+                        case "subrelation":
+                        case "subAttribute":
+
                             if (args.size() != 2) {
-                                throw new UnsupportedOperationException("relatedInternalConcept expects 2 arguments");
+                                throw new RuntimeException("instance expects 2 arguments");
                             } else {
-                                y = SIM.the(args.get(0), args.get(1));
+                                Term pred = args.get(1);
+
+                                Term subj = args.get(0);
+
+                                if (symmetricRelations.contains(pred)) {
+                                    symmetricRelations.add(subj);
+                                }
+
+                                if (pred.equals(SYMMETRIC_RELATION) && !subj.hasVars()) {
+                                    finished = true;
+                                    break;
+                                }
+
+                                if (!includePredArgCounts && predExclusions.contains(pred)) {
+                                    finished = true;
+                                    break;
+                                }
+
+                                if ("instance".equals(root))
+                                    y = $.inst(subj, pred);
+                                else
+                                    y = INH.the(subj, pred);
+
+                                if (y instanceof Bool) {
+                                    result = y;
+                                    finished = true;
+                                    break;
+                                }
                             }
-                        }
-                        break;
 
-                    case "greaterThan":
-                        if (args.size() == 2)
-                            y = $.func("cmp", args.get(0), args.get(1), Int.the(+1));
-                        break;
-                    case "lessThan":
-                        if (args.size() == 2)
-                            y = $.func("cmp", args.get(0), args.get(1), Int.the(-1));
-                        break;
+                            break;
 
-                    case "equal":
-                        y = Equal.the(args.get(0), args.get(1));
-                        break;
+                        case "relatedInternalConcept":
+                            /*(documentation relatedInternalConcept EnglishLanguage "Means that the two arguments are related concepts within the SUMO, i.e. there is a significant similarity of meaning between them. To indicate a meaning relation between a SUMO concept and a concept from another source, use the Predicate relatedExternalConcept.")            */
+                            boolean includeRelatedInternalConcept = true;
+                            if (includeRelatedInternalConcept) {
+                                if (args.size() != 2) {
+                                    throw new UnsupportedOperationException("relatedInternalConcept expects 2 arguments");
+                                } else {
+                                    y = SIM.the(args.get(0), args.get(1));
+                                }
+                            }
+                            break;
+
+                        case "greaterThan":
+                            if (args.size() == 2)
+                                y = $.func("cmp", args.get(0), args.get(1), Int.the(+1));
+                            break;
+                        case "lessThan":
+                            if (args.size() == 2)
+                                y = $.func("cmp", args.get(0), args.get(1), Int.the(-1));
+                            break;
+
+                        case "equal":
+                            y = Equal.the(args.get(0), args.get(1));
+                            break;
 
 
-                    case "<=>":
+                        case "<=>":
 
-                        y = impl(args.get(0), args.get(1), false);
-                        break;
-                    //                if (!(args.get(0).hasVars() || args.get(1).hasVars())) {
+                            y = impl(args.get(0), args.get(1), false);
+                            break;
+                        //                if (!(args.get(0).hasVars() || args.get(1).hasVars())) {
 //
 //                    //y = impl(args.get(0), args.get(1), false);
 //                    y = SIM.the(args.get(0), args.get(1));
@@ -390,93 +393,93 @@ public class KIF implements Iterable<Task> {
 //                }
 
 
-                    case "forall":
-                        String forVar = sargs.get(0);
-                        if (forVar.startsWith("(")) {
-                            forVar = forVar.substring(1, forVar.length() - 1);
-                        }
-                        String[] forVars = forVar.split(" ");
-                        boolean missingAParamVar = Arrays.stream(forVars).anyMatch(vv -> !sargs.get(1).contains(vv));
-                        if (!missingAParamVar) {
+                        case "forall":
+                            String forVar = sargs.get(0);
+                            if (forVar.startsWith("(")) {
+                                forVar = forVar.substring(1, forVar.length() - 1);
+                            }
+                            String[] forVars = forVar.split(" ");
+                            boolean missingAParamVar = Arrays.stream(forVars).anyMatch(vv -> !sargs.get(1).contains(vv));
+                            if (!missingAParamVar) {
+                                y = args.get(1);
+                            } else {
+                                y = impl(args.get(0), args.get(1), true);
+                            }
+                            break;
+                        case "exists":
                             y = args.get(1);
-                        } else {
+                            break;
+                        case "=>":
                             y = impl(args.get(0), args.get(1), true);
-                        }
-                        break;
-                    case "exists":
-                        y = args.get(1);
-                        break;
-                    case "=>":
-                        y = impl(args.get(0), args.get(1), true);
-                        break;
+                            break;
 
 
 //            case "causes":
 //                y = IMPL.the(args.get(0), 1, args.get(1));
 //                break;
 
-                    case "cooccur":
-                    case "during":
-                        y = CONJ.the(args.get(0), 0, args.get(1));
-                        break;
+                        case "cooccur":
+                        case "during":
+                            y = CONJ.the(args.get(0), 0, args.get(1));
+                            break;
 //            case "meetsTemporally":
 //                y = CONJ.the(args.get(0), +1, args.get(1));
 //                break;
 
-                    case "domain":
+                        case "domain":
 
-                        if (level == 0) {
-                            if (args.size() >= 3) {
-                                Term subj = (args.get(0));
-                                Term arg = (args.get(1));
-                                Term type = (args.get(2));
-                                if (type.equals(ASYMMETRIC_RELATION)) {
-                                    finished = true;
-                                    break;
+                            if (level == 0) {
+                                if (args.size() >= 3) {
+                                    Term subj = (args.get(0));
+                                    Term arg = (args.get(1));
+                                    Term type = (args.get(2));
+                                    if (type.equals(ASYMMETRIC_RELATION)) {
+                                        finished = true;
+                                        break;
+                                    }
+                                    FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
+
+                                    d.domain.updateValue(((Int) arg).i, () -> type, domainRangeMerger(type));
+
+                                } else {
+                                    throw new UnsupportedOperationException("unrecognized domain spec");
                                 }
-                                FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
-
-                                d.domain.updateValue(((Int) arg).i, () -> type, domainRangeMerger(type));
-
-                            } else {
-                                throw new UnsupportedOperationException("unrecognized domain spec");
+                                finished = true;
+                                break;
                             }
-                            finished = true;
                             break;
-                        }
-                        break;
-                    case "range":
-                        if (level == 0) {
-                            if (args.size() == 2) {
-                                Term subj = args.get(0);
-                                Term range = args.get(1);
-                                if (range.equals(ASYMMETRIC_RELATION)) {
-                                    finished = true;
-                                    break;
+                        case "range":
+                            if (level == 0) {
+                                if (args.size() == 2) {
+                                    Term subj = args.get(0);
+                                    Term range = args.get(1);
+                                    if (range.equals(ASYMMETRIC_RELATION)) {
+                                        finished = true;
+                                        break;
+                                    }
+                                    FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
+                                    d.range = range;
+                                } else {
+                                    throw new UnsupportedOperationException("unrecognized range spec");
                                 }
-                                FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
-                                d.range = range;
-                            } else {
-                                throw new UnsupportedOperationException("unrecognized range spec");
+                                finished = true;
+                                break;
                             }
-                            finished = true;
                             break;
-                        }
-                        break;
 
-                    case "AdditionFn":
-                        if (args.size() == 2)
-                            y = MathFunc.add(args.get(0), args.get(1));
-                        else
-                            throw new TODO();
-                        break;
+                        case "AdditionFn":
+                            if (args.size() == 2)
+                                y = MathFunc.add(args.get(0), args.get(1));
+                            else
+                                throw new TODO();
+                            break;
 
-                    case "MultiplicationFn":
-                        if (args.size() == 2)
-                            y = MathFunc.mul(args.get(0), args.get(1));
-                        else
-                            throw new TODO();
-                        break;
+                        case "MultiplicationFn":
+                            if (args.size() == 2)
+                                y = MathFunc.mul(args.get(0), args.get(1));
+                            else
+                                throw new TODO();
+                            break;
 
 //                if (args.size() > 2)
 //                    y = disjoint(args.subList(1, args.size()), args.get(0));
@@ -484,102 +487,103 @@ public class KIF implements Iterable<Task> {
 //                    y = Equal.the(args.get(0), args.get(1)).neg();
 //                break;
 
-                    case "disjointDecomposition":
-                    case "partition":
-                    case "disjointRelation":
-                    case "disjoint":
-                    case "inverse":
-                    case "contraryAttribute":
+                        case "disjointDecomposition":
+                        case "partition":
+                        case "disjointRelation":
+                        case "disjoint":
+                        case "inverse":
+                        case "contraryAttribute":
 
 //                if (args.size() > 2)
-                        y = $.inh(VarAuto, SETe.the(args));
+                            y = $.inh(VarAuto, SETe.the(args));
 //                else
 //                    y = Equal.the(args.get(0), args.get(1)).neg();
 
-                        break;
+                            break;
 
-                    case "comment":
-                    case "documentation":
-                    case "externalImage":
-                        if (includeDoc) {
-                            if (args.size() == 3) {
-                                Term subj = args.get(0);
-                                Term lang = args.get(1);
-                                Term desc = $.quote(args.get(2));
-                                try {
-                                    y = INH.the($.p(subj, desc), lang);
-                                } catch (Exception e) {
+                        case "comment":
+                        case "documentation":
+                        case "externalImage":
+                            if (includeDoc) {
+                                if (args.size() == 3) {
+                                    Term subj = args.get(0);
+                                    Term lang = args.get(1);
+                                    Term desc = $.quote(args.get(2));
+                                    try {
+                                        y = INH.the($.p(subj, desc), lang);
+                                    } catch (Exception e) {
 
-                                    y = null;
+                                        y = null;
+                                    }
+                                } else {
+                                    throw new UnsupportedOperationException();
                                 }
                             } else {
-                                throw new UnsupportedOperationException();
+                                finished = true;
+                                break;
                             }
-                        } else {
-                            finished = true;
+                            break;
+
+                        case "termFormat": {
+                            if (includeDoc) {
+                                String language = args.get(0).toString();
+                                language = language.replace("Language", "");
+
+                                Term term = args.get(1);
+                                Term string = args.get(2);
+                                y = INH.the($.p($.the(language), string), term);
+                            } else {
+                                finished = true;
+                                break;
+                            }
                             break;
                         }
-                        break;
 
-                    case "termFormat": {
-                        if (includeDoc) {
-                            String language = args.get(0).toString();
-                            language = language.replace("Language", "");
 
-                            Term term = args.get(1);
-                            Term string = args.get(2);
-                            y = INH.the($.p($.the(language), string), term);
-                        } else {
-                            finished = true;
+                        default:
+
                             break;
-                        }
-                        break;
                     }
+                    if (!finished) {
+                        if (y == null) {
 
 
-                    default:
+                            Term z = formulaToTerm(xCar, level + 1);
 
-                        break;
-                }
-                if (!finished) {
-                    if (y == null) {
+                            if (z != null) {
+                                switch (z.toString()) {
+                                    case "and":
+                                        y = CONJ.the(args);
+                                        break;
+                                    case "or":
+                                        y = DISJ(args.toArray(new Term[0]));
+                                        break;
+                                    case "not":
+                                        y = args.get(0).neg();
+                                        break;
+                                    default:
+                                        if (!z.op().var)
+                                            y = INH.the($.p(args), z);
+                                        else {
+                                            args.add(0, z);
+                                            y = $.p(args);
+                                        }
+                                        break;
+                                }
 
-
-                        Term z = formulaToTerm(xCar, level + 1);
-
-                        if (z != null) {
-                            switch (z.toString()) {
-                                case "and":
-                                    y = CONJ.the(args);
-                                    break;
-                                case "or":
-                                    y = DISJ(args.toArray(new Term[0]));
-                                    break;
-                                case "not":
-                                    y = args.get(0).neg();
-                                    break;
-                                default:
-                                    if (!z.op().var)
-                                        y = INH.the($.p(args), z);
-                                    else {
-                                        args.add(0, z);
-                                        y = $.p(args);
-                                    }
-                                    break;
                             }
 
+
                         }
-
-
-                    }
-                    if (y instanceof Bool) {
-                        logger.warn("{} Bool singularity: args={}", x, args);
-                        result = Bool.Null;
-                    } else {
-                        result = y;
+                        if (y instanceof Bool) {
+                            logger.warn("{} Bool singularity: args={}", x, args);
+                            result = Bool.Null;
+                        } else {
+                            result = y;
+                        }
                     }
                 }
-            }
+                break;
         }
 
 

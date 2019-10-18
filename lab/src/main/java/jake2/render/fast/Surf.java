@@ -1148,20 +1148,25 @@ public abstract class Surf extends Draw {
 
         char format = gl_monolightmap.string.toUpperCase().charAt(0);
 
-        if (format == 'A') {
-            gl_lms.internal_format = gl_tex_alpha_format;
-        }
-		/*
-		** try to do hacked colored lighting with a blended texture
-		*/
-        else if (format == 'C') {
-            gl_lms.internal_format = gl_tex_alpha_format;
-        } else if (format == 'I') {
-            gl_lms.internal_format = GL_INTENSITY8;
-        } else if (format == 'L') {
-            gl_lms.internal_format = GL_LUMINANCE8;
-        } else {
-            gl_lms.internal_format = gl_tex_solid_format;
+        switch (format) {
+            case 'A':
+                gl_lms.internal_format = gl_tex_alpha_format;
+                break;
+            /*
+             ** try to do hacked colored lighting with a blended texture
+             */
+            case 'C':
+                gl_lms.internal_format = gl_tex_alpha_format;
+                break;
+            case 'I':
+                gl_lms.internal_format = GL_INTENSITY8;
+                break;
+            case 'L':
+                gl_lms.internal_format = GL_LUMINANCE8;
+                break;
+            default:
+                gl_lms.internal_format = gl_tex_solid_format;
+                break;
         }
 
 		/*

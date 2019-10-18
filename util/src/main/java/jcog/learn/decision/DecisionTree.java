@@ -385,15 +385,17 @@ public class DecisionTree<K, V> {
 
 
             int s = size();
-            if (s == 2) {
+            switch (s) {
+                case 2:
 
-                explain(c, path, 0);
-                explain(c, path, 1);
+                    explain(c, path, 0);
+                    explain(c, path, 1);
 
-            } else if (s == 0) {
+                    break;
+                case 0:
 //
 //            } else {
-                throw new UnsupportedOperationException("predicate?");
+                    throw new UnsupportedOperationException("predicate?");
             }
 
         }

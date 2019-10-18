@@ -31,13 +31,13 @@ abstract class HashedWheelTimerTest {
         long resolution = TimeUnit.MILLISECONDS.toNanos(1)/4;
         int wheels = 8;
 
-        HashedWheelTimer.WheelModel q = model(resolution, wheels);
+        WheelModel q = model(resolution, wheels);
 
 
         timer = new HashedWheelTimer(q, waitStrategy());
     }
 
-    protected static HashedWheelTimer.WheelModel model(long resolution, int wheels) {
+    protected static WheelModel model(long resolution, int wheels) {
         //return new AdmissionQueueWheelModel(wheels, resolution);
         return new QueueWheelModel(wheels, resolution, ()->new MpscArrayQueue<>(32));
     }

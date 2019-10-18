@@ -60,10 +60,17 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener {
                                 sub.add((Term) sgt);
                             }
                         }
-                        if (":-".equals(name))
-                            sub.add(0, i + 1 < levels ? eclist.get(i + 1).getCurrentGoal() : s.sub(0));
-                        else if (",".equals(name)) name = " ";
-                        else name = null;
+                        switch (name) {
+                            case ":-":
+                                sub.add(0, i + 1 < levels ? eclist.get(i + 1).getCurrentGoal() : s.sub(0));
+                                break;
+                            case ",":
+                                name = " ";
+                                break;
+                            default:
+                                name = null;
+                                break;
+                        }
                         int pos = sub.indexOf(ec.getCurrentGoal());
                         if (bottom != null) sub.set(pos, bottom);
                         if (name == null) bottom = sub.get(0);

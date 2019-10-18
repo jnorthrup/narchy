@@ -555,52 +555,56 @@ public class PrintfFormat {
 		while (iterator.hasNext()) {
 			cs = (ConversionSpecification) iterator.next();
 			c = cs.getConversionCharacter();
-			if (c == '\0')
-				sb.append(cs.getLiteral());
-			else if (c == '%')
-				sb.append('%');
-			else {
-				if (cs.isPositionalSpecification()) {
-					i = cs.getArgumentPosition() - 1;
-					if (cs.isPositionalFieldWidth()) {
-						int ifw = cs.getArgumentPositionForFieldWidth() - 1;
-						cs.setFieldWidthWithArg((Integer) o[ifw]);
-					}
-					if (cs.isPositionalPrecision()) {
-						int ipr = cs.getArgumentPositionForPrecision() - 1;
-						cs.setPrecisionWithArg((Integer) o[ipr]);
-					}
-				} else {
-					if (cs.isVariableFieldWidth()) {
-						cs.setFieldWidthWithArg((Integer) o[i]);
-						i++;
-					}
-					if (cs.isVariablePrecision()) {
-						cs.setPrecisionWithArg((Integer) o[i]);
-						i++;
-					}
-				}
-				if (o[i] instanceof Byte)
-					sb.append(cs.internalsprintf(((Byte) o[i]).byteValue()));
-				else if (o[i] instanceof Short)
-					sb.append(cs.internalsprintf(((Short) o[i]).shortValue()));
-				else if (o[i] instanceof Integer)
-					sb.append(cs.internalsprintf(((Integer) o[i]).intValue()));
-				else if (o[i] instanceof Long)
-					sb.append(cs.internalsprintf(((Long) o[i]).longValue()));
-				else if (o[i] instanceof Float)
-					sb.append(cs.internalsprintf(((Float) o[i]).floatValue()));
-				else if (o[i] instanceof Double)
-					sb.append(cs.internalsprintf(((Double) o[i]).doubleValue()));
-				else if (o[i] instanceof Character)
-					sb.append(cs.internalsprintf(((Character) o[i]).charValue()));
-				else if (o[i] instanceof String)
-					sb.append(cs.internalsprintf((String) o[i]));
-				else
-					sb.append(cs.internalsprintf(o[i]));
-				if (!cs.isPositionalSpecification())
-					i++;
-			}
+            switch (c) {
+                case '\0':
+                    sb.append(cs.getLiteral());
+                    break;
+                case '%':
+                    sb.append('%');
+                    break;
+                default:
+                    if (cs.isPositionalSpecification()) {
+                        i = cs.getArgumentPosition() - 1;
+                        if (cs.isPositionalFieldWidth()) {
+                            int ifw = cs.getArgumentPositionForFieldWidth() - 1;
+                            cs.setFieldWidthWithArg((Integer) o[ifw]);
+                        }
+                        if (cs.isPositionalPrecision()) {
+                            int ipr = cs.getArgumentPositionForPrecision() - 1;
+                            cs.setPrecisionWithArg((Integer) o[ipr]);
+                        }
+                    } else {
+                        if (cs.isVariableFieldWidth()) {
+                            cs.setFieldWidthWithArg((Integer) o[i]);
+                            i++;
+                        }
+                        if (cs.isVariablePrecision()) {
+                            cs.setPrecisionWithArg((Integer) o[i]);
+                            i++;
+                        }
+                    }
+                    if (o[i] instanceof Byte)
+                        sb.append(cs.internalsprintf(((Byte) o[i]).byteValue()));
+                    else if (o[i] instanceof Short)
+                        sb.append(cs.internalsprintf(((Short) o[i]).shortValue()));
+                    else if (o[i] instanceof Integer)
+                        sb.append(cs.internalsprintf(((Integer) o[i]).intValue()));
+                    else if (o[i] instanceof Long)
+                        sb.append(cs.internalsprintf(((Long) o[i]).longValue()));
+                    else if (o[i] instanceof Float)
+                        sb.append(cs.internalsprintf(((Float) o[i]).floatValue()));
+                    else if (o[i] instanceof Double)
+                        sb.append(cs.internalsprintf(((Double) o[i]).doubleValue()));
+                    else if (o[i] instanceof Character)
+                        sb.append(cs.internalsprintf(((Character) o[i]).charValue()));
+                    else if (o[i] instanceof String)
+                        sb.append(cs.internalsprintf((String) o[i]));
+                    else
+                        sb.append(cs.internalsprintf(o[i]));
+                    if (!cs.isPositionalSpecification())
+                        i++;
+                    break;
+            }
 		}
 		return sb.toString();
 	}
@@ -616,10 +620,14 @@ public class PrintfFormat {
 		while (iterator.hasNext()) {
 			cs = (ConversionSpecification) iterator.next();
 			c = cs.getConversionCharacter();
-			if (c == '\0')
-				sb.append(cs.getLiteral());
-			else if (c == '%')
-				sb.append('%');
+            switch (c) {
+                case '\0':
+                    sb.append(cs.getLiteral());
+                    break;
+                case '%':
+                    sb.append('%');
+                    break;
+            }
 		}
 		return sb.toString();
 	}
@@ -639,12 +647,17 @@ public class PrintfFormat {
 		while (iterator.hasNext()) {
 			cs = (ConversionSpecification) iterator.next();
 			c = cs.getConversionCharacter();
-			if (c == '\0')
-				sb.append(cs.getLiteral());
-			else if (c == '%')
-				sb.append('%');
-			else
-				sb.append(cs.internalsprintf(x));
+            switch (c) {
+                case '\0':
+                    sb.append(cs.getLiteral());
+                    break;
+                case '%':
+                    sb.append('%');
+                    break;
+                default:
+                    sb.append(cs.internalsprintf(x));
+                    break;
+            }
 		}
 		return sb.toString();
 	}
@@ -664,12 +677,17 @@ public class PrintfFormat {
 		while (iterator.hasNext()) {
 			cs = (ConversionSpecification) iterator.next();
 			c = cs.getConversionCharacter();
-			if (c == '\0')
-				sb.append(cs.getLiteral());
-			else if (c == '%')
-				sb.append('%');
-			else
-				sb.append(cs.internalsprintf(x));
+            switch (c) {
+                case '\0':
+                    sb.append(cs.getLiteral());
+                    break;
+                case '%':
+                    sb.append('%');
+                    break;
+                default:
+                    sb.append(cs.internalsprintf(x));
+                    break;
+            }
 		}
 		return sb.toString();
 	}
@@ -689,12 +707,17 @@ public class PrintfFormat {
 		while (iterator.hasNext()) {
 			cs = (ConversionSpecification) iterator.next();
 			c = cs.getConversionCharacter();
-			if (c == '\0')
-				sb.append(cs.getLiteral());
-			else if (c == '%')
-				sb.append('%');
-			else
-				sb.append(cs.internalsprintf(x));
+            switch (c) {
+                case '\0':
+                    sb.append(cs.getLiteral());
+                    break;
+                case '%':
+                    sb.append('%');
+                    break;
+                default:
+                    sb.append(cs.internalsprintf(x));
+                    break;
+            }
 		}
 		return sb.toString();
 	}
@@ -713,12 +736,17 @@ public class PrintfFormat {
 		while (iterator.hasNext()) {
 			cs = (ConversionSpecification) iterator.next();
 			c = cs.getConversionCharacter();
-			if (c == '\0')
-				sb.append(cs.getLiteral());
-			else if (c == '%')
-				sb.append('%');
-			else
-				sb.append(cs.internalsprintf(x));
+            switch (c) {
+                case '\0':
+                    sb.append(cs.getLiteral());
+                    break;
+                case '%':
+                    sb.append('%');
+                    break;
+                default:
+                    sb.append(cs.internalsprintf(x));
+                    break;
+            }
 		}
 		return sb.toString();
 	}
@@ -743,30 +771,34 @@ public class PrintfFormat {
 		while (iterator.hasNext()) {
 			cs = (ConversionSpecification) iterator.next();
 			c = cs.getConversionCharacter();
-			if (c == '\0')
-				sb.append(cs.getLiteral());
-			else if (c == '%')
-				sb.append('%');
-			else {
-				if (x instanceof Byte)
-					sb.append(cs.internalsprintf(((Byte) x).byteValue()));
-				else if (x instanceof Short)
-					sb.append(cs.internalsprintf(((Short) x).shortValue()));
-				else if (x instanceof Integer)
-					sb.append(cs.internalsprintf(((Integer) x).intValue()));
-				else if (x instanceof Long)
-					sb.append(cs.internalsprintf(((Long) x).longValue()));
-				else if (x instanceof Float)
-					sb.append(cs.internalsprintf(((Float) x).floatValue()));
-				else if (x instanceof Double)
-					sb.append(cs.internalsprintf(((Double) x).doubleValue()));
-				else if (x instanceof Character)
-					sb.append(cs.internalsprintf(((Character) x).charValue()));
-				else if (x instanceof String)
-					sb.append(cs.internalsprintf((String) x));
-				else
-					sb.append(cs.internalsprintf(x));
-			}
+            switch (c) {
+                case '\0':
+                    sb.append(cs.getLiteral());
+                    break;
+                case '%':
+                    sb.append('%');
+                    break;
+                default:
+                    if (x instanceof Byte)
+                        sb.append(cs.internalsprintf(((Byte) x).byteValue()));
+                    else if (x instanceof Short)
+                        sb.append(cs.internalsprintf(((Short) x).shortValue()));
+                    else if (x instanceof Integer)
+                        sb.append(cs.internalsprintf(((Integer) x).intValue()));
+                    else if (x instanceof Long)
+                        sb.append(cs.internalsprintf(((Long) x).longValue()));
+                    else if (x instanceof Float)
+                        sb.append(cs.internalsprintf(((Float) x).floatValue()));
+                    else if (x instanceof Double)
+                        sb.append(cs.internalsprintf(((Double) x).doubleValue()));
+                    else if (x instanceof Character)
+                        sb.append(cs.internalsprintf(((Character) x).charValue()));
+                    else if (x instanceof String)
+                        sb.append(cs.internalsprintf((String) x));
+                    else
+                        sb.append(cs.internalsprintf(x));
+                    break;
+            }
 		}
 		return sb.toString();
 	}
@@ -1723,23 +1755,29 @@ public class PrintfFormat {
 		private boolean checkForCarry(char[] ca1, int icarry) {
 			boolean carry = false;
 			if (icarry < ca1.length) {
-				if (ca1[icarry] == '6' || ca1[icarry] == '7' || ca1[icarry] == '8' || ca1[icarry] == '9')
-					carry = true;
-				else if (ca1[icarry] == '5') {
-					int ii = icarry + 1;
-					for (; ii < ca1.length; ii++)
-						if (ca1[ii] != '0')
-							break;
-					carry = ii < ca1.length;
-					if (!carry && icarry > 0) {
-						carry =
-							(ca1[icarry - 1] == '1'
-								|| ca1[icarry - 1] == '3'
-								|| ca1[icarry - 1] == '5'
-								|| ca1[icarry - 1] == '7'
-								|| ca1[icarry - 1] == '9');
-					}
-				}
+                switch (ca1[icarry]) {
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                        carry = true;
+                        break;
+                    case '5':
+                        int ii = icarry + 1;
+                        for (; ii < ca1.length; ii++)
+                            if (ca1[ii] != '0')
+                                break;
+                        carry = ii < ca1.length;
+                        if (!carry && icarry > 0) {
+                            carry =
+                                    (ca1[icarry - 1] == '1'
+                                            || ca1[icarry - 1] == '3'
+                                            || ca1[icarry - 1] == '5'
+                                            || ca1[icarry - 1] == '7'
+                                            || ca1[icarry - 1] == '9');
+                        }
+                        break;
+                }
 			}
 			return carry;
 		}
@@ -2927,16 +2965,20 @@ public class PrintfFormat {
 			optionalL = false;
 			if (pos < fmt.length()) {
 				char c = fmt.charAt(pos);
-				if (c == 'h') {
-					optionalh = true;
-					pos++;
-				} else if (c == 'l') {
-					optionall = true;
-					pos++;
-				} else if (c == 'L') {
-					optionalL = true;
-					pos++;
-				}
+                switch (c) {
+                    case 'h':
+                        optionalh = true;
+                        pos++;
+                        break;
+                    case 'l':
+                        optionall = true;
+                        pos++;
+                        break;
+                    case 'L':
+                        optionalL = true;
+                        pos++;
+                        break;
+                }
 			}
 		}
 		/**
@@ -3083,28 +3125,37 @@ public class PrintfFormat {
 			leadingSpace = false;
 			alternateForm = false;
 			leadingZeros = false;
-			for (; pos < fmt.length(); pos++) {
-				char c = fmt.charAt(pos);
-				if (c == '\'')
-					thousands = true;
-				else if (c == '-') {
-					leftJustify = true;
-					leadingZeros = false;
-				} else if (c == '+') {
-					leadingSign = true;
-					leadingSpace = false;
-				} else if (c == ' ') {
-					if (!leadingSign)
-						leadingSpace = true;
-				} else if (c == '#')
-					alternateForm = true;
-				else if (c == '0') {
-					if (!leftJustify)
-						leadingZeros = true;
-				} else
-					break;
-			}
-		}
+            label:
+            for (; pos < fmt.length(); pos++) {
+                char c = fmt.charAt(pos);
+                switch (c) {
+                    case '\'':
+                        thousands = true;
+                        break;
+                    case '-':
+                        leftJustify = true;
+                        leadingZeros = false;
+                        break;
+                    case '+':
+                        leadingSign = true;
+                        leadingSpace = false;
+                        break;
+                    case ' ':
+                        if (!leadingSign)
+                            leadingSpace = true;
+                        break;
+                    case '#':
+                        alternateForm = true;
+                        break;
+                    case '0':
+                        if (!leftJustify)
+                            leadingZeros = true;
+                        break;
+                    default:
+                        break label;
+                }
+            }
+        }
 		/**
 		 * The integer portion of the result of a decimal
 		 * conversion (i, d, u, f, g, or G) will be

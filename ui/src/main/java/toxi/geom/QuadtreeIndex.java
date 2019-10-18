@@ -238,20 +238,23 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
     public void itemsWithinRadius(Vec2D p, float radius,
                                   Consumer<V> results) {
         if (intersectsCircle(p, radius)) {
-            if (type == Type.LEAF) {
-                if (values!=null) {
-                    float rsquare = radius * radius;
-                    for (V value : values) {
-                        if (value.distanceToSquared(p) < rsquare) {
-                            results.accept(value);
+            switch (type) {
+                case LEAF:
+                    if (values != null) {
+                        float rsquare = radius * radius;
+                        for (V value : values) {
+                            if (value.distanceToSquared(p) < rsquare) {
+                                results.accept(value);
+                            }
                         }
                     }
-                }
-            } else if (type == Type.BRANCH) {
-                if (nw !=null) nw.itemsWithinRadius(p, radius, results);
-                if (ne !=null) ne.itemsWithinRadius(p, radius, results);
-                if (sw !=null) sw.itemsWithinRadius(p, radius, results);
-                if (se !=null) se.itemsWithinRadius(p, radius, results);
+                    break;
+                case BRANCH:
+                    if (nw != null) nw.itemsWithinRadius(p, radius, results);
+                    if (ne != null) ne.itemsWithinRadius(p, radius, results);
+                    if (sw != null) sw.itemsWithinRadius(p, radius, results);
+                    if (se != null) se.itemsWithinRadius(p, radius, results);
+                    break;
             }
         }
     }

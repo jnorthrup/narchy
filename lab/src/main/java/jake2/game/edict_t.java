@@ -338,26 +338,37 @@ public class edict_t {
         } else if ("sounds".equals(key)) {
             sounds = Lib.atoi(value);
         } else if (!"light".equals(key)) {
-            if ("dmg".equals(key)) {
-                dmg = Lib.atoi(value);
-            } else if ("mass".equals(key)) {
-                mass = Lib.atoi(value);
-            } else if ("volume".equals(key)) {
-                volume = Lib.atof(value);
-            } else if ("attenuation".equals(key)) {
-                attenuation = Lib.atof(value);
-            } else if ("map".equals(key)) {
-                map = GameSpawn.ED_NewString(value);
-            } else if ("origin".equals(key)) {
-                s.origin = Lib.atov(value);
-            } else if ("angles".equals(key)) {
-                s.angles = Lib.atov(value);
-            } else if ("angle".equals(key)) {
-                s.angles = new float[]{0, Lib.atof(value), 0};
-            } else if ("item".equals(key)) {
-                game_import_t.error("ent.set(\"item\") called.");
-            } else {
-                result = false;
+            switch (key) {
+                case "dmg":
+                    dmg = Lib.atoi(value);
+                    break;
+                case "mass":
+                    mass = Lib.atoi(value);
+                    break;
+                case "volume":
+                    volume = Lib.atof(value);
+                    break;
+                case "attenuation":
+                    attenuation = Lib.atof(value);
+                    break;
+                case "map":
+                    map = GameSpawn.ED_NewString(value);
+                    break;
+                case "origin":
+                    s.origin = Lib.atov(value);
+                    break;
+                case "angles":
+                    s.angles = Lib.atov(value);
+                    break;
+                case "angle":
+                    s.angles = new float[]{0, Lib.atof(value), 0};
+                    break;
+                case "item":
+                    game_import_t.error("ent.set(\"item\") called.");
+                    break;
+                default:
+                    result = false;
+                    break;
             }
         }
 

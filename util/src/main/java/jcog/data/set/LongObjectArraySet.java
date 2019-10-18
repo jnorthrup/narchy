@@ -313,22 +313,23 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
     public boolean removeIf(LongObjectPredicate<X> iff) {
         int s = size();
-        if (s == 0)
-            return false;
-        else if (s == 1) {
-            if (iff.accept(when[0], get(0))) {
-                clear();
-                return true;
-            } else
+        switch (s) {
+            case 0:
                 return false;
-        } else {
+            case 1:
+                if (iff.accept(when[0], get(0))) {
+                    clear();
+                    return true;
+                } else
+                    return false;
+            default:
 
-            MetalBitSet m = MetalBitSet.bits(s);
-            for (int i = 0; i < s; i++) {
-                if (iff.accept(when[i], get(i)))
-                    m.set(i);
-            }
-            return removeAll(m, s);
+                MetalBitSet m = MetalBitSet.bits(s);
+                for (int i = 0; i < s; i++) {
+                    if (iff.accept(when[i], get(i)))
+                        m.set(i);
+                }
+                return removeAll(m, s);
         }
 
     }

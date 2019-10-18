@@ -178,25 +178,26 @@ public class TrieNode<S, T> implements Entry<S, T> {
 
         int childCount = (children == null ? 0 : children.size());
 
-        
-        if (childCount == 0) {
-            parent.children.remove(sequencer.hashOf(sequence, start));
-        }
-        
-        else if (childCount == 1) {
-            TrieNode<S, T> child = children.valueAt(0);
 
-            children = child.children;
-            value = child.value;
-            sequence = child.sequence;
-            end = child.end;
+        switch (childCount) {
+            case 0:
+                parent.children.remove(sequencer.hashOf(sequence, start));
+                break;
+            case 1:
+                TrieNode<S, T> child = children.valueAt(0);
 
-            child.children = null;
-            child.parent = null;
-            child.sequence = null;
-            child.value = null;
+                children = child.children;
+                value = child.value;
+                sequence = child.sequence;
+                end = child.end;
 
-            registerAsParent();
+                child.children = null;
+                child.parent = null;
+                child.sequence = null;
+                child.value = null;
+
+                registerAsParent();
+                break;
         }
     }
 

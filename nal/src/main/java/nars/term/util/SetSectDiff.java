@@ -108,13 +108,14 @@ public class SetSectDiff {
         if (y == null)
             return Null;
         int s = y.size();
-        if (s == 0)
-            return empty(o);
-        else if (s == 1)
-            return single(y.keysView().getOnly(), o, B);
-        else {
-            TermList yyy = new TermList(s);
-            y.keyValuesView().forEachWith((e,YYY) -> YYY.addFast(e.getOne().negIf(e.getTwo() == -1)), yyy);
+        switch (s) {
+            case 0:
+                return empty(o);
+            case 1:
+                return single(y.keysView().getOnly(), o, B);
+            default:
+                TermList yyy = new TermList(s);
+                y.keyValuesView().forEachWith((e, YYY) -> YYY.addFast(e.getOne().negIf(e.getTwo() == -1)), yyy);
 
 //            //Filter temporal terms that resolve to the same roots
 //            if (yyy.hasAny(Temporal)) {
@@ -129,12 +130,12 @@ public class SetSectDiff {
 //                }
 //            }
 
-            Term[] yyyy = yyy.arrayKeep();
-            if (o == SETe || o == SETi || !union) {
-                return B.compound(o, yyyy);
-            } else {
-                return DISJ(B, yyyy);
-            }
+                Term[] yyyy = yyy.arrayKeep();
+                if (o == SETe || o == SETi || !union) {
+                    return B.compound(o, yyyy);
+                } else {
+                    return DISJ(B, yyyy);
+                }
         }
 
 

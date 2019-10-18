@@ -252,12 +252,17 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
 
         DeterministicUnification base;
         int n = xyPairs.size()/2;
-        if (n == 0)
-            base = Self;
-        else if (n == 1)
-            base = new OneTermUnification(xyPairs.get(0), xyPairs.get(1));
-        else
-            base = new MapUnification().putIfAbsent(xyPairs);
+        switch (n) {
+            case 0:
+                base = Self;
+                break;
+            case 1:
+                base = new OneTermUnification(xyPairs.get(0), xyPairs.get(1));
+                break;
+            default:
+                base = new MapUnification().putIfAbsent(xyPairs);
+                break;
+        }
 
         return (termutes != null) ?
             new Termutifcation(this, base, termutes) : base;

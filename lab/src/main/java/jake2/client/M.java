@@ -386,11 +386,14 @@ public final class M {
             return;
 
         if (ent.powerarmor_time > GameBase.level.time) {
-            if (ent.monsterinfo.power_armor_type == Defines.POWER_ARMOR_SCREEN) {
-                ent.s.effects |= Defines.EF_POWERSCREEN;
-            } else if (ent.monsterinfo.power_armor_type == Defines.POWER_ARMOR_SHIELD) {
-                ent.s.effects |= Defines.EF_COLOR_SHELL;
-                ent.s.renderfx |= Defines.RF_SHELL_GREEN;
+            switch (ent.monsterinfo.power_armor_type) {
+                case Defines.POWER_ARMOR_SCREEN:
+                    ent.s.effects |= Defines.EF_POWERSCREEN;
+                    break;
+                case Defines.POWER_ARMOR_SHIELD:
+                    ent.s.effects |= Defines.EF_COLOR_SHELL;
+                    ent.s.renderfx |= Defines.RF_SHELL_GREEN;
+                    break;
             }
         }
     }

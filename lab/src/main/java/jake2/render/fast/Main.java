@@ -1039,17 +1039,19 @@ public abstract class Main extends Base {
             gl_state.prev_mode = (int) gl_mode.value;
         }
         else {
-            if (err == rserr_invalid_fullscreen) {
-                Cvar.SetValue("vid_fullscreen", 0);
-                vid_fullscreen.modified = false;
-                VID.Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n");
-                if ((err = glImpl.setMode(dim, (int) gl_mode.value, false)) == rserr_ok)
-                    return true;
-            }
-            else if (err == rserr_invalid_mode) {
-                Cvar.SetValue("gl_mode", gl_state.prev_mode);
-                gl_mode.modified = false;
-                VID.Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n");
+            switch (err) {
+                case rserr_invalid_fullscreen:
+                    Cvar.SetValue("vid_fullscreen", 0);
+                    vid_fullscreen.modified = false;
+                    VID.Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n");
+                    if ((err = glImpl.setMode(dim, (int) gl_mode.value, false)) == rserr_ok)
+                        return true;
+                    break;
+                case rserr_invalid_mode:
+                    Cvar.SetValue("gl_mode", gl_state.prev_mode);
+                    gl_mode.modified = false;
+                    VID.Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n");
+                    break;
             }
 
             

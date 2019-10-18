@@ -959,15 +959,20 @@ public class M_Gunner {
         public boolean think(edict_t self) {
             int flash_number;
 
-            if (self.s.frame == FRAME_attak105)
-                flash_number = Defines.MZ2_GUNNER_GRENADE_1;
-            else if (self.s.frame == FRAME_attak108)
-                flash_number = Defines.MZ2_GUNNER_GRENADE_2;
-            else if (self.s.frame == FRAME_attak111)
-                flash_number = Defines.MZ2_GUNNER_GRENADE_3;
-            else
-                
-                flash_number = Defines.MZ2_GUNNER_GRENADE_4;
+            switch (self.s.frame) {
+                case FRAME_attak105:
+                    flash_number = Defines.MZ2_GUNNER_GRENADE_1;
+                    break;
+                case FRAME_attak108:
+                    flash_number = Defines.MZ2_GUNNER_GRENADE_2;
+                    break;
+                case FRAME_attak111:
+                    flash_number = Defines.MZ2_GUNNER_GRENADE_3;
+                    break;
+                default:
+                    flash_number = Defines.MZ2_GUNNER_GRENADE_4;
+                    break;
+            }
 
             float[] right = {0, 0, 0};
             float[] forward = {0, 0, 0};

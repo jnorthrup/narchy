@@ -275,16 +275,18 @@ import java.util.function.Predicate;
             if (c + vl > nextRow.length) 
                 throw new RuntimeException("column overflow: " + m + ' ' + c + '+' + vl + '>' + nextRow.length);
 
-            if (vl == 1) {
-                nextRow[c++] = v[0];
-            }
-            else if (vl == 2) {
-                nextRow[c++] = v[0];
-                nextRow[c++] = v[1];
-            }
-            else {
-                System.arraycopy(v, 0, nextRow, c, vl);
-                c += vl;
+            switch (vl) {
+                case 1:
+                    nextRow[c++] = v[0];
+                    break;
+                case 2:
+                    nextRow[c++] = v[0];
+                    nextRow[c++] = v[1];
+                    break;
+                default:
+                    System.arraycopy(v, 0, nextRow, c, vl);
+                    c += vl;
+                    break;
             }
 
         }

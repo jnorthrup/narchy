@@ -1138,26 +1138,25 @@ public abstract class Model extends Surf {
 
 
             int i;
-            if (mod.type == mod_sprite)
-			{
-                qfiles.dsprite_t sprout = (qfiles.dsprite_t) mod.extradata;
-                for (i=0 ; i<sprout.numframes ; i++)
-					mod.skins[i] = GL_FindImage(sprout.frames[i].name, it_sprite);
-			}
-			else if (mod.type == mod_alias)
-			{
-                qfiles.dmdl_t pheader = (qfiles.dmdl_t) mod.extradata;
-                for (i=0 ; i<pheader.num_skins ; i++)
-					mod.skins[i] = GL_FindImage(pheader.skinNames[i], it_skin);
-				
-				mod.numframes = pheader.num_frames;
-				
-			}
-			else if (mod.type == mod_brush)
-			{
-				for (i=0 ; i<mod.numtexinfo ; i++)
-					mod.texinfo[i].image.registration_sequence = registration_sequence;
-			}
+            switch (mod.type) {
+                case mod_sprite:
+                    qfiles.dsprite_t sprout = (qfiles.dsprite_t) mod.extradata;
+                    for (i = 0; i < sprout.numframes; i++)
+                        mod.skins[i] = GL_FindImage(sprout.frames[i].name, it_sprite);
+                    break;
+                case mod_alias:
+                    qfiles.dmdl_t pheader = (qfiles.dmdl_t) mod.extradata;
+                    for (i = 0; i < pheader.num_skins; i++)
+                        mod.skins[i] = GL_FindImage(pheader.skinNames[i], it_skin);
+
+                    mod.numframes = pheader.num_frames;
+
+                    break;
+                case mod_brush:
+                    for (i = 0; i < mod.numtexinfo; i++)
+                        mod.texinfo[i].image.registration_sequence = registration_sequence;
+                    break;
+            }
 		}
 		return mod;
 	}

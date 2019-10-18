@@ -871,12 +871,15 @@ public enum OneDHaar {
         int J = (int) Math.pow(2.0, n - 1);
 
         for (int L = 1; L <= n; L++) {
-            if (binary[L] == '0') {
-                s_k += sample[J];
-                J -= I;
-            } else if (binary[L] == '1') {
-                s_k -= sample[J];
-                J += I;
+            switch (binary[L]) {
+                case '0':
+                    s_k += sample[J];
+                    J -= I;
+                    break;
+                case '1':
+                    s_k -= sample[J];
+                    J += I;
+                    break;
             }
             if (L < n) {
                 I /= 2;

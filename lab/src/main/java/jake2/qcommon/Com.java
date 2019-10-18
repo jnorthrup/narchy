@@ -276,25 +276,22 @@ public final class Com
 
 		msg= sprintf(fmt, vargs);
 
-		if (code == Defines.ERR_DISCONNECT)
-		{
-			CL.Drop();
-			recursive= false;
-			throw new longjmpException();
-		}
-		else if (code == Defines.ERR_DROP)
-		{
-			Com.Printf("********************\nERROR: " + msg + "\n********************\n");
-			SV_MAIN.SV_Shutdown("Server crashed: " + msg + '\n', false);
-			CL.Drop();
-			recursive= false;
-			throw new longjmpException();
-		}
-		else
-		{
-			SV_MAIN.SV_Shutdown("Server fatal crashed: %s" + msg + '\n', false);
-			CL.Shutdown();
-		}
+        switch (code) {
+            case Defines.ERR_DISCONNECT:
+                CL.Drop();
+                recursive = false;
+                throw new longjmpException();
+            case Defines.ERR_DROP:
+                Com.Printf("********************\nERROR: " + msg + "\n********************\n");
+                SV_MAIN.SV_Shutdown("Server crashed: " + msg + '\n', false);
+                CL.Drop();
+                recursive = false;
+                throw new longjmpException();
+            default:
+                SV_MAIN.SV_Shutdown("Server fatal crashed: %s" + msg + '\n', false);
+                CL.Shutdown();
+                break;
+        }
 
 		Sys.Error(msg);
 	}

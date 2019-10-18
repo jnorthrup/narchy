@@ -110,12 +110,14 @@ public class PatternMatcher {
         if (match == null) return false;
         if (type == PATTERN_LITERAL) {
             return pattern.equals(match);
-        } if (type == PATTERN_PREFIX) {
-            return match.startsWith(pattern);
-        } else if (type == PATTERN_SIMPLE_GLOB) {
-            return matchGlobPattern(pattern, match);
-        } else if (type == PATTERN_ADVANCED_GLOB) {
-            return matchAdvancedPattern(parsedPattern, match);
+        }
+        switch (type) {
+            case PATTERN_PREFIX:
+                return match.startsWith(pattern);
+            case PATTERN_SIMPLE_GLOB:
+                return matchGlobPattern(pattern, match);
+            case PATTERN_ADVANCED_GLOB:
+                return matchAdvancedPattern(parsedPattern, match);
         }
         return false;
     }

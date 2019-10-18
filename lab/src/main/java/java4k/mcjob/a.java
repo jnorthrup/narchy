@@ -457,108 +457,113 @@ public class a extends Applet implements Runnable {
 				
 				for (i = sliders.size() - 1; i >= 0; i--) {
 					slider = sliders.get(i);
-					if (slider[SLIDER_STATE] == SLIDER_STATE_DOWN) {
-						slider[SLIDER_Y] += 4;
-						if (slider[SLIDER_Y] > 300) {
-							sliders.remove(i);
-							if (slider[SLIDER_HOLDING] >= 0) {
-								
-								loseLife += 32;
-							}
-						} else {
+                    switch (slider[SLIDER_STATE]) {
+                        case SLIDER_STATE_DOWN:
+                            slider[SLIDER_Y] += 4;
+                            if (slider[SLIDER_Y] > 300) {
+                                sliders.remove(i);
+                                if (slider[SLIDER_HOLDING] >= 0) {
 
-							
-							for (j = customers.size() - 1; j >= 0; j--) {
-								customer = customers.get(j);
-								k = customer[CUSTOMER_Y] - slider[SLIDER_Y] - 3;
-								if (customer[CUSTOMER_ITEM] == slider[SLIDER_HOLDING] && customer[CUSTOMER_COLUMN] == slider[SLIDER_COLUMN] && k <= 5 && k >= -5) {
-									slider[SLIDER_Y] = customer[CUSTOMER_Y] + 3;
-									slider[SLIDER_STATE]++;
-									k = 100 + 3 * customer[CUSTOMER_Y];
-									if (lives < 7 && (score + k) / POINTS_PER_EXTRA_LIFE != score / POINTS_PER_EXTRA_LIFE) {
-										lives++;
-									}
-									score += k;
-									points.add(point = new int[16]);
-									point[POINTS_X] = (customer[CUSTOMER_COLUMN] << 6) + 20;
-									point[POINTS_Y] = customer[CUSTOMER_Y] + 6;
-									point[POINTS_VALUE] = k;
-									point[POINTS_COUNTER] = 64;
-									customers.remove(j);
-									break;
-								}
-							}
-						}
-					} else if (slider[SLIDER_STATE] == SLIDER_STATE_LEFT) {
-						if (slider[SLIDER_X] > (slider[SLIDER_COLUMN] << 6) + 6) {
-							slider[SLIDER_X] -= 8;
-						} else {
-							slider[SLIDER_STATE]++;
-							slider[SLIDER_HOLDING] = -1;
-						}
-					} else if (slider[SLIDER_STATE] == SLIDER_STATE_RIGHT) {
-						if (slider[SLIDER_X] < (slider[SLIDER_COLUMN] << 6) + 32) {
-							slider[SLIDER_X] += 8;
-						} else {
+                                    loseLife += 32;
+                                }
+                            } else {
 
-							slider[SLIDER_STATE] = SLIDER_STATE_DOWN;
 
-							if (random.nextInt(7) < level) {
-								slider[SLIDER_STATE] = SLIDER_STATE_UP;
-							} else if (random.nextInt(7) > level) {
-								
-								x = slider[SLIDER_X] + 2;
-								y = slider[SLIDER_Y] - 4;
-								z = slider[SLIDER_COLUMN];
-								sliders.add(slider = new int[16]);
-								slider[SLIDER_X] = x;
-								slider[SLIDER_Y] = y;
-								slider[SLIDER_TRAY] = 0;
-								slider[SLIDER_COLUMN] = z;
-								slider[SLIDER_STATE] = SLIDER_STATE_UP;
-							}
-						}
-					} else {
+                                for (j = customers.size() - 1; j >= 0; j--) {
+                                    customer = customers.get(j);
+                                    k = customer[CUSTOMER_Y] - slider[SLIDER_Y] - 3;
+                                    if (customer[CUSTOMER_ITEM] == slider[SLIDER_HOLDING] && customer[CUSTOMER_COLUMN] == slider[SLIDER_COLUMN] && k <= 5 && k >= -5) {
+                                        slider[SLIDER_Y] = customer[CUSTOMER_Y] + 3;
+                                        slider[SLIDER_STATE]++;
+                                        k = 100 + 3 * customer[CUSTOMER_Y];
+                                        if (lives < 7 && (score + k) / POINTS_PER_EXTRA_LIFE != score / POINTS_PER_EXTRA_LIFE) {
+                                            lives++;
+                                        }
+                                        score += k;
+                                        points.add(point = new int[16]);
+                                        point[POINTS_X] = (customer[CUSTOMER_COLUMN] << 6) + 20;
+                                        point[POINTS_Y] = customer[CUSTOMER_Y] + 6;
+                                        point[POINTS_VALUE] = k;
+                                        point[POINTS_COUNTER] = 64;
+                                        customers.remove(j);
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+                        case SLIDER_STATE_LEFT:
+                            if (slider[SLIDER_X] > (slider[SLIDER_COLUMN] << 6) + 6) {
+                                slider[SLIDER_X] -= 8;
+                            } else {
+                                slider[SLIDER_STATE]++;
+                                slider[SLIDER_HOLDING] = -1;
+                            }
+                            break;
+                        case SLIDER_STATE_RIGHT:
+                            if (slider[SLIDER_X] < (slider[SLIDER_COLUMN] << 6) + 32) {
+                                slider[SLIDER_X] += 8;
+                            } else {
 
-						if (--slider[SLIDER_Y] <= 64) {
-							sliders.remove(i);
-							if (slider[SLIDER_COLUMN] == (playerX - 34) >> 6) {
-								
-								points.add(point = new int[16]);
-								point[POINTS_X] = playerX + 17;
-								point[POINTS_Y] = 60;
-								point[POINTS_COUNTER] = 64;
-								k = point[POINTS_VALUE] = slider[SLIDER_TRAY] == 1 ? 100 : 500;
-								if (lives < 7 && (score + k) / POINTS_PER_EXTRA_LIFE != score / POINTS_PER_EXTRA_LIFE) {
-									lives++;
-								}
-								score += k;
-							} else if (slider[SLIDER_TRAY] == 1) {
-								
-								loseLife += 32;
-							}
-						}
+                                slider[SLIDER_STATE] = SLIDER_STATE_DOWN;
 
-						
-						for (j = sliders.size() - 1; j > i; j--) {
-							customer = sliders.get(j);
-							k = customer[CUSTOMER_Y] - slider[SLIDER_Y] - 3;
-							if (slider[SLIDER_COLUMN] == customer[SLIDER_COLUMN] && customer[SLIDER_STATE] == SLIDER_STATE_DOWN && k <= 8 && k >= -8) {
-								sliders.remove(i);
-								
-								points.add(point = new int[16]);
-								point[POINTS_X] = slider[SLIDER_X] + 12;
-								point[POINTS_Y] = slider[SLIDER_Y] + 8;
-								point[POINTS_COUNTER] = 64;
-								k = point[POINTS_VALUE] = slider[SLIDER_TRAY] == 1 ? 200 : 800;
-								if (lives < 7 && (score + k) / POINTS_PER_EXTRA_LIFE != score / POINTS_PER_EXTRA_LIFE) {
-									lives++;
-								}
-								score += k;
-								break;
-							}
-						}
-					}
+                                if (random.nextInt(7) < level) {
+                                    slider[SLIDER_STATE] = SLIDER_STATE_UP;
+                                } else if (random.nextInt(7) > level) {
+
+                                    x = slider[SLIDER_X] + 2;
+                                    y = slider[SLIDER_Y] - 4;
+                                    z = slider[SLIDER_COLUMN];
+                                    sliders.add(slider = new int[16]);
+                                    slider[SLIDER_X] = x;
+                                    slider[SLIDER_Y] = y;
+                                    slider[SLIDER_TRAY] = 0;
+                                    slider[SLIDER_COLUMN] = z;
+                                    slider[SLIDER_STATE] = SLIDER_STATE_UP;
+                                }
+                            }
+                            break;
+                        default:
+
+                            if (--slider[SLIDER_Y] <= 64) {
+                                sliders.remove(i);
+                                if (slider[SLIDER_COLUMN] == (playerX - 34) >> 6) {
+
+                                    points.add(point = new int[16]);
+                                    point[POINTS_X] = playerX + 17;
+                                    point[POINTS_Y] = 60;
+                                    point[POINTS_COUNTER] = 64;
+                                    k = point[POINTS_VALUE] = slider[SLIDER_TRAY] == 1 ? 100 : 500;
+                                    if (lives < 7 && (score + k) / POINTS_PER_EXTRA_LIFE != score / POINTS_PER_EXTRA_LIFE) {
+                                        lives++;
+                                    }
+                                    score += k;
+                                } else if (slider[SLIDER_TRAY] == 1) {
+
+                                    loseLife += 32;
+                                }
+                            }
+
+
+                            for (j = sliders.size() - 1; j > i; j--) {
+                                customer = sliders.get(j);
+                                k = customer[CUSTOMER_Y] - slider[SLIDER_Y] - 3;
+                                if (slider[SLIDER_COLUMN] == customer[SLIDER_COLUMN] && customer[SLIDER_STATE] == SLIDER_STATE_DOWN && k <= 8 && k >= -8) {
+                                    sliders.remove(i);
+
+                                    points.add(point = new int[16]);
+                                    point[POINTS_X] = slider[SLIDER_X] + 12;
+                                    point[POINTS_Y] = slider[SLIDER_Y] + 8;
+                                    point[POINTS_COUNTER] = 64;
+                                    k = point[POINTS_VALUE] = slider[SLIDER_TRAY] == 1 ? 200 : 800;
+                                    if (lives < 7 && (score + k) / POINTS_PER_EXTRA_LIFE != score / POINTS_PER_EXTRA_LIFE) {
+                                        lives++;
+                                    }
+                                    score += k;
+                                    break;
+                                }
+                            }
+                            break;
+                    }
 				}
 
 				

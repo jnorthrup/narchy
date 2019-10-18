@@ -819,10 +819,11 @@ public enum $ { ;
         //throw new TODO("use setAt/sect methods");
         Op aop = a.op();
         if (aop == b.op()) {
-            if (aop == SETi) {
-                return SetSectDiff.differenceSet(SETi, a, b);
-            } else if (aop == SETe) {
-                return SetSectDiff.differenceSet(SETe, a, b);
+            switch (aop) {
+                case SETi:
+                    return SetSectDiff.differenceSet(SETi, a, b);
+                case SETe:
+                    return SetSectDiff.differenceSet(SETe, a, b);
             }
         }
         //throw new UnsupportedOperationException();

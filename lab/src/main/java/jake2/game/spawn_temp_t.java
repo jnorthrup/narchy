@@ -50,38 +50,55 @@ public class spawn_temp_t {
 
 	public boolean set(String key, String value) {
 		boolean result = true;
-		if ("lip".equals(key)) {
-			lip = Lib.atoi(value);
-		} else if ("distance".equals(key)) {
-			distance = Lib.atoi(value);
-		} else if ("height".equals(key)) {
-			height = Lib.atoi(value);
-		} else if ("noise".equals(key)) {
-			noise = GameSpawn.ED_NewString(value);
-		} else if ("pausetime".equals(key)) {
-			pausetime = Lib.atof(value);
-		} else if ("item".equals(key)) {
-			item = GameSpawn.ED_NewString(value);
-		} else if ("gravity".equals(key)) {
-			gravity = GameSpawn.ED_NewString(value);
-		} else if ("sky".equals(key)) {
-			sky = GameSpawn.ED_NewString(value);
-		} else if ("skyrotate".equals(key)) {
-			skyrotate = Lib.atof(value);
-		} else if ("skyaxis".equals(key)) {
-			skyaxis = Lib.atov(value);
-		} else if ("minyaw".equals(key)) {
-			minyaw = Lib.atof(value);
-		} else if ("maxyaw".equals(key)) {
-			maxyaw = Lib.atof(value);
-		} else if ("minpitch".equals(key)) {
-			minpitch = Lib.atof(value);
-		} else if ("maxpitch".equals(key)) {
-			maxpitch = Lib.atof(value);
-		} else if ("nextmap".equals(key)) {
-			nextmap = GameSpawn.ED_NewString(value);
-		} else {
-			result = false;
+		switch (key) {
+			case "lip":
+				lip = Lib.atoi(value);
+				break;
+			case "distance":
+				distance = Lib.atoi(value);
+				break;
+			case "height":
+				height = Lib.atoi(value);
+				break;
+			case "noise":
+				noise = GameSpawn.ED_NewString(value);
+				break;
+			case "pausetime":
+				pausetime = Lib.atof(value);
+				break;
+			case "item":
+				item = GameSpawn.ED_NewString(value);
+				break;
+			case "gravity":
+				gravity = GameSpawn.ED_NewString(value);
+				break;
+			case "sky":
+				sky = GameSpawn.ED_NewString(value);
+				break;
+			case "skyrotate":
+				skyrotate = Lib.atof(value);
+				break;
+			case "skyaxis":
+				skyaxis = Lib.atov(value);
+				break;
+			case "minyaw":
+				minyaw = Lib.atof(value);
+				break;
+			case "maxyaw":
+				maxyaw = Lib.atof(value);
+				break;
+			case "minpitch":
+				minpitch = Lib.atof(value);
+				break;
+			case "maxpitch":
+				maxpitch = Lib.atof(value);
+				break;
+			case "nextmap":
+				nextmap = GameSpawn.ED_NewString(value);
+				break;
+			default:
+				result = false;
+				break;
 		}
 
 		return result;

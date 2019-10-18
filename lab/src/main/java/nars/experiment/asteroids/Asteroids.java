@@ -261,45 +261,51 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     }
 
     public float frame() {
-        if (gameState == 0) {
-            keyCheck();
-        } else if (gameState == 1) {
+        switch (gameState) {
+            case 0:
+                keyCheck();
+                break;
+            case 1:
 
-            ship.updatePosition(WIDTH, HEIGHT);
-            ship.checkWeapon();
-            ship.checkInvinc();
-            respawnShip();
-            keyCheck();
+                ship.updatePosition(WIDTH, HEIGHT);
+                ship.checkWeapon();
+                ship.checkInvinc();
+                respawnShip();
+                keyCheck();
 
 
-            for (int i = 0; i < rockList.size(); i++) {
-                rockList.get(i).updatePosition(WIDTH, HEIGHT);
-            }
-
-            for (int i = 0; i < bulletList.size(); i++) {
-                bulletList.get(i).updatePosition(WIDTH, HEIGHT);
-                if (bulletList.get(i).counter == bulletDeathCounter) {
-                    bulletList.remove(i);
+                for (int i = 0; i < rockList.size(); i++) {
+                    rockList.get(i).updatePosition(WIDTH, HEIGHT);
                 }
-            }
 
-            for (int i = 0; i < explosionList.size(); i++) {
-                explosionList.get(i).updatePosition(WIDTH, HEIGHT);
-                if (explosionList.get(i).counter == 25) {
-                    explosionList.remove(i);
+                for (int i = 0; i < bulletList.size(); i++) {
+                    bulletList.get(i).updatePosition(WIDTH, HEIGHT);
+                    if (bulletList.get(i).counter == bulletDeathCounter) {
+                        bulletList.remove(i);
+                    }
                 }
-            }
 
-            checkCollisions();
-            checkDestruction();
+                for (int i = 0; i < explosionList.size(); i++) {
+                    explosionList.get(i).updatePosition(WIDTH, HEIGHT);
+                    if (explosionList.get(i).counter == 25) {
+                        explosionList.remove(i);
+                    }
+                }
 
-        } else if (gameState == 2) {
-            keyCheck();
-            ship.checkWeapon();
-        } else if (gameState == 3) {
-            keyCheck();
-        } else if (gameState == 4) {
-            keyCheck();
+                checkCollisions();
+                checkDestruction();
+
+                break;
+            case 2:
+                keyCheck();
+                ship.checkWeapon();
+                break;
+            case 3:
+                keyCheck();
+                break;
+            case 4:
+                keyCheck();
+                break;
         }
 
 
@@ -309,71 +315,77 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     }
 
     private void render() {
-        if (gameState == 0) {
+        switch (gameState) {
+            case 0:
 
 
-            gameState = 1;
-        } else if (gameState == 1) {
+                gameState = 1;
+                break;
+            case 1:
 
-            offg.setColor(clearColor);
-            offg.fillRect(0, 0, WIDTH, HEIGHT);
+                offg.setColor(clearColor);
+                offg.fillRect(0, 0, WIDTH, HEIGHT);
 
-            offg.setColor(Color.WHITE);
+                offg.setColor(Color.WHITE);
 
 
-            offg.setColor(Color.WHITE);
+                offg.setColor(Color.WHITE);
 
-            for (int i = 0; i < rockList.size(); i++) {
-                Rock rock = rockList.get(i);
-                for (int n = 0; n < 5; n++) {
-                    for (int j = 0; j < 5; j++) {
-                        offg.drawLine((int) Math.round((rock.shape.xpoints[n] * Math.cos(rock.angle) - rock.shape.ypoints[n] * Math.sin(rock.angle) + rock.xposition)),
-                                (int) Math.round((rock.shape.xpoints[n] * Math.sin(rock.angle) + rock.shape.ypoints[n] * Math.cos(rock.angle) + rock.yposition)),
-                                (int) Math.round((rock.shape.xpoints[j] * Math.cos(rock.angle) - rock.shape.ypoints[j] * Math.sin(rock.angle) + rock.xposition)),
-                                (int) Math.round((rock.shape.xpoints[j] * Math.sin(rock.angle) + rock.shape.ypoints[j] * Math.cos(rock.angle) + rock.yposition)));
+                for (int i = 0; i < rockList.size(); i++) {
+                    Rock rock = rockList.get(i);
+                    for (int n = 0; n < 5; n++) {
+                        for (int j = 0; j < 5; j++) {
+                            offg.drawLine((int) Math.round((rock.shape.xpoints[n] * Math.cos(rock.angle) - rock.shape.ypoints[n] * Math.sin(rock.angle) + rock.xposition)),
+                                    (int) Math.round((rock.shape.xpoints[n] * Math.sin(rock.angle) + rock.shape.ypoints[n] * Math.cos(rock.angle) + rock.yposition)),
+                                    (int) Math.round((rock.shape.xpoints[j] * Math.cos(rock.angle) - rock.shape.ypoints[j] * Math.sin(rock.angle) + rock.xposition)),
+                                    (int) Math.round((rock.shape.xpoints[j] * Math.sin(rock.angle) + rock.shape.ypoints[j] * Math.cos(rock.angle) + rock.yposition)));
+                        }
+                    }
+
+                    if (rock.active == true) {
+                        rock.paint(offg, false);
                     }
                 }
 
-                if (rock.active == true) {
-                    rock.paint(offg, false);
+
+                offg.setColor(Color.YELLOW);
+                for (int i = 0; i < bulletList.size(); i++) {
+                    Bullet bullet = bulletList.get(i);
+                    if (bullet.active == true) {
+                        bullet.paint(offg, false);
+                    }
                 }
-            }
 
-
-            offg.setColor(Color.YELLOW);
-            for (int i = 0; i < bulletList.size(); i++) {
-                Bullet bullet = bulletList.get(i);
-                if (bullet.active == true) {
-                    bullet.paint(offg, false);
+                drawExplosions();
+                try {
+                    drawHUD();
+                } catch (Exception e) {
                 }
-            }
+                drawShip();
 
-            drawExplosions();
-            try {
-                drawHUD();
-            } catch (Exception e) {
-            }
-            drawShip();
+                break;
+            case 2:
 
-        } else if (gameState == 2) {
+                newLevel();
 
-            newLevel();
+                gameState = 1;
 
-            gameState = 1;
+                break;
+            case 3:
 
-        } else if (gameState == 3) {
+                gameState = 1;
 
-            gameState = 1;
+                break;
+            case 4:
+                offg.setColor(Color.GREEN);
+                offg.fillRect(390, 75, 105, 40);
 
-        } else if (gameState == 4) {
-            offg.setColor(Color.GREEN);
-            offg.fillRect(390, 75, 105, 40);
+                offg.setColor(Color.BLACK);
+                offg.fillRect(395, 80, 95, 30);
 
-            offg.setColor(Color.BLACK);
-            offg.fillRect(395, 80, 95, 30);
-
-            offg.setColor(Color.GREEN);
-            offg.drawString("GAME PAUSED", 400, 100);
+                offg.setColor(Color.GREEN);
+                offg.drawString("GAME PAUSED", 400, 100);
+                break;
         }
 
         repaint();
@@ -416,11 +428,14 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
         }
 
         if (spaceKey == true) {
-            if (gameState == 1) {
-                fireBullet();
-            } else if (gameState == 3) {
-                gameState = 0;
-                init();
+            switch (gameState) {
+                case 1:
+                    fireBullet();
+                    break;
+                case 3:
+                    gameState = 0;
+                    init();
+                    break;
             }
 
 
@@ -431,11 +446,14 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
         }
 
         if (SKey == true) {
-            if (gameState == 2) {
-                gameState = 1;
-                newLevel();
-            } else if (gameState == 0) {
-                gameState = 1;
+            switch (gameState) {
+                case 2:
+                    gameState = 1;
+                    newLevel();
+                    break;
+                case 0:
+                    gameState = 1;
+                    break;
             }
         }
 
@@ -452,12 +470,15 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
         }
 
         if (PKey == true && pauseKeyActivated == false) {
-            if (gameState == 1) {
-                gameState = 4;
-                pauseKeyActivated = true;
-            } else if (gameState == 4) {
-                gameState = 1;
-                pauseKeyActivated = true;
+            switch (gameState) {
+                case 1:
+                    gameState = 4;
+                    pauseKeyActivated = true;
+                    break;
+                case 4:
+                    gameState = 1;
+                    pauseKeyActivated = true;
+                    break;
             }
         }
 
@@ -535,50 +556,59 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     public void fireBullet() {
         if (ship.counter > ship.fireDelay && ship.active == true) {
             if (ship.weaponType == 1) {
-                if (ship.upgrades[0][0] == 0) {
-                    if (Math.random() < 0.25f)
+                switch (ship.upgrades[0][0]) {
+                    case 0:
+                        if (Math.random() < 0.25f)
+                            bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 + ship.spreadModifier, ship.weaponType));
+                        if (Math.random() < 0.25f)
+                            bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2, ship.weaponType));
+                        if (Math.random() < 0.25f)
+                            bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 - ship.spreadModifier, ship.weaponType));
+                        break;
+                    case 1:
+                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 + 0.5 * ship.spreadModifier, ship.weaponType));
                         bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 + ship.spreadModifier, ship.weaponType));
-                    if (Math.random() < 0.25f)
                         bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2, ship.weaponType));
-                    if (Math.random() < 0.25f)
                         bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 - ship.spreadModifier, ship.weaponType));
-                } else if (ship.upgrades[0][0] == 1) {
-                    bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 + 0.5 * ship.spreadModifier, ship.weaponType));
-                    bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 + ship.spreadModifier, ship.weaponType));
-                    bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2, ship.weaponType));
-                    bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 - ship.spreadModifier, ship.weaponType));
-                    bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 - 0.5 * ship.spreadModifier, ship.weaponType));
+                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2 - 0.5 * ship.spreadModifier, ship.weaponType));
+                        break;
                 }
 
                 ship.counter = 0;
             }
 
             if (ship.weaponType == 2) {
-                if (ship.upgrades[1][0] == 0) {
-                    bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2, ship.weaponType));
-                } else if (ship.upgrades[1][0] == 1) {
-                    bulletList.add(new Bullet(ship.xposition + 10 * Math.cos(ship.angle), ship.yposition + 10 * Math.sin(ship.angle), ship.angle - Math.PI / 2, ship.weaponType));
-                    bulletList.add(new Bullet(ship.xposition - 10 * Math.cos(ship.angle), ship.yposition - 10 * Math.sin(ship.angle), ship.angle - Math.PI / 2, ship.weaponType));
+                switch (ship.upgrades[1][0]) {
+                    case 0:
+                        bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2, ship.weaponType));
+                        break;
+                    case 1:
+                        bulletList.add(new Bullet(ship.xposition + 10 * Math.cos(ship.angle), ship.yposition + 10 * Math.sin(ship.angle), ship.angle - Math.PI / 2, ship.weaponType));
+                        bulletList.add(new Bullet(ship.xposition - 10 * Math.cos(ship.angle), ship.yposition - 10 * Math.sin(ship.angle), ship.angle - Math.PI / 2, ship.weaponType));
+                        break;
                 }
 
                 ship.counter = 0;
             }
 
             if (ship.weaponType == 3) {
-                if (ship.upgrades[2][0] == 0) {
-                    bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2, ship.weaponType));
-                    ship.counter = 0;
-                } else if (ship.upgrades[2][0] == 1) {
-                    ship.bursting = true;
-                    if (ship.burstCounter < 3) {
+                switch (ship.upgrades[2][0]) {
+                    case 0:
                         bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2, ship.weaponType));
-                        ship.counter = ship.fireDelay - 2;
-                        ship.burstCounter += 1;
-                    } else {
-                        ship.bursting = false;
                         ship.counter = 0;
-                        ship.burstCounter = 0;
-                    }
+                        break;
+                    case 1:
+                        ship.bursting = true;
+                        if (ship.burstCounter < 3) {
+                            bulletList.add(new Bullet(ship.xposition, ship.yposition, ship.angle - Math.PI / 2, ship.weaponType));
+                            ship.counter = ship.fireDelay - 2;
+                            ship.burstCounter += 1;
+                        } else {
+                            ship.bursting = false;
+                            ship.counter = 0;
+                            ship.burstCounter = 0;
+                        }
+                        break;
                 }
 
 

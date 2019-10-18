@@ -107,14 +107,16 @@ public class SyntaxTree {
                 case '{':
                     boolean deterministicLength = false;
                     StringBuilder sb = new StringBuilder();
+                    label:
                     for (char next = r.charAt(index++); ; ) {
                         sb.append(next);
                         next = r.charAt(index++);
-                        if (next == '}') {
-                            deterministicLength = true;
-                            break;
-                        } else if (next == ',') {
-                            break;
+                        switch (next) {
+                            case '}':
+                                deterministicLength = true;
+                                break label;
+                            case ',':
+                                break label;
                         }
                     }
                     int least = Texts.i(sb.toString());

@@ -967,13 +967,17 @@ public class M_Tank {
         public boolean think(edict_t self) {
             int flash_number;
 
-            if (self.s.frame == FRAME_attak110)
-                flash_number = Defines.MZ2_TANK_BLASTER_1;
-            else if (self.s.frame == FRAME_attak113)
-                flash_number = Defines.MZ2_TANK_BLASTER_2;
-            else
-                
-                flash_number = Defines.MZ2_TANK_BLASTER_3;
+            switch (self.s.frame) {
+                case FRAME_attak110:
+                    flash_number = Defines.MZ2_TANK_BLASTER_1;
+                    break;
+                case FRAME_attak113:
+                    flash_number = Defines.MZ2_TANK_BLASTER_2;
+                    break;
+                default:
+                    flash_number = Defines.MZ2_TANK_BLASTER_3;
+                    break;
+            }
 
             float[] right = {0, 0, 0};
             float[] forward = {0, 0, 0};
@@ -1015,13 +1019,17 @@ public class M_Tank {
         public boolean think(edict_t self) {
             int flash_number;
 
-            if (self.s.frame == FRAME_attak324)
-                flash_number = Defines.MZ2_TANK_ROCKET_1;
-            else if (self.s.frame == FRAME_attak327)
-                flash_number = Defines.MZ2_TANK_ROCKET_2;
-            else
-                
-                flash_number = Defines.MZ2_TANK_ROCKET_3;
+            switch (self.s.frame) {
+                case FRAME_attak324:
+                    flash_number = Defines.MZ2_TANK_ROCKET_1;
+                    break;
+                case FRAME_attak327:
+                    flash_number = Defines.MZ2_TANK_ROCKET_2;
+                    break;
+                default:
+                    flash_number = Defines.MZ2_TANK_ROCKET_3;
+                    break;
+            }
 
             float[] right = {0, 0, 0};
             float[] forward = {0, 0, 0};

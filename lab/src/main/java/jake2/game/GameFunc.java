@@ -812,10 +812,14 @@ public class GameFunc {
                     other.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
                     Defines.MOD_CRUSH);
 
-            if (self.moveinfo.state == STATE_UP)
-                plat_go_down.think(self);
-            else if (self.moveinfo.state == STATE_DOWN)
-                plat_go_up(self);
+            switch (self.moveinfo.state) {
+                case STATE_UP:
+                    plat_go_down.think(self);
+                    break;
+                case STATE_DOWN:
+                    plat_go_up(self);
+                    break;
+            }
 
         }
     };
@@ -843,13 +847,16 @@ public class GameFunc {
             if (other.health <= 0)
                 return;
 
-            ent = ent.enemy; 
-            if (ent.moveinfo.state == STATE_BOTTOM)
-                plat_go_up(ent);
-            else if (ent.moveinfo.state == STATE_TOP) {
-                ent.nextthink = GameBase.level.time + 1; 
-                                                         
-                                                         
+            ent = ent.enemy;
+            switch (ent.moveinfo.state) {
+                case STATE_BOTTOM:
+                    plat_go_up(ent);
+                    break;
+                case STATE_TOP:
+                    ent.nextthink = GameBase.level.time + 1;
+
+
+                    break;
             }
         }
     };

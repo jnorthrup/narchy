@@ -601,14 +601,22 @@ public class G extends Applet implements Runnable
                     else
                         addSprite( st, sx, sy, sd, sceneryT, X + 4, YT + 4 );
 
-                    if( sceneryB == G_UP )
-                        sceneryBH++;
-                    else if( sceneryB == G_DOWN )
-                        sceneryBH--;
-                    if( sceneryT == GT_UP )
-                        sceneryTH++;
-                    else if( sceneryT == GT_DOWN )
-                        sceneryTH--;
+                    switch (sceneryB) {
+                        case G_UP:
+                            sceneryBH++;
+                            break;
+                        case G_DOWN:
+                            sceneryBH--;
+                            break;
+                    }
+                    switch (sceneryT) {
+                        case GT_UP:
+                            sceneryTH++;
+                            break;
+                        case GT_DOWN:
+                            sceneryTH--;
+                            break;
+                    }
                 }
     
                 if( level == 1 && x % 50 == 0 )

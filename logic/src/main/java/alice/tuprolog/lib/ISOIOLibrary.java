@@ -1364,6 +1364,7 @@ public class ISOIOLibrary extends PrologLib {
             boolean open_apices2 = false;
             boolean open_apices = false;
             int ch = 0;
+            label:
             do {
                 ch = stream.read();
                 
@@ -1371,23 +1372,27 @@ public class ISOIOLibrary extends PrologLib {
                     break;
                 }
 
-                if (ch=='\''){
-                    open_apices = !open_apices;
-                } else if (ch=='\"'){
-                    open_apices2 = !open_apices2;
-                } else {
-                    if (ch=='.'){
-                        if (!open_apices && !open_apices2){
-                            break;
+                switch (ch) {
+                    case '\'':
+                        open_apices = !open_apices;
+                        break;
+                    case '\"':
+                        open_apices2 = !open_apices2;
+                        break;
+                    default:
+                        if (ch == '.') {
+                            if (!open_apices && !open_apices2) {
+                                break label;
+                            }
                         }
-                    }
+                        break;
                 }
                 boolean can_add = true;
                 if (can_add){
                     st += Character.toString(((char) ch));
                 }
             } while (true);
-            
+
             NumberTerm.Int p = (NumberTerm.Int)position;
             int p2 = p.intValue();
             p2 += (st.getBytes()).length;

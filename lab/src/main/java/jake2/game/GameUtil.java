@@ -429,17 +429,20 @@ public class GameUtil {
                                     result = false;
                                     finished = true;
                                 } else {
-                                    if (r == Defines.RANGE_NEAR) {
-                                        if (client.show_hostile < GameBase.level.time
-                                                && !infront(self, client)) {
-                                            result = false;
-                                            finished = true;
-                                        }
-                                    } else if (r == Defines.RANGE_MID) {
-                                        if (!infront(self, client)) {
-                                            result = false;
-                                            finished = true;
-                                        }
+                                    switch (r) {
+                                        case Defines.RANGE_NEAR:
+                                            if (client.show_hostile < GameBase.level.time
+                                                    && !infront(self, client)) {
+                                                result = false;
+                                                finished = true;
+                                            }
+                                            break;
+                                        case Defines.RANGE_MID:
+                                            if (!infront(self, client)) {
+                                                result = false;
+                                                finished = true;
+                                            }
+                                            break;
                                     }
                                     if (!finished) {
                                         if (client == self.enemy) {

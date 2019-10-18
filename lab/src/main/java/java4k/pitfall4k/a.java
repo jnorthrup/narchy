@@ -603,25 +603,31 @@ public class a extends GamePanel {
 
 						if (scene <= SCENE_LADDER_AND_HOLES && harryY > UPPER_FLOOR_Y) {
 							if (wallOnLeft) {
-								if (harryX == 4) {
-									harrySprite = SPRITE_HARRY_STANDING;
-									harryRunTimer = 0;
-									harryX = 3;
-								} else if (harryX == 15) {
-									harrySprite = SPRITE_HARRY_STANDING;
-									harryRunTimer = 0;
-									harryX = 16;
-								}
+                                switch (harryX) {
+                                    case 4:
+                                        harrySprite = SPRITE_HARRY_STANDING;
+                                        harryRunTimer = 0;
+                                        harryX = 3;
+                                        break;
+                                    case 15:
+                                        harrySprite = SPRITE_HARRY_STANDING;
+                                        harryRunTimer = 0;
+                                        harryX = 16;
+                                        break;
+                                }
 							} else {
-								if (harryX == 122) {
-									harrySprite = SPRITE_HARRY_STANDING;
-									harryRunTimer = 0;
-									harryX = 121;
-								} else if (harryX == 133) {
-									harrySprite = SPRITE_HARRY_STANDING;
-									harryRunTimer = 0;
-									harryX = 134;
-								}
+                                switch (harryX) {
+                                    case 122:
+                                        harrySprite = SPRITE_HARRY_STANDING;
+                                        harryRunTimer = 0;
+                                        harryX = 121;
+                                        break;
+                                    case 133:
+                                        harrySprite = SPRITE_HARRY_STANDING;
+                                        harryRunTimer = 0;
+                                        harryX = 134;
+                                        break;
+                                }
 							}
 						}
 
@@ -694,45 +700,51 @@ public class a extends GamePanel {
 						x = object[OBJECT_X];
 						y = object[OBJECT_Y];
 
-						if (j == OBJECT_TYPE_LOG) {
+                        switch (j) {
+                            case OBJECT_TYPE_LOG:
 
-							
 
-							if (object[OBJECT_ROLLING] == 1) {
-								object[OBJECT_Y] = (timer & 15) < 2 ? 112 : 111;
-								if ((timer & 3) == 0) {
-									object[OBJECT_SPRITE_DIRECTION] ^= 1;
-								}
-								if ((timer & 1) == 0 && --object[OBJECT_X] < -8) {
-									object[OBJECT_X] = 152;
-								}
-							}
-						} else if (j == OBJECT_TYPE_SCORPION) {
+                                if (object[OBJECT_ROLLING] == 1) {
+                                    object[OBJECT_Y] = (timer & 15) < 2 ? 112 : 111;
+                                    if ((timer & 3) == 0) {
+                                        object[OBJECT_SPRITE_DIRECTION] ^= 1;
+                                    }
+                                    if ((timer & 1) == 0 && --object[OBJECT_X] < -8) {
+                                        object[OBJECT_X] = 152;
+                                    }
+                                }
+                                break;
+                            case OBJECT_TYPE_SCORPION:
 
-							
 
-							if ((timer & 7) == 0) {
-								if (object[OBJECT_SPRITE_DIRECTION] == LEFT) {
-									if (--object[OBJECT_X] < harryX - 16) {
-										object[OBJECT_SPRITE_DIRECTION] = RIGHT;
-									}
-								} else {
-									if (++object[OBJECT_X] > harryX + 16) {
-										object[OBJECT_SPRITE_DIRECTION] = LEFT;
-									}
-								}
-								object[OBJECT_SPRITE_INDEX] = object[OBJECT_SPRITE_INDEX] != SPRITE_SCORPION_0 ? SPRITE_SCORPION_0 : SPRITE_SCORPION_1;
-							}
-						}
+                                if ((timer & 7) == 0) {
+                                    if (object[OBJECT_SPRITE_DIRECTION] == LEFT) {
+                                        if (--object[OBJECT_X] < harryX - 16) {
+                                            object[OBJECT_SPRITE_DIRECTION] = RIGHT;
+                                        }
+                                    } else {
+                                        if (++object[OBJECT_X] > harryX + 16) {
+                                            object[OBJECT_SPRITE_DIRECTION] = LEFT;
+                                        }
+                                    }
+                                    object[OBJECT_SPRITE_INDEX] = object[OBJECT_SPRITE_INDEX] != SPRITE_SCORPION_0 ? SPRITE_SCORPION_0 : SPRITE_SCORPION_1;
+                                }
+                                break;
+                        }
 
 						if ((timer & 1) == 0 && Math.random() < 0.5f) {
-							
 
-							if (j == OBJECT_TYPE_FIRE) {
-								object[OBJECT_SPRITE_DIRECTION] ^= 1;
-							} else if (j == OBJECT_TYPE_RATTLESNAKE || j == OBJECT_TYPE_SILVER_BRICK || j == OBJECT_TYPE_GOLD_BRICK) {
-								object[OBJECT_SPRITE_INDEX] = object[OBJECT_SPRITE_INDEX] != object[OBJECT_SPRITE_INDEX_2] ? object[OBJECT_SPRITE_INDEX_2] : object[OBJECT_SPRITE_INDEX_2] + 1;
-							}
+
+                            switch (j) {
+                                case OBJECT_TYPE_FIRE:
+                                    object[OBJECT_SPRITE_DIRECTION] ^= 1;
+                                    break;
+                                case OBJECT_TYPE_RATTLESNAKE:
+                                case OBJECT_TYPE_SILVER_BRICK:
+                                case OBJECT_TYPE_GOLD_BRICK:
+                                    object[OBJECT_SPRITE_INDEX] = object[OBJECT_SPRITE_INDEX] != object[OBJECT_SPRITE_INDEX_2] ? object[OBJECT_SPRITE_INDEX_2] : object[OBJECT_SPRITE_INDEX_2] + 1;
+                                    break;
+                            }
 						}
 
 						if (!harrySwinging && harryX >= x - 4 && harryX <= x + 4 && harryY >= y - 16 + (j == OBJECT_TYPE_SCORPION ? 6 : 0) && harryY <= y + 1) {

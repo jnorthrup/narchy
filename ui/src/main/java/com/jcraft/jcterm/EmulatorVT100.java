@@ -447,41 +447,46 @@ public final class EmulatorVT100 extends TerminalEmulator {
 
                     if (b == '?') {
                         b = getChar();
-                        if (b == '1') {
-                            b = getChar();
-                            if (b == 'l' || b == 'h') {
+                        switch (b) {
+                            case '1':
                                 b = getChar();
-                                if (b == 0x1b) {
+                                if (b == 'l' || b == 'h') {
                                     b = getChar();
-                                    if (b == '>' || 
-                                            b == '=') { 
-                                        
-                                        continue;
+                                    if (b == 0x1b) {
+                                        b = getChar();
+                                        if (b == '>' ||
+                                                b == '=') {
+
+                                            continue;
+                                        }
+                                    }
+                                } else if (b == 'h') {
+                                    b = getChar();
+                                    if (b == 0x1b) {
+                                        b = getChar();
+                                        if (b == '=') {
+                                            continue;
+                                        }
                                     }
                                 }
-                            } else if (b == 'h') {
+                                break;
+                            case '7':
                                 b = getChar();
-                                if (b == 0x1b) {
-                                    b = getChar();
-                                    if (b == '=') { 
+                                switch (b) {
+                                    case 'h':
+
+
                                         continue;
-                                    }
+                                    case 'l':
+
+
+                                        continue;
                                 }
-                            }
-                        } else if (b == '7') {
-                            b = getChar();
-                            if (b == 'h') { 
-                                
-                                
-                                continue;
-                            } else if (b == 'l') { 
-                                
-                                
-                                continue;
-                            }
-                            pushChar(b);
-                            b = '7';
-                        } else {
+                                pushChar(b);
+                                b = '7';
+                                break;
+                            default:
+                                break;
                         }
                     }
 

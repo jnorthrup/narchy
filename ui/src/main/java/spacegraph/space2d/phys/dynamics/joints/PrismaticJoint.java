@@ -523,10 +523,13 @@ public class PrismaticJoint extends Joint {
             
             m_impulse.addLocal(df);
 
-            if (m_limitState == LimitState.AT_LOWER) {
-                m_impulse.z = MathUtils.max(m_impulse.z, 0.0f);
-            } else if (m_limitState == LimitState.AT_UPPER) {
-                m_impulse.z = MathUtils.min(m_impulse.z, 0.0f);
+            switch (m_limitState) {
+                case AT_LOWER:
+                    m_impulse.z = MathUtils.max(m_impulse.z, 0.0f);
+                    break;
+                case AT_UPPER:
+                    m_impulse.z = MathUtils.min(m_impulse.z, 0.0f);
+                    break;
             }
 
             

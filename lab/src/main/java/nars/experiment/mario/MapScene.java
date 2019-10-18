@@ -290,44 +290,58 @@ public class MapScene extends Scene {
         for (int x = 0; x < 320 / 16; x++) {
             for (int y = 0; y < 240 / 16; y++) {
                 g.drawImage(map[worldNumber / 4][0], x * 16, y * 16, null);
-                if (level[x][y] == TILE_LEVEL) {
-                    int type = data[x][y];
-                    if (type == 0) {
-                        g.drawImage(map[0][7], x * 16, y * 16, null);
-                    } else if (type == -1) {
-                        g.drawImage(map[3][8], x * 16, y * 16, null);
-                    } else if (type == -3) {
-                        g.drawImage(map[0][8], x * 16, y * 16, null);
-                    } else if (type == -10) {
-                        g.drawImage(map[1][8], x * 16, y * 16, null);
-                    } else if (type == -11) {
-                        g.drawImage(map[1][7], x * 16, y * 16, null);
-                    } else if (type == -2) {
-                        g.drawImage(map[2][7], x * 16, y * 16 - 16, null);
-                        g.drawImage(map[2][8], x * 16, y * 16, null);
-                    } else {
-                        g.drawImage(map[type - 1][6], x * 16, y * 16, null);
+                switch (level[x][y]) {
+                    case TILE_LEVEL:
+                        int type = data[x][y];
+                        switch (type) {
+                            case 0:
+                                g.drawImage(map[0][7], x * 16, y * 16, null);
+                                break;
+                            case -1:
+                                g.drawImage(map[3][8], x * 16, y * 16, null);
+                                break;
+                            case -3:
+                                g.drawImage(map[0][8], x * 16, y * 16, null);
+                                break;
+                            case -10:
+                                g.drawImage(map[1][8], x * 16, y * 16, null);
+                                break;
+                            case -11:
+                                g.drawImage(map[1][7], x * 16, y * 16, null);
+                                break;
+                            case -2:
+                                g.drawImage(map[2][7], x * 16, y * 16 - 16, null);
+                                g.drawImage(map[2][8], x * 16, y * 16, null);
+                                break;
+                            default:
+                                g.drawImage(map[type - 1][6], x * 16, y * 16, null);
+                                break;
+                        }
+                        break;
+                    case TILE_ROAD: {
+                       var  p0 = isRoad(x - 1, y) ? 1 : 0;
+                       var  p1 = isRoad(x, y - 1) ? 1 : 0;
+                       var  p2 = isRoad(x + 1, y) ? 1 : 0;
+                       var  p3 = isRoad(x, y + 1) ? 1 : 0;
+                       var  s = p0 + p1 * 2 + p2 * 4 + p3 * 8;
+                        g.drawImage(map[s][2], x * 16, y * 16, null);
                     }
-                } else if (level[x][y] == TILE_ROAD) {
-                    int p0 = isRoad(x - 1, y) ? 1 : 0;
-                    int p1 = isRoad(x, y - 1) ? 1 : 0;
-                    int p2 = isRoad(x + 1, y) ? 1 : 0;
-                    int p3 = isRoad(x, y + 1) ? 1 : 0;
-                    int s = p0 + p1 * 2 + p2 * 4 + p3 * 8;
-                    g.drawImage(map[s][2], x * 16, y * 16, null);
-                } else if (level[x][y] == TILE_WATER) {
-                    for (int xx = 0; xx < 2; xx++) {
-                        for (int yy = 0; yy < 2; yy++) {
-                            int p0 = isWater(x * 2 + (xx - 1), y * 2 + (yy - 1)) ? 0 : 1;
-                            int p1 = isWater(x * 2 + (xx + 0), y * 2 + (yy - 1)) ? 0 : 1;
-                            int p2 = isWater(x * 2 + (xx - 1), y * 2 + (yy + 0)) ? 0 : 1;
-                            int p3 = isWater(x * 2 + (xx + 0), y * 2 + (yy + 0)) ? 0 : 1;
-                            int s = p0 + p1 * 2 + p2 * 4 + p3 * 8 - 1;
-                            if (s >= 0 && s < 14) {
-                                g.drawImage(map[s][4 + ((xx + yy) & 1)], x * 16 + xx * 8, y * 16 + yy * 8, null);
+                    break;
+                    case TILE_WATER:
+                        for (int xx = 0; xx < 2; xx++) {
+                            var x2 = x * 2;
+                            for (int yy = 0; yy < 2; yy++) {
+                                var p0 = isWater(x2 + (xx - 1), y * 2 + (yy - 1)) ? 0 : 1;
+                              var p1 = isWater(x2 + (xx + 0), y * 2 + (yy - 1)) ? 0 : 1;
+                              var p2 = isWater(x2 + (xx - 1), y * 2 + (yy + 0)) ? 0 : 1;
+                              var p3 = isWater(x2 + (xx + 0), y * 2 + (yy + 0)) ? 0 : 1;
+                              var s = p0 + p1 * 2 + p2 * 4 + p3 * 8 - 1;
+                                if (s >= 0 && s < 14) {
+                                    g.drawImage(map[s][4 + ((xx + yy) & 1)], x * 16 + xx * 8, y * 16 + yy * 8, null);
+                                }
                             }
                         }
-                    }
+                        break;
                 }
             }
         }
@@ -432,14 +446,18 @@ public class MapScene extends Scene {
                             type = LevelGenerator.TYPE_UNDERGROUND;
                         }
                         if (data[x][y] < 0) {
-                            if (data[x][y] == -2) {
-                                Mario.levelString += "X";
-                                difficulty += 2;
-                            } else if (data[x][y] == -1) {
-                                Mario.levelString += "?";
-                            } else {
-                                Mario.levelString += "#";
-                                difficulty += 1;
+                            switch (data[x][y]) {
+                                case -2:
+                                    Mario.levelString += "X";
+                                    difficulty += 2;
+                                    break;
+                                case -1:
+                                    Mario.levelString += "?";
+                                    break;
+                                default:
+                                    Mario.levelString += "#";
+                                    difficulty += 1;
+                                    break;
                             }
 
                             type = LevelGenerator.TYPE_CASTLE;

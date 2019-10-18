@@ -343,13 +343,17 @@ public class a extends JPanel implements Runnable {
                 }
                 if (x > 40 && x < 300 && random.nextInt(3) == 1) {
                   k = random.nextInt(level == 0 ? 2 : 3);
-                  if (k == 0) {
-                    enemies[i - 1][x + j - 5] = TYPE_CHIBIBO;
-                  } else if (k == 1) {
-                    enemies[i - 2][x + j - 5] = TYPE_NOKOBON;
-                  } else {
-                    enemies[i - 2][x + j - 5] = TYPE_FIGHTER_FLY;
-                  }
+                    switch (k) {
+                        case 0:
+                            enemies[i - 1][x + j - 5] = TYPE_CHIBIBO;
+                            break;
+                        case 1:
+                            enemies[i - 2][x + j - 5] = TYPE_NOKOBON;
+                            break;
+                        default:
+                            enemies[i - 2][x + j - 5] = TYPE_FIGHTER_FLY;
+                            break;
+                    }
                 }
                 int pipeX = 0;
                 if (random.nextInt(3) == 0 && i > 21) {
@@ -866,68 +870,69 @@ public class a extends JPanel implements Runnable {
         i = (cameraX + 160) >> 3;
         while(enemiesX <= i) {
           for(y = 16; y < 32; y++) {
-            if (enemies[y][enemiesX] == TYPE_CHIBIBO) {
-              for(j = random.nextInt(2) + 1; j >= 0; j--) {
+              switch (enemies[y][enemiesX]) {
+                  case TYPE_CHIBIBO:
+                      for (j = random.nextInt(2) + 1; j >= 0; j--) {
 
-                
 
-                float[] chibibo = new float[32];
-                queue.add(chibibo);
-                chibibo[OBJ_X] = (enemiesX << 3) + j * 12;
-                chibibo[OBJ_Y] = y << 3;
-                chibibo[OBJ_VX] = -CHIBIBO_SPEED;
-                chibibo[OBJ_X1] = 1;
-                chibibo[OBJ_X2] = 6;
-                chibibo[OBJ_Y2] = 7;
-                chibibo[OBJ_SPRITE] = SPRITE_CHIBIBO;
-                chibibo[OBJ_TYPE] = TYPE_CHIBIBO;
+                          float[] chibibo = new float[32];
+                          queue.add(chibibo);
+                          chibibo[OBJ_X] = (enemiesX << 3) + j * 12;
+                          chibibo[OBJ_Y] = y << 3;
+                          chibibo[OBJ_VX] = -CHIBIBO_SPEED;
+                          chibibo[OBJ_X1] = 1;
+                          chibibo[OBJ_X2] = 6;
+                          chibibo[OBJ_Y2] = 7;
+                          chibibo[OBJ_SPRITE] = SPRITE_CHIBIBO;
+                          chibibo[OBJ_TYPE] = TYPE_CHIBIBO;
+                      }
+                      break;
+                  case TYPE_NOKOBON:
+                      for (j = random.nextInt(2) + 1; j >= 0; j--) {
+
+
+                          float[] nokobon = new float[32];
+                          queue.add(nokobon);
+                          nokobon[OBJ_X] = (enemiesX << 3) + j * 12;
+                          nokobon[OBJ_Y] = y << 3;
+                          nokobon[OBJ_VX] = -NOKOBON_SPEED;
+                          nokobon[OBJ_Y1] = 10;
+                          nokobon[OBJ_X2] = 8;
+                          nokobon[OBJ_Y2] = 15;
+                          nokobon[OBJ_SPRITE] = SPRITE_NOKOBON_0;
+                          nokobon[OBJ_TYPE] = TYPE_NOKOBON;
+                      }
+                      break;
+                  case TYPE_PAKKUN_FLOWER:
+
+
+                      float[] pakkunFlower = new float[32];
+                      queue.add(pakkunFlower);
+                      pakkunFlower[OBJ_X] = (enemiesX << 3) + 4;
+                      pakkunFlower[OBJ_Y] = y << 3;
+                      pakkunFlower[OBJ_X2] = 7;
+                      pakkunFlower[OBJ_Y2] = 15;
+                      pakkunFlower[OBJ_SPRITE] = SPRITE_PAKKUN_FLOWER_0;
+                      pakkunFlower[OBJ_WEIGHTLESS] = 1;
+                      pakkunFlower[OBJ_NOT_SQUASHABLE] = 1;
+                      pakkunFlower[OBJ_BEHIND_TILES] = 1;
+                      pakkunFlower[OBJ_TYPE] = TYPE_PAKKUN_FLOWER;
+                      break;
+                  case TYPE_FIGHTER_FLY:
+
+
+                      float[] fighterFly = new float[32];
+                      queue.add(fighterFly);
+                      fighterFly[OBJ_X] = enemiesX << 3;
+                      fighterFly[OBJ_Y] = y << 3;
+                      fighterFly[OBJ_Y1] = 5;
+                      fighterFly[OBJ_X2] = 15;
+                      fighterFly[OBJ_Y2] = 15;
+                      fighterFly[OBJ_SPRITE] = SPRITE_FIGHTER_FLY_0;
+                      fighterFly[OBJ_MIRRORED] = 1;
+                      fighterFly[OBJ_TYPE] = TYPE_FIGHTER_FLY;
+                      break;
               }
-            } else if (enemies[y][enemiesX] == TYPE_NOKOBON) {
-              for(j = random.nextInt(2) + 1; j >= 0; j--) {
-
-                
-
-                float[] nokobon = new float[32];
-                queue.add(nokobon);
-                nokobon[OBJ_X] = (enemiesX << 3) + j * 12;
-                nokobon[OBJ_Y] = y << 3;
-                nokobon[OBJ_VX] = -NOKOBON_SPEED;
-                nokobon[OBJ_Y1] = 10;
-                nokobon[OBJ_X2] = 8;
-                nokobon[OBJ_Y2] = 15;
-                nokobon[OBJ_SPRITE] = SPRITE_NOKOBON_0;
-                nokobon[OBJ_TYPE] = TYPE_NOKOBON;
-              }
-            } else if (enemies[y][enemiesX] == TYPE_PAKKUN_FLOWER) {
-
-              
-
-              float[] pakkunFlower = new float[32];
-              queue.add(pakkunFlower);
-              pakkunFlower[OBJ_X] = (enemiesX << 3) + 4;
-              pakkunFlower[OBJ_Y] = y << 3;
-              pakkunFlower[OBJ_X2] = 7;
-              pakkunFlower[OBJ_Y2] = 15;
-              pakkunFlower[OBJ_SPRITE] = SPRITE_PAKKUN_FLOWER_0;
-              pakkunFlower[OBJ_WEIGHTLESS] = 1;
-              pakkunFlower[OBJ_NOT_SQUASHABLE] = 1;
-              pakkunFlower[OBJ_BEHIND_TILES] = 1;
-              pakkunFlower[OBJ_TYPE] = TYPE_PAKKUN_FLOWER;
-            } else if (enemies[y][enemiesX] == TYPE_FIGHTER_FLY) {
-
-              
-
-              float[] fighterFly = new float[32];
-              queue.add(fighterFly);
-              fighterFly[OBJ_X] = enemiesX << 3;
-              fighterFly[OBJ_Y] = y << 3;
-              fighterFly[OBJ_Y1] = 5;
-              fighterFly[OBJ_X2] = 15;
-              fighterFly[OBJ_Y2] = 15;
-              fighterFly[OBJ_SPRITE] = SPRITE_FIGHTER_FLY_0;
-              fighterFly[OBJ_MIRRORED] = 1;
-              fighterFly[OBJ_TYPE] = TYPE_FIGHTER_FLY;
-            }
           }
           enemiesX++;
         }
@@ -1093,11 +1098,14 @@ public class a extends JPanel implements Runnable {
         final int VK_A = 0x41;
         final int VK_RIGHT = 0x27;
         final int VK_LEFT = 0x25;
-        if (k == VK_A) {
-        k = VK_LEFT;
-      } else if (k == VK_D) {
-        k = VK_RIGHT;
-      }
+        switch (k) {
+            case VK_A:
+                k = VK_LEFT;
+                break;
+            case VK_D:
+                k = VK_RIGHT;
+                break;
+        }
         final int VK_S = 0x53;
         final int VK_JUMP = 0x44;
         final int VK_DOWN = 0x28;

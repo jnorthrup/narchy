@@ -331,10 +331,13 @@ public final class FS extends Globals {
                 Com.Error(Defines.ERR_FATAL, e.toString());
             }
 
-            if (read == 0) {
-                Com.Error(Defines.ERR_FATAL, "FS_Read: 0 bytes read");
-            } else if (read == -1) {
-                Com.Error(Defines.ERR_FATAL, "FS_Read: -1 bytes read");
+            switch (read) {
+                case 0:
+                    Com.Error(Defines.ERR_FATAL, "FS_Read: 0 bytes read");
+                    break;
+                case -1:
+                    Com.Error(Defines.ERR_FATAL, "FS_Read: -1 bytes read");
+                    break;
             }
             
             

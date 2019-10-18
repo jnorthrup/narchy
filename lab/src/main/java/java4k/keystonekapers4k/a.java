@@ -416,11 +416,14 @@ public class a extends Applet implements Runnable {
 				
 				if (++elevatorCounter == ELEVATOR_CLOSED) {
 					elevatorCounter = 0;
-					if (elevatorFloor == 0) {
-						elevatorDirection = 1;
-					} else if (elevatorFloor == 2) {
-						elevatorDirection = -1;
-					}
+                    switch (elevatorFloor) {
+                        case 0:
+                            elevatorDirection = 1;
+                            break;
+                        case 2:
+                            elevatorDirection = -1;
+                            break;
+                    }
 					elevatorFloor += elevatorDirection;
 				}
 
@@ -550,95 +553,102 @@ public class a extends Applet implements Runnable {
 							x = room * 152 - 4;
 							y = x + ((enemyDirection > 0) ? 0 : 152);
 							object[OBJ_ORIENTATION] = (enemyDirection > 0) ? ORIENTATION_REVERSED : ORIENTATION_ORIGINAL;
-							if (j == MAP_MONEY_BAG) {
-								
-								object[OBJ_X] = x + 72;
-								object[OBJ_Y] = 45 + (i << 5);
-								object[OBJ_SPRITE] = SPRITE_MONEY_BAG;
-								object[OBJ_Y2] = 10;
-							} else if (j == MAP_SUITCASE) {
-								
-								object[OBJ_X] = x + 72;
-								object[OBJ_Y] = 47 + (i << 5);
-								object[OBJ_SPRITE] = SPRITE_SUITCASE;
-								object[OBJ_Y2] = 9;
-							} else if (j == MAP_BALL) {
-								
-								object[OBJ_X] = y;
-								object[OBJ_Y3] = 51 + (i << 5);
-								object[OBJ_SPRITE] = SPRITE_BALL;
-								object[OBJ_Y2] = 4;
+                            switch (j) {
+                                case MAP_MONEY_BAG:
 
-								if (level > 7) {
-									object = new int[32];
-									queue.add(object);
-									object[OBJ_TYPE] = MAP_BALL;
-									object[OBJ_FLOOR] = i;
-									object[OBJ_X] = y + ((enemyDirection > 0) ? 64 : -64);
-									object[OBJ_Y3] = 51 + (i << 5);
-									object[OBJ_SPRITE] = SPRITE_BALL;
-									object[OBJ_Y2] = 4;
-								}
+                                    object[OBJ_X] = x + 72;
+                                    object[OBJ_Y] = 45 + (i << 5);
+                                    object[OBJ_SPRITE] = SPRITE_MONEY_BAG;
+                                    object[OBJ_Y2] = 10;
+                                    break;
+                                case MAP_SUITCASE:
 
-							} else if (j == MAP_RADIO) {
-								
-								object[OBJ_X] = x + (level > 4 ? 40 : 72);
-								object[OBJ_Y] = 43 + (i << 5);
-								object[OBJ_SPRITE] = SPRITE_RADIO_1;
-								object[OBJ_Y1] = 6;
-								object[OBJ_Y2] = 13;
+                                    object[OBJ_X] = x + 72;
+                                    object[OBJ_Y] = 47 + (i << 5);
+                                    object[OBJ_SPRITE] = SPRITE_SUITCASE;
+                                    object[OBJ_Y2] = 9;
+                                    break;
+                                case MAP_BALL:
 
-								if (level > 4) {
-									object = new int[32];
-									queue.add(object);
-									object[OBJ_TYPE] = MAP_RADIO;
-									object[OBJ_FLOOR] = i;
-									object[OBJ_X] = x + 104;
-									object[OBJ_Y] = 43 + (i << 5);
-									object[OBJ_SPRITE] = SPRITE_RADIO_1;
-									object[OBJ_Y1] = 6;
-									object[OBJ_Y2] = 13;
-								}
-								if (level > 8) {
-									object = new int[32];
-									queue.add(object);
-									object[OBJ_TYPE] = MAP_RADIO;
-									object[OBJ_FLOOR] = i;
-									object[OBJ_X] = x + 72;
-									object[OBJ_Y] = 43 + (i << 5);
-									object[OBJ_SPRITE] = SPRITE_RADIO_1;
-									object[OBJ_Y1] = 6;
-									object[OBJ_Y2] = 13;
-								}
+                                    object[OBJ_X] = y;
+                                    object[OBJ_Y3] = 51 + (i << 5);
+                                    object[OBJ_SPRITE] = SPRITE_BALL;
+                                    object[OBJ_Y2] = 4;
 
-							} else if (j == MAP_SHOPPING_CART) {
-								
-								object[OBJ_X] = y;
-								object[OBJ_Y] = 47 + (i << 5);
-								object[OBJ_SPRITE] = SPRITE_SHOPPING_CART;
-								object[OBJ_Y1] = 2;
-								object[OBJ_Y2] = 9;
+                                    if (level > 7) {
+                                        object = new int[32];
+                                        queue.add(object);
+                                        object[OBJ_TYPE] = MAP_BALL;
+                                        object[OBJ_FLOOR] = i;
+                                        object[OBJ_X] = y + ((enemyDirection > 0) ? 64 : -64);
+                                        object[OBJ_Y3] = 51 + (i << 5);
+                                        object[OBJ_SPRITE] = SPRITE_BALL;
+                                        object[OBJ_Y2] = 4;
+                                    }
 
-								if (level > 9) {
-									object = new int[32];
-									queue.add(object);
-									object[OBJ_TYPE] = MAP_SHOPPING_CART;
-									object[OBJ_FLOOR] = i;
-									object[OBJ_X] = y + ((enemyDirection > 0) ? 64 : -64);
-									object[OBJ_Y] = 47 + (i << 5);
-									object[OBJ_SPRITE] = SPRITE_SHOPPING_CART;
-									object[OBJ_Y1] = 2;
-									object[OBJ_Y2] = 9;
-									object[OBJ_ORIENTATION] = (enemyDirection > 0) ? ORIENTATION_REVERSED : ORIENTATION_ORIGINAL;
-								}
+                                    break;
+                                case MAP_RADIO:
 
-							} else if (j == MAP_AIRPLANE) {
-								
-								object[OBJ_X] = y;
-								object[OBJ_Y] = 30 + (i << 5);
-								object[OBJ_SPRITE] = SPRITE_AIRPLANE_1;
-								object[OBJ_Y2] = 8;
-							}
+                                    object[OBJ_X] = x + (level > 4 ? 40 : 72);
+                                    object[OBJ_Y] = 43 + (i << 5);
+                                    object[OBJ_SPRITE] = SPRITE_RADIO_1;
+                                    object[OBJ_Y1] = 6;
+                                    object[OBJ_Y2] = 13;
+
+                                    if (level > 4) {
+                                        object = new int[32];
+                                        queue.add(object);
+                                        object[OBJ_TYPE] = MAP_RADIO;
+                                        object[OBJ_FLOOR] = i;
+                                        object[OBJ_X] = x + 104;
+                                        object[OBJ_Y] = 43 + (i << 5);
+                                        object[OBJ_SPRITE] = SPRITE_RADIO_1;
+                                        object[OBJ_Y1] = 6;
+                                        object[OBJ_Y2] = 13;
+                                    }
+                                    if (level > 8) {
+                                        object = new int[32];
+                                        queue.add(object);
+                                        object[OBJ_TYPE] = MAP_RADIO;
+                                        object[OBJ_FLOOR] = i;
+                                        object[OBJ_X] = x + 72;
+                                        object[OBJ_Y] = 43 + (i << 5);
+                                        object[OBJ_SPRITE] = SPRITE_RADIO_1;
+                                        object[OBJ_Y1] = 6;
+                                        object[OBJ_Y2] = 13;
+                                    }
+
+                                    break;
+                                case MAP_SHOPPING_CART:
+
+                                    object[OBJ_X] = y;
+                                    object[OBJ_Y] = 47 + (i << 5);
+                                    object[OBJ_SPRITE] = SPRITE_SHOPPING_CART;
+                                    object[OBJ_Y1] = 2;
+                                    object[OBJ_Y2] = 9;
+
+                                    if (level > 9) {
+                                        object = new int[32];
+                                        queue.add(object);
+                                        object[OBJ_TYPE] = MAP_SHOPPING_CART;
+                                        object[OBJ_FLOOR] = i;
+                                        object[OBJ_X] = y + ((enemyDirection > 0) ? 64 : -64);
+                                        object[OBJ_Y] = 47 + (i << 5);
+                                        object[OBJ_SPRITE] = SPRITE_SHOPPING_CART;
+                                        object[OBJ_Y1] = 2;
+                                        object[OBJ_Y2] = 9;
+                                        object[OBJ_ORIENTATION] = (enemyDirection > 0) ? ORIENTATION_REVERSED : ORIENTATION_ORIGINAL;
+                                    }
+
+                                    break;
+                                case MAP_AIRPLANE:
+
+                                    object[OBJ_X] = y;
+                                    object[OBJ_Y] = 30 + (i << 5);
+                                    object[OBJ_SPRITE] = SPRITE_AIRPLANE_1;
+                                    object[OBJ_Y2] = 8;
+                                    break;
+                            }
 						}
 					}
 				}
@@ -690,16 +700,20 @@ public class a extends Applet implements Runnable {
 					object = queue.get(i);
 					j = object[OBJ_TYPE];
 
-					if (j == MAP_RADIO) {
-						
-						object[OBJ_SPRITE] = radioSprite;
-					} else if (j == MAP_AIRPLANE) {
-						
-						object[OBJ_SPRITE] = airplaneSprite;
-					} else if (j == MAP_BALL) {
-						
-						object[OBJ_Y] = object[OBJ_Y3] + (int) ballBounceY;
-					}
+                    switch (j) {
+                        case MAP_RADIO:
+
+                            object[OBJ_SPRITE] = radioSprite;
+                            break;
+                        case MAP_AIRPLANE:
+
+                            object[OBJ_SPRITE] = airplaneSprite;
+                            break;
+                        case MAP_BALL:
+
+                            object[OBJ_Y] = object[OBJ_Y3] + (int) ballBounceY;
+                            break;
+                    }
 
 					
 					if (j == MAP_BALL || j == MAP_AIRPLANE || j == MAP_SHOPPING_CART) {
@@ -858,76 +872,84 @@ public class a extends Applet implements Runnable {
 				}
 			}
 
-			
-			if (room == 1 || room == 5) {
-				
-				for (i = 0; i < 3; i++) {
-					for (j = 20; j <= 112; j += 28) {
-						if (j == 76) {
-							j = 84;
-						}
-						if (i == 1 || j == 20 || j == 112) {
-							g.setColor(colors[COLOR_TABLE_BOTTOM]);
-							g.fillRect(j, 80 + (i << 5), 12, 9);
-							g.setColor(colors[COLOR_TABLE_TOP]);
-							g.fillRect(j, 78 + (i << 5), 12, 2);
-						}
-					}
-				}
 
-			} else if (room == 2 || room == 6) {
-				
-				g.setColor(colors[COLOR_TABLE_BOTTOM]);
-				g.fillRect(32, 112, 24, 9);
-				g.fillRect(88, 112, 24, 9);
+            switch (room) {
+                case 1:
+                case 5:
 
-				g.setColor(colors[COLOR_TABLE_TOP]);
-				g.fillRect(32, 110, 24, 2);
-				g.fillRect(88, 110, 24, 2);
-			} else if (room == 4) {
-				
-				g.setColor(colors[COLOR_TABLE_BOTTOM]);
-				g.fillRect(88, 80, 24, 9);
-				g.fillRect(88, 144, 24, 9);
-				g.fillRect(32, 80, 24, 9);
-				g.fillRect(32, 144, 24, 9);
+                    for (i = 0; i < 3; i++) {
+                        for (j = 20; j <= 112; j += 28) {
+                            if (j == 76) {
+                                j = 84;
+                            }
+                            if (i == 1 || j == 20 || j == 112) {
+                                g.setColor(colors[COLOR_TABLE_BOTTOM]);
+                                g.fillRect(j, 80 + (i << 5), 12, 9);
+                                g.setColor(colors[COLOR_TABLE_TOP]);
+                                g.fillRect(j, 78 + (i << 5), 12, 2);
+                            }
+                        }
+                    }
 
-				g.setColor(colors[COLOR_TABLE_TOP]);
-				g.fillRect(88, 78, 24, 2);
-				g.fillRect(88, 142, 24, 2);
-				g.fillRect(32, 78, 24, 2);
-				g.fillRect(32, 142, 24, 2);
-			} else if (room == 7) {
-				
-				g.setColor(colors[COLOR_TABLE_BOTTOM]);
-				g.fillRect(32, 144, 24, 9);
-				g.fillRect(88, 144, 24, 9);
+                    break;
+                case 2:
+                case 6:
 
-				g.setColor(colors[COLOR_TABLE_TOP]);
-				g.fillRect(32, 142, 24, 2);
-				g.fillRect(88, 142, 24, 2);
-			} else if (room == 3) {
-				
-				for (i = 0; i < 3; i++) {
-					
-					g.setColor(colors[COLOR_ELEVATOR_TOP]);
-					g.fillRect(68, 62 + (i << 5), 8, 2);
-					g.setColor(colors[COLOR_ELEVATOR_BOTTOM]);
-					g.fillRect(68, 64 + (i << 5), 8, 22);
-					g.setColor(colors[COLOR_FLOOR_1]);
-					g.fillRect(68, 86 + (i << 5), 8, 2);
+                    g.setColor(colors[COLOR_TABLE_BOTTOM]);
+                    g.fillRect(32, 112, 24, 9);
+                    g.fillRect(88, 112, 24, 9);
 
-					if (insideElevator) {
-						
-						g.drawImage(sprites[copOrientation][SPRITE_COP_STANDING], copX - cameraX, 66 + (i << 5), null);
-					}
+                    g.setColor(colors[COLOR_TABLE_TOP]);
+                    g.fillRect(32, 110, 24, 2);
+                    g.fillRect(88, 110, 24, 2);
+                    break;
+                case 4:
 
-					
-					g.setColor(colors[COLOR_ELEVATOR_DOOR]);
-					g.fillRect(68, 62 + (i << 5), elevatorFloor == i ? elevatorCounter < ELEVATOR_OPENED ? ELEVATOR_OPENING - elevatorCounter : elevatorCounter < ELEVATOR_CLOSING ? elevatorCounter
-							- ELEVATOR_OPENED : 8 : 8, 25);
-				}
-			}
+                    g.setColor(colors[COLOR_TABLE_BOTTOM]);
+                    g.fillRect(88, 80, 24, 9);
+                    g.fillRect(88, 144, 24, 9);
+                    g.fillRect(32, 80, 24, 9);
+                    g.fillRect(32, 144, 24, 9);
+
+                    g.setColor(colors[COLOR_TABLE_TOP]);
+                    g.fillRect(88, 78, 24, 2);
+                    g.fillRect(88, 142, 24, 2);
+                    g.fillRect(32, 78, 24, 2);
+                    g.fillRect(32, 142, 24, 2);
+                    break;
+                case 7:
+
+                    g.setColor(colors[COLOR_TABLE_BOTTOM]);
+                    g.fillRect(32, 144, 24, 9);
+                    g.fillRect(88, 144, 24, 9);
+
+                    g.setColor(colors[COLOR_TABLE_TOP]);
+                    g.fillRect(32, 142, 24, 2);
+                    g.fillRect(88, 142, 24, 2);
+                    break;
+                case 3:
+
+                    for (i = 0; i < 3; i++) {
+
+                        g.setColor(colors[COLOR_ELEVATOR_TOP]);
+                        g.fillRect(68, 62 + (i << 5), 8, 2);
+                        g.setColor(colors[COLOR_ELEVATOR_BOTTOM]);
+                        g.fillRect(68, 64 + (i << 5), 8, 22);
+                        g.setColor(colors[COLOR_FLOOR_1]);
+                        g.fillRect(68, 86 + (i << 5), 8, 2);
+
+                        if (insideElevator) {
+
+                            g.drawImage(sprites[copOrientation][SPRITE_COP_STANDING], copX - cameraX, 66 + (i << 5), null);
+                        }
+
+
+                        g.setColor(colors[COLOR_ELEVATOR_DOOR]);
+                        g.fillRect(68, 62 + (i << 5), elevatorFloor == i ? elevatorCounter < ELEVATOR_OPENED ? ELEVATOR_OPENING - elevatorCounter : elevatorCounter < ELEVATOR_CLOSING ? elevatorCounter
+                                - ELEVATOR_OPENED : 8 : 8, 25);
+                    }
+                    break;
+            }
 
 			
 			cameraX = room * 152;
@@ -1021,13 +1043,17 @@ public class a extends Applet implements Runnable {
             final int VK_DOWN = 0x28;
             final int VK_RIGHT = 0x27;
             final int VK_LEFT = 0x25;
-            if (k == VK_A) {
-				k = VK_LEFT;
-			} else if (k == VK_D) {
-				k = VK_RIGHT;
-			} else if (k == VK_S) {
-				k = VK_DOWN;
-			}
+            switch (k) {
+                case VK_A:
+                    k = VK_LEFT;
+                    break;
+                case VK_D:
+                    k = VK_RIGHT;
+                    break;
+                case VK_S:
+                    k = VK_DOWN;
+                    break;
+            }
             final int VK_JUMP = 0x44;
             a[(k == VK_LEFT || k == VK_RIGHT || k == VK_DOWN) ? k : VK_JUMP] = keyEvent.getID() != 402;
 		}

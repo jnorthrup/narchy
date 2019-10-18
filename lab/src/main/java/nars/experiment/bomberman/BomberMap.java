@@ -161,13 +161,29 @@ public class BomberMap extends JPanel {
             for (int t = 0; t < 7; t++)
                 for (int i = 0; i < 8; i++) {
                     str = BomberMain.RP + "Images/BomberFires/";
-                    if (t == FIRE_CENTER) str += "C";
-                    else if (t == FIRE_VERTICAL) str += "V";
-                    else if (t == FIRE_NORTH) str += "N";
-                    else if (t == FIRE_HORIZONTAL) str += "H";
-                    else if (t == FIRE_EAST) str += "E";
-                    else if (t == FIRE_WEST) str += "W";
-                    else if (t == FIRE_SOUTH) str += "S";
+                    switch (t) {
+                        case FIRE_CENTER:
+                            str += "C";
+                            break;
+                        case FIRE_VERTICAL:
+                            str += "V";
+                            break;
+                        case FIRE_NORTH:
+                            str += "N";
+                            break;
+                        case FIRE_HORIZONTAL:
+                            str += "H";
+                            break;
+                        case FIRE_EAST:
+                            str += "E";
+                            break;
+                        case FIRE_WEST:
+                            str += "W";
+                            break;
+                        case FIRE_SOUTH:
+                            str += "S";
+                            break;
+                    }
                     if (t == FIRE_BRICK) fireImages[FIRE_BRICK][i] = null;
                     else {
                         str += (i + 1) + ".gif";

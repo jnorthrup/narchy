@@ -89,14 +89,18 @@ public enum Conj {
             return false;
 
         Term x;
-        if (polarity == 0)
-            throw new TODO();
-        else if (polarity == -1) {
-            if (!container.hasAny(Op.NEG.bit))
-                return false;
-            x = _x.neg();
-        } else
-            x = _x;
+        switch (polarity) {
+            case 0:
+                throw new TODO();
+            case -1:
+                if (!container.hasAny(Op.NEG.bit))
+                    return false;
+                x = _x.neg();
+                break;
+            default:
+                x = _x;
+                break;
+        }
 
         if (!x.op().eventable || container.equals(x))
             return false;

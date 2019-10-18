@@ -110,11 +110,16 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 			//TODO decide if this makes sense for QUEST
 
 			byte answerPunc;
-			if (punc == QUESTION) answerPunc = BELIEF;
-			else if (punc == QUEST) {
-				answerPunc = GOAL;
-			} else
-				throw new UnsupportedOperationException();
+            switch (punc) {
+                case QUESTION:
+                    answerPunc = BELIEF;
+                    break;
+                case QUEST:
+                    answerPunc = GOAL;
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
 
 //                    if (it.hasXternal())
 //                        it = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(it);

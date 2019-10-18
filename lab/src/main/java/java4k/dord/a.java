@@ -857,33 +857,47 @@ public class a extends GamePanel {
         for(y = 0; y < 10; y++) {
           for(x = 0; x < 5; x++) {
             k = S.charAt(j++);
-            if (k == 'a') {
-              k = 0xff000000;
-            } else if (k == 'b') {
-              k = 0xffff6a00;
-            } else if (k == 'c') {
-              k = 0xffff0000;
-            } else if (k == 'd') {
-              k = 0xff00ff00;
-            } else if (k == 'e') {
-              k = 0xff0000ff;
-            } else if (k == 'f') {
-              k = 0xffffff00;
-            } else if (k == 'g') {
-              k = 0xff00ffff;
-            } else if (k == 'h') {
-              k = 0;
-            } else if (k == 'i') {
-              k = 0xffffffff;
-            } else if (k == 'j') {
-              k = 0xff6675cc;
-            } else if (k == 'k') {
-              k = 0xff7f92ff;
-            } else if (k == 'l') {
-              k = 0xffff00ff;
-            } else {
-              k = 0xfff7d3b3;
-            }
+              switch (k) {
+                  case 'a':
+                      k = 0xff000000;
+                      break;
+                  case 'b':
+                      k = 0xffff6a00;
+                      break;
+                  case 'c':
+                      k = 0xffff0000;
+                      break;
+                  case 'd':
+                      k = 0xff00ff00;
+                      break;
+                  case 'e':
+                      k = 0xff0000ff;
+                      break;
+                  case 'f':
+                      k = 0xffffff00;
+                      break;
+                  case 'g':
+                      k = 0xff00ffff;
+                      break;
+                  case 'h':
+                      k = 0;
+                      break;
+                  case 'i':
+                      k = 0xffffffff;
+                      break;
+                  case 'j':
+                      k = 0xff6675cc;
+                      break;
+                  case 'k':
+                      k = 0xff7f92ff;
+                      break;
+                  case 'l':
+                      k = 0xffff00ff;
+                      break;
+                  default:
+                      k = 0xfff7d3b3;
+                      break;
+              }
             tiles[i].setRGB(x, y, k);
             tiles[i].setRGB(9 - x, y, k);
           }
@@ -1264,12 +1278,15 @@ public class a extends GamePanel {
                   * (float)Math.sin(enemy[ENEMY_V] / d));
               enemy[ENEMY_V]++;
             } else if (enemy[ENEMY_TYPE] == ENEMY_TYPE_SPIKES) {
-              
-              if (enemy[ENEMY_Y] == 0) {
-                enemy[ENEMY_V] = 1;
-              } else if (enemy[ENEMY_Y] == FRAME_HEIGHT - 10) {
-                enemy[ENEMY_V] = -1;
-              }              
+
+                switch (enemy[ENEMY_Y]) {
+                    case 0:
+                        enemy[ENEMY_V] = 1;
+                        break;
+                    case FRAME_HEIGHT - 10:
+                        enemy[ENEMY_V] = -1;
+                        break;
+                }
               enemy[ENEMY_Y] += enemy[ENEMY_V];
             } else if (enemy[ENEMY_TYPE] != ENEMY_TYPE_GREEN) {
               

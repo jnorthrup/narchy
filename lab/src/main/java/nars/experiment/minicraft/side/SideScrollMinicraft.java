@@ -351,39 +351,43 @@ public class SideScrollMinicraft {
     }
 
     public void zoom(int level) {
-        if (level == 0) {
-            if (tileSize < 32) {
-                zoom(1);
-                zoom(0);
-            }
-            if (tileSize > 32) {
-                zoom(-1);
-                zoom(0);
-            }
-        } else if (level == 1) {
-            if (tileSize < 128) {
-                tileSize *= 2;
-                for (Entity entity : entities) {
-                    entity.widthPX *= 2;
-                    entity.heightPX *= 2;
+        switch (level) {
+            case 0:
+                if (tileSize < 32) {
+                    zoom(1);
+                    zoom(0);
                 }
-                for (Item item : Constants.itemTypes.values()) {
-                    item.widthPX *= 2;
-                    item.heightPX *= 2;
+                if (tileSize > 32) {
+                    zoom(-1);
+                    zoom(0);
                 }
-            }
-        } else if (level == -1) {
-            if (tileSize > 8) {
-                tileSize /= 2;
-                for (Entity entity : entities) {
-                    entity.widthPX /= 2;
-                    entity.heightPX /= 2;
+                break;
+            case 1:
+                if (tileSize < 128) {
+                    tileSize *= 2;
+                    for (Entity entity : entities) {
+                        entity.widthPX *= 2;
+                        entity.heightPX *= 2;
+                    }
+                    for (Item item : Constants.itemTypes.values()) {
+                        item.widthPX *= 2;
+                        item.heightPX *= 2;
+                    }
                 }
-                for (Item item : Constants.itemTypes.values()) {
-                    item.widthPX /= 2;
-                    item.heightPX /= 2;
+                break;
+            case -1:
+                if (tileSize > 8) {
+                    tileSize /= 2;
+                    for (Entity entity : entities) {
+                        entity.widthPX /= 2;
+                        entity.heightPX /= 2;
+                    }
+                    for (Item item : Constants.itemTypes.values()) {
+                        item.widthPX /= 2;
+                        item.heightPX /= 2;
+                    }
                 }
-            }
+                break;
         }
     }
 

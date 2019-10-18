@@ -144,10 +144,12 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 
 			int ccn = cc.size();
 
-			if (ccn == 0)
-				throw new UnsupportedOperationException();
-			else if (ccn == 1)
-				return cc.get(0);
+            switch (ccn) {
+                case 0:
+                    throw new UnsupportedOperationException();
+                case 1:
+                    return cc.get(0);
+            }
 
 //            nextX: for (int i = 0, ccSize = ccn; i < ccSize; i++) {
 //                UnifyConstraint x = cc.get(i);

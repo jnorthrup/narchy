@@ -240,32 +240,35 @@ public class SND_MIX extends SND_JAVA {
             int step = 3 - dma.channels;
 
             int val;
-            if (dma.samplebits == 16) {
-                
-                ShortBuffer out = pbuf.asShortBuffer();
-                while (count-- > 0) {
-                    val = paintbuffer.get(p) >> 8;
-                    p += step;
-                    if (val > 0x7fff)
-                        val = 0x7fff;
-                    else if (val < (short) 0x8000)
-                        val = (short) 0x8000;
-                    out.put(out_idx, (short) val);
-                    
-                    out_idx = (out_idx + 1) & out_mask;
-                }
-            } else if (dma.samplebits == 8) {
-                
-                while (count-- > 0) {
-                    val = paintbuffer.get(p) >> 8;
-                    p += step;
-                    if (val > 0x7fff)
-                        val = 0x7fff;
-                    else if (val < (short) 0x8000)
-                        val = (short) 0x8000;
-                    pbuf.put(out_idx, (byte) (val >>> 8));
-                    out_idx = (out_idx + 1) & out_mask;
-                }
+            switch (dma.samplebits) {
+                case 16:
+
+                    ShortBuffer out = pbuf.asShortBuffer();
+                    while (count-- > 0) {
+                        val = paintbuffer.get(p) >> 8;
+                        p += step;
+                        if (val > 0x7fff)
+                            val = 0x7fff;
+                        else if (val < (short) 0x8000)
+                            val = (short) 0x8000;
+                        out.put(out_idx, (short) val);
+
+                        out_idx = (out_idx + 1) & out_mask;
+                    }
+                    break;
+                case 8:
+
+                    while (count-- > 0) {
+                        val = paintbuffer.get(p) >> 8;
+                        p += step;
+                        if (val > 0x7fff)
+                            val = 0x7fff;
+                        else if (val < (short) 0x8000)
+                            val = (short) 0x8000;
+                        pbuf.put(out_idx, (byte) (val >>> 8));
+                        out_idx = (out_idx + 1) & out_mask;
+                    }
+                    break;
             }
         }
     }

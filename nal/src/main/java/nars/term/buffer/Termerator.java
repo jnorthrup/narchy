@@ -84,18 +84,21 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
      * assert a termutation
      */
     public void canBe(Term x, Term... y) {
-        if (y.length == 0)
-            throw new NullPointerException();
-        else if (y.length == 1)
-            is(x, y[0]);
-        else {
+        switch (y.length) {
+            case 0:
+                throw new NullPointerException();
+            case 1:
+                is(x, y[0]);
+                break;
+            default:
 
-            //remove duplicates
-            Set<Term> yy = Set.of(y);
-            if (yy.size()!=y.length)
-                y = yy.toArray(Op.EmptyTermArray);
+                //remove duplicates
+                Set<Term> yy = Set.of(y);
+                if (yy.size() != y.length)
+                    y = yy.toArray(Op.EmptyTermArray);
 
-            canBe(x, ArrayIterator.iterable(y));
+                canBe(x, ArrayIterator.iterable(y));
+                break;
         }
     }
 

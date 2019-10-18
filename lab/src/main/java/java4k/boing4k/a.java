@@ -434,47 +434,62 @@ public class a extends GamePanel {
 								playerVy = JUMP_SPEED;
 								playerGravity = GRAVITY;
 								i = world[z][x];
-								if (i == TILE_SOLID) {
-									playerRestoreVx = (x << 4) + 8;
-									playerRestoreVz = (z << 4) - 42;
-								} else if (i == TILE_EXCLAMATION) {
-									world[z][x] = TILE_EMPTY;
-								} else if (i == TILE_UP) {
-									playerVz = 1;
-								} else if (i == TILE_DOWN) {
-									playerVz = -1;
-								} else if (i == TILE_LEFT) {
-									playerVx = -0.5f;
-									playerVa = -V_ANGLE;
-								} else if (i == TILE_RIGHT) {
-									playerVx = 0.5f;
-									playerVa = V_ANGLE;
-								} else if (i == TILE_DOUBLE_UP) {
-									playerVz = 2;
-								} else if (i == TILE_DOUBLE_DOWN) {
-									playerVz = -2;
-								} else if (i == TILE_DOUBLE_LEFT) {
-									playerVx = -1.25f;
-									playerVa = -V_ANGLE;
-								} else if (i == TILE_DOUBLE_RIGHT) {
-									playerVx = 1.25f;
-									playerVa = V_ANGLE;
-								} else if (i == TILE_QUESTION) {
-									if (x < 4) {
-										playerVx = 0.5f;
-										playerVa = V_ANGLE;
-									} else {
-										playerVx = -0.5f;
-										playerVa = -V_ANGLE;
-									}
-								} else if (i == TILE_PAUSE) {
-									playerGravity = HIGH_GRAVITY;
-								} else if (i == TILE_GREEN) {
-									playerGravity = LOW_GRAVITY;
-								} else if (i == TILE_CHECKER) {
-									beatLevel = true;
-									beatLevelCounter = 64;
-								}
+                                switch (i) {
+                                    case TILE_SOLID:
+                                        playerRestoreVx = (x << 4) + 8;
+                                        playerRestoreVz = (z << 4) - 42;
+                                        break;
+                                    case TILE_EXCLAMATION:
+                                        world[z][x] = TILE_EMPTY;
+                                        break;
+                                    case TILE_UP:
+                                        playerVz = 1;
+                                        break;
+                                    case TILE_DOWN:
+                                        playerVz = -1;
+                                        break;
+                                    case TILE_LEFT:
+                                        playerVx = -0.5f;
+                                        playerVa = -V_ANGLE;
+                                        break;
+                                    case TILE_RIGHT:
+                                        playerVx = 0.5f;
+                                        playerVa = V_ANGLE;
+                                        break;
+                                    case TILE_DOUBLE_UP:
+                                        playerVz = 2;
+                                        break;
+                                    case TILE_DOUBLE_DOWN:
+                                        playerVz = -2;
+                                        break;
+                                    case TILE_DOUBLE_LEFT:
+                                        playerVx = -1.25f;
+                                        playerVa = -V_ANGLE;
+                                        break;
+                                    case TILE_DOUBLE_RIGHT:
+                                        playerVx = 1.25f;
+                                        playerVa = V_ANGLE;
+                                        break;
+                                    case TILE_QUESTION:
+                                        if (x < 4) {
+                                            playerVx = 0.5f;
+                                            playerVa = V_ANGLE;
+                                        } else {
+                                            playerVx = -0.5f;
+                                            playerVa = -V_ANGLE;
+                                        }
+                                        break;
+                                    case TILE_PAUSE:
+                                        playerGravity = HIGH_GRAVITY;
+                                        break;
+                                    case TILE_GREEN:
+                                        playerGravity = LOW_GRAVITY;
+                                        break;
+                                    case TILE_CHECKER:
+                                        beatLevel = true;
+                                        beatLevelCounter = 64;
+                                        break;
+                                }
 							} else {
 								playerFalling = true;
 							}

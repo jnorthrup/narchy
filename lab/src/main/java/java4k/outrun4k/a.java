@@ -131,14 +131,19 @@ public class a extends Applet implements Runnable {
             slope = nextSlope;
           } else if (lastSegment[2] > 7.25f) {
             slope = -nextSlope;
-          } if (j == 0) {
-            slope = nextSlope;
-          } else if (j == 1) {
-            slope = -nextSlope;
-          } else if (j == 2) {
-            slope = 0;
-            nextSlope = 0.3f * random.nextFloat();
           }
+            switch (j) {
+                case 0:
+                    slope = nextSlope;
+                    break;
+                case 1:
+                    slope = -nextSlope;
+                    break;
+                case 2:
+                    slope = 0;
+                    nextSlope = 0.3f * random.nextFloat();
+                    break;
+            }
         }
 
         segment[2] = lastSegment[0] + lastSegment[1] + lastSegment[2];
@@ -170,22 +175,26 @@ public class a extends Applet implements Runnable {
         if (hue < 0.175f) {
           hue = 0.175f;
         }
-        if (k == 0) {
-          
-          g3.setColor(new Color(Color.HSBtoRGB(hue, 0.5f + hue, 0.7f - mag)));
-        } else if (k == 1) {
-          
-          g3.setColor(new Color(Color.HSBtoRGB(
-              hue - 0.2f, 0.5f + hue, 0.7f - mag)));
-        } else {
-          
-          float s = 0.495f - hue * 1.9f;
-          if (s < -0.05f) {
-            s = -0.05f;
+          switch (k) {
+              case 0:
+
+                  g3.setColor(new Color(Color.HSBtoRGB(hue, 0.5f + hue, 0.7f - mag)));
+                  break;
+              case 1:
+
+                  g3.setColor(new Color(Color.HSBtoRGB(
+                          hue - 0.2f, 0.5f + hue, 0.7f - mag)));
+                  break;
+              default:
+
+                  float s = 0.495f - hue * 1.9f;
+                  if (s < -0.05f) {
+                      s = -0.05f;
+                  }
+                  g3.setColor(new Color(Color.HSBtoRGB(
+                          hue, 0.495f - hue * 1.9f, 0.8f - mag)));
+                  break;
           }
-          g3.setColor(new Color(Color.HSBtoRGB(
-             hue, 0.495f - hue * 1.9f, 0.8f - mag)));
-        }
         g3.setTransform(transform);
         g3.fillRect(-10, -40, 20, 40);
         if (mag > 0.03f) {
@@ -754,11 +763,14 @@ public class a extends Applet implements Runnable {
         final int VK_A = 0x41;
         final int VK_RIGHT = 0x27;
         final int VK_LEFT = 0x25;
-        if (k == VK_D) {
-        k = VK_RIGHT;
-      } else if (k == VK_A) {
-        k = VK_LEFT;
-      }
+        switch (k) {
+            case VK_D:
+                k = VK_RIGHT;
+                break;
+            case VK_A:
+                k = VK_LEFT;
+                break;
+        }
         final int VK_START = '\n';
         final int VK_GAS = 0x44;
         a[(k == VK_LEFT || k == VK_RIGHT || k == VK_START) ? k : VK_GAS]

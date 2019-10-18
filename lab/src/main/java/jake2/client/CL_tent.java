@@ -772,15 +772,20 @@ public class CL_tent {
 
                 
                 cnt = Lib.rand() & 15;
-                if (cnt == 1)
-                    S.StartSound(pos, 0, 0, cl_sfx_ric1, 1, Defines.ATTN_NORM,
-                            0);
-                else if (cnt == 2)
-                    S.StartSound(pos, 0, 0, cl_sfx_ric2, 1, Defines.ATTN_NORM,
-                            0);
-                else if (cnt == 3)
-                    S.StartSound(pos, 0, 0, cl_sfx_ric3, 1, Defines.ATTN_NORM,
-                            0);
+                switch (cnt) {
+                    case 1:
+                        S.StartSound(pos, 0, 0, cl_sfx_ric1, 1, Defines.ATTN_NORM,
+                                0);
+                        break;
+                    case 2:
+                        S.StartSound(pos, 0, 0, cl_sfx_ric2, 1, Defines.ATTN_NORM,
+                                0);
+                        break;
+                    case 3:
+                        S.StartSound(pos, 0, 0, cl_sfx_ric3, 1, Defines.ATTN_NORM,
+                                0);
+                        break;
+                }
             }
 
             break;
@@ -817,15 +822,20 @@ public class CL_tent {
 
             if (r == Defines.SPLASH_SPARKS) {
                 r = Lib.rand() & 3;
-                if (r == 0)
-                    S.StartSound(pos, 0, 0, cl_sfx_spark5, 1,
-                            Defines.ATTN_STATIC, 0);
-                else if (r == 1)
-                    S.StartSound(pos, 0, 0, cl_sfx_spark6, 1,
-                            Defines.ATTN_STATIC, 0);
-                else
-                    S.StartSound(pos, 0, 0, cl_sfx_spark7, 1,
-                            Defines.ATTN_STATIC, 0);
+                switch (r) {
+                    case 0:
+                        S.StartSound(pos, 0, 0, cl_sfx_spark5, 1,
+                                Defines.ATTN_STATIC, 0);
+                        break;
+                    case 1:
+                        S.StartSound(pos, 0, 0, cl_sfx_spark6, 1,
+                                Defines.ATTN_STATIC, 0);
+                        break;
+                    default:
+                        S.StartSound(pos, 0, 0, cl_sfx_spark7, 1,
+                                Defines.ATTN_STATIC, 0);
+                        break;
+                }
             }
             break;
 

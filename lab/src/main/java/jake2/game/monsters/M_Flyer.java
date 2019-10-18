@@ -583,12 +583,17 @@ public class M_Flyer {
         public String getID() { return "flyer_nextmove"; }
         @Override
         public boolean think(edict_t self) {
-            if (nextmove == ACTION_attack1)
-                self.monsterinfo.currentmove = flyer_move_start_melee;
-            else if (nextmove == ACTION_attack2)
-                self.monsterinfo.currentmove = flyer_move_attack2;
-            else if (nextmove == ACTION_run)
-                self.monsterinfo.currentmove = flyer_move_run;
+            switch (nextmove) {
+                case ACTION_attack1:
+                    self.monsterinfo.currentmove = flyer_move_start_melee;
+                    break;
+                case ACTION_attack2:
+                    self.monsterinfo.currentmove = flyer_move_attack2;
+                    break;
+                case ACTION_run:
+                    self.monsterinfo.currentmove = flyer_move_run;
+                    break;
+            }
             return true;
         }
     };
@@ -930,18 +935,22 @@ public class M_Flyer {
                 return;
 
             int n = Lib.rand() % 3;
-            if (n == 0) {
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
-                self.monsterinfo.currentmove = flyer_move_pain1;
-            } else if (n == 1) {
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                        Defines.ATTN_NORM, 0);
-                self.monsterinfo.currentmove = flyer_move_pain2;
-            } else {
-                game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
-                self.monsterinfo.currentmove = flyer_move_pain3;
+            switch (n) {
+                case 0:
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
+                            Defines.ATTN_NORM, 0);
+                    self.monsterinfo.currentmove = flyer_move_pain1;
+                    break;
+                case 1:
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
+                            Defines.ATTN_NORM, 0);
+                    self.monsterinfo.currentmove = flyer_move_pain2;
+                    break;
+                default:
+                    game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
+                            Defines.ATTN_NORM, 0);
+                    self.monsterinfo.currentmove = flyer_move_pain3;
+                    break;
             }
 
         }

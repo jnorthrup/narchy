@@ -271,10 +271,13 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
     if (isI18N)
     {
       int utflen = readUnsignedShort();
-      if (utflen == 0)
-        return "";
-      else if (utflen == 0xFFFF)
-        utflen = readInt();
+        switch (utflen) {
+            case 0:
+                return "";
+            case 0xFFFF:
+                utflen = readInt();
+                break;
+        }
       if (bytearr == null || bytearr.length < utflen)
       {
         bytearr = new byte[utflen*2];
@@ -304,38 +307,38 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
             int x = c >> 4;
             int c2;
-            if (x == 12 || x == 13) {
-          
-          incount += 2;
-          if (incount > utflen)
-            throw new java.io.UTFDataFormatException("bad UTF data: missing second byte of 2 byte char at " + incount);
-          c2 = bytearr[incount - 1];
-          
-          if ((c2 & 0xC0) != 0x80)
-            throw new java.io.UTFDataFormatException("bad UTF data: second byte format after 110xxxx is wrong char: 0x" +
-                Integer.toString(c2, 16) + " count: " + incount);
-          chararr[outcount++]=(char)(((c & 0x1F) << 6) | (c2 & 0x3F));
-        }
-        else if (x == 14)
-        {
-          
-          incount += 3;
-          if (incount > utflen)
-            throw new java.io.UTFDataFormatException("bad UTF data: missing extra bytes of 3 byte char at " + incount);
-          c2 = bytearr[incount - 2];
-            int c3 = bytearr[incount - 1];
+            switch (x) {
+                case 12:
+                case 13:
 
-            if (((c2 & 0xC0) != 0x80) || ((c3 & 0xC0) != 0x80))
-            throw new java.io.UTFDataFormatException("bad UTF data: extra byte format after 1110xxx is wrong char2: 0x" +
-                Integer.toString(c2, 16) + " char3: " + Integer.toString(c3, 16) + " count: " + incount);
-          chararr[outcount++]=(char)(((c & 0x0F) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F));
-        }
-        else
-        {
-          
-          throw new java.io.UTFDataFormatException("bad UTF data: we don't support more than 16 bit chars char: " +
-              Integer.toString(c, 16) + " count:" + incount);
-        }
+                    incount += 2;
+                    if (incount > utflen)
+                        throw new java.io.UTFDataFormatException("bad UTF data: missing second byte of 2 byte char at " + incount);
+                    c2 = bytearr[incount - 1];
+
+                    if ((c2 & 0xC0) != 0x80)
+                        throw new java.io.UTFDataFormatException("bad UTF data: second byte format after 110xxxx is wrong char: 0x" +
+                                Integer.toString(c2, 16) + " count: " + incount);
+                    chararr[outcount++] = (char) (((c & 0x1F) << 6) | (c2 & 0x3F));
+                    break;
+                case 14:
+
+                    incount += 3;
+                    if (incount > utflen)
+                        throw new java.io.UTFDataFormatException("bad UTF data: missing extra bytes of 3 byte char at " + incount);
+                    c2 = bytearr[incount - 2];
+                    int c3 = bytearr[incount - 1];
+
+                    if (((c2 & 0xC0) != 0x80) || ((c3 & 0xC0) != 0x80))
+                        throw new java.io.UTFDataFormatException("bad UTF data: extra byte format after 1110xxx is wrong char2: 0x" +
+                                Integer.toString(c2, 16) + " char3: " + Integer.toString(c3, 16) + " count: " + incount);
+                    chararr[outcount++] = (char) (((c & 0x0F) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F));
+                    break;
+                default:
+
+                    throw new java.io.UTFDataFormatException("bad UTF data: we don't support more than 16 bit chars char: " +
+                            Integer.toString(c, 16) + " count:" + incount);
+            }
       }
       return new String(chararr, 0, outcount);
     }
@@ -392,38 +395,38 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
             int x = c >> 4;
             int c2;
-            if (x == 12 || x == 13) {
-          
-          incount += 2;
-          if (incount > utflen)
-            throw new java.io.UTFDataFormatException("bad UTF data: missing second byte of 2 byte char at " + incount);
-          c2 = bytearr[incount - 1];
-          
-          if ((c2 & 0xC0) != 0x80)
-            throw new java.io.UTFDataFormatException("bad UTF data: second byte format after 110xxxx is wrong char: 0x" +
-                Integer.toString(c2, 16) + " count: " + incount);
-          sb.setCharAt(outcount++, (char)(((c & 0x1F) << 6) | (c2 & 0x3F)));
-        }
-        else if (x == 14)
-        {
-          
-          incount += 3;
-          if (incount > utflen)
-            throw new java.io.UTFDataFormatException("bad UTF data: missing extra bytes of 3 byte char at " + incount);
-          c2 = bytearr[incount - 2];
-            int c3 = bytearr[incount - 1];
+            switch (x) {
+                case 12:
+                case 13:
 
-            if (((c2 & 0xC0) != 0x80) || ((c3 & 0xC0) != 0x80))
-            throw new java.io.UTFDataFormatException("bad UTF data: extra byte format after 1110xxx is wrong char2: 0x" +
-                Integer.toString(c2, 16) + " char3: " + Integer.toString(c3, 16) + " count: " + incount);
-          sb.setCharAt(outcount++, (char)(((c & 0x0F) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F)));
-        }
-        else
-        {
-          
-          throw new java.io.UTFDataFormatException("bad UTF data: we don't support more than 16 bit chars char: " +
-              Integer.toString(c, 16) + " count:" + incount);
-        }
+                    incount += 2;
+                    if (incount > utflen)
+                        throw new java.io.UTFDataFormatException("bad UTF data: missing second byte of 2 byte char at " + incount);
+                    c2 = bytearr[incount - 1];
+
+                    if ((c2 & 0xC0) != 0x80)
+                        throw new java.io.UTFDataFormatException("bad UTF data: second byte format after 110xxxx is wrong char: 0x" +
+                                Integer.toString(c2, 16) + " count: " + incount);
+                    sb.setCharAt(outcount++, (char) (((c & 0x1F) << 6) | (c2 & 0x3F)));
+                    break;
+                case 14:
+
+                    incount += 3;
+                    if (incount > utflen)
+                        throw new java.io.UTFDataFormatException("bad UTF data: missing extra bytes of 3 byte char at " + incount);
+                    c2 = bytearr[incount - 2];
+                    int c3 = bytearr[incount - 1];
+
+                    if (((c2 & 0xC0) != 0x80) || ((c3 & 0xC0) != 0x80))
+                        throw new java.io.UTFDataFormatException("bad UTF data: extra byte format after 1110xxx is wrong char2: 0x" +
+                                Integer.toString(c2, 16) + " char3: " + Integer.toString(c3, 16) + " count: " + incount);
+                    sb.setCharAt(outcount++, (char) (((c & 0x0F) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F)));
+                    break;
+                default:
+
+                    throw new java.io.UTFDataFormatException("bad UTF data: we don't support more than 16 bit chars char: " +
+                            Integer.toString(c, 16) + " count:" + incount);
+            }
       }
       sb.setLength(outcount);
       return sb;

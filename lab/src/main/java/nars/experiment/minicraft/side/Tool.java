@@ -31,14 +31,19 @@ public class Tool extends Item {
     public Tool(String ref, int size, int id, String name, int[][] template, int templateCount,
                 ToolType toolType, ToolPower toolPower) {
         super(ref, size, id, name, template, templateCount);
-        if (toolPower == ToolPower.Wood) {
-            totalUses = 32;
-        } else if (toolPower == ToolPower.Stone) {
-            totalUses = 64;
-        } else if (toolPower == ToolPower.Metal) {
-            totalUses = 128;
-        } else {
-            totalUses = 256;
+        switch (toolPower) {
+            case Wood:
+                totalUses = 32;
+                break;
+            case Stone:
+                totalUses = 64;
+                break;
+            case Metal:
+                totalUses = 128;
+                break;
+            default:
+                totalUses = 256;
+                break;
         }
         this.toolPower = toolPower;
         this.toolType = toolType;

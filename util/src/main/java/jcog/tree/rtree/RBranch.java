@@ -195,21 +195,23 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 
                 if (nAfter == null) {
                     --size;
-                    if (size == 0) {
-                        //emptied
-                        return null;
-                    } else if (size == 1) {
-                        //return the only remaining item
-                        RNode<X> only = firstNonNull();
-                        size = 0;
-                        return only;
-                    } else {
+                    switch (size) {
+                        case 0:
+                            //emptied
+                            return null;
+                        case 1:
+                            //return the only remaining item
+                            RNode<X> only = firstNonNull();
+                            size = 0;
+                            return only;
+                        default:
 
-                        //sort nulls to end
-                        if (i < size) {
-                            arraycopy(data, i + 1, data, i, size - i);
-                            data[size] = null;
-                        }
+                            //sort nulls to end
+                            if (i < size) {
+                                arraycopy(data, i + 1, data, i, size - i);
+                                data[size] = null;
+                            }
+                            break;
                     }
 
                 }
@@ -262,16 +264,20 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
             size--;
         }
         RNode<X> target;
-        if (size == 0) {
-            bounds = null;
-            target = model.newLeaf();
-        } else if (size == 1) {
-            target = firstNonNull();
-            size = 0;
-        } else {
-            ArrayUtil.sortNullsToEnd(data);
-            updateBounds();
-            target = this;
+        switch (size) {
+            case 0:
+                bounds = null;
+                target = model.newLeaf();
+                break;
+            case 1:
+                target = firstNonNull();
+                size = 0;
+                break;
+            default:
+                ArrayUtil.sortNullsToEnd(data);
+                updateBounds();
+                target = this;
+                break;
         }
 
 

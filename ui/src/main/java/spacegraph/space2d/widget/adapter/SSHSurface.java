@@ -267,13 +267,17 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
     public void processKeyEvent(KeyEvent e) {
 
         int id = e.getID();
-        if (id == KeyEvent.KEY_PRESSED) {
-            keyPressed(e);
-        } else if (id == KeyEvent.KEY_RELEASED) {
-            /*keyReleased(e);*/
-            keyTyped(e);
-        } else if (id == KeyEvent.KEY_TYPED) {
-            //keyTyped(e);/*keyTyped(e);*/
+        switch (id) {
+            case KeyEvent.KEY_PRESSED:
+                keyPressed(e);
+                break;
+            case KeyEvent.KEY_RELEASED:
+                /*keyReleased(e);*/
+                keyTyped(e);
+                break;
+            case KeyEvent.KEY_TYPED:
+                //keyTyped(e);/*keyTyped(e);*/
+                break;
         }
         e.consume();
     }

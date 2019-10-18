@@ -61,12 +61,17 @@ public class GameTrigger {
     }
 
     public static void SP_trigger_multiple(edict_t ent) {
-        if (ent.sounds == 1)
-            ent.noise_index = game_import_t.soundindex("misc/secret.wav");
-        else if (ent.sounds == 2)
-            ent.noise_index = game_import_t.soundindex("misc/talk.wav");
-        else if (ent.sounds == 3)
-            ent.noise_index = game_import_t.soundindex("misc/trigger1.wav");
+        switch (ent.sounds) {
+            case 1:
+                ent.noise_index = game_import_t.soundindex("misc/secret.wav");
+                break;
+            case 2:
+                ent.noise_index = game_import_t.soundindex("misc/talk.wav");
+                break;
+            case 3:
+                ent.noise_index = game_import_t.soundindex("misc/trigger1.wav");
+                break;
+        }
 
         if (ent.wait == 0)
             ent.wait = 0.2f;

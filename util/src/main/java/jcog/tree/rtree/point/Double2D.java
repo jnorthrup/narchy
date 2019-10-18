@@ -45,12 +45,13 @@ public class Double2D implements HyperPoint, Comparable<Double2D> {
 
     @Override
     public Double coord(int d) {
-        if (d == 0) {
-            return x;
-        } else if (d == 1) {
-            return y;
-        } else {
-            throw new ArrayIndexOutOfBoundsException();
+        switch (d) {
+            case 0:
+                return x;
+            case 1:
+                return y;
+            default:
+                throw new ArrayIndexOutOfBoundsException();
         }
     }
 
@@ -66,12 +67,13 @@ public class Double2D implements HyperPoint, Comparable<Double2D> {
     @Override
     public double distance(HyperPoint p, int d) {
         Double2D p2 = (Double2D) p;
-        if (d == 0) {
-            return Math.abs(p2.x - x);
-        } else if (d == 1) {
-            return Math.abs(p2.y - y);
-        } else {
-            throw new ArrayIndexOutOfBoundsException();
+        switch (d) {
+            case 0:
+                return Math.abs(p2.x - x);
+            case 1:
+                return Math.abs(p2.y - y);
+            default:
+                throw new ArrayIndexOutOfBoundsException();
         }
     }
 

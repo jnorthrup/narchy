@@ -128,14 +128,19 @@ class RealWorldTests {
                     } else {
                         DoubleVar variable = new DoubleVar(variableName);
                         node.put(variableName, variable);
-                        if (RIGHT.equals(variableName)) {
-                            solver.add(C.equals(variable, C.add(getVariableFromNode(node, LEFT), getVariableFromNode(node, WIDTH))));
-                        } else if (BOTTOM.equals(variableName)) {
-                            solver.add(C.equals(variable, C.add(getVariableFromNode(node, TOP), getVariableFromNode(node, HEIGHT))));
-                        } else if (CENTERX.equals(variableName)) {
-                           
-                        } else if (CENTERY.equals(variableName)) {
-                           
+                        switch (variableName) {
+                            case RIGHT:
+                                solver.add(C.equals(variable, C.add(getVariableFromNode(node, LEFT), getVariableFromNode(node, WIDTH))));
+                                break;
+                            case BOTTOM:
+                                solver.add(C.equals(variable, C.add(getVariableFromNode(node, TOP), getVariableFromNode(node, HEIGHT))));
+                                break;
+                            case CENTERX:
+
+                                break;
+                            case CENTERY:
+
+                                break;
                         }
                         return variable;
                     }

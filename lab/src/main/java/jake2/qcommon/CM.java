@@ -972,16 +972,20 @@ public class CM {
 
             int s = Math3D.BoxOnPlaneSide(leaf_mins, leaf_maxs, plane);
 
-            if (s == 1)
-                nodenum = node.children[0];
-            else if (s == 2)
-                nodenum = node.children[1];
-            else {
-                
-                if (leaf_topnode == -1)
-                    leaf_topnode = nodenum;
-                CM_BoxLeafnums_r(node.children[0]);
-                nodenum = node.children[1];
+            switch (s) {
+                case 1:
+                    nodenum = node.children[0];
+                    break;
+                case 2:
+                    nodenum = node.children[1];
+                    break;
+                default:
+
+                    if (leaf_topnode == -1)
+                        leaf_topnode = nodenum;
+                    CM_BoxLeafnums_r(node.children[0]);
+                    nodenum = node.children[1];
+                    break;
             }
         }
     }

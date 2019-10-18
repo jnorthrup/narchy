@@ -843,64 +843,67 @@ public class Struct extends Term {
         }
 
         int p = 0;
-        if (subs() == 2) {
-            if ((p = op.opPrio(name, "xfx")) >= PrologOperators.OP_LOW) {
-                return (
-                        ((x ? p >= prio : p > prio) ? "(" : "") +
-                                subs[0].toStringAsArgX(op, p) +
-                                ' ' + name + ' ' +
-                                subs[1].toStringAsArgX(op, p) +
-                                ((x ? p >= prio : p > prio) ? ")" : ""));
-            }
-            if ((p = op.opPrio(name, "yfx")) >= PrologOperators.OP_LOW) {
-                return (
-                        ((x ? p >= prio : p > prio) ? "(" : "") +
-                                subs[0].toStringAsArgY(op, p) +
-                                ' ' + name + ' ' +
-                                subs[1].toStringAsArgX(op, p) +
-                                ((x ? p >= prio : p > prio) ? ")" : ""));
-            }
-            if ((p = op.opPrio(name, "xfy")) >= PrologOperators.OP_LOW) {
-                return !",".equals(name) ? ((x ? p >= prio : p > prio) ? "(" : "") +
-                        subs[0].toStringAsArgX(op, p) +
-                        ' ' + name + ' ' +
-                        subs[1].toStringAsArgY(op, p) +
-                        ((x ? p >= prio : p > prio) ? ")" : "") : ((x ? p >= prio : p > prio) ? "(" : "") +
-                        subs[0].toStringAsArgX(op, p) +
+        switch (subs()) {
+            case 2:
+                if ((p = op.opPrio(name, "xfx")) >= PrologOperators.OP_LOW) {
+                    return (
+                            ((x ? p >= prio : p > prio) ? "(" : "") +
+                                    subs[0].toStringAsArgX(op, p) +
+                                    ' ' + name + ' ' +
+                                    subs[1].toStringAsArgX(op, p) +
+                                    ((x ? p >= prio : p > prio) ? ")" : ""));
+                }
+                if ((p = op.opPrio(name, "yfx")) >= PrologOperators.OP_LOW) {
+                    return (
+                            ((x ? p >= prio : p > prio) ? "(" : "") +
+                                    subs[0].toStringAsArgY(op, p) +
+                                    ' ' + name + ' ' +
+                                    subs[1].toStringAsArgX(op, p) +
+                                    ((x ? p >= prio : p > prio) ? ")" : ""));
+                }
+                if ((p = op.opPrio(name, "xfy")) >= PrologOperators.OP_LOW) {
+                    return !",".equals(name) ? ((x ? p >= prio : p > prio) ? "(" : "") +
+                            subs[0].toStringAsArgX(op, p) +
+                            ' ' + name + ' ' +
+                            subs[1].toStringAsArgY(op, p) +
+                            ((x ? p >= prio : p > prio) ? ")" : "") : ((x ? p >= prio : p > prio) ? "(" : "") +
+                            subs[0].toStringAsArgX(op, p) +
 
-                        ',' +
-                        subs[1].toStringAsArgY(op, p) +
-                        ((x ? p >= prio : p > prio) ? ")" : "");
-            }
-        } else if (subs() == 1) {
-            if ((p = op.opPrio(name, "fx")) >= PrologOperators.OP_LOW) {
-                return (
-                        ((x ? p >= prio : p > prio) ? "(" : "") +
-                                name + ' ' +
-                                subs[0].toStringAsArgX(op, p) +
-                                ((x ? p >= prio : p > prio) ? ")" : ""));
-            }
-            if ((p = op.opPrio(name, "fy")) >= PrologOperators.OP_LOW) {
-                return (
-                        ((x ? p >= prio : p > prio) ? "(" : "") +
-                                name + ' ' +
-                                subs[0].toStringAsArgY(op, p) +
-                                ((x ? p >= prio : p > prio) ? ")" : ""));
-            }
-            if ((p = op.opPrio(name, "xf")) >= PrologOperators.OP_LOW) {
-                return (
-                        ((x ? p >= prio : p > prio) ? "(" : "") +
-                                subs[0].toStringAsArgX(op, p) +
-                                ' ' + name + ' ' +
-                                ((x ? p >= prio : p > prio) ? ")" : ""));
-            }
-            if ((p = op.opPrio(name, "yf")) >= PrologOperators.OP_LOW) {
-                return (
-                        ((x ? p >= prio : p > prio) ? "(" : "") +
-                                subs[0].toStringAsArgY(op, p) +
-                                ' ' + name + ' ' +
-                                ((x ? p >= prio : p > prio) ? ")" : ""));
-            }
+                            ',' +
+                            subs[1].toStringAsArgY(op, p) +
+                            ((x ? p >= prio : p > prio) ? ")" : "");
+                }
+                break;
+            case 1:
+                if ((p = op.opPrio(name, "fx")) >= PrologOperators.OP_LOW) {
+                    return (
+                            ((x ? p >= prio : p > prio) ? "(" : "") +
+                                    name + ' ' +
+                                    subs[0].toStringAsArgX(op, p) +
+                                    ((x ? p >= prio : p > prio) ? ")" : ""));
+                }
+                if ((p = op.opPrio(name, "fy")) >= PrologOperators.OP_LOW) {
+                    return (
+                            ((x ? p >= prio : p > prio) ? "(" : "") +
+                                    name + ' ' +
+                                    subs[0].toStringAsArgY(op, p) +
+                                    ((x ? p >= prio : p > prio) ? ")" : ""));
+                }
+                if ((p = op.opPrio(name, "xf")) >= PrologOperators.OP_LOW) {
+                    return (
+                            ((x ? p >= prio : p > prio) ? "(" : "") +
+                                    subs[0].toStringAsArgX(op, p) +
+                                    ' ' + name + ' ' +
+                                    ((x ? p >= prio : p > prio) ? ")" : ""));
+                }
+                if ((p = op.opPrio(name, "yf")) >= PrologOperators.OP_LOW) {
+                    return (
+                            ((x ? p >= prio : p > prio) ? "(" : "") +
+                                    subs[0].toStringAsArgY(op, p) +
+                                    ' ' + name + ' ' +
+                                    ((x ? p >= prio : p > prio) ? ")" : ""));
+                }
+                break;
         }
         String v = (Parser.isAtom(name) ? name : '\'' + name + '\'');
         if (subs() == 0) {

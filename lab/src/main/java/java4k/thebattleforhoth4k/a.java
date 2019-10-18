@@ -660,17 +660,20 @@ public class a extends GamePanel {
 					int offsetX = 640;
 					int offsetY = 832;
 
-					if (enemy[ENEMY_TYPE] == ENEMY_TYPE_ATST) {
-						width = 224;
-						height = 256;
-						offsetX = 144;
-						offsetY = 236;
-					} else if (enemy[ENEMY_TYPE] == ENEMY_TYPE_EXPLOSION) {
-						width = 64 - enemy[ENEMY_POWER];
-						height = width;
-						offsetX = width >> 1;
-						offsetY = enemy[ENEMY_Y] + width;
-					}
+                    switch (enemy[ENEMY_TYPE]) {
+                        case ENEMY_TYPE_ATST:
+                            width = 224;
+                            height = 256;
+                            offsetX = 144;
+                            offsetY = 236;
+                            break;
+                        case ENEMY_TYPE_EXPLOSION:
+                            width = 64 - enemy[ENEMY_POWER];
+                            height = width;
+                            offsetX = width >> 1;
+                            offsetY = enemy[ENEMY_Y] + width;
+                            break;
+                    }
 
 					if (spriteCount < 4096) {
 						int[] scaledSprite = scaledSprites[spriteCount++];

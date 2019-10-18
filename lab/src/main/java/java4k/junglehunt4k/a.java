@@ -345,586 +345,589 @@ public class a extends Applet implements Runnable {
           jumpReleased = true;
         }
 
-        if (mode == MODE_VINES) {
+          switch (mode) {
+              case MODE_VINES:
 
-          if (playerY > 256) {
-            
-            lives--;
-            playerVine++;
-            playerVineOffset = 64;
-            playerVy = 0;
-          }
+                  if (playerY > 256) {
 
-            j = cameraX / 80;
-          k = cameraX % 80;
-            int w = 0;
-            int vineIndex = -1;
-            for(i = 0; i < 3; i++) {
-            int[] vine = vines[i + j];
-            if (i + j == playerVine) {
-              vineIndex = i << 7;
-              playerSprite = vine[VINE_RADIUS] > 1200 ? SPRITE_CLING_2
-                  : vine[VINE_DIRECTION] == 1 ? SPRITE_CLING_1 : SPRITE_CLING_3;
-            }
-
-            
-            if ((counter & 3) == 3) {
-              if (vine[VINE_INCREMENTING] == 1) {
-                vine[VINE_RADIUS] *= 20 + vine[VINE_SPEED];
-                vine[VINE_RADIUS] >>= 4;
-                if (vine[VINE_RADIUS] > 1600) {
-                  vine[VINE_RADIUS] = 1600;
-                  vine[VINE_INCREMENTING] = 0;
-                  vine[VINE_DIRECTION] ^= 1;
-                }
-              } else {
-                vine[VINE_RADIUS] <<= 4;
-                vine[VINE_RADIUS] /= 20 + vine[VINE_SPEED];
-                if (vine[VINE_RADIUS] < 100) {
-                  vine[VINE_RADIUS] = 100;
-                  vine[VINE_INCREMENTING] = 1;
-                }
-              }
-            }
-
-            
-            int radius = vine[VINE_RADIUS];
-                int t = 1 - radius;
-                u = 1;
-                int v = -2 * radius;
-                z = x = 0;
-            y = radius;
-
-            while(true) {
-
-              if (t >= 0) {
-                if (++z == 64) {
-                  break;
-                }
-                if (vine[VINE_DIRECTION] == 0) {
-                  y--;
-                } else {
-                  y++;
-                }
-                v += 2;
-                t += v;
-
-                vinePoints[w++] = cameraX + i * 80 - k + y - radius + 53;
-                vinePoints[w++] = 61 + x;
-              }
-              if (++z == 64) {
-                break;
-              }
-              x++;
-              u += 2;
-              t += u;
-
-              vinePoints[w++] = cameraX + i * 80 - k + y - radius + 53;
-              vinePoints[w++] = 61 + x;
-            }
-          }
-
-          if (playerVy == 0) {
-            
-            playerX = vinePoints[vineIndex + playerVineOffset] - 1;
-            playerY = vinePoints[vineIndex + playerVineOffset + 1];
-
-            if (jumpReleased && a[VK_JUMP]) {              
-              jumpReleased = false;
-              playerVy = JUMP_SPEED;
-              playerVine--;
-            } else if (remaining <= 0 && playerDead == 0) {
-
-              
-              remaining = 15 + (level << 1);
-              mode = MODE_SWIMMING;
-              cameraX = CAMERAX0;
-              crocSpawnX = cameraX;
-              playerX = cameraX + 133;
-              playerY = 85;
-              playerStabbing = 0;
-              playerOxygen = 16;
-              score += POINTS_ADVANCED_LEVEL;
-
-              
-              crocs = new int[3][16];
-              for(i = 0; i < 3; i++) {
-                crocs[i][CROC_X] = cameraX << 1;
-              }
-            }
-
-          } else {
-            playerSprite = SPRITE_CLING_1;
-            playerX -= 2;
-            playerVy += GRAVITY_3 
-                + (level == 1 ? 0.0025f : level > 1 ? 0.005f : 0);
-            playerY += playerVy;
-
-            if (vineIndex >= 0) {
-              for(i = 0; i < 64; i++) {
-                x = vinePoints[vineIndex + (i << 1)] + 1;
-                y = vinePoints[vineIndex + (i << 1) + 1];
-                if (playerX >= x && playerX <= x + 2
-                    && (int)playerY == y) {
-                  
-                  playerVineOffset = i << 1;
-                  playerVy = 0;
-                  targetCameraX -= 80;
-                  if (firstMove) {
-                    
-                    firstMove = false;
-                    score = POINTS_VINE_CATCH;
-                  } else {
-                    score += POINTS_VINE_CATCH;
+                      lives--;
+                      playerVine++;
+                      playerVineOffset = 64;
+                      playerVy = 0;
                   }
-                  remaining--;
-                  break;
-                }
-              }
-            } 
-          }
 
-          if (cameraX > targetCameraX) {
-            cameraX--;
-          }
+                  j = cameraX / 80;
+                  k = cameraX % 80;
+                  int w = 0;
+                  int vineIndex = -1;
+                  for (i = 0; i < 3; i++) {
+                      int[] vine = vines[i + j];
+                      if (i + j == playerVine) {
+                          vineIndex = i << 7;
+                          playerSprite = vine[VINE_RADIUS] > 1200 ? SPRITE_CLING_2
+                                  : vine[VINE_DIRECTION] == 1 ? SPRITE_CLING_1 : SPRITE_CLING_3;
+                      }
 
-        } else if (mode == MODE_SWIMMING) {
 
-          if ((counter & 1) == 1) {
-            cameraX--;
-          }
+                      if ((counter & 3) == 3) {
+                          if (vine[VINE_INCREMENTING] == 1) {
+                              vine[VINE_RADIUS] *= 20 + vine[VINE_SPEED];
+                              vine[VINE_RADIUS] >>= 4;
+                              if (vine[VINE_RADIUS] > 1600) {
+                                  vine[VINE_RADIUS] = 1600;
+                                  vine[VINE_INCREMENTING] = 0;
+                                  vine[VINE_DIRECTION] ^= 1;
+                              }
+                          } else {
+                              vine[VINE_RADIUS] <<= 4;
+                              vine[VINE_RADIUS] /= 20 + vine[VINE_SPEED];
+                              if (vine[VINE_RADIUS] < 100) {
+                                  vine[VINE_RADIUS] = 100;
+                                  vine[VINE_INCREMENTING] = 1;
+                              }
+                          }
+                      }
 
-          if (playerDead > 0) {
-            if (++playerDead > 128) {
-              
-              
-              playerDead = 0;
-              remaining += 4;
-              lives--;
-              cameraX = CAMERAX0;
-              crocSpawnX = cameraX;
-              playerX = cameraX + 133;
-              playerY = 85;
-              playerStabbing = 0;
-              playerOxygen = 16;
 
-              
-              crocs = new int[3][16];
-              for(i = 0; i < 3; i++) {
-                crocs[i][CROC_X] = cameraX << 1;
-              }
-            } else {
-              playerSprite = SPRITE_DEAD_BODY_1 + ((counter >> 4) & 1);
-              playerSprite2 = SPRITE_DEAD_LEGS;
-              if ((counter & 1) == 1) {
-                playerX--;
-              }
-              if (playerY > 85) {
-                playerY--;
-              }
-            }
-          } else {
+                      int radius = vine[VINE_RADIUS];
+                      int t = 1 - radius;
+                      u = 1;
+                      int v = -2 * radius;
+                      z = x = 0;
+                      y = radius;
 
-            if (playerY < 86) {
-              playerOxygen = 16;
-            } else if ((counter & 63) == 63 && --playerOxygen == 0) {
-              playerDead = 1;
-            }
+                      while (true) {
 
-            if (a[VK_UP]) {
-              if (playerY > 85) {
-                playerY--;
-              }
-            } else if (a[VK_DOWN]) {
-              if (playerY < 155) {
-                playerY++;
-              }
-            }
+                          if (t >= 0) {
+                              if (++z == 64) {
+                                  break;
+                              }
+                              if (vine[VINE_DIRECTION] == 0) {
+                                  y--;
+                              } else {
+                                  y++;
+                              }
+                              v += 2;
+                              t += v;
 
-            if (a[VK_LEFT]) {
-              playerX--;
-            } else if (a[VK_RIGHT]) {
-              playerX++;
-            }
+                              vinePoints[w++] = cameraX + i * 80 - k + y - radius + 53;
+                              vinePoints[w++] = 61 + x;
+                          }
+                          if (++z == 64) {
+                              break;
+                          }
+                          x++;
+                          u += 2;
+                          t += u;
 
-            if (playerStabbing > 0) {
-              playerStabbing--;
-              playerSprite = SPRITE_STAB_BODY;
-              playerSprite2 = SPRITE_STAB_LEGS;
-            } else {
-              i = (counter >> 3) & 3;
-              playerSprite = i + SPRITE_SWIM_BODY_1;
-              playerSprite2 = i + SPRITE_SWIM_LEGS_1;
-
-              if (jumpReleased && a[VK_JUMP]) {
-                jumpReleased = false;
-                playerStabbing = 64;
-              }
-            }
-          }
-          
-          if (playerX > cameraX + 133) {
-            playerX = cameraX + 133;
-          } else if (playerX < cameraX + 81) {
-            playerX = cameraX + 81;
-          }
-
-          
-          for(i = 0; i < 3; i++) {
-            int[] croc = crocs[i];
-            if (croc[CROC_DELAY] > 0) {
-              if (--croc[CROC_DELAY] == 0) {
-                croc[CROC_X] = cameraX + SCREEN_WIDTH;
-              }
-            } else {
-              if (croc[CROC_X] >= cameraX + SCREEN_WIDTH) {
-                if (crocSpawnX > cameraX) {
-                  crocSpawnX = cameraX;
-                }
-                crocSpawnX -= 43 + random.nextInt(31);
-                croc[CROC_X] = crocSpawnX;
-                croc[CROC_CENTER_Y] = 85 + random.nextInt(70);
-                croc[CROC_RADIUS] = 8 + random.nextInt(24);
-                croc[CROC_ANGLE] = random.nextInt(1608);
-                croc[CROC_ANGLE_INC] = 4 + random.nextInt(5 + level);
-
-                if (playerDead == 0 && --remaining <= 0 && !a[VK_DOWN]) {
-
-                  
-                  remaining = 15 + (level << 1);
-                  mode = MODE_ROCKS;
-                  cameraX = CAMERAX0;
-                  playerX = cameraX + 133;
-                  playerY = 115;
-                  playerVy = 0;
-                  rockX = cameraX + SCREEN_WIDTH;
-                  playerDucking = false;
-                  panning = false;
-                  score += POINTS_ADVANCED_LEVEL;
-                }
-              }
-              croc[CROC_ANGLE] += croc[CROC_ANGLE_INC];
-              croc[CROC_Y] = (int)(croc[CROC_CENTER_Y]
-                  + croc[CROC_RADIUS] * Math.sin(croc[CROC_ANGLE] / 256f));
-              if (croc[CROC_Y] < 85) {
-                croc[CROC_Y] = 85;
-              } else if (croc[CROC_Y] > 155) {
-                croc[CROC_Y] = 155;
-              }
-
-              croc[CROC_SPRITE_1] = SPRITE_CROC_TAIL_1
-                      + ((croc[CROC_ANGLE] >> 6) % 3);
-              croc[CROC_SPRITE_2] = SPRITE_CROC_HEAD_1
-                      + ((croc[CROC_ANGLE] >> 8) % 3);
-
-              if (playerDead == 0) {
-                if (playerStabbing > 0
-                    && playerX >= croc[CROC_X] + 2
-                    && playerX <= croc[CROC_X] + 14
-                    && playerY >= croc[CROC_Y] + 1
-                    && playerY <= croc[CROC_Y] + 3) {
-                  
-                  j = playerX - croc[CROC_X];
-                  if (j < 5) {
-                    score += 100;
-                    croc[CROC_SPRITE_1] = SPRITE_10;
-                  } else if (j < 10) {
-                    score += 200;
-                    croc[CROC_SPRITE_1] = SPRITE_20;
-                  } else {
-                    score += 300;
-                    croc[CROC_SPRITE_1] = SPRITE_30;
+                          vinePoints[w++] = cameraX + i * 80 - k + y - radius + 53;
+                          vinePoints[w++] = 61 + x;
+                      }
                   }
-                  croc[CROC_SPRITE_2] = SPRITE_00;
-                  croc[CROC_DELAY] = 32;
-                } else if (playerX - 15 <= croc[CROC_X]
-                    && playerX + 15 >= croc[CROC_X]
-                    && playerY - 2 <= croc[CROC_Y]
-                    && playerY + 7 >= croc[CROC_Y]) {
-                  
-                  playerDead = 1;
-                }
-              }
-            }
+
+                  if (playerVy == 0) {
+
+                      playerX = vinePoints[vineIndex + playerVineOffset] - 1;
+                      playerY = vinePoints[vineIndex + playerVineOffset + 1];
+
+                      if (jumpReleased && a[VK_JUMP]) {
+                          jumpReleased = false;
+                          playerVy = JUMP_SPEED;
+                          playerVine--;
+                      } else if (remaining <= 0 && playerDead == 0) {
+
+
+                          remaining = 15 + (level << 1);
+                          mode = MODE_SWIMMING;
+                          cameraX = CAMERAX0;
+                          crocSpawnX = cameraX;
+                          playerX = cameraX + 133;
+                          playerY = 85;
+                          playerStabbing = 0;
+                          playerOxygen = 16;
+                          score += POINTS_ADVANCED_LEVEL;
+
+
+                          crocs = new int[3][16];
+                          for (i = 0; i < 3; i++) {
+                              crocs[i][CROC_X] = cameraX << 1;
+                          }
+                      }
+
+                  } else {
+                      playerSprite = SPRITE_CLING_1;
+                      playerX -= 2;
+                      playerVy += GRAVITY_3
+                              + (level == 1 ? 0.0025f : level > 1 ? 0.005f : 0);
+                      playerY += playerVy;
+
+                      if (vineIndex >= 0) {
+                          for (i = 0; i < 64; i++) {
+                              x = vinePoints[vineIndex + (i << 1)] + 1;
+                              y = vinePoints[vineIndex + (i << 1) + 1];
+                              if (playerX >= x && playerX <= x + 2
+                                      && (int) playerY == y) {
+
+                                  playerVineOffset = i << 1;
+                                  playerVy = 0;
+                                  targetCameraX -= 80;
+                                  if (firstMove) {
+
+                                      firstMove = false;
+                                      score = POINTS_VINE_CATCH;
+                                  } else {
+                                      score += POINTS_VINE_CATCH;
+                                  }
+                                  remaining--;
+                                  break;
+                              }
+                          }
+                      }
+                  }
+
+                  if (cameraX > targetCameraX) {
+                      cameraX--;
+                  }
+
+                  break;
+              case MODE_SWIMMING:
+
+                  if ((counter & 1) == 1) {
+                      cameraX--;
+                  }
+
+                  if (playerDead > 0) {
+                      if (++playerDead > 128) {
+
+
+                          playerDead = 0;
+                          remaining += 4;
+                          lives--;
+                          cameraX = CAMERAX0;
+                          crocSpawnX = cameraX;
+                          playerX = cameraX + 133;
+                          playerY = 85;
+                          playerStabbing = 0;
+                          playerOxygen = 16;
+
+
+                          crocs = new int[3][16];
+                          for (i = 0; i < 3; i++) {
+                              crocs[i][CROC_X] = cameraX << 1;
+                          }
+                      } else {
+                          playerSprite = SPRITE_DEAD_BODY_1 + ((counter >> 4) & 1);
+                          playerSprite2 = SPRITE_DEAD_LEGS;
+                          if ((counter & 1) == 1) {
+                              playerX--;
+                          }
+                          if (playerY > 85) {
+                              playerY--;
+                          }
+                      }
+                  } else {
+
+                      if (playerY < 86) {
+                          playerOxygen = 16;
+                      } else if ((counter & 63) == 63 && --playerOxygen == 0) {
+                          playerDead = 1;
+                      }
+
+                      if (a[VK_UP]) {
+                          if (playerY > 85) {
+                              playerY--;
+                          }
+                      } else if (a[VK_DOWN]) {
+                          if (playerY < 155) {
+                              playerY++;
+                          }
+                      }
+
+                      if (a[VK_LEFT]) {
+                          playerX--;
+                      } else if (a[VK_RIGHT]) {
+                          playerX++;
+                      }
+
+                      if (playerStabbing > 0) {
+                          playerStabbing--;
+                          playerSprite = SPRITE_STAB_BODY;
+                          playerSprite2 = SPRITE_STAB_LEGS;
+                      } else {
+                          i = (counter >> 3) & 3;
+                          playerSprite = i + SPRITE_SWIM_BODY_1;
+                          playerSprite2 = i + SPRITE_SWIM_LEGS_1;
+
+                          if (jumpReleased && a[VK_JUMP]) {
+                              jumpReleased = false;
+                              playerStabbing = 64;
+                          }
+                      }
+                  }
+
+                  if (playerX > cameraX + 133) {
+                      playerX = cameraX + 133;
+                  } else if (playerX < cameraX + 81) {
+                      playerX = cameraX + 81;
+                  }
+
+
+                  for (i = 0; i < 3; i++) {
+                      int[] croc = crocs[i];
+                      if (croc[CROC_DELAY] > 0) {
+                          if (--croc[CROC_DELAY] == 0) {
+                              croc[CROC_X] = cameraX + SCREEN_WIDTH;
+                          }
+                      } else {
+                          if (croc[CROC_X] >= cameraX + SCREEN_WIDTH) {
+                              if (crocSpawnX > cameraX) {
+                                  crocSpawnX = cameraX;
+                              }
+                              crocSpawnX -= 43 + random.nextInt(31);
+                              croc[CROC_X] = crocSpawnX;
+                              croc[CROC_CENTER_Y] = 85 + random.nextInt(70);
+                              croc[CROC_RADIUS] = 8 + random.nextInt(24);
+                              croc[CROC_ANGLE] = random.nextInt(1608);
+                              croc[CROC_ANGLE_INC] = 4 + random.nextInt(5 + level);
+
+                              if (playerDead == 0 && --remaining <= 0 && !a[VK_DOWN]) {
+
+
+                                  remaining = 15 + (level << 1);
+                                  mode = MODE_ROCKS;
+                                  cameraX = CAMERAX0;
+                                  playerX = cameraX + 133;
+                                  playerY = 115;
+                                  playerVy = 0;
+                                  rockX = cameraX + SCREEN_WIDTH;
+                                  playerDucking = false;
+                                  panning = false;
+                                  score += POINTS_ADVANCED_LEVEL;
+                              }
+                          }
+                          croc[CROC_ANGLE] += croc[CROC_ANGLE_INC];
+                          croc[CROC_Y] = (int) (croc[CROC_CENTER_Y]
+                                  + croc[CROC_RADIUS] * Math.sin(croc[CROC_ANGLE] / 256f));
+                          if (croc[CROC_Y] < 85) {
+                              croc[CROC_Y] = 85;
+                          } else if (croc[CROC_Y] > 155) {
+                              croc[CROC_Y] = 155;
+                          }
+
+                          croc[CROC_SPRITE_1] = SPRITE_CROC_TAIL_1
+                                  + ((croc[CROC_ANGLE] >> 6) % 3);
+                          croc[CROC_SPRITE_2] = SPRITE_CROC_HEAD_1
+                                  + ((croc[CROC_ANGLE] >> 8) % 3);
+
+                          if (playerDead == 0) {
+                              if (playerStabbing > 0
+                                      && playerX >= croc[CROC_X] + 2
+                                      && playerX <= croc[CROC_X] + 14
+                                      && playerY >= croc[CROC_Y] + 1
+                                      && playerY <= croc[CROC_Y] + 3) {
+
+                                  j = playerX - croc[CROC_X];
+                                  if (j < 5) {
+                                      score += 100;
+                                      croc[CROC_SPRITE_1] = SPRITE_10;
+                                  } else if (j < 10) {
+                                      score += 200;
+                                      croc[CROC_SPRITE_1] = SPRITE_20;
+                                  } else {
+                                      score += 300;
+                                      croc[CROC_SPRITE_1] = SPRITE_30;
+                                  }
+                                  croc[CROC_SPRITE_2] = SPRITE_00;
+                                  croc[CROC_DELAY] = 32;
+                              } else if (playerX - 15 <= croc[CROC_X]
+                                      && playerX + 15 >= croc[CROC_X]
+                                      && playerY - 2 <= croc[CROC_Y]
+                                      && playerY + 7 >= croc[CROC_Y]) {
+
+                                  playerDead = 1;
+                              }
+                          }
+                      }
+                  }
+
+                  break;
+              case MODE_ROCKS:
+
+                  if ((counter & 1) == 1) {
+                      rockX += playerDucking ? 2 : 1;
+                  }
+                  if (playerDead == 0 && rockX > cameraX + SCREEN_WIDTH) {
+                      if (--remaining == 0) {
+
+
+                          remaining = 2 + level;
+                          mode = MODE_CANNIBALS;
+                          panning = true;
+                          rockY = 112;
+                          rockVy = 0;
+                          cannibalDirection = -1;
+                          rockX = cameraX - 72;
+                          score += POINTS_ADVANCED_LEVEL;
+                      }
+                      rockX = cameraX - 8 - random.nextInt(64);
+                      rockBonusAwarded = false;
+                      if ((rockSprite = SPRITE_ROCK_1 + random.nextInt(2))
+                              == SPRITE_ROCK_1) {
+                          rockY = ROCK_Y_LARGE;
+                          rockMaxY = ROCK_MAX_Y_LARGE;
+                      } else {
+                          rockY = ROCK_Y_SMALL;
+                          rockMaxY = ROCK_MAX_Y_SMALL;
+                      }
+                      rockVy = 0;
+                  }
+
+                  rockVy += GRAVITY;
+                  rockY += rockVy;
+                  if (rockY >= rockMaxY) {
+                      rockY = (rockMaxY << 1) - rockY;
+                      rockVy = -rockVy;
+                  }
+
+                  if (playerDead > 0) {
+                      if (++playerDead > 128) {
+
+
+                          playerDead = 0;
+                          lives--;
+                          remaining += 2;
+                          cameraX = CAMERAX0;
+                          playerX = cameraX + 133;
+                          playerY = 115;
+                          playerVy = 0;
+                          rockX = cameraX + SCREEN_WIDTH;
+                          playerDucking = false;
+                          panning = false;
+                      } else {
+                          playerY = (int) playerY;
+                          if (playerY < 123) {
+                              playerY++;
+                          }
+                      }
+                  } else {
+
+                      if (playerVy == 0 && a[VK_DOWN]) {
+                          playerY = 121;
+                          playerSprite = SPRITE_DUCK;
+                          playerDucking = true;
+                      } else {
+                          if (playerDucking) {
+                              playerDucking = false;
+                              playerY = 115;
+                          }
+
+                          if ((counter & 1) == 1) {
+                              cameraX--;
+                          }
+
+                          if (a[VK_LEFT]) {
+                              playerX--;
+                          }
+
+                          if (playerX > cameraX + 143) {
+                              playerX = cameraX + 143;
+                          } else if (playerX < cameraX + 71) {
+                              playerX = cameraX + 71;
+                          }
+
+                          if (playerVy == 0) {
+                              if (jumpReleased && a[VK_JUMP]) {
+                                  jumpReleased = false;
+                                  playerVy = JUMP_SPEED;
+                              }
+                              if ((counter & 3) == 3 && playerSprite++ > SPRITE_RUN_3) {
+                                  playerSprite = SPRITE_RUN_1;
+                              }
+                          } else {
+                              playerVy += GRAVITY;
+                              playerY += playerVy;
+                              if (playerY >= 115) {
+                                  playerY = 115;
+                                  playerVy = 0;
+                              }
+                              playerSprite = (playerVy < 0) ? SPRITE_JUMP_2 : SPRITE_JUMP_1;
+                          }
+                      }
+
+                      i = rockSprite == SPRITE_ROCK_1 ? 11 : 7;
+                      j = 1 + (int) rockY;
+                      k = playerDucking ? 18 : 13;
+                      x = 2 + (int) playerY;
+
+
+                      if (rockX + 8 > playerX && playerX + 8 > rockX
+                              && j + i > x && x + k > j) {
+                          playerDead = 1;
+                          playerY += playerDucking ? 2 : 8;
+                          playerSprite = SPRITE_CRUSHED;
+                      } else if (!rockBonusAwarded && rockX > playerX) {
+                          rockBonusAwarded = true;
+                          if (playerVy != 0) {
+                              score += POINTS_ROCK_JUMP;
+                          } else if (playerDucking) {
+                              score += POINTS_ROCK_DUCK;
+                          } else {
+                              score += POINTS_ROCK_WALK;
+                          }
+                      }
+                  }
+                  break;
+              case MODE_WON:
+
+                  playerSprite = (counter & 32) == 0 ? 0 : SPRITE_COUNT;
+                  rockSprite = SPRITE_WOMAN + (SPRITE_COUNT - playerSprite);
+
+                  if (time > 0) {
+                      time -= 10;
+                      score += 30;
+                      if (time <= 0) {
+
+                          levelAdvanceRequest = true;
+                      }
+                  }
+
+                  break;
+              default:
+
+
+                  rockSprite = (mode == MODE_WOMAN ? SPRITE_WOMAN : SPRITE_CANNIBAL)
+                          + ((counter & 32) == 0 ? 0 : SPRITE_COUNT);
+                  if (mode == MODE_CANNIBALS) {
+                      if ((counter & 1) == 1) {
+                          rockX += cannibalDirection;
+                      }
+                      rockVy += GRAVITY;
+                      rockY += rockVy;
+                      if (rockY >= 112) {
+                          rockY = 112;
+                          rockVy = CANNIBAL_JUMP_SPEED;
+                          cannibalDirection = -cannibalDirection;
+                      }
+                  } else {
+                      rockY = 117;
+                  }
+
+                  if (playerDead > 0) {
+                      if (++playerDead > 128) {
+
+
+                          lives--;
+                          playerDead = 0;
+                          playerX = cameraX + 143;
+                          playerY = 115;
+                          playerVy = 0;
+                          playerSprite = SPRITE_RUN_1;
+                      } else {
+                          playerY = (int) playerY;
+                          if (playerY < 123) {
+                              playerY++;
+                          }
+                      }
+                  } else if (panning) {
+                      playerDucking = false;
+                      if (playerY > 115) {
+                          playerY = 115;
+                      }
+                      if ((counter & 3) == 3 && playerSprite++ > SPRITE_RUN_3) {
+                          playerSprite = SPRITE_RUN_1;
+                      }
+                      if ((counter & 1) == 1) {
+                          cameraX--;
+                      }
+                      if (playerX > cameraX + 143) {
+                          playerX = cameraX + 143;
+                      }
+                      if (rockX >= cameraX + 72) {
+                          panning = false;
+                      }
+                  } else {
+                      i = 0;
+                      if (a[VK_LEFT]) {
+                          playerDirection = i = -1;
+                      } else if (a[VK_RIGHT]) {
+                          playerDirection = i = 1;
+                      }
+                      playerX += i;
+
+                      if (playerX > cameraX + 143) {
+                          playerX = cameraX + 143;
+                      } else {
+                          while (playerX < cameraX + 25) {
+                              if ((counter & 1) == 1) {
+                                  cameraX--;
+                              } else {
+                                  playerX++;
+                              }
+                          }
+                      }
+
+                      if (jumpReleased && a[VK_JUMP] && mode < MODE_WOMAN) {
+                          jumpReleased = false;
+                          playerVy = JUMP_SPEED_2;
+                      }
+
+                      if (playerVy == 0) {
+
+                          if (rockX > cameraX + SCREEN_WIDTH) {
+                              rockBonusAwarded = false;
+                              panning = true;
+                              rockY = 112;
+                              rockVy = 0;
+                              cannibalDirection = -1;
+                              rockX = cameraX - 72;
+                              if (--remaining == 0) {
+
+
+                                  rockSprite = SPRITE_WOMAN;
+                                  mode = MODE_WOMAN;
+                                  score += POINTS_ADVANCED_LEVEL;
+                              }
+                          }
+
+                          if (i != 0) {
+                              if (playerSprite >= SPRITE_COUNT) {
+                                  playerSprite -= SPRITE_COUNT;
+                              }
+                              if ((counter & 3) == 3 && playerSprite++ > SPRITE_RUN_3) {
+                                  playerSprite = SPRITE_RUN_1;
+                              }
+                              if (i > 0) {
+                                  playerSprite += SPRITE_COUNT;
+                              }
+                          }
+                      } else {
+                          playerVy += GRAVITY_2;
+                          playerY += playerVy;
+                          if (playerY >= 115) {
+                              playerY = 115;
+                              playerVy = 0;
+                          }
+                          playerSprite = ((playerVy < 0) ? SPRITE_JUMP_2 : SPRITE_JUMP_1)
+                                  + (playerDirection == 1 ? SPRITE_COUNT : 0);
+                      }
+
+
+                      if (rockX + 8 > playerX && playerX + 8 > rockX
+                              && rockY + 20 > playerY && playerY + 20 > rockY) {
+                          if (mode == MODE_WOMAN) {
+                              mode = MODE_WON;
+                          } else {
+                              playerDead = 1;
+                              playerY += playerDucking ? 2 : 8;
+                              playerSprite = SPRITE_CRUSHED;
+                          }
+                      } else if (!rockBonusAwarded && rockX > playerX) {
+                          rockBonusAwarded = true;
+                          score += POINTS_ROCK_JUMP;
+                      }
+                  }
+                  break;
           }
-
-        } else if (mode == MODE_ROCKS) {
-
-          if ((counter & 1) == 1) {
-            rockX += playerDucking ? 2 : 1;
-          }
-          if (playerDead == 0 && rockX > cameraX + SCREEN_WIDTH) {
-            if (--remaining == 0) {
-
-              
-
-              remaining = 2 + level;
-              mode = MODE_CANNIBALS;
-              panning = true;
-              rockY = 112;
-              rockVy = 0;
-              cannibalDirection = -1;
-              rockX = cameraX - 72;              
-              score += POINTS_ADVANCED_LEVEL;
-            }
-            rockX = cameraX - 8 - random.nextInt(64);
-            rockBonusAwarded = false;
-            if ((rockSprite = SPRITE_ROCK_1 + random.nextInt(2))
-                == SPRITE_ROCK_1) {
-              rockY = ROCK_Y_LARGE;
-              rockMaxY = ROCK_MAX_Y_LARGE;
-            } else {
-              rockY = ROCK_Y_SMALL;
-              rockMaxY = ROCK_MAX_Y_SMALL;
-            }
-            rockVy = 0;
-          }
-
-          rockVy += GRAVITY;
-          rockY += rockVy;
-          if (rockY >= rockMaxY) {
-            rockY = (rockMaxY << 1) - rockY;
-            rockVy = -rockVy;
-          }
-
-          if (playerDead > 0) {
-            if (++playerDead > 128) {
-              
-              
-              playerDead = 0;
-              lives--;
-              remaining += 2;
-              cameraX = CAMERAX0;
-              playerX = cameraX + 133;
-              playerY = 115;
-              playerVy = 0;
-              rockX = cameraX + SCREEN_WIDTH;
-              playerDucking = false;
-              panning = false;
-            } else {
-              playerY = (int)playerY;
-              if (playerY < 123) {
-                playerY++;
-              }
-            }
-          } else {
-
-            if (playerVy == 0 && a[VK_DOWN]) {
-              playerY = 121;
-              playerSprite = SPRITE_DUCK;
-              playerDucking = true;
-            } else {
-              if (playerDucking) {
-                playerDucking = false;
-                playerY = 115;
-              }
-
-              if ((counter & 1) == 1) {
-                cameraX--;
-              }
-
-              if (a[VK_LEFT]) {
-                playerX--;
-              }
-
-              if (playerX > cameraX + 143) {
-                playerX = cameraX + 143;
-              } else if (playerX < cameraX + 71) {
-                playerX = cameraX + 71;
-              }
-
-              if (playerVy == 0) {
-                if (jumpReleased && a[VK_JUMP]) {
-                  jumpReleased = false;
-                  playerVy = JUMP_SPEED;
-                }
-                if ((counter & 3) == 3 && playerSprite++ > SPRITE_RUN_3) {
-                  playerSprite = SPRITE_RUN_1;
-                }
-              } else {
-                playerVy += GRAVITY;
-                playerY += playerVy;
-                if (playerY >= 115) {
-                  playerY = 115;
-                  playerVy = 0;
-                }
-                playerSprite = (playerVy < 0) ? SPRITE_JUMP_2 : SPRITE_JUMP_1;
-              }
-            }
-
-            i = rockSprite == SPRITE_ROCK_1 ? 11 : 7; 
-            j = 1 + (int)rockY; 
-            k = playerDucking ? 18 : 13; 
-            x = 2 + (int)playerY; 
-
-            
-            if (rockX + 8 > playerX && playerX + 8 > rockX
-                && j + i > x && x + k > j) {
-              playerDead = 1;
-              playerY += playerDucking ? 2 : 8;
-              playerSprite = SPRITE_CRUSHED;
-            } else if (!rockBonusAwarded && rockX > playerX) {
-              rockBonusAwarded = true;
-              if (playerVy != 0) {
-                score += POINTS_ROCK_JUMP;
-              } else if (playerDucking) {
-                score += POINTS_ROCK_DUCK;
-              } else {
-                score += POINTS_ROCK_WALK;
-              }
-            }
-          }
-        } else if (mode == MODE_WON) {
-
-          playerSprite = (counter & 32) == 0 ? 0 : SPRITE_COUNT;
-          rockSprite = SPRITE_WOMAN + (SPRITE_COUNT - playerSprite);
-
-          if (time > 0) {
-            time -= 10;
-            score += 30;
-            if (time <= 0) {
-              
-              levelAdvanceRequest = true;
-            }
-          }
-
-        } else {
-
-          
-
-          rockSprite = (mode == MODE_WOMAN ? SPRITE_WOMAN : SPRITE_CANNIBAL)
-              + ((counter & 32) == 0 ? 0 : SPRITE_COUNT);
-          if (mode == MODE_CANNIBALS) {
-            if ((counter & 1) == 1) {
-              rockX += cannibalDirection;
-            }
-            rockVy += GRAVITY;
-            rockY += rockVy;
-            if (rockY >= 112) {
-              rockY = 112;
-              rockVy = CANNIBAL_JUMP_SPEED;
-              cannibalDirection = -cannibalDirection;
-            }
-          } else {
-            rockY = 117;
-          }
-
-          if (playerDead > 0) {
-            if (++playerDead > 128) {
-              
-              
-              lives--;
-              playerDead = 0;
-              playerX = cameraX + 143;
-              playerY = 115;
-              playerVy = 0;
-              playerSprite = SPRITE_RUN_1;
-            } else {
-              playerY = (int)playerY;
-              if (playerY < 123) {
-                playerY++;
-              }
-            }
-          } else if (panning) {
-            playerDucking = false;
-            if (playerY > 115) {
-              playerY = 115;
-            }
-            if ((counter & 3) == 3 && playerSprite++ > SPRITE_RUN_3) {
-              playerSprite = SPRITE_RUN_1;
-            }
-            if ((counter & 1) == 1) {
-              cameraX--;
-            }
-            if (playerX > cameraX + 143) {
-              playerX = cameraX + 143;
-            }
-            if (rockX >= cameraX + 72) {
-              panning = false;
-            }
-          } else {
-            i = 0;
-            if (a[VK_LEFT]) {
-              playerDirection = i = -1;
-            } else if (a[VK_RIGHT]) {
-              playerDirection = i = 1;
-            }
-            playerX += i;
-
-            if (playerX > cameraX + 143) {
-              playerX = cameraX + 143;
-            } else {
-              while (playerX < cameraX + 25) {
-                if ((counter & 1) == 1) {
-                  cameraX--;
-                } else {
-                  playerX++;
-                }
-              }
-            }
-
-            if (jumpReleased && a[VK_JUMP] && mode < MODE_WOMAN) {
-              jumpReleased = false;
-              playerVy = JUMP_SPEED_2;
-            }
-
-            if (playerVy == 0) {
-
-              if (rockX > cameraX + SCREEN_WIDTH) {
-                rockBonusAwarded = false;
-                panning = true;
-                rockY = 112;
-                rockVy = 0;
-                cannibalDirection = -1;
-                rockX = cameraX - 72;
-                if (--remaining == 0) {
-
-                  
-
-                  rockSprite = SPRITE_WOMAN;
-                  mode = MODE_WOMAN;
-                  score += POINTS_ADVANCED_LEVEL;
-                }
-              }
-
-              if (i != 0) {
-                if (playerSprite >= SPRITE_COUNT) {
-                  playerSprite -= SPRITE_COUNT;
-                }
-                if ((counter & 3) == 3 && playerSprite++ > SPRITE_RUN_3) {
-                  playerSprite = SPRITE_RUN_1;
-                }
-                if (i > 0) {
-                  playerSprite += SPRITE_COUNT;
-                }
-              }
-            } else {
-              playerVy += GRAVITY_2;
-              playerY += playerVy;
-              if (playerY >= 115) {
-                playerY = 115;
-                playerVy = 0;
-              }
-              playerSprite = ((playerVy < 0) ? SPRITE_JUMP_2 : SPRITE_JUMP_1)
-                  + (playerDirection == 1 ? SPRITE_COUNT : 0);
-            }
-
-            
-            if (rockX + 8 > playerX && playerX + 8 > rockX
-                && rockY + 20 > playerY && playerY + 20 > rockY) {
-              if (mode == MODE_WOMAN) {
-                mode = MODE_WON;
-              } else {
-                playerDead = 1;
-                playerY += playerDucking ? 2 : 8;
-                playerSprite = SPRITE_CRUSHED;
-              }
-            } else if (!rockBonusAwarded && rockX > playerX) {
-              rockBonusAwarded = true;
-              score += POINTS_ROCK_JUMP;
-            }
-          }
-        }
 
         if (lives < 0 || time <= 0) {
           
@@ -986,92 +989,96 @@ public class a extends Applet implements Runnable {
         }
       }
 
-      if (mode == MODE_VINES) {
+          switch (mode) {
+              case MODE_VINES:
 
-        
-        g.setColor(COLOR_DIRT);
-        g.fillRect(0, 180, 152, 11);      
-        j = cameraX;
-        for(i = 0; i < 6; i++) {
-          g.drawImage(sprites[SPRITE_LEAVES_11 + ((i + (j >> 5)) % 5)],
-              (i << 5) - (j & 31), 164, 32, 16, null);
-        }
-        
-        
-        g.setColor(COLOR_VINE);
-        for(i = 0; i < 384; i += 2) {
-          g.fillRect(vinePoints[i] - cameraX, vinePoints[i + 1], 1, 1);
-        }
 
-        
-        g.drawImage(sprites[playerSprite],
-            playerX - cameraX, (int)playerY, null);
+                  g.setColor(COLOR_DIRT);
+                  g.fillRect(0, 180, 152, 11);
+                  j = cameraX;
+                  for (i = 0; i < 6; i++) {
+                      g.drawImage(sprites[SPRITE_LEAVES_11 + ((i + (j >> 5)) % 5)],
+                              (i << 5) - (j & 31), 164, 32, 16, null);
+                  }
 
-        
-        j = cameraX << 1;
-        for(i = 0; i < 6; i++) {
-          g.drawImage(sprites[SPRITE_LEAVES_6 + ((i + (j >> 5)) % 5)],
-              (i << 5) - (j & 31), 177, 32, 16, null);
-        }
 
-      } else if (mode == MODE_SWIMMING) {
+                  g.setColor(COLOR_VINE);
+                  for (i = 0; i < 384; i += 2) {
+                      g.fillRect(vinePoints[i] - cameraX, vinePoints[i + 1], 1, 1);
+                  }
 
-        
-        g.setColor(COLOR_WATER);
-        g.fillRect(0, 88, 152, 103);
-        j = cameraX << 1;
-        for(i = 0; i < 6; i++) {
-          g.drawImage(sprites[SPRITE_WATER_1 + (((i + (j >> 5)) % 3))],
-              (i << 5) - (j & 31), 80, 32, 8, null);
-        }
 
-        
-        j = cameraX;
-        for(i = 0; i < 6; i++) {
-          g.drawImage(sprites[SPRITE_CORAL_1 + (((i + (j >> 5)) & 1))],
-              (i << 5) - (j & 31), 167, 32, 24, null);
-        }
+                  g.drawImage(sprites[playerSprite],
+                          playerX - cameraX, (int) playerY, null);
 
-        
-        for(i = 0; i < 3; i++) {
-          int[] croc = crocs[i];
-          g.drawImage(sprites[croc[CROC_SPRITE_1]],
-              croc[CROC_X] - cameraX, croc[CROC_Y], null);
-          g.drawImage(sprites[croc[CROC_SPRITE_2]],
-              croc[CROC_X] - cameraX + 8, croc[CROC_Y], null);
-        }
 
-        
-        g.drawImage(sprites[playerSprite], playerX - cameraX,
-            (int)playerY, null);
-        g.drawImage(sprites[playerSprite2], playerX - cameraX + 8,
-            (int)playerY, null);
+                  j = cameraX << 1;
+                  for (i = 0; i < 6; i++) {
+                      g.drawImage(sprites[SPRITE_LEAVES_6 + ((i + (j >> 5)) % 5)],
+                              (i << 5) - (j & 31), 177, 32, 16, null);
+                  }
 
-        
-        g.setColor(COLOR_BLACK);
-        g.fillRect(128, 68, 20, 4);
-        for(i = 0; i < 5; i++) {
-          g.drawImage(sprites[SPRITE_OXYGEN], 130 + i * 3, 68, null);
-        }
-        g.fillRect(130 + playerOxygen, 68, 16 - playerOxygen, 4);
-        g.drawImage(sprites[SPRITE_DIVING_1], 128, 61, null);
-        g.drawImage(sprites[SPRITE_DIVING_2], 136, 61, null);
-        g.drawImage(sprites[SPRITE_DIVING_3], 144, 61, null);
+                  break;
+              case MODE_SWIMMING:
 
-      } else {
 
-        
-        g.setColor(COLOR_DIRT);
-        g.fillRect(0, 135, 152, 56);
+                  g.setColor(COLOR_WATER);
+                  g.fillRect(0, 88, 152, 103);
+                  j = cameraX << 1;
+                  for (i = 0; i < 6; i++) {
+                      g.drawImage(sprites[SPRITE_WATER_1 + (((i + (j >> 5)) % 3))],
+                              (i << 5) - (j & 31), 80, 32, 8, null);
+                  }
 
-        
-        g.drawImage(sprites[rockSprite], rockX - cameraX, (int)rockY, null);
 
-        
-        g.drawImage(sprites[playerSprite
-              + ((playerDead & 16) == 0 ? 0 : SPRITE_COUNT)],
-            playerX - cameraX, (int)playerY, null);
-      }
+                  j = cameraX;
+                  for (i = 0; i < 6; i++) {
+                      g.drawImage(sprites[SPRITE_CORAL_1 + (((i + (j >> 5)) & 1))],
+                              (i << 5) - (j & 31), 167, 32, 24, null);
+                  }
+
+
+                  for (i = 0; i < 3; i++) {
+                      int[] croc = crocs[i];
+                      g.drawImage(sprites[croc[CROC_SPRITE_1]],
+                              croc[CROC_X] - cameraX, croc[CROC_Y], null);
+                      g.drawImage(sprites[croc[CROC_SPRITE_2]],
+                              croc[CROC_X] - cameraX + 8, croc[CROC_Y], null);
+                  }
+
+
+                  g.drawImage(sprites[playerSprite], playerX - cameraX,
+                          (int) playerY, null);
+                  g.drawImage(sprites[playerSprite2], playerX - cameraX + 8,
+                          (int) playerY, null);
+
+
+                  g.setColor(COLOR_BLACK);
+                  g.fillRect(128, 68, 20, 4);
+                  for (i = 0; i < 5; i++) {
+                      g.drawImage(sprites[SPRITE_OXYGEN], 130 + i * 3, 68, null);
+                  }
+                  g.fillRect(130 + playerOxygen, 68, 16 - playerOxygen, 4);
+                  g.drawImage(sprites[SPRITE_DIVING_1], 128, 61, null);
+                  g.drawImage(sprites[SPRITE_DIVING_2], 136, 61, null);
+                  g.drawImage(sprites[SPRITE_DIVING_3], 144, 61, null);
+
+                  break;
+              default:
+
+
+                  g.setColor(COLOR_DIRT);
+                  g.fillRect(0, 135, 152, 56);
+
+
+                  g.drawImage(sprites[rockSprite], rockX - cameraX, (int) rockY, null);
+
+
+                  g.drawImage(sprites[playerSprite
+                                  + ((playerDead & 16) == 0 ? 0 : SPRITE_COUNT)],
+                          playerX - cameraX, (int) playerY, null);
+                  break;
+          }
 
       
       j = score;

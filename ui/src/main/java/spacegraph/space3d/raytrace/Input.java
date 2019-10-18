@@ -92,16 +92,22 @@ final class Input extends ComponentAdapter implements KeyListener, MouseListener
     @Override
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
-        if (keyCode ==  KeyEvent.VK_A) {
-            left = true;
-        } else if (keyCode ==  KeyEvent.VK_D) {
-            right = true;
-        } else if (keyCode ==  KeyEvent.VK_W) {
-            forward = true;
-        } else if (keyCode ==  KeyEvent.VK_S) {
-            backward = true;
-        } else if (keyCode == KeyEvent.VK_SHIFT) {
-            shift = true;
+        switch (keyCode) {
+            case KeyEvent.VK_A:
+                left = true;
+                break;
+            case KeyEvent.VK_D:
+                right = true;
+                break;
+            case KeyEvent.VK_W:
+                forward = true;
+                break;
+            case KeyEvent.VK_S:
+                backward = true;
+                break;
+            case KeyEvent.VK_SHIFT:
+                shift = true;
+                break;
         }
         if (moving()) {
             interrupt();
@@ -112,16 +118,22 @@ final class Input extends ComponentAdapter implements KeyListener, MouseListener
     public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
         boolean oldMoving = moving();
-        if (keyCode == KeyEvent.VK_A) {
-            left = false;
-        } else if (keyCode == KeyEvent.VK_D) {
-            right = false;
-        } else if (keyCode == KeyEvent.VK_W) {
-            forward = false;
-        } else if (keyCode == KeyEvent.VK_S) {
-            backward = false;
-        } else if (keyCode == KeyEvent.VK_SHIFT) {
-            shift = false;
+        switch (keyCode) {
+            case KeyEvent.VK_A:
+                left = false;
+                break;
+            case KeyEvent.VK_D:
+                right = false;
+                break;
+            case KeyEvent.VK_W:
+                forward = false;
+                break;
+            case KeyEvent.VK_S:
+                backward = false;
+                break;
+            case KeyEvent.VK_SHIFT:
+                shift = false;
+                break;
         }
     }
 

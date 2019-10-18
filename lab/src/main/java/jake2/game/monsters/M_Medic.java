@@ -1169,33 +1169,37 @@ public class M_Medic {
             if (tr.fraction != 1.0 && tr.ent != self.enemy)
                 return true;
 
-            if (self.s.frame == FRAME_attack43) {
-                game_import_t.sound(self.enemy, Defines.CHAN_AUTO,
-                        sound_hook_hit, 1, Defines.ATTN_NORM, 0);
-                self.enemy.monsterinfo.aiflags |= Defines.AI_RESURRECTING;
-            } else if (self.s.frame == FRAME_attack50) {
-                self.enemy.spawnflags = 0;
-                self.enemy.monsterinfo.aiflags = 0;
-                self.enemy.target = null;
-                self.enemy.targetname = null;
-                self.enemy.combattarget = null;
-                self.enemy.deathtarget = null;
-                self.enemy.owner = self;
-                GameSpawn.ED_CallSpawn(self.enemy);
-                self.enemy.owner = null;
-                if (self.enemy.think != null) {
-                    self.enemy.nextthink = GameBase.level.time;
-                    self.enemy.think.think(self.enemy);
-                }
-                self.enemy.monsterinfo.aiflags |= Defines.AI_RESURRECTING;
-                if (self.oldenemy != null && self.oldenemy.client != null) {
-                    self.enemy.enemy = self.oldenemy;
-                    GameUtil.FoundTarget(self.enemy);
-                }
-            } else {
-                if (self.s.frame == FRAME_attack44)
-                    game_import_t.sound(self, Defines.CHAN_WEAPON,
-                            sound_hook_heal, 1, Defines.ATTN_NORM, 0);
+            switch (self.s.frame) {
+                case FRAME_attack43:
+                    game_import_t.sound(self.enemy, Defines.CHAN_AUTO,
+                            sound_hook_hit, 1, Defines.ATTN_NORM, 0);
+                    self.enemy.monsterinfo.aiflags |= Defines.AI_RESURRECTING;
+                    break;
+                case FRAME_attack50:
+                    self.enemy.spawnflags = 0;
+                    self.enemy.monsterinfo.aiflags = 0;
+                    self.enemy.target = null;
+                    self.enemy.targetname = null;
+                    self.enemy.combattarget = null;
+                    self.enemy.deathtarget = null;
+                    self.enemy.owner = self;
+                    GameSpawn.ED_CallSpawn(self.enemy);
+                    self.enemy.owner = null;
+                    if (self.enemy.think != null) {
+                        self.enemy.nextthink = GameBase.level.time;
+                        self.enemy.think.think(self.enemy);
+                    }
+                    self.enemy.monsterinfo.aiflags |= Defines.AI_RESURRECTING;
+                    if (self.oldenemy != null && self.oldenemy.client != null) {
+                        self.enemy.enemy = self.oldenemy;
+                        GameUtil.FoundTarget(self.enemy);
+                    }
+                    break;
+                default:
+                    if (self.s.frame == FRAME_attack44)
+                        game_import_t.sound(self, Defines.CHAN_WEAPON,
+                                sound_hook_heal, 1, Defines.ATTN_NORM, 0);
+                    break;
             }
 
             

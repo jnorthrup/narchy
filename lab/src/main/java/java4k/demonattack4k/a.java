@@ -869,11 +869,14 @@ public class a extends GamePanel {
                 final int VK_A = 0x41;
                 final int VK_RIGHT = 0x27;
                 final int VK_LEFT = 0x25;
-                if (k == VK_D) {
-					k = VK_RIGHT;
-				} else if (k == VK_A) {
-					k = VK_LEFT;
-				}
+                switch (k) {
+                    case VK_D:
+                        k = VK_RIGHT;
+                        break;
+                    case VK_A:
+                        k = VK_LEFT;
+                        break;
+                }
                 final int VK_P = 0x50;
                 final int VK_SHOOT = 0x42;
                 a[(k == VK_LEFT || k == VK_RIGHT || k == VK_P) ? k : VK_SHOOT] = keyEvent.getID() != 402;

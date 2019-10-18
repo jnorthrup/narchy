@@ -42,12 +42,19 @@ public class ConstraintParser {
     private static ScalarComparison parseOperator(String operatorString) {
 
         ScalarComparison operator = null;
-        if ("EQ".equals(operatorString) || "==".equals(operatorString)) {
-            operator = ScalarComparison.Equal;
-        } else if ("GEQ".equals(operatorString) || ">=".equals(operatorString)) {
-            operator = ScalarComparison.GreaterThanOrEqual;
-        } else if ("LEQ".equals(operatorString) || "<=".equals(operatorString)) {
-            operator = ScalarComparison.LessThanOrEqual;
+        switch (operatorString) {
+            case "EQ":
+            case "==":
+                operator = ScalarComparison.Equal;
+                break;
+            case "GEQ":
+            case ">=":
+                operator = ScalarComparison.GreaterThanOrEqual;
+                break;
+            case "LEQ":
+            case "<=":
+                operator = ScalarComparison.LessThanOrEqual;
+                break;
         }
         return operator;
     }
@@ -55,14 +62,19 @@ public class ConstraintParser {
     private static double parseStrength(String strengthString) {
 
         double strength =  Strength.REQUIRED;
-        if ("!required".equals(strengthString)) {
-            strength = Strength.REQUIRED;
-        } else if ("!strong".equals(strengthString)) {
-            strength = Strength.STRONG;
-        } else if ("!medium".equals(strengthString)) {
-            strength = Strength.MEDIUM;
-        } else if ("!weak".equals(strengthString)) {
-            strength = Strength.WEAK;
+        switch (strengthString) {
+            case "!required":
+                strength = Strength.REQUIRED;
+                break;
+            case "!strong":
+                strength = Strength.STRONG;
+                break;
+            case "!medium":
+                strength = Strength.MEDIUM;
+                break;
+            case "!weak":
+                strength = Strength.WEAK;
+                break;
         }
         return strength;
     }
@@ -74,25 +86,31 @@ public class ConstraintParser {
         Stack<Expression> expressionStack = new Stack<>();
 
         for (String expression : postFixExpression) {
-            if ("+".equals(expression)) {
-                expressionStack.push(C.add(expressionStack.pop(), (expressionStack.pop())));
-            } else if ("-".equals(expression)) {
-                Expression a = expressionStack.pop();
-                Expression b = expressionStack.pop();
-                
-                expressionStack.push(C.subtract(b, a));
-            } else if ("/".equals(expression)) {
-                Expression denominator = expressionStack.pop();
-                Expression numerator = expressionStack.pop();
-                expressionStack.push(C.divide(numerator, denominator));
-            } else if ("*".equals(expression)) {
-                expressionStack.push(C.multiply(expressionStack.pop(), (expressionStack.pop())));
-            } else {
-                Expression linearExpression =  variableResolver.resolveConstant(expression);
-                if (linearExpression == null) {
-                    linearExpression = new Expression(new DoubleTerm(variableResolver.resolveVariable(expression)));
-                }
-                expressionStack.push(linearExpression);
+            switch (expression) {
+                case "+":
+                    expressionStack.push(C.add(expressionStack.pop(), (expressionStack.pop())));
+                    break;
+                case "-":
+                    Expression a = expressionStack.pop();
+                    Expression b = expressionStack.pop();
+
+                    expressionStack.push(C.subtract(b, a));
+                    break;
+                case "/":
+                    Expression denominator = expressionStack.pop();
+                    Expression numerator = expressionStack.pop();
+                    expressionStack.push(C.divide(numerator, denominator));
+                    break;
+                case "*":
+                    expressionStack.push(C.multiply(expressionStack.pop(), (expressionStack.pop())));
+                    break;
+                default:
+                    Expression linearExpression = variableResolver.resolveConstant(expression);
+                    if (linearExpression == null) {
+                        linearExpression = new Expression(new DoubleTerm(variableResolver.resolveVariable(expression)));
+                    }
+                    expressionStack.push(linearExpression);
+                    break;
             }
         }
 

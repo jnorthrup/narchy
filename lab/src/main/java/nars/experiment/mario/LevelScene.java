@@ -77,12 +77,17 @@ public class LevelScene extends Scene implements SpriteContext {
          recorder.addLong(LevelGenerator.lastSeed);
          }*/
 
-        if (levelType == LevelGenerator.TYPE_OVERGROUND)
-            Art.startMusic(1);
-        else if (levelType == LevelGenerator.TYPE_UNDERGROUND)
-            Art.startMusic(2);
-        else if (levelType == LevelGenerator.TYPE_CASTLE)
-            Art.startMusic(3);
+        switch (levelType) {
+            case LevelGenerator.TYPE_OVERGROUND:
+                Art.startMusic(1);
+                break;
+            case LevelGenerator.TYPE_UNDERGROUND:
+                Art.startMusic(2);
+                break;
+            case LevelGenerator.TYPE_CASTLE:
+                Art.startMusic(3);
+                break;
+        }
 
 
         paused = false;

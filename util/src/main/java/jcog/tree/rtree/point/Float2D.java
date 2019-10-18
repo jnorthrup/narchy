@@ -21,12 +21,13 @@ public class Float2D implements HyperPoint, Comparable<Float2D> {
 
     @Override
     public Float coord(int d) {
-        if (d == 0) {
-            return x;
-        } else if (d == 1) {
-            return y;
-        } else {
-            throw new ArrayIndexOutOfBoundsException();
+        switch (d) {
+            case 0:
+                return x;
+            case 1:
+                return y;
+            default:
+                throw new ArrayIndexOutOfBoundsException();
         }
     }
 
@@ -44,12 +45,13 @@ public class Float2D implements HyperPoint, Comparable<Float2D> {
     public double distance(HyperPoint p, int d) {
         if (p == this) return 0;
         Float2D p2 = (Float2D) p;
-        if (d == 0) {
-            return Math.abs(p2.x - x);
-        } else if (d == 1) {
-            return Math.abs(p2.y - y);
-        } else {
-            throw new ArrayIndexOutOfBoundsException();
+        switch (d) {
+            case 0:
+                return Math.abs(p2.x - x);
+            case 1:
+                return Math.abs(p2.y - y);
+            default:
+                throw new ArrayIndexOutOfBoundsException();
         }
     }
 

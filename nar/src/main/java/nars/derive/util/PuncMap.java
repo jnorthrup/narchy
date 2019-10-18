@@ -69,9 +69,14 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
     }
 
     private static Term idTerm(Atom puncAtom, byte value) {
-        if (value == 0) return puncAtom.neg();
-        else if (value == 1) return puncAtom;
-        else return $.p(puncAtom, Op.puncAtom(value));
+        switch (value) {
+            case 0:
+                return puncAtom.neg();
+            case 1:
+                return puncAtom;
+            default:
+                return $.p(puncAtom, Op.puncAtom(value));
+        }
     }
 
     public boolean all() {
