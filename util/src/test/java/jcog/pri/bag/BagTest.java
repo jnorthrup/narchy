@@ -202,6 +202,7 @@ public class BagTest {
         System.out.println();
 
         float[] ff = f1.snapshot();
+        System.out.println(Arrays.toString(ff));
 
 
         int n = ff.length;

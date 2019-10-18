@@ -138,10 +138,7 @@ class HijackBagTest {
         for (int cap : new int[] { 63, 37 }) {
             int rep = 4;
             int extraSpace = Math.round(cap *0.4f);
-            PLinkHijackBag bag = new PLinkHijackBag(plus, cap * extraSpace, rep) {
-
-
-            };
+            PLinkHijackBag bag = new PLinkHijackBag(plus, cap + extraSpace, rep);
 
 
             fillLinear(bag, cap);

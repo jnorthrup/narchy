@@ -3,6 +3,7 @@ package jcog.net;
 import org.gridkit.nanocloud.Cloud;
 import org.gridkit.nanocloud.CloudFactory;
 import org.gridkit.nanocloud.VX;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.lang.management.ManagementFactory;
@@ -12,6 +13,7 @@ import java.util.concurrent.Callable;
  * https://github.com/jenkinsci/remoting/blob/master/README.md
  * https://github.com/gridkit/nanocloud/blob/vicluster-0.8/docs/NanoCloud_Tutorial.md
  * */
+@Disabled
 public class RemotingTest {
 
     static final String ALL_NODES = "**";

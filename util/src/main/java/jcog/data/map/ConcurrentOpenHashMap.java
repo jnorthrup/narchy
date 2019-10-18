@@ -39,7 +39,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Concurrent hash map
- * 
+ *
  * Provides similar methods as a ConcurrentMap<K,V> but since it's an open hash map with linear probing, no node
  * allocations are required to store the values
  *
@@ -50,6 +50,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
     private static final Object DeletedKey = new Object();
+
+    private final float MapFillFactor;
 
     private static final int DefaultExpectedItems = 1024;
     private static final int DefaultConcurrencyLevel = Runtime.getRuntime().availableProcessors();
@@ -75,8 +77,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
         int numSections = concurrencyLevel;
         int perSectionExpectedItems = expectedItems / numSections;
-        float mapFillFactor;
-        int perSectionCapacity = (int) (perSectionExpectedItems / (mapFillFactor = MapFillFactor));
+        int perSectionCapacity = (int) (perSectionExpectedItems / (this.MapFillFactor = MapFillFactor));
         this.sections = (Section<K, V>[]) new Section[numSections];
 
         for (int i = 0; i < numSections; i++) {
@@ -87,7 +88,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     public int size() {
         long size = Arrays.stream(sections).mapToLong(s -> s.size.getOpaque()).sum();
         if (size >= Integer.MAX_VALUE)
-            return Integer.MAX_VALUE-1; 
+            return Integer.MAX_VALUE-1;
         return (int) size;
     }
 
@@ -146,8 +147,8 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     }
 
     private Section<K, V> section(long hash) {
-        
-        int sectionIdx = (int) (hash >>> 32) & (sections.length - 1);
+
+        final int sectionIdx = (int) (hash >>> 32) & (sections.length - 1);
         return sections[sectionIdx];
     }
 
@@ -168,11 +169,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
      */
     public List<K> keys() {
         List<K> keys = Lists.newArrayList();
-        for (Entry<K, V> entry : this.entrySet()) {
-            K key = entry.getKey();
-            V value = entry.getValue();
-            keys.add(key);
-        }
+        forEach((key, value) -> keys.add(key));
         return keys;
     }
 
@@ -185,16 +182,14 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
             target = arrayBuilder.apply(s);
         }
 
-        int[] i = {0};
+        final int[] i = {0};
         V[] t = target;
-        for (Entry<K, V> entry : this.entrySet()) {
-            K k = entry.getKey();
-            V v = entry.getValue();
-            if (v != null) {
+        forEach((k, v) -> {
+            if (v!=null) {
                 if (i[0] < s)
                     t[i[0]++] = v;
             }
-        }
+        });
 
         if (i[0] < s) {
             return Arrays.copyOf(t, i[0]); //dont leave suffix nulls; create new list
@@ -205,11 +200,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
     public List<V> values() {
         List<V> values = new FasterList(size());
-        for (Entry<K, V> entry : this.entrySet()) {
-            K key = entry.getKey();
-            V value = entry.getValue();
-            values.add(value);
-        }
+        forEach((key, value) -> values.add(value));
         return values;
     }
 
@@ -218,7 +209,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         throw new TODO();
     }
 
-    
+
     @SuppressWarnings("serial")
     private static final class Section<K, V> extends StampedLock {
 
@@ -251,7 +242,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                     V storedValue = (V) table.getOpaque(bucket + 1);
 
                     if (!acquiredLock && validate(stamp)) {
-                        
+
                         if (key.equals(storedKey)) {
                             return storedValue;
                         } else if (storedKey == null) {
@@ -260,11 +251,11 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
                     } else {
 
-                        
+
                         if (!acquiredLock) {
                             stamp = readLock();
                             acquiredLock = true;
-                            table = this.table; 
+                            table = this.table;
 
                             bucket = signSafeMod(keyHash, capacity);
                             storedKey = (K) table.getOpaque(bucket);
@@ -288,11 +279,13 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         }
 
         V put(K key, V value, int keyHash, boolean onlyIfAbsent, Function<? super K, ? extends V> valueProvider) {
+            long stamp = writeLock();
             int bucket = signSafeMod(keyHash, capacity);
 
 
+            int firstDeletedKey = -1;
+
             try {
-                int firstDeletedKey = -1;
                 while (true) {
                     AtomicReferenceArray table = this.table;
                     K storedKey = (K) table.getOpaque(bucket);
@@ -333,7 +326,6 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                     bucket = (bucket + 2) & (table.length() - 1);
                 }
             } finally {
-                long stamp = writeLock();
                 if (usedBuckets.get() > resizeThreshold) {
                     try {
                         rehash();
@@ -347,6 +339,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         }
 
         private V remove(K key, Object value, int keyHash) {
+            long stamp = writeLock();
             int bucket = signSafeMod(keyHash, capacity);
 
             try {
@@ -373,7 +366,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                             return null;
                         }
                     } else if (storedKey == null) {
-                        
+
                         return null;
                     }
 
@@ -381,12 +374,12 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                 }
 
             } finally {
-                long stamp = writeLock();
                 unlockWrite(stamp);
             }
         }
 
         void clear() {
+            long stamp = writeLock();
 
             try {
                 int l = table.length();
@@ -395,7 +388,6 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                 this.size.set(0);
                 this.usedBuckets.set(0);
             } finally {
-                long stamp = writeLock();
                 unlockWrite(stamp);
             }
         }
@@ -445,7 +437,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         }
 
         private void rehash() {
-            
+
             int newCapacity = capacity * 2;
             AtomicReferenceArray newTable = new AtomicReferenceArray(2 * newCapacity);
 

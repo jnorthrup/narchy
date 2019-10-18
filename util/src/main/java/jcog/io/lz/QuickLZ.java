@@ -344,8 +344,10 @@ public final class QuickLZ {
 					offset2 = dst - o;
 				}
 
-
-                if (matchlen >= 0) System.arraycopy(out, offset2 + 0, out, dst + 0, matchlen);
+                //for some reason System.arraycopy doesnt ever work here... i dont know
+				//noinspection ManualArrayCopy
+				for (int i = 0; i < matchlen; i++)
+					out[dst + i] = out[offset2 + i];
 
 				dst += matchlen;
 
