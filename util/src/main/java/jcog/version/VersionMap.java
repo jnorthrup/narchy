@@ -149,11 +149,9 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
             ArrayUnenforcedSet<Entry<X, Y>> e = new ArrayUnenforcedSet<>(0, new Entry[s]);
             map.forEach((k, v) -> {
                 Y vv = v.get();
-                if (vv != null) {
+                if (vv != null)
                     e.add(new AbstractMap.SimpleImmutableEntry<>(k, vv));
-                }
             });
-
             return e;
         }
     }
@@ -162,7 +160,7 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
     public Set<X> keySet() {
         int s = size();
         if (s == 0)
-            return Set.of();
+            return Collections.EMPTY_SET;
         //else if (s == 1) ...
         else {
             ArrayUnenforcedSet<X> e = new ArrayUnenforcedSet(0, new Object[s]);
@@ -174,9 +172,10 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
         }
     }
 
+    /** @noinspection SimplifyStreamApiCallChains*/
     @Override
     public Collection<Y> values() {
-        return new ArrayList<>(values()); //HACK
+        return entrySet().stream().map(Entry::getValue).collect(toList()); //HACK
     }
 
 

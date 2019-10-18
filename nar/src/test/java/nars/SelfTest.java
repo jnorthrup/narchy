@@ -50,14 +50,14 @@ public class SelfTest {
     public static void main(String[] args) {
         SelfTest s = new SelfTest();
         s.unitTestsByPackage("nars.nal.nal1");
-//        s.unitTestsByPackage("nars.nal.nal2");
-//        s.unitTestsByPackage("nars.nal.nal3");
-//        s.unitTestsByPackage("nars.nal.nal4");
+        s.unitTestsByPackage("nars.nal.nal2");
+        s.unitTestsByPackage("nars.nal.nal3");
+        s.unitTestsByPackage("nars.nal.nal4");
 //        s.unitTestsByPackage("nars.nal.nal5");
 //        s.unitTestsByPackage("nars.nal.nal6");
 //        s.unitTestsByPackage("nars.nal.nal7");
 //        s.unitTestsByPackage("nars.nal.nal8");
-        s.run(16);
+        s.run(8);
     }
 
 
@@ -91,16 +91,19 @@ public class SelfTest {
         selector.accept(b);
         LauncherDiscoveryRequest bb = b.build();
 
-        TestPlan tp = LauncherFactory.create(launcherConfig).discover(bb);
+        Launcher lf = LauncherFactory.create(launcherConfig);
+
+        TestPlan tp = lf.discover(bb);
+
 
         return ()->{
 
 
             DataTable results = newTable();
 
-            Launcher lf = LauncherFactory.create(launcherConfig);
-            lf.registerTestExecutionListeners(new MyTestExecutionListener(results));
-            lf.execute(tp);
+            //lf.registerTestExecutionListeners(new MyTestExecutionListener(results));
+            //lf.execute(tp);
+            lf.execute(tp,new MyTestExecutionListener(results));
 
             return results;
         };
@@ -226,7 +229,9 @@ public class SelfTest {
                 String me = m.getMethodName() +
                         (!m.getMethodParameterTypes().isEmpty() ? ('(' + id.getDisplayName() + ')') : "");
                 assert(!me.isEmpty());
-                out.add(pk, cl, me, startUnixTime, success, error, wallTimeNS);
+                synchronized (out) {
+                    out.add(pk, cl, me, startUnixTime, success, error, wallTimeNS);
+                }
             } else {
                 //TODO / ignore
             }
@@ -263,7 +268,7 @@ public class SelfTest {
 
 
 
-        ExecutorService exe = Executors.newWorkStealingPool(threads);
+        ExecutorService exe = Executors.newFixedThreadPool(threads);
 
         for (int i = 0; i < repeats; i++) {
 

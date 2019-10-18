@@ -279,19 +279,21 @@ public abstract class MetaAgent extends Game {
 			float emotionalMomentumDurs = 4;
 
 			reward(happy, () -> {
+				float durMeasured = 0;
 				float dur = dur();
 				long now = nar.time();
-				return (happiness(Math.round(now - dur), now, dur, nar) * 2
+				return (happiness(Math.round(now - dur), now, durMeasured, nar) * 2
 					+
 					//historic happiness ~= gradient momentum / echo effect
-					happiness(Math.round(now - (dur * (emotionalMomentumDurs+1))), Math.round(now - dur), dur, nar)) /3;
+					happiness(Math.round(now - (dur * (emotionalMomentumDurs+1))), Math.round(now - dur), durMeasured, nar)) /3;
 			});
 
 			/** encourage predicted future happiness */
 			reward(optimistic, () -> {
+				float durMeasured = 0;
 				float dur = dur();
 				long now = nar.time();
-				float h = happiness(now, Math.round(now+(emotionalMomentumDurs * dur)), dur, nar);
+				float h = happiness(now, Math.round(now+(emotionalMomentumDurs * dur)), durMeasured, nar);
 				return h;
 			});
 //        ThreadCPUTimeTracker.getCPUTime()

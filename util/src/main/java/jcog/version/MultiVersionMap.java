@@ -1,5 +1,7 @@
 package jcog.version;
 
+import java.util.Objects;
+
 public class MultiVersionMap<X,Y> extends VersionMap<X,Y> {
     final int maxValuesPerItem;
 
@@ -10,8 +12,7 @@ public class MultiVersionMap<X,Y> extends VersionMap<X,Y> {
 
     @Override
     public int size() {
-        int count = (int) map.values().stream().filter(e -> e.get() != null).count();
-        return count;
+        return (int) map.values().stream().map(Versioned::get).filter(Objects::nonNull).count();
     }
 
     @Override

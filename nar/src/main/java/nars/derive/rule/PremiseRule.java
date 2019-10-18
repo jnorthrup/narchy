@@ -7,7 +7,6 @@ import nars.derive.action.How;
 import nars.derive.util.Forkable;
 import nars.term.ProxyTerm;
 import nars.term.Term;
-import nars.term.atom.Atomic;
 import nars.term.control.PREDICATE;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +49,10 @@ public class PremiseRule extends ProxyTerm  {
     }
 
     How action(NAR n, Map<String, RuleCause> tags) {
-        return action.apply(tag==null ? cause(n, ref) : tags.computeIfAbsent(tag, t-> cause(n, Atomic.the(t))));
+        return action.apply(
+            //tag==null ? cause(n, ref) : tags.computeIfAbsent(tag, t -> cause(n, Atomic.the(t))) //GROUPED
+            cause(n, ref) //UNIQUE
+        );
     }
 
     private static RuleCause cause(NAR n, Term ref) {

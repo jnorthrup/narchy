@@ -329,7 +329,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     @Deprecated public final FloatRange questionForgetRate = new FloatRange(1f, 0, 1);
 
-    @Deprecated public final IntRange deriveBranchTTL = new IntRange(16, 1, 256);
+    @Deprecated public final IntRange deriveBranchTTL = new IntRange(24, 1, 256);
 
     /**
      * how many cycles above which to dither dt and occurrence time
@@ -740,7 +740,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY= configIs("TIMEGRAPH_DITHER_EVENTS_INTERNALLY");
 
 
-        public static final int TTL_UNISUBST = 8;
+        public static final int TTL_UNISUBST = 3;
 
         public static final int TTL_CONJ_BEFORE_AFTER = NAL.derive.TTL_UNISUBST;
 

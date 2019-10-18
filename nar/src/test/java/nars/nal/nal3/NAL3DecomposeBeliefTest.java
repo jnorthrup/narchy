@@ -18,23 +18,23 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class NAL3DecomposeBeliefTest extends NAL3Test {
 
-    static final int cycles = 1350;
+    static final int cycles = 150;
 
 
     @Test
     void diff_compound_decomposition_single3_intersect() {
         test.termVolMax(8);
-        test.believe("<(dinosaur && --ant) --> [strong]>", 0.9f, 0.9f);
+        test.believe("<(dinosaur & --ant) --> [strong]>", 0.9f, 0.9f);
         test.mustBelieve(cycles, "<dinosaur --> [strong]>", 0.90f, 0.73f);
         test.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.73f);
     }
-    @Test
-    void diff_compound_decomposition_single3_union() {
-        test.termVolMax(8);
-        test.believe("<(dinosaur || --ant) --> [strong]>", 0.9f, 0.9f);
-        test.mustBelieve(cycles, "<dinosaur --> [strong]>", 0.90f, 0.73f);
-        test.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.73f);
-    }
+//    @Test
+//    void diff_compound_decomposition_single3_union() {
+//        test.termVolMax(8);
+//        test.believe("<(dinosaur | --ant) --> [strong]>", 0.9f, 0.9f);
+//        test.mustBelieve(cycles, "<dinosaur --> [strong]>", 0.90f, 0.73f);
+//        test.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.73f);
+//    }
 //
 //    @Test
 //    void diff_compound_decomposition_low_dynamic() {
@@ -83,9 +83,9 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
         |-
         ''outputMustContain('<robin --> mammal>. %0.00;0.81%') 'Robin is not a type of mammal.
         */
-        test.believe("(robin --> (swimmer && --mammal))");
+        test.believe("--(robin --> (mammal & --swimmer))");
         test.believe("--(robin --> swimmer)");
-        test.mustBelieve(cycles, "--(robin --> mammal)", 1f, 0.81f);
+        test.mustBelieve(cycles, "(robin --> mammal)", 0f, 0.81f);
         test.mustNotOutput(cycles, "(robin --> mammal)", BELIEF, 0.5f, 1f, 0, 1)
         ;
     }

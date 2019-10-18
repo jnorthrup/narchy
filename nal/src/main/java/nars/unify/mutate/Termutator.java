@@ -11,15 +11,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * AIKR choicepoint used in deciding possible mutations to apply in deriving new compounds
  */
-public interface Termutator {
-
-    Termutator[] CUT = new Termutator[0];
-
-    Termutator ELIDE = new AbstractTermutator(Atomic.atom("ELIDE")) {
-        @Override public void mutate(Termutator[] chain, int current, Unify u) {
-            u.tryMutate(chain, current);
-        }
-    };
+@FunctionalInterface public interface Termutator {
 
     /**
      * match all termutations recursing to the next after each successful one
@@ -46,11 +38,17 @@ public interface Termutator {
 
     }
 
-
     /** constant result for return from preprocess() call
      * */
     static Termutator result(boolean success) {
         return success ? Termutator.ELIDE : null;
     }
 
+    Termutator[] CUT = new Termutator[0];
+
+    Termutator ELIDE = new AbstractTermutator(Atomic.atom("ELIDE")) {
+        @Override public void mutate(Termutator[] chain, int current, Unify u) {
+            u.tryMutate(chain, current);
+        }
+    };
 }

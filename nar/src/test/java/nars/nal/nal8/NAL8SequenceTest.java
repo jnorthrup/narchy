@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /** test precision of sequence execution (planning) */
 public class NAL8SequenceTest extends NALTest {
 
-    public static final int cycles = 400;
+    public static final int cycles = 50;
 
     @BeforeEach void init() {
         test.termVolMax(26);
@@ -170,23 +170,22 @@ public class NAL8SequenceTest extends NALTest {
     }
 
     @Test
-    void testGoalDeduction_MidSequence_Conj() {
+    void beliefDeduction_MidSequence_Conj() {
 
         test
                 .input( "(a &&+1 ((b(x)&&c) &&+1 ((c(#1) && d(x,#1)) &&+1 (d &&+1 e(#1))))).")
-                .input( "(b(x)&&c)!")
-                //.mustGoal(cycles, "((&&,d(x,x)) &&+1 (d &&+1 e(x)))", 1, 0.81f) //81% for one step
-                .mustGoal(cycles, "(((d(x,#1)&&c(#1)) &&+1 d) &&+1 e(#1))", 1, 0.81f) //81% for one step
+                .input( "(b(x)&&c).")
+                .mustBelieve(cycles, "(((d(x,#1)&&c(#1)) &&+1 d) &&+1 e(#1))", 1, 0.81f) //81% for one step
         ;
     }
 
     @Test
-    void testGoalDeduction_MidSequence_Disj() {
+    void beliefDeduction_MidSequence_Disj() {
 
         test
                 .input( "(a &&+1 ((b(x)||c) &&+1 (c(#1) &&+1 (d &&+1 e)))).")
-                .input( "c!")
-                .mustGoal(cycles, "((c(#1) &&+1 d) &&+1 e)", 1, 0.81f) //81% for one step
+                .input( "c.")
+                .mustBelieve(cycles, "((c(#1) &&+1 d) &&+1 e)", 1, 0.81f) //81% for one step
         ;
     }
     @Test
@@ -313,14 +312,14 @@ public class NAL8SequenceTest extends NALTest {
         test
             .input("x!")//eternal
             .input("(y &&+10 x). |") //temporal
-            .mustGoal(cycles, "y", 1, 0.81f, -10);
+            .mustGoal(cycles, "y", 1, 0.81f, t->t>=0 /*-10*/);
     }
     @Test void taskEventConjBeforeCorrectTime2() {
 
         test
             .input("(--x&&z)!")//eternal
             .input("(y &&+10 (--x&&z)). |") //temporal
-            .mustGoal(cycles, "y", 1, 0.81f, -10);
+            .mustGoal(cycles, "y", 1, 0.81f, t->t>=0 /*-10*/);
     }
     @Test void testGoalUnionDeduction() {
         test

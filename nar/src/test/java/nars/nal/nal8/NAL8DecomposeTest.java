@@ -17,7 +17,7 @@ import static nars.Op.GOAL;
  */
 public abstract class NAL8DecomposeTest extends NALTest {
 
-    public static final int cycles = 800;
+    public static final int cycles = 200;
 
 
     @Override
@@ -264,16 +264,16 @@ public abstract class NAL8DecomposeTest extends NALTest {
                     .input("b. %0.9;0.9%")
                     .mustBelieve(cycles, "a", 0.81f, 0.66f);
         }
-        @Test
-        void decompose_Conj_BeliefPosNeg() {
-            test
-                    .termVolMax(4)
-                    .input("(a && --b). %0.9;0.9%")
-                    .input("b. %0.1;0.9%")
-                    .mustBelieve(cycles, "a", 0.81f, 0.66f)
-                    .mustNotBelieve(cycles, "a", 0.91f, 0.07f, (s,e)->true);
-
-        }
+//        @Test
+//        void decompose_Conj_BeliefPosNeg() {
+//            test
+//                    .termVolMax(4)
+//                    .input("(a && --b). %0.9;0.9%")
+//                    .input("b. %0.1;0.9%")
+//                    .mustBelieve(cycles, "a", 0.81f, 0.66f)
+//                    .mustNotBelieve(cycles, "a", 0.91f, 0.07f, (s,e)->true);
+//
+//        }
         @Test
         void decompose_Conj_BeliefNegPos() {
             test
@@ -295,16 +295,21 @@ public abstract class NAL8DecomposeTest extends NALTest {
             //test.confMin(0.6f);
             test.input("(a && b)! %0.1;0.9%");
             test.input("b. %0.9;0.9%");
-            test.mustGoal(cycles, "a", 0.1f, 0.59f);
+            test.mustGoal(cycles, "a",
+                0.19f, 0.66f);
+                //0.1f, 0.59f);
         }
 
         @Test
         void decompose_Conj_Goal_neg_decompose_neg() {
             //adapted form nal3 test
+
             test.termVolMax(6);
             test.input("(--a || b)! %0.9;0.9%");
             test.input("b. %0.1;0.9%");
-            test.mustGoal(cycles, "a", 0.1f, 0.58f);
+            test.mustGoal(cycles, "a",
+                0.19f, 0.66f);
+                //0.1f, 0.58f);
         }
 
     }
