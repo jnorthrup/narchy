@@ -53,7 +53,7 @@ public class PoleCart extends GameX {
 
 
 	static final boolean rl = false;
-	static final boolean beliefPredict = true;
+	static final boolean beliefPredict = false;
 	static final boolean impiler = false;
 	static final boolean speedControl = true;
 

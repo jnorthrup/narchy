@@ -608,9 +608,9 @@ public class Smasher {
     }
 
     public void update(Dynamics2D dyn, float dt) {
-        for (Fracture f : fractures) {
-            f.smash(this, dt, dyn);
-        }
+        fractures.forEach(f ->
+            f.smash(this, dt, dyn)
+        );
         fractures.clear();
     }
 }

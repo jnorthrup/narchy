@@ -6,7 +6,6 @@ import jcog.exe.Exe;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.ArrayBitmap2D;
-import jcog.table.DataTable;
 import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
@@ -27,11 +26,7 @@ import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.video.Draw;
-import tech.tablesaw.api.DoubleColumn;
-import tech.tablesaw.api.Table;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jcog.Texts.n2;
@@ -54,10 +49,9 @@ public class TrackXY_NAR extends GameX {
 //    static float fps = 16;
 //    static int durMS = Math.round(1000/(fps));
 
-	static int dur = 4;
+	static int dur = 1;
 
 	static float camResolution = 0.1f;
-	static int experimentTime = 3000000;
 	public final AtomicBoolean trainer = new AtomicBoolean(false);
 	public final AtomicBoolean log = new AtomicBoolean(true);
 	final Bitmap2DSensor cam;
@@ -214,14 +208,14 @@ public class TrackXY_NAR extends GameX {
 //        n.questPriDefault.amp(0.05f);
 
 
-		n.freqResolution.set(0.01f);
+		n.freqResolution.set(0.1f);
 		n.confMin.evi(0);
 //        n.confResolution.set(0.05f);
 
 
 		//n.freqResolution.set(0.04f);
 
-		n.termVolMax.set(24);
+		n.termVolMax.set(16);
 		//n.dtDither.set(Math.max(1, durMS));
 
 
@@ -276,22 +270,22 @@ public class TrackXY_NAR extends GameX {
 
 		TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
 
-		Table t = DataTable.create(DoubleColumn.create("tx"), DoubleColumn.create("cx"));
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			try {
-				File f = new File("/tmp/x.csv");
-				System.out.println("writing perf metrics: " + f);
-				t.write().csv(f);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}));
-		a.onFrame(f -> {
-			synchronized (t) {
-				((DoubleColumn) t.column(0)).append((double) a.track.tx);
-				((DoubleColumn) t.column(1)).append((double) a.track.cx);
-			}
-		});
+//		Table t = DataTable.create(DoubleColumn.create("tx"), DoubleColumn.create("cx"));
+//		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//			try {
+//				File f = new File("/tmp/x.csv");
+//				System.out.println("writing perf metrics: " + f);
+//				t.write().csv(f);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}));
+//		a.onFrame(f -> {
+//			synchronized (t) {
+//				((DoubleColumn) t.column(0)).append((double) a.track.tx);
+//				((DoubleColumn) t.column(1)).append((double) a.track.cx);
+//			}
+//		});
 
 //        //if (rl) {
 //        {
@@ -388,7 +382,8 @@ public class TrackXY_NAR extends GameX {
 
 
 		});
-		n.run(experimentTime);
+		//n.run(experimentTime);
+		n.startFPS(10);
 
 
 //                g.build(a, new AutoBuilder<>(2, (context, features, obj) -> {
