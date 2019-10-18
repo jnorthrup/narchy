@@ -413,7 +413,7 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
-    Desire() {
+    @AllowOverlap Desire() {
         @Override
         public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions2.desire(T, B, minConf, false,true);
@@ -422,6 +422,14 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
+    @AllowOverlap DesireWeak() {
+        @Override
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
+            return TruthFunctions2.desire(T, B, minConf, false,false);
+            //return TruthFunctions.desire(T, B, minConf, false);
+            //return TruthFunctions2.desireSemiBipolar(T, B, minConf, false);
+        }
+    },
 
     /** wrapper for Desire that inverts the belief truth according to the polarity of the task  truth */
     Undesire() {
@@ -431,14 +439,6 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
-    DesireWeak() {
-        @Override
-        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
-            return TruthFunctions2.desire(T, B, minConf, false,false);
-            //return TruthFunctions.desire(T, B, minConf, false);
-            //return TruthFunctions2.desireSemiBipolar(T, B, minConf, false);
-        }
-    },
 
 //    /** bipolar form of desire - belief truth can invert goal truth */
 //    Need() {

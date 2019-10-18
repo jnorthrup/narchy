@@ -127,15 +127,21 @@ public enum TruthFunctions2 {
 
 
 
-            float bF =
-                    belief.freq();
+            float bF = belief.freq();
                     //(float) Math.sqrt(belief.freq());
 
-            bF = Math.max(0, (bF - 0.5f) * 2); //only positive side
+            //ACTIVATION FUNCTIONS
+            //--------------------
 
-            if (!bipolar) {
+            //CLEAN POSITIVE-ONLY linear
+            bF = Math.max(0, (bF - 0.5f) * 2);
+
+            //"SOFTMAX"-like (but using polynomial) - some negative leakage/cross-over
+            //bF = (float) Math.pow(bF, 5);
+
+
+            if (!bipolar)
                 cc = Util.and(bF, cc); //in unipolar mode, attenuate confidence to zero as the low belief frequency pulls the output frequency to 0.5
-            }
 
 //            /* attenuate by polarity, helps to unglue sticky ambivalent states */
 //            cc = Util.and(cc, goal.polarity()
