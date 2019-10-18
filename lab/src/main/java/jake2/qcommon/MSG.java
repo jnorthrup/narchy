@@ -166,8 +166,6 @@ public class MSG extends Globals {
 
     
     public static void WriteDir(sizebuf_t sb, float[] dir) {
-        int i;
-        float d;
 
         if (dir == null) {
             WriteByte(sb, 0);
@@ -176,8 +174,8 @@ public class MSG extends Globals {
 
         float bestd = 0;
         int best = 0;
-        for (i = 0; i < NUMVERTEXNORMALS; i++) {
-            d = Math3D.DotProduct(dir, bytedirs[i]);
+        for (int i = 0; i < NUMVERTEXNORMALS; i++) {
+            float d = Math3D.DotProduct(dir, bytedirs[i]);
             if (d > bestd) {
                 bestd = d;
                 best = i;
@@ -466,11 +464,10 @@ public class MSG extends Globals {
 
     public static String ReadString(sizebuf_t msg_read) {
 
-        byte c;
         int l = 0;
         byte[] rb = MSG.readbuf;
         do {
-            c = (byte) ReadByte(msg_read);
+            byte c = (byte) ReadByte(msg_read);
             if (c == -1 || c == 0)
                 break;
 
@@ -484,11 +481,9 @@ public class MSG extends Globals {
 
     public static String ReadStringLine(sizebuf_t msg_read) {
 
-        byte c;
-
         int l = 0;
         do {
-            c = (byte) ReadChar(msg_read);
+            byte c = (byte) ReadChar(msg_read);
             if (c == -1 || c == 0 || c == 0x0a)
                 break;
             readbuf[l] = c;

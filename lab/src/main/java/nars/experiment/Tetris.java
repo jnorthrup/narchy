@@ -535,11 +535,11 @@ public class Tetris extends GameX {
          */
         private boolean inBounds(int checkX, int checkY, int checkOrientation) {
             boolean result = false;
-            boolean finished = false;
             try {
                 var thePiece = possibleBlocks.get(currentBlockId).thePiece[checkOrientation];
 
-                for (var y = 0;!finished&& y < thePiece[0].length; ++y) {
+                boolean finished = false;
+                for (var y = 0; !finished&& y < thePiece[0].length; ++y) {
                     int i1 = checkY + y;
                     boolean b = i1 >= 0 && i1 < height;
                     for (var x = 0; !finished&&x < thePiece.length; ++x) {

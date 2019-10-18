@@ -622,17 +622,16 @@ public class M_Boss31 {
         public boolean think(edict_t self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
 
-            float[] start = { 0, 0, 0 };
-            float[] dir = { 0, 0, 0 };
-            float[] vec = { 0, 0, 0 };
-
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[Defines.MZ2_JORG_BFG_1],
                     forward, right, start);
 
+            float[] vec = {0, 0, 0};
             Math3D.VectorCopy(self.enemy.s.origin, vec);
             vec[2] += self.enemy.viewheight;
+            float[] dir = {0, 0, 0};
             Math3D.VectorSubtract(vec, start, dir);
             Math3D.VectorNormalize(dir);
             game_import_t.sound(self, Defines.CHAN_VOICE, sound_attack2, 1,
@@ -653,17 +652,18 @@ public class M_Boss31 {
         public String getID() { return "jorg_firebullet_right"; }
         @Override
         public boolean think(edict_t self) {
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, target = { 0,
-                    0, 0 };
-            float[] start = { 0, 0, 0 };
+            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D
                     .G_ProjectSource(
                             self.s.origin,
                             M_Flash.monster_flash_offset[Defines.MZ2_JORG_MACHINEGUN_R1],
                             forward, right, start);
 
+            float[] target = {0,
+                    0, 0};
             Math3D.VectorMA(self.enemy.s.origin, -0.2f, self.enemy.velocity,
                     target);
             target[2] += self.enemy.viewheight;
@@ -683,17 +683,18 @@ public class M_Boss31 {
         public String getID() { return "jorg_firebullet_left"; }
         @Override
         public boolean think(edict_t self) {
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, target = { 0,
-                    0, 0 };
-            float[] start = { 0, 0, 0 };
+            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D
                     .G_ProjectSource(
                             self.s.origin,
                             M_Flash.monster_flash_offset[Defines.MZ2_JORG_MACHINEGUN_L1],
                             forward, right, start);
 
+            float[] target = {0,
+                    0, 0};
             Math3D.VectorMA(self.enemy.s.origin, -0.2f, self.enemy.velocity,
                     target);
             target[2] += self.enemy.viewheight;
@@ -790,29 +791,28 @@ public class M_Boss31 {
         public String getID() { return "Jorg_CheckAttack"; }
         @Override
         public boolean think(edict_t self) {
-            float[] spot1 = { 0, 0, 0 }, spot2 = { 0, 0, 0 };
-            float[] temp = { 0, 0, 0 };
-            float chance;
-            trace_t tr;
 
             if (self.enemy.health > 0) {
-                
+
+                float[] spot1 = {0, 0, 0};
                 Math3D.VectorCopy(self.s.origin, spot1);
                 spot1[2] += self.viewheight;
+                float[] spot2 = {0, 0, 0};
                 Math3D.VectorCopy(self.enemy.s.origin, spot2);
                 spot2[2] += self.enemy.viewheight;
 
-                tr = game_import_t.trace(spot1, null, null, spot2, self,
+                trace_t tr = game_import_t.trace(spot1, null, null, spot2, self,
                         Defines.CONTENTS_SOLID | Defines.CONTENTS_MONSTER
                                 | Defines.CONTENTS_SLIME
                                 | Defines.CONTENTS_LAVA);
 
-                
+
                 if (tr.ent != self.enemy)
                     return false;
             }
 
             int enemy_range = GameUtil.range(self, self.enemy);
+            float[] temp = {0, 0, 0};
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, temp);
             float enemy_yaw = Math3D.vectoyaw(temp);
 
@@ -837,6 +837,7 @@ public class M_Boss31 {
             if (enemy_range == Defines.RANGE_FAR)
                 return false;
 
+            float chance;
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0) {
                 chance = 0.4f;
             } else if (enemy_range == Defines.RANGE_MELEE) {

@@ -319,14 +319,14 @@ class MyCMAESOptimizerTest {
 		double resNoBound = result.getPoint()[0];
 
 
-		double[] lower = {-20};
-		double[] upper = {5e16};
-		double[] sigma2 = {10};
+        double[] sigma2 = {10};
 		optimizer
 			= new MyCMAESOptimizer(30000, 0, true, 10,
 			0, rng(), false, null, 5, sigma2);
 
-		result = optimizer.optimize(new MaxEval(100000),
+        double[] upper = {5e16};
+        double[] lower = {-20};
+        result = optimizer.optimize(new MaxEval(100000),
 			new ObjectiveFunction(fitnessFunction),
 			GoalType.MINIMIZE,
 			new InitialGuess(start),
@@ -529,9 +529,9 @@ class MyCMAESOptimizerTest {
 
 		@Override
 		public double value(double[] x) {
-			double f = 0;
-			x = B.Rotate(x);
-			for (int i = 0; i < x.length; ++i) {
+            x = B.Rotate(x);
+            double f = 0;
+            for (int i = 0; i < x.length; ++i) {
 				f += FastMath.pow(factor, i / (x.length - 1.)) * x[i] * x[i];
 			}
 			return f;
@@ -588,11 +588,10 @@ class MyCMAESOptimizerTest {
 
 		@Override
 		public double value(double[] x) {
-			double f;
-			int bound = x.length - 1;
-			f = IntStream.range(0, bound).mapToDouble(i -> 1e2 * (x[i] * x[i] - x[i + 1]) * (x[i] * x[i] - x[i + 1])
-					+ (x[i] - 1.) * (x[i] - 1.)).sum();
-			return f;
+            int bound = x.length - 1;
+            double f = IntStream.range(0, bound).mapToDouble(i -> 1e2 * (x[i] * x[i] - x[i + 1]) * (x[i] * x[i] - x[i + 1])
+                    + (x[i] - 1.) * (x[i] - 1.)).sum();
+            return f;
 		}
 	}
 
@@ -640,10 +639,9 @@ class MyCMAESOptimizerTest {
 		@Override
 		public double value(double[] x) {
 			double f = 0;
-			double fac;
-			for (int i = 0; i < x.length; ++i) {
-				fac = FastMath.pow(axisratio, (i - 1.) / (x.length - 1.));
-				if (i == 0 && x[i] < 0) {
+            for (int i = 0; i < x.length; ++i) {
+                double fac = FastMath.pow(axisratio, (i - 1.) / (x.length - 1.));
+                if (i == 0 && x[i] < 0) {
 					fac *= 1.;
 				}
 				f += fac * fac * x[i] * x[i] + amplitude
@@ -674,18 +672,18 @@ class MyCMAESOptimizerTest {
 				return;
 			}
 
-			double sp;
-			int i, j, k;
-
-			/* generate orthogonal basis */
+            /* generate orthogonal basis */
 			basis = new double[DIM][DIM];
-			for (i = 0; i < DIM; ++i) {
+			for (int i = 0; i < DIM; ++i) {
 				/* sample components gaussian */
-				for (j = 0; j < DIM; ++j) {
+                int j;
+                for (j = 0; j < DIM; ++j) {
 					basis[i][j] = rand.nextGaussian();
 				}
 				/* substract projection of previous vectors */
-				for (j = i - 1; j >= 0; --j) {
+                int k;
+                double sp;
+                for (j = i - 1; j >= 0; --j) {
 					for (sp = 0., k = 0; k < DIM; ++k) {
 						sp += basis[i][k] * basis[j][k]; /* scalar product */
 					}

@@ -43,7 +43,6 @@ public class LogisticRegression {
     }
 
     public void softmax(double[] x) {
-        double sum = 0.0;
 
         boolean seen = false;
         double best = 0;
@@ -59,7 +58,8 @@ public class LogisticRegression {
         }
         double max = seen ? best : 0.0;
 
-        for(int i=0; i<n_out; i++) {
+        double sum = 0.0;
+        for(int i = 0; i<n_out; i++) {
             x[i] = Math.exp(x[i] - max);
             sum += x[i];
         }
@@ -84,7 +84,6 @@ public class LogisticRegression {
         int n_epochs = 500;
 
         int train_N = 6;
-        int test_N = 2;
         int n_in = 6;
         int n_out = 2;
 
@@ -123,6 +122,7 @@ public class LogisticRegression {
                 {0., 0., 1., 1., 1., 0.}
         };
 
+        int test_N = 2;
         double[][] test_Y = new double[test_N][n_out];
 
 

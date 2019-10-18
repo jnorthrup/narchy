@@ -26,21 +26,20 @@ public class MJDiv_StrIn {
 	
 	
 	private void SetStr(String sStr) {
-		String sTok, sBff;
-		int i, iPos, iCnt;
+		int i;
 
-        m_Str = sStr;
+		m_Str = sStr;
 
 		m_Pos = 0;
         StringTokenizer st = new StringTokenizer(sStr, ",", false);
 		while (st.hasMoreTokens()) {
-			sTok = st.nextToken();
+			String sTok = st.nextToken();
 			sTok = sTok.trim();
 			if (sTok.contains("(")) 
 			{
-				iPos = sTok.indexOf('(');
-				sBff = sTok.substring(0, iPos);
-				iCnt = Integer.valueOf(sBff); 
+				int iPos = sTok.indexOf('(');
+				String sBff = sTok.substring(0, iPos);
+				int iCnt = Integer.valueOf(sBff);
 				sBff = sTok.substring(iPos + 1); 
 				iPos = sBff.indexOf(')');
 				if (iPos >= 0)
@@ -70,15 +69,12 @@ public class MJDiv_StrIn {
 	
 	public void SetFromString(String sStr) {
 
-        String sTok;
-		String sBff;
-
-        Reset();
+		Reset();
 
         StringTokenizer st = new StringTokenizer(sStr, ",", false);
 		while (st.hasMoreTokens()) {
-			sTok = st.nextToken().toUpperCase();
-			
+			String sTok = st.nextToken().toUpperCase();
+
 			if (sTok.startsWith("ACT="))
 				m_Active = Integer.valueOf(sTok.substring(4)) != 0;
 			else if (sTok.startsWith("REP="))
@@ -91,7 +87,7 @@ public class MJDiv_StrIn {
 
         int iPos = sStr.indexOf("str=");
 		if (iPos >= 0) {
-			sBff = sStr.substring(iPos + 4);
+			String sBff = sStr.substring(iPos + 4);
 			SetStr(sBff);
 		}
 	}

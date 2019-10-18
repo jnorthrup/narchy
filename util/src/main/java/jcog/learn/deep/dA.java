@@ -139,7 +139,6 @@ public class dA {
         int training_epochs = 100;
 
         int train_N = 10;
-        int test_N = 2;
         int n_visible = 20;
         int n_hidden = 5;
 
@@ -171,6 +170,7 @@ public class dA {
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0}
         };
 
+        int test_N = 2;
         double[][] reconstructed_X = new double[test_N][n_visible];
 
         

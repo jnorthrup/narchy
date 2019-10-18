@@ -91,22 +91,22 @@ public class Dimensionaleyez extends SimpleSpatial {
                 
                 return;
             }
-            float x = d0 * s;
             float y = d[1] * s;
             float z = d.length > 2 ? d[2] * s : 0;
 
             float last = ((float) n.getEntry(n.getDimension() - 1) + 1f) / 2f;
 
             gl.glPushMatrix();
+            float x = d0 * s;
             gl.glTranslatef(x, y, z);
             float p = 0.3f + (float) (0.7f / (1f + n.localDistance()));
 
             float sat = 0.5f;
             float hue = (n.id %10)/10f;
             float bri = 0.5f;
-            float size = last;
 
             Draw.hsb(gl, hue, sat, p, bri);
+            float size = last;
             Draw.glut.glutSolidCube(1f * size);
             gl.glPopMatrix();
         });

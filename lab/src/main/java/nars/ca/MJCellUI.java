@@ -416,11 +416,11 @@ class MJCellUI extends Frame {
 		
 		int iLen = lblRule.getText().length();
 		if (iLen < 20) {
-			
-			
-			String str = "";
-			iLen = 20 - iLen;
-			while (iLen-- > 0)
+
+
+            iLen = 20 - iLen;
+            String str = "";
+            while (iLen-- > 0)
                 str += ' ';
 			lblRule.setText(lblRule.getText() + str);
 		}
@@ -448,13 +448,12 @@ class MJCellUI extends Frame {
 	
 	
 	public void InitRules() {
-		int i;
         String sGameName = cmbGames.getSelectedItem();
 
 		cmbRules.removeAll();
         int iGame = MJRules.GetGameIndex(sGameName);
 		if (iGame >= 0) {
-			for (i = 0; i < mjr.Rules[iGame].size(); i++)
+			for (int i = 0; i < mjr.Rules[iGame].size(); i++)
 				cmbRules.addItem(((CARule) mjr.Rules[iGame].elementAt(i)).name);
 		}
 		SendActiveRule(); 
@@ -874,11 +873,10 @@ class MJCellUI extends Frame {
 				"Input the count of states (" + sRange + "):");
 		requestFocus();
 		if (ib.isAccepted) {
-			int iTmp;
-			String sRetVal = ib.txtFld.getText();
+            String sRetVal = ib.txtFld.getText();
 			try {
-				iTmp = Integer.valueOf(sRetVal);
-				mjb.SetStatesCount(iTmp);
+                int iTmp = Integer.valueOf(sRetVal);
+                mjb.SetStatesCount(iTmp);
 			} catch (Exception e) {
             }
 		}
@@ -894,11 +892,10 @@ class MJCellUI extends Frame {
 				"Input the active state (" + sRange + "):");
 		requestFocus();
 		if (ib.isAccepted) {
-			int iTmp;
-			String sRetVal = ib.txtFld.getText();
+            String sRetVal = ib.txtFld.getText();
 			try {
-				iTmp = Integer.valueOf(sRetVal);
-				mjb.SetCrrState(iTmp);
+                int iTmp = Integer.valueOf(sRetVal);
+                mjb.SetCrrState(iTmp);
 			} catch (Exception e) {
             }
 		}

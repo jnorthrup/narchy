@@ -45,123 +45,21 @@ public class a extends GamePanel {
   @Override
   public void run() {
 
-    final int VK_LEFT = 0x25;
-    final int VK_RIGHT = 0x27;
-    final int VK_UP = 0x26;
-    final int VK_DOWN = 0x28;
-    final int VK_ATTACK = 0x42;
-
-    final int DIRECTION_RIGHT = 0;
-    final int DIRECTION_DOWN = 1;
-    final int DIRECTION_LEFT = 2;
-    final int DIRECTION_UP = 3;
-
-    final int MAP_EMPTY = 0;    
-    final int MAP_SWORD = 1;
-    final int MAP_CANDLE = 2;
-    final int MAP_KEY = 3;
-    final int MAP_PRINCESS = 4;
-    final int MAP_HEART = 5;
-    final int MAP_BRIDGE = 6;
-    final int MAP_LADDER = 7;
-    final int MAP_WALL = 8;
-    final int MAP_LOCK = 9;
-    final int MAP_CRACKED_WALL = 10;
-    final int MAP_WATER = 11;
-
     final int SPRITE_COUNT = 22;
-    final int MAP_OFFSET = SPRITE_COUNT << 5;
     final int SPRITE_FLIPPED = 32;
 
-    final int SPRITE_LINK_DOWN_1 = 0;
-    final int SPRITE_LINK_DOWN_2 = 1;
-    final int SPRITE_LINK_DOWN_LUNGE = 2;
     final int SPRITE_LINK_LEFT_1 = 3;
     final int SPRITE_LINK_LEFT_2 = 4;
     final int SPRITE_LINK_LEFT_LUNGE = 5;
     final int SPRITE_LINK_UP_1 = 6;
-    final int SPRITE_LINK_UP_2 = SPRITE_LINK_UP_1 + SPRITE_FLIPPED;
-    final int SPRITE_LINK_UP_LUNGE = 7;
-    final int SPRITE_LINK_RIGHT_1 = SPRITE_LINK_LEFT_1 + SPRITE_FLIPPED;
-    final int SPRITE_LINK_RIGHT_2 = SPRITE_LINK_LEFT_2 + SPRITE_FLIPPED;
-    final int SPRITE_LINK_RIGHT_LUNGE = SPRITE_LINK_LEFT_LUNGE + SPRITE_FLIPPED;
-    final int SPRITE_SWORD = 8;
-    final int SPRITE_ROCK = 9;
-    final int SPRITE_CRACKED_ROCK = 10;
-    final int SPRITE_OCTOROC_1 = 11;
-    final int SPRITE_OCTOROC_2 = 12;
-    final int SPRITE_CANDLE = 13;
-    final int SPRITE_HEART = 14;
-    final int SPRITE_KEY = 15;
-    final int SPRITE_TRIFORCE = 16;
-    final int SPRITE_LOCK = 17;
-    final int SPRITE_WATER = 18;
-    final int SPRITE_BRIDGE = 19;
-    final int SPRITE_PRINCESS = 20;
-    final int SPRITE_LADDER = 21;
-
-    final int ENEMY_X = 0;
-    final int ENEMY_Y = 1;
-    final int ENEMY_SPRITE = 2;
-    final int ENEMY_DIRECTION = 3;
-    final int ENEMY_COUNTER = 4;
-    final int ENEMY_DYING = 5;
-
-    Color COLOR_FLOOR = new Color(0xF7D8A5);
-    Color COLOR_MAP_1 = new Color(0x666666);
-    Color COLOR_MAP_2 = new Color(0x88D800);
-    Color COLOR_RED = new Color(0xB53120);
-
-    final String S = "\u002a\ua800\u00aa\uaa00\u0c95\u5630\u0c55\u5530\u0f7b\uedf0\u0f77\uddf0\u07ff\uffc0\u06bd\u7e80\u15af\uf554\u17aa\u9575\u1fe9\u75fd\u3f55\ub575\u0ea9\u7575\u00aa\ub555\u0054\u1ffc\u0000\u1500\u002a\ua800\u00aa\uaa00\u0c95\u5630\u0c55\u5530\u0f7b\uedf0\u0f77\uddf0\u07ff\uffc0\u05bd\u7e00\u0eaf\ud550\u0eaa\u55d4\u01a5\ud7f4\u0256\ud5d4\u02a5\ud5d4\u006a\ud554\u0054\u3ff0\u0054\u0000\u0000\u0000\u002a\ua140\u00aa\ua9d0\u02a5\u5ad4\u3295\u56f5\u3e5b\uedf5\u0e77\uddd7\u03fd\u7e5c\u017d\u7a70\u055f\ueac0\u055a\ua900\u0955\u6600\u0a56\u5a00\u1a7d\u6940\u56bf\ua150\u553f\u0000\n\ua000\u00aa\u9540\u0aba\u5550\u2abd\u5540\u22bf\u7ec1\u025f\u7dfd\u0057\uffc1\u002a\ubfc1\u01aa\ua95d\u056f\uea5d\u055f\uea51\u055f\ua901\u025a\u5501\u0aaa\uaa00\u0015\u4000\u0015\u5000\u0000\u0000\n\ua000\u00aa\u9540\u0aba\u5550\u2abd\u5540\u22bf\u7ec0\u025f\u7dfc\u0057\uffc4\u002a\ubfc4\u025a\ufd74\u0155\ufe74\u0955\ufa44\u0a55\ua904\u16aa\u5584\u15aa\uaa50\u0540\u0540\u0000\u0000\u0002\ua800\u002a\ua550\u00ae\u9554\u00af\u5550\u02af\udfb0\u0a97\udf7f\u0815\ufff0\u002a\uaffc\u00a5\u55fc\u0095\u55f0\u0295\u5580\u0aa5\u6a50\u16aa\u9550\u15aa\uaa94\u0540\u0055\u002a\ua800\u00aa\uaa00\u0caa\uaa30\u0eaa\uaab0\u0daa\uaa70\u0f5a\ua5f0\u0356\u95c0\u0195\u5640\u016a\uaa50\u0d6a\uaa50\u0d6a\ua940\u0f95\u5680\u02aa\uaa80\u006a\ua540\u0014\u1540\u0000\u0500\u0002\uaa40\n\uaa8c\u002a\uaa9c\u032a\uaabc\u03da\uaa74\uc0d5\ua974\u70e5\u6594\u5d59\u5694\u575a\uaa90\u55da\uaa90\u157a\uaa60\u05d5\u55a4\u03aa\uaaa5\u016a\u8015\u0550\u0000\u0550\u0000\u0002\ua000\u0003\uf000\u0002\ua000\u0023\uf200\u002a\uaa00\u0001\u5000\u0001\u5000\u0001\u5000\u0001\u5000\u0001\u5000\u0001\u5000\u0001\u5000\u0001\u5000\u0001\u5000\u0001\u5000\u0000\u4000\uffff\ufdaf\uffff\uf6ab\uff5a\u96bb\ufdaa\ub6ae\uf5aa\ub6ae\uf6aa\uadae\ud6a9\uadaa\ud569\uadaa\ud669\uadab\ud665\uadab\ud665\uadab\ud566\ua9aa\ud96a\ua9aa\ufa56\uaaaa\u555a\u9aab\uf555\u5555\uffff\ufdaf\uffff\uf6ab\uff59\u96bb\ufda6\ub6a6\uf5a9\ub69e\uf6aa\u6d6e\ud6a9\u9d9a\ud569\u6da6\ud669\u9d9b\ud665\ua56b\ud665\u9dab\ud566\u69aa\ud969\ua9aa\ufa56\u6aaa\u555a\u9aab\uf555\u5555\u0000\u0410\u0005\u1450\u0001\u5550\u0055\uf554\u405f\ufe54\u401d\u5d59\u5575\u7595\u557f\uf556\u557f\uf556\u5575\u7595\u401d\u5d59\u405f\ufe54\u0055\uf554\u0001\u5550\u0005\u1450\u0000\u0410\u0001\u0104\u0001\u4514\u0041\u5550\u0055\uf554\u041f\ufe54\u051d\u5d59\u0575\u7595\u057f\uf556\u057f\uf556\u0575\u7595\u051d\u5d59\u041f\ufe54\u0055\uf554\u0041\u5550\u0001\u4514\u0001\u0104\u0001\u0000\u0005\u5000\u0006\u5400\u0015\u9400\u0006\u9000\u0000\u0000\u000f\uf000\u000f\uf000\u000f\uf000\u008f\uf000\u008f\uf000\u008f\uf000\u008f\uf000\u008f\uf000\u00aa\uaa00\u002a\ua800\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0014\u5000\u0055\u5400\u0055\u5400\u0055\u5400\u0055\u5400\u0015\u5000\u0005\u4000\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0006\ua000\u001a\uac00\u0068\u1b00\u0060\u0700\u0060\u0700\u006a\uaa00\u0056\uab00\u0001\u8000\u0001\u8000\u0001\u8000\u0001\u8000\u0001\uac00\u0001\ua800\u0001\ua000\u0001\ua800\u0001\u8000\u0000\u0a00\u0000\u0a00\u0000\u2a80\u0000\u2a80\u0000\uaaa0\u0000\uaaa0\u0002\uaaa8\u0002\uaaa8\n\uaaaa\n\uaaaa\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u7fff\ufffe\u5fff\ufffb\u57ff\uffef\u56aa\uaabf\u56aa\uaabf\u56a9\u6abf\u56a5\u5abf\u56a5\u5abf\u56a9\u6abf\u56a9\u6abf\u56a9\u6abf\u56a9\u6abf\u56aa\uaabf\u5955\u557f\u6555\u555f\u9555\u5557\u5555\u5555\u5555\u5555\u5565\u5565\u5555\u5555\u5555\u5555\u5555\u5555\u5556\u5556\u5555\u5555\u5555\u5555\u5655\u5655\u5555\u5555\u5555\u5555\u5555\u5555\u5595\u5595\u5555\u5555\u5555\u5555\u6aaa\u6aaa\ueeae\ueeae\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueeae\ueeae\ueaaa\ueaaa\ufffd\ufffd\u003f\ufc00\u00be\ube00\u00bf\ufe00\u03f2\u8fc0\u03e2\u8bc0\u03ea\uabc0\u03fb\uefc0\u03d6\u97c0\u0f95\u56f0\u0fa5\u5af0\u0f9e\ub6f0\u0a55\u55a0\u0f55\u55f0\u0d55\u5570\u0d55\u5570\u1555\u5554\u4fff\uffd4\u4aaa\uaaa4\u4aaa\uaaa4\u4aaa\uaaa4\u4fff\uffd4\u4aaa\uaaa4\u4aaa\uaaa4\u4aaa\uaaa4\u4fff\uffd4\u4aaa\uaaa4\u4aaa\uaaa4\u4aaa\uaaa4\u4fff\uffd4\u4aaa\uaaa4\u4aaa\uaaa4\u4aaa\uaaa4\uffff\u8003\u8003\u924b\u0003\u124b\u0003\u924b\u8003\u8003\ubfff\ubfff\ubfff\ubfff\ubfff\ubfff\u8003\u8003\u8003\u8003\uc003\uc003\uc003\u8003\u8003\u8103\u8403\u1153\u8403\u8103\uc003\ufff7\ufff7\ufff7\ufff7\u0003\u0403\u1003\u0403\u1003\u0403\u0003\uffef\uffef\uffef\uffef\u0003\u1101\u0401\u1109\u0401\u1101\u0003\uffff\uffff\uffff\uffff\uffff\uf3f3\ue1e0\u0000\ue000\ue003\ue007\uffff\uffff\uffff\uffff\u0003\ufe01\ufe01\ufe01\ufe01\ufe01\u0003\uffff\uffff\uffff\ufe7f\u0003\ufff1\ufff1\ufff0\ufff1\ufff1\u0003\uc19f\uffff\uffff\uffff\uc000\u8078\u0700\u0078\u0700\u8078\uc000\ucfff\u4fff\u4fff\u4fff\uc000\uc100\u8444\u0100\u0444\u8100\uc000\uffff\uffff\uffff\ud001\u17fd\uf501\u0577\ufd10\uc1d7\u5451\ud7fd\u1001\uf7ff\uf7ff\uf7ff\uf000\uffff\uffff\uc3ff\uc3ff\uc3ff\uc000\uffff\uffff\uffff\ufe7f\uc000\u8003\u0003\u0003\u0003\u8003\uc000\uc00f\uffff\uffff\uffff\uc603\u9029\u0000\u1028\u0000\u9029\uc603\ufe7f\ufe70\ufe77\ufe37\ufe07\ufe03\ufe01\u0000\u0000\uc003\uc003\uc003\uffff\uffff\u8507\ub574\ua415\ubff4\u8101\ubd7f\ua540\uad5f\u2040\uffff\uffff\uffff\ue7c3\ue7c3\u67c1\u0001\u6001\ue003\ue003\uffff\uffff\uffff\uffff\uc003\uc001\ud008\uc000\ud008\uc001\uc003\uffff\uffff\uffff\u8007\u8003\ua211\u8004\uaa50\u8004\ua211\u8003\uaa57\uaa57\uaa57\uaa57\u0003\u2a41\u0015\u2a40\u0014\u2a41\u0003\uffff\uffff\uffff\u87e1\u8db1\u8991\u8991\u8e71\u83c1\u83c1\u8001\u83c0\uffff\uffff\u8001\u8001\u8841\ua214\u8840\ua214\u8841\u8001\uff7f\uff7f\uff7f\u8a05\uaafd\uaa01\uabf5\ub855\uaadd\uaa45\uaf75\ua021\ubdf7\ubdf7\u8101\ubffd\u8005\ubff5\ua411\uaddf\ua101\uaffd\u8801\ufdff\ufdff\ufdff\uf03e\ue03c\ue238\ue530\ue200\ue000\uf030\uffff\uffff";
 
     int i;
     int j;
-    int k;
-    int x;
-    int y;
-    int z;
-    int p;
-    int q;
-    int u;
-    int r = 0;
-    int s = 0;
-
-    int counter = 0;
-
-    int playerX = 0;
-    int playerY = 0;
-    int playerSprite = 0;
-    int playerDirection = 0;
-    int playerLastDirection = 0;
-    int playerWalkCount = 0;
-    int playerHealth = 0;
-    int playerStunned = 0;
-
-    int cameraX = 0;
-    int targetCameraX = 0;
-    int cameraY = 0;
-    int targetCameraY = 0;
-    int fadeIntensity = 255;
-    int fadeDelta = 1;
- 
-    int attacking = 0;
-    boolean attackReleased = true;
-    boolean acquiredSword = true;
-    boolean acquiredCandle = false;
-    boolean acquiredKey = false;
-    boolean scrolling = true;
-    boolean flash = false;
-    boolean fading = true;
-    boolean won = false;
-
-    int[][] map = new int[81][81];
 
     Random random = new Random();
     AffineTransform affineTransform = new AffineTransform();
 
-    ArrayList<int[]> enemies = new ArrayList<>();
 
-    
     BufferedImage candleLight = new BufferedImage(112, 112, 2);
     for(i = 0; i < 112; i++) {
       for(j = 0; j < 112; j++) {
@@ -177,6 +75,15 @@ public class a extends GamePanel {
     int[] pixels = new int[16];
     int[] pixels2 = new int[16];
     BufferedImage[] sprites = new BufferedImage[64];
+    int y;
+    int x;
+    final String S = "\u002a\ua800\u00aa\uaa00\u0c95\u5630\u0c55\u5530\u0f7b\uedf0\u0f77\uddf0\u07ff\uffc0\u06bd\u7e80\u15af\uf554\u17aa\u9575\u1fe9\u75fd\u3f55\ub575\u0ea9\u7575\u00aa\ub555\u0054\u1ffc\u0000\u1500\u002a\ua800\u00aa\uaa00\u0c95\u5630\u0c55\u5530\u0f7b\uedf0\u0f77\uddf0\u07ff\uffc0\u05bd\u7e00\u0eaf\ud550\u0eaa\u55d4\u01a5\ud7f4\u0256\ud5d4\u02a5\ud5d4\u006a\ud554\u0054\u3ff0\u0054\u0000\u0000\u0000\u002a\ua140\u00aa\ua9d0\u02a5\u5ad4\u3295\u56f5\u3e5b\uedf5\u0e77\uddd7\u03fd\u7e5c\u017d\u7a70\u055f\ueac0\u055a\ua900\u0955\u6600\u0a56\u5a00\u1a7d\u6940\u56bf\ua150\u553f\u0000\n\ua000\u00aa\u9540\u0aba\u5550\u2abd\u5540\u22bf\u7ec1\u025f\u7dfd\u0057\uffc1\u002a\ubfc1\u01aa\ua95d\u056f\uea5d\u055f\uea51\u055f\ua901\u025a\u5501\u0aaa\uaa00\u0015\u4000\u0015\u5000\u0000\u0000\n\ua000\u00aa\u9540\u0aba\u5550\u2abd\u5540\u22bf\u7ec0\u025f\u7dfc\u0057\uffc4\u002a\ubfc4\u025a\ufd74\u0155\ufe74\u0955\ufa44\u0a55\ua904\u16aa\u5584\u15aa\uaa50\u0540\u0540\u0000\u0000\u0002\ua800\u002a\ua550\u00ae\u9554\u00af\u5550\u02af\udfb0\u0a97\udf7f\u0815\ufff0\u002a\uaffc\u00a5\u55fc\u0095\u55f0\u0295\u5580\u0aa5\u6a50\u16aa\u9550\u15aa\uaa94\u0540\u0055\u002a\ua800\u00aa\uaa00\u0caa\uaa30\u0eaa\uaab0\u0daa\uaa70\u0f5a\ua5f0\u0356\u95c0\u0195\u5640\u016a\uaa50\u0d6a\uaa50\u0d6a\ua940\u0f95\u5680\u02aa\uaa80\u006a\ua540\u0014\u1540\u0000\u0500\u0002\uaa40\n\uaa8c\u002a\uaa9c\u032a\uaabc\u03da\uaa74\uc0d5\ua974\u70e5\u6594\u5d59\u5694\u575a\uaa90\u55da\uaa90\u157a\uaa60\u05d5\u55a4\u03aa\uaaa5\u016a\u8015\u0550\u0000\u0550\u0000\u0002\ua000\u0003\uf000\u0002\ua000\u0023\uf200\u002a\uaa00\u0001\u5000\u0001\u5000\u0001\u5000\u0001\u5000\u0001\u5000\u0001\u5000\u0001\u5000\u0001\u5000\u0001\u5000\u0001\u5000\u0000\u4000\uffff\ufdaf\uffff\uf6ab\uff5a\u96bb\ufdaa\ub6ae\uf5aa\ub6ae\uf6aa\uadae\ud6a9\uadaa\ud569\uadaa\ud669\uadab\ud665\uadab\ud665\uadab\ud566\ua9aa\ud96a\ua9aa\ufa56\uaaaa\u555a\u9aab\uf555\u5555\uffff\ufdaf\uffff\uf6ab\uff59\u96bb\ufda6\ub6a6\uf5a9\ub69e\uf6aa\u6d6e\ud6a9\u9d9a\ud569\u6da6\ud669\u9d9b\ud665\ua56b\ud665\u9dab\ud566\u69aa\ud969\ua9aa\ufa56\u6aaa\u555a\u9aab\uf555\u5555\u0000\u0410\u0005\u1450\u0001\u5550\u0055\uf554\u405f\ufe54\u401d\u5d59\u5575\u7595\u557f\uf556\u557f\uf556\u5575\u7595\u401d\u5d59\u405f\ufe54\u0055\uf554\u0001\u5550\u0005\u1450\u0000\u0410\u0001\u0104\u0001\u4514\u0041\u5550\u0055\uf554\u041f\ufe54\u051d\u5d59\u0575\u7595\u057f\uf556\u057f\uf556\u0575\u7595\u051d\u5d59\u041f\ufe54\u0055\uf554\u0041\u5550\u0001\u4514\u0001\u0104\u0001\u0000\u0005\u5000\u0006\u5400\u0015\u9400\u0006\u9000\u0000\u0000\u000f\uf000\u000f\uf000\u000f\uf000\u008f\uf000\u008f\uf000\u008f\uf000\u008f\uf000\u008f\uf000\u00aa\uaa00\u002a\ua800\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0014\u5000\u0055\u5400\u0055\u5400\u0055\u5400\u0055\u5400\u0015\u5000\u0005\u4000\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0006\ua000\u001a\uac00\u0068\u1b00\u0060\u0700\u0060\u0700\u006a\uaa00\u0056\uab00\u0001\u8000\u0001\u8000\u0001\u8000\u0001\u8000\u0001\uac00\u0001\ua800\u0001\ua000\u0001\ua800\u0001\u8000\u0000\u0a00\u0000\u0a00\u0000\u2a80\u0000\u2a80\u0000\uaaa0\u0000\uaaa0\u0002\uaaa8\u0002\uaaa8\n\uaaaa\n\uaaaa\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u7fff\ufffe\u5fff\ufffb\u57ff\uffef\u56aa\uaabf\u56aa\uaabf\u56a9\u6abf\u56a5\u5abf\u56a5\u5abf\u56a9\u6abf\u56a9\u6abf\u56a9\u6abf\u56a9\u6abf\u56aa\uaabf\u5955\u557f\u6555\u555f\u9555\u5557\u5555\u5555\u5555\u5555\u5565\u5565\u5555\u5555\u5555\u5555\u5555\u5555\u5556\u5556\u5555\u5555\u5555\u5555\u5655\u5655\u5555\u5555\u5555\u5555\u5555\u5555\u5595\u5595\u5555\u5555\u5555\u5555\u6aaa\u6aaa\ueeae\ueeae\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueaaa\ueeae\ueeae\ueaaa\ueaaa\ufffd\ufffd\u003f\ufc00\u00be\ube00\u00bf\ufe00\u03f2\u8fc0\u03e2\u8bc0\u03ea\uabc0\u03fb\uefc0\u03d6\u97c0\u0f95\u56f0\u0fa5\u5af0\u0f9e\ub6f0\u0a55\u55a0\u0f55\u55f0\u0d55\u5570\u0d55\u5570\u1555\u5554\u4fff\uffd4\u4aaa\uaaa4\u4aaa\uaaa4\u4aaa\uaaa4\u4fff\uffd4\u4aaa\uaaa4\u4aaa\uaaa4\u4aaa\uaaa4\u4fff\uffd4\u4aaa\uaaa4\u4aaa\uaaa4\u4aaa\uaaa4\u4fff\uffd4\u4aaa\uaaa4\u4aaa\uaaa4\u4aaa\uaaa4\uffff\u8003\u8003\u924b\u0003\u124b\u0003\u924b\u8003\u8003\ubfff\ubfff\ubfff\ubfff\ubfff\ubfff\u8003\u8003\u8003\u8003\uc003\uc003\uc003\u8003\u8003\u8103\u8403\u1153\u8403\u8103\uc003\ufff7\ufff7\ufff7\ufff7\u0003\u0403\u1003\u0403\u1003\u0403\u0003\uffef\uffef\uffef\uffef\u0003\u1101\u0401\u1109\u0401\u1101\u0003\uffff\uffff\uffff\uffff\uffff\uf3f3\ue1e0\u0000\ue000\ue003\ue007\uffff\uffff\uffff\uffff\u0003\ufe01\ufe01\ufe01\ufe01\ufe01\u0003\uffff\uffff\uffff\ufe7f\u0003\ufff1\ufff1\ufff0\ufff1\ufff1\u0003\uc19f\uffff\uffff\uffff\uc000\u8078\u0700\u0078\u0700\u8078\uc000\ucfff\u4fff\u4fff\u4fff\uc000\uc100\u8444\u0100\u0444\u8100\uc000\uffff\uffff\uffff\ud001\u17fd\uf501\u0577\ufd10\uc1d7\u5451\ud7fd\u1001\uf7ff\uf7ff\uf7ff\uf000\uffff\uffff\uc3ff\uc3ff\uc3ff\uc000\uffff\uffff\uffff\ufe7f\uc000\u8003\u0003\u0003\u0003\u8003\uc000\uc00f\uffff\uffff\uffff\uc603\u9029\u0000\u1028\u0000\u9029\uc603\ufe7f\ufe70\ufe77\ufe37\ufe07\ufe03\ufe01\u0000\u0000\uc003\uc003\uc003\uffff\uffff\u8507\ub574\ua415\ubff4\u8101\ubd7f\ua540\uad5f\u2040\uffff\uffff\uffff\ue7c3\ue7c3\u67c1\u0001\u6001\ue003\ue003\uffff\uffff\uffff\uffff\uc003\uc001\ud008\uc000\ud008\uc001\uc003\uffff\uffff\uffff\u8007\u8003\ua211\u8004\uaa50\u8004\ua211\u8003\uaa57\uaa57\uaa57\uaa57\u0003\u2a41\u0015\u2a40\u0014\u2a41\u0003\uffff\uffff\uffff\u87e1\u8db1\u8991\u8991\u8e71\u83c1\u83c1\u8001\u83c0\uffff\uffff\u8001\u8001\u8841\ua214\u8840\ua214\u8841\u8001\uff7f\uff7f\uff7f\u8a05\uaafd\uaa01\uabf5\ub855\uaadd\uaa45\uaf75\ua021\ubdf7\ubdf7\u8101\ubffd\u8005\ubff5\ua411\uaddf\ua101\uaffd\u8801\ufdff\ufdff\ufdff\uf03e\ue03c\ue238\ue530\ue200\ue000\uf030\uffff\uffff";
+    final int SPRITE_LADDER = 21;
+    final int SPRITE_PRINCESS = 20;
+    final int SPRITE_BRIDGE = 19;
+    final int SPRITE_WATER = 18;
+    final int SPRITE_CRACKED_ROCK = 10;
+    final int SPRITE_ROCK = 9;
     for(i = 0; i < SPRITE_COUNT; i++) {
       sprites[i] = new BufferedImage(16, 16, 2);
       sprites[i + SPRITE_FLIPPED] = new BufferedImage(16, 16, 2);
@@ -204,7 +111,12 @@ public class a extends GamePanel {
       }
     }
 
-    
+
+    int[][] map = new int[81][81];
+    int k;
+    final int MAP_OFFSET = SPRITE_COUNT << 5;
+    final int MAP_WALL = 8;
+    final int MAP_EMPTY = 0;
     for(i = 0; i < 5; i++) {
       for(j = 0; j < 55; j++) {
         for(k = 0; k < 16; k++) {
@@ -214,21 +126,28 @@ public class a extends GamePanel {
       }
     }
 
-    
+
+    final int MAP_SWORD = 1;
     map[45][31] = MAP_SWORD;
+    final int MAP_CANDLE = 2;
     map[51][3] = MAP_CANDLE;
+    final int MAP_KEY = 3;
     map[14][51] = MAP_KEY;
     map[27][60] = MAP_KEY;
     map[17][43] = MAP_KEY;
     map[3][53] = MAP_KEY;
+    final int MAP_LOCK = 9;
     map[34][3] = MAP_LOCK;
     map[5][29] = MAP_LOCK;
     map[4][43] = MAP_LOCK;
     map[8][70] = MAP_LOCK;
+    final int MAP_PRINCESS = 4;
     map[3][77] = MAP_PRINCESS;
+    final int MAP_CRACKED_WALL = 10;
     map[27][15] = MAP_CRACKED_WALL;
 
-    
+
+    final int MAP_WATER = 11;
     for(i = 0; i < 23; i++) {
       if (i != 6) {
         map[i + 32][5] = map[i + 32][6] = MAP_WATER;
@@ -239,6 +158,7 @@ public class a extends GamePanel {
         map[i + 32][j + 7] = MAP_WATER;
       }
     }
+    final int MAP_LADDER = 7;
     for(i = 0; i < 4; i++) {
       for(j = 0; j < 6; j++) {
         map[i + 25][j + 53] = MAP_WATER;
@@ -246,7 +166,8 @@ public class a extends GamePanel {
       }
     }
 
-    
+
+    final int MAP_BRIDGE = 6;
     map[38][5] = map[38][6] = MAP_BRIDGE;
 
     BufferedImage image = new BufferedImage(256, 240, 1);
@@ -254,8 +175,73 @@ public class a extends GamePanel {
     Graphics2D g2 = null;
 
     long nextFrameStartTime = System.nanoTime();
+    ArrayList<int[]> enemies = new ArrayList<>();
+    boolean won = false;
+    boolean fading = true;
+    boolean flash = false;
+    boolean scrolling = true;
+    boolean acquiredKey = false;
+    boolean acquiredCandle = false;
+    boolean acquiredSword = true;
+    boolean attackReleased = true;
+    int attacking = 0;
+    int fadeDelta = 1;
+    int fadeIntensity = 255;
+    int targetCameraY = 0;
+    int cameraY = 0;
+    int targetCameraX = 0;
+    int cameraX = 0;
+    int playerStunned = 0;
+    int playerHealth = 0;
+    int playerWalkCount = 0;
+    int playerLastDirection = 0;
+    int playerDirection = 0;
+    int playerSprite = 0;
+    int playerY = 0;
+    int playerX = 0;
+    int counter = 0;
+    int s = 0;
+    int r = 0;
+    Color COLOR_RED = new Color(0xB53120);
+    Color COLOR_MAP_2 = new Color(0x88D800);
+    Color COLOR_MAP_1 = new Color(0x666666);
+    Color COLOR_FLOOR = new Color(0xF7D8A5);
+    final int ENEMY_DYING = 5;
+    final int ENEMY_COUNTER = 4;
+    final int ENEMY_DIRECTION = 3;
+    final int ENEMY_SPRITE = 2;
+    final int ENEMY_Y = 1;
+    final int ENEMY_X = 0;
+    final int SPRITE_LOCK = 17;
+    final int SPRITE_TRIFORCE = 16;
+    final int SPRITE_KEY = 15;
+    final int SPRITE_HEART = 14;
+    final int SPRITE_CANDLE = 13;
+    final int SPRITE_OCTOROC_2 = 12;
+    final int SPRITE_OCTOROC_1 = 11;
+    final int SPRITE_SWORD = 8;
+    final int SPRITE_LINK_RIGHT_LUNGE = SPRITE_LINK_LEFT_LUNGE + SPRITE_FLIPPED;
+    final int SPRITE_LINK_RIGHT_2 = SPRITE_LINK_LEFT_2 + SPRITE_FLIPPED;
+    final int SPRITE_LINK_RIGHT_1 = SPRITE_LINK_LEFT_1 + SPRITE_FLIPPED;
+    final int SPRITE_LINK_UP_LUNGE = 7;
+    final int SPRITE_LINK_UP_2 = SPRITE_LINK_UP_1 + SPRITE_FLIPPED;
+    final int SPRITE_LINK_DOWN_LUNGE = 2;
+    final int SPRITE_LINK_DOWN_2 = 1;
+    final int SPRITE_LINK_DOWN_1 = 0;
+    final int MAP_HEART = 5;
+    final int DIRECTION_UP = 3;
+    final int DIRECTION_LEFT = 2;
+    final int DIRECTION_DOWN = 1;
+    final int DIRECTION_RIGHT = 0;
+    final int VK_ATTACK = 0x42;
+    final int VK_DOWN = 0x28;
+    final int VK_UP = 0x26;
+    final int VK_RIGHT = 0x27;
+    final int VK_LEFT = 0x25;
     while(true) {
 
+      int q;
+      int p;
       do {
         nextFrameStartTime += 16666667;
 
@@ -620,12 +606,13 @@ public class a extends GamePanel {
         y = cameraY >> 4;
         r = playerX >> 4;
         s = playerY >> 4;
-        z = cameraX & 15;
+        int z = cameraX & 15;
         k = cameraY & 15;
         for(i = 0; i < 12; i++) {
           for(j = 0; j < 17; j++) {
             p = j + x;
             q = i + y;
+            int u;
             if (((p >= 64 && q >= 22) || (p >= 16 && p < 64 && q < 11))
                   && (!acquiredCandle
                       || (p < r - 2 || p > r + 3 || q < s - 2 || q > s + 3))) {
@@ -757,20 +744,20 @@ public class a extends GamePanel {
 
   @Override
   public void processKeyEvent(KeyEvent keyEvent) {
-    final int VK_LEFT = 0x25;
-    final int VK_RIGHT = 0x27;
-    final int VK_UP = 0x26;
-    final int VK_DOWN = 0x28;
-    final int VK_ATTACK = 0x42;
-    final int VK_W = 0x57;
-    final int VK_S = 0x53;
-    final int VK_A = 0x41;
-    final int VK_D = 0x44;
 
     int k = keyEvent.getKeyCode();
     if (k > 0) {
+      final int VK_D = 0x44;
+      final int VK_A = 0x41;
+      final int VK_S = 0x53;
+      final int VK_W = 0x57;
+      final int VK_DOWN = 0x28;
+      final int VK_UP = 0x26;
+      final int VK_RIGHT = 0x27;
+      final int VK_LEFT = 0x25;
       k = k == VK_W ? VK_UP : k == VK_D ? VK_RIGHT : k == VK_A ? VK_LEFT
           : k == VK_S ? VK_DOWN : k;
+      final int VK_ATTACK = 0x42;
       a[(k >= VK_LEFT && k <= VK_DOWN) ? k : VK_ATTACK]
           = keyEvent.getID() != 402;
     }

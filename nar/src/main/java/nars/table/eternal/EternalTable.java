@@ -322,7 +322,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
             Truth yt = null;
 
-            Term nt;
             Truth xt = x.truth();
 
             if (Stamp.overlapsAny(inputStamp, x.stamp())) {
@@ -344,6 +343,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             if (yt != null) {
 
                 float _aProp = (float) (ie / (ie + x.evi()));
+                Term nt;
                 if (inputTerm instanceof Compound) {
                     nt =
                             Intermpolate.intermpolate(

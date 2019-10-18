@@ -162,7 +162,6 @@ public class Encoder implements Constants {
      * @return audio samples (of length 2 * kSamplesPerDuration), used to calibrate the decoding
      */
     private static byte[] getCalibrationSequence() {
-        byte[] results = new byte[2 * kSamplesPerDuration];
         byte[] inputBytes1 = new byte[kBytesPerDuration];
         byte[] inputBytes2 = new byte[kBytesPerDuration];
         for (int i = 0; i < kBytesPerDuration; i++) {
@@ -172,6 +171,7 @@ public class Encoder implements Constants {
 
         //encode inputBytes1 and 2 in sequence
         byte[] partialResult = encodeDuration(inputBytes1);
+        byte[] results = new byte[2 * kSamplesPerDuration];
         System.arraycopy(partialResult, 0, results, 0, kSamplesPerDuration);
         partialResult = encodeDuration(inputBytes2);
         System.arraycopy(partialResult, 0, results, 4410, kSamplesPerDuration);

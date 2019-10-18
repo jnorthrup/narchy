@@ -110,12 +110,12 @@ public class BagTest {
 
         assert(bins > 1);
 
-        Set<String> hit = new TreeSet();
         Frequency hits = new Frequency();
         ArrayTensor f = new ArrayTensor(bins);
         assertFalse(b.isEmpty());
         Random rng = new XoRoShiRo128PlusRandom(1);
         float min = b.priMin(), max = b.priMax(), range = max-min;
+        Set<String> hit = new TreeSet();
         for (int i = 0; i < batches; i++) {
             b.sample(rng, batchSize, x -> {
                 f.data[Util.bin(b.pri(x), bins)]++;
@@ -188,13 +188,13 @@ public class BagTest {
 
         int cap = bag.capacity();
         int batchSize = (int)Math.ceil(batchSizeProp * cap);
-        int batches = cap * 1000 / batchSize;
 
         if (bag.size() < 3)
             return; //histogram tests wont apply
 
         int bins = Math.max(8, Math.max(3, cap/4));
 
+        int batches = cap * 1000 / batchSize;
         Tensor f1 = samplingPriDist(bag, batches, batchSize, bins);
 
         String h = "cap=" + cap + " total=" + (batches * batchSize);
@@ -203,15 +203,14 @@ public class BagTest {
 
         float[] ff = f1.snapshot();
 
-        
 
-        float orderThresh = 0.1f;
         int n = ff.length;
         if (ff[n-1] == 0)
             n--; //skip last empty histogram cell HACK
         if (ff[n-1] == 0)
             n--; //skip last empty histogram cell HACK
 
+        float orderThresh = 0.1f;
         for (int j = 0; j < n; j++) {
 //            assertTrue(ff[j] > 0); //no zero bins
             for (int i = j+1; i < n; i++) {

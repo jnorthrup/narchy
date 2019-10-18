@@ -178,9 +178,8 @@ public interface HyperRegion {
      */
     default double perimeter() {
         int n = this.dim();
-        double p;
         int bound = n;
-        p = IntStream.range(0, bound).mapToDouble(this::cost).sum();
+        double p = IntStream.range(0, bound).mapToDouble(this::cost).sum();
         return p;
     }
 

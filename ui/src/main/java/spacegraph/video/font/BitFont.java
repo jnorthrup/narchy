@@ -107,12 +107,12 @@ public class BitFont {
 
         int c = byteArrayToInt(new byte[]{bytes[6], bytes[7]});
 
-        float[] tex = new float[w * h];
         textureWidth = w;
         textureHeight = h;
 
 
         int off = 8 + s;
+        float[] tex = new float[w * h];
         for (int i = off; i < bytes.length; i++) {
             for (int j = 0; j < 8; j++) {
                 tex[(i - off) * 8 + j] = getBit(bytes[i], j) == 1 ? 0xff000000 : 0xffffffff;

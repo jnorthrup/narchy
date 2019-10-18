@@ -169,14 +169,14 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
         if (s == 0) return x; //nothing assigned
 
 
-        Term /*Variable*/ z = x, y;
+        Term /*Variable*/ z = x;
 
         int safety = NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT;
             //Math.min(s, NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) + 1;
 
         do {
 
-            y = xy.get(z);
+            Term y = xy.get(z);
 
             if (y==null)
                 return z; //done

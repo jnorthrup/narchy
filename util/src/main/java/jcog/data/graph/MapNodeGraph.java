@@ -35,13 +35,13 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     public MapNodeGraph(SuccessorsFunction<N> s, Iterable<N> start) {
         this();
-        Collection<N> traversed = new HashSet();
         ArrayDeque<N> queue = new ArrayDeque();
         for (N n : start) {
             queue.add(n);
         }
 
         N x;
+        Collection<N> traversed = new HashSet();
         while ((x = queue.poll()) != null) {
 
             MutableNode<N, E> xx = addNode(x);

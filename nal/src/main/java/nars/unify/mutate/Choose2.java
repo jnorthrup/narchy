@@ -153,20 +153,18 @@ public class Choose2 extends Termutator.AbstractTermutator {
 
         Combinations ccc = new Combinations(yFree.subs(), 2);
 
-        boolean phase = true;
-
         int start = u.size();
         ShuffledSubterms yy = new ShuffledSubterms(yFree, u.random);
 
 
         Term xEllipsis = u.resolveTerm(this.xEllipsis);
 
-        int[] c = null;
-
         TermList tl = new TermList(2);
         tl.setSize(2);
         Term[] tll = tl.array();
 
+        int[] c = null;
+        boolean phase = true;
         while (ccc.hasNext() || !phase) {
 
             c = phase ? ccc.next() : c;

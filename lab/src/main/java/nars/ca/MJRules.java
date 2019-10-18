@@ -81,16 +81,16 @@ public class MJRules {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	private void AddRules() {
-        int i = -1, iGame = -1;
-		String sBff, sNam, sDef;
 
         Vector vLines = new Vector();
         MJTools mjT = new MJTools();
 		if (MJTools.LoadResTextFile("rul.txt", vLines))
 		{
-			for (i = 0; i < vLines.size(); i++) {
-				sBff = ((String) vLines.elementAt(i)).trim();
-				if ((!sBff.isEmpty())
+            int iGame = -1;
+            int i = -1;
+            for (i = 0; i < vLines.size(); i++) {
+                String sBff = ((String) vLines.elementAt(i)).trim();
+                if ((!sBff.isEmpty())
 						&& !((String) vLines.elementAt(i)).startsWith("//")) {
 					if (sBff.length() > 0 && sBff.charAt(0) == '#') // next family of rules
 					{
@@ -100,9 +100,9 @@ public class MJRules {
 						if (iGame >= 0) {
 							int whereSep = sBff.indexOf('|');
 							if (whereSep > 0) {
-								sNam = sBff.substring(0, whereSep); 
-								sDef = sBff.substring(whereSep + 1); 
-								sNam = sNam.trim();
+                                String sNam = sBff.substring(0, whereSep);
+                                String sDef = sBff.substring(whereSep + 1);
+                                sNam = sNam.trim();
 								sDef = sDef.trim();
 								Rules[iGame].addElement(new CARule(sNam, sDef));
 							}
@@ -227,11 +227,10 @@ public class MJRules {
 	
 	public String GetRuleDef(String sGameName, String sRuleName) {
 		String sRuleDef = "";
-		int i;
 
         int iGame = GetGameIndex(sGameName);
 		if (iGame >= 0) {
-			for (i = 0; i < Rules[iGame].size(); i++) {
+			for (int i = 0; i < Rules[iGame].size(); i++) {
 				if (sRuleName
 						.compareTo(((CARule) Rules[iGame].elementAt(i)).name) == 0) {
 					sRuleDef = ((CARule) Rules[iGame].elementAt(i)).def;
@@ -247,11 +246,10 @@ public class MJRules {
 	
 	public String GetRuleName(String sGameName, String sRuleDef) {
 		String sRuleName = "";
-		int i;
 
         int iGame = GetGameIndex(sGameName);
 		if (iGame >= 0) {
-			for (i = 0; i < Rules[iGame].size(); i++) {
+			for (int i = 0; i < Rules[iGame].size(); i++) {
 				if (sRuleDef
 						.compareTo(((CARule) Rules[iGame].elementAt(i)).def) == 0) {
 					sRuleName = ((CARule) Rules[iGame].elementAt(i)).name;

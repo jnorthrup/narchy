@@ -46,11 +46,10 @@ public class DecideEpsilonGreedy implements Deciding {
             return random.nextInt(actions);
         }
 
-        int nextAction = -1;
-        float nextMotivation = Float.NEGATIVE_INFINITY;
-
         ArrayUtil.shuffle(motivationOrder, random);
 
+        float nextMotivation = Float.NEGATIVE_INFINITY;
+        int nextAction = -1;
         for (int j = 0; j < actions; j++) {
             int i = motivationOrder[j];
             float m = vector[i];

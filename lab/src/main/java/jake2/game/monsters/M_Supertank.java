@@ -766,10 +766,6 @@ public class M_Supertank {
         public String getID(){ return "supertankRocket"; }
         @Override
         public boolean think(edict_t self) {
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-            float[] start = { 0, 0, 0 };
-            float[] dir = { 0, 0, 0 };
-            float[] vec = { 0, 0, 0 };
             int flash_number;
 
             if (self.s.frame == FRAME_attak2_8)
@@ -780,13 +776,18 @@ public class M_Supertank {
                 
                 flash_number = Defines.MZ2_SUPERTANK_ROCKET_3;
 
+            float[] right = {0, 0, 0};
+            float[] forward = {0, 0, 0};
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[flash_number], forward, right,
                     start);
 
+            float[] vec = {0, 0, 0};
             Math3D.VectorCopy(self.enemy.s.origin, vec);
             vec[2] += self.enemy.viewheight;
+            float[] dir = {0, 0, 0};
             Math3D.VectorSubtract(vec, start, dir);
             Math3D.VectorNormalize(dir);
 
@@ -803,9 +804,6 @@ public class M_Supertank {
         @Override
         public boolean think(edict_t self) {
             float[] dir = { 0, 0, 0 };
-            float[] vec = { 0, 0, 0 };
-            float[] start = { 0, 0, 0 };
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
 
             int flash_number = Defines.MZ2_SUPERTANK_MACHINEGUN_1
                     + (self.s.frame - FRAME_attak1_1);
@@ -815,12 +813,16 @@ public class M_Supertank {
             dir[1] = self.s.angles[1];
             dir[2] = 0;
 
+            float[] right = {0, 0, 0};
+            float[] forward = {0, 0, 0};
             Math3D.AngleVectors(dir, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[flash_number], forward, right,
                     start);
 
             if (self.enemy != null) {
+                float[] vec = {0, 0, 0};
                 Math3D.VectorCopy(self.enemy.s.origin, vec);
                 Math3D.VectorMA(vec, 0, self.enemy.velocity, vec);
                 vec[2] += self.enemy.viewheight;
@@ -1234,13 +1236,12 @@ public class M_Supertank {
         public String getID(){ return "BossExplode"; }
         @Override
         public boolean think(edict_t self) {
-            float[] org = { 0, 0, 0 };
-    
-            int n;
-    
+
             self.think = BossExplode;
+            float[] org = {0, 0, 0};
             Math3D.VectorCopy(self.s.origin, org);
             org[2] += 24 + (Lib.rand() & 15);
+            int n;
             switch (self.count++) {
             case 0:
                 org[0] -= 24;

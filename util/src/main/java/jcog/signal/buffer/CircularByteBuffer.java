@@ -156,7 +156,6 @@ public class CircularByteBuffer extends CircularBuffer {
     }
 
     public int write(byte[] data, int offset, int length, boolean blocking) {
-        int len = length;
         lock.lock();
         try {
             if (length > 0) {
@@ -170,13 +169,13 @@ public class CircularByteBuffer extends CircularBuffer {
                     emptySize = _circBuffer.length - writeAt.get();
                 }
                 if (emptySize > 0) {
+                    int len = length;
                     if (len > emptySize)
                         len = emptySize;
 
                     int tmpIdx = bufEnd + len;
-                    int tmpLen;
                     if (tmpIdx > _circBuffer.length) {
-                        tmpLen = _circBuffer.length - bufEnd;
+                        int tmpLen = _circBuffer.length - bufEnd;
                         System.arraycopy(data, offset, _circBuffer, bufEnd, tmpLen);
                         bufEnd = (tmpIdx) % _circBuffer.length;
                         System.arraycopy(data, tmpLen + offset, _circBuffer, 0, bufEnd);
@@ -205,17 +204,16 @@ public class CircularByteBuffer extends CircularBuffer {
      * @return the amount of data read
      */
     public int peek(byte[] data, int length) {
-        int len = length;
         lock.lock();
         try {
             int remSize = writeAt.get() - readAt.get();
             if (length > 0 && remSize > 0) {
+                int len = length;
                 if (len > remSize)
                     len = remSize;
                 int tmpIdx = viewPtr + len;
-                int tmpLen;
                 if (tmpIdx > _circBuffer.length) {
-                    tmpLen = _circBuffer.length - viewPtr;
+                    int tmpLen = _circBuffer.length - viewPtr;
                     System.arraycopy(_circBuffer, viewPtr, data, 0, tmpLen);
                     viewPtr = (tmpIdx) % _circBuffer.length;
                     System.arraycopy(_circBuffer, 0, data, tmpLen, viewPtr);
@@ -259,7 +257,6 @@ public class CircularByteBuffer extends CircularBuffer {
     }
 
     public int read(byte[] data, int offset, int length, boolean blocking) {
-        int len = length;
         lock.lock();
         try {
             wasMarked = false;
@@ -273,6 +270,7 @@ public class CircularByteBuffer extends CircularBuffer {
                 }
                 int minSize = Math.max(this.minSize, 0);
                 if (writeAt.get() > 0) {
+                    int len = length;
                     if (len > writeAt.get() - minSize)
                         len = writeAt.get() - minSize;
                     int tmpLen;

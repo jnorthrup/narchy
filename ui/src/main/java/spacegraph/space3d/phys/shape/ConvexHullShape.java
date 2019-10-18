@@ -88,9 +88,8 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 	public v3 localGetSupportingVertexWithoutMargin(v3 vec0, v3 out) {
 		v3 supVec = out;
 		supVec.set(0f, 0f, 0f);
-		float newDot, maxDot = BulletGlobals.SIMD_EPSILON; 
 
-		v3 vec = new v3(vec0);
+        v3 vec = new v3(vec0);
 		float lenSqr = vec.lengthSquared();
 		if (lenSqr < 0.0001f) {
 			vec.set(1f, 0f, 0f);
@@ -102,11 +101,12 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 
 
 		v3 vtx = new v3();
+        float maxDot = BulletGlobals.SIMD_EPSILON;
         for (v3 point : points) {
 
             VectorUtil.mul(vtx, point, localScaling);
 
-            newDot = vec.dot(vtx);
+            float newDot = vec.dot(vtx);
             if (newDot > maxDot) {
                 maxDot = newDot;
                 supVec.set(vtx);
@@ -117,11 +117,9 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 
 	@Override
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
-		float newDot;
 
-		
-		
-		float[] wcoords = new float[numVectors];
+
+        float[] wcoords = new float[numVectors];
 
 		
 		for (int i = 0; i < numVectors; i++) {
@@ -136,7 +134,7 @@ public class ConvexHullShape extends PolyhedralConvexShape {
             for (int j = 0; j < numVectors; j++) {
                 v3 vec = vectors[j];
 
-                newDot = vec.dot(vtx);
+                float newDot = vec.dot(vtx);
 
                 if (newDot > wcoords[j]) {
 

@@ -11,20 +11,20 @@ import java.util.function.Supplier;
 public class LambdaStampedLock extends StampedLock {
 
     public void write(Runnable writeProcedure) {
-        long stamp = writeLock();
         try {
             writeProcedure.run();
         } finally {
+            long stamp = writeLock();
             unlockWrite(stamp);
         }
     }
 
     public <T> T write(Supplier<T> writeProcedure) {
-        long stamp = writeLock();
         T result;
         try {
             result = writeProcedure.get();
         } finally {
+            long stamp = writeLock();
             unlockWrite(stamp);
         }
         return result;
@@ -32,54 +32,54 @@ public class LambdaStampedLock extends StampedLock {
 
 
     public boolean write(BooleanSupplier writeProcedure) {
-        long stamp = writeLock();
         boolean result;
         try {
             result = writeProcedure.getAsBoolean();
         } finally {
+            long stamp = writeLock();
             unlockWrite(stamp);
         }
         return result;
     }
 
     public int write(IntSupplier writeProcedure) {
-        long stamp = writeLock();
         int result;
         try {
             result = writeProcedure.getAsInt();
         } finally {
+            long stamp = writeLock();
             unlockWrite(stamp);
         }
         return result;
     }
 
     public <T> T read(Supplier<T> readProcedure) {
-        long stamp = readLock();
         T result;
         try {
             result = readProcedure.get();
         } finally {
+            long stamp = readLock();
             unlockRead(stamp);
         }
         return result;
     }
 
     public int read(IntSupplier readProcedure) {
-        long stamp = readLock();
         int result;
         try {
             result = readProcedure.getAsInt();
         } finally {
+            long stamp = readLock();
             unlockRead(stamp);
         }
         return result;
     }
 
     public void read(Runnable readProcedure) {
-        long stamp = readLock();
         try {
             readProcedure.run();
         } finally {
+            long stamp = readLock();
             unlockRead(stamp);
         }
     }

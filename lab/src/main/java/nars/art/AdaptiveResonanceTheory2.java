@@ -20,9 +20,8 @@ public class AdaptiveResonanceTheory2
              * \param prot it is some prototype
              **/
     private static float countScore(DynamicVector<Float> prototype, DynamicVector<Float> instance) {
-        int i;
         float score = 0.0f;
-        for (i = 0;i < prototype.array.length;i++)
+        for (int i = 0; i < prototype.array.length; i++)
         {
             score += instance.get___idx(i) * prototype.get___idx(i);
         }
@@ -40,24 +39,23 @@ public class AdaptiveResonanceTheory2
              * */
     private static void addInstance(DynamicVector<Float> instance, DynamicVector<Float> prototype, float beta) {
         DynamicVector<Float> temp;
-        int i;
 
 
-        float norm = 0.0f;
-        
         try {
             temp = new DynamicVector<>(prototype.array.length);
         }
         catch( Exception ex ) {
             throw new RuntimeException("array ctor exception");
         }
-        
-        for (i = 0;i < instance.array.length;i++)
+
+        int i;
+        for (i = 0; i < instance.array.length; i++)
         {
             
             temp.set___idx(i,(1.0f - beta) * prototype.get___idx(i) + beta * instance.get___idx(i));
         }
-        for (i = 0;i < instance.array.length;i++)
+        float norm = 0.0f;
+        for (i = 0; i < instance.array.length; i++)
         {
             
             norm += temp.get___idx(i) * temp.get___idx(i);
@@ -170,8 +168,6 @@ public class AdaptiveResonanceTheory2
              **/
     private DynamicVector<Float> bestPrototype2A(DynamicVector<Float> inst, ArrayList<DynamicVector<Float>> prot, ArrayList<DynamicVector<Float>> used) {
 
-        int i, j;
-        ArrayList<DynamicVector<Float>> sameScore = new ArrayList<>();
         DynamicVector<Float> empty = new DynamicVector<>(0);
 
         int usize = used.size();
@@ -184,7 +180,8 @@ public class AdaptiveResonanceTheory2
         }
 
         float[] score = new float[psize];
-        for (i = 0;i < psize;i++)
+        int i;
+        for (i = 0; i < psize; i++)
         {
             
             score[i] = Float.MIN_VALUE;
@@ -193,7 +190,7 @@ public class AdaptiveResonanceTheory2
         {
 
             boolean usedb = false;
-            for (j = 0;j < usize;j++)
+            for (int j = 0; j < usize; j++)
             {
                 if (prot.get(i).equals(used.get(j)))
                 {
@@ -214,7 +211,8 @@ public class AdaptiveResonanceTheory2
         }
 
         float higher = Float.MIN_VALUE;
-        for (i = 0;i < psize;i++)
+        ArrayList<DynamicVector<Float>> sameScore = new ArrayList<>();
+        for (i = 0; i < psize; i++)
         {
             if (score[i] == higher)
             {
@@ -354,28 +352,22 @@ public class AdaptiveResonanceTheory2
              * \param par all input parameters set by an user or default
              **/
     public void art2A(ArrayList<DynamicVector<Float>> sample, in_param param, Clust results) {
-        
-        DynamicVector<Float> P;
 
 
-        ArrayList<DynamicVector<Float>> used = new ArrayList<>();
-        ArrayList<DynamicVector<Float>> prot = new ArrayList<>();
-        ArrayList<ArrayList<Integer>> prot_seq = new ArrayList<>();
-        ArrayList<DynamicVector<Float>> prot_best = new ArrayList<>();
-        ArrayList<ArrayList<Integer>> prot_seq_best = new ArrayList<>();
-        float fluctuation = 100.0f;
-        
-        
-        float fluctuation_best = 120.0f;
-        
-        int pass = 0;
-
-        int i, j;
+        int i;
         ArrayList<Boolean> changed = new ArrayList<>();
         for (i = 0;i < sample.size();i++)
         {
             changed.add(true);
         }
+        int pass = 0;
+        float fluctuation_best = 120.0f;
+        float fluctuation = 100.0f;
+        ArrayList<ArrayList<Integer>> prot_seq_best = new ArrayList<>();
+        ArrayList<DynamicVector<Float>> prot_best = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> prot_seq = new ArrayList<>();
+        ArrayList<DynamicVector<Float>> prot = new ArrayList<>();
+        ArrayList<DynamicVector<Float>> used = new ArrayList<>();
         while ((pass < param.pass) && (fluctuation > param.error))
         {
 
@@ -384,7 +376,8 @@ public class AdaptiveResonanceTheory2
                 
                 changed.set(i, false);
             }
-            for (i = 0;i < sample.size();i++)
+            int j;
+            for (i = 0; i < sample.size(); i++)
             {
                 
                 
@@ -392,8 +385,8 @@ public class AdaptiveResonanceTheory2
                 do
                 {
 
-                    P = bestPrototype2A(sample.get(i), prot, used);
-                    
+                    DynamicVector<Float> P = bestPrototype2A(sample.get(i), prot, used);
+
                     if (P.array.length == 0)
                     {
 

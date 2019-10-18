@@ -42,11 +42,9 @@ enum HexDump { ;
      */
     public static void encode(byte[] data, String msg/* PrintStream out */) {
         int count = 0;
-        String index;
-        String number;
 
         while (count < data.length) {
-            index = Integer.toHexString(count);
+            String index = Integer.toHexString(count);
             switch (index.length()) {
                 case (1):
                     index = "0000000" + index;
@@ -81,7 +79,7 @@ enum HexDump { ;
                 if (count >= data.length) {
                     break;
                 }
-                number = Integer.toHexString((data[count] & 0x000000ff));
+                String number = Integer.toHexString((data[count] & 0x000000ff));
                 switch (number.length()) {
                     case (1):
                         number = "0" + number;

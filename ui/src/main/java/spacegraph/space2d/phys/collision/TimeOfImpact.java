@@ -131,17 +131,14 @@ public class TimeOfImpact {
 
         assert (target > tolerance);
 
-        float t1 = 0f;
-        int iter = 0;
-
         cache.count = 0;
         distanceInput.proxyA = input.proxyA;
         distanceInput.proxyB = input.proxyB;
         distanceInput.useRadii = false;
 
-        
-        
-        for (; ; ) {
+
+        int iter = 0;
+        for (float t1 = 0f; ; ) {
             sweepA.getTransform(xfA, t1);
             sweepB.getTransform(xfB, t1);
             
@@ -180,8 +177,7 @@ public class TimeOfImpact {
             
             boolean done = false;
             float t2 = tMax;
-            int pushBackIter = 0;
-            for (; ; ) {
+            for (int pushBackIter = 0; ; ) {
 
                 
                 float s2 = fcn.findMinSeparation(indexes, t2);

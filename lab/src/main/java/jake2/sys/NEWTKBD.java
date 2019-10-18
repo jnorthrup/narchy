@@ -36,16 +36,16 @@ public final class NEWTKBD extends KBD
 	
 	private void HandleEvents() 
 	{
-		int key;
 
-		Jake2InputEvent event;
+        Jake2InputEvent event;
 		while ( (event=InputListener.nextEvent()) != null ) {
 	                Window eventWin = null;
 	                Object source = event.ev.getSource();
 	                if(source instanceof Window) {
 	                    eventWin = (Window)source;
 	                }
-			switch(event.type) {
+            int key;
+            switch(event.type) {
 				case Jake2InputEvent.KeyPress:
 				case Jake2InputEvent.KeyRelease:
 					Do_Key_Event(XLateKeyCode((KeyEvent)event.ev), event.type == Jake2InputEvent.KeyPress);

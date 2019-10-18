@@ -74,10 +74,7 @@ public class Q2DataTool {
     void install(int mirrorIdx) {
         String mirrorName = mirrorNames.get(mirrorIdx);
         String mirror = mirrorLinks.get(mirrorIdx);
-        InputStream in = null;
-        OutputStream out = null;
-        File outFile = null;
-        
+
         setStatus("downloading from "+mirrorName+": <"+mirror+ '>');
 
         File dir = null;
@@ -97,6 +94,9 @@ public class Q2DataTool {
             return;
         }
 
+        File outFile = null;
+        OutputStream out = null;
+        InputStream in = null;
         try {
             URL url = new URL(mirror);
             URLConnection conn = url.openConnection();

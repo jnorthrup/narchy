@@ -79,7 +79,6 @@ public class WeightedInterpolationFunction implements ParameterizedFunction {
         adjustBorders(xs);
 
         ArrayRealVector xs3 = new ArrayRealVector(xs);
-        double y;
         double sumOfWeights = Arrays.stream(points).mapToDouble(point -> weight(point.xs, xs3)).sum();
 
         if (sumOfWeights == 0) {
@@ -87,7 +86,7 @@ public class WeightedInterpolationFunction implements ParameterizedFunction {
         }
 
         double sum = Arrays.stream(points).mapToDouble(p -> weight(p.xs, xs3) * p.y).sum();
-        y = sum;
+        double y = sum;
 
         y /= sumOfWeights;
 

@@ -523,9 +523,7 @@ public class ContactSolver {
                         
                         
                         float P1x = dx * normalx;
-                        float P1y = dx * normaly;
                         float P2x = dy * normalx;
-                        float P2y = dy * normaly;
 
                         /*
                          * vA -= invMassA * (P1 + P2); wA -= invIA * (Cross(cp1.rA, P1) + Cross(cp2.rA, P2));
@@ -534,6 +532,8 @@ public class ContactSolver {
                          */
 
                         vA.x -= mA * (P1x + P2x);
+                        float P2y = dy * normaly;
+                        float P1y = dx * normaly;
                         vA.y -= mA * (P1y + P2y);
                         vB.x += mB * (P1x + P2x);
                         vB.y += mB * (P1y + P2y);
@@ -588,9 +588,7 @@ public class ContactSolver {
                         
                         
                         float P1x = normalx * dx;
-                        float P1y = normaly * dx;
                         float P2x = normalx * dy;
-                        float P2y = normaly * dy;
 
                         /*
                          * Vec2 P1 = d.x * normal; Vec2 P2 = d.y * normal; vA -= invMassA * (P1 + P2); wA -=
@@ -600,6 +598,8 @@ public class ContactSolver {
                          */
 
                         vA.x -= mA * (P1x + P2x);
+                        float P2y = normaly * dy;
+                        float P1y = normaly * dx;
                         vA.y -= mA * (P1y + P2y);
                         vB.x += mB * (P1x + P2x);
                         vB.y += mB * (P1y + P2y);
@@ -655,11 +655,11 @@ public class ContactSolver {
                          */
 
                         float P1x = normalx * dx;
-                        float P1y = normaly * dx;
                         float P2x = normalx * dy;
-                        float P2y = normaly * dy;
 
                         vA.x -= mA * (P1x + P2x);
+                        float P2y = normaly * dy;
+                        float P1y = normaly * dx;
                         vA.y -= mA * (P1y + P2y);
                         vB.x += mB * (P1x + P2x);
                         vB.y += mB * (P1y + P2y);
@@ -714,11 +714,11 @@ public class ContactSolver {
                          */
 
                         float P1x = normalx * dx;
-                        float P1y = normaly * dx;
                         float P2x = normalx * dy;
-                        float P2y = normaly * dy;
 
                         vA.x -= mA * (P1x + P2x);
+                        float P2y = normaly * dy;
+                        float P1y = normaly * dx;
                         vA.y -= mA * (P1y + P2y);
                         vB.x += mB * (P1x + P2x);
                         vB.y += mB * (P1y + P2y);

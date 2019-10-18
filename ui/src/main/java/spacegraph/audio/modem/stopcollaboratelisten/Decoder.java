@@ -30,7 +30,6 @@ public class Decoder implements Constants {
         int maxCorrelationIndex = -1;
         double maxCorrelation = -1;
         double minSignal = 0.003;
-        double acceptedSignal = 0.01;
         int i = 0;
         for (i = 0; i <= signal.length - kSamplesPerDuration; i += granularity) {
             //test the correlation
@@ -47,6 +46,7 @@ public class Decoder implements Constants {
         }
 
         //System.out.println("Searched to index:" + i);
+        double acceptedSignal = 0.01;
         if (maxCorrelation < acceptedSignal && maxCorrelation > -1) {
             //System.out.println("Best Correlation:" + maxCorrelation);
             maxCorrelationIndex = -1;

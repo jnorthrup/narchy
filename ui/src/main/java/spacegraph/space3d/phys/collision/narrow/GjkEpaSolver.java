@@ -652,9 +652,7 @@ public class GjkEpaSolver {
 		float EvaluatePD(float accuracy) {
             v3 tmp = new v3();
 
-            
-            Face bestface = null;
-            int markid = 1;
+
             depth = -cstInf;
             normal.set(0f, 0f, 0f);
             root = null;
@@ -673,8 +671,6 @@ public class GjkEpaSolver {
                 int peidx_index = 0;
 
                 int neidx = 0;
-                Mkv[] basemkv = new Mkv[5];
-                Face[] basefaces = new Face[6];
                 switch (gjk.order) {
                     
                     case 3:
@@ -707,10 +703,12 @@ break;
                 }
                 int i;
 
+                Mkv[] basemkv = new Mkv[5];
                 for (i = 0; i <= gjk.order; ++i) {
                     basemkv[i] = new Mkv();
                     basemkv[i].set(gjk.simplex[i]);
                 }
+                Face[] basefaces = new Face[6];
                 for (i = 0; i < nfidx; ++i, pfidx_index++) {
                     basefaces[i] = NewFace(basemkv[pfidx_ptr[pfidx_index][0]], basemkv[pfidx_ptr[pfidx_index][1]], basemkv[pfidx_ptr[pfidx_index][2]]);
                 }
@@ -723,7 +721,8 @@ break;
                 return (depth);
             }
             /* Expand hull		*/
-            for (; iterations < EPA_maxiterations; ++iterations) {
+            Face bestface = null;
+            for (int markid = 1; iterations < EPA_maxiterations; ++iterations) {
                 Face bf = FindBest();
                 if (bf != null) {
                     tmp.negated(bf.n);
@@ -731,11 +730,11 @@ break;
                     float d = bf.n.dot(w.w) + bf.d;
                     bestface = bf;
                     if (d < -accuracy) {
-                        Face[] cf = {null};
-                        Face[] ff = {null};
-                        int nf = 0;
                         Detach(bf);
                         bf.mark = ++markid;
+                        int nf = 0;
+                        Face[] ff = {null};
+                        Face[] cf = {null};
                         for (int i = 0; i < 3; ++i) {
                             nf += BuildHorizon(markid, w, bf.f[i], bf.e[i], cf, ff);
                         }

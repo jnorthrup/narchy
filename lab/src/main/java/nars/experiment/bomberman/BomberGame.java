@@ -64,11 +64,11 @@ public class BomberGame extends JPanel
         }
 
         String path = BomberMain.RP + "Images/BomberEndGame/";
-        String str = null;
         /** create the images */
         images = new Image[6];
         /** open the image files */
         try {
+            String str = null;
             for (int i = 0; i < 4; i++) {
                 str = path + "Player " + (i + 1) + " Wins.jpg";
                 images[i] = Toolkit.getDefaultToolkit().getImage(
@@ -265,9 +265,8 @@ public class BomberGame extends JPanel
             }
             /** set default game result = draw */
             /** find winner */
-            int found;
             int bound = totalPlayers;
-            found = IntStream.range(0, bound).filter(i -> !players[i].isDead()).findFirst().orElse(4);
+            int found = IntStream.range(0, bound).filter(i -> !players[i].isDead()).findFirst().orElse(4);
             winner = found;
             gameOver = true;
             map.setGameOver();

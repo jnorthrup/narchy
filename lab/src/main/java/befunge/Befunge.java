@@ -96,10 +96,10 @@ public enum Befunge {
 
             map.put('?', () -> {
                 int[] xarray = {-1, 1, 0, 0};
-                int[] yarray = {0, 0, -1, 1};
                 Random r = new Random();
                 int t = r.nextInt(3);
                 dx = xarray[t];
+                int[] yarray = {0, 0, -1, 1};
                 dy = yarray[t];
             });
 

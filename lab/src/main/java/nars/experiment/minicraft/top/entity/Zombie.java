@@ -48,7 +48,6 @@ public class Zombie extends Mob {
     @Override
     public void render(Screen screen) {
         int xt = 0;
-        int yt = 14;
 
         int flip1 = (walkDist >> 3) & 1;
         int flip2 = (walkDist >> 3) & 1;
@@ -77,6 +76,7 @@ public class Zombie extends Mob {
             col = Color.get(-1, 555, 555, 555);
         }
 
+        int yt = 14;
         screen.render(xo + 8 * flip1, yo + 0, xt + yt * 32, col, flip1);
         screen.render(xo + 8 - 8 * flip1, yo + 0, xt + 1 + yt * 32, col, flip1);
         screen.render(xo + 8 * flip2, yo + 8, xt + (yt + 1) * 32, col, flip2);

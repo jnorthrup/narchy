@@ -139,10 +139,9 @@ public class PadSynthetizer {
          * @param dataImag
          */
         private static void bitReversalReordering( double[] dataReal, double[] dataImag ) {
-            int iRev;
             int nBits = Integer.numberOfTrailingZeros(dataReal.length);
             for ( int i=1; i<dataReal.length-1; i++) {
-                iRev = reverseBits ( i, nBits );
+                int iRev = reverseBits(i, nBits);
                 if ( iRev > i) {
 					ArrayUtil.swapDouble(dataReal, i, iRev);
 					ArrayUtil.swapDouble(dataImag, i, iRev);
@@ -182,31 +181,27 @@ public class PadSynthetizer {
          */
         private static void DanielsonLanczos(double[] dataReal, double[] dataImag) {
 
-            int istep;
-            double theta, sinHalfTheta;
-            double wpR, wpI;
-            double wR, wI;
-            double tempR, tempI;
-
             int mmax = 1;
 
             while (dataReal.length > mmax) {
 
-                istep = 2 * mmax;
-                theta = -Math.PI / mmax;
-                sinHalfTheta = Math.sin(0.5 * theta);
+                int istep = 2 * mmax;
+                double theta = -Math.PI / mmax;
+                double sinHalfTheta = Math.sin(0.5 * theta);
 
                 // wp = -2.0 * SIN(0.5_8*theta)**2 + i* SIN(theta)
-                wpR = -2.0 * sinHalfTheta * sinHalfTheta;
-                wpI = Math.sin(theta);
+                double wpR = -2.0 * sinHalfTheta * sinHalfTheta;
+                double wpI = Math.sin(theta);
 
                 // w = 1. + i*0.
-                wR = 1.0;
-                wI = 0.0;
+                double wR = 1.0;
+                double wI = 0.0;
 
                 for (int m=1; m<=mmax; m++) {
 
-                    for (int i=m-1; i<dataReal.length; i+=istep) {
+                    double tempI;
+                    double tempR;
+                    for (int i = m-1; i<dataReal.length; i+=istep) {
 
                         int j = i + mmax;
 
@@ -270,14 +265,13 @@ public class PadSynthetizer {
     private static void padsynth_basic_algorithm(int N, int samplerate, double f,
             double bw,int number_harmonics, double[] A, double[] smp) {
 
-        int i,nh;
+        int i;
         double[] freq_amp=new double[N/2];
-        double[] freq_phase=new double[N/2];
 
         //default, all the frequency amplitudes are zero
         for (i=0;i<N/2;i++) freq_amp[i]=0.0;
 
-        for (nh=1;nh<number_harmonics;nh++){//for each harmonic
+        for (int nh = 1; nh<number_harmonics; nh++){//for each harmonic
             //bandwidth of the current harmonic measured in Hz
             double bw_Hz = (Math.pow(2.0, bw / 1200.0) - 1.0) * f * nh;
 
@@ -290,7 +284,8 @@ public class PadSynthetizer {
         }
 
         //Add random phases
-        for (i=0;i<N/2;i++){
+        double[] freq_phase = new double[N / 2];
+        for (i=0; i<N/2; i++){
             freq_phase[i]=RND()*2.0*Math.PI;
         }
 
@@ -301,13 +296,13 @@ public class PadSynthetizer {
 
 
     public static void main(String[] args) {
-        double[] sample = new double[N];
 
         double[] A = new double[number_harmonics];
         //A[0] is not used
         A[0]=0.0;
 
-        for (int note=0;note<=24;note+=4){
+        double[] sample = new double[N];
+        for (int note = 0; note<=24; note+=4){
             double f1=130.81* Math.pow(2,note/12.0);
             System.out.print("Generating frequency: "+(int) f1+" Hz\n");
             for (int i=1;i<number_harmonics;i++) {

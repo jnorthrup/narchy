@@ -462,7 +462,6 @@ public enum Op {
 
         boolean isBool = "B".equals(str);
         boolean isInt = "+".equals(str);
-        boolean isNeg = "--".equals(str);
         boolean isImg = "/".equals(str);
         //boolean isSect = str.equals("|") || str.equals("&");
         boolean isFrag = "`".equals(str);
@@ -477,6 +476,7 @@ public enum Op {
         //!isNeg && //<- HACK technically NEG cant be conceptualized but in many cases this is assumed. so NEG must not be included in conceptualizable for it to work currently
         ;
 
+        boolean isNeg = "--".equals(str);
         taskable = conceptualizable && !isInt && !isNeg;
 
         eventable = taskable || isNeg || var;

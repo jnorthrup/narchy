@@ -56,13 +56,12 @@ public class ImageBeliefTable extends DynamicTaskTable {
         Task imaged = r.input;
         Term normal = Image.imageNormalize(imaged.term());
 
-        Task normalized;
-
         if (r.store) {
             //r.link = r.notify = false; //proxy store
             TaskConcept c = (TaskConcept) r.nar.conceptualize(normal);
             if (c == null)
                 return;
+            Task normalized;
             r.input = normalized = SpecialTermTask.the(imaged, normal, true);
             c.table(normalized.punc()).remember(r);
         }

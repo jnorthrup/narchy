@@ -123,9 +123,8 @@ public class ImageTracer {
         protected void render(HashMap<String, Float> options, float w, float h, BiConsumer<ArrayList<Double[]>, byte[]> path) {
             
             TreeMap<Double, int[]> zindex = new TreeMap<>();
-            double label;
 
-            
+
             for (int k = 0; k < this.layers.size(); k++) {
 
                 
@@ -136,7 +135,7 @@ public class ImageTracer {
                     
                     Double[] lkp0 = lk.get(pcnt).get(0);
 
-                    label = (lkp0[2] * w) + lkp0[1];
+                    double label = (lkp0[2] * w) + lkp0[1];
                     int finalPcnt = pcnt;
                     int finalK = k;
                     

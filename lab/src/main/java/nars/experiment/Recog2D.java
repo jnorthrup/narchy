@@ -72,7 +72,6 @@ public class Recog2D extends GameX {
 
 
         w = 12; h = 14;
-        int sw = 7, sh = 9;
 
         canvas = new BufferedImage(w, h, BufferedImage.TYPE_INT_BGR);
         g = ((Graphics2D) canvas.getGraphics());
@@ -82,6 +81,8 @@ public class Recog2D extends GameX {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 
+        int sh = 9;
+        int sw = 7;
         sp = senseCamera(
                 $.p(id,$.the("x"))
 
@@ -151,11 +152,11 @@ public class Recog2D extends GameX {
                         Concept c = tv.concepts[i];
                         BeliefVector.Neuron nn = tv.neurons[i];
 
-                        float freq, conf;
+                        float freq;
 
                         Truth t = nar.beliefTruth(c, nar.time());
                         if (t != null) {
-                            conf = t.conf();
+                            float conf = t.conf();
                             freq = t.freq();
                         } else {
 //                            conf = nar.confMin.floatValue();

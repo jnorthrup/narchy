@@ -41,9 +41,8 @@ public class HiddenLayerDiscrete extends HiddenLayer {
     }
 
     public double output(int[] input, double[] w, double b) {
-        double linear_output;
         int bound = n_in;
-        linear_output = IntStream.range(0, bound).mapToDouble(j -> w[j] * input[j]).sum();
+        double linear_output = IntStream.range(0, bound).mapToDouble(j -> w[j] * input[j]).sum();
         linear_output += b;
         return sigmoid(linear_output);
     }

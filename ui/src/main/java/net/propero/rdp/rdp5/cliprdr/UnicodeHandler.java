@@ -72,8 +72,8 @@ public class UnicodeHandler extends TypeHandler {
     }
 
     private static byte[] fromTransferable(Transferable in) {
-        String s;
         if (in != null) {
+            String s;
             try {
                 s = (String) (in.getTransferData(DataFlavor.stringFlavor));
             } catch (Exception e) {

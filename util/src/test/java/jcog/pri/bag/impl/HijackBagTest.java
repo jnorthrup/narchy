@@ -137,7 +137,6 @@ class HijackBagTest {
     void testHijackSampling() {
         for (int cap : new int[] { 63, 37 }) {
             int rep = 4;
-            int batch = 4;
             int extraSpace = Math.round(cap *0.4f);
             PLinkHijackBag bag = new PLinkHijackBag(plus, cap * extraSpace, rep) {
 
@@ -147,6 +146,7 @@ class HijackBagTest {
 
             fillLinear(bag, cap);
             bag.print();
+            int batch = 4;
             testBagSamplingDistribution(bag, batch);
         }
 

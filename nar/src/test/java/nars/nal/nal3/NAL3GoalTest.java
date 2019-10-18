@@ -42,7 +42,6 @@ class NAL3GoalTest {
 
     private static void testGoalDiff(boolean goalPolarity, boolean beliefPolarity, boolean diffIsGoal, boolean diffIsFwd, float f, float c, boolean subjOrPred) {
 
-        String goalTerm, beliefTerm;
         String first, second;
         if (diffIsFwd) {
             first = X;
@@ -56,6 +55,8 @@ class NAL3GoalTest {
                 "(A-->(" + first + '-' + second + "))";
         String XX = subjOrPred ? Xe : Xi;
         String YY = subjOrPred ? Ye : Yi;
+        String beliefTerm;
+        String goalTerm;
         if (diffIsGoal) {
             goalTerm = diff;
             beliefTerm = XX;

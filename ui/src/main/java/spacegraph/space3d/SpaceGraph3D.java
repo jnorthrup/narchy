@@ -133,18 +133,18 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
 
         final float a = 0.7f;
         float[] light_ambient = {a, a, a, 1.0f};
-        float[] light_diffuse = {0.5f, 0.5f, 0.5f, 0.5f};
 
-        float[] light_specular = {0.5f, 0.5f, 0.5f, 0.5f};
         /* light_position is NOT default value */
 
         float distance = 25f;
-        float[] light_position0 = {0f, 0f, distance, 0.0f};
 
 
         gl.glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient, 0);
+        float[] light_diffuse = {0.5f, 0.5f, 0.5f, 0.5f};
         gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse, 0);
+        float[] light_specular = {0.5f, 0.5f, 0.5f, 0.5f};
         gl.glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular, 0);
+        float[] light_position0 = {0f, 0f, distance, 0.0f};
         gl.glLightfv(GL_LIGHT0, GL_POSITION, light_position0, 0);
         gl.glEnable(GL_LIGHTING);
         gl.glEnable(GL_LIGHT0);

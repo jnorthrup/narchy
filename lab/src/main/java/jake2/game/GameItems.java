@@ -85,8 +85,6 @@ public class GameItems {
         @Override
         public boolean interact(edict_t ent, edict_t other) {
 
-            int index;
-    
             if (other.client.pers.max_bullets < 300)
                 other.client.pers.max_bullets = 300;
             if (other.client.pers.max_shells < 200)
@@ -101,6 +99,7 @@ public class GameItems {
                 other.client.pers.max_slugs = 100;
 
             gitem_t item = FindItem("Bullets");
+            int index;
             if (item != null) {
                 index = ITEM_INDEX(item);
                 other.client.pers.inventory[index] += item.quantity;
@@ -297,11 +296,11 @@ public class GameItems {
         public String getID() { return "use_quad";}
         @Override
         public void use(edict_t ent, gitem_t item) {
-            int timeout;
-    
+
             ent.client.pers.inventory[ITEM_INDEX(item)]--;
             GameUtil.ValidateSelectedItem(ent);
-    
+
+            int timeout;
             if (quad_drop_timeout_hack != 0) {
                 timeout = quad_drop_timeout_hack;
                 quad_drop_timeout_hack = 0;
@@ -445,10 +444,6 @@ public class GameItems {
         public String getID() { return "pickup_armor";}
         @Override
         public boolean interact(edict_t ent, edict_t other) {
-            gitem_armor_t oldinfo;
-            int newcount;
-            float salvage;
-            int salvagecount;
 
 
             gitem_armor_t newinfo = ent.item.info;
@@ -470,7 +465,8 @@ public class GameItems {
     
             
             else {
-                
+
+                gitem_armor_t oldinfo;
                 if (old_armor_index == jacket_armor_index)
                     oldinfo = jacketarmor_info;
     
@@ -480,7 +476,10 @@ public class GameItems {
                 else
                     
                     oldinfo = bodyarmor_info;
-    
+
+                int salvagecount;
+                float salvage;
+                int newcount;
                 if (newinfo.normal_protection > oldinfo.normal_protection) {
                     
                     salvage = oldinfo.normal_protection
@@ -615,8 +614,7 @@ public class GameItems {
         public String getID() { return "pickup_bandolier";}
         @Override
         public boolean interact(edict_t ent, edict_t other) {
-            int index;
-    
+
             if (other.client.pers.max_bullets < 250)
                 other.client.pers.max_bullets = 250;
             if (other.client.pers.max_shells < 150)
@@ -627,6 +625,7 @@ public class GameItems {
                 other.client.pers.max_slugs = 75;
 
             gitem_t item = FindItem("Bullets");
+            int index;
             if (item != null) {
                 index = ITEM_INDEX(item);
                 other.client.pers.inventory[index] += item.quantity;
@@ -705,12 +704,8 @@ public class GameItems {
         public String getID() { return "drop_to_floor";}
         @Override
         public boolean think(edict_t ent) {
-            float[] dest = { 0, 0, 0 };
-    
-            
-    
-            
-            
+
+
             ent.mins[0] = ent.mins[1] = ent.mins[2] = -15;
             
             
@@ -725,6 +720,7 @@ public class GameItems {
             ent.touch = Touch_Item;
 
             float[] v = {0, 0, -128};
+            float[] dest = {0, 0, 0};
             Math3D.VectorAdd(ent.s.origin, v, dest);
 
             trace_t tr = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, dest, ent,
@@ -773,8 +769,7 @@ public class GameItems {
         public String getID() { return "use_powerarmor";}
         @Override
         public void use(edict_t ent, gitem_t item) {
-            int index;
-    
+
             if ((ent.flags & Defines.FL_POWER_ARMOR) != 0) {
                 ent.flags &= ~Defines.FL_POWER_ARMOR;
                 game_import_t
@@ -782,7 +777,7 @@ public class GameItems {
                                 .soundindex("misc/power2.wav"), 1,
                                 Defines.ATTN_NORM, 0);
             } else {
-                index = ITEM_INDEX(FindItem("cells"));
+                int index = ITEM_INDEX(FindItem("cells"));
                 if (0 == ent.client.pers.inventory[index]) {
                     game_import_t.cprintf(ent, Defines.PRINT_HIGH,
                             "No cells for power armor.\n");
@@ -869,9 +864,6 @@ public class GameItems {
     }
 
     static edict_t Drop_Item(edict_t ent, gitem_t item) {
-        float[] forward = { 0, 0, 0 };
-        float[] right = { 0, 0, 0 };
-        float[] offset = { 0, 0, 0 };
 
         edict_t dropped = GameUtil.G_Spawn();
     
@@ -889,10 +881,13 @@ public class GameItems {
         dropped.touch = drop_temp_touch;
     
         dropped.owner = ent;
-    
+
+        float[] right = {0, 0, 0};
+        float[] forward = {0, 0, 0};
         if (ent.client != null) {
 
             Math3D.AngleVectors(ent.client.v_angle, forward, right, null);
+            float[] offset = {0, 0, 0};
             Math3D.VectorSet(offset, 24, 0, -16);
             Math3D.G_ProjectSource(ent.s.origin, offset, forward, right,
                     dropped.s.origin);
@@ -980,11 +975,11 @@ public class GameItems {
     }
 
     public static boolean Add_Ammo(edict_t ent, gitem_t item, int count) {
-        int max;
-    
+
         if (null == ent.client)
             return false;
-    
+
+        int max;
         if (item.tag == Defines.AMMO_BULLETS)
             max = ent.client.pers.max_bullets;
         else if (item.tag == Defines.AMMO_SHELLS)
@@ -1023,11 +1018,9 @@ public class GameItems {
      * Called by worldspawn ===============
      */
     public static void SetItemNames() {
-        int i;
-        gitem_t it;
-    
-        for (i = 1; i < GameBase.game.num_items; i++) {
-            it = GameItemList.itemlist[i];
+
+        for (int i = 1; i < GameBase.game.num_items; i++) {
+            gitem_t it = GameItemList.itemlist[i];
             game_import_t.configstring(Defines.CS_ITEMS + i, it.pickup_name);
         }
     
@@ -1039,8 +1032,6 @@ public class GameItems {
     }
 
     public static void SelectNextItem(edict_t ent, int itflags) {
-        int i, index;
-        gitem_t it;
 
         gclient_t cl = ent.client;
     
@@ -1050,11 +1041,11 @@ public class GameItems {
         }
     
         
-        for (i = 1; i <= Defines.MAX_ITEMS; i++) {
-            index = (cl.pers.selected_item + i) % Defines.MAX_ITEMS;
+        for (int i = 1; i <= Defines.MAX_ITEMS; i++) {
+            int index = (cl.pers.selected_item + i) % Defines.MAX_ITEMS;
             if (0 == cl.pers.inventory[index])
                 continue;
-            it = GameItemList.itemlist[index];
+            gitem_t it = GameItemList.itemlist[index];
             if (it.use == null)
                 continue;
             if (0 == (it.flags & itflags))
@@ -1068,8 +1059,6 @@ public class GameItems {
     }
 
     public static void SelectPrevItem(edict_t ent, int itflags) {
-        int i, index;
-        gitem_t it;
 
         gclient_t cl = ent.client;
     
@@ -1079,12 +1068,12 @@ public class GameItems {
         }
     
         
-        for (i = 1; i <= Defines.MAX_ITEMS; i++) {
-            index = (cl.pers.selected_item + Defines.MAX_ITEMS - i)
+        for (int i = 1; i <= Defines.MAX_ITEMS; i++) {
+            int index = (cl.pers.selected_item + Defines.MAX_ITEMS - i)
                     % Defines.MAX_ITEMS;
             if (0 == cl.pers.inventory[index])
                 continue;
-            it = GameItemList.itemlist[index];
+            gitem_t it = GameItemList.itemlist[index];
             if (null == it.use)
                 continue;
             if (0 == (it.flags & itflags))
@@ -1105,10 +1094,7 @@ public class GameItems {
      * ===============
      */
     public static void PrecacheItem(gitem_t it) {
-        String data;
-        int len;
-        gitem_t ammo;
-    
+
         if (it == null)
             return;
     
@@ -1126,7 +1112,7 @@ public class GameItems {
     
         
         if (it.ammo != null && it.ammo.length() != 0) {
-            ammo = FindItem(it.ammo);
+            gitem_t ammo = FindItem(it.ammo);
             if (ammo != it)
                 PrecacheItem(ammo);
         }
@@ -1139,10 +1125,10 @@ public class GameItems {
         StringTokenizer tk = new StringTokenizer(s);
     
         while (tk.hasMoreTokens()) {
-            data = tk.nextToken();
-    
-            len = data.length();
-    
+            String data = tk.nextToken();
+
+            int len = data.length();
+
             if (len >= Defines.MAX_QPATH || len < 5)
                 game_import_t
                         .error("PrecacheItem: it.classname has bad precache string: "

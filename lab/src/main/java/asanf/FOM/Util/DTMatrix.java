@@ -164,9 +164,8 @@ public class DTMatrix<E> {
 	}
 	
 	protected void normalizeBy(double value){
-		int i,j;
-		for(i = 0; i < values.length; i++)
-			for(j = 0; j < values[i].length; j++){
+        for(int i = 0; i < values.length; i++)
+			for(int j = 0; j < values[i].length; j++){
 				values[i][j] /= value;
 			}
 	}

@@ -197,9 +197,6 @@ public interface Stamp {
         int aLen = a.length, bLen = b.length;
 
 
-        int baseLength = Math.min(aLen + bLen, maxLen);
-
-
         int aMin = 0, bMin = 0;
         if (aLen + bLen > maxLen) {
             if (!newToOld)
@@ -224,6 +221,7 @@ public interface Stamp {
 
         }
 
+        int baseLength = Math.min(aLen + bLen, maxLen);
         long[] c = new long[baseLength];
         if (newToOld) {
 
@@ -561,9 +559,6 @@ public interface Stamp {
         }
 
         LongHashSet l = new LongHashSet(maxLen);
-        int done = 0;
-
-        int repeats = 0;
 
         int totalEvidence = 0;
 
@@ -585,6 +580,8 @@ public interface Stamp {
 
         int size = 0;
         boolean halted = false;
+        int repeats = 0;
+        int done = 0;
         main:
         while (done < S) {
             done = 0;

@@ -46,10 +46,10 @@ class BvhTreeNodeArray {
 
 	public void resize(int newSize) {
 		float[] newBound = new float[newSize*6];
-		int[] newEIODI = new int[newSize];
-		
-		System.arraycopy(bound, 0, newBound, 0, size*6);
-		System.arraycopy(escapeIndexOrDataIndex, 0, newEIODI, 0, size);
+
+        System.arraycopy(bound, 0, newBound, 0, size*6);
+        int[] newEIODI = new int[newSize];
+        System.arraycopy(escapeIndexOrDataIndex, 0, newEIODI, 0, size);
 		
 		bound = newBound;
 		escapeIndexOrDataIndex = newEIODI;

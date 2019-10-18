@@ -236,12 +236,12 @@ public class Dynamics2DView extends PaintSurface {
             float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
             float c = (float) Math.cos(theta);
             float s = (float) Math.sin(theta);
-            float x = radius;
-            float y = 0;
             float cx = center.x;
             float cy = center.y;
             gl.glBegin(GL.GL_LINE_LOOP);
             gl.glColor4f(color.x, color.y, color.z, 1);
+            float y = 0;
+            float x = radius;
             for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
                 gl.glVertex3f(x + cx, y + cy, 0);
                 // apply the rotation matrix
@@ -261,12 +261,12 @@ public class Dynamics2DView extends PaintSurface {
             float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
             float c = (float) Math.cos(theta);
             float s = (float) Math.sin(theta);
-            float x = radius;
-            float y = 0;
             float cx = center.x;
             float cy = center.y;
             gl.glBegin(GL.GL_LINE_LOOP);
             gl.glColor4f(color.x, color.y, color.z, 1);
+            float y = 0;
+            float x = radius;
             for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
                 gl.glVertex3f(x + cx, y + cy, 0);
                 // apply the rotation matrix
@@ -290,12 +290,12 @@ public class Dynamics2DView extends PaintSurface {
             float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
             float c = (float) Math.cos(theta);
             float s = (float) Math.sin(theta);
-            float x = radius;
-            float y = 0;
             float cx = center.x;
             float cy = center.y;
             gl.glBegin(GL.GL_TRIANGLE_FAN);
             gl.glColor4f(color.x, color.y, color.z, .4f);
+            float y = 0;
+            float x = radius;
             for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
                 gl.glVertex3f(x + cx, y + cy, 0);
                 // apply the rotation matrix
@@ -413,11 +413,11 @@ public class Dynamics2DView extends PaintSurface {
 
             getWorldToScreenToOut(xf.pos, temp);
             temp2.setZero();
-            float k_axisScale = 0.4f;
 
             gl.glBegin(GL.GL_LINES);
             gl.glColor3f(1, 0, 0);
 
+            float k_axisScale = 0.4f;
             temp2.x = xf.pos.x + k_axisScale * xf.c;
             temp2.y = xf.pos.y + k_axisScale * xf.s;
             getWorldToScreenToOut(temp2, temp2);

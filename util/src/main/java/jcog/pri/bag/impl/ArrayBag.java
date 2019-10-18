@@ -215,11 +215,6 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         SortedArray<Y> items = table.items;
         Object[] a = items.array();
 
-        float above = Float.POSITIVE_INFINITY;
-        boolean sorted = true;
-
-        float m = 0;
-
 
         ArrayHistogram.HistogramWriter hist;
         int bins = histogramBins(s);
@@ -229,6 +224,9 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             hist = null; //disabled
         }
 
+        float m = 0;
+        boolean sorted = true;
+        float above = Float.POSITIVE_INFINITY;
         for (int i = 0; i < s; ) {
             Object _y = a[i];
 
@@ -322,11 +320,10 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         Object[] ii;
         int s;
-        int i;
 
         while ((s = Math.min((ii = items()).length, size())) > 0) {
 
-            i = sampleNext(rng, s);
+            int i = sampleNext(rng, s);
 
             Object x = ii[i];
 

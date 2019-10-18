@@ -85,11 +85,7 @@ public final class Console extends Globals {
 	@Override
     public void execute() {
 
-	    int l, x;
-	    int line;
-		byte[] buffer = new byte[1024];
-
-		if (Cmd.Argc() != 2) {
+        if (Cmd.Argc() != 2) {
 		Com.Printf("usage: condump <filename>\n");
 		return;
 	    }
@@ -105,8 +101,11 @@ public final class Console extends Globals {
 		return;
 	    }
 
-	    
-	    for (l = con.current - con.totallines + 1; l <= con.current; l++) {
+
+        int line;
+        int x;
+        int l;
+        for (l = con.current - con.totallines + 1; l <= con.current; l++) {
 		line = (l % con.totallines) * con.linewidth;
 		for (x = 0; x < con.linewidth; x++)
 		    if (con.text[line + x] != ' ')
@@ -115,8 +114,9 @@ public final class Console extends Globals {
 		    break;
 	    }
 
-	    
-	    buffer[con.linewidth] = 0;
+
+        byte[] buffer = new byte[1024];
+        buffer[con.linewidth] = 0;
 	    for (; l <= con.current; l++) {
 		line = (l % con.totallines) * con.linewidth;
 		
@@ -220,8 +220,7 @@ public final class Console extends Globals {
     }
 
     public static void ClearNotify() {
-	int i;
-	for (i = 0; i < Defines.NUM_CON_TIMES; i++)
+        for (int i = 0; i < Defines.NUM_CON_TIMES; i++)
 	    Globals.con.times[i] = 0;
     }
 
@@ -306,24 +305,23 @@ public final class Console extends Globals {
     private static int cr;
 
     public static void Print(String txt) {
-	int y;
-	int c, l;
-	int mask;
-	int txtpos = 0;
 
-	if (!con.initialized)
+        if (!con.initialized)
 	    return;
 
-	if (txt.charAt(0) == 1 || txt.charAt(0) == 2) {
+        int txtpos = 0;
+        int mask;
+        if (txt.charAt(0) == 1 || txt.charAt(0) == 2) {
 	    mask = 128; 
 	    txtpos++;
 	} else
 	    mask = 0;
 
 	while (txtpos < txt.length()) {
-	    c = txt.charAt(txtpos);
-	    
-	    for (l = 0; l < con.linewidth && l < (txt.length() - txtpos); l++)
+        int c = txt.charAt(txtpos);
+
+        int l;
+        for (l = 0; l < con.linewidth && l < (txt.length() - txtpos); l++)
 		if (txt.charAt(l + txtpos) <= ' ')
 		    break;
 
@@ -345,7 +343,8 @@ public final class Console extends Globals {
 		    con.times[con.current % NUM_CON_TIMES] = cls.realtime;
 	    }
 
-	    switch (c) {
+        int y;
+        switch (c) {
 	    case '\n':
 		con.x = 0;
 		break;
@@ -401,10 +400,8 @@ public final class Console extends Globals {
      * ================
      */
     static void DrawInput() {
-	int i;
-		int start = 0;
 
-	if (cls.key_dest == key_menu)
+        if (cls.key_dest == key_menu)
 	    return;
 	if (cls.key_dest != key_console && cls.state == ca_active)
 	    return;
@@ -414,12 +411,14 @@ public final class Console extends Globals {
 	
 	text[key_linepos] = (byte) (10 + (cls.realtime >> 8 & 1));
 
-	
-	for (i = key_linepos + 1; i < con.linewidth; i++)
+
+        int i;
+        for (i = key_linepos + 1; i < con.linewidth; i++)
 	    text[i] = ' ';
 
-	
-	if (key_linepos >= con.linewidth)
+
+        int start = 0;
+        if (key_linepos >= con.linewidth)
 	    start += 1 + key_linepos - con.linewidth;
 
 	
@@ -440,35 +439,31 @@ public final class Console extends Globals {
      */
     static void DrawNotify() {
 	int x;
-		int text;
-	int i;
-	int time;
-	String s;
-	int skip;
 
-		int v = 0;
-	for (i = con.current - NUM_CON_TIMES + 1; i <= con.current; i++) {
+        int v = 0;
+	for (int i = con.current - NUM_CON_TIMES + 1; i <= con.current; i++) {
 	    if (i < 0)
 		continue;
 
-	    time = (int) con.times[i % NUM_CON_TIMES];
-	    if (time == 0)
+        int time = (int) con.times[i % NUM_CON_TIMES];
+        if (time == 0)
 		continue;
 
 	    time = cls.realtime - time;
 	    if (time > con_notifytime.value * 1000)
 		continue;
 
-	    text = (i % con.totallines) * con.linewidth;
+        int text = (i % con.totallines) * con.linewidth;
 
-	    for (x = 0; x < con.linewidth; x++)
+        for (x = 0; x < con.linewidth; x++)
 		re.DrawChar((x + 1) << 3, v, con.text[text + x]);
 
 	    v += 8;
 	}
 
 	if (cls.key_dest == key_message) {
-	    if (chat_team) {
+        int skip;
+        if (chat_team) {
 		DrawString(8, v, "say_team:");
 		skip = 11;
 	    } else {
@@ -476,8 +471,8 @@ public final class Console extends Globals {
 		skip = 5;
 	    }
 
-	    s = chat_buffer;
-	    if (chat_bufferlen > (viddef.getWidth() >> 3) - (skip + 1))
+        String s = chat_buffer;
+        if (chat_bufferlen > (viddef.getWidth() >> 3) - (skip + 1))
 		s = s.substring(chat_bufferlen
 			- ((viddef.getWidth() >> 3) - (skip + 1)));
 
@@ -539,9 +534,9 @@ public final class Console extends Globals {
 	    rows--;
 	}
 
-	int i, j, x, n;
+	int i, x;
 
-	int row = con.display;
+        int row = con.display;
 	for (i = 0; i < rows; i++, y -= 8, row--) {
 	    if (row < 0)
 		break;
@@ -579,13 +574,14 @@ public final class Console extends Globals {
 	    dlbar.append(": ");
 	    dlbar.append((char) 0x80);
 
-	    
-	    if (cls.downloadpercent == 0)
+
+        int n;
+        if (cls.downloadpercent == 0)
 		n = 0;
 	    else
 		n = y * cls.downloadpercent / 100;
 
-	    for (j = 0; j < y; j++) {
+	    for (int j = 0; j < y; j++) {
 		if (j == n)
 		    dlbar.append((char) 0x83);
 		else

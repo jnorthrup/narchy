@@ -169,10 +169,8 @@ public class DefaultIntersecter extends Intersecter {
 		assert (body0 != null);
 		assert (body1 != null);
 
-		boolean needsCollision = true;
 
-		
-		if (!staticWarningReported) {
+        if (!staticWarningReported) {
 			
 			if ((body0.isStaticObject() || body0.isKinematicObject()) &&
 					(body1.isStaticObject() || body1.isKinematicObject())) {
@@ -180,9 +178,10 @@ public class DefaultIntersecter extends Intersecter {
 				System.err.println("warning CollisionDispatcher.needsCollision: static-static collision!");
 			}
 		}
-		
 
-		if ((!body0.isActive()) && (!body1.isActive()) || !body0.checkCollideWith(body1)) {
+
+        boolean needsCollision = true;
+        if ((!body0.isActive()) && (!body1.isActive()) || !body0.checkCollideWith(body1)) {
 			needsCollision = false;
 		}
 

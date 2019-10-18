@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MetaGoalTest {
     @Test void causesAppliedToDerivations() throws Narsese.NarseseException {
-        int cycles = 64;
 
         //test causes of inputs (empty) and derivations (includes all necessary premise construction steps)
         Multimap<ShortHashSet, Task> tasks = MultimapBuilder.hashKeys().linkedHashSetValues().build();
@@ -34,6 +33,7 @@ class MetaGoalTest {
         });
         n.input("(x-->y).");
         n.input("(y-->z).");
+        int cycles = 64;
         n.run(cycles);
 
 

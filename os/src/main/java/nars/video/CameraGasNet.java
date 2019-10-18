@@ -97,8 +97,8 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
                     float x = (float) n.getEntry(0);
                     float y = (float) n.getEntry(1);
                     float c = (float) n.getEntry(2);
-                    float r = 0.1f / (1f + e);
                     gl.glColor4f(c, 0, (0.25f * (1f-c)), 0.75f );
+                    float r = 0.1f / (1f + e);
                     Draw.rect(x, 1f - y, r, r, gl);
                 }
             }

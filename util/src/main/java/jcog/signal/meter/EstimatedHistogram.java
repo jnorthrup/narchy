@@ -277,9 +277,8 @@ public class EstimatedHistogram {
      * @return the total number of non-zero values
      */
     public long count() {
-        long sum;
         int bound = buckets.length();
-        sum = IntStream.range(0, bound).mapToLong(buckets::get).sum();
+        long sum = IntStream.range(0, bound).mapToLong(buckets::get).sum();
         return sum;
     }
 

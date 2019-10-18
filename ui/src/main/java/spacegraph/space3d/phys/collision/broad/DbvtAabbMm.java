@@ -236,12 +236,12 @@ public class DbvtAabbMm {
 
 		MatrixUtil.transposeTransform(d1, d0, xform.basis);
 
-		float[] s0 = { 0, 0 };
-		float[] s1 = new float[2];
+        float[] s1 = new float[2];
 		s1[0] = xform.dot(d0);
 		s1[1] = s1[0];
 
-		a.addSpan(d0, s0, 0, s0, 1);
+        float[] s0 = {0, 0};
+        a.addSpan(d0, s0, 0, s0, 1);
 		b.addSpan(d1, s1, 0, s1, 1);
 		if (s0[0] > (s1[1])) {
 			return false;

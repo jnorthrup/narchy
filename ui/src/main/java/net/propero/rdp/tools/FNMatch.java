@@ -62,14 +62,13 @@ class FNMatch {
                                    int flags) {
         boolean result = FNM_NOMATCH;
         boolean finished = false;
-        char c;
-        char c1;
 
-                                       int len = pattern.length();
+        int len = pattern.length();
                                        int n = 0;
                                        for (int p = 0; p < len; p++) {
-                                           c = pattern.charAt(p);
+                                           char c = pattern.charAt(p);
                                            c = fold(c, flags);
+                                           char c1;
                                            switch (c) {
                                                case '?':
                                                    if (string.length() == n) {

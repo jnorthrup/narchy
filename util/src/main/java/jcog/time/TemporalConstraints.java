@@ -253,9 +253,8 @@ public class TemporalConstraints<E> {
 
     boolean pathConsistency() {
         if (previouslyInconsistent) return false; 
-        if (this.modeledConstraints.isEmpty()) return true; 
-        List<IntIntPair> batchStack = new ArrayList<>();
-        
+        if (this.modeledConstraints.isEmpty()) return true;
+
         int S = this.constraintnetwork.size();
         ArrayList<BooleanArrayList> stack = new ArrayList<>(S);
         for (int i = 0; i < S; i++) {
@@ -268,7 +267,8 @@ public class TemporalConstraints<E> {
         
         
         Constraint<E> start = this.modeledConstraints.get(modeledConstraints.size() - 1);
-        
+
+        List<IntIntPair> batchStack = new ArrayList<>();
         batchStack.add(pair(start.src.allen, start.tgt.allen));
         
         stack.get(start.src.allen).set(start.tgt.allen, true);

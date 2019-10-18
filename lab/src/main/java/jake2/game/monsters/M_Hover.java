@@ -478,10 +478,6 @@ public class M_Hover {
         public String getID() { return "hover_fire_blaster"; }
         @Override
         public boolean think(edict_t self) {
-            float[] start = { 0, 0, 0 };
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-            float[] end = { 0, 0, 0 };
-            float[] dir = { 0, 0, 0 };
             int effect;
 
             if (self.s.frame == FRAME_attak104)
@@ -489,13 +485,18 @@ public class M_Hover {
             else
                 effect = 0;
 
+            float[] right = {0, 0, 0};
+            float[] forward = {0, 0, 0};
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[Defines.MZ2_HOVER_BLASTER_1],
                     forward, right, start);
 
+            float[] end = {0, 0, 0};
             Math3D.VectorCopy(self.enemy.s.origin, end);
             end[2] += self.enemy.viewheight;
+            float[] dir = {0, 0, 0};
             Math3D.VectorSubtract(end, start, dir);
 
             Monster.monster_fire_blaster(self, start, dir, 1, 1000,
@@ -628,14 +629,14 @@ public class M_Hover {
         @Override
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
-            int n;
 
-            
+
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
                                 .soundindex("misc/udeath.wav"), 1,
                                 Defines.ATTN_NORM, 0);
+                int n;
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
                             damage, Defines.GIB_ORGANIC);

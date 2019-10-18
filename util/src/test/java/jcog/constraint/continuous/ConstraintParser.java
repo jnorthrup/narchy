@@ -139,8 +139,7 @@ public class ConstraintParser {
         ArrayList<String> tokenList = new ArrayList<>();
 
         StringBuilder stringBuilder = new StringBuilder();
-        int i;
-        for (i = 0; i < expressionString.length(); i++) {
+        for (int i = 0; i < expressionString.length(); i++) {
             char c = expressionString.charAt(i);
             switch (c) {
                 case '+':

@@ -101,7 +101,6 @@ public class AStarGoalFind<F extends Solution> {
             
             Iterable<F> successorNodes = problem.next(currentNode);
             for (F successorNode : successorNodes) {
-                boolean inOpenSet;
                 if (closedSet.contains(successorNode))
                     continue;
                 /* Special rule for nodes that are generated within other nodes:
@@ -109,6 +108,7 @@ public class AStarGoalFind<F extends Solution> {
                  * its g value from the openSet if its already discovered
                  */
                 F discSuccessorNode = openSet.getNode(successorNode);
+                boolean inOpenSet;
                 if (discSuccessorNode != null) {
                     successorNode = discSuccessorNode;
                     inOpenSet = true;

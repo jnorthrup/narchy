@@ -232,11 +232,12 @@ public class WaveShaper extends UGen implements DataBeadReceiver {
                     limit = 0;
                 wetMix = wetMixUGen.getValue(0, currsample);
 
-                float y, y2;
                 for (int currchannel = 0; currchannel < channels; currchannel++) {
+                    float y;
                     float y1 = (((y = bufIn[currchannel][currsample]) * preGain * .5f) + .5f)
                             * shapeLen;
 
+                    float y2;
                     if (y1 <= 0) {
                         y2 = shape[0] * postGain;
                     } else if (y1 >= shapeLen) {
@@ -508,8 +509,8 @@ public class WaveShaper extends UGen implements DataBeadReceiver {
      */
     @Override
     public DataBeadReceiver sendData(DataAuvent db) {
-        UGen u;
         if (db != null) {
+            UGen u;
             if ((u = db.getUGen("preGain")) != null) {
                 setPreGain(u);
             } else {

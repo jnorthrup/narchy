@@ -82,8 +82,6 @@ class BvhTree {
 	}
 
 	private static int _sort_and_calc_splitting_index(BvhDataArray primitive_boxes, int startIndex, int endIndex, int splitAxis) {
-		int splitIndex = startIndex;
-		int numIndices = endIndex - startIndex;
 
 
         v3 means = new v3();
@@ -94,12 +92,14 @@ class BvhTree {
 		v3 tmp1 = new v3();
 		v3 tmp2 = new v3();
 
-		mean(primitive_boxes, startIndex, endIndex, means, numIndices, center, tmp1, tmp2);
+        int numIndices = endIndex - startIndex;
+        mean(primitive_boxes, startIndex, endIndex, means, numIndices, center, tmp1, tmp2);
 
         float splitValue = VectorUtil.coord(means, splitAxis);
 
-		
-		for (int i = startIndex; i < endIndex; i++) {
+
+        int splitIndex = startIndex;
+        for (int i = startIndex; i < endIndex; i++) {
 			primitive_boxes.getBoundMax(i, tmp1);
 			primitive_boxes.getBoundMin(i, tmp2);
 			center.add(tmp1, tmp2);

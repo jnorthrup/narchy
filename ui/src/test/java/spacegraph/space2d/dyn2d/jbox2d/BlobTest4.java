@@ -13,18 +13,16 @@ public class BlobTest4 implements Consumer<Dynamics2D> {
 
   @Override
   public void accept(Dynamics2D w) {
-    
-    
 
-    Body2D ground = null;
-    {
+
+      {
       PolygonShape sd = new PolygonShape();
       sd.setAsBox(50.0f, 0.4f);
 
       BodyDef bd = new BodyDef();
       bd.position.set(0.0f, 0.0f);
-      ground = w.addBody(bd);
-      ground.addFixture(sd, 0f);
+          Body2D ground = w.addBody(bd);
+          ground.addFixture(sd, 0f);
 
       sd.setAsBox(0.4f, 50.0f, new v2(-10.0f, 0.0f), 0.0f);
       ground.addFixture(sd, 0f);

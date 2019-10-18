@@ -478,9 +478,10 @@ public class PatternHow extends CondHow {
         boolean atMostOneTemporal = !(taskTemporal && beliefTemporal);
 
         //decide when inline "paste" (macro substitution) of the premise task or belief terms is allowed.
-        boolean taskPastable = false, beliefPastable = false;
+        boolean taskPastable = false;
         if (!taskObviouslyNotPastable && ((atMostOneTemporal || !y.hasAny(Op.Temporal))))
             taskPastable = true;
+        boolean beliefPastable = false;
         if (!beliefObviouslyNotPastable && ((atMostOneTemporal || !y.hasAny(Op.Temporal))))
             beliefPastable = true;
 
@@ -569,7 +570,7 @@ public class PatternHow extends CondHow {
 
         /** infer necessary double premise for derived belief  */
 
-        boolean doubleBelief = false, doubleGoal = false;
+        boolean doubleBelief = false;
         if (beliefTruthOp != null) {
             assert (concPunc.valueOf(BELIEF) == BELIEF || concPunc.valueOf(GOAL) == BELIEF || concPunc.valueOf(QUESTION) == BELIEF || concPunc.valueOf(QUEST) == BELIEF);
             if (!beliefTruthOp.single()) {
@@ -577,6 +578,7 @@ public class PatternHow extends CondHow {
             }
         }
         /** infer necessary double premise for derived goal  */
+        boolean doubleGoal = false;
         if (goalTruthOp != null) {
             assert (concPunc.valueOf(BELIEF) == GOAL || concPunc.valueOf(GOAL) == GOAL || concPunc.valueOf(QUESTION) == GOAL || concPunc.valueOf(QUEST) == GOAL);
             if (!goalTruthOp.single()) {

@@ -184,10 +184,6 @@ public final class Cmd {
      * Cmd_MacroExpandString.
      */
     public static char[] MacroExpandString(char[] text, int len) {
-        int i, j;
-
-        String token;
-        boolean inquote = false;
 
         char[] scan = text;
 
@@ -199,7 +195,8 @@ public final class Cmd {
 
         int count = 0;
 
-        for (i = 0; i < len; i++) {
+        boolean inquote = false;
+        for (int i = 0; i < len; i++) {
             if (scan[i] == '"')
                 inquote = !inquote;
 
@@ -211,14 +208,14 @@ public final class Cmd {
 
             
             Com.ParseHelp ph = new Com.ParseHelp(text, i + 1);
-            token = Com.Parse(ph);
+            String token = Com.Parse(ph);
 
             if (ph.data == null)
                 continue;
 
             token = Cvar.VariableString(token);
 
-            j = token.length();
+            int j = token.length();
 
             len += j;
 
@@ -256,7 +253,6 @@ public final class Cmd {
      * unless they are in a quoted token.
      */
     public static void TokenizeString(char[] text, boolean macroExpand) {
-        String com_token;
 
         cmd_argc = 0;
         cmd_args = "";
@@ -293,7 +289,7 @@ public final class Cmd {
                 cmd_args.trim();
             }
 
-            com_token = Com.Parse(ph);
+            String com_token = Com.Parse(ph);
 
             if (ph.data == null)
                 return;
@@ -306,16 +302,16 @@ public final class Cmd {
     }
 
     public static void AddCommand(String cmd_name, xcommand_t function) {
-        cmd_function_t cmd;
-        
-        
+
+
         if ((Cvar.VariableString(cmd_name)).length() > 0) {
             Com.Printf("Cmd_AddCommand: " + cmd_name
                     + " already defined as a var\n");
             return;
         }
 
-        
+
+        cmd_function_t cmd;
         for (cmd = cmd_functions; cmd != null; cmd = cmd.next) {
             if (cmd_name.equals(cmd.name)) {
                 Com
@@ -363,9 +359,8 @@ public final class Cmd {
      * Cmd_Exists 
      */
     public static boolean Exists(String cmd_name) {
-        cmd_function_t cmd;
 
-        for (cmd = cmd_functions; cmd != null; cmd = cmd.next) {
+        for (cmd_function_t cmd = cmd_functions; cmd != null; cmd = cmd.next) {
             if (cmd.name.equals(cmd_name))
                 return true;
         }
@@ -395,9 +390,6 @@ public final class Cmd {
      */
     public static void ExecuteString(String text) {
 
-        cmd_function_t cmd;
-        cmdalias_t a;
-
         TokenizeString(text.toCharArray(), true);
 
         
@@ -405,7 +397,7 @@ public final class Cmd {
             return; 
 
         
-        for (cmd = cmd_functions; cmd != null; cmd = cmd.next) {
+        for (cmd_function_t cmd = cmd_functions; cmd != null; cmd = cmd.next) {
             if (cmd_argv[0].equalsIgnoreCase(cmd.name)) {
                 if (null == cmd.function) { 
                     Cmd.ExecuteString("cmd " + text);
@@ -417,7 +409,7 @@ public final class Cmd {
         }
 
         
-        for (a = Globals.cmd_alias; a != null; a = a.next) {
+        for (cmdalias_t a = Globals.cmd_alias; a != null; a = a.next) {
 
             if (cmd_argv[0].equalsIgnoreCase(a.name)) {
 
@@ -444,9 +436,6 @@ public final class Cmd {
      * Give items to a client.
      */
     public static void Give_f(edict_t ent) {
-        gitem_t it;
-        int i;
-        edict_t it_ent;
 
         if (GameBase.deathmatch.value != 0 && GameBase.sv_cheats.value == 0) {
             SV_GAME.PF_cprintfhigh(ent,
@@ -467,6 +456,8 @@ public final class Cmd {
                 return;
         }
 
+        int i;
+        gitem_t it;
         if (give_all || 0 == Lib.Q_stricmp(name, "weapons")) {
             for (i = 1; i < GameBase.game.num_items; i++) {
                 it = GameItemList.itemlist[i];
@@ -509,6 +500,7 @@ public final class Cmd {
                 return;
         }
 
+        edict_t it_ent;
         if (give_all || Lib.Q_stricmp(name, "Power Shield") == 0) {
             it = GameItems.FindItem("Power Shield");
             it_ent = GameUtil.G_Spawn();
@@ -574,7 +566,6 @@ public final class Cmd {
      * argv(0) god
      */
     public static void God_f(edict_t ent) {
-        String msg;
 
         if (GameBase.deathmatch.value != 0 && GameBase.sv_cheats.value == 0) {
             SV_GAME.PF_cprintfhigh(ent,
@@ -583,6 +574,7 @@ public final class Cmd {
         }
 
         ent.flags ^= Defines.FL_GODMODE;
+        String msg;
         if (0 == (ent.flags & Defines.FL_GODMODE))
             msg = "godmode OFF\n";
         else
@@ -599,7 +591,6 @@ public final class Cmd {
      * argv(0) notarget.
      */
     public static void Notarget_f(edict_t ent) {
-        String msg;
 
         if (GameBase.deathmatch.value != 0 && GameBase.sv_cheats.value == 0) {
             SV_GAME.PF_cprintfhigh(ent, 
@@ -608,6 +599,7 @@ public final class Cmd {
         }
 
         ent.flags ^= Defines.FL_NOTARGET;
+        String msg;
         if (0 == (ent.flags & Defines.FL_NOTARGET))
             msg = "notarget OFF\n";
         else
@@ -622,7 +614,6 @@ public final class Cmd {
      * argv(0) noclip.
      */
     public static void Noclip_f(edict_t ent) {
-        String msg;
 
         if (GameBase.deathmatch.value != 0 && GameBase.sv_cheats.value == 0) {
             SV_GAME.PF_cprintfhigh(ent, 
@@ -630,6 +621,7 @@ public final class Cmd {
             return;
         }
 
+        String msg;
         if (ent.movetype == Defines.MOVETYPE_NOCLIP) {
             ent.movetype = Defines.MOVETYPE_WALK;
             msg = "noclip OFF\n";
@@ -700,7 +692,6 @@ public final class Cmd {
      * Cmd_Inven_f.
      */
     public static void Inven_f(edict_t ent) {
-        int i;
 
         gclient_t cl = ent.client;
 
@@ -715,7 +706,7 @@ public final class Cmd {
         cl.showinventory = true;
 
         game_import_t.WriteByte(Defines.svc_inventory);
-        for (i = 0; i < Defines.MAX_ITEMS; i++) {
+        for (int i = 0; i < Defines.MAX_ITEMS; i++) {
             game_import_t.WriteShort(cl.pers.inventory[i]);
         }
         game_import_t.unicast(ent, true);
@@ -745,8 +736,6 @@ public final class Cmd {
      * Cmd_WeapPrev_f.
      */
     public static void WeapPrev_f(edict_t ent) {
-        int i, index;
-        gitem_t it;
 
         gclient_t cl = ent.client;
 
@@ -756,12 +745,12 @@ public final class Cmd {
         int selected_weapon = GameItems.ITEM_INDEX(cl.pers.weapon);
 
         
-        for (i = 1; i <= Defines.MAX_ITEMS; i++) {
-            index = (selected_weapon + i) % Defines.MAX_ITEMS;
+        for (int i = 1; i <= Defines.MAX_ITEMS; i++) {
+            int index = (selected_weapon + i) % Defines.MAX_ITEMS;
             if (0 == cl.pers.inventory[index])
                 continue;
 
-            it = GameItemList.itemlist[index];
+            gitem_t it = GameItemList.itemlist[index];
             if (it.use == null)
                 continue;
 
@@ -777,8 +766,6 @@ public final class Cmd {
      * Cmd_WeapNext_f.
      */
     public static void WeapNext_f(edict_t ent) {
-        int i, index;
-        gitem_t it;
 
         gclient_t cl = ent.client;
 
@@ -788,15 +775,15 @@ public final class Cmd {
         int selected_weapon = GameItems.ITEM_INDEX(cl.pers.weapon);
 
         
-        for (i = 1; i <= Defines.MAX_ITEMS; i++) {
-            index = (selected_weapon + Defines.MAX_ITEMS - i)
+        for (int i = 1; i <= Defines.MAX_ITEMS; i++) {
+            int index = (selected_weapon + Defines.MAX_ITEMS - i)
                     % Defines.MAX_ITEMS;
-            
+
             if (index == 0)
                 index++;
             if (0 == cl.pers.inventory[index])
                 continue;
-            it = GameItemList.itemlist[index];
+            gitem_t it = GameItemList.itemlist[index];
             if (null == it.use)
                 continue;
             if (0 == (it.flags & Defines.IT_WEAPON))
@@ -923,7 +910,6 @@ public final class Cmd {
      */
     public static void Players_f(edict_t ent) {
         int i;
-        String small;
 
         Integer[] index = new Integer[256];
 
@@ -942,7 +928,7 @@ public final class Cmd {
         String large = "";
 
         for (i = 0; i < count; i++) {
-            small = GameBase.game.clients[index[i]].ps.stats[Defines.STAT_FRAGS]
+            String small = GameBase.game.clients[index[i]].ps.stats[Defines.STAT_FRAGS]
                     + " "
                     + GameBase.game.clients[index[i]].pers.netname
                     + '\n';
@@ -1016,17 +1002,13 @@ public final class Cmd {
      */
     public static void Say_f(edict_t ent, boolean team, boolean arg0) {
 
-        int i, j;
-        edict_t other;
-        String text;
-        gclient_t cl;
-
         if (Cmd.Argc() < 2 && !arg0)
             return;
 
         if (0 == ((int) (GameBase.dmflags.value) & (Defines.DF_MODELTEAMS | Defines.DF_SKINTEAMS)))
             team = false;
 
+        String text;
         if (team)
             text = '(' + ent.client.pers.netname + "): ";
         else
@@ -1051,7 +1033,7 @@ public final class Cmd {
         text += "\n";
 
         if (GameBase.flood_msgs.value != 0) {
-            cl = ent.client;
+            gclient_t cl = ent.client;
 
             if (GameBase.level.time < cl.flood_locktill) {
                 SV_GAME.PF_cprintfhigh(ent, "You can't talk for "
@@ -1059,7 +1041,7 @@ public final class Cmd {
                                         + " more seconds\n");
                 return;
             }
-            i = (int) (cl.flood_whenhead - GameBase.flood_msgs.value + 1);
+            int i = (int) (cl.flood_whenhead - GameBase.flood_msgs.value + 1);
             if (i < 0)
                 i = (10) + i;
             if (cl.flood_when[i] != 0
@@ -1079,8 +1061,8 @@ public final class Cmd {
         if (Globals.dedicated.value != 0)
             SV_GAME.PF_cprintf(null, Defines.PRINT_CHAT, text);
 
-        for (j = 1; j <= GameBase.game.maxclients; j++) {
-            other = GameBase.g_edicts[j];
+        for (int j = 1; j <= GameBase.game.maxclients; j++) {
+            edict_t other = GameBase.g_edicts[j];
             if (!other.inuse)
                 continue;
             if (other.client == null)
@@ -1098,19 +1080,16 @@ public final class Cmd {
      * Returns the playerlist. TODO: The list is badly formatted at the moment.
      */
     public static void PlayerList_f(edict_t ent) {
-        int i;
-        String st;
-        edict_t e2;
 
 
         String text = "";
 
-        for (i = 0; i < GameBase.maxclients.value; i++) {
-            e2 = GameBase.g_edicts[1 + i];
+        for (int i = 0; i < GameBase.maxclients.value; i++) {
+            edict_t e2 = GameBase.g_edicts[1 + i];
             if (!e2.inuse)
                 continue;
 
-            st = String.valueOf((GameBase.level.framenum - e2.client.resp.enterframe)
+            String st = String.valueOf((GameBase.level.framenum - e2.client.resp.enterframe)
                     / 600) + ':' + ((GameBase.level.framenum - e2.client.resp.enterframe) % 600)
                     / 10 + ' ' + e2.client.ping + ' ' + e2.client.resp.score + ' ' + e2.client.pers.netname + ' ' + (e2.client.resp.spectator ? " (spectator)" : "") + '\n';
 

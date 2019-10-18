@@ -105,8 +105,6 @@ public class BeliefPredict extends NARPart {
 
         long now = nar.time();
 
-        double[] p = null;
-
         float c = conf.floatValue() * nar.beliefConfDefault.floatValue();
         float fade = confFadeFactor.floatValue();
         List<PredictionTask> nextPred = new FasterList((projections+1)*predictor.framer.outputCount());
@@ -120,6 +118,7 @@ public class BeliefPredict extends NARPart {
         oldPred.clear();
 
 
+        double[] p = null;
         for (int i = 0; i < projections + 1; i++) {
 
             p = (i == 0) ? predictor.next(now-sampleDur) : predictor.project(p);

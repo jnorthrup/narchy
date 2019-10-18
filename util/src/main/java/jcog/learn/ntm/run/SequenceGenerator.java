@@ -21,9 +21,9 @@ public class SequenceGenerator
         int j = (int)(rng.nextFloat() * 100);
         for (int i = 0;i < length;i++) {
             int index = j % vectorSize;
-            int reflected = (vectorSize-1) - index;
 
             input[i][index] = 1;
+            int reflected = (vectorSize - 1) - index;
             output[i][reflected] = 1;
 
             if (direction)

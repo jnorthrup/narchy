@@ -73,9 +73,9 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
     @Override
     public void setTime(long tStart, long tEnd) {
 
-        long start = (tStart);
-        long end = (tEnd);
         synchronized (this) {
+            long end = (tEnd);
+            long start = (tStart);
             if (update || !Util.equals(start, this.start) || !Util.equals(end, this.end)) {
                 this.start = start;
                 this.end = end;

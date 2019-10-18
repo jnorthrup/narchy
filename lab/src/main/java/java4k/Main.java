@@ -58,8 +58,7 @@ public class Main extends JFrame {
 
   public void launch() {
 
-    int[] pixels = new int[PIXELS];
-    float[][] rays = new float[PIXELS][3];
+      float[][] rays = new float[PIXELS][3];
 
     if (FISH_EYE_LENS) {
       float MAX = Math.max(WIDTH, HEIGHT);
@@ -118,7 +117,8 @@ public class Main extends JFrame {
 
     int frame = 0;
     long startTime = System.currentTimeMillis() - 1;
-    while(true) {
+      int[] pixels = new int[PIXELS];
+      while(true) {
 
       float cosPhi = (float)Math.cos(phi);
       float sinPhi = (float)Math.sin(phi);
@@ -163,15 +163,9 @@ public class Main extends JFrame {
 
       for(int k = 0; k < PIXELS; k++) {
 
-        int red = 0;
-        int green = 0;
-        int blue = 0;
+          int gx = GX;
 
-        int gx = GX;
-        int gy = GY;
-        int gz = GZ;
-
-        float[] ray = rays[k];
+          float[] ray = rays[k];
         float Rx = ray[0];
         float Ry = ray[1];
         float Rz = ray[2];
@@ -185,32 +179,30 @@ public class Main extends JFrame {
         float irz = 1f / rz;
 
         int dgx = 0;
-        int dgy = 0;
-        int dgz = 0;
 
-        float tx = 0;
-        float ty = 0;
-        float tz = 0;
+          float tx = 0;
 
-        float dtx = Math.abs(GRID_SIZE * irx);
-        float dty = Math.abs(GRID_SIZE * iry);
-        float dtz = Math.abs(GRID_SIZE * irz);
-
-        if (rx > 0) {
+          if (rx > 0) {
           dgx = 1;
           tx = ((GRID_SIZE * (gx + 1)) - ox) * irx;
         } else {
           dgx = -1;
           tx = ((GRID_SIZE * gx) - ox) * irx;
         }
-        if (ry > 0) {
+          float ty = 0;
+          int dgy = 0;
+          int gy = GY;
+          if (ry > 0) {
           dgy = 1;
           ty = ((GRID_SIZE * (gy + 1)) - oy) * iry;
         } else {
           dgy = -1;
           ty = (GRID_SIZE * gy - oy) * iry;
         }
-        if (rz > 0) {
+          float tz = 0;
+          int dgz = 0;
+          int gz = GZ;
+          if (rz > 0) {
           dgz = 1;
           tz = ((GRID_SIZE * (gz + 1)) - oz) * irz;
         } else {
@@ -218,14 +210,19 @@ public class Main extends JFrame {
           tz = ((GRID_SIZE * gz) - oz) * irz;
         }
 
-        for(int i = 0; i < ITERATIONS; i++) {
+          float dtz = Math.abs(GRID_SIZE * irz);
+          float dty = Math.abs(GRID_SIZE * iry);
+          float dtx = Math.abs(GRID_SIZE * irx);
+          int blue = 0;
+          int green = 0;
+          int red = 0;
+          for(int i = 0; i < ITERATIONS; i++) {
 
           float minT = Float.MAX_VALUE;
 
           float minY = GRID_SIZE * gy;
-          float maxY = minY + GRID_SIZE;
 
-          float j = gx * GRID_SIZE + HALF_GRID_SIZE;
+              float j = gx * GRID_SIZE + HALF_GRID_SIZE;
           float l = gz * GRID_SIZE + HALF_GRID_SIZE;
           float P = ox - j;
           float Q = oz - l;
@@ -237,7 +234,8 @@ public class Main extends JFrame {
             float t = (-B - (float)Math.sqrt(D)) / (2 * A);
             if (t > 0) {
               float y = oy + ry * t;
-              if (y >= minY && y <= maxY) {
+                float maxY = minY + GRID_SIZE;
+                if (y >= minY && y <= maxY) {
                 minT = t;
                 i = ITERATIONS;
                 float nx = ox + rx * t - j;
@@ -255,9 +253,8 @@ public class Main extends JFrame {
           }
 
           float minX = GRID_SIZE * gx;
-          float maxX = minX + GRID_SIZE;
 
-          j = gy * GRID_SIZE + HALF_GRID_SIZE;
+              j = gy * GRID_SIZE + HALF_GRID_SIZE;
           l = gz * GRID_SIZE + HALF_GRID_SIZE;
           P = oy - j;
           Q = oz - l;
@@ -269,7 +266,8 @@ public class Main extends JFrame {
             float t = (-B - (float)Math.sqrt(D)) / (2 * A);
             if (t > 0 && t < minT) {
               float x = ox + rx * t;
-              if (x >= minX && x <= maxX) {
+                float maxX = minX + GRID_SIZE;
+                if (x >= minX && x <= maxX) {
                 minT = t;
                 i = ITERATIONS;
                 float ny = oy + ry * t - j;
@@ -287,9 +285,8 @@ public class Main extends JFrame {
           }
 
           float minZ = GRID_SIZE * gz;
-          float maxZ = minZ + GRID_SIZE;
 
-          j = gy * GRID_SIZE + HALF_GRID_SIZE;
+              j = gy * GRID_SIZE + HALF_GRID_SIZE;
           l = gx * GRID_SIZE + HALF_GRID_SIZE;
           P = oy - j;
           Q = ox - l;
@@ -301,7 +298,8 @@ public class Main extends JFrame {
             float t = (-B - (float)Math.sqrt(D)) / (2 * A);
             if (t > 0 && t < minT) {
               float z = oz + rz * t;
-              if (z >= minZ && z <= maxZ) {
+                float maxZ = minZ + GRID_SIZE;
+                if (z >= minZ && z <= maxZ) {
                 minT = t;
                 i = ITERATIONS;
                 float ny = oy + ry * t - j;

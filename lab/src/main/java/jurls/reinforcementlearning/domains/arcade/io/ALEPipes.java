@@ -310,10 +310,10 @@ public class ALEPipes {
     /** Parses a hex byte in the given String, at position 'ptr'. */
     private static int byteAt(String line, int ptr) {
         int ld = line.charAt(ptr+1);
-        int hd = line.charAt(ptr);
 
         if (ld >= 'A') ld -= 'A' - 10;
         else ld -= '0';
+        int hd = line.charAt(ptr);
         if (hd >= 'A') hd -= 'A' - 10;
         else hd -= '0';
 

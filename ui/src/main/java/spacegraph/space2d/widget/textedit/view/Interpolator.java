@@ -18,8 +18,8 @@ public enum Interpolator {
         double[] result = new double[10];
         int count = 0;
         for (int i = 0; i < divOfNum; i++) {
-            double v = gain;
             if (result.length == count) result = Arrays.copyOf(result, count * 2);
+            double v = gain;
             result[count++] = v;
         }
         result = Arrays.copyOfRange(result, 0, count);

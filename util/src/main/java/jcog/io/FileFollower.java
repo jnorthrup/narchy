@@ -266,17 +266,17 @@ public class FileFollower {
                 needsRestart_ = false;
                 long fileSize = file_.length();
                 char[] byteArray = new char[bufferSize_];
-                int numBytesRead = -1;
-                long lastActivityTime = 0;
 
                 try (FileInputStream fis = new FileInputStream(file_)) {
                     try (Reader r = Channels.newReader(fis.getChannel(), encoding_.newDecoder(), bufferSize_)) {
+                        long lastActivityTime = 0;
+                        int numBytesRead = -1;
                         if (fileSize > bufferSize_) {
                             // on lit rapidement le debut
                             if (forceReadBegin_) {
-                                char[] byteArrayTemp = new char[65536];
                                 forceReadBegin_ = false;
                                 // tant que c'est trop gros pour le buffer
+                                char[] byteArrayTemp = new char[65536];
                                 while (fis.available() > bufferSize_) {
                                     numBytesRead = r.read(byteArrayTemp, 0, byteArrayTemp.length);
 

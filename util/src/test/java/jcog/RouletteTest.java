@@ -36,11 +36,11 @@ class RouletteTest {
     @Test
     void testMutableRouletteFlat() {
         int uniques = 8;
-        int samples = 1500;
 
         float[] w = new float[uniques];
         Arrays.fill(w, 0.5f);
 
+        int samples = 1500;
         testMutableRoulette(new XoRoShiRo128PlusRandom(1), uniques, samples, w);
     }
 

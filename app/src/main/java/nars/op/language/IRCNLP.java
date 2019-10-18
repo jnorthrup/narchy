@@ -278,8 +278,8 @@ public class IRCNLP extends IRC {
         Runnable r = null;
         synchronized (channels) {
             String w = $.unquote(o);
-            boolean punctuation = List.of(".", "!", "?").contains(w);
             this.s += w;
+            boolean punctuation = List.of(".", "!", "?").contains(w);
             if (!punctuation)
                 s += " ";
             if ((!s.isEmpty() && punctuation) || this.s.length() >= minSendLength) {

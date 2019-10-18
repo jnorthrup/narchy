@@ -251,8 +251,8 @@ public class KellyLochbaumFilter /*implements Filter*/ {
 
 		protected void computeBuffer(float[] buf, int bufsz) {
 			//int bufsz = getBufferSize();
-			float y;
 			for(int i=0;i<bufsz;i++) {
+				float y;
 				if(phase > (Tn+Tp)) {
 					y=0;
 				} else if(phase<Tp) {

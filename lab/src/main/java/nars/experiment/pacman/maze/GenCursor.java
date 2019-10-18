@@ -106,12 +106,11 @@ public class GenCursor {
 
     public Direction[] getPunchDirections() {
 
-        ArrayList<Direction> openDirs = new ArrayList<>();
-
         Direction past = null;
         if (path.size() > 2)
             past = path.get(path.size() - 2);
 
+        ArrayList<Direction> openDirs = new ArrayList<>();
         if (past != Direction.right)
             if (maze.isWall(x - 1, y) && x > area.x)
                 openDirs.add(Direction.left);

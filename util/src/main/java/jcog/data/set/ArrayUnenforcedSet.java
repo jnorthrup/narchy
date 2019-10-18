@@ -82,10 +82,10 @@ public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
 //        return h;
 
         //Obeying (Abstract)Set<> semantics:
-        int hashCode, s = this.size;
+        int s = this.size;
         X[] ii = this.items;
         int sum = IntStream.range(0, s).map(i -> ii[i].hashCode()).sum();
-        hashCode = sum;
+        int hashCode = sum;
 
         return hashCode;
     }

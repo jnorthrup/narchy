@@ -44,156 +44,54 @@ public class a extends GamePanel {
 	@Override
     public void run() {
 
-		
-		int[] LEVEL_OFFSETS = { 174, 200, 227, 256, 282, 309 };
 
-		
-		int[] PALETTE = { 0xFCC4A4, 0xD08050, 0x0000AD, 0xFF4F4F, 0xA8A8A8, 0x2C2C2C, 0xFCF400, 0xFFFFFF, 0xFF0000, 0x4F4F00, 0xE4DA00 };
-
-		final int COLOR_TRANSPARENT = -1;
+        final int COLOR_TRANSPARENT = -1;
 		final int COLOR_FLESH = 0;
 		final int COLOR_BROWN = 1;
-		final int COLOR_BLUE = 2;
-		final int COLOR_LIGHT_RED = 3;
-		final int COLOR_LIGHT_GRAY = 4;
-		final int COLOR_DARK_GRAY = 5;
+        final int COLOR_LIGHT_RED = 3;
+        final int COLOR_DARK_GRAY = 5;
 		final int COLOR_YELLOW = 6;
-		final int COLOR_WHITE = 7;
-		final int COLOR_RED = 8;
+        final int COLOR_RED = 8;
 		final int COLOR_DARK_GOLD = 9;
 		final int COLOR_GOLD = 10;
 
-		final int CEILING_COLOR = 0x383838;
-		final int FLOOR_COLOR = 0x707070;
 
-		final int OBJ_REMOVE = 0;
-		final int OBJ_TYPE = 1;
-		final int OBJ_SPRITE = 2;
-		final int OBJ_FLIPPED = 3;
-		final int OBJ_PARALLEL = 4;
-		final int OBJ_HEIGHT = 5;
-		final int OBJ_WIDTH = 6;
-		final int OBJ_X = 7;
-		final int OBJ_Y = 8;
-		final int OBJ_VX = 9;
-		final int OBJ_VY = 10;
-		final int OBJ_STATE = 11;
-		final int OBJ_TIMER = 12;
-		final int OBJ_X2 = 13;
-		final int OBJ_Y2 = 14;
-		final int OBJ_TIMER2 = 15;
-		final int OBJ_HITS = 16;
-		final int OBJ_BOSS = 17;
+        final int SYMBOL_KEY = 2;
 
-		final int PARALLEL_NOT = 0;
-		final int PARALLEL_X = 1;
-		final int PARALLEL_Y = 2;
+        final int MAP_WALL = 1;
 
-		final int MAN_STATE_PAUSED = 0;
-		final int MAN_STATE_RUNNING = 1;
-
-		final int TYPE_MAN = 0;
-		final int TYPE_DEAD_MAN = 1;
-		final int TYPE_MED_PACK = 2;
-		final int TYPE_HORIZONTAL_DOOR = 3;
-		final int TYPE_VERTICAL_DOOR = 4;
-		final int TYPE_KEY = 5;
-
-		final int SPRITE_MAN = 0;
-		final int SPRITE_LEG = 1;
-		final int SPRITE_GUN = 2;
-		final int SPRITE_FIRE = 3;
-		final int SPRITE_DEAD_MAN = 4;
-		final int SPRITE_MED_PACK = 5;
-		final int SPRITE_SWASTIKA = 6;
-		final int SPRITE_KEY = 7;
-		final int SPRITE_BLUE_DOOR = 8;
-		final int SPRITE_MAN_SHOOTING = 9;
-		final int SPRITE_YELLOW_DOOR = 10;
-		final int SPRITE_BOSS = 11;
-		final int SPRITE_BOSS_SHOOTING = 12;
-		final int SPRITE_DEAD_BOSS = 13;
-
-		final int TEXTURE_BRICK_WALL = 0;
-		final int TEXTURE_SWASTIKA_WALL = 1;
-		final int TEXTURE_GRAY_BRICK_WALL = 2;
-		final int TEXTURE_GRAY_SWASTIKA_WALL = 3;
-
-		
-		final int SYMBOL_BLUE_HORIZONTAL_DOOR = 0;
-		final int SYMBOL_BLUE_VERTICAL_DOOR = 1;
-		final int SYMBOL_KEY = 2;
-		final int SYMBOL_YELLOW_HORIZONTAL_DOOR = 3;
-		final int SYMBOL_YELLOW_VERTICAL_DOOR = 4;
-		final int SYMBOL_BOSS = 5;
-
-		final int MAP_EMPTY = 0;
-		final int MAP_WALL = 1;
-		final int MAP_DOOR = 2;
-
-		final int DOOR_STATE_CLOSED = 0;
-		final int DOOR_STATE_OPENING = 1;
-		final int DOOR_STATE_OPENED = 2;
-		final int DOOR_STATE_CLOSING = 3;
-
-		final int VK_LEFT = 0x25;
-		final int VK_RIGHT = 0x27;
-		final int VK_UP = 0x26;
-		final int VK_DOWN = 0x28;
-		final int VK_SHOOT = 0x42;
-		final int VK_SPACE = 0x20;
-		final int VK_W = 0x57;
+        final int VK_W = 0x57;
 		final int VK_S = 0x53;
 		final int VK_A = 0x41;
 		final int VK_D = 0x44;
 
-		final float PLAYER_ANGLE_SPEED = 0.04f;
-		final float PLAYER_SPEED = 4f;
-		final int MED_PACK_HEALTH = 16;
-
-		ArrayList<float[]>[][] objectMap = new ArrayList[16][16];
-		int[][] map = new int[16][16];
-		int[][][] textures = new int[16][64][64];
-		int[][][] sprites = new int[16][64][64];
-		float[][] zbuffer = new float[256][256];
-		Color[] reds = new Color[256];
+        Color[] reds = new Color[256];
 		Color[] blacks = new Color[256];
 
-		int x = 0;
-		int y = 0;
-		int i = 0;
-		int j = 0;
-		int k = 0;
-		int value = 0;
-		int[] pixels = new int[65536];
-		BufferedImage image = new BufferedImage(256, 256, 1);
+        int i = 0;
+        BufferedImage image = new BufferedImage(256, 256, 1);
 		Graphics2D g = image.createGraphics();
-		Graphics2D g2 = null;
-		Random random = new Random();
-		ArrayList<float[]> queue = new ArrayList<>();
-		int playerFiring = 0;
-		int level = 0;
-		int playerDying = 0;
-		int playerWinning = 0;
+        Random random = new Random();
 
-		float playerX = 0;
-		float playerY = 0;
-		float playerAngle = 0;
-		boolean playerTriggerReleased = false;
-		boolean playerHasKey = false;
-		int playerHealth = 0;
 
-		
-		for (i = 0; i < 256; i++) {
+        for (i = 0; i < 256; i++) {
 			reds[i] = new Color(0xFF, 0, 0, i);
 			blacks[i] = new Color(0, 0, 0, i);
 		}
 
 		String s = "\u3310\u5400\u6900\uaa40\u5640\ud500\u5500\udf40\uff40\u7f40\u5d00\u5d54\u56a9\u5aa9\u56a9\uf6a9\uf5a9\ud5a5\u5a94\ua964\u65a4\u56a4\uaaa4\u6a90\ud550\ud550\u6aa4\u6aa4\u6aa4\u6aa4\u6954\u66a4\u6aa4\u6aa4\u6aa4\u6aa4\u6a90\u6a90\u6aa4\u6aa4\u1550\u5550\u5550\u5550\u5550\u5550\u5550\u1550\u1540\u5550\u5554\u1554\u0c11\u06a9\u06a9\u0555\u0555\u0555\u0155\u0155\u0155\u0155\u0054\u0000\u0000\u1550\u4000\u5000\ua400\ua400\u9900\u5a40\uaa40\uaa40\ua940\ua940\u5950\u59f4\u57f4\ufffd\ufffd\ufffd\ufff4\uff54\uf5a4\u5aa9\u6aa9\u1067\u5000\ua540\ua640\u6a90\uda94\uf6a4\ud6a4\udaa5\uf6a5\uf654\uda90\u6a94\ua554\ua900\u6a40\u1540\u8b11\u0014\u0055\u5155\ua555\ua555\u9555\u5554\u5554\u5550\u5540\u5500\u5400\ua940\uaa95\uaaaa\uaaaa\uaaaa\uaaa9\uaaa5\u55a5\u0055\u0000\u8a37\ud000\uf400\ufd00\uff40\uffd0\uffd0\uffd0\u5550\uffd0\uffd0\u7fff\u957f\uaa9f\uaaa7\ua955\u55ff\uffff\u5555\uffff\uffff\u0887\u2aaa\u2576\u2f76\u2556\u277e\u2756\u2aaa\u0000\u889a\u0000\u0000\ufffb\ufffb\uaaa0\u0be0\u0be0\u5aa5\u2ff8\ubebc\ub82e\ub82e\ubffe\u2ff8\u0aa0\u5555\uffff\u8041\ub441\ua401\ue7c1\u807f\ua001\ufffd\u8005\u8105\u8101\ufbff\u9101\u8141\u9041\uffff\t\u01d1\u00b2\u0163\u02e6\u03ab\u016c\u052d\u007d\u01cd\uffff\u8001\ubef1\ua09f\ube81\ua085\ua2fd\ube05\ua095\ubefd\ua215\ua295\ua085\ubffd\u8001\uffff\n\u0141\u0193\u0424\u0554\u0195\u0177\u0198\u023a\u017a\u019c\uffff\u9411\u8481\u9411\udffb\u9021\u9033\ubde1\ua533\ub521\u9533\u9521\ud573\u8001\u8021\uffff\f\u0442\u0583\u02b3\u0024\u00d4\u00e7\u00e9\u007c\u009c\u00bc\u00dc\u015d\uffff\u8011\uccd1\u8001\uccdf\u8011\ufdf1\u8001\ufdff\u8021\uaa2d\ubb81\ue0e1\uc06d\u8021\uffff\t\u0143\u0096\u0147\u01d7\u02e7\u0098\u015b\u03ab\u05ad\uffff\ua081\ua0a1\ubba1\u803f\ubb81\ua0bd\ua0a5\ubf85\u8025\ubfbd\ua081\ua8bd\ubba1\u8001\uffff\n\u00a3\u0155\u00a5\u0538\u0458\u015b\u001c\u02cc\u00ad\u015e\uffff\u8141\ubc01\u8141\uf76b\u8149\u8149\uff7f\u8001\uba75\u8a15\ube7d\ua851\uae5d\u8001\uffff\u0010\u0162\u0482\u0024\u0044\u03b4\u05c6\u0077\u0039\u00a9\u025a\u016a\u01da\u012c\u019c\u005d\u00cd";
 
-		
 
-		for (i = 0; i < 8; i++) {
+        int value = 0;
+        int k = 0;
+        int y = 0;
+        int x = 0;
+        int[][][] sprites = new int[16][64][64];
+        final int COLOR_WHITE = 7;
+        final int COLOR_LIGHT_GRAY = 4;
+        final int COLOR_BLUE = 2;
+        int[] PALETTE = {0xFCC4A4, 0xD08050, 0x0000AD, 0xFF4F4F, 0xA8A8A8, 0x2C2C2C, 0xFCF400, 0xFFFFFF, 0xFF0000, 0x4F4F00, 0xE4DA00};
+        for (i = 0; i < 8; i++) {
 			value = s.charAt(k++);
 			int width = (0x8000 & value) == 0 ? 8 : 16;
 			int height = (value >> 8) & 0x7F;
@@ -217,20 +115,24 @@ public class a extends GamePanel {
 			}
 		}
 
-		
-		for (y = 0; y < 12; y++) {
+
+        final int SPRITE_LEG = 1;
+        final int SPRITE_MAN = 0;
+        for (y = 0; y < 12; y++) {
 			for (x = 0; x < 8; x++) {
 				sprites[SPRITE_MAN][y + 39][x + 8] = sprites[SPRITE_LEG][y][x];
 			}
 		}
 
-		
-		for (y = 0; y < 51; y++) {
+
+        final int SPRITE_MAN_SHOOTING = 9;
+        for (y = 0; y < 51; y++) {
 			for (x = 0; x < 16; x++) {
 				sprites[SPRITE_MAN_SHOOTING][y][x] = sprites[SPRITE_MAN][y][x];
 			}
 		}
-		for (y = 0; y < 8; y++) {
+        final int SPRITE_FIRE = 3;
+        for (y = 0; y < 8; y++) {
 			for (x = 0; x < 8; x++) {
 				if (sprites[SPRITE_FIRE][y << 1][x << 1] >= 0) {
 					sprites[SPRITE_MAN_SHOOTING][y + 5][x + 4] = sprites[SPRITE_FIRE][y << 1][x << 1];
@@ -238,8 +140,11 @@ public class a extends GamePanel {
 			}
 		}
 
-		
-		for (y = 0; y < 14; y++) {
+
+        int j = 0;
+        int[][][] textures = new int[16][64][64];
+        final int TEXTURE_BRICK_WALL = 0;
+        for (y = 0; y < 14; y++) {
 			for (x = 0; x < 30; x++) {
 				for (i = 0; i < 4; i++) {
 					for (j = 0; j < 3; j++) {
@@ -249,8 +154,17 @@ public class a extends GamePanel {
 			}
 		}
 
-		
-		for (y = 0; y < 64; y++) {
+
+        final int TEXTURE_GRAY_SWASTIKA_WALL = 3;
+        final int TEXTURE_GRAY_BRICK_WALL = 2;
+        final int TEXTURE_SWASTIKA_WALL = 1;
+        final int SPRITE_DEAD_BOSS = 13;
+        final int SPRITE_BOSS_SHOOTING = 12;
+        final int SPRITE_BOSS = 11;
+        final int SPRITE_YELLOW_DOOR = 10;
+        final int SPRITE_BLUE_DOOR = 8;
+        final int SPRITE_DEAD_MAN = 4;
+        for (y = 0; y < 64; y++) {
 			for (x = 0; x < 64; x++) {
 				int color = textures[TEXTURE_BRICK_WALL][y][x] & 0xFF;
 				textures[TEXTURE_GRAY_SWASTIKA_WALL][y][x] = textures[TEXTURE_GRAY_BRICK_WALL][y][x] = (color << 16) | (color << 8) | color;
@@ -265,8 +179,9 @@ public class a extends GamePanel {
 			}
 		}
 
-		
-		for (y = 0; y < 32; y++) {
+
+        final int SPRITE_SWASTIKA = 6;
+        for (y = 0; y < 32; y++) {
 			for (x = 0; x < 32; x++) {
 				if (sprites[SPRITE_SWASTIKA][y >> 2][x >> 2] >= 0) {
 					textures[TEXTURE_GRAY_SWASTIKA_WALL][16 + y][16 + x] = textures[TEXTURE_SWASTIKA_WALL][16 + y][16 + x] = sprites[SPRITE_SWASTIKA][y >> 2][x >> 2];
@@ -277,7 +192,78 @@ public class a extends GamePanel {
 		
 
 		long nextFrameStartTime = System.nanoTime();
-		while (true) {
+        int playerHealth = 0;
+        boolean playerHasKey = false;
+        boolean playerTriggerReleased = false;
+        float playerAngle = 0;
+        float playerY = 0;
+        float playerX = 0;
+        int playerWinning = 0;
+        int playerDying = 0;
+        int level = 0;
+        int playerFiring = 0;
+        ArrayList<float[]> queue = new ArrayList<>();
+        Graphics2D g2 = null;
+        int[] pixels = new int[65536];
+        float[][] zbuffer = new float[256][256];
+        int[][] map = new int[16][16];
+        ArrayList<float[]>[][] objectMap = new ArrayList[16][16];
+        final int MED_PACK_HEALTH = 16;
+        final float PLAYER_SPEED = 4f;
+        final float PLAYER_ANGLE_SPEED = 0.04f;
+        final int VK_SPACE = 0x20;
+        final int VK_SHOOT = 0x42;
+        final int VK_DOWN = 0x28;
+        final int VK_UP = 0x26;
+        final int VK_RIGHT = 0x27;
+        final int VK_LEFT = 0x25;
+        final int DOOR_STATE_CLOSING = 3;
+        final int DOOR_STATE_OPENED = 2;
+        final int DOOR_STATE_OPENING = 1;
+        final int DOOR_STATE_CLOSED = 0;
+        final int MAP_DOOR = 2;
+        final int MAP_EMPTY = 0;
+        final int SYMBOL_BOSS = 5;
+        final int SYMBOL_YELLOW_VERTICAL_DOOR = 4;
+        final int SYMBOL_YELLOW_HORIZONTAL_DOOR = 3;
+        final int SYMBOL_BLUE_VERTICAL_DOOR = 1;
+        final int SYMBOL_BLUE_HORIZONTAL_DOOR = 0;
+        final int SPRITE_KEY = 7;
+        final int SPRITE_MED_PACK = 5;
+        final int SPRITE_GUN = 2;
+        final int TYPE_KEY = 5;
+        final int TYPE_VERTICAL_DOOR = 4;
+        final int TYPE_HORIZONTAL_DOOR = 3;
+        final int TYPE_MED_PACK = 2;
+        final int TYPE_DEAD_MAN = 1;
+        final int TYPE_MAN = 0;
+        final int MAN_STATE_RUNNING = 1;
+        final int MAN_STATE_PAUSED = 0;
+        final int PARALLEL_Y = 2;
+        final int PARALLEL_X = 1;
+        final int PARALLEL_NOT = 0;
+        final int OBJ_BOSS = 17;
+        final int OBJ_HITS = 16;
+        final int OBJ_TIMER2 = 15;
+        final int OBJ_Y2 = 14;
+        final int OBJ_X2 = 13;
+        final int OBJ_TIMER = 12;
+        final int OBJ_STATE = 11;
+        final int OBJ_VY = 10;
+        final int OBJ_VX = 9;
+        final int OBJ_Y = 8;
+        final int OBJ_X = 7;
+        final int OBJ_WIDTH = 6;
+        final int OBJ_HEIGHT = 5;
+        final int OBJ_PARALLEL = 4;
+        final int OBJ_FLIPPED = 3;
+        final int OBJ_SPRITE = 2;
+        final int OBJ_TYPE = 1;
+        final int OBJ_REMOVE = 0;
+        final int FLOOR_COLOR = 0x707070;
+        final int CEILING_COLOR = 0x383838;
+        int[] LEVEL_OFFSETS = {174, 200, 227, 256, 282, 309};
+        while (true) {
 
 			do {
 				nextFrameStartTime += 16666667;
@@ -916,29 +902,28 @@ public class a extends GamePanel {
 	@Override
     public void processKeyEvent(KeyEvent keyEvent) {
 
-		final int VK_LEFT = 0x25;
-		final int VK_RIGHT = 0x27;
-		final int VK_UP = 0x26;
-		final int VK_DOWN = 0x28;
-		final int VK_SHOOT = 0x42;
-		final int VK_SPACE = 0x20;
-		final int VK_W = 0x57;
-		final int VK_S = 0x53;
-		final int VK_A = 0x41;
-		final int VK_D = 0x44;
-
-		int k = keyEvent.getKeyCode();
+        int k = keyEvent.getKeyCode();
 		if (k > 0) {
-			if (k == VK_W) {
-				k = VK_UP;
+            final int VK_D = 0x44;
+            final int VK_A = 0x41;
+            final int VK_S = 0x53;
+            final int VK_W = 0x57;
+            final int VK_DOWN = 0x28;
+            final int VK_LEFT = 0x25;
+            if (k == VK_W) {
+                final int VK_UP = 0x26;
+                k = VK_UP;
 			} else if (k == VK_D) {
-				k = VK_RIGHT;
+                final int VK_RIGHT = 0x27;
+                k = VK_RIGHT;
 			} else if (k == VK_A) {
 				k = VK_LEFT;
 			} else if (k == VK_S) {
 				k = VK_DOWN;
 			}
-			a[(k >= VK_LEFT && k <= VK_DOWN) || k == VK_SPACE ? k : VK_SHOOT] = keyEvent.getID() != 402;
+            final int VK_SPACE = 0x20;
+            final int VK_SHOOT = 0x42;
+            a[(k >= VK_LEFT && k <= VK_DOWN) || k == VK_SPACE ? k : VK_SHOOT] = keyEvent.getID() != 402;
 		}
 	}
 

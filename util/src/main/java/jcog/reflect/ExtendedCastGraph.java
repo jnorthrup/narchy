@@ -1296,8 +1296,6 @@ public class ExtendedCastGraph extends CastGraph {
 
         byte[] ba = ArrayUtil.EMPTY_BYTE_ARRAY;
         Byte[] Ba = ArrayUtil.EMPTY_BYTE_OBJECT_ARRAY;
-        char[] ca = ArrayUtil.EMPTY_CHAR_ARRAY;
-        Character[] Ca = ArrayUtil.EMPTY_CHARACTER_OBJECT_ARRAY;
 
         // TODO use proj text
         addEdge(String.class, String2byteArr, ba.getClass());
@@ -1309,7 +1307,9 @@ public class ExtendedCastGraph extends CastGraph {
         // TODO use proj text
 //        setAt( String.class, Ba.getClass(), String2ByteArr );
 
+        char[] ca = ArrayUtil.EMPTY_CHAR_ARRAY;
         addEdge(ca.getClass(), charArr2String, String.class);
+        Character[] Ca = ArrayUtil.EMPTY_CHARACTER_OBJECT_ARRAY;
         addEdge(Ca.getClass(), CharArr2String, String.class);
 
         addEdge(String.class, String2charArr, ca.getClass());

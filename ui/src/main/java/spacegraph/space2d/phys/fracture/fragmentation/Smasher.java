@@ -67,7 +67,6 @@ public class Smasher {
         List<Fragment> list = getVoronoi();
 
         List<EdgePolygon> polygonEdgesList = new FasterList<>();
-        HashTabulka<EdgeDiagram> diagramEdges = new HashTabulka<>();
         HashTabulka<EdgePolygon> polygonEdges = new HashTabulka<>();
 
 
@@ -81,6 +80,7 @@ public class Smasher {
         }
 
 
+        HashTabulka<EdgeDiagram> diagramEdges = new HashTabulka<>();
         for (Fragment pp : list) {
             count = pp.size();
             for (int i = 1; i <= count; i++) {
@@ -191,11 +191,10 @@ public class Smasher {
             }
         }
 
-        MyList<Fragment> allIntersections = new MyList<>();
-
 
         precalc_values();
 
+        MyList<Fragment> allIntersections = new MyList<>();
         for (Fragment ppp : list) {
             List<Fragment> intsc = getIntersections(ppp, polygonAll);
             if (intsc == null) {
@@ -247,9 +246,9 @@ public class Smasher {
         MyList<Fragment> ppx = new MyList<>();
         ppx.add(startPolygon[0]);
         EdgeDiagram epx = new EdgeDiagram(null, null);
-        HashTabulka<Fragment> vysledneFragmenty = new HashTabulka<>();
         startPolygon[0].visited = true;
 
+        HashTabulka<Fragment> vysledneFragmenty = new HashTabulka<>();
         while (!ppx.isEmpty()) {
             Fragment px = ppx.get(0);
             vysledneFragmenty.add(px);
@@ -369,8 +368,6 @@ public class Smasher {
      */
     private List<Fragment> getIntersections(Fragment p1, Polygon p2) {
         Vec2Intersect firstV = null;
-        boolean idemPoKonvexnom = false;
-        List<Fragment> polygonList = new ArrayList<>();
 
         for (v2 v : p1) {
             if (v instanceof Vec2Intersect) {
@@ -385,6 +382,7 @@ public class Smasher {
             }
         }
 
+        List<Fragment> polygonList = new ArrayList<>();
         if (firstV == null) {
             if (pointInPolygon(p1.get(0))) {
                 polygonList.add(p1);
@@ -396,14 +394,14 @@ public class Smasher {
 
         v2 start = firstV;
 
-        v2 iterator;
         Polygon iterationPolygon = p2;
         int index = firstV.index;
 
-        int exI = 0;
+        boolean idemPoKonvexnom = false;
         cyklus:
-        for (; ; ) {
+        for (int exI = 0; ; ) {
             Fragment prienik = new Fragment();
+            v2 iterator;
             do {
                 exI++;
                 if (exI >= 10000) {
@@ -575,10 +573,10 @@ public class Smasher {
      */
     private void precalc_values() {
         int n = p.size();
-        int i, j = n - 1;
         multiple = new float[n];
         constant = new float[n];
-        for (i = 0; i < n; i++) {
+        int j = n - 1;
+        for (int i = 0; i < n; i++) {
             v2 vi = p.get(i);
             v2 vj = p.get(j);
             multiple[i] = (vj.x - vi.x) / (vj.y - vi.y);
@@ -596,9 +594,9 @@ public class Smasher {
         float x = v.x;
         float y = v.y;
         int n = p.size();
-        int i, j = n - 1;
+        int j = n - 1;
         boolean b = false;
-        for (i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             v2 vi = p.get(i);
             v2 vj = p.get(j);
             if ((vi.y < y && vj.y >= y || vj.y < y && vi.y >= y) && y * multiple[i] + constant[i] < x) {

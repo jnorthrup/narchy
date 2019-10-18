@@ -142,10 +142,10 @@ public class PongModel extends JPanel implements ActionListener, MouseListener, 
 
 
         int bounceLX = PADDING + WIDTH + RADIUS;
-        int dieLX = RADIUS;
 
         if (ball_x <= bounceLX) {
             int collision_point = ball_y + (int) (ball_y_speed / ball_x_speed * (PADDING + WIDTH + RADIUS - ball_x));
+            int dieLX = RADIUS;
             if (ball_x <= bounceLX && collision_point > player1.position - PADDLE_HEIGHT - TOLERANCE &&
                     collision_point < player1.position + PADDLE_HEIGHT + TOLERANCE) {
                 ball_x = 2 * (PADDING + WIDTH + RADIUS) - ball_x;

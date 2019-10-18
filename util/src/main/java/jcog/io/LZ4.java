@@ -217,11 +217,11 @@ public enum LZ4 { ;
         if (len > LAST_LITERALS + MIN_MATCH) {
 
             int limit = end - LAST_LITERALS;
-            int matchLimit = limit - MIN_MATCH;
             ht.reset(len);
             int hashLog = ht.hashLog;
             PackedInts.Mutable hashTable = ht.hashTable;
 
+            int matchLimit = limit - MIN_MATCH;
             main:
             while (off <= limit) {
                 // find a match
@@ -329,13 +329,13 @@ public enum LZ4 { ;
         boolean insertAndFindBestMatch(byte[] buf, int off, int matchLimit, Match match) {
             match.start = off;
             match.len = 0;
-            int delta = 0;
-            int repl = 0;
 
             insert(off, buf);
 
             int ref = hashPointer(buf, off);
 
+            int repl = 0;
+            int delta = 0;
             if (ref >= off - 4 && ref <= off && ref >= base) { // potential repetition
                 if (readIntEquals(buf, ref, off)) { // confirmed
                     delta = off - ref;
@@ -420,7 +420,6 @@ public enum LZ4 { ;
 
         int srcEnd = srcOff + srcLen;
         int matchLimit = srcEnd - LAST_LITERALS;
-        int mfLimit = matchLimit - MIN_MATCH;
 
         int sOff = srcOff;
         int anchor = sOff++;
@@ -431,6 +430,7 @@ public enum LZ4 { ;
         Match match2 = new Match();
         Match match3 = new Match();
 
+        int mfLimit = matchLimit - MIN_MATCH;
         main:
         while (sOff <= mfLimit) {
             if (!ht.insertAndFindBestMatch(src, sOff, matchLimit, match1)) {

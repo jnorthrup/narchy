@@ -271,8 +271,7 @@ public abstract class TruthProjection extends TaskList {
 		//shuffle spans of equivalent items
 		double last = evi[0];
 		int contig = 0;
-		int i;
-		for (i = 1; i <= s; i++) {
+		for (int i = 1; i <= s; i++) {
 			double ei = i < s ? evi[i] : Double.NaN;
 			if (ei != last) {
 				if (contig > 0) {
@@ -383,8 +382,6 @@ public abstract class TruthProjection extends TaskList {
 		if (us == ue)
 			return;
 
-		double ud = 1 + (ue - us);
-
 
 		//first non-eternal
 		int rootIndex = 0;
@@ -417,6 +414,7 @@ public abstract class TruthProjection extends TaskList {
 				}
 			}
 
+			double ud = 1 + (ue - us);
 			double densityUnion = eviSum / (1 + ud);
 			double densityRoot = eviRoot / (1 + re - rs);
 			//System.out.println(Texts.n4(densityRoot) +"/"+ Texts.n4(densityUnion) + " : " + this);

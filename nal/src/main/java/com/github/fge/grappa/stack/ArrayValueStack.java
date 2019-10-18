@@ -78,12 +78,11 @@ public final class ArrayValueStack<V>
 
     @Override
     protected void doSwap(int n) {
-        V tmp;
 
         int swapIndex = n / 2; // this also works for odd numbers
 
         for (int index = 0; index < swapIndex; index++) {
-            tmp = array[index];
+            V tmp = array[index];
             array[index] = array[n - index - 1];
             array[n - index - 1] = tmp;
         }

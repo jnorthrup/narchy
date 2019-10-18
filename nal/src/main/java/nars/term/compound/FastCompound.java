@@ -129,17 +129,14 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         hashCode = Util.hashCombine(hashCode, o.id);
 
         assert (volume < 127);
-        boolean normalized = false;
-
-
-        FastCompound y;
 
 
         Term[] a = new Term[atoms.size()];
         for (ObjectBytePair<Term> p : atoms.keyValuesView()) {
             a[p.getTwo()] = p.getOne();
         }
-        y = new FastCompoundInstancedAtoms(a, shadow.toByteArray(), structure, hashCode, volume, normalized);
+        boolean normalized = false;
+        FastCompound y = new FastCompoundInstancedAtoms(a, shadow.toByteArray(), structure, hashCode, volume, normalized);
 
         return y;
     }
@@ -221,12 +218,12 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         if (subterms == 0)
             return;
 
-        byte depth = 0;
         byte[] stack = new byte[MAX_LAYERS];
         stack[0] = subterms;
 
         at += 2;
 
+        byte depth = 0;
         for (byte i = 0; i < subterms; ) {
             if (depth == 0) {
                 if (!each.test(i, at) || i == subterms - 1)

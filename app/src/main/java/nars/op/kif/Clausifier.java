@@ -65,9 +65,9 @@ public class Clausifier  {
             System.out.println("Error Formula.separateConjunctions(): not a conjunction " + thisFormula);
             return null;
         }
-        ArrayList<Formula> result = new ArrayList<>();
         Formula temp = new Formula();
         temp.read(thisFormula.cdr());
+        ArrayList<Formula> result = new ArrayList<>();
         while (!temp.empty()) {
             Formula clause = new Formula();
             clause.read(temp.car());
@@ -113,21 +113,21 @@ public class Clausifier  {
 
         Formula old = new Formula();
         old.theFormula = thisFormula.theFormula;
-        ArrayList result = new ArrayList();
         Formula ans = null;
-        Map topLevelVars  = new HashMap();
-        Map scopedRenames = new HashMap();
-        HashMap allRenames    = new HashMap();
-        Map standardizedRenames = new HashMap();
         thisFormula = equivalencesOut();
         thisFormula = implicationsOut();
         thisFormula = negationsIn();
+        HashMap allRenames = new HashMap();
+        Map scopedRenames = new HashMap();
+        Map topLevelVars = new HashMap();
         thisFormula = renameVariables(topLevelVars, scopedRenames, allRenames);
         thisFormula = existentialsOut();
         thisFormula = universalsOut();
         thisFormula = disjunctionsIn();
+        Map standardizedRenames = new HashMap();
         thisFormula = standardizeApart(standardizedRenames);
         allRenames.putAll(standardizedRenames);
+        ArrayList result = new ArrayList();
         result.add(thisFormula);
         result.add(old);
         result.add(allRenames);
@@ -207,17 +207,17 @@ public class Clausifier  {
                 Formula clause = null;
                 for (Formula o : (Iterable<Formula>) clauses) {
                     ArrayList<Formula> negLits = new ArrayList<>();
-                    ArrayList<Formula> posLits = new ArrayList<>();
                     ArrayList literals = new ArrayList();
                     literals.add(negLits);
+                    ArrayList<Formula> posLits = new ArrayList<>();
                     literals.add(posLits);
                     clause = o;
                     if (clause.listP()) {
                         while (!clause.empty()) {
-                            boolean isNegLit = false;
                             String lit = clause.car();
                             Formula litF = new Formula();
                             litF.read(lit);
+                            boolean isNegLit = false;
                             if (litF.listP() && litF.car().equals(Formula.NOT)) {
                                 litF.read(litF.cadr());
                                 isNegLit = true;
@@ -288,10 +288,10 @@ public class Clausifier  {
                     List clause = (List) itc.next();
                     if (clause.size() == 2) {
                         sb = new StringBuilder();
-                        Iterator itl = null;
                         List neglits = (List) clause.get(0);
                         if (neglits.size() > 1) Collections.sort(neglits);
                         int i = 0;
+                        Iterator itl = null;
                         for (itl = neglits.iterator(); itl.hasNext(); i++) {
                             if (i > 0) sb.append(Formula.SPACE);
                             sb.append(Formula.LP);
@@ -536,14 +536,14 @@ public class Clausifier  {
     protected static String normalizeVariables_1(String input,int[] idxs, 
                                                  Map vmap, boolean replaceSkolemTerms) {
 
-        String vbase = Formula.VVAR;
-        String rvbase = (Formula.RVAR + "VAR");
         StringBuilder sb = new StringBuilder();
         String flist = input.trim();
         boolean isSkolem = Formula.isSkolemTerm(flist);
         if ((replaceSkolemTerms && isSkolem) || Formula.isVariable(flist)) {
             String newvar = (String) vmap.get(flist);
             if (newvar == null) {
+                String rvbase = (Formula.RVAR + "VAR");
+                String vbase = Formula.VVAR;
                 newvar = ((flist.startsWith(Formula.V_PREF) || isSkolem)
                           ? (vbase + idxs[0]++)
                           : (rvbase + idxs[1]++));
@@ -584,9 +584,9 @@ public class Clausifier  {
     private Formula equivalencesOut() {
 
         Formula ans = thisFormula;
-        String theNewFormula = null;
         if (thisFormula.listP() && !(thisFormula.empty())) {
             String head = thisFormula.car();
+            String theNewFormula = null;
             if (!StringUtil.emptyString(head) && Formula.listP(head)) {
                 Clausifier headF = new Clausifier(head);
                 String newHead = headF.equivalencesOut().theFormula;
@@ -625,9 +625,9 @@ public class Clausifier  {
     private Formula implicationsOut() {
 
         Formula ans = thisFormula;
-        String theNewFormula = null;
         if (thisFormula.listP() && !thisFormula.empty()) {
             String head = thisFormula.car();
+            String theNewFormula = null;
             if (!StringUtil.emptyString(head) && Formula.listP(head)) {
                 Clausifier headF = new Clausifier(head);
                 String newHead = headF.implicationsOut().theFormula;
@@ -783,9 +783,8 @@ public class Clausifier  {
     private Formula listAll(String before, String after) {
 
         Formula ans = thisFormula;
-        String theNewFormula = null;
         if (thisFormula.listP()) {
-            theNewFormula = "";
+            String theNewFormula = "";
             Formula f = thisFormula;
             while (!(f.empty())) {
                 String element = f.car();
@@ -994,9 +993,9 @@ public class Clausifier  {
 
         Formula f = renameVariables();
         ArrayList<ArrayList<String>> varList = f.collectVariables();
-        Map<String, String> vars = new TreeMap<>();
         ArrayList<String> al = varList.get(0);
         al.addAll(varList.get(1));
+        Map<String, String> vars = new TreeMap<>();
         for (String s : al) {
             _GENSYM_COUNTER++;
             String value = "GenSym" + _GENSYM_COUNTER;
@@ -1159,24 +1158,18 @@ public class Clausifier  {
      */
     private Formula existentialsOut() {
 
-        
-        
-        Map<String,String> evSubs = new HashMap<>();
 
-        
         TreeSet<String> iUQVs = new TreeSet<>();
 
         
         TreeSet<String> scopedVars = new TreeSet<>();
 
-        
-        TreeSet<String> scopedUQVs = new TreeSet<>();
 
-        
-        
         collectIUQVars(iUQVs, scopedVars);
 
-        
+
+        TreeSet<String> scopedUQVs = new TreeSet<>();
+        Map<String, String> evSubs = new HashMap<>();
         return existentialsOut(evSubs, iUQVs, scopedUQVs);
     }
 
@@ -1228,11 +1221,11 @@ public class Clausifier  {
                 
                 TreeSet<String> uQVs = new TreeSet<>(iUQVs);
                 uQVs.addAll(scopedUQVs);
-                
-                ArrayList<String> eQVs = new ArrayList<>();
-                String varList = thisFormula.cadr();           
+
+                String varList = thisFormula.cadr();
                 Formula varListF = new Formula();
                 varListF.read(varList);
+                ArrayList<String> eQVs = new ArrayList<>();
                 while (!(varListF.empty())) {
                     String var = varListF.car();
                     eQVs.add(var);
@@ -1579,8 +1572,8 @@ public class Clausifier  {
     private ArrayList<Formula> operatorsOut() {
 
         ArrayList<Formula> result = new ArrayList<>();
-        ArrayList<Formula> clauses = new ArrayList<>();
         if (!StringUtil.emptyString(thisFormula.theFormula)) {
+            ArrayList<Formula> clauses = new ArrayList<>();
             if (thisFormula.listP()) {
                 String arg0 = thisFormula.car();
                 if (arg0.equals(Formula.AND)) {
@@ -1663,10 +1656,10 @@ public class Clausifier  {
         if (renameMap instanceof Map) 
             reverseRenames = renameMap;            
         else 
-            reverseRenames = new HashMap();            
-        
-        ArrayList<Formula> clauses = new ArrayList<>();
+            reverseRenames = new HashMap();
+
         if (!StringUtil.emptyString(thisFormula.theFormula)) {
+            ArrayList<Formula> clauses = new ArrayList<>();
             if (thisFormula.listP()) {
                 String arg0 = thisFormula.car();
                 if (arg0.equals(Formula.AND)) {
@@ -1773,10 +1766,9 @@ public class Clausifier  {
     public static String getOriginalVar(String var, Map<String, String> varMap) {
 
         String ans = null;
-        String next = null;
         if (!StringUtil.emptyString(var) && (varMap instanceof Map)) {
             ans = var;
-            next = varMap.get(ans);
+            String next = varMap.get(ans);
             while (! ((next == null) || next.equals(ans))) {
                 ans = next;
                 next = varMap.get(ans);        

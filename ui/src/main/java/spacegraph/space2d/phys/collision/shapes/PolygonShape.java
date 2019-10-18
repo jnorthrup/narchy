@@ -514,7 +514,6 @@ public class PolygonShape extends Shape {
         assert (count >= 3);
 
         out.set(0.0f, 0.0f);
-        float area = 0.0f;
 
         v2 pool1 = new v2(), pool2 = new v2(), pool3 = new v2();
 
@@ -526,6 +525,7 @@ public class PolygonShape extends Shape {
 
         final float inv3 = 1.0f / 3.0f;
 
+        float area = 0.0f;
         for (int i = 0; i < count; ++i) {
 
             v2 p1 = pRef;
@@ -558,8 +558,6 @@ public class PolygonShape extends Shape {
 
         v2 center = pool1;
         center.setZero();
-        float area = 0.0f;
-        float I = 0.0f;
 
 
         v2 s = pool2;
@@ -575,6 +573,8 @@ public class PolygonShape extends Shape {
         v2 e1 = pool3;
         v2 e2 = pool4;
 
+        float I = 0.0f;
+        float area = 0.0f;
         for (int i = 0; i < vertices; ++i) {
 
             e1.set(vertex[i]).subbed(s);

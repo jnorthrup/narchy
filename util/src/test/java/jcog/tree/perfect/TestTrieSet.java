@@ -121,16 +121,16 @@ class TestTrieSet
       set.add( "meow" );
       set.add( "kitten" );
       set.add( "purr" );
-    
-      String expected = "kittenmeowpurr";
-      String actual = "";
+
+       String actual = "";
       
       for (String key : set)
       {
          actual += key;
       }
-      
-      assertEquals( expected, actual );
+
+       String expected = "kittenmeowpurr";
+       assertEquals( expected, actual );
    }
    
    @Test

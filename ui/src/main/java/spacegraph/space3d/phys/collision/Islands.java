@@ -124,10 +124,9 @@ public class Islands {
             int numElem = find.size();
 
             int endIslandIndex = 1;
-            int startIslandIndex;
 
-            
-            for (startIslandIndex = 0; startIslandIndex < numElem; startIslandIndex = endIslandIndex) {
+
+        for (int startIslandIndex = 0; startIslandIndex < numElem; startIslandIndex = endIslandIndex) {
                 int islandId = find.id(startIslandIndex);
                 for (endIslandIndex = startIslandIndex + 1; (endIslandIndex < numElem) && (find.id(endIslandIndex) == islandId); endIslandIndex++) {
                 }
@@ -199,14 +198,13 @@ public class Islands {
             }
 
 
-            int i;
-            int maxNumManifolds = intersecter.manifoldCount();
+        int maxNumManifolds = intersecter.manifoldCount();
 
             
             
             
 
-            for (i = 0; i < maxNumManifolds; i++) {
+            for (int i = 0; i < maxNumManifolds; i++) {
                 PersistentManifold manifold = intersecter.manifold(i);
 
                 Collidable colObj0 = (Collidable) manifold.getBody0();
@@ -247,8 +245,6 @@ public class Islands {
     public void buildAndProcessIslands(Intersecter intersecter, List<Collidable> collidables, IslandCallback callback) {
         buildIslands(intersecter, collidables);
 
-        int endIslandIndex = 1;
-        int startIslandIndex;
         int numElem = find.size();
 
 
@@ -275,12 +271,9 @@ public class Islands {
             int startManifoldIndex = 0;
             int endManifoldIndex = 1;
 
-            
 
-            
-
-            
-            for (startIslandIndex = 0; startIslandIndex < numElem; startIslandIndex = endIslandIndex) {
+        int endIslandIndex = 1;
+        for (int startIslandIndex = 0; startIslandIndex < numElem; startIslandIndex = endIslandIndex) {
                 int islandId = find.id(startIslandIndex);
                 boolean islandSleeping = false;
 

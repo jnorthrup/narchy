@@ -125,8 +125,8 @@ public class UGenOutput extends AudioIO {
         void initJavaSound() {
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat);
             try {
-                int inputBufferSize = 5000;
                 targetDataLine = (TargetDataLine) AudioSystem.getLine(info);
+                int inputBufferSize = 5000;
                 targetDataLine.open(audioFormat, inputBufferSize);
                 if (targetDataLine == null) System.out.println("no line");
                 else

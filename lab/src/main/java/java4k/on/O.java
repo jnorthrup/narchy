@@ -51,10 +51,9 @@ public class O extends Applet implements Runnable {
 		int[] STATIC = new int[STATIC_DATA_LENGTH];
 
 		{
-			int i, j;
 
-			for (i = 0; i < 726; i++) {
-				j = STATIC_DATA.charAt(i);
+			for (int i = 0; i < 726; i++) {
+				int j = STATIC_DATA.charAt(i);
 				STATIC[i] = (0xfffffffe * (j & 0x8000)) | j;
 			}
 		}
@@ -67,8 +66,6 @@ public class O extends Applet implements Runnable {
 		int[] display = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
 		long nextFrame = System.nanoTime();
-
-		int highScore = 0;
 
 		int[] units = new int[UNIT_SIZE];
 		for (int pp = STAR_INDEX; pp < STAR_INDEX_FINAL; pp += UNIT_LEN) {
@@ -88,6 +85,7 @@ public class O extends Applet implements Runnable {
 		}
 
 		int lives = 0;
+		int highScore = 0;
 		startGame: while (true) {
 			
 			
@@ -128,12 +126,8 @@ public class O extends Applet implements Runnable {
 
 				Graphics sg = getGraphics();
 				loopGame: while (true) {
-					
 
-					
-					int[] hitDetect = new int[SCENE_PIXEL_COUNT];
 
-					
 					for (int i = 0; i < RENDER_PIXEL_COUNT; i++) {
 						display[i] = 0;
 					}
@@ -364,17 +358,9 @@ public class O extends Applet implements Runnable {
 							units[HEALTHBAR_UNIT_IDX_AX] = HEALTHBAR_X; 
 							units[HEALTHBAR_UNIT_IDX_HP] = 1; 
 							units[HEALTHBAR_UNIT_IDX_SHIP_TEMPLATE] = HEALTHBAR_SHIP_TEMPLATE;
-							
-							
-							
-							
 
-							
-							int pp = OTHER_START_INDEX;
-							
-							
-							
-							for (; pp < UNIT_SIZE; pp++) {
+
+							for (int pp = OTHER_START_INDEX; pp < UNIT_SIZE; pp++) {
 								units[pp] = 0;
 							}
 
@@ -383,8 +369,8 @@ public class O extends Applet implements Runnable {
 
 					}
 
-					
-					
+
+					int[] hitDetect = new int[SCENE_PIXEL_COUNT];
 					unitDrawLoop: for (int upos = 0; upos < UNIT_SIZE; upos += UNIT_LEN) {
 						int templatePos = units[upos + UNIT_IDX_SHIP_TEMPLATE];
 
@@ -584,23 +570,10 @@ public class O extends Applet implements Runnable {
 								int party = basey + STATIC[sppos + SHIP_IDX_PART_IDX_Y];
 								int baseColor = STATIC[sppos + SHIP_IDX_PART_IDX_BASECOLOR];
 
-								
-								
-								
-								
-								
-								
-								
 
-								int colorR = (baseColor & 0xf00) | ((baseColor & 0xf00) << 4);
-								int colorG = ((baseColor & 0x0f0) << 4) | ((baseColor & 0x0f0) << 8);
-								int colorB = ((baseColor & 0x00f) << 8) | ((baseColor & 0x00f) << 12);
 								int ccount = STATIC[ppos + PART_IDX_COMPONENT_COUNT];
-								int cpos = ppos + PART_BASE_LEN;
 
-								
-								
-								int spawnVX = 0;
+
 								int spawnVY = 0;
 								int spawnTemplate = 0;
 
@@ -613,6 +586,7 @@ public class O extends Applet implements Runnable {
 										spawnTemplate = LONG_BULLET_SHIP_TEMPLATE;
 									}
 								}
+								int spawnVX = 0;
 								if (partAi == PART_AI_RADIAL_FIRE) {
 									int time = units[upos + UNIT_IDX_TIMER] % (RADIAL_FIRE_RATE * 8);
 									if (time == 0) {
@@ -694,18 +668,16 @@ public class O extends Applet implements Runnable {
 									}
 								}
 
+								int cpos = ppos + PART_BASE_LEN;
+								int colorB = ((baseColor & 0x00f) << 8) | ((baseColor & 0x00f) << 12);
+								int colorG = ((baseColor & 0x0f0) << 4) | ((baseColor & 0x0f0) << 8);
+								int colorR = (baseColor & 0xf00) | ((baseColor & 0xf00) << 4);
 								for (int k = 0; k < ccount; k++, cpos += PART_IDX_COMPONENT_LEN) {
 									
 									
 									int alpha = STATIC[cpos + PART_IDX_COMPONENT_IDX_GRADIENT];
 									int gradient = (alpha & 0xff) + 1;
 
-									
-									
-									
-									
-
-									int color = (((gradient * colorR)) & 0xff0000) | (((gradient * colorG) >>> 8) & 0xff00) | (((gradient * colorB) >>> 16) & 0xff);
 
 									int startX = partx + ((scaleX * STATIC[cpos + PART_IDX_COMPONENT_IDX_X]) >> SHIP_SCALE_X_SHR);
 									int endX = startX + ((scaleX * STATIC[cpos + PART_IDX_COMPONENT_IDX_WIDTH]) >> SHIP_SCALE_X_SHR);
@@ -753,7 +725,7 @@ public class O extends Applet implements Runnable {
 										if (endY > RENDER_HEIGHT) {
 											endY = RENDER_HEIGHT;
 										}
-										for (; y < endY; y++) {
+										for (int color = (((gradient * colorR)) & 0xff0000) | (((gradient * colorG) >>> 8) & 0xff00) | (((gradient * colorB) >>> 16) & 0xff); y < endY; y++) {
 											for (int x = startX; x < endX; x++) {
 												
 												int hitPos = x + (y * SCENE_WIDTH);

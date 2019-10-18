@@ -154,7 +154,7 @@ public class MatrixUtil {
 		float d = x * x + y * y + z * z + w * w;
 		assert (d != 0f);
 		float s = 2f / d;
-		float xs = x * s, ys = y * s, zs = z * s;
+		float ys = y * s, zs = z * s;
 		float yy = y * ys, zz = z * zs;
 		dest.m00 = 1f - (yy + zz);
 		float xy = x * ys;
@@ -164,7 +164,8 @@ public class MatrixUtil {
 		float wy = w * ys;
 		dest.m02 = xz + wy;
 		dest.m10 = xy + wz;
-		float xx = x * xs;
+        float xs = x * s;
+        float xx = x * xs;
 		dest.m11 = 1f - (xx + zz);
 		float yz = y * zs;
 		float wx = w * xs;
@@ -182,7 +183,7 @@ public class MatrixUtil {
 		float d = x * x + y * y + z * z + w * w;
 		assert (d != 0f);
 		float s = 2f / d;
-		float xs = x * s, ys = y * s, zs = z * s;
+		float ys = y * s, zs = z * s;
 		float yy = y * ys, zz = z * zs;
 		dest.m00 = 1f - (yy + zz);
 		float xy = x * ys;
@@ -192,7 +193,8 @@ public class MatrixUtil {
 		float wy = w * ys;
 		dest.m02 = xz + wy;
 		dest.m10 = xy + wz;
-		float xx = x * xs;
+        float xs = x * s;
+        float xx = x * xs;
 		dest.m11 = 1f - (xx + zz);
 		float yz = y * zs;
 		float wx = w * xs;

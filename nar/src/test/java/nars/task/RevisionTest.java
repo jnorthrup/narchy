@@ -330,8 +330,6 @@ public class RevisionTest {
         NAR n = newNAR(maxBeliefs);
 
 
-        long at = 5;
-
         float outConf = w2c(c2w(inConf) * repeats);
 
         BeliefAnalysis b = null;
@@ -340,6 +338,7 @@ public class RevisionTest {
         } catch (Narsese.NarseseException e) {
             fail(e);
         }
+        long at = 5;
         for (int i = 0; i < repeats; i++) {
             b.believe(0.5f, freq, inConf, at);
         }
@@ -506,8 +505,6 @@ public class RevisionTest {
         NAR n = NARS.shell();
 
 
-        int offCycles = 2;
-
         BeliefAnalysis b = new BeliefAnalysis(n, x);
 
 
@@ -528,6 +525,7 @@ public class RevisionTest {
         b.print();
         assertEquals(2, b.size(true));
 
+        int offCycles = 2;
         b.believe(1.0f, 0.9f, Tense.Present).run(offCycles)
                 .believe(0.0f, 0.9f, Tense.Present);
 

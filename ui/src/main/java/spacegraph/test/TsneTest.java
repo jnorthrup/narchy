@@ -96,9 +96,9 @@ public class TsneTest {
                 vv = vv.clone();
 
 
+                float h;
+                float w = h = 1f / vv.length;
                 float scale = 0.1f;
-                float w, h;
-                w = h = 1f / vv.length;
                 for (int i = 0, yLength = vv.length; i < yLength; i++) {
                     double[] v = vv[i];
 

@@ -43,58 +43,9 @@ public class a extends Applet implements Runnable {
   @Override
   public void run() {
 
-    final int SEGMENTS = 4096;
-    final int ROAD = 0;
-    final int HILL = 1;
-    final int CHECKPOINT_SPRITE = 11;    
-    final int TELEPHONE_POLE_SPRITE = 12;
-    final int SNOWMAN_SPRITE = 13;
-    final int TREE_SPRITE = 14;
-    final float I256 = 0.00390625f;
-    final float ACCELERATION = 0.003f;
-    final float CAR_SPEED = 0.05f;
+      int i;
 
-    final int OBJ_TIME = 0;
-    final int OBJ_X = 1;
-    final int OBJ_DT = 2;
-    final int OBJ_SPRITE = 3;
-    final int OBJ_SPRITE_X = 4;
-    final int OBJ_SPRITE_Y = 5;
-    final int OBJ_SPRITE_WIDTH = 6;
-    final int OBJ_SPRITE_HEIGHT = 7;
-    final int OBJ_CAR = 8;
-    final int OBJ_SEEKER = 9;
-    final int OBJ_HALF_WIDTH = 10;
-    final int OBJ_HEIGHT = 11;
-    final int OBJ_CHECKPOINT = 12;
-    final int OBJ_SEEKER_SPEED = 13;
-
-    final int ROAD_HEIGHT = 0;
-    final int ROAD_K = 1;
-    final int ROAD_OFFSET = 2;
-    final int ROAD_CLIP = 3;
-    final int ROAD_Y = 4;
-
-    final int VK_LEFT = 0x25;
-    final int VK_RIGHT = 0x27;
-    final int VK_GAS = 0x44;
-    final int VK_START = '\n';
-
-    int x;
-    int y;
-    int z;
-    int i;
-    int j;
-    int k;
-    int time = 50;
-    int timeIncrementor = 0;
-    float mag;
-    float nextCarTime = 32;
-    boolean wonBlink = false;
-    boolean startReleased = true;
-    boolean raceStarted = false;
-
-    int[] colors = {
+      int[] colors = {
       0xE3BD7C, 
       0x6AC730, 
       0xFF8A68, 
@@ -103,15 +54,8 @@ public class a extends Applet implements Runnable {
     };
 
     BufferedImage image = new BufferedImage(256, 256, 1);
-    BufferedImage[] sprites = new BufferedImage[64];
-    Graphics2D g = (Graphics2D)image.getGraphics();
-    Graphics2D g2 = null;
-    Graphics2D g3 = null;
-    ArrayList<float[]> queue = new ArrayList<>();
-    ArrayList[] renderList = new ArrayList[8192];
-    float[][] roadInfos = new float[8192][16];
-    float[] player = new float[32];
-    Random random = new Random(37);
+      Graphics2D g = (Graphics2D)image.getGraphics();
+      Random random = new Random(37);
 
     Color[] backgroundColors = new Color[10];
     for(i = 0; i < 10; i++) {
@@ -126,27 +70,36 @@ public class a extends Applet implements Runnable {
       }
     }
 
-    
-    queue.add(player);
-    player[OBJ_SPRITE] = 0;
-    player[OBJ_TIME] = 16;
-    player[OBJ_HALF_WIDTH] = 42;
-    player[OBJ_HEIGHT] = 54;
 
-    for(i = 0; i < 8192; i++) {
+      float[] player = new float[32];
+      ArrayList<float[]> queue = new ArrayList<>();
+      queue.add(player);
+      final int OBJ_SPRITE = 3;
+      player[OBJ_SPRITE] = 0;
+      final int OBJ_TIME = 0;
+      player[OBJ_TIME] = 16;
+      final int OBJ_HALF_WIDTH = 10;
+      player[OBJ_HALF_WIDTH] = 42;
+      final int OBJ_HEIGHT = 11;
+      player[OBJ_HEIGHT] = 54;
+
+      ArrayList[] renderList = new ArrayList[8192];
+      for(i = 0; i < 8192; i++) {
       renderList[i] = new ArrayList<float[]>();
     }
 
-    
-    float[][][] segments = new float[2][SEGMENTS][3];
-    float slope;
-    float nextSlope;
 
-    for(k = 0; k < 2; k++) {
-      slope = 0;
-      nextSlope = 0.3f;
+      final int SEGMENTS = 4096;
+      float[][][] segments = new float[2][SEGMENTS][3];
 
-      for(i = 1; i < SEGMENTS; i++) {
+      int k;
+      int j;
+      final int ROAD = 0;
+      for(k = 0; k < 2; k++) {
+          float slope = 0;
+          float nextSlope = 0.3f;
+
+          for(i = 1; i < SEGMENTS; i++) {
 
         float[] lastSegment = segments[k][i - 1];
         float[] segment = segments[k][i];
@@ -194,17 +147,21 @@ public class a extends Applet implements Runnable {
       }
     }
 
-    
-    for(k = 0; k < 3; k++) {
+
+      Graphics2D g3 = null;
+      BufferedImage[] sprites = new BufferedImage[64];
+      float mag;
+      final int TREE_SPRITE = 14;
+      for(k = 0; k < 3; k++) {
       if (k == 2) {
         random = new Random(22);
       }
       sprites[TREE_SPRITE + k] = new BufferedImage(128, 128, 2);
       g3 = (Graphics2D)sprites[TREE_SPRITE + k].getGraphics();
-      ArrayList<AffineTransform> transforms = new ArrayList<>();
-      AffineTransform transform = g3.getTransform();
+          AffineTransform transform = g3.getTransform();
       transform.translate(64, 128);
-      transforms.add(transform);
+          ArrayList<AffineTransform> transforms = new ArrayList<>();
+          transforms.add(transform);
       while(transforms.size() > 0) {
         transform = transforms.remove(0);
         mag = (float)transform.getScaleX() + (float)transform.getScaleY();
@@ -248,11 +205,13 @@ public class a extends Applet implements Runnable {
       }
     }
 
-    
-    sprites[SNOWMAN_SPRITE] = new BufferedImage(256, 256, 2);
+
+      final int SNOWMAN_SPRITE = 13;
+      sprites[SNOWMAN_SPRITE] = new BufferedImage(256, 256, 2);
     Graphics2D g4 = (Graphics2D) sprites[SNOWMAN_SPRITE].getGraphics();
     AffineTransform transform = g4.getTransform();
-    for(x = 2; x >= 0; x--) {
+      int x;
+      for(x = 2; x >= 0; x--) {
       for(i = 0; i < 16; i++) {
         k = i << 2;
         j = 195 + k;
@@ -267,10 +226,12 @@ public class a extends Applet implements Runnable {
     g4.fillOval(142, 250, 25, 25);
     g4.setTransform(transform);
 
-    
-    sprites[TELEPHONE_POLE_SPRITE] = new BufferedImage(84, 256, 2);
+
+      final int TELEPHONE_POLE_SPRITE = 12;
+      sprites[TELEPHONE_POLE_SPRITE] = new BufferedImage(84, 256, 2);
     g3 = (Graphics2D)sprites[TELEPHONE_POLE_SPRITE].getGraphics();
-    for(i = 0; i < 16; i++) {
+      int y;
+      for(i = 0; i < 16; i++) {
       Color color = new Color(Color.HSBtoRGB(24f / 360, 0.69f,
         (74 - (i << 1)) / 100f));
       g3.setColor(color);
@@ -338,8 +299,9 @@ public class a extends Applet implements Runnable {
     }
 
     
-    String S = "\u03c0\u0000\u5ff0\u0000\u5ff0\u0000\ufbe4\u0000\u0aac\u0000\u0aad\u0000\u0aa3\u0000\u0aa3\u0000\u0aa3\u0000\u0283\u0000\u0e83\uf000\u3aaf\ufc00\ueaaa\ufc00\uaaab\ubc00\ufeaa\u8000\uaaaa\u8000\uaaaa\u5000\u555a\u9000\u5555\u9400\u5555\u5400\u5555\u5500\u5555\u5550\u5555\u5550\u5555\u5554\u5555\u5554\u5555\u5554\u5555\u5554\u5555\u5554\u5555\u5554\uaa95\u5557\uaaa9\u5557\uaaaa\u9557\uaaaa\ua955\u5555\u55fd\u555f\ufead\u555a\uaaa5\u955a\uaaa5\u955a\uaaa5\u555a\ua957\u5555\u57f7\u5555\u57f7\ufff5\u57f7\uffd5\u57f7\uaad5\u57f7\uffd5\u55f4\ufb55\u55f4\ufaff\uf5f4\ufaea\ufff4\uaaee\ufff4\ufff3\ufffc\uffc0\u3ffc\u0000\u3ffc\u0000\u3ffc\u0000\u3ff0";    
-    for(k = 0; k < 10; k++) {
+    String S = "\u03c0\u0000\u5ff0\u0000\u5ff0\u0000\ufbe4\u0000\u0aac\u0000\u0aad\u0000\u0aa3\u0000\u0aa3\u0000\u0aa3\u0000\u0283\u0000\u0e83\uf000\u3aaf\ufc00\ueaaa\ufc00\uaaab\ubc00\ufeaa\u8000\uaaaa\u8000\uaaaa\u5000\u555a\u9000\u5555\u9400\u5555\u5400\u5555\u5500\u5555\u5550\u5555\u5550\u5555\u5554\u5555\u5554\u5555\u5554\u5555\u5554\u5555\u5554\u5555\u5554\uaa95\u5557\uaaa9\u5557\uaaaa\u9557\uaaaa\ua955\u5555\u55fd\u555f\ufead\u555a\uaaa5\u955a\uaaa5\u955a\uaaa5\u555a\ua957\u5555\u57f7\u5555\u57f7\ufff5\u57f7\uffd5\u57f7\uaad5\u57f7\uffd5\u55f4\ufb55\u55f4\ufaff\uf5f4\ufaea\ufff4\uaaee\ufff4\ufff3\ufffc\uffc0\u3ffc\u0000\u3ffc\u0000\u3ffc\u0000\u3ff0";
+      int z;
+      for(k = 0; k < 10; k++) {
 
       mag = 0.628f * (k + 6);
       x = (int)(256f * (0.5f + 0.5f * (float)Math.sin(mag)));
@@ -372,8 +334,9 @@ public class a extends Applet implements Runnable {
       g3.drawImage(carImage, 0, 0, 84, 54, null);
     }
 
-    
-    sprites[CHECKPOINT_SPRITE] = new BufferedImage(710, 256, 2);
+
+      final int CHECKPOINT_SPRITE = 11;
+      sprites[CHECKPOINT_SPRITE] = new BufferedImage(710, 256, 2);
     g3 = (Graphics2D)sprites[CHECKPOINT_SPRITE].getGraphics();
     for(z = 0; z < 8; z++) {
       int h = z << 5;
@@ -399,7 +362,38 @@ public class a extends Applet implements Runnable {
     }
 
     long nextFrameStartTime = System.nanoTime();
-    while(true) {
+      float[][] roadInfos = new float[8192][16];
+      Graphics2D g2 = null;
+      boolean raceStarted = false;
+      boolean startReleased = true;
+      boolean wonBlink = false;
+      float nextCarTime = 32;
+      int timeIncrementor = 0;
+      int time = 50;
+      final int VK_START = '\n';
+      final int VK_GAS = 0x44;
+      final int VK_RIGHT = 0x27;
+      final int VK_LEFT = 0x25;
+      final int ROAD_Y = 4;
+      final int ROAD_CLIP = 3;
+      final int ROAD_OFFSET = 2;
+      final int ROAD_K = 1;
+      final int ROAD_HEIGHT = 0;
+      final int OBJ_SEEKER_SPEED = 13;
+      final int OBJ_CHECKPOINT = 12;
+      final int OBJ_SEEKER = 9;
+      final int OBJ_CAR = 8;
+      final int OBJ_SPRITE_HEIGHT = 7;
+      final int OBJ_SPRITE_WIDTH = 6;
+      final int OBJ_SPRITE_Y = 5;
+      final int OBJ_SPRITE_X = 4;
+      final int OBJ_DT = 2;
+      final int OBJ_X = 1;
+      final float CAR_SPEED = 0.05f;
+      final float ACCELERATION = 0.003f;
+      final float I256 = 0.00390625f;
+      final int HILL = 1;
+      while(true) {
 
       do {
         nextFrameStartTime += 16666667;
@@ -753,21 +747,21 @@ public class a extends Applet implements Runnable {
 
   @Override
   public void processKeyEvent(KeyEvent keyEvent) {
-    final int VK_LEFT = 0x25;
-    final int VK_RIGHT = 0x27;
-    final int VK_GAS = 0x44;
-    final int VK_START = '\n';
-    final int VK_A = 0x41;
-    final int VK_D = 0x44;
 
-    int k = keyEvent.getKeyCode();
+      int k = keyEvent.getKeyCode();
     if (k > 0) {
-      if (k == VK_D) {
+        final int VK_D = 0x44;
+        final int VK_A = 0x41;
+        final int VK_RIGHT = 0x27;
+        final int VK_LEFT = 0x25;
+        if (k == VK_D) {
         k = VK_RIGHT;
       } else if (k == VK_A) {
         k = VK_LEFT;
       }
-      a[(k == VK_LEFT || k == VK_RIGHT || k == VK_START) ? k : VK_GAS]
+        final int VK_START = '\n';
+        final int VK_GAS = 0x44;
+        a[(k == VK_LEFT || k == VK_RIGHT || k == VK_START) ? k : VK_GAS]
           = keyEvent.getID() != 402;
     }
   }

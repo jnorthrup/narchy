@@ -469,15 +469,15 @@ public class PrintfFormat {
 	 */
 	public PrintfFormat(Locale locale, String fmtArg) throws IllegalArgumentException {
 		dfs = new DecimalFormatSymbols(locale);
-		int ePos = 0;
-		ConversionSpecification sFmt = null;
+        ConversionSpecification sFmt = null;
 		String unCS = this.nonControl(fmtArg, 0);
 		if (unCS != null) {
 			sFmt = new ConversionSpecification();
 			sFmt.setLiteral(unCS);
 			vFmt.addElement(sFmt);
 		}
-		while (cPos != -1 && cPos < fmtArg.length()) {
+        int ePos = 0;
+        while (cPos != -1 && cPos < fmtArg.length()) {
 			for (ePos = cPos + 1; ePos < fmtArg.length(); ePos++) {
                 char c = fmtArg.charAt(ePos);
 				if (c == 'i')
@@ -1142,10 +1142,7 @@ public class PrintfFormat {
 		private char[] fFormatDigits(double x) {
 			
 			String sx, sxOut;
-			int i, j, k;
-			int n1In, n2In;
-			int expon = 0;
-			boolean minusSign = false;
+            boolean minusSign = false;
 			if (x > 0.0)
 				sx = Double.toString(x);
 			else if (x < 0.0) {
@@ -1160,23 +1157,26 @@ public class PrintfFormat {
 			}
 			int ePos = sx.indexOf('E');
 			int rPos = sx.indexOf('.');
-			if (rPos != -1)
+            int n1In;
+            if (rPos != -1)
 				n1In = rPos;
 			else if (ePos != -1)
 				n1In = ePos;
 			else
 				n1In = sx.length();
-			if (rPos != -1) {
+            int n2In;
+            if (rPos != -1) {
 				if (ePos != -1)
 					n2In = ePos - rPos - 1;
 				else
 					n2In = sx.length() - rPos - 1;
 			} else
 				n2In = 0;
-			if (ePos != -1) {
-				int ie = ePos + 1;
-				expon = 0;
-				if (sx.charAt(ie) == '-') {
+            int expon = 0;
+            if (ePos != -1) {
+                expon = 0;
+                int ie = ePos + 1;
+                if (sx.charAt(ie) == '-') {
 					for (++ie; ie < sx.length(); ie++)
 						if (sx.charAt(ie) != '0')
 							break;
@@ -1199,13 +1199,15 @@ public class PrintfFormat {
 				p = defaultDigits - 1;
 			char[] ca1 = sx.toCharArray();
 			char[] ca2 = new char[n1In + n2In];
-			char[] ca3, ca4, ca5;
-			for (j = 0; j < n1In; j++)
+            int j;
+            for (j = 0; j < n1In; j++)
 				ca2[j] = ca1[j];
-			i = j + 1;
-			for (k = 0; k < n2In; j++, i++, k++)
+            int i = j + 1;
+            int k;
+            for (k = 0; k < n2In; j++, i++, k++)
 				ca2[j] = ca1[i];
-			if (n1In + expon <= 0) {
+            char[] ca3;
+            if (n1In + expon <= 0) {
 				ca3 = new char[-expon + n2In];
 				for (j = 0, k = 0; k < (-n1In - expon); k++, j++)
 					ca3[j] = '0';
@@ -1223,7 +1225,8 @@ public class PrintfFormat {
 				if (carry)
 					carry = startSymbolicCarry(ca3, i - 1, 0);
 			}
-			if (n1In + expon <= 0) {
+            char[] ca4;
+            if (n1In + expon <= 0) {
 				ca4 = new char[2 + p];
 				if (!carry)
 					ca4[0] = '0';
@@ -1286,7 +1289,8 @@ public class PrintfFormat {
 					nZeros = 0;
 			}
 			j = 0;
-			if (minusSign || (leadingSign || leadingSpace)) {
+            char[] ca5;
+            if (minusSign || (leadingSign || leadingSpace)) {
 				ca5 = new char[ca4.length + nZeros + 1];
 				j++;
 			} else
@@ -1402,14 +1406,9 @@ public class PrintfFormat {
 		 * double.
 		 */
 		private char[] eFormatDigits(double x, char eChar) {
-			char[] ca1, ca2, ca3;
-			
-			String sx, sxOut;
-			int i, j, k, p;
-			int n1In, n2In;
-			int expon = 0;
-			int eSize;
-			boolean minusSign = false;
+
+            String sx, sxOut;
+            boolean minusSign = false;
 			if (x > 0.0)
 				sx = Double.toString(x);
 			else if (x < 0.0) {
@@ -1426,20 +1425,23 @@ public class PrintfFormat {
 			if (ePos == -1)
 				ePos = sx.indexOf('e');
             int rPos = sx.indexOf('.');
-			if (rPos != -1)
+            int n1In;
+            if (rPos != -1)
 				n1In = rPos;
 			else if (ePos != -1)
 				n1In = ePos;
 			else
 				n1In = sx.length();
-			if (rPos != -1) {
+            int n2In;
+            if (rPos != -1) {
 				if (ePos != -1)
 					n2In = ePos - rPos - 1;
 				else
 					n2In = sx.length() - rPos - 1;
 			} else
 				n2In = 0;
-			if (ePos != -1) {
+            int expon = 0;
+            if (ePos != -1) {
 				int ie = ePos + 1;
 				expon = 0;
 				if (sx.charAt(ie) == '-') {
@@ -1460,11 +1462,13 @@ public class PrintfFormat {
 			}
 			if (rPos != -1)
 				expon += rPos - 1;
-			if (precisionSet)
+            int p;
+            if (precisionSet)
 				p = precision;
 			else
 				p = defaultDigits - 1;
-			if (rPos != -1 && ePos != -1)
+            char[] ca1;
+            if (rPos != -1 && ePos != -1)
 				ca1 = (sx.substring(0, rPos) + sx.substring(rPos + 1, ePos)).toCharArray();
 			else if (rPos != -1)
 				ca1 = (sx.substring(0, rPos) + sx.substring(rPos + 1)).toCharArray();
@@ -1472,17 +1476,19 @@ public class PrintfFormat {
 				ca1 = sx.substring(0, ePos).toCharArray();
 			else
 				ca1 = sx.toCharArray();
-			boolean carry = false;
-			int i0 = 0;
+            int i0 = 0;
 			if (ca1[0] != '0')
 				i0 = 0;
 			else
 				for (i0 = 0; i0 < ca1.length; i0++)
 					if (ca1[i0] != '0')
 						break;
-			if (i0 + p < ca1.length - 1) {
-				carry = checkForCarry(ca1, i0 + p + 1);
-				if (carry)
+            int j;
+            int i;
+            char[] ca2;
+            if (i0 + p < ca1.length - 1) {
+                boolean carry = checkForCarry(ca1, i0 + p + 1);
+                if (carry)
 					carry = startSymbolicCarry(ca1, i0 + p, i0);
 				if (carry) {
 					ca2 = new char[i0 + p + 1];
@@ -1495,7 +1501,8 @@ public class PrintfFormat {
 					ca1 = ca2;
 				}
 			}
-			if (Math.abs(expon) < 100 && !optionalL)
+            int eSize;
+            if (Math.abs(expon) < 100 && !optionalL)
 				eSize = 4;
 			else
 				eSize = 5;
@@ -1524,7 +1531,8 @@ public class PrintfFormat {
 				i = 2;
 			} else
 				i = 1;
-			for (k = 0; k < p && j < ca1.length; j++, i++, k++)
+            int k;
+            for (k = 0; k < p && j < ca1.length; j++, i++, k++)
 				ca2[i] = ca1[j];
 			for (; i < ca2.length - eSize; i++)
 				ca2[i] = '0';
@@ -1653,7 +1661,8 @@ public class PrintfFormat {
 					nZeros = 0;
 			}
 			j = 0;
-			if (minusSign || (leadingSign || leadingSpace)) {
+            char[] ca3;
+            if (minusSign || (leadingSign || leadingSpace)) {
 				ca3 = new char[ca2.length + nZeros + 1];
 				j++;
 			} else
@@ -1921,10 +1930,8 @@ public class PrintfFormat {
 		 * @return the formatted String.
 		 */
 		private String printGFormat(double x) {
-			String sx, sy, sz, ret;
-			int savePrecision = precision;
-			int i;
-			char[] ca4;
+            int savePrecision = precision;
+            char[] ca4;
             boolean noDigits = false;
 			if (Double.isInfinite(x)) {
 				if (x == Double.POSITIVE_INFINITY) {
@@ -1951,15 +1958,16 @@ public class PrintfFormat {
 				if (precision == 0)
 					precision = 1;
 				int ePos = -1;
-				if (conversionCharacter == 'g') {
+                String sx;
+                if (conversionCharacter == 'g') {
 					sx = eFormatString(x, 'e').trim();
 					ePos = sx.indexOf('e');
 				} else {
 					sx = eFormatString(x, 'E').trim();
 					ePos = sx.indexOf('E');
 				}
-				i = ePos + 1;
-				int expon = 0;
+                int i = ePos + 1;
+                int expon = 0;
 				if (sx.charAt(i) == '-') {
 					for (++i; i < sx.length(); i++)
 						if (sx.charAt(i) != '0')
@@ -1975,11 +1983,12 @@ public class PrintfFormat {
 					if (i < sx.length())
 						expon = Integer.parseInt(sx.substring(i));
 				}
-				
-				
-				
-				if (!alternateForm) {
-					if (expon >= -4 && expon < precision)
+
+
+                String ret;
+                if (!alternateForm) {
+                    String sy;
+                    if (expon >= -4 && expon < precision)
 						sy = fFormatString(x).trim();
 					else
 						sy = sx.substring(0, ePos);
@@ -1989,7 +1998,8 @@ public class PrintfFormat {
 							break;
 					if (i >= 0 && sy.charAt(i) == '.')
 						i--;
-					if (i == -1)
+                    String sz;
+                    if (i == -1)
 						sz = "0";
 					else if (!Character.isDigit(sy.charAt(i)))
 						sz = sy.substring(0, i + 1) + '0';
@@ -2113,13 +2123,11 @@ public class PrintfFormat {
 		 * @return the formatted String.
 		 */
 		private String printDFormat(String sx) {
-			int nLeadingZeros = 0;
-			int nBlanks = 0, n = 0;
-			int i = 0, jFirst = 0;
-			boolean neg = sx.charAt(0) == '-';
+            boolean neg = sx.charAt(0) == '-';
 			if ("0".equals(sx) && precisionSet && precision == 0)
 				sx = "";
-			if (!neg) {
+            int nLeadingZeros = 0;
+            if (!neg) {
 				if (precisionSet && sx.length() < precision)
 					nLeadingZeros = precision - sx.length();
 			} else {
@@ -2128,14 +2136,16 @@ public class PrintfFormat {
 			}
 			if (nLeadingZeros < 0)
 				nLeadingZeros = 0;
-			if (fieldWidthSet) {
+            int nBlanks = 0;
+            if (fieldWidthSet) {
 				nBlanks = fieldWidth - nLeadingZeros - sx.length();
 				if (!neg && (leadingSign || leadingSpace))
 					nBlanks--;
 			}
 			if (nBlanks < 0)
 				nBlanks = 0;
-			if (leadingSign)
+            int n = 0;
+            if (leadingSign)
 				n++;
 			else if (leadingSpace)
 				n++;
@@ -2143,7 +2153,9 @@ public class PrintfFormat {
 			n += nLeadingZeros;
 			n += sx.length();
 			char[] ca = new char[n];
-			if (leftJustify) {
+            int jFirst = 0;
+            int i = 0;
+            if (leftJustify) {
 				if (neg)
 					ca[i++] = '-';
 				else if (leadingSign)
@@ -2449,15 +2461,15 @@ public class PrintfFormat {
 		 * @return the formatted String.
 		 */
 		private String printXFormat(String sx) {
-			int nLeadingZeros = 0;
-			int nBlanks = 0;
-			if ("0".equals(sx) && precisionSet && precision == 0)
+            if ("0".equals(sx) && precisionSet && precision == 0)
 				sx = "";
-			if (precisionSet)
+            int nLeadingZeros = 0;
+            if (precisionSet)
 				nLeadingZeros = precision - sx.length();
 			if (nLeadingZeros < 0)
 				nLeadingZeros = 0;
-			if (fieldWidthSet) {
+            int nBlanks = 0;
+            if (fieldWidthSet) {
 				nBlanks = fieldWidth - nLeadingZeros - sx.length();
 				if (alternateForm)
                     nBlanks -= 2;
@@ -2725,17 +2737,17 @@ public class PrintfFormat {
 		 * @return the formatted String.
 		 */
 		private String printOFormat(String sx) {
-			int nLeadingZeros = 0;
-			int nBlanks = 0;
-			if ("0".equals(sx) && precisionSet && precision == 0)
+            if ("0".equals(sx) && precisionSet && precision == 0)
 				sx = "";
-			if (precisionSet)
+            int nLeadingZeros = 0;
+            if (precisionSet)
 				nLeadingZeros = precision - sx.length();
 			if (alternateForm)
 				nLeadingZeros++;
 			if (nLeadingZeros < 0)
 				nLeadingZeros = 0;
-			if (fieldWidthSet)
+            int nBlanks = 0;
+            if (fieldWidthSet)
 				nBlanks = fieldWidth - nLeadingZeros - sx.length();
 			if (nBlanks < 0)
 				nBlanks = 0;
@@ -2876,9 +2888,9 @@ public class PrintfFormat {
 		 */
 		private boolean setConversionCharacter() {
 			/* idfgGoxXeEcs */
-			boolean ret = false;
-			conversionCharacter = '\0';
-			if (pos < fmt.length()) {
+            conversionCharacter = '\0';
+            boolean ret = false;
+            if (pos < fmt.length()) {
 				char c = fmt.charAt(pos);
 				if (c == 'i'
 					|| c == 'd'
@@ -3006,13 +3018,13 @@ public class PrintfFormat {
 		 * Store the digits <code>n</code> in *n$ forms.
 		 */
 		private boolean setFieldWidthArgPosition() {
-			boolean ret = false;
-			int xPos;
+            int xPos;
 			for (xPos = pos; xPos < fmt.length(); xPos++) {
 				if (!Character.isDigit(fmt.charAt(xPos)))
 					break;
 			}
-			if (xPos > pos && xPos < fmt.length()) {
+            boolean ret = false;
+            if (xPos > pos && xPos < fmt.length()) {
 				if (fmt.charAt(xPos) == '$') {
 					positionalFieldWidth = true;
 					argumentPositionForFieldWidth = Integer.parseInt(fmt.substring(pos, xPos));
@@ -3026,13 +3038,13 @@ public class PrintfFormat {
 		 * Store the digits <code>n</code> in *n$ forms.
 		 */
 		private boolean setPrecisionArgPosition() {
-			boolean ret = false;
-			int xPos;
+            int xPos;
 			for (xPos = pos; xPos < fmt.length(); xPos++) {
 				if (!Character.isDigit(fmt.charAt(xPos)))
 					break;
 			}
-			if (xPos > pos && xPos < fmt.length()) {
+            boolean ret = false;
+            if (xPos > pos && xPos < fmt.length()) {
 				if (fmt.charAt(xPos) == '$') {
 					positionalPrecision = true;
 					argumentPositionForPrecision = Integer.parseInt(fmt.substring(pos, xPos));

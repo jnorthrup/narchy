@@ -53,7 +53,6 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
             return;
 
         float gRad = g.radius();
-        float gRadPerSec = gRad / dtS;
 
         float AUTOSCALE = (float) (nodeScale.floatValue() * gRad / Math.sqrt(1f + n));
         assert (AUTOSCALE == AUTOSCALE);
@@ -66,6 +65,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
         int iterations1 = 1;
         int iterations = iterations1;
+        float gRadPerSec = gRad / dtS;
         float repelSpeed = this.repelSpeed.floatValue() * gRadPerSec / iterations / gRad;
         float attractSpeed = this.attractSpeed.floatValue() / iterations / gRad;
 

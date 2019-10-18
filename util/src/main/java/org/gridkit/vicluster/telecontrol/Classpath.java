@@ -146,9 +146,9 @@ public class Classpath {
     }
 
     public static Classpath.ClasspathEntry getLocalEntry(String path) throws IOException {
-        URL url = (new File(path)).toURI().toURL();
         synchronized (Classpath.class) {
             try {
+                URL url = (new File(path)).toURI().toURL();
                 WeakReference<Classpath.ClasspathEntry> wr = CUSTOM_ENTRIES.get(url);
                 Classpath.ClasspathEntry entry;
                 if (wr != null) {
@@ -339,9 +339,9 @@ public class Classpath {
             if (uri.getAuthority() == null) {
                 return new File(uri);
             } else {
-                String path = "file:////" + uri.getAuthority() + '/' + uri.getPath();
 
                 try {
+                    String path = "file:////" + uri.getAuthority() + '/' + uri.getPath();
                     return new File(new URI(path));
                 } catch (URISyntaxException var3) {
                     return new File(uri);

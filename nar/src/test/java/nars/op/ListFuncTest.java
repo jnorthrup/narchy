@@ -200,9 +200,6 @@ abstract class ListFuncTest {
             NAR n = NARS.tmp();
             n.termVolMax.set(48);
 
-            int levels =
-                    2;
-
 
             //n.log();
             n.input("hanoi(0,#A,#B,#C,()).");
@@ -212,7 +209,7 @@ abstract class ListFuncTest {
                             ",hanoi(addAt($N,-1),$B,$A,$C,#Moves2)" +
                             ",append(#Moves1,append(to($A,$C),#Moves2),$Moves)) ==> hanoi($N,$A,$B,$C,$Moves)).");
 
-            for (; levels > 0; levels--)
+            for (int levels = 2; levels > 0; levels--)
                 n.input("hanoi(" + levels + ",left,middle,right,#M)?");
 
             n.run(2000);

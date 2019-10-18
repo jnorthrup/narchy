@@ -65,8 +65,6 @@ public class AutoBuilder<X, Y> {
         if (!add(obj))
             return null; //cycle
 
-        List<Pair<X, Iterable<Y>>> target = new FasterList<>();
-
 
         FasterList<BiFunction<Object, Object, Y>> builders = new FasterList(maxClassBuilders);
 
@@ -83,6 +81,7 @@ public class AutoBuilder<X, Y> {
 //        }
 
         classBuilders(obj, builders); //TODO check subtypes/supertypes etc
+        List<Pair<X, Iterable<Y>>> target = new FasterList<>();
         if (!builders.isEmpty()) {
             target.add(pair(obj,
                     //builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull)::iterator

@@ -114,9 +114,9 @@ public class ConvexPlaneCollisionAlgorithm extends CollisionAlgorithm {
 		planeObj.getWorldTransform(tmpTrans).transform(vtxInPlaneWorld);
 
 		float breakingThresh = manifoldPtr.getContactBreakingThreshold();
+        resultOut.setPersistentManifold(manifoldPtr);
         boolean hasCollision = distance < breakingThresh;
-		resultOut.setPersistentManifold(manifoldPtr);
-		if (hasCollision) {
+        if (hasCollision) {
 			
 			v3 normalOnSurfaceB = new v3(planeNormal);
 			planeObj.getWorldTransform(tmpTrans).basis.transform(normalOnSurfaceB);

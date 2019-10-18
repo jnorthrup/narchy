@@ -136,12 +136,12 @@ public class ConstantVolumeJoint extends Joint {
             v2 pi = positions[bodies[i].island];
             float dx = pn.x - pi.x;
             float dy = pn.y - pi.y;
-            float distSq = (dx * dx + dy * dy), dist;
+            float distSq = (dx * dx + dy * dy);
             v2 ni = normals[i];
             if (distSq < Settings.EPSILONsqr) {
                 ni.setZero();
             } else {
-                dist = (float) Math.sqrt(distSq);
+                float dist = (float) Math.sqrt(distSq);
 
                 ni.x = dy / dist;
                 ni.y = -dx / dist;

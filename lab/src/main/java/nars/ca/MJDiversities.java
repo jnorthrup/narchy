@@ -77,15 +77,13 @@ public class MJDiversities {
 	
 	
 	public void ItemFromString(String sStr, int sizX, int sizY) {
-		int itm = DIV_NONE;
-		
-		StringTokenizer st;
-		String sTok;
+
 		String sBff;
 		int iTmp;
 
 		try {
-			
+
+			int itm = DIV_NONE;
 			if (sStr.startsWith("#SYSTEM"))
 				itm = DIV_SYSTEM;
 			else if (sStr.startsWith("#NOISE"))
@@ -98,10 +96,10 @@ public class MJDiversities {
 				itm = DIV_STRIN;
 
 			if (itm != DIV_NONE) {
-				ResetItem(itm); 
-				st = new StringTokenizer(sStr, ",", false);
+				ResetItem(itm);
+				StringTokenizer st = new StringTokenizer(sStr, ",", false);
 				while (st.hasMoreTokens()) {
-					sTok = st.nextToken().toUpperCase();
+					String sTok = st.nextToken().toUpperCase();
 					switch (itm) {
 						case DIV_SYSTEM :
 							if (sTok.startsWith("ACT="))
@@ -244,7 +242,7 @@ public class MJDiversities {
 	
 	
 	public void Perform(boolean BeforePass, MJBoard mjb) {
-		int i, iCol, iRow;
+		int iCol, iRow;
 		int minX, minY;
 		boolean ifRedraw = false;
 
@@ -273,7 +271,7 @@ public class MJDiversities {
 				&& (m_NoiseCells > 0)) {
 			if ((mjb.Cycle % m_NoiseCycles) == 0) {
 				ifRedraw = true; 
-				for (i = 1; i <= m_NoiseCells; i++) {
+				for (int i = 1; i <= m_NoiseCells; i++) {
 					iCol = (int) Math
 							.ceil(Math.random() * (mjb.UnivSize.x - 1));
 					iRow = (int) Math

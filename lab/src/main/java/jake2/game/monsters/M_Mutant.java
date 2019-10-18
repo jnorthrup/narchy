@@ -715,11 +715,11 @@ public class M_Mutant {
 
             if (other.takedamage != 0) {
                 if (Math3D.VectorLength(self.velocity) > 400) {
-                    float[] point = { 0, 0, 0 };
                     float[] normal = { 0, 0, 0 };
 
                     Math3D.VectorCopy(self.velocity, normal);
                     Math3D.VectorNormalize(normal);
+                    float[] point = {0, 0, 0};
                     Math3D.VectorMA(self.s.origin, self.maxs[0], normal, point);
                     int damage = (int) (40 + 10 * Lib.random());
                     GameCombat.T_Damage(other, self, self, self.velocity, point,
@@ -745,10 +745,9 @@ public class M_Mutant {
         @Override
         public boolean think(edict_t self) {
 
-            float[] forward = { 0, 0, 0 };
-
             game_import_t.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
                     Defines.ATTN_NORM, 0);
+            float[] forward = {0, 0, 0};
             Math3D.AngleVectors(self.s.angles, forward, null, null);
             self.s.origin[2] += 1;
             Math3D.VectorScale(forward, 600, self.velocity);
@@ -825,14 +824,13 @@ public class M_Mutant {
         @Override
         public boolean think(edict_t self) {
 
-            float[] v = { 0, 0, 0 };
-
             if (self.absmin[2] > (self.enemy.absmin[2] + 0.75 * self.enemy.size[2]))
                 return false;
 
             if (self.absmax[2] < (self.enemy.absmin[2] + 0.25 * self.enemy.size[2]))
                 return false;
 
+            float[] v = {0, 0, 0};
             v[0] = self.s.origin[0] - self.enemy.s.origin[0];
             v[1] = self.s.origin[1] - self.enemy.s.origin[1];
             v[2] = 0;
@@ -1001,13 +999,13 @@ public class M_Mutant {
         @Override
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
-            int n;
 
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
                                 .soundindex("misc/udeath.wav"), 1,
                                 Defines.ATTN_NORM, 0);
+                int n;
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
                             damage, Defines.GIB_ORGANIC);

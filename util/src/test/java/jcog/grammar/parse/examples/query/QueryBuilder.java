@@ -98,13 +98,13 @@ public class QueryBuilder implements PubliclyCloneable<QueryBuilder> {
 	 * this object has received so far.
 	 */
 	public Query build(AxiomSource as) {
-		Vector structures = new Vector();
 
-		
-		Term[] termArray = new Term[terms.size()];
+
+        Term[] termArray = new Term[terms.size()];
 		terms.copyInto(termArray);
 		Structure s = new Structure("q", termArray);
-		structures.addElement(s);
+        Vector structures = new Vector();
+        structures.addElement(s);
 
 		
 		Enumeration e = classNames.elements();

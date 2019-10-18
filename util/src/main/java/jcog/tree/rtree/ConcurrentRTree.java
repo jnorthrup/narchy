@@ -80,10 +80,10 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
      */
     @Override
     public RInsertion<X> insert(X x) {
-        long l = writeLock();
         try {
             return tree.insert(x);
         } finally {
+            long l = writeLock();
             unlockWrite(l);
         }
     }
@@ -104,10 +104,10 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
     /** TODO read -> write lock */
     @Override public boolean remove(X x) {
-        long l = writeLock();
         try {
             return tree.remove(x);
         } finally {
+            long l = writeLock();
             unlockWrite(l);
         }
     }
@@ -126,10 +126,10 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     public final void read(Consumer<RTree<X>> x) {
-        long l = readLock();
         try {
             x.accept(tree);
         } finally {
+            long l = readLock();
             unlockRead(l);
         }
     }
@@ -143,37 +143,37 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     public final void write(Consumer<Space<X>> x) {
-        long l = writeLock();
         try {
             x.accept(tree);
         } finally {
+            long l = writeLock();
             unlockWrite(l);
         }
     }
 
     public final boolean write(Predicate<Space<X>> x) {
-        long l = writeLock();
         try {
             return x.test(tree);
         } finally {
+            long l = writeLock();
             unlockWrite(l);
         }
     }
 
     public final <Y> Y write(Function<Space<X>,Y> x) {
-        long l = writeLock();
         try {
             return x.apply(tree);
         } finally {
+            long l = writeLock();
             unlockWrite(l);
         }
     }
 
     public final <A,Y> Y writeWith(A a, BiFunction<Space<X>,A,Y> x) {
-        long l = writeLock();
         try {
             return x.apply(tree, a);
         } finally {
+            long l = writeLock();
             unlockWrite(l);
         }
     }
@@ -196,10 +196,10 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
      * TODO read -> write lock
      */
     @Override public final boolean replace(X told, X tnew) {
-        long l = writeLock();
         try {
             return tree.replace(told, tnew);
         } finally {
+            long l = writeLock();
             unlockWrite(l);
         }
     }
@@ -216,10 +216,10 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
     @Override
     public final void forEach(Consumer<? super X> consumer) {
-        long l = readLock();
         try {
             tree.forEach(consumer);
         } finally {
+            long l = readLock();
             unlockRead(l);
         }
     }
@@ -229,29 +229,29 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     public <Y> void readWith(BiConsumer<RTree<X>,Y> readProcedure, Y x) {
-        long stamp = readLock();
         try {
             readProcedure.accept(tree, x);
         } finally {
+            long stamp = readLock();
             unlockRead(stamp);
         }
     }
 
 
     public boolean test(Predicate<RTree<X>> p) {
-        long stamp = readLock();
         try {
             return p.test(tree);
         } finally {
+            long stamp = readLock();
             unlockRead(stamp);
         }
     }
 
     public <Y> boolean testWith(BiPredicate<RTree<X>,Y> p, Y y) {
-        long stamp = readLock();
         try {
             return p.test(tree, y);
         } finally {
+            long stamp = readLock();
             unlockRead(stamp);
         }
     }
@@ -304,10 +304,10 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
     @Override
     public boolean contains(X x, HyperRegion b, Spatialization<X> model) {
-        long l = readLock();
         try {
             return tree.contains(x, b, model);
         } finally {
+            long l = readLock();
             unlockRead(l);
         }
     }

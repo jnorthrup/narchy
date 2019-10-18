@@ -80,16 +80,15 @@ public abstract class Draw extends Image {
 		int row = num>>4;
 		int col = num&15;
 
-		float frow = row*0.0625f;
-		float fcol = col*0.0625f;
-		float size = 0.0625f;
-
-		GL_Bind(draw_chars.texnum);
+        GL_Bind(draw_chars.texnum);
 
 		gl.glBegin (GL_QUADS);
-		gl.glTexCoord2f (fcol, frow);
+        float fcol = col * 0.0625f;
+        float frow = row * 0.0625f;
+        gl.glTexCoord2f (fcol, frow);
 		gl.glVertex2f (x, y);
-		gl.glTexCoord2f (fcol + size, frow);
+        float size = 0.0625f;
+        gl.glTexCoord2f (fcol + size, frow);
 		gl.glVertex2f (x+8, y);
 		gl.glTexCoord2f (fcol + size, frow + size);
 		gl.glVertex2f (x+8, y+8);
@@ -107,12 +106,11 @@ public abstract class Draw extends Image {
 	@Override
     public image_t Draw_FindPic(String name) {
 		image_t image = null;
-		String fullname;
 
-		if (!name.startsWith("/") && !name.startsWith("\\"))
+        if (!name.startsWith("/") && !name.startsWith("\\"))
 		{
-			fullname = "pics/" + name + ".pcx";
-			image = GL_FindImage(fullname, it_pic);
+            String fullname = "pics/" + name + ".pcx";
+            image = GL_FindImage(fullname, it_pic);
 		} else {
 			image = GL_FindImage(name.substring(1), it_pic);
 		}
@@ -319,15 +317,12 @@ final IntBuffer image32=Lib.newIntBuffer(256*256);
 	@Override
     public void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte[] data)
 	{
-		int i, j, trows;
-		int sourceIndex;
-		int frac, fracstep;
-		float hscale;
-		int row;
 
         GL_Bind(0);
 
-		if (rows<=256)
+        float hscale;
+        int trows;
+        if (rows<=256)
 		{
 			hscale = 1;
 			trows = rows;
@@ -339,7 +334,13 @@ final IntBuffer image32=Lib.newIntBuffer(256*256);
 		}
         float t = rows * hscale / 256;
 
-		if ( !qglColorTableEXT )
+        int row;
+        int fracstep;
+        int frac;
+        int sourceIndex;
+        int j;
+        int i;
+        if ( !qglColorTableEXT )
 		{
 			image32.clear();
             int destIndex = 0;

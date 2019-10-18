@@ -77,8 +77,9 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
                 c[j++] = left + ix; c[j++] = top; c[j++] = left + ix + di; c[j++] = bottom;
                 //xyi.posSpectro(left, top + ix,  left + ix + di, bottom);
             } else {
+                c[j++] = left;
                 float iy = ii * di;
-                c[j++] = left; c[j++] = top + iy; c[j++] = right; c[j++] = top+iy+di;
+                c[j++] = top + iy; c[j++] = right; c[j++] = top+iy+di;
                 //xyi.posSpectro(left,  top + iy, right, top + iy + di);
             }
         }

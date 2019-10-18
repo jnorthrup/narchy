@@ -407,10 +407,9 @@ public class ParticleSystem {
         RotateBuffer(groupA.m_firstIndex, groupA.m_lastIndex, groupB.m_firstIndex);
         assert (groupA.m_lastIndex == groupB.m_firstIndex);
 
-        int particleFlags;
         int[] array = m_flagsBuffer.data;
         int bound = groupB.m_lastIndex;
-        particleFlags = Arrays.stream(array, groupA.m_firstIndex, bound).reduce(0, (a, b) -> a | b);
+        int particleFlags = Arrays.stream(array, groupA.m_firstIndex, bound).reduce(0, (a, b) -> a | b);
 
         updateContacts(true);
         if ((particleFlags & k_pairFlags) != 0) {
@@ -531,11 +530,11 @@ public class ParticleSystem {
                     float ap0 = m_depthBuffer[a];
                     float bp0 = m_depthBuffer[b];
                     float ap1 = bp0 + r;
-                    float bp1 = ap0 + r;
                     if (ap0 > ap1) {
                         m_depthBuffer[a] = ap1;
                         updated = true;
                     }
+                    float bp1 = ap0 + r;
                     if (bp0 > bp1) {
                         m_depthBuffer[b] = bp1;
                         updated = true;
@@ -1100,8 +1099,8 @@ public class ParticleSystem {
                 float vx = vb.x - va.x;
                 float vy = vb.y - va.y;
                 float fx = viscousStrength * w * vx;
-                float fy = viscousStrength * w * vy;
                 va.x += fx;
+                float fy = viscousStrength * w * vy;
                 va.y += fy;
                 vb.x -= fx;
                 vb.y -= fy;
@@ -1628,10 +1627,9 @@ public class ParticleSystem {
 
     private static int lowerBound(Proxy[] ray, int length, long tag) {
         int left = 0;
-        int step, curr;
         while (length > 0) {
-            step = length / 2;
-            curr = left + step;
+            int step = length / 2;
+            int curr = left + step;
             if (ray[curr].tag < tag) {
                 left = curr + 1;
                 length -= step + 1;
@@ -1644,10 +1642,9 @@ public class ParticleSystem {
 
     private static int upperBound(Proxy[] ray, int length, long tag) {
         int left = 0;
-        int step, curr;
         while (length > 0) {
-            step = length / 2;
-            curr = left + step;
+            int step = length / 2;
+            int curr = left + step;
             if (ray[curr].tag <= tag) {
                 left = curr + 1;
                 length -= step + 1;
@@ -1705,14 +1702,13 @@ public class ParticleSystem {
                         m_proxyCount,
                         computeTag(m_inverseDiameter * MathUtils.max(point1.x, point2.x) + 1, m_inverseDiameter
                                 * MathUtils.max(point1.y, point2.y) + 1));
-        float fraction = 1;
-        
-        
-        
+
+
         float vx = point2.x - point1.x;
         float vy = point2.y - point1.y;
         float v2 = vx * vx + vy * vy;
         if (v2 == 0) v2 = Float.MAX_VALUE;
+        float fraction = 1;
         for (int proxy = firstProxy; proxy < lastProxy; ++proxy) {
             int i = m_proxyBuffer[proxy].index;
             jcog.math.v2 posI = m_positionBuffer.data[i];

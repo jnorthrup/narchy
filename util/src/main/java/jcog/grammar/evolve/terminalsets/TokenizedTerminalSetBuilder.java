@@ -96,10 +96,9 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
         Set<Leaf> terminalSet = new HashSet<>(nodeFactory.getTerminalSet());
         
         
-        Map<String,Double> tokensCounter = new HashMap<>();    
-        Map<String,Double> winnerTokens = new HashMap<>();    
-        
-        
+        Map<String,Double> tokensCounter = new HashMap<>();
+
+
         for (Example example : dataSet.getExamples()) {
             for (String match : example.getMatchedStrings()) {
                 
@@ -126,6 +125,7 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
         }
         
         int numberOfMatches = dataSet.getNumberMatches();
+        Map<String, Double> winnerTokens = new HashMap<>();
         for (Map.Entry<String, Double> entry : tokensCounter.entrySet()) {
             String key = entry.getKey();
             Double double1 = entry.getValue();

@@ -19,10 +19,7 @@ public class Diffusion extends Material {
 
     @Override
     public v2[] focee(v2 startPoint, v2 vektor) {
-        final int count = 128; 
-        double c = 4; 
 
-        
 
         float ln = vektor.length();
         Transform t = new Transform();
@@ -30,7 +27,9 @@ public class Diffusion extends Material {
         t.c = vektor.y / ln;
         t.s = vektor.x / ln;
 
+        final int count = 128;
         v2[] va = new v2[count];
+        double c = 4;
         for (int i = 1; i <= count; i++) {
 
             double a = r.nextFloat() * 2 * Math.PI;

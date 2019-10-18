@@ -351,12 +351,11 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
         long windowRadius = Math.round(dur * this.window.floatValue() / 2);
 
-        long start = now - windowRadius;
-        long end = now + windowRadius;
-
         int answerDetail = truthPrecision.intValue();
         this.answerTries = (int)Math.ceil(answerDetail);
 
+        long end = now + windowRadius;
+        long start = now - windowRadius;
         if (answer == null) {
             this.answer = Answer
                     .taskStrength(true, answerDetail, start, end, null, null, nar);

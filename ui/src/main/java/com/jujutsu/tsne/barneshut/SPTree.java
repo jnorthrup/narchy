@@ -32,16 +32,16 @@ public class SPTree {
     int no_children;
 
 	public SPTree(int D, double[] inp_data, int N) {
-		
-		int nD = 0;
-		double [] mean_Y = new double [D];
-		double []  min_Y = new double [D]; 
+
+        double []  min_Y = new double [D];
 		double []  max_Y = new double [D]; 
 		for(int d = 0; d < D; d++)  {
 			min_Y[d] = Double.POSITIVE_INFINITY;
 			max_Y[d] = Double.NEGATIVE_INFINITY;
 		}
-		for( int n = 0; n < N; n++) {
+        double[] mean_Y = new double[D];
+        int nD = 0;
+        for(int n = 0; n < N; n++) {
 			for( int d = 0; d < D; d++) {
 				mean_Y[d] += inp_data[n * D + d];
 				if(inp_data[nD + d] < min_Y[d]) min_Y[d] = inp_data[nD + d];
@@ -285,12 +285,11 @@ public class SPTree {
 		int ind = point_index * dimension;
 		
 		double max_width = 0.0;
-		double cur_width;
-		for(int d = 0; d < dimension; d++) {
+        for(int d = 0; d < dimension; d++) {
 			buff[d] = data[ind + d] - center_of_mass[d];
 			D += buff[d] * buff[d];
-			cur_width = boundary.getWidth(d);
-			max_width = (max_width > cur_width) ? max_width : cur_width;
+            double cur_width = boundary.getWidth(d);
+            max_width = (max_width > cur_width) ? max_width : cur_width;
 		} 
 
 		if(is_leaf || max_width / sqrt(D) < theta) {
@@ -317,13 +316,12 @@ public class SPTree {
 		double [] buff = new double[dimension];
 		int ind1 = 0;
 		int ind2 = 0;
-		double D;
-		for(int n = 0; n < N; n++) {
+        for(int n = 0; n < N; n++) {
 			for(int i = row_P[n]; i < row_P[n + 1]; i++) {
 
-				
-				D = 1.0;
-				ind2 = col_P[i] * dimension;
+
+                double D = 1.0;
+                ind2 = col_P[i] * dimension;
 				for(int d = 0; d < dimension; d++) { 
 					buff[d] = data[ind1 + d] - data[ind2 + d];
 					D += buff[d] * buff[d];

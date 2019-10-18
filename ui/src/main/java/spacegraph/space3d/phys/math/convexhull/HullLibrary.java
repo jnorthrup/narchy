@@ -56,9 +56,8 @@ public class HullLibrary {
 	 * @return whether conversion was successful
 	 */
 	public boolean createConvexHull(HullDesc desc, HullResult result) {
-		boolean ret = false;
 
-		PHullResult hr = new PHullResult();
+        PHullResult hr = new PHullResult();
 
 		int vcount = desc.vcount;
 		if (vcount < 8) vcount = 8;
@@ -70,9 +69,10 @@ public class HullLibrary {
 
 		int[] ovcount = new int[1];
 
-		boolean ok = cleanupVertices(desc.vcount, desc.vertices, desc.vertexStride, ovcount, vertexSource, desc.normalEpsilon, scale); 
+		boolean ok = cleanupVertices(desc.vcount, desc.vertices, desc.vertexStride, ovcount, vertexSource, desc.normalEpsilon, scale);
 
-		if (ok) {
+        boolean ret = false;
+        if (ok) {
 			
             for (int i=0; i<ovcount[0]; i++) {
                 
@@ -369,9 +369,9 @@ public class HullLibrary {
             tmp.sub(verts.get(t.vmax), verts.get(t.getCoord(0)));
             t.rise = n.dot(tmp);
         }
-		Tri te;
-		vlimit -= 4;
-		while (vlimit > 0 && ((te = extrudable(epsilon)) != null)) {
+        vlimit -= 4;
+        Tri te;
+        while (vlimit > 0 && ((te = extrudable(epsilon)) != null)) {
 			Int3 ti = te;
 			int v = te.vmax;
 			assert (v != -1);
@@ -635,9 +635,7 @@ public class HullLibrary {
 
 		vcount[0] = 0;
 
-		float[] recip = new float[3];
-
-		if (scale != null) {
+        if (scale != null) {
 			scale.set(1, 1, 1);
 		}
 
@@ -711,6 +709,7 @@ public class HullLibrary {
 
 			return true; 
 		}
+        float[] recip = new float[3];
         if (scale != null) {
             scale.x = dx;
             scale.y = dy;

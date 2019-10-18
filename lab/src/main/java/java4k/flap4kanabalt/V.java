@@ -112,37 +112,33 @@ public class V extends Applet implements Runnable {
 
 		
 		long lastTime = System.nanoTime();
-		long think = 10000000L;
 
-		String s = "";
-		int x = 0;
-		int curFrame = 0;
-		int frameTime = 0;
-		int i = 0;
-		int j = 0;
-		int score = 0;
-		int maxScore = 0;
-		boolean bCurDown = false;
-		boolean bStart = false;
-		boolean bWin = false;
-
-		final float CHANGE_DIF = 1.2f;
-
-		Color downColor = new Color(100, 106, 125);
-		Color windowColor = new Color(176, 176, 191);
-		Color darkColor = new Color(53, 53, 61);
-		Color brightColor = new Color(230, 230, 230);
-
-		float playerY = 240;
-		float playerX = 60;
-		float curVecY = 0;
-		float curDif = 0;
-
-		int[] level = new int[4];
+        int[] level = new int[4];
 		level[0] = level[1] = 400;
 
-		
-		while (true) {
+
+        float curDif = 0;
+        float curVecY = 0;
+        float playerX = 60;
+        float playerY = 240;
+        Color brightColor = new Color(230, 230, 230);
+        Color darkColor = new Color(53, 53, 61);
+        Color windowColor = new Color(176, 176, 191);
+        Color downColor = new Color(100, 106, 125);
+        final float CHANGE_DIF = 1.2f;
+        boolean bWin = false;
+        boolean bStart = false;
+        boolean bCurDown = false;
+        int maxScore = 0;
+        int score = 0;
+        int j = 0;
+        int i = 0;
+        int frameTime = 0;
+        int curFrame = 0;
+        int x = 0;
+        String s = "";
+        long think = 10000000L;
+        while (true) {
 			long now = System.nanoTime();
 			long delta = now - lastTime;
 			think += delta;

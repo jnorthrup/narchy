@@ -199,11 +199,11 @@ final class StdAudio {
     // return data as a byte array
     private static byte[] readByte(String filename) {
         byte[] data = null;
-        AudioInputStream ais = null;
         try {
 
             // try to read from file
             File file = new File(filename);
+            AudioInputStream ais = null;
             if (file.exists()) {
                 ais = AudioSystem.getAudioInputStream(file);
                 data = new byte[ais.available()];

@@ -367,7 +367,6 @@ public class PulleyJoint extends Joint {
         }
 
         float C = m_constant - lengthA - m_ratio * lengthB;
-        float linearError = Math.abs(C);
 
         float impulse = -mass * C;
 
@@ -389,6 +388,7 @@ public class PulleyJoint extends Joint {
         pool.pushRot(2);
         pool.pushVec2(7);
 
+        float linearError = Math.abs(C);
         return linearError < Settings.linearSlop;
     }
 }

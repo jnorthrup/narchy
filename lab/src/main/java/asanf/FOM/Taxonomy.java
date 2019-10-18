@@ -33,13 +33,10 @@ public class Taxonomy<E> implements Iterable<E>{
     }
 
     public void taxonomyPruning(){
-        int bigNum = 10000;
-    	int i,j,k;
-    	double sumDist;
-    	int numConcepts = concepts.size();
-        double[][] distance = new double[numConcepts][numConcepts];
-    	
-    	/* conservo solo le relazioni più forti:
+        int i,j;
+        int numConcepts = concepts.size();
+
+        /* conservo solo le relazioni più forti:
     	 * ovvero la relazione più alta fra rel(i,j) e rel(j,i)
     	 */
     	for(i = 0; i < numConcepts; i++){
@@ -51,10 +48,11 @@ public class Taxonomy<E> implements Iterable<E>{
 	    				relations[i][j] = 0;
     		}
     	}
-    	
-    	
-    	
-    	for(i = 0; i < numConcepts; i++)
+
+
+        double[][] distance = new double[numConcepts][numConcepts];
+        int bigNum = 10000;
+        for(i = 0; i < numConcepts; i++)
     		for(j = 0; j < numConcepts; j++){
     			
     			if(i == j){
@@ -69,7 +67,7 @@ public class Taxonomy<E> implements Iterable<E>{
     	 * Ciò che segue è una leggera modifica dell'algoritmo di 
     	 * Floyd Warshall per all-pairs shortest path.
     	 */
-    	for(k = 0; k < numConcepts; k++){
+    	for(int k = 0; k < numConcepts; k++){
     		for(i = 0; i < numConcepts; i++){
     			for (j = 0; j < numConcepts; j++) {
     				
@@ -83,8 +81,8 @@ public class Taxonomy<E> implements Iterable<E>{
     				 * e quindi decidere se esso va eliminato o meno.
     				 */
 					if(relations[i][k] > relations[i][j] && relations[k][j] > relations[i][j]){
-						sumDist = distance[i][k] + distance[k][j]; 
-						if(  sumDist < distance[i][j])
+                        double sumDist = distance[i][k] + distance[k][j];
+                        if(  sumDist < distance[i][j])
 							distance[i][j] = sumDist;
 					}
 				}

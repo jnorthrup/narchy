@@ -110,16 +110,14 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
                 //24;
                 8;
 
-        int targets =
-                //4;
-                2;
-        int prompts = 2;
-        int distractors =
-                //4;
-                2;
         seqLen = sequenceLength;
+        //4;
+        int targets = 2;
         this.targets = targets; // targets all all bits up to _targets
+        int prompts = 2;
         this.prompts = prompts;
+        //4;
+        int distractors = 2;
         this.distractors = distractors;
 
         int observations = numInputs();
@@ -326,8 +324,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
             for(int c = 0; c < targets; ++c ) {
 //                String s = "   ";
                 float r = sequenceActions.get(sequence, c);
-                String ideal = "";
-//                if( r > 0.f ) {
+                //                if( r > 0.f ) {
 //                    if( c < ( _targets + _prompts ) ) {
 //                        s = "*  ";
 //                    }
@@ -339,7 +336,8 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
                     int n = (int)( r * 100f ); // 0..99
                     String val = String.valueOf( n );
                     while( val.length() < 3 ) val = ' ' + val;
-                    ideal += val;
+                String ideal = "";
+                ideal += val;
 //                }
                 System.err.print( ideal );
 //                System.err.print( s );

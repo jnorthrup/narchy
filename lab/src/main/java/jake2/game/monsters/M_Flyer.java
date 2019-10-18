@@ -960,11 +960,7 @@ public class M_Flyer {
     };
 
     static void flyer_fire(edict_t self, int flash_number) {
-        float[] start = { 0, 0, 0 };
 
-        float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-        float[] end = { 0, 0, 0 };
-        float[] dir = { 0, 0, 0 };
         int effect;
 
         boolean b = IntStream.of(FRAME_attak204, FRAME_attak207, FRAME_attak210).anyMatch(i -> (self.s.frame == i));
@@ -972,13 +968,18 @@ public class M_Flyer {
             effect = Defines.EF_HYPERBLASTER;
         else
             effect = 0;
+        float[] right = {0, 0, 0};
+        float[] forward = {0, 0, 0};
         Math3D.AngleVectors(self.s.angles, forward, right, null);
+        float[] start = {0, 0, 0};
         Math3D.G_ProjectSource(self.s.origin,
                 M_Flash.monster_flash_offset[flash_number], forward, right,
                 start);
 
+        float[] end = {0, 0, 0};
         Math3D.VectorCopy(self.enemy.s.origin, end);
         end[2] += self.enemy.viewheight;
+        float[] dir = {0, 0, 0};
         Math3D.VectorSubtract(end, start, dir);
 
         Monster.monster_fire_blaster(self, start, dir, 1, 1000, flash_number,

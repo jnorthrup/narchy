@@ -59,10 +59,10 @@ public class SignalViewTest {
     static final int capacity = 128;
 
     public static void main(String[] args) {
-        SensorNode n, n2;
+        SensorNode n;
         try {
             n = new SensorNode();
-            n2 = new SensorNode();
+            SensorNode n2 = new SensorNode();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -179,11 +179,10 @@ public class SignalViewTest {
             super(id);
             this.i = i;
 
-            float audioFPS = 4;
-            float granularity = 2;
-
             in = new SignalInput();
+            float audioFPS = 4;
             in.set(i, 1 / audioFPS);
+            float granularity = 2;
             in.setFPS(audioFPS * granularity);
         }
 

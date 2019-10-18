@@ -58,7 +58,6 @@ public class MatrixImage extends JComponent {
 
     public static int val2col(double n, double min, double max) {
         double mean = (max + min) / 2.0;
-        double n5 = min + 2.0 * (max - min) / 3.0;
         int r;
         if (n < mean) {
             r = (int) (255.0 * (min - n) / (mean - min)) + 255;
@@ -72,6 +71,7 @@ public class MatrixImage extends JComponent {
             r = 255;
         }
         int g;
+        double n5 = min + 2.0 * (max - min) / 3.0;
         if (n < mean) {
             g = (int) (255.0 * (n - min) / (mean - min));
         } else if (n < n5) {

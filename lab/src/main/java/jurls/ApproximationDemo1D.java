@@ -86,8 +86,8 @@ public class ApproximationDemo1D extends javax.swing.JFrame {
         int count = 0;
         int bound = components;
         for (int i = 0; i < bound; i++) {
-            double v = 2f * (Math.random() - 0.5);
             if (ys.length == count) ys = Arrays.copyOf(ys, count * 2);
+            double v = 2f * (Math.random() - 0.5);
             ys[count++] = v;
         }
         ys = Arrays.copyOfRange(ys, 0, count);

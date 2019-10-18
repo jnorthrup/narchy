@@ -41,7 +41,6 @@ public enum PremiseRuleCompiler {
 
         /** indexed by local (deriver-specific) id */
         int s = rr.size();
-        short i = 0;
         assert(s > 0);
 
         How[] roots = new How[s];
@@ -49,6 +48,7 @@ public enum PremiseRuleCompiler {
 
         Map<String,RuleCause> tags = new HashMap();
 
+        short i = 0;
         for (PremiseRule r : rr) {
 
             How added = paths.put(

@@ -24,8 +24,8 @@ public class WorldGenerator {
     public static Int2 playerLocation;
 
     public static TileID[][] generate(int width, int height, Random random) {
-        TileID[][] world = new TileID[width][height];
         visibility = new boolean[width][height];
+        TileID[][] world = new TileID[width][height];
         for (int i = 0; i < visibility.length; i++) {
             for (int j = 0; j < visibility[0].length; j++) {
                 visibility[i][j] = true;

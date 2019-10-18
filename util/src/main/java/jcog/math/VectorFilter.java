@@ -32,11 +32,11 @@ public class VectorFilter {
     }
 
     public double[] highpass(double[] vector) {
-        double[] retVal = new double[3];
         prevAcc[0] = vector[0] * this.factor + this.prevAcc[0] * (1.0 - this.factor);
         prevAcc[1] = vector[1] * this.factor + this.prevAcc[1] * (1.0 - this.factor);
         prevAcc[2] = vector[2] * this.factor + this.prevAcc[2] * (1.0 - this.factor);
 
+        double[] retVal = new double[3];
         retVal[0] = vector[0] - prevAcc[0];
         retVal[1] = vector[1] - prevAcc[1];
         retVal[2] = vector[2] - prevAcc[2];

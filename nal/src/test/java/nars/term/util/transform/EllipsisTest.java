@@ -45,7 +45,6 @@ public class EllipsisTest {
         Term getMatchable(int arity) throws Narsese.NarseseException;
 
         default Set<Term> test(int arity, int repeats) throws Narsese.NarseseException {
-            Set<Term> selectedFixed = new HashSet(arity);
 
 
             Term y = /*index.patternify*/(getMatchable(arity));
@@ -69,6 +68,7 @@ public class EllipsisTest {
             assertNotNull(ellipsisTerm);
 
 
+            Set<Term> selectedFixed = new HashSet(arity);
             for (int seed = 0; seed < Math.max(1, repeats) /* enough chances to select all combinations */; seed++) {
 
                 

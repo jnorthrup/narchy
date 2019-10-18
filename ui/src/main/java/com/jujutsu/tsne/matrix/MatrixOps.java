@@ -373,8 +373,8 @@ public enum MatrixOps { ;
 		double[] vector = new double[10];
 		int count = 0;
 		for (double v : v1) {
-			double sqrt = Math.sqrt(v);
 			if (vector.length == count) vector = Arrays.copyOf(vector, count * 2);
+			double sqrt = Math.sqrt(v);
 			vector[count++] = sqrt;
 		}
 		vector = Arrays.copyOfRange(vector, 0, count);
@@ -433,8 +433,8 @@ public enum MatrixOps { ;
 		double[] matrix = new double[10];
 		int count = 0;
 		for (double v : m1) {
-			double pow = Math.pow(v, power);
 			if (matrix.length == count) matrix = Arrays.copyOf(matrix, count * 2);
+			double pow = Math.pow(v, power);
 			matrix[count++] = pow;
 		}
 		matrix = Arrays.copyOfRange(matrix, 0, count);
@@ -489,8 +489,8 @@ public enum MatrixOps { ;
 		double[] vector = new double[10];
 		int count = 0;
 		for (double v : v1) {
-			double v2 = 1 / v;
 			if (vector.length == count) vector = Arrays.copyOf(vector, count * 2);
+			double v2 = 1 / v;
 			vector[count++] = v2;
 		}
 		vector = Arrays.copyOfRange(vector, 0, count);
@@ -664,8 +664,8 @@ public enum MatrixOps { ;
 		double[] absolutes = new double[10];
 		int count = 0;
 		for (double val : vals) {
-			double abs = Math.abs(val);
 			if (absolutes.length == count) absolutes = Arrays.copyOf(absolutes, count * 2);
+			double abs = Math.abs(val);
 			absolutes[count++] = abs;
 		}
 		absolutes = Arrays.copyOfRange(absolutes, 0, count);
@@ -1225,11 +1225,9 @@ public enum MatrixOps { ;
 		int n = v[0].length;
 		double[] var = new double[n];
 		int degrees = (m - 1);
-		double c;
-		double s;
 		for (int j = 0; j < n; j++) {
-			c = 0;
-			s = 0;
+			double c = 0;
+			double s = 0;
 			for (double[] aV1 : v) s += aV1[j];
 			s /= m;
 			for (double[] aV : v) c += (aV[j] - s) * (aV[j] - s);
@@ -1314,8 +1312,8 @@ public enum MatrixOps { ;
 		double[] matrix = new double[10];
 		int count = 0;
 		for (double v : m1) {
-			double v1 = v + m2;
 			if (matrix.length == count) matrix = Arrays.copyOf(matrix, count * 2);
+			double v1 = v + m2;
 			matrix[count++] = v1;
 		}
 		matrix = Arrays.copyOfRange(matrix, 0, count);
@@ -1349,8 +1347,8 @@ public enum MatrixOps { ;
 		double[] vector = new double[10];
 		int count = 0;
 		for (double v : denom) {
-			double v1 = numerator / v;
 			if (vector.length == count) vector = Arrays.copyOf(vector, count * 2);
+			double v1 = numerator / v;
 			vector[count++] = v1;
 		}
 		vector = Arrays.copyOfRange(vector, 0, count);
@@ -1362,8 +1360,8 @@ public enum MatrixOps { ;
 		double[] vector = new double[10];
 		int count = 0;
 		for (double v : numerator) {
-			double v1 = v / denom;
 			if (vector.length == count) vector = Arrays.copyOf(vector, count * 2);
+			double v1 = v / denom;
 			vector[count++] = v1;
 		}
 		vector = Arrays.copyOfRange(vector, 0, count);
@@ -1425,8 +1423,8 @@ public enum MatrixOps { ;
 		double[] matrix = new double[10];
 		int count = 0;
 		for (double v : m1) {
-			double v1 = v * mul;
 			if (matrix.length == count) matrix = Arrays.copyOf(matrix, count * 2);
+			double v1 = v * mul;
 			matrix[count++] = v1;
 		}
 		matrix = Arrays.copyOfRange(matrix, 0, count);
@@ -1616,8 +1614,8 @@ public enum MatrixOps { ;
 		double[] result = new double[10];
 		int count = 0;
 		for (Double d : ds) {
-			double v = d;
 			if (result.length == count) result = Arrays.copyOf(result, count * 2);
+			double v = d;
 			result[count++] = v;
 		}
 		result = Arrays.copyOfRange(result, 0, count);

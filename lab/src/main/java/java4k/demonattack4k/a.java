@@ -862,21 +862,21 @@ public class a extends GamePanel {
 	public void processAWTEvent(AWTEvent e) {
 		if (e instanceof KeyEvent) {
 			KeyEvent keyEvent = (KeyEvent) e;
-			final int VK_LEFT = 0x25;
-			final int VK_RIGHT = 0x27;
-			final int VK_SHOOT = 0x42;
-			final int VK_A = 0x41;
-			final int VK_D = 0x44;
-			final int VK_P = 0x50;
 
-			int k = keyEvent.getKeyCode();
+            int k = keyEvent.getKeyCode();
 			if (k > 0) {
-				if (k == VK_D) {
+                final int VK_D = 0x44;
+                final int VK_A = 0x41;
+                final int VK_RIGHT = 0x27;
+                final int VK_LEFT = 0x25;
+                if (k == VK_D) {
 					k = VK_RIGHT;
 				} else if (k == VK_A) {
 					k = VK_LEFT;
 				}
-				a[(k == VK_LEFT || k == VK_RIGHT || k == VK_P) ? k : VK_SHOOT] = keyEvent.getID() != 402;
+                final int VK_P = 0x50;
+                final int VK_SHOOT = 0x42;
+                a[(k == VK_LEFT || k == VK_RIGHT || k == VK_P) ? k : VK_SHOOT] = keyEvent.getID() != 402;
 			}
 		}
 	}

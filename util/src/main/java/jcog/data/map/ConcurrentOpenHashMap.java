@@ -288,13 +288,11 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         }
 
         V put(K key, V value, int keyHash, boolean onlyIfAbsent, Function<? super K, ? extends V> valueProvider) {
-            long stamp = writeLock();
             int bucket = signSafeMod(keyHash, capacity);
 
-            
-            int firstDeletedKey = -1;
 
             try {
+                int firstDeletedKey = -1;
                 while (true) {
                     AtomicReferenceArray table = this.table;
                     K storedKey = (K) table.getOpaque(bucket);
@@ -335,6 +333,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                     bucket = (bucket + 2) & (table.length() - 1);
                 }
             } finally {
+                long stamp = writeLock();
                 if (usedBuckets.get() > resizeThreshold) {
                     try {
                         rehash();
@@ -348,7 +347,6 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         }
 
         private V remove(K key, Object value, int keyHash) {
-            long stamp = writeLock();
             int bucket = signSafeMod(keyHash, capacity);
 
             try {
@@ -383,12 +381,12 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                 }
 
             } finally {
+                long stamp = writeLock();
                 unlockWrite(stamp);
             }
         }
 
         void clear() {
-            long stamp = writeLock();
 
             try {
                 int l = table.length();
@@ -397,6 +395,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                 this.size.set(0);
                 this.usedBuckets.set(0);
             } finally {
+                long stamp = writeLock();
                 unlockWrite(stamp);
             }
         }

@@ -126,7 +126,6 @@ public class WorkerExec extends ThreadedExec {
 			FloatAveragedWindow loopTime = new FloatAveragedWindow(16, 0.5f, false).mode(FloatAveragedWindow.Mode.Mean);
 			loopTime.fill(loopNS_recorded_max);
 
-			DeriverExecutor d;
 			while (alive.getOpaque()) {
 
 				concurrency = Math.max(1,nar.exe.concurrency());
@@ -163,7 +162,7 @@ public class WorkerExec extends ThreadedExec {
 						continue; //slept all day
 				}
 
-				d = deriver();
+				DeriverExecutor d = deriver();
 				if (d == null) continue;
 
 				PartBag<What> ww = nar.what;

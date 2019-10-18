@@ -387,8 +387,10 @@ public enum LongArrays {
             m = med3(x, l, m, n, comp); 
         }
         long v = x[m];
-        
-        int a = from, b = a, c = to - 1, d = c;
+
+        int c = to - 1;
+        int a = from;
+        int b = a, d = c;
         while (true) {
             int comparison;
             while (b <= c && (comparison = comp.compare(x[b], v)) <= 0) {
@@ -402,10 +404,10 @@ public enum LongArrays {
             if (b > c) break;
             swap(x, b++, c--);
         }
-        
-        int n = to;
+
         int s = Math.min(a - from, b - a);
         vecSwap(x, from, b - s, s);
+        int n = to;
         s = Math.min(d - c, n - d - 1);
         vecSwap(x, b, n - s, s);
         
@@ -472,8 +474,10 @@ public enum LongArrays {
             m = med3(x, l, m, n); 
         }
         long v = x[m];
-        
-        int a = from, b = a, c = to - 1, d = c;
+
+        int c = to - 1;
+        int a = from;
+        int b = a, d = c;
         while (true) {
             int comparison;
             while (b <= c && (comparison = (Long.compare(x[b], v))) <= 0) {
@@ -487,10 +491,10 @@ public enum LongArrays {
             if (b > c) break;
             swap(x, b++, c--);
         }
-        
-        int n = to;
+
         int s = Math.min(a - from, b - a);
         vecSwap(x, from, b - s, s);
+        int n = to;
         s = Math.min(d - c, n - d - 1);
         vecSwap(x, b, n - s, s);
         
@@ -665,10 +669,9 @@ public enum LongArrays {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static int binarySearch(long[] a, int from, int to, long key) {
-        long midVal;
         while (from <= to) {
             int mid = (from + to) >>> 1;
-            midVal = a[mid];
+            long midVal = a[mid];
             if (midVal < key) from = mid + 1;
             else if (midVal > key) to = mid - 1;
             else return mid;
@@ -720,10 +723,9 @@ public enum LongArrays {
      * @see java.util.Arrays
      */
     public static int binarySearch(long[] a, int from, int to, long key, LongComparator c) {
-        long midVal;
         while (from <= to) {
             int mid = (from + to) >>> 1;
-            midVal = a[mid];
+            long midVal = a[mid];
             int cmp = c.compare(midVal, key);
             if (cmp < 0) from = mid + 1;
             else if (cmp > 0) to = mid - 1;

@@ -136,8 +136,6 @@ public class PitchProcessor {
          */
         public PitchDetectionResult getPitch(float[] audioBuffer) {
 
-            float pitchInHertz;
-
             // step 2
             difference(audioBuffer);
 
@@ -148,6 +146,7 @@ public class PitchProcessor {
             int tauEstimate = absoluteThreshold();
 
             // step 5
+            float pitchInHertz;
             if (tauEstimate != -1) {
                 float betterTau = parabolicInterpolation(tauEstimate);
 
@@ -174,14 +173,13 @@ public class PitchProcessor {
          * paper.
          */
         private void difference(float[] audioBuffer) {
-            int index, tau;
-            float delta;
+            int tau;
             for (tau = 0; tau < yinBuffer.length; tau++) {
                 yinBuffer[tau] = 0;
             }
             for (tau = 1; tau < yinBuffer.length; tau++) {
-                for (index = 0; index < yinBuffer.length; index++) {
-                    delta = audioBuffer[index] - audioBuffer[index + tau];
+                for (int index = 0; index < yinBuffer.length; index++) {
+                    float delta = audioBuffer[index] - audioBuffer[index + tau];
                     yinBuffer[tau] += delta * delta;
                 }
             }
@@ -195,10 +193,9 @@ public class PitchProcessor {
          * </code>
          */
         private void cumulativeMeanNormalizedDifference() {
-            int tau;
             yinBuffer[0] = 1;
             float runningSum = 0;
-            for (tau = 1; tau < yinBuffer.length; tau++) {
+            for (int tau = 1; tau < yinBuffer.length; tau++) {
                 runningSum += yinBuffer[tau];
                 yinBuffer[tau] *= tau / runningSum;
             }
@@ -257,20 +254,20 @@ public class PitchProcessor {
          * @return A better, more precise tau value.
          */
         private float parabolicInterpolation(int tauEstimate) {
-            float betterTau;
             int x0;
-            int x2;
 
             if (tauEstimate < 1) {
                 x0 = tauEstimate;
             } else {
                 x0 = tauEstimate - 1;
             }
+            int x2;
             if (tauEstimate + 1 < yinBuffer.length) {
                 x2 = tauEstimate + 1;
             } else {
                 x2 = tauEstimate;
             }
+            float betterTau;
             if (x0 == tauEstimate) {
                 if (yinBuffer[tauEstimate] <= yinBuffer[x2]) {
                     betterTau = tauEstimate;

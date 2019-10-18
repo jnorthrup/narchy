@@ -86,9 +86,9 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
                                 (int)Math.ceil(((float)ttlStart) / N)
                                 //ttlStart
                             );
-                            int ttlUsed = 0;
                             int[] ne = nonEmpty.toIntArray();
                             ArrayUtil.shuffle(ne, a.random());
+                            int ttlUsed = 0;
                             for (int i = 0; i < N; i++) {
                                 a.ttl = ttlFair;
                                 items[ne[i]].match(a);

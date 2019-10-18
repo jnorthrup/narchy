@@ -225,13 +225,12 @@ public class SequentialImpulseConstrainer implements Constrainer {
         float vel1Dotn = contactConstraint.contactNormal.dot(body1.linearVelocity) + contactConstraint.relpos1CrossNormal.dot(body1.angularVelocity);
         float vel2Dotn = contactConstraint.contactNormal.dot(body2.linearVelocity) + contactConstraint.relpos2CrossNormal.dot(body2.angularVelocity);
 
-        float rel_vel = vel1Dotn - vel2Dotn;
-
         float positionalError = 0.f;
         if (!solverInfo.splitImpulse || (contactConstraint.penetration > solverInfo.splitImpulsePenetrationThreshold)) {
             positionalError = -contactConstraint.penetration * solverInfo.erp / solverInfo.timeStep;
         }
 
+        float rel_vel = vel1Dotn - vel2Dotn;
         float velocityError = contactConstraint.restitution - rel_vel;
 
         float penetrationImpulse = positionalError * contactConstraint.jacDiagABInv;
@@ -267,9 +266,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
             float appliedNormalImpulse) {
         float combinedFriction = contactConstraint.friction;
 
-        float limit = appliedNormalImpulse * combinedFriction;
-
-        if (appliedNormalImpulse > 0f) 
+        if (appliedNormalImpulse > 0f)
         {
 
             float vel1Dotn = contactConstraint.contactNormal.dot(body1.linearVelocity) + contactConstraint.relpos1CrossNormal.dot(body1.angularVelocity);
@@ -283,6 +280,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
             float oldTangentImpulse = contactConstraint.appliedImpulse;
             contactConstraint.appliedImpulse = oldTangentImpulse + j1;
 
+            float limit = appliedNormalImpulse * combinedFriction;
             if (limit < contactConstraint.appliedImpulse) {
                 contactConstraint.appliedImpulse = limit;
             } else {
@@ -364,11 +362,11 @@ public class SequentialImpulseConstrainer implements Constrainer {
         
         v3 vec = new v3();
         float denom0 = 0f;
-        float denom1 = 0f;
         if (body0 != null) {
             vec.cross(solverConstraint.angularComponentA, rel_pos1);
             denom0 = body0.getInvMass() + normalAxis.dot(vec);
         }
+        float denom1 = 0f;
         if (body1 != null) {
             vec.cross(solverConstraint.angularComponentB, rel_pos2);
             denom1 = body1.getInvMass() + normalAxis.dot(vec);
@@ -385,8 +383,6 @@ public class SequentialImpulseConstrainer implements Constrainer {
                 
                 return 0f;
             }
-            PersistentManifold manifold = null;
-            Collidable colObj0 = null, colObj1 = null;
 
             
 
@@ -451,7 +447,6 @@ public class SequentialImpulseConstrainer implements Constrainer {
             
 
             {
-                int i;
 
                 v3 rel_pos1 = new v3();
                 v3 rel_pos2 = new v3();
@@ -469,7 +464,10 @@ public class SequentialImpulseConstrainer implements Constrainer {
 
                 Matrix3f tmpMat = new Matrix3f();
 
-                for (i = 0; i < numManifolds; i++) {
+                Collidable colObj1 = null;
+                Collidable colObj0 = null;
+                PersistentManifold manifold = null;
+                for (int i = 0; i < numManifolds; i++) {
                     
                     manifold = manifoldPtr.get(manifold_offset + i);
                     colObj0 = (Collidable) manifold.getBody0();
@@ -517,8 +515,6 @@ public class SequentialImpulseConstrainer implements Constrainer {
                         }
                     }
 
-                    float relaxation;
-
                     for (int j = 0; j < manifold.numContacts(); j++) {
 
                         ManifoldPoint cp = manifold.getContactPoint(j);
@@ -530,7 +526,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
                             rel_pos1.sub(pos1, colObj0.transform);
                             rel_pos2.sub(pos2, colObj1.transform);
 
-                            relaxation = 1f;
+                            float relaxation = 1f;
 
                             int frictionIndex = tmpSolverConstraintPool.size();
 
@@ -568,11 +564,11 @@ public class SequentialImpulseConstrainer implements Constrainer {
                             
                             
                             float denom0 = 0f;
-                            float denom1 = 0f;
                             if (rb0 != null) {
                                 vec.cross(solverConstraint.angularComponentA, rel_pos1);
                                 denom0 = rb0.getInvMass() + cp.normalWorldOnB.dot(vec);
                             }
+                            float denom1 = 0f;
                             if (rb1 != null) {
                                 vec.cross(solverConstraint.angularComponentB, rel_pos2);
                                 denom1 = rb1.getInvMass() + cp.normalWorldOnB.dot(vec);
@@ -704,10 +700,8 @@ public class SequentialImpulseConstrainer implements Constrainer {
                 }
             }
 
-            
 
-            int j;
-            for (j = 0; j < numConstraints; j++) {
+        for (int j = 0; j < numConstraints; j++) {
                 constraints.get(constraints_offset + j).buildJacobian();
             }
 
@@ -915,8 +909,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
             int totalPoints = 0;
             OrderIndex[] gOrder = this.gOrder;
             {
-                short j;
-                for (j = 0; j < numManifolds; j++) {
+                for (short j = 0; j < numManifolds; j++) {
                     
                     PersistentManifold manifold = manifoldPtr.get(manifold_offset + j);
                     prepareConstraints(manifold, info);
@@ -931,15 +924,13 @@ public class SequentialImpulseConstrainer implements Constrainer {
             }
 
             {
-                int j;
-                for (j = 0; j < numConstraints; j++) {
+                for (int j = 0; j < numConstraints; j++) {
                     constraints.get(constraints_offset + j).buildJacobian();
                 }
             }
 
-            
-            int iteration;
-            for (iteration = 0; iteration < numiter; iteration++) {
+
+        for (int iteration = 0; iteration < numiter; iteration++) {
                 int j;
                 if ((infoGlobal.solverMode & SolverMode.SOLVER_RANDMIZE_ORDER) != 0) {
                     if ((iteration & 7) == 0) {

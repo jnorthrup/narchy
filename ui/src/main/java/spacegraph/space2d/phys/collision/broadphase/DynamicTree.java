@@ -202,8 +202,6 @@ public class DynamicTree implements BroadPhaseStrategy {
         v2 p1 = input.p1;
         v2 p2 = input.p2;
         float p1x = p1.x, p2x = p2.x, p1y = p1.y, p2y = p2.y;
-        float cx, cy;
-        float hx, hy;
         r.x = p2x - p1x;
         r.y = p2y - p1y;
         assert ((r.x * r.x + r.y * r.y) > 0f);
@@ -214,11 +212,7 @@ public class DynamicTree implements BroadPhaseStrategy {
 
         float vx = -1f * ry;
         float vy = 1f * rx;
-        float absVx = Math.abs(vx);
-        float absVy = Math.abs(vy);
 
-        
-        
 
         float maxFraction = input.maxFraction;
 
@@ -236,6 +230,8 @@ public class DynamicTree implements BroadPhaseStrategy {
 
         stackPtr = 0;
         stack[stackPtr++] = m_root;
+        float absVy = Math.abs(vy);
+        float absVx = Math.abs(vx);
         while (stackPtr > 0) {
             DynamicTreeNode node = stack[--stackPtr];
             if (node == null) {
@@ -247,14 +243,11 @@ public class DynamicTree implements BroadPhaseStrategy {
                 continue;
             }
 
-            
-            
-            
-            
-            cx = (nodeAABB.lowerBound.x + nodeAABB.upperBound.x) * .5f;
-            cy = (nodeAABB.lowerBound.y + nodeAABB.upperBound.y) * .5f;
-            hx = (nodeAABB.upperBound.x - nodeAABB.lowerBound.x) * .5f;
-            hy = (nodeAABB.upperBound.y - nodeAABB.lowerBound.y) * .5f;
+
+            float cx = (nodeAABB.lowerBound.x + nodeAABB.upperBound.x) * .5f;
+            float cy = (nodeAABB.lowerBound.y + nodeAABB.upperBound.y) * .5f;
+            float hx = (nodeAABB.upperBound.x - nodeAABB.lowerBound.x) * .5f;
+            float hy = (nodeAABB.upperBound.y - nodeAABB.lowerBound.y) * .5f;
             tempx = p1x - cx;
             tempy = p1y - cy;
             float separation = Math.abs(vx * tempx + vy * tempy) - (absVx * hx + absVy * hy);
@@ -516,10 +509,7 @@ public class DynamicTree implements BroadPhaseStrategy {
             combinedAABB.combine(node.aabb, leafAABB);
             float combinedArea = combinedAABB.getPerimeter();
 
-            
-            float cost = 2.0f * combinedArea;
 
-            
             float inheritanceCost = 2.0f * (combinedArea - area);
 
             
@@ -546,7 +536,8 @@ public class DynamicTree implements BroadPhaseStrategy {
                 cost2 = newArea - oldArea + inheritanceCost;
             }
 
-            
+
+            float cost = 2.0f * combinedArea;
             if (cost < cost1 && cost < cost2) {
                 break;
             }

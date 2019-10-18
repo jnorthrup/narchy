@@ -586,13 +586,12 @@ public class M_Medic {
         public String getID(){ return "medic_search"; }
         @Override
         public boolean think(edict_t self) {
-            edict_t ent;
 
             game_import_t.sound(self, Defines.CHAN_VOICE, sound_search, 1,
                     Defines.ATTN_IDLE, 0);
 
             if (self.oldenemy == null) {
-                ent = medic_FindDeadMonster(self);
+                edict_t ent = medic_FindDeadMonster(self);
                 if (ent != null) {
                     self.oldenemy = self.enemy;
                     self.enemy = ent;
@@ -852,10 +851,6 @@ public class M_Medic {
         public String getID(){ return "medic_fire_blaster"; }
         @Override
         public boolean think(edict_t self) {
-            float[] start = { 0, 0, 0 };
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-            float[] end = { 0, 0, 0 };
-            float[] dir = { 0, 0, 0 };
             int effect;
 
             if ((self.s.frame == FRAME_attack9)
@@ -869,13 +864,18 @@ public class M_Medic {
                     effect = 0;
             }
 
+            float[] right = {0, 0, 0};
+            float[] forward = {0, 0, 0};
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[Defines.MZ2_MEDIC_BLASTER_1],
                     forward, right, start);
 
+            float[] end = {0, 0, 0};
             Math3D.VectorCopy(self.enemy.s.origin, end);
             end[2] += self.enemy.viewheight;
+            float[] dir = {0, 0, 0};
             Math3D.VectorSubtract(end, start, dir);
 
             Monster.monster_fire_blaster(self, start, dir, 2, 1000,
@@ -941,9 +941,7 @@ public class M_Medic {
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
 
-            int n;
 
-            
             if ((self.enemy != null) && (self.enemy.owner == self))
                 self.enemy.owner = null;
 
@@ -953,6 +951,7 @@ public class M_Medic {
                         .sound(self, Defines.CHAN_VOICE, game_import_t
                                 .soundindex("misc/udeath.wav"), 1,
                                 Defines.ATTN_NORM, 0);
+                int n;
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
                             damage, Defines.GIB_ORGANIC);
@@ -1136,25 +1135,29 @@ public class M_Medic {
         public String getID(){ return "medic_cable_attack"; }
         @Override
         public boolean think(edict_t self) {
-            float[] offset = { 0, 0, 0 }, start = { 0, 0, 0 }, end = { 0, 0, 0 }, f = {
-                    0, 0, 0 }, r = { 0, 0, 0 };
-            float[] dir = { 0, 0, 0 }, angles = { 0, 0, 0 };
 
             if (!self.enemy.inuse)
                 return true;
 
+            float[] r = {0, 0, 0};
+            float[] f = {
+                    0, 0, 0};
             Math3D.AngleVectors(self.s.angles, f, r, null);
+            float[] offset = {0, 0, 0};
             Math3D.VectorCopy(
                     medic_cable_offsets[self.s.frame - FRAME_attack42], offset);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin, offset, f, r, start);
 
-            
+
+            float[] dir = {0, 0, 0};
             Math3D.VectorSubtract(start, self.enemy.s.origin, dir);
             float distance = Math3D.VectorLength(dir);
             if (distance > 256)
                 return true;
 
-            
+
+            float[] angles = {0, 0, 0};
             Math3D.vectoangles(dir, angles);
             if (angles[0] < -180)
                 angles[0] += 360;
@@ -1198,7 +1201,8 @@ public class M_Medic {
             
             Math3D.VectorMA(start, 8, f, start);
 
-            
+
+            float[] end = {0, 0, 0};
             Math3D.VectorCopy(self.enemy.s.origin, end);
             end[2] = self.enemy.absmin[2] + self.enemy.size[2] / 2;
 

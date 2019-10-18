@@ -371,9 +371,9 @@ public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterm
     }
 
     protected int negs() {
-        int n, s = subs();
+        int s = subs();
         long count = IntStream.range(0, s).filter(i -> subMap(i) < 0).count();
-        n = (int) count;
+        int n = (int) count;
         return n;
     }
 

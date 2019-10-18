@@ -33,14 +33,16 @@ public class QuickMemoize<X, Y> {
             return; //same size
 
         int nextShift = intLog2(capacity);
-        int nextMask = capacity - 1;
-        Pair[] nextData = new Pair[capacity];
 
         if (this.data!=null) {
             throw new TODO("copy to the new instance and replace the fields here");
         }
 
-        this.shift = nextShift; this.mask = nextMask; this.data = nextData;
+        this.shift = nextShift;
+        int nextMask = capacity - 1;
+        this.mask = nextMask;
+        Pair[] nextData = new Pair[capacity];
+        this.data = nextData;
     }
 
     public final @Nullable Y apply(@Nullable X X, Function<X, Y> calc) {
@@ -48,7 +50,7 @@ public class QuickMemoize<X, Y> {
     }
 
     public @Nullable <P> Y apply(@Nullable X x, P p, BiFunction<X, P, Y> calc) {
-        Pair<X, Y> s1, s2;
+        Pair<X, Y> s1;
 
         Pair<X,Y>[] data = this.data;
 
@@ -59,6 +61,7 @@ public class QuickMemoize<X, Y> {
 
 
         int h2 = (hash >> shift) & mask;
+        Pair<X, Y> s2;
         if ((s2 = data[h2]) != null && x.equals(s2.getOne()))
             return s2.getTwo();
 

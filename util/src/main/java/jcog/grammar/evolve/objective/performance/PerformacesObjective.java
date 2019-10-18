@@ -121,14 +121,14 @@ public class PerformacesObjective implements Objective {
         double charPrecision = statsCharsOverall.precision(); 
         double charRecall = statsCharsOverall.recall(); 
         double precision = statsOverall.precision(); 
-        double recall = statsOverall.recall(dataSetView.getNumberMatches()); 
-        double fmeasure = 2 * (precision * recall) / (precision + recall);
+        double recall = statsOverall.recall(dataSetView.getNumberMatches());
 
         fitness[0] = precision;
         fitness[1] = recall;
         fitness[2] = charPrecision;
         fitness[3] = charRecall;
         fitness[4] = charAccuracy;
+        double fmeasure = 2 * (precision * recall) / (precision + recall);
         fitness[5] = fmeasure;
         
         fitness[6] = statsOverallFlagging.accuracy();

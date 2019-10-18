@@ -270,16 +270,15 @@ public abstract class Main extends Base {
 	=================
 	*/
 	void R_DrawSpriteModel(entity_t e) {
-		float alpha = 1.0F;
-		float[] point = { 0, 0, 0 };
 
 
-        qfiles.dsprite_t psprite = (qfiles.dsprite_t) currentmodel.extradata;
+		qfiles.dsprite_t psprite = (qfiles.dsprite_t) currentmodel.extradata;
 
 		e.frame %= psprite.numframes;
 
         qfiles.dsprframe_t frame = psprite.frames[e.frame];
 
+		float alpha = 1.0F;
 		if ((e.flags & Defines.RF_TRANSLUCENT) != 0)
 			alpha = e.alpha;
 
@@ -300,6 +299,7 @@ public abstract class Main extends Base {
 		gl.glBegin(GL_QUADS);
 
 		gl.glTexCoord2f(0, 1);
+		float[] point = {0, 0, 0};
 		Math3D.VectorMA(e.origin, -frame.origin_y, vup, point);
 		Math3D.VectorMA(point, -frame.origin_x, vright, point);
 		gl.glVertex3f(point[0], point[1], point[2]);
@@ -386,12 +386,12 @@ public abstract class Main extends Base {
 	=============
 	*/
 	void R_DrawEntitiesOnList() {
-		int i;
 
 		if (r_drawentities.value == 0.0f)
 			return;
 
-		
+
+		int i;
 		for (i = 0; i < r_newrefdef.num_entities; i++) {
 			currententity = r_newrefdef.entities[i];
 			if ((currententity.flags & Defines.RF_TRANSLUCENT) != 0)
@@ -465,13 +465,9 @@ public abstract class Main extends Base {
 	*/
 	void GL_DrawParticles(int num_particles) {
 		float[] up = { 0, 0, 0 };
-		float[] right = { 0, 0, 0 };
-		float scale;
-		int color;
-
-		float origin_x, origin_y, origin_z;
 
 		Math3D.VectorScale(vup, 1.5f, up);
+		float[] right = {0, 0, 0};
 		Math3D.VectorScale(vright, 1.5f, right);
 		
 		GL_Bind(r_particletexture.texnum);
@@ -484,19 +480,18 @@ public abstract class Main extends Base {
 		FloatBuffer sourceVertices = particle_t.vertexArray;
 		IntBuffer sourceColors = particle_t.colorArray;
 		for (int j = 0, i = 0; i < num_particles; i++) {
-			origin_x = sourceVertices.get(j++);
-			origin_y = sourceVertices.get(j++);
-			origin_z = sourceVertices.get(j++);
+			float origin_x = sourceVertices.get(j++);
+			float origin_y = sourceVertices.get(j++);
+			float origin_z = sourceVertices.get(j++);
 
-			
-			scale =
-				(origin_x - r_origin[0]) * vpn[0]
+
+			float scale = (origin_x - r_origin[0]) * vpn[0]
 					+ (origin_y - r_origin[1]) * vpn[1]
 					+ (origin_z - r_origin[2]) * vpn[2];
 
 			scale = (scale < 20) ? 1 :  1 + scale * 0.004f;
 
-			color = sourceColors.get(i);
+			int color = sourceColors.get(i);
 			gl.glColor4ub(
 				(byte)((color >> 0) & 0xFF),
 				(byte)((color >> 8) & 0xFF),
@@ -629,8 +624,6 @@ public abstract class Main extends Base {
 	===============
 	*/
 	void R_SetupFrame() {
-		int i;
-		mleaf_t leaf;
 
 		r_framecount++;
 
@@ -643,7 +636,7 @@ public abstract class Main extends Base {
 		if ((r_newrefdef.rdflags & Defines.RDF_NOWORLDMODEL) == 0) {
 			r_oldviewcluster = r_viewcluster;
 			r_oldviewcluster2 = r_viewcluster2;
-			leaf = Mod_PointInLeaf(r_origin, r_worldmodel);
+			mleaf_t leaf = Mod_PointInLeaf(r_origin, r_worldmodel);
 			r_viewcluster = r_viewcluster2 = leaf.cluster;
 
 			
@@ -667,7 +660,7 @@ public abstract class Main extends Base {
 			}
 		}
 
-		for (i = 0; i < 4; i++)
+		for (int i = 0; i < 4; i++)
 			v_blend[i] = r_newrefdef.blend[i];
 
 		c_brush_polys = 0;
@@ -694,9 +687,9 @@ public abstract class Main extends Base {
 		double ymin = -ymax;
 
 		double xmin = ymin * aspect;
-		double xmax = ymax * aspect;
 
 		xmin += - (2 * gl_state.camera_separation) / zNear;
+		double xmax = ymax * aspect;
 		xmax += - (2 * gl_state.camera_separation) / zNear;
 
 		gl.glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
@@ -879,13 +872,12 @@ public abstract class Main extends Base {
 	====================
 	*/
 	void R_SetLightLevel() {
-		float[] shadelight = { 0, 0, 0 };
 
 		if ((r_newrefdef.rdflags & Defines.RDF_NOWORLDMODEL) != 0)
 			return;
 
-		
 
+		float[] shadelight = {0, 0, 0};
 		R_LightPoint(r_newrefdef.vieworg, shadelight);
 
 		
@@ -1019,16 +1011,15 @@ public abstract class Main extends Base {
 	*/
 	protected boolean R_SetMode() {
 
-		int err;
 
-
-        boolean fullscreen = (vid_fullscreen.value > 0.0f);
+		boolean fullscreen = (vid_fullscreen.value > 0.0f);
 
 		vid_fullscreen.modified = false;
 		gl_mode.modified = false;
 
 		Dimension dim = new Dimension(vid.getWidth(), vid.getHeight());
 
+		int err;
 		if ((err = glImpl.setMode(dim, (int) gl_mode.value, fullscreen)) == rserr_ok) {
 			gl_state.prev_mode = (int) gl_mode.value;
 		}
@@ -1472,10 +1463,10 @@ public abstract class Main extends Base {
 		
 		
 		int i;
-		int color = 0;
 
 		if (palette != null) {
 			int j =0;
+			int color = 0;
 			for (i = 0; i < 256; i++) {
 				color = (palette[j++] & 0xFF) << 0;
 				color |= (palette[j++] & 0xFF) << 8;
@@ -1506,23 +1497,19 @@ public abstract class Main extends Base {
 	*/
 	void R_DrawBeam(entity_t e) {
 
-		int i;
-
-        float[] perpvec = { 0, 0, 0 };
-		float[] direction = { 0, 0, 0 }; 
-		float[] normalized_direction = { 0, 0, 0 }; 
-
-		float[] oldorigin = { 0, 0, 0 }; 
-		float[] origin = { 0, 0, 0 }; 
+		float[] oldorigin = { 0, 0, 0 };
 
 		oldorigin[0] = e.oldorigin[0];
 		oldorigin[1] = e.oldorigin[1];
 		oldorigin[2] = e.oldorigin[2];
 
+		float[] origin = {0, 0, 0};
 		origin[0] = e.origin[0];
 		origin[1] = e.origin[1];
 		origin[2] = e.origin[2];
 
+		float[] normalized_direction = {0, 0, 0};
+		float[] direction = {0, 0, 0};
 		normalized_direction[0] = direction[0] = oldorigin[0] - origin[0];
 		normalized_direction[1] = direction[1] = oldorigin[1] - origin[1];
 		normalized_direction[2] = direction[2] = oldorigin[2] - origin[2];
@@ -1530,9 +1517,11 @@ public abstract class Main extends Base {
 		if (Math3D.VectorNormalize(normalized_direction) == 0.0f)
 			return;
 
+		float[] perpvec = {0, 0, 0};
 		Math3D.PerpendicularVector(perpvec, normalized_direction);
 		Math3D.VectorScale(perpvec, e.frame / 2f, perpvec);
 
+		int i;
 		for (i = 0; i < 6; i++) {
 			Math3D.RotatePointAroundVector(
 				start_points[i],
@@ -1559,11 +1548,9 @@ public abstract class Main extends Base {
 		gl.glColor4f(r, g, b, e.alpha);
 
 		gl.glBegin(GL_TRIANGLE_STRIP);
-		
-		float[] v;
-		
+
 		for (i = 0; i < NUM_BEAM_SEGS; i++) {
-			v = start_points[i];
+			float[] v = start_points[i];
 			gl.glVertex3f(v[0], v[1], v[2]);
 			v = end_points[i];
 			gl.glVertex3f(v[0], v[1], v[2]);

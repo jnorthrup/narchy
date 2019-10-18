@@ -876,7 +876,6 @@ public class Dynamics3D<X> extends Collisions<X> {
                 
                 
                 int startConstraint_idx = -1;
-                int numCurConstraints = 0;
                 int i;
 
                 
@@ -889,7 +888,8 @@ public class Dynamics3D<X> extends Collisions<X> {
                         break;
                     }
                 }
-                
+
+                int numCurConstraints = 0;
                 for (; i < numConstraints; i++) {
                     
                     if (getConstraintIslandId(sc.get(i)) == islandId) {

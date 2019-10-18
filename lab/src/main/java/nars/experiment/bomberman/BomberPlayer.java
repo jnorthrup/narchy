@@ -103,11 +103,11 @@ public class BomberPlayer extends Thread {
 
         /** create the images */
         sprites = new Image[4][5][5];
-        int[] states = {UP, DOWN, LEFT, RIGHT, EXPLODING};
         Toolkit tk = Toolkit.getDefaultToolkit();
-        String path = "";
         /** open the files */
         try {
+            String path = "";
+            int[] states = {UP, DOWN, LEFT, RIGHT, EXPLODING};
             for (int p = 0; p < 4; p++) {
                 for (int d = 0; d < 5; d++) {
                     for (int f = 0; f < 5; f++) {
@@ -199,7 +199,6 @@ public class BomberPlayer extends Thread {
      */
     public void keyPressed(KeyEvent evt) {
         /** assume no new key is pressed */
-        byte newKey = 0x00;
         /** if player isn't exploding or dead and key pressed is in player's */
         /** key list */
         if (!isExploding && !isDead &&
@@ -208,6 +207,7 @@ public class BomberPlayer extends Thread {
                 evt.getKeyCode() == keys[LEFT] ||
                 evt.getKeyCode() == keys[RIGHT]) {
             /** if down key pressed */
+            byte newKey = 0x00;
             if (evt.getKeyCode() == keys[DOWN]) {
                 newKey = BDOWN;
                 /** if only the up key is pressed */
@@ -401,7 +401,6 @@ public class BomberPlayer extends Thread {
     @Override
     public void run() {
         /** can move flat */
-        boolean canMove;
         /** keeps track of last key state */
         boolean lastState = false;
         /** shift count */
@@ -441,7 +440,7 @@ public class BomberPlayer extends Thread {
                 /** set moving to true */
                 moving = true;
                 /** assume can't move */
-                canMove = false;
+                boolean canMove = false;
                 /** make sure a key is down */
                 if (dirKeysDown > 0) {
                     /** if left key is down */

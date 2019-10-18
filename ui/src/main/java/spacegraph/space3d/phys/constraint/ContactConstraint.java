@@ -107,9 +107,8 @@ public class ContactConstraint {
 				body2.getInvInertiaDiagLocal(new v3()), body2.getInvMass());
 
         float jacDiagAB = jac.Adiag;
-		float jacDiagABInv = 1f / jacDiagAB;
 
-		v3 tmp1 = body1.getAngularVelocity(new v3());
+        v3 tmp1 = body1.getAngularVelocity(new v3());
 		mat1.transform(tmp1);
 
 		v3 tmp2 = body2.getAngularVelocity(new v3());
@@ -121,6 +120,7 @@ public class ContactConstraint {
 				body2.getLinearVelocity(new v3()),
 				tmp2);
 
+        float jacDiagABInv = 1f / jacDiagAB;
         float a = jacDiagABInv;
 
 
@@ -171,12 +171,12 @@ public class ContactConstraint {
 
 		
 		float Kerp = solverInfo.erp;
-		float Kcor = Kerp * Kfps;
 
-		ConstraintPersistentData cpd = (ConstraintPersistentData) contactPoint.userPersistentData;
+        ConstraintPersistentData cpd = (ConstraintPersistentData) contactPoint.userPersistentData;
 		assert (cpd != null);
 		float distance = cpd.penetration;
-		float positionalError = Kcor * -distance;
+        float Kcor = Kerp * Kfps;
+        float positionalError = Kcor * -distance;
 		float velocityError = cpd.restitution - rel_vel; 
 
 		float penetrationImpulse = positionalError * cpd.jacDiagABInv;
@@ -333,12 +333,12 @@ public class ContactConstraint {
 
 		
 		float Kerp = solverInfo.erp;
-		float Kcor = Kerp * Kfps;
 
-		ConstraintPersistentData cpd = (ConstraintPersistentData) contactPoint.userPersistentData;
+        ConstraintPersistentData cpd = (ConstraintPersistentData) contactPoint.userPersistentData;
 		assert (cpd != null);
 		float distance = cpd.penetration;
-		float positionalError = Kcor * -distance;
+        float Kcor = Kerp * Kfps;
+        float positionalError = Kcor * -distance;
 		float velocityError = cpd.restitution - rel_vel;
 
 		float penetrationImpulse = positionalError * cpd.jacDiagABInv;

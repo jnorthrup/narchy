@@ -14,12 +14,12 @@ public class PMI implements CorrelationFunction{
     public double calculateCorrelation(double p_x, double p_y, double p_x_y) {
 		
 		int isZero = Double.compare(p_x_y, 0.0);
-		int isOne = Double.compare(p_x_y, 1.0);
-		
-		if (isZero == 0)
+
+        if (isZero == 0)
 			return -num;
-		
-		if (isOne == 0)
+
+        int isOne = Double.compare(p_x_y, 1.0);
+        if (isOne == 0)
 			return num;
 		
 		double log2 = Math.log(2);

@@ -165,7 +165,6 @@ public class StringSynth {
     // assumes base is in lowest octave
     private static double indexToGenerator(int index, int indexOfBase, double generator) {
         int note = (index + 12 - indexOfBase) % 12;
-        int octaves = Math.floorDiv(index - indexOfBase, 12);
         int fifths = 0;
         while (note != 0) {
             note = (note - 7) % 12;
@@ -176,6 +175,7 @@ public class StringSynth {
         }
         double frequency = base * Math.pow(generator, fifths);
         frequency = normalize(base, frequency);
+        int octaves = Math.floorDiv(index - indexOfBase, 12);
         return frequency * Math.pow(2.0, octaves);
     }
 

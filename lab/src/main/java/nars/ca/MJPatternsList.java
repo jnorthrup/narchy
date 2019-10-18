@@ -52,16 +52,16 @@ public class MJPatternsList extends Dialog implements ActionListener {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	private void AddPatterns() {
-        int i = -1, iGame = -1;
-		String sBff;
 
         Vector vLines = new Vector();
         MJTools mjT = new MJTools();
 		if (MJTools.LoadResTextFile("pat.txt", vLines)) // load the file with pattern names
 		{
-			for (i = 0; i < vLines.size(); i++) {
-				sBff = ((String) vLines.elementAt(i)).trim();
-				if ((!sBff.isEmpty())
+            int iGame = -1;
+            int i = -1;
+            for (i = 0; i < vLines.size(); i++) {
+                String sBff = ((String) vLines.elementAt(i)).trim();
+                if ((!sBff.isEmpty())
 						&& !((String) vLines.elementAt(i)).startsWith("//")) {
 					if (sBff.length() > 0 && sBff.charAt(0) == '#') // next family of rules
 					{
@@ -80,14 +80,13 @@ public class MJPatternsList extends Dialog implements ActionListener {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void InitList() {
-		int i;
         sRuleName = mjUI.cmbRules.getSelectedItem();
 		sGameName = mjUI.cmbGames.getSelectedItem();
 
 		LstFiles.clear();
         int iGame = MJRules.GetGameIndex(sGameName);
 		if (MJRules.IsGameIdxValid(iGame))
-			for (i = 0; i < vPatterns[iGame].size(); i++)
+			for (int i = 0; i < vPatterns[iGame].size(); i++)
 				if (((String) vPatterns[iGame].elementAt(i))
 						.startsWith(sRuleName + '/'))
 					LstFiles.add(((String) vPatterns[iGame].elementAt(i))

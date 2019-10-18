@@ -696,10 +696,10 @@ public abstract class GameX extends Game {
         //                    b.valve.add(0.005f * (b.load() - ideal)); //simple proportional control
         //                });
         n.parts(What.class).filter(w -> w.inBuffer instanceof PriBuffer.BagTaskBuffer).map(w -> (PriBuffer.BagTaskBuffer) w.inBuffer).forEach(b -> {
-            float ideal = 0.5f;
             MiniPID pid = new MiniPID(0.007f, 0.005, 0.0025, 0);
             pid.outLimit(0, 1);
             pid.setOutMomentum(0.1);
+            float ideal = 0.5f;
             n.onDur(() -> b.valve.set(pid.out(ideal - b.load(), 0)));
         });
 

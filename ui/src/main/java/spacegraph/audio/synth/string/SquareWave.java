@@ -26,10 +26,10 @@ public class SquareWave extends KarplusStrongString {
         clear();
         int capacity = buffer.capacity();
         int half = capacity / 2;
-        int otherHalf = capacity - half;
         for (int i = 0; i < half; i++) {
             buffer.enqueue(getInitialVolume() * -1);
         }
+        int otherHalf = capacity - half;
         for (int i = 0; i < otherHalf; i++) {
             buffer.enqueue(getInitialVolume());
         }

@@ -29,10 +29,10 @@ public class VectorizingUtils {
 		for(int j=0; j<(imgd.height+2); j++){ arr[j][0] = -1; arr[j][imgd.width+1 ] = -1; }
 		for(int i=0; i<(imgd.width+2) ; i++){ arr[0][i] = -1; arr[imgd.height+1][i] = -1; }
 
-		int idx=0, cd,cdl,ci,c1,c2,c3,c4;
+		int idx=0;
 
-		
-		byte [][] original_palette_backup = palette;
+
+        byte [][] original_palette_backup = palette;
 		long [][] paletteacc = new long[palette.length][5];
 
 		
@@ -78,20 +78,20 @@ public class VectorizingUtils {
 
 					idx = ((j*imgd.width)+i)*4;
 
-					
-					
-					cdl = 256+256+256+256; ci=0;
-					for(int k=0;k<original_palette_backup.length;k++){
 
-						
-						c1 = Math.abs(original_palette_backup[k][0]-imgd.data[idx]);
-						c2 = Math.abs(original_palette_backup[k][1]-imgd.data[idx+1]);
-						c3 = Math.abs(original_palette_backup[k][2]-imgd.data[idx+2]);
-						c4 = Math.abs(original_palette_backup[k][3]-imgd.data[idx+3]);
-						cd = c1+c2+c3+(c4*4); 
+                    int cdl = 256 + 256 + 256 + 256;
+                    int ci = 0;
+                    for(int k=0;k<original_palette_backup.length;k++){
 
-						
-						if(cd<cdl){ cdl = cd; ci = k; }
+
+                        int c1 = Math.abs(original_palette_backup[k][0] - imgd.data[idx]);
+                        int c2 = Math.abs(original_palette_backup[k][1] - imgd.data[idx + 1]);
+                        int c3 = Math.abs(original_palette_backup[k][2] - imgd.data[idx + 2]);
+                        int c4 = Math.abs(original_palette_backup[k][3] - imgd.data[idx + 3]);
+                        int cd = c1 + c2 + c3 + (c4 * 4);
+
+
+                        if(cd<cdl){ cdl = cd; ci = k; }
 
 					}
 
@@ -119,9 +119,9 @@ public class VectorizingUtils {
 	
 	public static int[][][] layering (ImageTracer.IndexedImage ii){
 		
-		int val=0, aw = ii.array[0].length, ah = ii.array.length, n1,n2,n3,n4,n5,n6,n7,n8;
+		int val=0, aw = ii.array[0].length, ah = ii.array.length;
 
-		int[][][] layers = new int[ii.palette.length][ah][aw];
+        int[][][] layers = new int[ii.palette.length][ah][aw];
 
 		
 		for(int j=1; j<(ah-1); j++){
@@ -130,18 +130,18 @@ public class VectorizingUtils {
 				
 				val = ii.array[j][i];
 
-				
-				n1 = ii.array[j-1][i-1]==val ? 1 : 0;
-				n2 = ii.array[j-1][i  ]==val ? 1 : 0;
-				n3 = ii.array[j-1][i+1]==val ? 1 : 0;
-				n4 = ii.array[j  ][i-1]==val ? 1 : 0;
-				n5 = ii.array[j  ][i+1]==val ? 1 : 0;
-				n6 = ii.array[j+1][i-1]==val ? 1 : 0;
-				n7 = ii.array[j+1][i  ]==val ? 1 : 0;
-				n8 = ii.array[j+1][i+1]==val ? 1 : 0;
 
-				
-				layers[val][j+1][i+1] = 1 + (n5 * 2) + (n8 * 4) + (n7 * 8) ;
+                int n1 = ii.array[j - 1][i - 1] == val ? 1 : 0;
+                int n2 = ii.array[j - 1][i] == val ? 1 : 0;
+                int n3 = ii.array[j - 1][i + 1] == val ? 1 : 0;
+                int n4 = ii.array[j][i - 1] == val ? 1 : 0;
+                int n5 = ii.array[j][i + 1] == val ? 1 : 0;
+                int n6 = ii.array[j + 1][i - 1] == val ? 1 : 0;
+                int n7 = ii.array[j + 1][i] == val ? 1 : 0;
+                int n8 = ii.array[j + 1][i + 1] == val ? 1 : 0;
+
+
+                layers[val][j+1][i+1] = 1 + (n5 * 2) + (n8 * 4) + (n7 * 8) ;
 				if(n4==0){ layers[val][j+1][i  ] = 0 + 2 + (n7 * 4) + (n6 * 8) ; }
 				if(n2==0){ layers[val][j  ][i+1] = 0 + (n3*2) + (n5 * 4) + 8 ; }
 				if(n1==0){ layers[val][j  ][i  ] = 0 + (n2*2) + 4 + (n4 * 8) ; }
@@ -191,18 +191,17 @@ public class VectorizingUtils {
 	
 	public static ArrayList<ArrayList<Integer[]>> pathscan (int [][] arr,float pathomit){
 		ArrayList<ArrayList<Integer[]>> paths = new ArrayList<>();
-		ArrayList<Integer[]> thispath;
-		int px=0,py=0,w=arr[0].length,h=arr.length,dir=0;
+        int px=0,py=0,w=arr[0].length,h=arr.length,dir=0;
 		boolean pathfinished=true, holepath = false;
-		byte[] lookuprow;
 
-		for(int j=0;j<h;j++){
+        for(int j=0;j<h;j++){
 			for(int i=0;i<w;i++){
 				if((arr[j][i]!=0)&&(arr[j][i]!=15)){
 
 					
 					px = i; py = j;
-					paths.add(thispath = new ArrayList<>());
+                    ArrayList<Integer[]> thispath;
+                    paths.add(thispath = new ArrayList<>());
 					pathfinished = false;
 
 					
@@ -214,9 +213,9 @@ public class VectorizingUtils {
 						
 						thispath.add(new Integer[] { px-1, py-1, arr[py][px]});
 
-						
-						lookuprow = pathscan_combined_lookup[ arr[py][px] ][ dir ];
-						arr[py][px] = lookuprow[0]; dir = lookuprow[1]; px += lookuprow[2]; py += lookuprow[3];
+
+                        byte[] lookuprow = pathscan_combined_lookup[arr[py][px]][dir];
+                        arr[py][px] = lookuprow[0]; dir = lookuprow[1]; px += lookuprow[2]; py += lookuprow[3];
 
 						
 						if(((px-1)==thispath.get(0)[0])&&((py-1)==thispath.get(0)[1])){
@@ -248,16 +247,14 @@ public class VectorizingUtils {
 	
 	public static ArrayList<ArrayList<Double[]>> internodes (List<ArrayList<Integer[]>> paths){
 		ArrayList<ArrayList<Double[]>> ins = new ArrayList<>();
-		ArrayList<Double[]> thisinp;
-		Double[] thispoint, nextpoint = new Double[2];
-		Integer[] pp1, pp2, pp3;
-		int palen=0,nextidx=0,nextidx2=0;
+        Double[] nextpoint = new Double[2];
+        int palen=0,nextidx=0,nextidx2=0;
 
 
 		for (ArrayList<Integer[]> path : paths) {
 			ins.add(new ArrayList<>());
-			thisinp = ins.get(ins.size() - 1);
-			palen = path.size();
+            ArrayList<Double[]> thisinp = ins.get(ins.size() - 1);
+            palen = path.size();
 
 			for (int pcnt = 0; pcnt < palen; pcnt++) {
 
@@ -265,11 +262,11 @@ public class VectorizingUtils {
 				nextidx = (pcnt + 1) % palen;
 				nextidx2 = (pcnt + 2) % palen;
 				thisinp.add(new Double[3]);
-				thispoint = thisinp.get(thisinp.size() - 1);
-				pp1 = path.get(pcnt);
-				pp2 = path.get(nextidx);
-				pp3 = path.get(nextidx2);
-				thispoint[0] = (pp1[0] + pp2[0]) / 2.0;
+                Double[] thispoint = thisinp.get(thisinp.size() - 1);
+                Integer[] pp1 = path.get(pcnt);
+                Integer[] pp2 = path.get(nextidx);
+                Integer[] pp3 = path.get(nextidx2);
+                thispoint[0] = (pp1[0] + pp2[0]) / 2.0;
 				thispoint[1] = (pp1[1] + pp2[1]) / 2.0;
 				nextpoint[0] = (pp2[0] + pp3[0]) / 2.0;
 				nextpoint[1] = (pp2[1] + pp3[1]) / 2.0;
@@ -333,14 +330,16 @@ public class VectorizingUtils {
 	
 
 	public static ArrayList<Double[]> tracepath (ArrayList<Double[]> path, float ltreshold, float qtreshold){
-		int pcnt=0, seqend=0; double segtype1, segtype2;
-		ArrayList<Double[]> smp = new ArrayList<>();
+		int pcnt=0, seqend=0;
+        ArrayList<Double[]> smp = new ArrayList<>();
 		
 		int pathlength = path.size();
 
 		while(pcnt<pathlength){
-			
-			segtype1 = path.get(pcnt)[2]; segtype2 = -1; seqend=pcnt+1;
+
+            double segtype1 = path.get(pcnt)[2];
+            double segtype2 = -1;
+            seqend=pcnt+1;
 			while(
 					((path.get(seqend)[2]==segtype1) || (path.get(seqend)[2]==segtype2) || (segtype2==-1))
 					&& (seqend<(pathlength-1))){
@@ -367,24 +366,26 @@ public class VectorizingUtils {
 	
 	public static ArrayList<Double[]> fitseq (ArrayList<Double[]> path, float ltreshold, float qtreshold, int seqstart, int seqend){
 		ArrayList<Double[]> segment = new ArrayList<>();
-		Double [] thissegment;
-		int pathlength = path.size();
+        int pathlength = path.size();
 
 		
 		if((seqend>pathlength)||(seqend<0)){return segment;}
 
-		int errorpoint=seqstart;
-		boolean curvepass=true;
-		double px, py, dist2, errorval=0;
-		double tl = (seqend-seqstart); if(tl<0){ tl += pathlength; }
+        double tl = (seqend-seqstart); if(tl<0){ tl += pathlength; }
 		double vx = (path.get(seqend)[0]-path.get(seqstart)[0]) / tl,
 				vy = (path.get(seqend)[1]-path.get(seqstart)[1]) / tl;
 
 		
 		int pcnt = (seqstart+1)%pathlength;
-		double pl;
-		while(pcnt != seqend){
-			pl = pcnt-seqstart; if(pl<0){ pl += pathlength; }
+        double errorval = 0;
+        double dist2;
+        double py;
+        double px;
+        boolean curvepass = true;
+        int errorpoint = seqstart;
+        while(pcnt != seqend){
+            double pl = pcnt - seqstart;
+            if(pl<0){ pl += pathlength; }
 			px = path.get(seqstart)[0] + (vx * pl); py = path.get(seqstart)[1] + (vy * pl);
 			dist2 = ((path.get(pcnt)[0]-px)*(path.get(pcnt)[0]-px)) + ((path.get(pcnt)[1]-py)*(path.get(pcnt)[1]-py));
 			if(dist2>ltreshold){curvepass=false;}
@@ -392,8 +393,9 @@ public class VectorizingUtils {
 			pcnt = (pcnt+1)%pathlength;
 		}
 
-		
-		if(curvepass){
+
+        Double[] thissegment;
+        if(curvepass){
 			segment.add(new Double[7]);
 			thissegment = segment.get(segment.size()-1);
 			thissegment[0] = 1.0;

@@ -60,8 +60,8 @@ public class Triangle {
         double Bs = Bx * Bx + By * By;
         double Cs = Cx * Cx + Cy * Cy;
         double x = (Cy * Bs - By * Cs) * D;
-        double y = (Bx * Cs - Cx * Bs) * D;
         dX = x + a.x;
+        double y = (Bx * Cs - Cx * Bs) * D;
         dY = y + a.y;
 
         

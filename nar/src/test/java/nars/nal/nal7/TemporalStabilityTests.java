@@ -171,13 +171,13 @@ public class TemporalStabilityTests {
 
         @NotNull NAR n = NARS.tmp();
 
-        int time = CYCLES;
         T1 a = new T1(linkedimpl, 1, 2, 5, 10);
         T1 b = new T1(linkedinh, 1, 2, 5, 10);
 
         a.test(-1, n);
         b.test(-1, n);
 
+        int time = CYCLES;
         n.run(time);
 
 

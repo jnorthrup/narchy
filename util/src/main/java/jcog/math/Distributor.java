@@ -46,16 +46,15 @@ public final class Distributor {
      * @param range Range of valid numbers
      */
     protected Distributor(int range) {
-        int rank, time;
         capacity = (range * (range + 1)) / 2;
         order = new short[capacity];
         
         Arrays.fill(order, (short)-1);
         int index = capacity;
         
-        for (rank = range; rank > 0; rank--) {
+        for (int rank = range; rank > 0; rank--) {
             int capDivRank = capacity / rank;
-            for (time = 0; time < rank; time++) {
+            for (int time = 0; time < rank; time++) {
                 index = (capDivRank + index) % capacity;
                 while (order[index] >= 0) {
                     index = (index + 1) % capacity;

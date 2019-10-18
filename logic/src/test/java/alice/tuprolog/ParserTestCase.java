@@ -70,35 +70,35 @@ public class ParserTestCase {
 	}
 	
 	@Test public void testDotOperator() throws InvalidTermException {
-		String s = "class('java.lang.Integer').'MAX_VALUE'";
-		PrologOperators.DefaultOps om = new PrologOperators.DefaultOps();
+        PrologOperators.DefaultOps om = new PrologOperators.DefaultOps();
 		om.opNew(".", "xfx", 600);
-		Parser p = new Parser(s, om);
+        String s = "class('java.lang.Integer').'MAX_VALUE'";
+        Parser p = new Parser(s, om);
 		Struct result = new Struct(".", new Struct("class", new Struct("java.lang.Integer")),
 				                        new Struct("MAX_VALUE"));
 		assertEquals(result, p.nextTerm(false));
 	}
 	
 	@Test public void testBracketedOperatorAsTerm() throws InvalidTermException {
-		String s = "u (b1) b2 (b3)";
-		PrologOperators.DefaultOps om = new PrologOperators.DefaultOps();
+        PrologOperators.DefaultOps om = new PrologOperators.DefaultOps();
 		om.opNew("u", "fx", 200);
 		om.opNew("b1", "yfx", 400);
 		om.opNew("b2", "yfx", 500);
 		om.opNew("b3", "yfx", 300);
-		Parser p = new Parser(s, om);
+        String s = "u (b1) b2 (b3)";
+        Parser p = new Parser(s, om);
 		Struct result = new Struct("b2", new Struct("u", new Struct("b1")), new Struct("b3"));
 		assertEquals(result, p.nextTerm(false));
 	}
 	
 	@Test public void testBracketedOperatorAsTerm2() throws InvalidTermException {
-		String s = "(u) b1 (b2) b3 a";
-		PrologOperators.DefaultOps om = new PrologOperators.DefaultOps();
+        PrologOperators.DefaultOps om = new PrologOperators.DefaultOps();
 		om.opNew("u", "fx", 200);
 		om.opNew("b1", "yfx", 400);
 		om.opNew("b2", "yfx", 500);
 		om.opNew("b3", "yfx", 300);
-		Parser p = new Parser(s, om);
+        String s = "(u) b1 (b2) b3 a";
+        Parser p = new Parser(s, om);
 		Struct result = new Struct("b1", new Struct("u"), new Struct("b3", new Struct("b2"), new Struct("a")));
 		assertEquals(result, p.nextTerm(false));
 	}
@@ -108,9 +108,9 @@ public class ParserTestCase {
 		Parser p = new Parser(n);
 		NumberTerm result = new NumberTerm.Int(45);
 		assertEquals(result, p.nextTerm(false));
-		String invalid = "0b101201";
-		try {
-			new Parser(invalid).nextTerm(false);
+        try {
+            String invalid = "0b101201";
+            new Parser(invalid).nextTerm(false);
 			fail("");
 		} catch (InvalidTermException expected) {}
 	}
@@ -120,9 +120,9 @@ public class ParserTestCase {
 		Parser p = new Parser(n);
 		NumberTerm result = new NumberTerm.Int(32489);
 		assertEquals(result, p.nextTerm(false));
-		String invalid = "0o78351";
-		try {
-			new Parser(invalid).nextTerm(false);
+        try {
+            String invalid = "0o78351";
+            new Parser(invalid).nextTerm(false);
 			fail("");
 		} catch (InvalidTermException expected) {}
 	}
@@ -132,9 +132,9 @@ public class ParserTestCase {
 		Parser p = new Parser(n);
 		NumberTerm result = new NumberTerm.Int(912559);
 		assertEquals(result, p.nextTerm(false));
-		String invalid = "0xG";
-		try {
-			new Parser(invalid).nextTerm(false);
+        try {
+            String invalid = "0xG";
+            new Parser(invalid).nextTerm(false);
 			fail("");
 		} catch (InvalidTermException expected) {}
 	}
@@ -164,11 +164,11 @@ public class ParserTestCase {
 	
 	 
 	@Test public void testDCGActionWithOperators() {
-        String input = "{A =.. B, hotel, 2}";
         Struct result = new Struct("{}",
                             new Struct(",", new Struct("=..", new Var("A"), new Var("B")),
                                 new Struct(",", new Struct("hotel"), new NumberTerm.Int(2))));
         result.resolveTerm();
+        String input = "{A =.. B, hotel, 2}";
         Parser p = new Parser(input);
         
 		assertEquals(result.toString(), p.nextTerm(false).toString());

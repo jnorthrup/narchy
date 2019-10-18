@@ -153,7 +153,6 @@ class NAL7ImplTruthProjectionTest {
     }
 
     double[] max(double xStart, double[] previous) {
-        final boolean isMinim = false; 
         double lo = min;
         
         double hi = max;
@@ -175,9 +174,8 @@ class NAL7ImplTruthProjectionTest {
         double X = xStart;
         double v = X;
         double w = X;
-        double d = 0;
-        double e = 0;
         double Y = func.valueOf(X);
+        final boolean isMinim = false;
         if (!isMinim) {
             Y = -Y;
         }
@@ -189,6 +187,8 @@ class NAL7ImplTruthProjectionTest {
         
         double[] best = current;
 
+        double e = 0;
+        double d = 0;
         while (true) {
             
 
@@ -199,15 +199,12 @@ class NAL7ImplTruthProjectionTest {
             
             boolean stop = Math.abs(X - m) <= tol2 - 0.5 * (b - a);
             if (!stop) {
-                double p = 0;
-                double q = 0;
-                double r = 0;
                 double u = 0;
 
-                if (Math.abs(e) > tol1) { 
-                    r = (X - w) * (Y - fv);
-                    q = (X - v) * (Y - fw);
-                    p = (X - v) * q - (X - w) * r;
+                if (Math.abs(e) > tol1) {
+                    double r = (X - w) * (Y - fv);
+                    double q = (X - v) * (Y - fw);
+                    double p = (X - v) * q - (X - w) * r;
                     q = 2 * (q - r);
 
                     if (q > 0) {

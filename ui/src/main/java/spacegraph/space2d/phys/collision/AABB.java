@@ -210,11 +210,8 @@ public class AABB {
      */
     private boolean raycast(RayCastOutput output, RayCastInput input,
                             IWorldPool argPool) {
-        boolean result = true;
-        float tmin = -Float.MAX_VALUE;
-                                float tmax = Float.MAX_VALUE;
 
-                                v2 p = argPool.popVec2();
+        v2 p = argPool.popVec2();
                                 v2 d = argPool.popVec2();
                                 v2 absD = argPool.popVec2();
                                 v2 normal = argPool.popVec2();
@@ -224,6 +221,9 @@ public class AABB {
                                 v2.absToOut(d, absD);
 
 
+        float tmax = Float.MAX_VALUE;
+        float tmin = -Float.MAX_VALUE;
+        boolean result = true;
         if (absD.x < Settings.EPSILON) {
 
             if (p.x < lowerBound.x || upperBound.x < p.x) {

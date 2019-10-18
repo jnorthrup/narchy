@@ -74,8 +74,8 @@ public class MergesSynthesis {
             return;
         }
         Collection<String> firstExamplesSimple = new ArrayList<>();
-        Collection<String> secondExamplesSimple = new ArrayList<>();
         firstExamplesSimple.add(secondRep.getData().example + secondRep.getData().example);
+        Collection<String> secondExamplesSimple = new ArrayList<>();
         secondExamplesSimple.add(firstRep.getData().example + firstRep.getData().example);
         if (!GrammarSynthesis.getCheck(oracle, firstRep.getData().context, firstExamplesSimple) || !GrammarSynthesis.getCheck(oracle, secondRep.getData().context, secondExamplesSimple)) {
             return;

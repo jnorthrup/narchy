@@ -55,13 +55,12 @@ class PstCache {
     /* Update usage info for a bitmap */
     static void touchBitmap(int cache_id, int cache_idx, int stamp) {
         logger.info("PstCache.touchBitmap");
-        FileOutputStream fd;
 
         if (!IS_PERSISTENT(cache_id) || cache_idx >= Rdp.BMPCACHE2_NUM_PSTCELLS)
             return;
 
         try {
-            fd = new FileOutputStream(g_pstcache_fd[cache_id]);
+            FileOutputStream fd = new FileOutputStream(g_pstcache_fd[cache_id]);
 
             fd.write(toBigEndian32(stamp), 12 + cache_idx
                     * (g_pstcache_Bpp * MAX_CELL_SIZE + CELLHEADER.size()), 4);
@@ -90,8 +89,6 @@ class PstCache {
             throws IOException, RdesktopException {
         logger.info("PstCache.pstcache_load_bitmap");
 
-        byte[] cellHead = null;
-
         if (!Options.persistent_bitmap_caching)
             return false;
 
@@ -101,6 +98,7 @@ class PstCache {
         FileInputStream fd = new FileInputStream(g_pstcache_fd[cache_id]);
         int offset = cache_idx
                 * (g_pstcache_Bpp * MAX_CELL_SIZE + CELLHEADER.size());
+        byte[] cellHead = null;
         fd.read(cellHead, offset, CELLHEADER.size());
         CELLHEADER c = new CELLHEADER(cellHead);
 
@@ -151,9 +149,6 @@ class PstCache {
     static int pstcache_enumerate(int cache_id, int[] idlist)
             throws IOException, RdesktopException {
         logger.info("PstCache.pstcache_enumerate");
-        FileInputStream fd;
-        int n, c = 0;
-        CELLHEADER cellhdr = null;
 
         if (!(Options.bitmap_caching && Options.persistent_bitmap_caching && IS_PERSISTENT(cache_id)))
             return 0;
@@ -166,8 +161,11 @@ class PstCache {
             return 0;
 
         logger.debug("pstcache enumeration... ");
+        CELLHEADER cellhdr = null;
+        int c = 0;
+        int n;
         for (n = 0; n < Rdp.BMPCACHE2_NUM_PSTCELLS; n++) {
-            fd = new FileInputStream(g_pstcache_fd[cache_id]);
+            FileInputStream fd = new FileInputStream(g_pstcache_fd[cache_id]);
 
             byte[] cellhead_data = new byte[CELLHEADER.size()];
             if (fd.read(cellhead_data, n

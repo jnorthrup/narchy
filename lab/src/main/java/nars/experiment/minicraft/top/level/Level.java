@@ -35,11 +35,11 @@ public class Level {
         this.depth = level;
         this.w = w;
         this.h = h;
-        byte[][] maps;
 
         if (level == 1) {
             dirtColor = 444;
         }
+        byte[][] maps;
         if (level == 0)
             maps = LevelGen.createAndValidateTopMap(w, h);
         else if (level < 0) {
@@ -97,11 +97,11 @@ public class Level {
     }
 
     public void renderBackground(Screen screen, int xScroll, int yScroll) {
-        int xo = xScroll >> 4;
-        int yo = yScroll >> 4;
         int w = (screen.w + 15) >> 4;
         int h = (screen.h + 15) >> 4;
         screen.setOffset(xScroll, yScroll);
+        int yo = yScroll >> 4;
+        int xo = xScroll >> 4;
         for (int y = yo; y <= h + yo; y++) {
             for (int x = xo; x <= w + xo; x++) {
                 getTile(x, y).render(screen, this, x, y);
@@ -115,12 +115,12 @@ public class Level {
     public Player player;
 
     public void renderSprites(Screen screen, int xScroll, int yScroll) {
-        int xo = xScroll >> 4;
-        int yo = yScroll >> 4;
         int w = (screen.w + 15) >> 4;
         int h = (screen.h + 15) >> 4;
 
         screen.setOffset(xScroll, yScroll);
+        int yo = yScroll >> 4;
+        int xo = xScroll >> 4;
         for (int y = yo; y <= h + yo; y++) {
             for (int x = xo; x <= w + xo; x++) {
                 if (x < 0 || y < 0 || x >= this.w || y >= this.h) continue;
@@ -135,13 +135,13 @@ public class Level {
     }
 
     public void renderLight(Screen screen, int xScroll, int yScroll) {
-        int xo = xScroll >> 4;
-        int yo = yScroll >> 4;
         int w = (screen.w + 15) >> 4;
         int h = (screen.h + 15) >> 4;
 
         screen.setOffset(xScroll, yScroll);
         int r = 4;
+        int yo = yScroll >> 4;
+        int xo = xScroll >> 4;
         for (int y = yo - r; y <= h + yo + r; y++) {
             for (int x = xo - r; x <= w + xo + r; x++) {
                 if (x < 0 || y < 0 || x >= this.w || y >= this.h) continue;
@@ -218,18 +218,18 @@ public class Level {
 
     public void trySpawn(int count) {
         for (int i = 0; i < count; i++) {
-            Mob mob;
 
-            int minLevel = 1;
             int maxLevel = 1;
             if (depth < 0) {
                 maxLevel = (-depth) + 1;
             }
+            int minLevel = 1;
             if (depth > 0) {
                 minLevel = maxLevel = 4;
             }
 
             int lvl = random.nextInt(maxLevel - minLevel + 1) + minLevel;
+            Mob mob;
             if (random.nextInt(2) == 0)
                 mob = new Slime(lvl);
             else

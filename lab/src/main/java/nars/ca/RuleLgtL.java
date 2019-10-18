@@ -42,24 +42,22 @@ public class RuleLgtL {
 	
 	public void InitFromString(String sStr) {
 
-        String sTok, sBff;
-		int i, iTmp;
 		ResetToDefaults();
 
         StringTokenizer st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
-			sTok = st.nextToken().toUpperCase();
+			String sTok = st.nextToken().toUpperCase();
 			sTok = sTok.trim();
-			
 
-			
-			if (sTok.length() > 0 && sTok.charAt(0) == 'R') 
+
+			int iTmp;
+			if (sTok.length() > 0 && sTok.charAt(0) == 'R')
 			{
 				iRng = Integer.valueOf(sTok.substring(1));
 			} else if (sTok.length() > 0 && sTok.charAt(0) == 'C') 
 																	
 			{
-				i = Integer.valueOf(sTok.substring(1));
+				int i = Integer.valueOf(sTok.substring(1));
 				if (i >= 3) {
 					isHist = true; 
 					iClo = i;
@@ -81,7 +79,7 @@ public class RuleLgtL {
 				if (sTok.length() >= 4) {
 					iTmp = sTok.indexOf("..");
 					if (iTmp >= 0) {
-						sBff = sTok.substring(1, iTmp);
+						String sBff = sTok.substring(1, iTmp);
 						iSMin = Integer.valueOf(sBff);
 						sBff = sTok.substring(iTmp + 2);
 						iSMax = Integer.valueOf(sBff);
@@ -154,9 +152,8 @@ public class RuleLgtL {
 	
 	
 	public void Validate() {
-		int i;
 
-        if (iClo < 2)
+		if (iClo < 2)
 			iClo = 2;
 		else if (iClo > MJBoard.MAX_CLO)
 			iClo = MJBoard.MAX_CLO;
@@ -170,7 +167,7 @@ public class RuleLgtL {
 			iNgh = MJRules.NGHTYP_MOOR;
 
         int iMax = isCentr ? 1 : 0;
-		for (i = 1; i <= iRng; i++)
+		for (int i = 1; i <= iRng; i++)
 
             iMax += i * 8;
 
@@ -193,44 +190,42 @@ public class RuleLgtL {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
-		short bOldVal, bNewVal;
 		int modCnt = 0;
-		int i, j, iCnt;
-		int[] lurd = new int[4]; 
+		int[] lurd = new int[4];
 		int[] xVector = new int[21]; 
-		int[] yVector = new int[21]; 
-		int colL, colR, rowT, rowB;
-		int ic, ir, iTmp;
+		int[] yVector = new int[21];
 		int iTmpC, iTmpR, iTmpBlobC, iTmpBlobR;
 		int ctrCol, ctrRow;
 		boolean fMoore = (iNgh == MJRules.NGHTYP_MOOR); 
 														
 
-		for (i = 0; i < sizX; i++) {
-			for (j = 0; j < sizY; j++) {
+		for (int i = 0; i < sizX; i++) {
+			for (int j = 0; j < sizY; j++) {
 				
 				
 				xVector[10] = i;
 				yVector[10] = j;
-				for (iTmp = 1; iTmp <= iRng; iTmp++) {
-					colL = i - iTmp;
+				for (int iTmp = 1; iTmp <= iRng; iTmp++) {
+					int colL = i - iTmp;
 					xVector[10 - iTmp] = colL >= 0 ? colL : sizX + colL;
 
-					colR = i + iTmp;
+					int colR = i + iTmp;
 					xVector[10 + iTmp] = colR < sizX ? colR : colR - sizX;
 
-					rowT = j - iTmp;
+					int rowT = j - iTmp;
 					yVector[10 - iTmp] = rowT >= 0 ? rowT : sizY + rowT;
 
-					rowB = j + iTmp;
+					int rowB = j + iTmp;
 					yVector[10 + iTmp] = rowB < sizY ? rowB : rowB - sizY;
 				}
-				bOldVal = crrState[i][j];
-				bNewVal = bOldVal; 
+				short bOldVal = crrState[i][j];
+				short bNewVal = bOldVal;
 				if (bNewVal >= iClo)
 					bNewVal = (short) (iClo - 1);
 
-				iCnt = 0; 
+				int iCnt = 0;
+				int ir;
+				int ic;
 				if (isHist) {
 					if (bOldVal <= 1) 
 					{

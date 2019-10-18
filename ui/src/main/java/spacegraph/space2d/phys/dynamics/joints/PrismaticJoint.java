@@ -671,20 +671,20 @@ public class PrismaticJoint extends Joint {
         }
 
         if (active) {
-            float k11 = mA + mB + iA * s1 * s1 + iB * s2 * s2;
-            float k12 = iA * s1 + iB * s2;
-            float k13 = iA * s1 * a1 + iB * s2 * a2;
             float k22 = iA + iB;
             if (k22 == 0.0f) {
                 
                 k22 = 1.0f;
             }
-            float k23 = iA * a1 + iB * a2;
-            float k33 = mA + mB + iA * a1 * a1 + iB * a2 * a2;
 
             Mat33 K = pool.popMat33();
+            float k13 = iA * s1 * a1 + iB * s2 * a2;
+            float k12 = iA * s1 + iB * s2;
+            float k11 = mA + mB + iA * s1 * s1 + iB * s2 * s2;
             K.ex.set(k11, k12, k13);
+            float k23 = iA * a1 + iB * a2;
             K.ey.set(k12, k22, k23);
+            float k33 = mA + mB + iA * a1 * a1 + iB * a2 * a2;
             K.ez.set(k13, k23, k33);
 
             v3 C = pool.popVec3();
@@ -697,14 +697,14 @@ public class PrismaticJoint extends Joint {
             pool.pushVec3(1);
             pool.pushMat33(1);
         } else {
-            float k11 = mA + mB + iA * s1 * s1 + iB * s2 * s2;
-            float k12 = iA * s1 + iB * s2;
             float k22 = iA + iB;
             if (k22 == 0.0f) {
                 k22 = 1.0f;
             }
 
             Mat22 K = pool.popMat22();
+            float k12 = iA * s1 + iB * s2;
+            float k11 = mA + mB + iA * s1 * s1 + iB * s2 * s2;
             K.ex.set(k11, k12);
             K.ey.set(k12, k22);
 

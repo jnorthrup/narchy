@@ -89,12 +89,12 @@ public class MJCell extends Applet {
 	@Override
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void init() {
-		boolean isApplet = true; 
 
-		mjcUI = new MJCellUI(this); 
+        mjcUI = new MJCellUI(this);
 
-		
-		try {
+
+        boolean isApplet = true;
+        try {
 			sBaseURL = getCodeBase().toString();
 			if (sBaseURL.length() > 0 && sBaseURL.charAt(sBaseURL.length() - 1) == '.')
 				sBaseURL = sBaseURL.substring(0, sBaseURL.length() - 1);

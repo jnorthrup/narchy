@@ -66,11 +66,10 @@ public class Cache {
      * @param cache_id Number of cache from which to remove bitmap
      */
     void removeLRUBitmap(int cache_id) {
-        int i;
         int cache_idx = 0;
         int m = 0xffffffff;
 
-        for (i = 0; i < bitmapcache[cache_id].length; i++) {
+        for (int i = 0; i < bitmapcache[cache_id].length; i++) {
             if ((bitmapcache[cache_id][i] != null)
                     && (bitmapcache[cache_id][i].getBitmapData() != null)
                     && (bitmapcache[cache_id][i].usage < m)) {
@@ -91,9 +90,8 @@ public class Cache {
      * @throws RdesktopException
      */
     public IndexColorModel get_colourmap(int cache_id) throws RdesktopException {
-        IndexColorModel map = null;
         if (cache_id < colourcache.length) {
-            map = colourcache[cache_id];
+            IndexColorModel map = colourcache[cache_id];
             if (map != null)
                 return map;
         }
@@ -128,11 +126,9 @@ public class Cache {
     public Bitmap getBitmap(int cache_id, int cache_idx)
             throws RdesktopException {
 
-        Bitmap bitmap = null;
-
         if ((cache_id < bitmapcache.length)
                 && (cache_idx < bitmapcache[0].length)) {
-            bitmap = bitmapcache[cache_id][cache_idx];
+            Bitmap bitmap = bitmapcache[cache_id][cache_idx];
             /*
              * try { if (bitmap != null ||
              * PstCache.pstcache_load_bitmap(cache_id, cache_idx)){ if
@@ -184,10 +180,9 @@ public class Cache {
      * @throws RdesktopException
      */
     public Cursor getCursor(int cache_idx) throws RdesktopException {
-        Cursor cursor = null;
 
         if (cache_idx < cursorcache.length) {
-            cursor = cursorcache[cache_idx];
+            Cursor cursor = cursorcache[cache_idx];
             if (cursor != null) {
                 return cursor;
             }
@@ -231,11 +226,10 @@ public class Cache {
      * Update the persistent bitmap cache MRU information on exit
      */
     public void saveState() {
-        int id, idx;
 
-        for (id = 0; id < bitmapcache.length; id++)
+        for (int id = 0; id < bitmapcache.length; id++)
             if (PstCache.IS_PERSISTENT(id))
-                for (idx = 0; idx < bitmapcache[id].length; idx++)
+                for (int idx = 0; idx < bitmapcache[id].length; idx++)
                     PstCache.touchBitmap(id, idx, bitmapcache[id][idx].usage);
     }
 
@@ -267,9 +261,8 @@ public class Cache {
      * @throws RdesktopException
      */
     public DataBlob getText(int cache_id) throws RdesktopException {
-        DataBlob entry = null;
         if (cache_id < textcache.length) {
-            entry = textcache[cache_id];
+            DataBlob entry = textcache[cache_id];
             if (entry != null) {
                 if (entry.getData() != null) {
                     return entry;
@@ -307,13 +300,12 @@ public class Cache {
     public void putDesktop(int offset, int cx, int cy, int[] data)
             throws RdesktopException {
 
-        int length = cx * cy;
-        int pdata = 0;
-
         if (offset > highdeskcache.length)
             offset = 0;
 
+        int length = cx * cy;
         if (offset + length <= highdeskcache.length) {
+            int pdata = 0;
             for (int i = 0; i < cy; i++) {
                 System.arraycopy(data, pdata, highdeskcache, offset, cx);
                 offset += cx;
@@ -336,13 +328,13 @@ public class Cache {
     public int[] getDesktopInt(int offset, int cx, int cy)
             throws RdesktopException {
         int length = cx * cy;
-        int pdata = 0;
-        int[] data = new int[length];
 
         if (offset > highdeskcache.length)
             offset = 0;
 
         if (offset + length <= highdeskcache.length) {
+            int[] data = new int[length];
+            int pdata = 0;
             for (int i = 0; i < cy; i++) {
                 System.arraycopy(highdeskcache, offset, data, pdata, cx);
                 offset += cx;

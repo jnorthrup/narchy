@@ -271,14 +271,12 @@ public class NAL8SequenceTest extends NALTest {
     @Disabled
     @Test void one() throws Narsese.NarseseException {
 
-        String sequence = "(((f(a) &&+2 f(b)) &&+2 f(c)) &&+2 done)";
-        String goal = "done";
-        List<Term> log = new FasterList();
-
         NAR n = NARS.tmp();
         n.termVolMax.set(20);
         n.time.dur(4);
 
+        List<Term> log = new FasterList();
+        String goal = "done";
         n.addOp1("f", (x, nar)->{
             System.err.println(x);
 
@@ -298,6 +296,7 @@ public class NAL8SequenceTest extends NALTest {
             n.want($$(goal), Tense.Present, 1f); //reinforce
         });
 
+        String sequence = "(((f(a) &&+2 f(b)) &&+2 f(c)) &&+2 done)";
         n.believe(sequence);
         //n.want($$(goal), Tense.Eternal /* Present */, 1f);
         n.want($$(goal), Tense.Present, 1f);

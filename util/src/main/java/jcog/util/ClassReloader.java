@@ -566,10 +566,9 @@ public class ClassReloader extends ClassLoader {
 
     @Override
     public Class<?> findClass(String s) throws ClassNotFoundException {
-        Class<?> clazz = null;
         try {
             byte[] bytes = loadClassData(s);
-            clazz = this.defineClass(s, bytes, 0, bytes.length);
+            Class<?> clazz = this.defineClass(s, bytes, 0, bytes.length);
             resolveClass(clazz);
             return clazz;
         } catch (IOException ioe) {
@@ -871,8 +870,8 @@ public class ClassReloader extends ClassLoader {
         public static byte[] digest(String original, boolean justCode) {
             String code = justCode?getJustCode(original):original;
             InputStream is = new ByteArrayInputStream(code.getBytes());
-            DigestInputStream dis = null;
             JustCodeDigest.lastException = null;
+            DigestInputStream dis = null;
             try {
                 dis = new DigestInputStream(is, md5);
                 while (dis.read() != -1) {}
@@ -907,10 +906,9 @@ public class ClassReloader extends ClassLoader {
         }
 
         public static byte[] digest(File file, boolean justCode) {
-            byte[] bytes;
             JustCodeDigest.lastException = null;
             try {
-                bytes = Files.readAllBytes(file.toPath());
+                byte[] bytes = Files.readAllBytes(file.toPath());
                 String text = new String(bytes, StandardCharsets.UTF_8);
                 return digest(text, justCode);
             } catch (IOException e) {

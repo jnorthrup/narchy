@@ -74,8 +74,6 @@ public class SplayTree {
     
     public BTreeNode delete(Comparable keys) {
 
-        BTreeNode newTree;
-
         root = splay(keys, root);
 
         if (!(root.keyValue()).equals(keys)) {
@@ -84,6 +82,7 @@ public class SplayTree {
 
         BTreeNode result = root;
 
+        BTreeNode newTree;
         if (root._left == null)
             newTree = root._right;
         else {
@@ -242,10 +241,10 @@ public class SplayTree {
      */
     
     private static BTreeNode splay(Comparable keys, BTreeNode t) {
-        BTreeNode _leftTreeMax, _rightTreeMin;
 
         header._left = header._right = null;
-        _leftTreeMax = _rightTreeMin = header;
+        BTreeNode _rightTreeMin;
+        BTreeNode _leftTreeMax = _rightTreeMin = header;
 
         for (; ; ) {
             Comparable rKey = t.keyValue();

@@ -43,9 +43,8 @@ public class CL_inv {
 	 * ================ CL_ParseInventory ================
 	 */
 	static void ParseInventory() {
-		int i;
 
-		for (i = 0; i < Defines.MAX_ITEMS; i++)
+        for (int i = 0; i < Defines.MAX_ITEMS; i++)
 			Globals.cl.inventory[i] = MSG.ReadShort(Globals.net_message);
 	}
 
@@ -73,12 +72,8 @@ public class CL_inv {
 	static final int DISPLAY_ITEMS = 17;
 
 	static void DrawInventory() {
-		int i, j;
-		int item;
-		int[] index = new int[Defines.MAX_ITEMS];
-		String string;
-        String binding;
-		String bind;
+		int i;
+        int[] index = new int[Defines.MAX_ITEMS];
 
         int selected = Globals.cl.frame.playerstate.stats[Defines.STAT_SELECTED_ITEM];
 
@@ -114,21 +109,20 @@ public class CL_inv {
 		Inv_DrawString(x, y + 8, "------ --- ----");
 		y += 16;
 		for (i = top; i < num && i < top + DISPLAY_ITEMS; i++) {
-			item = index[i];
-			
-			
-			
-			binding = "use " + Globals.cl.configstrings[Defines.CS_ITEMS + item];
-			bind = "";
-			for (j = 0; j < 256; j++)
+            int item = index[i];
+
+
+            String binding = "use " + Globals.cl.configstrings[Defines.CS_ITEMS + item];
+            String bind = "";
+            for (int j = 0; j < 256; j++)
 				if (Globals.keybindings[j] != null && Globals.keybindings[j].equals(binding)) {
 					bind = Key.KeynumToString(j);
 					break;
 				}
 
-			string = Com.sprintf("%6s %3i %s", new Vargs(3).add(bind).add(Globals.cl.inventory[item]).add(
-					Globals.cl.configstrings[Defines.CS_ITEMS + item]));
-			if (item != selected)
+            String string = Com.sprintf("%6s %3i %s", new Vargs(3).add(bind).add(Globals.cl.inventory[item]).add(
+                    Globals.cl.configstrings[Defines.CS_ITEMS + item]));
+            if (item != selected)
 				string = getHighBitString(string);
 			else 
 			{

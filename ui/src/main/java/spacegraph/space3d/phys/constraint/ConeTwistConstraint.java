@@ -178,9 +178,9 @@ public class ConeTwistConstraint extends TypedConstraint {
 		rbBFrame.basis.getColumn(0, b2Axis1);
 		getRigidBodyB().getCenterOfMassTransform(tmpTrans).basis.transform(b2Axis1);
 
-		float swing1 = 0f, swing2 = 0f;
+		float swing1 = 0f;
 
-		float swx = 0f, swy = 0f;
+        float swx = 0f, swy = 0f;
 		float thresh = 10f;
 		float fact;
 
@@ -197,7 +197,8 @@ public class ConeTwistConstraint extends TypedConstraint {
 			swing1 *= fact;
 		}
 
-		if (swingSpan2 >= 0.05f) {
+        float swing2 = 0f;
+        if (swingSpan2 >= 0.05f) {
 			rbAFrame.basis.getColumn(2, b1Axis3);
 			getRigidBodyA().getCenterOfMassTransform(tmpTrans).basis.transform(b1Axis3);
 
@@ -284,10 +285,8 @@ public class ConeTwistConstraint extends TypedConstraint {
 		v3 pivotBInW = new v3(rbBFrame);
 		rbB.getCenterOfMassTransform(tmpTrans).transform(pivotBInW);
 
-		float tau = 0.3f;
 
-		
-		if (!angularOnly) {
+        if (!angularOnly) {
 			v3 rel_pos1 = new v3();
 			rel_pos1.sub(pivotAInW, rbA.getCenterOfMassPosition(tmpVec));
 
@@ -299,7 +298,8 @@ public class ConeTwistConstraint extends TypedConstraint {
 			v3 vel = new v3();
 			vel.sub(vel1, vel2);
 
-			for (int i = 0; i < 3; i++) {
+            float tau = 0.3f;
+            for (int i = 0; i < 3; i++) {
 				v3 normal = jac[i].linearJointAxis;
                 float jacDiagABInv = 1f / jac[i].Adiag;
 

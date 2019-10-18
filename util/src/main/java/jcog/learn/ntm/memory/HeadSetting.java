@@ -41,9 +41,8 @@ public class HeadSetting
         double[] addr = addressingVector.value;
 
         Unit[] sv = getShiftedVector();
-        double sum;
         int bound = cellCount;
-        sum = IntStream.range(0, bound).mapToDouble(i -> (addr[i] = Math.pow(sv[i].value, gammaIndex))).sum();
+        double sum = IntStream.range(0, bound).mapToDouble(i -> (addr[i] = Math.pow(sv[i].value, gammaIndex))).sum();
 
         addressingVector.valueMultiplySelf(1.0/sum);
         
@@ -110,9 +109,8 @@ public class HeadSetting
             s += temps[i];
         }
         double lnexps = lnexp / s;
-        double gradient2;
         int bound = cells;
-        gradient2 = IntStream.range(0, bound).filter(i -> !(sv[i].value < NTMMemory.EPSILON)).mapToDouble(i -> addrGrad[i] * (addrValue[i] * (lns[i] - lnexps))).sum();
+        double gradient2 = IntStream.range(0, bound).filter(i -> !(sv[i].value < NTMMemory.EPSILON)).mapToDouble(i -> addrGrad[i] * (addrValue[i] * (lns[i] - lnexps))).sum();
 
 
         gradient2 /= (1.0 + Math.exp(-gamma.value));

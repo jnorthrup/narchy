@@ -311,8 +311,6 @@ public class ContinuousConstraintSolver {
      * This will return false if the constraint cannot be satisfied.
      */
     private boolean  addWithArtificialVariable(Row row) {
-        boolean res = false;
-        boolean completed = false;
 
 
         var art = new Symbol(Symbol.Type.SLACK);
@@ -331,6 +329,8 @@ public class ContinuousConstraintSolver {
 
         var rowptr = rows.get(art);
 
+        boolean completed = false;
+        boolean res = false;
         if (rowptr != null) {
             var deleteQueue = new ArrayList<>();
             for (Map.Entry<Symbol, Row> entry : rows.entrySet()) {

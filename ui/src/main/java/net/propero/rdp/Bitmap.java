@@ -97,11 +97,11 @@ public class Bitmap {
 
     private static int convert15to24(int colour16) {
         int r24 = (colour16 >> 7) & 0xF8;
-        int g24 = (colour16 >> 2) & 0xF8;
-        int b24 = (colour16 << 3) & 0xFF;
 
         r24 |= r24 >> 5;
+        int g24 = (colour16 >> 2) & 0xF8;
         g24 |= g24 >> 5;
+        int b24 = (colour16 << 3) & 0xFF;
         b24 |= b24 >> 5;
 
         return (r24 << 16) | (g24 << 8) | b24;
@@ -109,11 +109,11 @@ public class Bitmap {
 
     private static int convert16to24(int colour16) {
         int r24 = (colour16 >> 8) & 0xF8;
-        int g24 = (colour16 >> 3) & 0xFC;
-        int b24 = (colour16 << 3) & 0xFF;
 
         r24 |= r24 >> 5;
+        int g24 = (colour16 >> 3) & 0xFC;
         g24 |= g24 >> 6;
+        int b24 = (colour16 << 3) & 0xFF;
         b24 |= b24 >> 5;
 
         return (r24 << 16) | (g24 << 8) | b24;
@@ -694,28 +694,36 @@ public class Bitmap {
                                       RdpPacket_Localised data, int Bpp, IndexColorModel cm)
             throws RdesktopException {
 
-        WrappedImage w = null;
-
         byte[] compressed_pixel = new byte[size];
         data.copyToByteArray(compressed_pixel, 0, data.getPosition(), size);
         data.incrementPosition(size);
 
-        int previous = -1, line = 0, prevY = 0;
-        int input = 0, end = size;
-        int opcode = 0, count = 0, offset = 0, x = width;
-        int lastopcode = -1, fom_mask = 0;
-        int code = 0, color1 = 0, color2 = 0;
-        byte mixmask = 0;
-        int mask = 0;
-        int mix = 0xffffffff;
-
-        boolean insertmix = false, bicolor = false, isfillormix = false;
-
+        WrappedImage w = null;
         if (cm == null)
             w = new WrappedImage(width, height, BufferedImage.TYPE_INT_RGB);
         else
             w = new WrappedImage(width, height, BufferedImage.TYPE_INT_RGB, cm);
 
+        boolean isfillormix = false;
+        boolean bicolor = false;
+        boolean insertmix = false;
+        int mix = 0xffffffff;
+        int mask = 0;
+        byte mixmask = 0;
+        int color2 = 0;
+        int color1 = 0;
+        int code = 0;
+        int fom_mask = 0;
+        int lastopcode = -1;
+        int x = width;
+        int offset = 0;
+        int count = 0;
+        int opcode = 0;
+        int end = size;
+        int input = 0;
+        int prevY = 0;
+        int line = 0;
+        int previous = -1;
         while (input < end) {
             fom_mask = 0;
             code = (compressed_pixel[input++] & 0x000000ff);

@@ -38,9 +38,8 @@ public class ThreadCPUTimeTracker extends DoubleMeter {
     }
 
     public static double getCPUTime() {
-        double sum;
         ThreadMXBean threadMXBean1 = getThreadMXBean();
-        sum = Arrays.stream(getThreadMXBean().getAllThreadIds()).mapToDouble(threadMXBean1::getThreadUserTime).sum();
+        double sum = Arrays.stream(getThreadMXBean().getAllThreadIds()).mapToDouble(threadMXBean1::getThreadUserTime).sum();
         return sum;
                 //.getCurrentThreadCpuTime();
     }

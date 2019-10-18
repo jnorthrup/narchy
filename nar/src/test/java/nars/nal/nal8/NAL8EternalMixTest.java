@@ -367,8 +367,8 @@ class NAL8EternalMixTest extends NALTest {
         test.termVolMax(13);
         TestNAR tester = test;
 
-        int when = 2;
         tester.input("( ( hold:t2 &&+1 (att1 &&+1 open:t1)) ==>+1 opened:t1).");
+        int when = 2;
         tester.inputAt(when, "hold:t2. :|:");
 
         String result = "((att1 &&+1 open:t1) ==>+1 opened:t1)";

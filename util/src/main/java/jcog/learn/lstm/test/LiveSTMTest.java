@@ -12,17 +12,16 @@ public class LiveSTMTest {
 
     public static void main(String[] args) {
 
-        final int seqPeriod = 12;
-
         int inputs = 4;
         int outputs = 8;
-        int cells = 8;
 
         ExpectedVsActual i = ExpectedVsActual.the(inputs, outputs);
         double[] expect = i.expected;
         i.zero();
 
 
+        int cells = 8;
+        final int seqPeriod = 12;
         LiveSTM l = new LiveSTM(inputs, outputs, cells) {
 
             int t;

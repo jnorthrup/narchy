@@ -171,9 +171,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
     @Override
     default int structure() {
         //return intifyShallow((s, x) -> s | x.structure(), 0);
-        int s, n = subs();
+        int n = subs();
         int acc = IntStream.range(0, n).map(i -> sub(i).structure()).reduce(0, (a, b) -> a | b);
-        s = acc;
+        int s = acc;
         return s;
     }
 

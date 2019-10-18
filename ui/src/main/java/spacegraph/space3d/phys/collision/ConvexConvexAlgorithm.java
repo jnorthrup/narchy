@@ -131,14 +131,10 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 		Transform tmpTrans1 = new Transform();
 		Transform tmpTrans2 = new Transform();
 
-		
 
-		
-		
-		float resultFraction = 1f;
-
-		tmp.sub(col0.getInterpolationWorldTransform(tmpTrans1), col0.getWorldTransform(tmpTrans2));
-		if (tmp.lengthSquared() < col0.getCcdSquareMotionThreshold()) {
+        tmp.sub(col0.getInterpolationWorldTransform(tmpTrans1), col0.getWorldTransform(tmpTrans2));
+        float resultFraction = 1f;
+        if (tmp.lengthSquared() < col0.getCcdSquareMotionThreshold()) {
 			tmp.sub(col1.getInterpolationWorldTransform(tmpTrans1), col1.getWorldTransform(tmpTrans2));
 			if (tmp.lengthSquared() < col1.getCcdSquareMotionThreshold()) {
 				return resultFraction;

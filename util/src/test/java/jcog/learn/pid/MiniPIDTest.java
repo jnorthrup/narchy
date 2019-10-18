@@ -17,20 +17,17 @@ class MiniPIDTest {
         
         miniPID.setSetpointRange(40);
 
-        double target = 100;
-
-        double actual = 0;
-        double output;
-
         miniPID.setpoint(0);
+        double target = 100;
         miniPID.setpoint(target);
 
+        double actual = 0;
         for (int i = 0; i < 200; i++) {
 
             if (i == 60)
                 target = 50;
 
-            output = miniPID.out(actual, target);
+            double output = miniPID.out(actual, target);
             actual += output;
             System.out.println(n4(output) + ' ' + n4(actual));
         }

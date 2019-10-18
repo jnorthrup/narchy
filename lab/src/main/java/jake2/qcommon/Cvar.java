@@ -54,7 +54,6 @@ public class Cvar extends Globals {
     static final xcommand_t Set_f = new xcommand_t() {
         @Override
         public void execute() {
-            int flags;
 
             int c = Cmd.Argc();
             if (c != 3 && c != 4) {
@@ -63,6 +62,7 @@ public class Cvar extends Globals {
             }
 
             if (c == 4) {
+                int flags;
                 switch (Cmd.Argv(3)) {
                     case "u":
                         flags = Defines.CVAR_USERINFO;
@@ -87,10 +87,9 @@ public class Cvar extends Globals {
     static final xcommand_t List_f = new xcommand_t() {
         @Override
         public void execute() {
-            cvar_t var;
 
             int i = 0;
-            for (var = Globals.cvar_vars; var != null; var = var.next, i++) {
+            for (cvar_t var = Globals.cvar_vars; var != null; var = var.next, i++) {
                 if ((var.flags & Defines.CVAR_ARCHIVE) != 0)
                     Com.Printf("*");
                 else
@@ -170,9 +169,8 @@ public class Cvar extends Globals {
     }
 
     static cvar_t FindVar(String var_name) {
-        cvar_t var;
 
-        for (var = Globals.cvar_vars; var != null; var = var.next) {
+        for (cvar_t var = Globals.cvar_vars; var != null; var = var.next) {
             if (var_name.equals(var.name))
                 return var;
         }
@@ -338,11 +336,10 @@ public class Cvar extends Globals {
     }
 
     public static String BitInfo(int bit) {
-        cvar_t var;
 
         String info = "";
 
-        for (var = Globals.cvar_vars; var != null; var = var.next) {
+        for (cvar_t var = Globals.cvar_vars; var != null; var = var.next) {
             if ((var.flags & bit) != 0)
                 info = Info.Info_SetValueForKey(info, var.name, var.string);
         }
@@ -386,8 +383,6 @@ public class Cvar extends Globals {
      */
 
     public static void WriteVariables(String path) {
-        cvar_t var;
-        String buffer;
 
         RandomAccessFile f = Lib.fopen(path, "rw");
         if (f != null) {
@@ -397,9 +392,9 @@ public class Cvar extends Globals {
                 Lib.fclose(f);
                 return;
             }
-            for (var = Globals.cvar_vars; var != null; var = var.next) {
+            for (cvar_t var = Globals.cvar_vars; var != null; var = var.next) {
                 if ((var.flags & Defines.CVAR_ARCHIVE) != 0) {
-                    buffer = "setAt " + var.name + " \"" + var.string + "\"\n";
+                    String buffer = "setAt " + var.name + " \"" + var.string + "\"\n";
                     try {
                         f.writeBytes(buffer);
                     } catch (IOException e) {

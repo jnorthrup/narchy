@@ -72,8 +72,7 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
         
         NodeFactory nodeFactory = configuration.getNodeFactory(); 
         Set<Leaf> terminalSet = new HashSet<>(nodeFactory.getTerminalSet());
-        
-        Map<String, Long> ngrams = new HashMap<>();
+
         List<Example> examples = dataset.getExamples();
         List<Example> positiveExamples = new ArrayList<>();
         List<Example> negativeExamples = new ArrayList<>();
@@ -89,7 +88,8 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
          * Uses postive examples n-grams and gives a score 
          * +1 for each positive example which contains it
          */
-        for (Example example : positiveExamples) {           
+        Map<String, Long> ngrams = new HashMap<>();
+        for (Example example : positiveExamples) {
             
             for (char c : example.getString().toCharArray()) {
                     charset.add(c);

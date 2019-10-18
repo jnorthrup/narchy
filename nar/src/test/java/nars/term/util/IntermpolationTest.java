@@ -396,20 +396,20 @@ class IntermpolationTest {
             n.run(1);
 
 
-            String abpill = "((a==>b)-->[pill])";
             assertEquals("(a ==>+- a)", $$("(a ==>+- a)").concept().toString());
             assertEquals("((a ==>+- b)-->[pill])", $$("((a ==>+- b)-->[pill])").concept().toString());
+            String abpill = "((a==>b)-->[pill])";
             assertEquals("((a ==>+- b)-->[pill])", $$(abpill).concept().toString());
 
             TaskConcept cc = (TaskConcept) n.conceptualize(abpill);
             assertNotNull(cc);
 
-            String correctMerge = "((a ==>+" + ab +" b)-->[pill])";
             cc.beliefs().print();
 
 
             long when = t == Present ? 0 : ETERNAL;
             Task m = cc.beliefs().match(when, when, null, 0, n);
+            String correctMerge = "((a ==>+" + ab + " b)-->[pill])";
             assertEquals(correctMerge, m.term().toString());
 
 

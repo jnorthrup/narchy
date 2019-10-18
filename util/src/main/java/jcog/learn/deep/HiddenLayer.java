@@ -56,9 +56,8 @@ public class HiddenLayer {
     }
 
     public double output(double[] input, double[] w, double b) {
-        double linear_output;
         int bound = n_in;
-        linear_output = IntStream.range(0, bound).mapToDouble(j -> w[j] * input[j]).sum();
+        double linear_output = IntStream.range(0, bound).mapToDouble(j -> w[j] * input[j]).sum();
         linear_output += b;
 
         return activation.apply(linear_output);

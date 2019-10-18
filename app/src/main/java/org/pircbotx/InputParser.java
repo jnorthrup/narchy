@@ -476,12 +476,12 @@ public class InputParser implements Closeable {
 				sourceSnapshot = null;
 			}
 			//A real target is missing, so index is off
-			String reason = target;
-			// Someone has quit from the IRC server.
+            // Someone has quit from the IRC server.
 			if (!source.getNick().equals(bot.getNick())) 
 			//Someone else
 			bot.getUserChannelDao().removeUser(sourceUser);
-			configuration.getListenerManager().onEvent(new QuitEvent(bot, daoSnapshot, source, sourceSnapshot, reason));
+            String reason = target;
+            configuration.getListenerManager().onEvent(new QuitEvent(bot, daoSnapshot, source, sourceSnapshot, reason));
 		} else if ("KICK".equals(command)) {
 			// Somebody has been kicked from a channel.
 			UserHostmask recipientHostmask = bot.getConfiguration().getBotFactory().createUserHostmask(bot, message);
@@ -541,8 +541,7 @@ public class InputParser implements Closeable {
 			//TODO: When output parsing is implemented intercept outgoing NICK?
 			//Nickname in use, rename
 			boolean autoNickChange = configuration.isAutoNickChange();
-			String autoNewNick = null;
-			String usedNick = null;
+            String usedNick = null;
 			boolean doAutoNickChange = false;
 			//Ignore cases where we already have a valid nick but changed to a used one
 			if (parsedResponse.size() == 3) {
@@ -557,7 +556,8 @@ public class InputParser implements Closeable {
 					doAutoNickChange = true;
 				}
 			}
-			if (autoNickChange && doAutoNickChange) {
+            String autoNewNick = null;
+            if (autoNickChange && doAutoNickChange) {
 				nickSuffix++;
 				autoNewNick = configuration.getName() + nickSuffix;
 				bot.sendIRC().changeNick(autoNewNick);

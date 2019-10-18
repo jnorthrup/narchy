@@ -60,10 +60,9 @@ public class SV_CCMDS {
 	====================
 	*/
 	public static void SV_SetMaster_f() {
-		int i;
 
 
-        if (Globals.dedicated.value == 0) {
+		if (Globals.dedicated.value == 0) {
 			Com.Printf("Only dedicated servers use masters.\n");
 			return;
 		}
@@ -71,6 +70,7 @@ public class SV_CCMDS {
 		
 		Cvar.Set("public", "1");
 
+		int i;
 		for (i = 1; i < Defines.MAX_MASTERS; i++)
 			SV_MAIN.master_adr[i] = new netadr_t();
 
@@ -104,18 +104,15 @@ public class SV_CCMDS {
 	==================
 	*/
 	public static boolean SV_SetPlayer() {
-		client_t cl;
-		int i;
-		int idnum;
 
-        if (Cmd.Argc() < 2)
+		if (Cmd.Argc() < 2)
 			return false;
 
         String s = Cmd.Argv(1);
 
 		
 		if (s.charAt(0) >= '0' && s.charAt(0) <= '9') {
-			idnum = Lib.atoi(Cmd.Argv(1));
+			int idnum = Lib.atoi(Cmd.Argv(1));
 			if (idnum < 0 || idnum >= SV_MAIN.maxclients.value) {
 				Com.Printf("Bad client slot: " + idnum + '\n');
 				return false;
@@ -131,8 +128,8 @@ public class SV_CCMDS {
 		}
 
 		
-		for (i = 0; i < SV_MAIN.maxclients.value; i++) {
-			cl = SV_INIT.svs.clients[i];
+		for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+			client_t cl = SV_INIT.svs.clients[i];
 			if (0 == cl.state)
 				continue;
 			if (0 == Lib.strcmp(cl.name, s)) {
@@ -197,17 +194,16 @@ public class SV_CCMDS {
 	================
 	*/
 	public static void CopyFile(String src, String dst) {
-		RandomAccessFile f1, f2;
-		int l = -1;
-        byte[] buffer = new byte[65536];
+		RandomAccessFile f1;
 
-		
+
 		try {
 			f1 = new RandomAccessFile(src, "r");
 		}
 		catch (Exception e) {
 			return;
 		}
+		RandomAccessFile f2;
 		try {
 			f2 = new RandomAccessFile(dst, "rw");
 		}
@@ -221,6 +217,8 @@ public class SV_CCMDS {
 			return;
 		}
 
+		byte[] buffer = new byte[65536];
+		int l = -1;
 		while (true) {
 
 			try {
@@ -306,14 +304,12 @@ public class SV_CCMDS {
 	*/
 	public static void SV_WriteLevelFile() {
 
-        QuakeFile f;
-
 		Com.DPrintf("SV_WriteLevelFile()\n");
 
         String name = FS.Gamedir() + "/save/current/" + SV_INIT.sv.name + ".sv2";
 
 		try {
-			f = new QuakeFile(name, "rw");
+			QuakeFile f = new QuakeFile(name, "rw");
 
 			for (int i = 0; i < Defines.MAX_CONFIGSTRINGS; i++)
 				f.writeString(SV_INIT.sv.configstrings[i]);
@@ -337,13 +333,11 @@ public class SV_CCMDS {
 	*/
 	public static void SV_ReadLevelFile() {
 
-        QuakeFile f;
-
 		Com.DPrintf("SV_ReadLevelFile()\n");
 
         String name = FS.Gamedir() + "/save/current/" + SV_INIT.sv.name + ".sv2";
 		try {
-			f = new QuakeFile(name, "r");
+			QuakeFile f = new QuakeFile(name, "r");
 
 			for (int n = 0; n < Defines.MAX_CONFIGSTRINGS; n++)
 				SV_INIT.sv.configstrings[n] = f.readString();
@@ -367,17 +361,14 @@ public class SV_CCMDS {
 	==============
 	*/
 	public static void SV_WriteServerFile(boolean autosave) {
-		QuakeFile f;
-		cvar_t var;
-
-		String name, string, comment;
 
 		Com.DPrintf("SV_WriteServerFile(" + (autosave ? "true" : "false") + ")\n");
 
         String filename = FS.Gamedir() + "/save/current/server.ssv";
 		try {
-			f = new QuakeFile(filename, "rw");
+			QuakeFile f = new QuakeFile(filename, "rw");
 
+			String comment;
 			if (!autosave) {
 				Calendar c = Calendar.getInstance();
 				comment =
@@ -400,7 +391,7 @@ public class SV_CCMDS {
 
 			
 			
-			for (var = Globals.cvar_vars; var != null; var = var.next) {
+			for (cvar_t var = Globals.cvar_vars; var != null; var = var.next) {
 				if (0 == (var.flags & Defines.CVAR_LATCH))
 					continue;
 				if (var.name.length() >= Defines.MAX_OSPATH - 1 || var.string.length() >= 128 - 1) {
@@ -408,8 +399,8 @@ public class SV_CCMDS {
 					continue;
 				}
 
-				name = var.name;
-				string = var.string;
+				String name = var.name;
+				String string = var.string;
 				try {
 					f.writeString(name);
 					f.writeString(string);
@@ -437,10 +428,10 @@ public class SV_CCMDS {
 	==============
 	*/
 	public static void SV_ReadServerFile() {
-		String filename="", name = "", string, mapcmd;
+		String filename="";
 		try {
 
-            mapcmd = "";
+			String mapcmd = "";
 
 			Com.DPrintf("SV_ReadServerFile()\n");
 
@@ -454,13 +445,13 @@ public class SV_CCMDS {
 			
 			mapcmd = f.readString();
 
-			
-			
+
+			String name = "";
 			while (true) {
 				name = f.readString();
 				if (name == null)
 					break;
-				string = f.readString();
+				String string = f.readString();
 
 				Com.DPrintf("Set " + name + " = " + string + '\n');
 				Cvar.ForceSet(name, string);
@@ -576,12 +567,10 @@ public class SV_CCMDS {
 	*/
 	public static void SV_Map_f() {
 
-        String expanded;
 
-
-        String map = Cmd.Argv(1);
+		String map = Cmd.Argv(1);
 		if (!map.contains(".")) {
-			expanded = "maps/" + map + ".bsp";
+			String expanded = "maps/" + map + ".bsp";
 			if (FS.LoadFile(expanded) == null) {
 
 				Com.Printf("Can't find " + expanded + '\n');
@@ -739,10 +728,6 @@ public class SV_CCMDS {
 	================
 	*/
 	public static void SV_Status_f() {
-		int i, j, l;
-		client_t cl;
-		String s;
-		int ping;
 		if (SV_INIT.svs.clients == null) {
 			Com.Printf("No server running.\n");
 			return;
@@ -751,8 +736,8 @@ public class SV_CCMDS {
 
 		Com.Printf("num score ping name            lastmsg address               qport \n");
 		Com.Printf("--- ----- ---- --------------- ------- --------------------- ------\n");
-		for (i = 0; i < SV_MAIN.maxclients.value; i++) {
-			cl = SV_INIT.svs.clients[i];
+		for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
+			client_t cl = SV_INIT.svs.clients[i];
 			if (0 == cl.state)
 				continue;
 
@@ -764,18 +749,19 @@ public class SV_CCMDS {
 			else if (cl.state == Defines.cs_zombie)
 				Com.Printf("ZMBI ");
 			else {
-				ping = cl.ping < 9999 ? cl.ping : 9999;
+				int ping = cl.ping < 9999 ? cl.ping : 9999;
 				Com.Printf("%4i ", new Vargs().add(ping));
 			}
 
 			Com.Printf("%s", new Vargs().add(cl.name));
-			l = 16 - cl.name.length();
+			int l = 16 - cl.name.length();
+			int j;
 			for (j = 0; j < l; j++)
 				Com.Printf(" ");
 
 			Com.Printf("%7i ", new Vargs().add(SV_INIT.svs.realtime - cl.lastmessage));
 
-			s = NET.AdrToString(cl.netchan.remote_address);
+			String s = NET.AdrToString(cl.netchan.remote_address);
 			Com.Printf(s);
 			l = 22 - s.length();
 			for (j = 0; j < l; j++)
@@ -793,23 +779,21 @@ public class SV_CCMDS {
 	==================
 	*/
 	public static void SV_ConSay_f() {
-		client_t client;
-		int j;
 
-        if (Cmd.Argc() < 2)
+		if (Cmd.Argc() < 2)
 			return;
 
-        String text = "console: ";
-        String p = Cmd.Args();
+		String p = Cmd.Args();
 
 		if (p.charAt(0) == '"') {
 			p = p.substring(1, p.length() - 1);
 		}
 
+		String text = "console: ";
 		text += p;
 
-		for (j = 0; j < SV_MAIN.maxclients.value; j++) {
-			client = SV_INIT.svs.clients[j];
+		for (int j = 0; j < SV_MAIN.maxclients.value; j++) {
+			client_t client = SV_INIT.svs.clients[j];
 			if (client.state != Defines.cs_spawned)
 				continue;
 			SV_SEND.SV_ClientPrintf(client, Defines.PRINT_CHAT, text + '\n');
@@ -865,9 +849,7 @@ public class SV_CCMDS {
 	*/
 	public static void SV_ServerRecord_f() {
 
-        byte[] buf_data = new byte[32768];
 		sizebuf_t buf = new sizebuf_t();
-        int i;
 
 		if (Cmd.Argc() != 2) {
 			Com.Printf("serverrecord <demoname>\n");
@@ -900,9 +882,8 @@ public class SV_CCMDS {
 		
 		SZ.Init(SV_INIT.svs.demo_multicast, SV_INIT.svs.demo_multicast_buf, SV_INIT.svs.demo_multicast_buf.length);
 
-		
-		
-		
+
+		byte[] buf_data = new byte[32768];
 		SZ.Init(buf, buf_data, buf_data.length);
 
 		
@@ -920,7 +901,7 @@ public class SV_CCMDS {
 		
 		MSG.WriteString(buf, SV_INIT.sv.configstrings[Defines.CS_NAME]);
 
-		for (i = 0; i < Defines.MAX_CONFIGSTRINGS; i++)
+		for (int i = 0; i < Defines.MAX_CONFIGSTRINGS; i++)
 			if (SV_INIT.sv.configstrings[i].length() == 0) {
 				MSG.WriteByte(buf, Defines.svc_configstring);
 				MSG.WriteShort(buf, i);

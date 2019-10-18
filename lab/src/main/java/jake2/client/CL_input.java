@@ -418,12 +418,9 @@ public class CL_input {
 	 * ============== CL_FinishMove ==============
 	 */
 	static void FinishMove(usercmd_t cmd) {
-        int i;
 
-		
-		
-		
-		if ((in_attack.state & 3) != 0)
+
+        if ((in_attack.state & 3) != 0)
 			cmd.buttons |= Defines.BUTTON_ATTACK;
 		in_attack.state &= ~2;
 
@@ -441,7 +438,7 @@ public class CL_input {
 		cmd.msec = (byte) ms;
 
 		ClampPitch();
-		for (i = 0; i < 3; i++)
+		for (int i = 0; i < 3; i++)
 			cmd.angles[i] = (short) Math3D.ANGLE2SHORT(Globals.cl.viewangles[i]);
 
 		cmd.impulse = (byte) in_impulse;

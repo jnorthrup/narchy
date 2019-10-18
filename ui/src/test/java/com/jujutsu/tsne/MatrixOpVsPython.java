@@ -349,16 +349,16 @@ public class MatrixOpVsPython {
 		double [] pymean0 = { 4.28571429,  4.28571429,  5.42857143,  6.,          4.57142857};
 		double [][] mean0 = MatrixOps.mean(X,0);
 		assertArrayEquals(pymean0, mean0[0], epsilon);
-		double [] pymean1 = {3.,   7.,   3.8,  5.2,  6.,   3.6,  5.8};
-		
-		double [][] mean1mtrx = MatrixOps.mean(X,1);
+
+        double [][] mean1mtrx = MatrixOps.mean(X,1);
 		double [] mean1 = new double [mean1mtrx.length];
 		for (int i = 0; i < mean1mtrx.length; i++) {
 			for (int j = 0; j < mean1mtrx[i].length; j++) {				
 				mean1[i] = mean1mtrx[i][j];
 			}
 		}
-		assertArrayEquals(pymean1, mean1, epsilon);
+        double[] pymean1 = {3., 7., 3.8, 5.2, 6., 3.6, 5.8};
+        assertArrayEquals(pymean1, mean1, epsilon);
 	}
 	
 	@Test

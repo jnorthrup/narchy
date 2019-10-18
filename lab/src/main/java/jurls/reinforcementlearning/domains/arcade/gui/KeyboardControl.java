@@ -133,12 +133,12 @@ public class KeyboardControl implements KeyListener {
      * @return
      */
     public int toALEAction() {
-        int bitfield = 0;
 
-        
+
         if (reset) return Actions.map("system_reset");
 
-        
+
+        int bitfield = 0;
         if (left == right) bitfield |= 0;
         else if (left) bitfield |= 0x08;
         else if (right) bitfield |= 0x04;

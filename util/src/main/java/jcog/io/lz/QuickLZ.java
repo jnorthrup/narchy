@@ -63,17 +63,9 @@ public final class QuickLZ {
 	 */
 	public static int compress(byte[] in, byte[] out, int level) {
 
-		int src = 0;
-		int dst = DEFAULT_HEADERLEN + CWORD_LEN;
-		long cword_val = 0x80000000L;
-		int cword_ptr = DEFAULT_HEADERLEN;
-		int[] cachetable = new int[HASH_VALUES];
-		byte[] hash_counter = new byte[HASH_VALUES];
-		int fetch = 0;
-		int last_matchstart = (in.length - UNCONDITIONAL_MATCHLEN - UNCOMPRESSED_END - 1);
-		int lits = 0;
+        int last_matchstart = (in.length - UNCONDITIONAL_MATCHLEN - UNCOMPRESSED_END - 1);
 
-		if (level != 1 && level != 3)
+        if (level != 1 && level != 3)
 			throw new RuntimeException("Java version only supports level 1 and 3");
 
 		int[][] hashtable = new int[HASH_VALUES][level == 1 ? QLZ_POINTERS_1 : QLZ_POINTERS_3];
@@ -81,10 +73,18 @@ public final class QuickLZ {
 		if (in.length == 0)
 			return 0;
 
-		if (src <= last_matchstart)
+        int fetch = 0;
+        int src = 0;
+        if (src <= last_matchstart)
 			fetch = fast_read_int(in, src, 3);
 
-		while (src <= last_matchstart) {
+        int lits = 0;
+        byte[] hash_counter = new byte[HASH_VALUES];
+        int[] cachetable = new int[HASH_VALUES];
+        int cword_ptr = DEFAULT_HEADERLEN;
+        long cword_val = 0x80000000L;
+        int dst = DEFAULT_HEADERLEN + CWORD_LEN;
+        while (src <= last_matchstart) {
 			if ((cword_val & 1) == 1) {
 				if (src > 3 * (in.length >> 2) && dst > src - (src >> 5)) {
 					//byte[] d2 = new byte[in.length + DEFAULT_HEADERLEN];
@@ -158,7 +158,6 @@ public final class QuickLZ {
 				fetch = fast_read_int(in, src, 3);
 
 				int o;
-                int k, m/*, best_k = 0*/;
                 int remaining = (Math.min((in.length - UNCOMPRESSED_END - src + 1 - 1), 255));
 				int hash = ((fetch >>> 12) ^ fetch) & (HASH_VALUES - 1);
 
@@ -167,11 +166,12 @@ public final class QuickLZ {
                 int offset2 = 0;
 
                 int[] hth = hashtable[hash];
-				for (k = 0; k < QLZ_POINTERS_3 && (c > k || c < 0); k++) {
+				for (int k = 0; k < QLZ_POINTERS_3 && (c > k || c < 0); k++) {
 					o = hth[k];
 					if ((byte) fetch == in[o] && (byte) (fetch >>> 8) == in[o + 1] && (byte) (fetch >>> 16) == in[o + 2] && o < src - MINOFFSET) {
-						m = 3;
-						while (in[o + m] == in[src + m] && m < remaining)
+                        /*, best_k = 0*/
+                        int m = 3;
+                        while (in[o + m] == in[src + m] && m < remaining)
 							m++;
 						if ((m > matchlen) || (m == matchlen && o > offset2)) {
 							offset2 = o;
@@ -269,22 +269,10 @@ public final class QuickLZ {
 	public static byte[] decompress(byte[] in, int offset) {
 		int size = (int) sizeDecompressed(in, offset);
 		int initSrc = headerLen(in, offset);
-		int src = initSrc;
-		int dst = 0;
-		long cword_val = 1;
 
-		byte[] out = new byte[size];
+        //byte[] hash_counter = new byte[4096];
 
-        int[] hashtable =
-            //new int[hashtable_size];
-            null;
-
-		//byte[] hash_counter = new byte[4096];
-		int last_matchstart = size - UNCONDITIONAL_MATCHLEN - UNCOMPRESSED_END - 1;
-		int last_hashed = -1;
-		int fetch = 0;
-
-		byte first = in[offset];
+        byte first = in[offset];
 		int level = (first >>> 2) & 0x3;
 
 		if (level != 1 && level != 3)
@@ -296,7 +284,15 @@ public final class QuickLZ {
 			return d2;
 		}
 
-		for (; ; ) {
+        int last_hashed = -1;
+        int last_matchstart = size - UNCONDITIONAL_MATCHLEN - UNCOMPRESSED_END - 1;
+        //new int[hashtable_size];
+        int[] hashtable = null;
+        byte[] out = new byte[size];
+        long cword_val = 1;
+        int dst = 0;
+        int src = initSrc;
+        for (int fetch = 0; ; ) {
 			if (cword_val == 1) {
 				cword_val = fast_read_long(in, src, 4);
 				src += 4;
@@ -306,12 +302,12 @@ public final class QuickLZ {
 			}
 
 			if ((cword_val & 1) == 1) {
-				int matchlen;
-				int offset2;
 
                 cword_val >>>= 1;
 
-				if (level == 1) {
+                int offset2;
+                int matchlen;
+                if (level == 1) {
                     offset2 = hashtable[(fetch >>> 4) & 0xfff];
 
 					if ((fetch & 0xf) != 0) {

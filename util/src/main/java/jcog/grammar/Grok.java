@@ -370,15 +370,14 @@ public class Grok implements Serializable {
             throw new RuntimeException("{pattern} should not be empty or null");
         }
 
-        String namedRegex = pattern;
         originalGrokPattern = pattern;
         int index = 0;
         /** flag for infinite recurtion */
         int iterationLeft = 1000;
         Boolean continueIteration = true;
 
-        
-        
+
+        String namedRegex = pattern;
         while (continueIteration) {
             continueIteration = false;
             if (iterationLeft <= 0) {
@@ -610,10 +609,8 @@ public class Grok implements Serializable {
 
             Map<String, Grok> groks = new TreeMap<>();
             Map<String, String> gPatterns = grok.patterns();
-            
-            String texte = text;
 
-            
+
             for (Map.Entry<String, String> pairs : gPatterns.entrySet()) {
                 String key = pairs.getKey();
                 Grok g = new Grok();
@@ -633,8 +630,8 @@ public class Grok implements Serializable {
             
             Map<String, Grok> patterns = Discovery.sort(groks);
 
-            
-            
+
+            String texte = text;
             for (Map.Entry<String, Grok> pairs : patterns.entrySet()) {
                 String key = pairs.getKey();
                 Grok value = pairs.getValue();

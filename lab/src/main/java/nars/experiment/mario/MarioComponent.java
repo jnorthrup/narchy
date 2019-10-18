@@ -105,7 +105,6 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
     @Override
     public void run() {
-        boolean running = true;
         graphicsConfiguration = getGraphicsConfiguration();
 
         mapScene = new MapScene(graphicsConfiguration, this, new Random().nextLong());
@@ -121,7 +120,6 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
         Graphics og = image.getGraphics();
 
         double time = System.nanoTime() / 1000000000.0;
-        double now = time;
         long tm = System.currentTimeMillis();
 
         addKeyListener(this);
@@ -131,6 +129,8 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
         adjustFPS();
 
 
+        double now = time;
+        boolean running = true;
         while (running) {
 
             if (!paused)

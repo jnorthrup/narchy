@@ -329,10 +329,9 @@ public class TopDownMinicraft extends Canvas implements Runnable {
         String msg = "Click to focus!";
         int xx = (WIDTH - msg.length() * 8) / 2;
         int yy = (HEIGHT - 8) / 2;
-        int w = msg.length();
-        int h = 1;
 
         screen.render(xx - 8, yy - 8, 0 + 13 * 32, Color.get(-1, 1, 5, 445), 0);
+        int w = msg.length();
         screen.render(xx + w * 8, yy - 8, 0 + 13 * 32, Color.get(-1, 1, 5, 445), 1);
         screen.render(xx - 8, yy + 8, 0 + 13 * 32, Color.get(-1, 1, 5, 445), 2);
         screen.render(xx + w * 8, yy + 8, 0 + 13 * 32, Color.get(-1, 1, 5, 445), 3);
@@ -340,6 +339,7 @@ public class TopDownMinicraft extends Canvas implements Runnable {
             screen.render(xx + x * 8, yy - 8, 1 + 13 * 32, Color.get(-1, 1, 5, 445), 0);
             screen.render(xx + x * 8, yy + 8, 1 + 13 * 32, Color.get(-1, 1, 5, 445), 2);
         }
+        int h = 1;
         for (int y = 0; y < h; y++) {
             screen.render(xx - 8, yy + y * 8, 2 + 13 * 32, Color.get(-1, 1, 5, 445), 0);
             screen.render(xx + w * 8, yy + y * 8, 2 + 13 * 32, Color.get(-1, 1, 5, 445), 1);

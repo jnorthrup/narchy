@@ -281,13 +281,12 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
         chararr = new char[utflen*2];
       }
 
-      int c, c2, c3;
-      int incount = 0;
-      int outcount = 0;
+        readFully(bytearr, 0, utflen);
 
-      readFully(bytearr, 0, utflen);
-
-      while (incount < utflen) {
+        int outcount = 0;
+        int incount = 0;
+        int c;
+        while (incount < utflen) {
         
         c = bytearr[incount] & 0xFF;
         if (c > 127) break;
@@ -295,17 +294,17 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
         chararr[outcount++]=(char)c;
       }
 
-      int x;
-      while (incount < utflen) {
+        while (incount < utflen) {
         c = bytearr[incount] & 0xFF;
         if (c < 128) {
           incount++;
           chararr[outcount++]=(char)c;
           continue;
         }
-        
-        x = c >> 4;
-        if (x == 12 || x == 13) {
+
+            int x = c >> 4;
+            int c2;
+            if (x == 12 || x == 13) {
           
           incount += 2;
           if (incount > utflen)
@@ -324,9 +323,9 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
           if (incount > utflen)
             throw new java.io.UTFDataFormatException("bad UTF data: missing extra bytes of 3 byte char at " + incount);
           c2 = bytearr[incount - 2];
-          c3 = bytearr[incount - 1];
-          
-          if (((c2 & 0xC0) != 0x80) || ((c3 & 0xC0) != 0x80))
+            int c3 = bytearr[incount - 1];
+
+            if (((c2 & 0xC0) != 0x80) || ((c3 & 0xC0) != 0x80))
             throw new java.io.UTFDataFormatException("bad UTF data: extra byte format after 1110xxx is wrong char2: 0x" +
                 Integer.toString(c2, 16) + " char3: " + Integer.toString(c3, 16) + " count: " + incount);
           chararr[outcount++]=(char)(((c & 0x0F) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F));
@@ -370,13 +369,12 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
       else
         sb.setLength(utflen);
 
-      int c, c2, c3;
-      int incount = 0;
-      int outcount = 0;
+        readFully(bytearr, 0, utflen);
 
-      readFully(bytearr, 0, utflen);
-
-      while (incount < utflen) {
+        int outcount = 0;
+        int incount = 0;
+        int c;
+        while (incount < utflen) {
         
         c = bytearr[incount] & 0xFF;
         if (c > 127) break;
@@ -384,17 +382,17 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
         sb.setCharAt(outcount++, (char)c);
       }
 
-      int x;
-      while (incount < utflen) {
+        while (incount < utflen) {
         c = bytearr[incount] & 0xFF;
         if (c < 128) {
           incount++;
           sb.setCharAt(outcount++, (char)c);
           continue;
         }
-        
-        x = c >> 4;
-        if (x == 12 || x == 13) {
+
+            int x = c >> 4;
+            int c2;
+            if (x == 12 || x == 13) {
           
           incount += 2;
           if (incount > utflen)
@@ -413,9 +411,9 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
           if (incount > utflen)
             throw new java.io.UTFDataFormatException("bad UTF data: missing extra bytes of 3 byte char at " + incount);
           c2 = bytearr[incount - 2];
-          c3 = bytearr[incount - 1];
-          
-          if (((c2 & 0xC0) != 0x80) || ((c3 & 0xC0) != 0x80))
+            int c3 = bytearr[incount - 1];
+
+            if (((c2 & 0xC0) != 0x80) || ((c3 & 0xC0) != 0x80))
             throw new java.io.UTFDataFormatException("bad UTF data: extra byte format after 1110xxx is wrong char2: 0x" +
                 Integer.toString(c2, 16) + " char3: " + Integer.toString(c3, 16) + " count: " + incount);
           sb.setCharAt(outcount++, (char)(((c & 0x0F) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F)));

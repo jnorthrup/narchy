@@ -825,9 +825,8 @@ public class UDPeer extends UDP {
 
         public @Nullable InetSocketAddress origin() {
             int port = this.port();
-            InetAddress aa = null;
             try {
-                aa = InetAddress.getByAddress(Arrays.copyOfRange(bytes, ORIGIN_BYTE, ORIGIN_BYTE + 16));
+                InetAddress aa = InetAddress.getByAddress(Arrays.copyOfRange(bytes, ORIGIN_BYTE, ORIGIN_BYTE + 16));
                 return new InetSocketAddress(aa, port);
             } catch (UnknownHostException e) {
                 return null;

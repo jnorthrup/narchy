@@ -178,11 +178,10 @@ final byte[][] dottexture =
 	        } else {
 	            
 	            gl.glReadPixels(0, 0, vid.getWidth(), vid.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, rgb);
-		        
-		        byte tmp;
-		        for (i = TGA_HEADER_SIZE; i < fileLength; i += 3) {
-		            tmp = image.get(i);
-		            image.put(i, image.get(i + 2));
+
+                for (i = TGA_HEADER_SIZE; i < fileLength; i += 3) {
+                    byte tmp = image.get(i);
+                    image.put(i, image.get(i + 2));
 		            image.put(i + 2, tmp);
 		        }
 	        }

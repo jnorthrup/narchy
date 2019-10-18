@@ -150,9 +150,8 @@ public class TriangleShape extends PolyhedralConvexShape {
 		float planeconst = vertices1[0].dot(normal);
 		dist -= planeconst;
 		if (dist >= -tolerance && dist <= tolerance) {
-			
-			int i;
-			for (i = 0; i < 3; i++) {
+
+            for (int i = 0; i < 3; i++) {
 				v3 pa = new v3(), pb = new v3();
 				getEdge(i, pa, pb);
 				v3 edge = new v3();

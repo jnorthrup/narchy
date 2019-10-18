@@ -36,8 +36,7 @@ public class RuleUser {
 	
 	public void InitFromString(String sStr) {
 
-        String sTok;
-		int i;
+        int i;
 		ResetToDefaults();
 		if (sStr.length() < 3)
 			return;
@@ -64,8 +63,8 @@ public class RuleUser {
 
         StringTokenizer st = new StringTokenizer(sStr, " ,", true);
 		while (st.hasMoreTokens()) {
-			sTok = st.nextToken().toUpperCase();
-			if (sTok.length() > 0 && sTok.charAt(0) == 'I')
+            String sTok = st.nextToken().toUpperCase();
+            if (sTok.length() > 0 && sTok.charAt(0) == 'I')
 				Increment = Integer.valueOf(sTok.substring(1));
 			else if (sTok.length() > 0 && sTok.charAt(0) == 'C')
 				iClo = Integer.valueOf(sTok.substring(1));
@@ -77,12 +76,12 @@ public class RuleUser {
 	
 	
 	public String GetAsString() {
-		String sBff = "";
 
-		
-		Validate();
 
-		switch (RuleIdx) {
+        Validate();
+
+        String sBff = "";
+        switch (RuleIdx) {
 			case RIDX_RUG : 
 				sBff = "RUG,C" + iClo;
 				sBff = sBff + ",I" + Increment;
@@ -116,23 +115,22 @@ public class RuleUser {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState) {
-		short bOldVal, bNewVal;
-		int modCnt = 0;
-		int i, j, iCnt;
-		int[] lurd = new int[4]; 
+        int modCnt = 0;
+        int[] lurd = new int[4];
 
-		for (i = 0; i < sizX; ++i) {
+		for (int i = 0; i < sizX; ++i) {
 			
 			lurd[0] = (i > 0) ? i - 1 : (isWrap) ? sizX - 1 : sizX;
 			lurd[2] = (i < sizX - 1) ? i + 1 : (isWrap) ? 0 : sizX;
-			for (j = 0; j < sizY; ++j) {
+			for (int j = 0; j < sizY; ++j) {
 				
 				lurd[1] = j > 0 ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
-				bOldVal = crrState[i][j];
+                short bOldVal = crrState[i][j];
 
-				bNewVal = bOldVal;
-				switch (RuleIdx) {
+                short bNewVal = bOldVal;
+                int iCnt;
+                switch (RuleIdx) {
 					case RIDX_RUG : 
 						
 						iCnt = crrState[lurd[0]][lurd[1]]
@@ -191,16 +189,16 @@ public class RuleUser {
 						}
 						break;
 
-					case RIDX_GRH : 
-						int r = 0,
-						d = 0;
+					case RIDX_GRH :
 
                         int prevState = (bOldVal >> 2) & 3;
 
                         bOldVal &= 3;
-															
 
-						switch (bOldVal) {
+
+                        int d = 0;
+                        int r = 0;
+                        switch (bOldVal) {
 							case 0 :
                                 int i4Sum = (((crrState[lurd[0]][j] & 3) == 1)
                                         ? 1

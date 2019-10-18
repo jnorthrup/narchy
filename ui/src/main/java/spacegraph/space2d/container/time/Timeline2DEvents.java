@@ -107,9 +107,9 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
             next.sortThis((x, y) -> model.compareDurThenStart(x.id, y.id));
 
 
-            List<RoaringBitmap> lanes = new FasterList();
             RoaringBitmap l0 = new RoaringBitmap();
             l0.add(0);
+            List<RoaringBitmap> lanes = new FasterList();
             lanes.add(l0);
 
             for (int i = 1, byDurationSize = next.size(); i < byDurationSize; i++) {

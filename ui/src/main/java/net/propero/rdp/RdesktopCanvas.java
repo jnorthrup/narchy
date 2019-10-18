@@ -396,12 +396,7 @@ public abstract class RdesktopCanvas extends Canvas {
             return;
         }
 
-        int deltax = Math.abs(x2 - x1); 
-        int deltay = Math.abs(y2 - y1); 
-        int x = x1; 
-        int y = y1; 
-        int xinc1, xinc2, yinc1, yinc2;
-        int num, den, numadd, numpixels;
+        int xinc1, xinc2;
 
         if (x2 >= x1) { 
             xinc1 = 1;
@@ -411,7 +406,9 @@ public abstract class RdesktopCanvas extends Canvas {
             xinc2 = -1;
         }
 
-        if (y2 >= y1) { 
+        int yinc2;
+        int yinc1;
+        if (y2 >= y1) {
             yinc1 = 1;
             yinc2 = 1;
         } else { 
@@ -419,7 +416,13 @@ public abstract class RdesktopCanvas extends Canvas {
             yinc2 = -1;
         }
 
-        if (deltax >= deltay) { 
+        int numpixels;
+        int numadd;
+        int den;
+        int num;
+        int deltay = Math.abs(y2 - y1);
+        int deltax = Math.abs(x2 - x1);
+        if (deltax >= deltay) {
             
             xinc1 = 0; 
             yinc2 = 0; 
@@ -436,6 +439,8 @@ public abstract class RdesktopCanvas extends Canvas {
             numpixels = deltay; 
         }
 
+        int y = y1;
+        int x = x1;
         for (int curpixel = 0; curpixel <= numpixels; curpixel++) {
             setPixel(opcode, x, y, color); 
             num += numadd; 
@@ -952,11 +957,6 @@ public abstract class RdesktopCanvas extends Canvas {
     public void drawGlyph(int mixmode, int x, int y, int cx, int cy,
                           byte[] data, int bgcolor, int fgcolor) {
 
-        int index = 0x80;
-
-        int bytes_per_row = (cx - 1) / 8 + 1;
-        int newx;
-
         int Bpp = Options.Bpp;
 
         
@@ -979,6 +979,7 @@ public abstract class RdesktopCanvas extends Canvas {
         int clipright = x + cx - 1;
         if (clipright > this.right)
             clipright = this.right;
+        int newx;
         if (x < this.left)
             newx = this.left;
         else
@@ -996,9 +997,11 @@ public abstract class RdesktopCanvas extends Canvas {
         int newcy = clipbottom - newy + 1;
 
         int pbackstore = (newy * this.width) + x;
+        int bytes_per_row = (cx - 1) / 8 + 1;
         int pdata = bytes_per_row * (newy - y);
 
-        if (mixmode == MIX_TRANSPARENT) { 
+        int index = 0x80;
+        if (mixmode == MIX_TRANSPARENT) {
             for (int i = 0; i < newcy; i++) {
                 for (int j = 0; j < newcx; j++) {
                     if (index == 0) { 
@@ -1067,9 +1070,7 @@ public abstract class RdesktopCanvas extends Canvas {
     public Cursor createCursor(int cache_idx, int x, int y, int w, int h, byte[] andmask,
                                byte[] xormask, int bpp) {
         Point p = new Point(x, y);
-        int pmask = 0, pcursor = 0, pandmask = 0;
         int delta;
-        int i, j, k = 0;
         int scanline = (w + 7) / 8;
         int offset = scanline * h;
 
@@ -1084,6 +1085,12 @@ public abstract class RdesktopCanvas extends Canvas {
             delta = -scanline;
         }
 
+        int k = 0;
+        int j;
+        int i;
+        int pandmask = 0;
+        int pcursor = 0;
+        int pmask = 0;
         for (i = 0; i < h; i++) {
             pcursor = offset;
             pmask = offset;
@@ -1154,12 +1161,12 @@ public abstract class RdesktopCanvas extends Canvas {
             offset += delta;
         }
 
-        int[] cursormap = new int[w * h];
-        int pcursormap = 0;
-        int fg = 0xFFFFFFFF;
-        int bg = 0xFF000000;
         pmask = 0;
         pcursor = 0;
+        int bg = 0xFF000000;
+        int fg = 0xFFFFFFFF;
+        int pcursormap = 0;
+        int[] cursormap = new int[w * h];
         for (i = 0; i < h; i++) {
             for (j = 0; j < scanline; j++) {
                 for (int nextbit = 0x80; nextbit != 0; nextbit >>= 1) {

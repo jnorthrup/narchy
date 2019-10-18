@@ -196,9 +196,7 @@ public class WeldJoint extends Joint {
             float invM = iA + iB;
             float m = invM > 0.0f ? 1.0f / invM : 0.0f;
 
-            float C = aB - aA - m_referenceAngle;
 
-            
             float omega = 2.0f * MathUtils.PI * m_frequencyHz;
 
             
@@ -211,6 +209,7 @@ public class WeldJoint extends Joint {
             float h = data.step.dt;
             m_gamma = h * (d + h * k);
             m_gamma = m_gamma != 0.0f ? 1.0f / m_gamma : 0.0f;
+            float C = aB - aA - m_referenceAngle;
             m_bias = C * h * k * m_gamma;
 
             invM += m_gamma;
@@ -345,7 +344,6 @@ public class WeldJoint extends Joint {
 
         Rot.mulToOutUnsafe(qA, temp.set(m_localAnchorA).subbed(m_localCenterA), rA);
         Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_localCenterB), rB);
-        float positionError, angularError;
 
         Mat33 K = pool.popMat33();
         v2 C1 = pool.popVec2();
@@ -360,6 +358,8 @@ public class WeldJoint extends Joint {
         K.ex.z = K.ez.x;
         K.ey.z = K.ez.y;
         K.ez.z = iA + iB;
+        float angularError;
+        float positionError;
         if (m_frequencyHz > 0.0f) {
             C1.set(cB).added(rB).subbed(cA).subbed(rA);
 

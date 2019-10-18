@@ -10,8 +10,8 @@ public abstract class NumberX extends Number {
     public abstract void set(float v);
 
     public float getAndSet(float r) {
-        float p = floatValue();
         set(r);
+        float p = floatValue();
         return p;
     }
 

@@ -178,9 +178,7 @@ public class P extends GamePanel {
 				line.open(format, BUFFER_SIZE);
 				line.start();
 
-				byte[] out = new byte[BUFFER_SIZE];
-				int[][] delay = new int[NUM_TRACKS][DELAY_SIZE];
-				int index;
+                 int index;
 				int sequence = 0;
 
 				
@@ -204,7 +202,9 @@ public class P extends GamePanel {
 					wave[2][index] = (int) (FP_U1 * (float) Math.random()) - FP_S1;
 					
 				}
-				new Thread(new Runnable() {
+                 int[][] delay = new int[NUM_TRACKS][DELAY_SIZE];
+                 byte[] out = new byte[BUFFER_SIZE];
+                 new Thread(new Runnable() {
 					int sequence;
 
 					@Override
@@ -270,30 +270,13 @@ public class P extends GamePanel {
 			Graphics appletGraphics = getGraphics();
 
 			Font smallFont = g.getFont();
-			Font bigFont = smallFont.deriveFont(0, 50);
-
-			
-			float[] player = new float[9];
-			float[] intersect = new float[32];
-
-			int[] faceX = new int[32];
-			int[] faceY = new int[32];
-
-			float[][] solids = null;
-			float[] level = null;
-			
-
-			int portals = 0; 
-			int levelCount = 0;
-			int gameState = 0;
-			int animation = 0;
 
 
-			int bound = str_colors.length() >> 1;
+            int bound = str_colors.length() >> 1;
 			Color[] color = IntStream.range(0, bound).mapToObj(i1 -> new Color((str_colors.charAt(2 * i1 + 0) << 16) + str_colors.charAt(2 * i1 + 1))).toArray(Color[]::new);
 
-            int i, k;
-			int j = data.length();
+            int i;
+            int j = data.length();
 			int[] level_data = new int[j * 2];
 			for (i = 0; i < j; i++) {
 				level_data[2 * i + 0] = (data.charAt(i) >> 8);
@@ -302,13 +285,24 @@ public class P extends GamePanel {
 			int num_levels = level_data[1] >> 1;
 
 			
-			float dt, lastTime = System.nanoTime() / NANOTIME;
+			float lastTime = System.nanoTime() / NANOTIME;
 
-			
-			mainLoop: while (true) {
+
+            int animation = 0;
+            int gameState = 0;
+            int levelCount = 0;
+            int portals = 0;
+            float[] level = null;
+            float[][] solids = null;
+            int[] faceY = new int[32];
+            int[] faceX = new int[32];
+            float[] intersect = new float[32];
+            float[] player = new float[9];
+            Font bigFont = smallFont.deriveFont(0, 50);
+            mainLoop: while (true) {
 				float time = System.nanoTime() / NANOTIME;
-				dt = time - lastTime;
-				dt = dt > 0.05f ? 0.05f : dt;
+                float dt = time - lastTime;
+                dt = dt > 0.05f ? 0.05f : dt;
 				dt = dt < 0.01f ? 0.01f : dt;
 				lastTime = time;
 
@@ -329,8 +323,9 @@ public class P extends GamePanel {
 					level = null;
 				}
 
-				
-				if (level == null) {
+
+                int k;
+                if (level == null) {
 					player[X] = ENTRY_X + DOOR_WIDTH / 2;
 					player[Y] = HEIGHT - BORDER - PLAYER_WALL_BOUNDING;
 					player[AIMX] = player[X] + 10;
@@ -437,12 +432,11 @@ public class P extends GamePanel {
 					float ly = level[i + DY];
 					float position = ((player[X] - x) * lx + (player[Y] - y) * ly);
 
-					float ax = x + position * lx;
-					float ay = y + position * ly;
-
-					if (0 < position && position <= length) {
-						float dx = ax - player[X];
-						float dy = ay - player[Y];
+                    if (0 < position && position <= length) {
+                        float ax = x + position * lx;
+                        float dx = ax - player[X];
+                        float ay = y + position * ly;
+                        float dy = ay - player[Y];
 
 						if (dx * dx + dy * dy <= PLAYER_WALL_BOUNDING_2) {
 							if (i <= PORTAL2) {
@@ -452,11 +446,11 @@ public class P extends GamePanel {
 								}
 								
 								int direction = i / COMPONENTS;
-								int dstPortal = (1 - direction) * COMPONENTS;
 
-								player[BLOCKTIME] = time + PORTAL_BLOCK_TIME;
+                                player[BLOCKTIME] = time + PORTAL_BLOCK_TIME;
 
-								float ddx = level[dstPortal + DX];
+                                int dstPortal = (1 - direction) * COMPONENTS;
+                                float ddx = level[dstPortal + DX];
 								float ddy = level[dstPortal + DY];
 								player[X] = level[dstPortal + X] + ddx * HALF_PORTAL_WIDTH - ddy * (PLAYER_WALL_BOUNDING + 2);
 								player[Y] = level[dstPortal + Y] + ddy * HALF_PORTAL_WIDTH + ddx * (PLAYER_WALL_BOUNDING + 2);
@@ -601,11 +595,11 @@ public class P extends GamePanel {
 							}
 
 							int index = COMPONENTS * (key[MOUSE_BUTTON] - 1);
-							int other = PORTAL2 - index;
-							boolean apply = true;
 
-							portals |= 1 << (key[MOUSE_BUTTON] - 1);
-							if (portals == 3 && level[other + INDEX] == line) {
+                            portals |= 1 << (key[MOUSE_BUTTON] - 1);
+                            boolean apply = true;
+                            int other = PORTAL2 - index;
+                            if (portals == 3 && level[other + INDEX] == line) {
 								float Dx = x1 - level[other + X];
 								float Dy = y1 - level[other + Y];
 								apply = (Dx * Dx + Dy * Dy >= PORTAL_WIDTH_2);

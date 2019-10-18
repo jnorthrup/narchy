@@ -42,10 +42,10 @@ public class Delta extends UGen {
 
         float[] bi = bufIn[0];
         float[] bo = bufOut[0];
-        int i;
 
         bo[0] = bi[0] - lastX;
 
+        int i;
         for (i = 1; i < bufferSize; i++) {
             bo[i] = bi[i] - bi[i - 1];
         }

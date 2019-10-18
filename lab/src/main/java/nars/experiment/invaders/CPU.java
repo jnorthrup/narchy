@@ -342,10 +342,9 @@ public class CPU {
     }
 
     public static boolean parity(int x, int size) {
-        int i;
-        int p = 0;
         x &= ((1 << size) - 1);
-        for (i = 0; i < size; i++) {
+        int p = 0;
+        for (int i = 0; i < size; i++) {
             if ((x & 0x1) != 0) {
                 p++;
             }

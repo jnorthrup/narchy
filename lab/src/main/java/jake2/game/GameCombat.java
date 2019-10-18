@@ -149,11 +149,6 @@ public class GameCombat {
 
     static int CheckPowerArmor(edict_t ent, float[] point, float[] normal,
             int damage, int dflags) {
-        int power_armor_type;
-        int index = 0;
-        int damagePerCell;
-        int pa_te_type;
-        int power = 0;
 
         if (damage == 0)
             return 0;
@@ -162,7 +157,10 @@ public class GameCombat {
     
         if ((dflags & Defines.DAMAGE_NO_ARMOR) != 0)
             return 0;
-    
+
+        int power = 0;
+        int index = 0;
+        int power_armor_type;
         if (client != null) {
             power_armor_type = GameItems.PowerArmorType(ent);
             if (power_armor_type != Defines.POWER_ARMOR_NONE) {
@@ -179,13 +177,15 @@ public class GameCombat {
             return 0;
         if (power == 0)
             return 0;
-    
+
+        int pa_te_type;
+        int damagePerCell;
         if (power_armor_type == Defines.POWER_ARMOR_SCREEN) {
-            float[] vec = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 };
     
             
             Math3D.AngleVectors(ent.s.angles, forward, null, null);
+            float[] vec = {0, 0, 0};
             Math3D.VectorSubtract(point, ent.s.origin, vec);
             Math3D.VectorNormalize(vec);
             float dot = Math3D.DotProduct(vec, forward);
@@ -222,7 +222,6 @@ public class GameCombat {
 
     static int CheckArmor(edict_t ent, float[] point, float[] normal,
             int damage, int te_sparks, int dflags) {
-        int save;
 
         if (damage == 0)
             return 0;
@@ -242,7 +241,8 @@ public class GameCombat {
 
         gitem_t armor = GameItems.GetItemByIndex(index);
         gitem_armor_t garmor = armor.info;
-    
+
+        int save;
         if (0 != (dflags & Defines.DAMAGE_ENERGY))
             save = (int) Math.ceil(garmor.energy_protection * damage);
         else
@@ -345,7 +345,6 @@ public class GameCombat {
      */
     static void T_RadiusDamage(edict_t inflictor, edict_t attacker,
             float damage, edict_t ignore, float radius, int mod) {
-        float points;
         EdictIterator edictit = null;
     
         float[] v = { 0, 0, 0 };
@@ -362,7 +361,7 @@ public class GameCombat {
             Math3D.VectorAdd(ent.mins, ent.maxs, v);
             Math3D.VectorMA(ent.s.origin, 0.5f, v, v);
             Math3D.VectorSubtract(inflictor.s.origin, v, v);
-            points = damage - 0.5f * Math3D.VectorLength(v);
+            float points = damage - 0.5f * Math3D.VectorLength(v);
             if (ent == attacker)
                 points *= 0.5f;
             if (points > 0) {
@@ -379,8 +378,7 @@ public class GameCombat {
     public static void T_Damage(edict_t targ, edict_t inflictor,
             edict_t attacker, float[] dir, float[] point, float[] normal,
             int damage, int knockback, int dflags, int mod) {
-        int te_sparks;
-    
+
         if (targ.takedamage == 0)
             return;
     
@@ -407,7 +405,8 @@ public class GameCombat {
         }
 
         gclient_t client = targ.client;
-    
+
+        int te_sparks;
         if ((dflags & Defines.DAMAGE_BULLET) != 0)
             te_sparks = Defines.TE_BULLET_SPARKS;
         else
@@ -431,14 +430,14 @@ public class GameCombat {
                     && (targ.movetype != Defines.MOVETYPE_BOUNCE)
                     && (targ.movetype != Defines.MOVETYPE_PUSH)
                     && (targ.movetype != Defines.MOVETYPE_STOP)) {
-                float[] kvel = { 0, 0, 0 };
                 float mass;
     
                 if (targ.mass < 50)
                     mass = 50;
                 else
                     mass = targ.mass;
-    
+
+                float[] kvel = {0, 0, 0};
                 if (targ.client != null && attacker == targ)
                     Math3D.VectorScale(dir, 1600.0f * (float) knockback / mass,
                             kvel);

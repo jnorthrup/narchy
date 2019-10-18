@@ -138,8 +138,8 @@ public class Vocalization extends NARPart {
         return pending.max((a, b) -> {
             float ta = a.getTwo().expectation();
             float tb = b.getTwo().expectation();
-            int tab = Float.compare(ta, tb);
             if (ta > tb) {
+                int tab = Float.compare(ta, tb);
                 return tab;
             } else {
                 return a.getOne().compareTo(b.getOne());

@@ -85,10 +85,9 @@ public class InfluxDB {
 
         String query = "SELECT " + value + " FROM \"" + measurement + "\" WHERE \"time\" >= \"" + rfc(from) + "\" AND \"time\" <= \"" + rfc(to) + '"';
 
-        String epoch = "ms";
-
         URL u = null;
         try {
+            String epoch = "ms";
             u = new URL("http://" + host + ':' + port + "/query?db=" + db + "&epoch=" + epoch + "&q=" + UrlEscapers.urlFragmentEscaper().escape( query) );
             System.out.println(u);
         } catch (MalformedURLException e) {

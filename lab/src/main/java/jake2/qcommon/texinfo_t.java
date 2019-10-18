@@ -37,15 +37,14 @@ public class texinfo_t {
 
 	public texinfo_t(ByteBuffer bb) {
 
-        byte[] str = new byte[32];
-
-		vecs[0] = new float[] { bb.getFloat(), bb.getFloat(), bb.getFloat(), bb.getFloat()};
+        vecs[0] = new float[] { bb.getFloat(), bb.getFloat(), bb.getFloat(), bb.getFloat()};
 		vecs[1] = new float[] { bb.getFloat(), bb.getFloat(), bb.getFloat(), bb.getFloat()};
 
 		flags = bb.getInt();
 		value = bb.getInt();
 
-		bb.get(str);
+        byte[] str = new byte[32];
+        bb.get(str);
 		texture = new String(str, 0, Lib.strlen(str));
 		nexttexinfo = bb.getInt();
 	}

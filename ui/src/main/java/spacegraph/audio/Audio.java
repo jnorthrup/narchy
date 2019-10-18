@@ -76,13 +76,12 @@ public class Audio implements Runnable {
 //                AudioSystem.getMixer(null);
                 //AudioSystem.getMixer(mixers[2]);
 
-        int bufferBytes = bufferSize * 2 * 2;
-
         try {
             AudioFormat format = new AudioFormat(rate, 16, 2, true, false);
             sdl = AudioSystem.getSourceDataLine(format);
             //sdl = (SourceDataLine) AudioSystem.getMixer(null).getLine(new Line.Info(SourceDataLine.class));
 
+            int bufferBytes = bufferSize * 2 * 2;
             sdl.open(format, bufferBytes);
             soundBuffer.order(ByteOrder.LITTLE_ENDIAN);
             sdl.start();

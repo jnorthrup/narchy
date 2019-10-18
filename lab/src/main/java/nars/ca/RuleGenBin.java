@@ -31,23 +31,20 @@ public class RuleGenBin {
 	
 	
 	private static String ExpandIt(String sStr) {
-		int i, j;
-        String sRetString = "";
-		char cChar;
-		int iCharVal;
 
+        sStr = sStr.trim();
         int iNum = 0;
-		sStr = sStr.trim();
-		for (i = 0; i < sStr.length(); i++) {
-			cChar = sStr.charAt(i);
-			if (Character.isDigit(cChar)) {
-				iCharVal = cChar - '0';
-				iNum = iNum * 10 + iCharVal;
+        String sRetString = "";
+        for (int i = 0; i < sStr.length(); i++) {
+            char cChar = sStr.charAt(i);
+            if (Character.isDigit(cChar)) {
+                int iCharVal = cChar - '0';
+                iNum = iNum * 10 + iCharVal;
 			} else {
 				if (iNum == 0)
 					iNum = 1;
 				if ((sStr.charAt(i) == 'a') || (sStr.charAt(i) == 'b')) {
-					for (j = 0; j < iNum; j++) {
+					for (int j = 0; j < iNum; j++) {
                         sRetString += ((sStr.charAt(i) == 'a') ? "0" : "1");
 					}
 					iNum = 0;
@@ -61,16 +58,16 @@ public class RuleGenBin {
 	
 	
 	public void InitFromString(String sStr) {
-		int i, iTmp;
-		String sTok;
+		int iTmp;
 
         ResetToDefaults();
 
         StringTokenizer st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
-			sTok = st.nextToken();
-			
-			if (sTok.length() > 0 && sTok.charAt(0) == 'S') 
+            String sTok = st.nextToken();
+
+            int i;
+            if (sTok.length() > 0 && sTok.charAt(0) == 'S')
 			{
 				sTok = ExpandIt(sTok.substring(1));
 				for (i = 0; (i < sTok.length()) && (i < 256); i++)
@@ -113,13 +110,12 @@ public class RuleGenBin {
 
 	
 	private static String OneToken(int iVal, int iCnt) {
-		String sChr;
 
         String sRetStr = "";
 		if (iCnt > 0) {
-			sChr = iVal == 0 ? "a" : "b";
+            String sChr = iVal == 0 ? "a" : "b";
 
-			if (iCnt == 1)
+            if (iCnt == 1)
 				sRetStr = sChr;
 			else if (iCnt == 2)
 				sRetStr = sChr + sChr;
@@ -131,14 +127,13 @@ public class RuleGenBin {
 
 	
 	private static String CompactIt(String sStr) {
-		int i, iThis;
         String sResult = "";
 
         int iLast = -1;
         int iCnt = 0;
-		for (i = 0; i < sStr.length(); i++) {
-			iThis = Integer.valueOf(sStr.substring(i, i + 1));
-			if ((iThis != 0) && (iThis != 1))
+		for (int i = 0; i < sStr.length(); i++) {
+            int iThis = Integer.valueOf(sStr.substring(i, i + 1));
+            if ((iThis != 0) && (iThis != 1))
 				iThis = 0;
 			if (iThis != iLast) {
                 sResult += OneToken(iLast, iCnt);
@@ -154,17 +149,17 @@ public class RuleGenBin {
 	
 	
 	public String GetAsString() {
-        int i, maxIdx;
 
-		
-		Validate();
+
+        Validate();
 
 
         int ih = isHist ? iClo : 0;
         String sBff = 'C' + String.valueOf(ih);
 
-		
-		if (iNgh == MJRules.NGHTYP_NEUM) 
+
+        int maxIdx;
+        if (iNgh == MJRules.NGHTYP_NEUM)
 		{
             sBff += ",NN";
 			maxIdx = 15;
@@ -176,7 +171,8 @@ public class RuleGenBin {
 
 
         String sTmp = "";
-		for (i = 0; i < maxIdx; i++) {
+        int i;
+        for (i = 0; i < maxIdx; i++) {
             sTmp += (rulesS[i] ? '1' : '0');
 		}
 		sBff = sBff + ",S" + CompactIt(sTmp);
@@ -209,23 +205,21 @@ public class RuleGenBin {
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
 		int modCnt = 0;
-		int i, j, iCnt;
-		short bOldVal, bNewVal; 
-		int[] lurd = new int[4]; 
+        int[] lurd = new int[4];
 
-		for (i = 0; i < sizX; ++i) {
+		for (int i = 0; i < sizX; ++i) {
 			
 			lurd[0] = (i > 0) ? i - 1 : (isWrap) ? sizX - 1 : sizX;
 			lurd[2] = (i < sizX - 1) ? i + 1 : (isWrap) ? 0 : sizX;
-			for (j = 0; j < sizY; ++j) {
+			for (int j = 0; j < sizY; ++j) {
 				
 				lurd[1] = (j > 0) ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
-				bOldVal = crrState[i][j];
-				bNewVal = bOldVal; 
+                short bOldVal = crrState[i][j];
+                short bNewVal = bOldVal;
 
-				iCnt = 0; 
-				if (isHist) 
+                int iCnt = 0;
+                if (isHist)
 				{
 					if (bOldVal <= 1) 
 					{

@@ -504,8 +504,8 @@ public class Sokoban extends Applet {
     }
 
     public int moveone(int pos, int x, int y, int dx, int dy) {
-        int i;
         if (dx != 0) return pos + dx;
+        int i;
         if (dy == -1) for (i = pos - x - 2; level[i] != cr; i--) ;
         else for (i = pos + 1; level[i] != cr; i++) ;
         return i + x + 1;

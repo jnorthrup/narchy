@@ -99,10 +99,8 @@ public class SphereSphereCollisionAlgorithm extends CollisionAlgorithm {
 		v3 normalOnSurfaceB = new v3(1, 0, 0);
 
 		float len = (float) Math.sqrt(lenSq);
-		
-		float dist = len - r01;
 
-		if (len > BulletGlobals.FLT_EPSILON) {
+        if (len > BulletGlobals.FLT_EPSILON) {
 			normalOnSurfaceB.scale(1f / len, diff);
 		}
 
@@ -118,8 +116,9 @@ public class SphereSphereCollisionAlgorithm extends CollisionAlgorithm {
 		tmp.scale(radius1, normalOnSurfaceB);
 		pos1.add(col1.transform, tmp);
 
-		
-		resultOut.addContactPoint(normalOnSurfaceB, pos1, dist, manifoldPtr.getContactBreakingThreshold());
+
+        float dist = len - r01;
+        resultOut.addContactPoint(normalOnSurfaceB, pos1, dist, manifoldPtr.getContactBreakingThreshold());
 
 		
 		resultOut.refreshContactPoints();

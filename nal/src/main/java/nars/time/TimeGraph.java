@@ -910,10 +910,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 			nextPermute:
 			while (ci.hasNext()) {
-				long start = Long.MAX_VALUE, range = 0;
 
 				Absolute[] ss = ci.next();
 				cc.clear();
+				long range = 0;
+				long start = Long.MAX_VALUE;
 				for (int i = 0; i < abs; i++) {
 					Absolute e = ss[i];
 //                    if (!ii.isEmpty()) {
@@ -1108,8 +1109,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		Op o = x.op();
 
-		int dt;
-
 		if (o == CONJ) {
 			//swap to correct sequence order
 			if (a.start() > b.start()) {
@@ -1121,6 +1120,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //        assert (!a.equals(b));
 
 		long aWhen = a.start(), bWhen = b.start();
+		int dt;
 		if (aWhen == ETERNAL || bWhen == ETERNAL)
 			dt = 0;
 		else {
@@ -2039,8 +2039,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 				return true; //not the target destination
 			}
 
-			long start;
-
 			long[] pt = pathTime(path);
 			if (pt == null)
 				return true;
@@ -2050,6 +2048,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 			if (dt == ETERNAL)
 				dt = 0; //HACK
 
+			long start;
 			if (!(ss instanceof Absolute) && !(ee instanceof Absolute)) {
 				start = TIMELESS;
 			} else {

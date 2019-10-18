@@ -200,10 +200,10 @@ public enum Texts {
 		int len0 = a.length() + 1;
 		int len1 = b.length() + 1;
 		int[] cost = new int[len0];
-		int[] newcost = new int[len0];
 		for (int i = 0; i < len0; i++) {
 			cost[i] = i;
 		}
+		int[] newcost = new int[len0];
 		for (int j = 1; j < len1; j++) {
 			newcost[0] = j;
 			char bj = b.charAt(j - 1);
@@ -573,9 +573,8 @@ public enum Texts {
 	}
 
 	public static int countRows(String s, char x) {
-		long count;
 		int bound = s.length();
-		count = IntStream.range(0, bound).filter(i -> s.charAt(i) == x).count();
+		long count = IntStream.range(0, bound).filter(i -> s.charAt(i) == x).count();
 		int c = (int) count;
 
         return c;

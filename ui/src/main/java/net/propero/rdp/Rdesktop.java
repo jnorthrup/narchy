@@ -266,15 +266,7 @@ public class Rdesktop {
                 System.exit(0);
         }
 
-        
 
-        
-
-        int logonflags = Rdp.RDP_LOGON_NORMAL;
-
-        boolean fKdeHack = false;
-        int c;
-        String arg;
         StringBuffer sb = new StringBuffer();
         LongOpt[] alo = new LongOpt[15];
         alo[0] = new LongOpt("debug_key", LongOpt.NO_ARGUMENT, null, 0);
@@ -303,13 +295,11 @@ public class Rdesktop {
         SoundChannel soundChannel = new SoundChannel();
 
 
-
-
-
-
-
-
+        int c;
+        boolean fKdeHack = false;
+        int logonflags = Rdp.RDP_LOGON_NORMAL;
         while ((c = g.getopt()) != -1) {
+            String arg;
             switch (c) {
 
                 case 0:
@@ -530,11 +520,11 @@ public class Rdesktop {
         logger.info("Java version is {}", java);
 
         String os = System.getProperty("os.name");
-        String osvers = System.getProperty("os.version");
 
         if ("Windows 2000".equals(os) || "Windows XP".equals(os))
             Options.built_in_licence = true;
 
+        String osvers = System.getProperty("os.version");
         logger.info("Operating System is {} version {}", os, osvers);
 
         if (os.startsWith("Linux"))
@@ -584,10 +574,9 @@ public class Rdesktop {
             if (keyMap != null)
                 window.registerKeyboard(keyMap);
 
-            boolean[] deactivated = new boolean[1];
-            int[] ext_disc_reason = new int[1];
-
             logger.debug("keep_running = {}", keep_running);
+            int[] ext_disc_reason = new int[1];
+            boolean[] deactivated = new boolean[1];
             while (keep_running) {
                 logger.debug("Initialising RDP layer...");
                 RdpLayer = new Rdp5(channels);
@@ -664,9 +653,9 @@ public class Rdesktop {
                                 
                                 String msg1 = "The terminal server disconnected before licence negotiation completed.";
                                 String msg2 = "Possible cause: terminal server could not issue a licence.";
-                                String[] msg = {msg1, msg2};
                                 logger.warn(msg1);
                                 logger.warn(msg2);
+                                String[] msg = {msg1, msg2};
                                 window.showErrorDialog(msg);
                             }
                         } 

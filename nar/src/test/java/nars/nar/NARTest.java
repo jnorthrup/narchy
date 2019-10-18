@@ -60,7 +60,6 @@ class NARTest {
 
     @Test
     void testFluentBasics() throws Exception {
-        int frames = 32;
         AtomicInteger cycCount = new AtomicInteger(0);
         StringWriter sw = new StringWriter();
 
@@ -69,6 +68,7 @@ class NARTest {
                 .stopIf(() -> false);
         m.onCycle(nn -> cycCount.incrementAndGet());
         m.trace(sw);
+        int frames = 32;
         m.run(frames);
 
         NAR n = NARS.tmp()
@@ -98,13 +98,12 @@ class NARTest {
     void testConceptInstancing() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
 
-        String statement1 = "<a --> b>.";
-
         Termed a = $.$("a");
         assertNotNull(a);
         Termed a1 = $.$("a");
         assertEquals(a, a1);
 
+        String statement1 = "<a --> b>.";
         n.input(statement1);
         n.run(4);
 
@@ -162,13 +161,12 @@ class NARTest {
         AtomicInteger count = new AtomicInteger();
 
 
-        Set<Task> written = new HashSet();
-
         NAR a = NARS.tmp()
 
                 .input(new String[]{input});
         a
                 .run(16);
+        Set<Task> written = new HashSet();
         a
                 .synch()
                 .outputBinary(baos, (Task t) -> {

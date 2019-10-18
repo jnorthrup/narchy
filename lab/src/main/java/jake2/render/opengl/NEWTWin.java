@@ -250,8 +250,8 @@ public class NEWTWin {
             int width = window.getWidth();
             int height = window.getHeight();
             int _width;
-            final int mask = ~0x03;
             if ((width & 0x03) != 0) {
+                final int mask = ~0x03;
                 _width = ( width & mask ) + 4;
             } else {
                 _width = width;

@@ -182,17 +182,16 @@ public final class RC4 {
      */
     private void rc4(byte[] in, int inOffset, int inLen, byte[] out,
                      int outOffset) {
-        int xorIndex, t;
 
         for (int i = 0; i < inLen; i++) {
             x = (x + 1) & 0xFF;
             y = (sBox[x] + y) & 0xFF;
 
-            t = sBox[x];
+            int t = sBox[x];
             sBox[x] = sBox[y];
             sBox[y] = t;
 
-            xorIndex = (sBox[x] + sBox[y]) & 0xFF;
+            int xorIndex = (sBox[x] + sBox[y]) & 0xFF;
             out[outOffset++] = (byte) (in[inOffset++] ^ sBox[xorIndex]);
         }
     }
@@ -228,12 +227,12 @@ public final class RC4 {
         for (int i = 0; i < 256; i++)
             sBox[i] = i;
 
-        int i1 = 0, i2 = 0, t;
+        int i1 = 0, i2 = 0;
 
         for (int i = 0; i < 256; i++) {
             i2 = ((userkey[i1] & 0xFF) + sBox[i] + i2) & 0xFF;
 
-            t = sBox[i];
+            int t = sBox[i];
             sBox[i] = sBox[i2];
             sBox[i2] = t;
 

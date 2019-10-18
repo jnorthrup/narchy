@@ -212,14 +212,12 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
     
     
     private static Node createIndividualFromTokenizedString(List<String> tokenizedString, Map<String, Double> winnerTokens, boolean compact, boolean useMinMaxQuantifier){
-         
-        Deque<Node> nodes = new LinkedList<>();
-        Deque<Node> tmp = new LinkedList<>();
 
 
         ParentNode letters = new ListMatch();
         letters.add(new RegexRange("A-Za-z"));
-        
+
+        Deque<Node> nodes = new LinkedList<>();
         for(String token : tokenizedString){
             if(winnerTokens.containsKey(token)){
                 nodes.add(new Constant(Utils.escape(token)));
@@ -278,9 +276,8 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
             nodes = newNodes;
         }
 
-        
-        
-       
+
+        Deque<Node> tmp = new LinkedList<>();
         while (nodes.size() > 1) {
 
             while (nodes.size() > 0) {

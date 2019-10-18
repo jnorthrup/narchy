@@ -44,8 +44,6 @@ public abstract class LiveSTM extends AbstractTraining {
         ExpectedVsActual inter = observe();
 
 
-        double[] predicted;
-
         double dist;
         if (inter.expected == null) {
 
@@ -56,6 +54,7 @@ public abstract class LiveSTM extends AbstractTraining {
         } else {
 
             float learningRate = 0.1f;
+            double[] predicted;
             if (validation_mode)
                 predicted = agent.predict(inter.actual);
             else

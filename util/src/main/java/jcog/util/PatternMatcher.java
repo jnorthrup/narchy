@@ -207,13 +207,12 @@ public class PatternMatcher {
         boolean inSet = false;
         boolean inRange = false;
         boolean inCharClass = false;
-        boolean addToParsedPattern;
         while (ip < LP) {
             if (it > MAX_PATTERN_STORAGE - 3) {
                 throw new IllegalArgumentException("Pattern is too large!");
             }
             char c = pattern.charAt(ip);
-            addToParsedPattern = false;
+            boolean addToParsedPattern = false;
             switch (c) {
                 case '[':
                     if (inSet) {
@@ -316,10 +315,10 @@ public class PatternMatcher {
                     throw new IllegalArgumentException("Range not ended with '}'");
                 }
                 String rangeString = pattern.substring(ip, endOfSet);
-                int commaIndex = rangeString.indexOf(',');
                 try {
                     int rangeMin;
                     int rangeMax;
+                    int commaIndex = rangeString.indexOf(',');
                     if (commaIndex < 0) {
                         int parsedRange = Integer.parseInt(rangeString);
                         rangeMin = rangeMax = parsedRange;
@@ -363,13 +362,12 @@ public class PatternMatcher {
         int ip = 0, im = 0;
         
         int LP = parsedPattern.length, LM = match.length();
-        
-        int patternChar;
-        int tokenType;
+
         int charSetStart = 0, charSetEnd = 0;
-        while (ip < LP) { 
-            patternChar = parsedPattern[ip];
-            
+        while (ip < LP) {
+            int patternChar = parsedPattern[ip];
+
+            int tokenType;
             switch (patternChar) {
                 case PARSED_TOKEN_CHAR_ANY:
                     tokenType = TOKEN_TYPE_ANY;

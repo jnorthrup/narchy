@@ -115,7 +115,6 @@ public abstract class AbstractPath<N, E> implements Path<N, E> {
 
     @Override
     public List<Path<N, E>> cycles() {
-        List<Path<N, E>> list = new FasterList<>();
 
         Map<N, IntArrayList> nposmap = new LinkedHashMap<>();
         for (int ni = 0; ni < nodeCount(); ni++) {
@@ -124,6 +123,7 @@ public abstract class AbstractPath<N, E> implements Path<N, E> {
             npos.add(ni);
         }
 
+        List<Path<N, E>> list = new FasterList<>();
         for (Map.Entry<N, IntArrayList> en : nposmap.entrySet()) {
             IntArrayList npos = en.getValue();
             if (npos.size() > 1) {

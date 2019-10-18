@@ -271,7 +271,6 @@ public class Collision {
         float separation = -Float.MAX_VALUE;
         float radius = polygon.skinRadius + circle.skinRadius;
         int vertexCount = polygon.vertices;
-        float s;
         v2[] vertices = polygon.vertex;
         v2[] normals = polygon.normals;
 
@@ -283,7 +282,7 @@ public class Collision {
             v2 vertex = vertices[i];
             float tempx = cLocalx - vertex.x;
             float tempy = cLocaly - vertex.y;
-            s = normals[i].x * tempx + normals[i].y * tempy;
+            float s = normals[i].x * tempx + normals[i].y * tempy;
 
 
             if (s > radius) {
@@ -998,10 +997,10 @@ public class Collision {
             edge1.normalize();
             m_normal1.set(edge1.y, -edge1.x);
             float offset1 = v2.dot(m_normal1, temp.set(m_centroidB).subbed(m_v1));
-            float offset0 = 0.0f, offset2 = 0.0f;
-            boolean convex1 = false, convex2 = false;
+            float offset0 = 0.0f;
+            boolean convex1 = false;
 
-            
+
             if (hasVertex0) {
                 edge0.set(m_v1).subbed(m_v0);
                 edge0.normalize();
@@ -1010,7 +1009,9 @@ public class Collision {
                 offset0 = v2.dot(m_normal0, temp.set(m_centroidB).subbed(m_v0));
             }
 
-            
+
+            boolean convex2 = false;
+            float offset2 = 0.0f;
             if (hasVertex3) {
                 edge2.set(m_v3).subbed(m_v2);
                 edge2.normalize();

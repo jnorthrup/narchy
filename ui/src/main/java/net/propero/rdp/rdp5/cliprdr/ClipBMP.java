@@ -129,7 +129,6 @@ public class ClipBMP extends Component {
      * Returns: Image Object, be sure to check for (Image)null !!!!
      */
     public static Image loadbitmap(InputStream fs) {
-        Image image;
         try {
             
             
@@ -189,22 +188,18 @@ public class ClipBMP extends Component {
             int nclrused = ((bi[35] & 0xff) << 24)
                     | ((bi[34] & 0xff) << 16)
                     | ((bi[33] & 0xff) << 8) | bi[32] & 0xff;
-            
 
-            
-            
-            
-            
 
+            Image image;
             switch (nbitcount) {
                 case 24:
                     
                     
                     int npad = (nsizeimage / nheight) - nwidth * 3;
-                    int[] ndata = new int[nheight * nwidth];
                     byte[] brgb = new byte[(nwidth + npad) * 3 * nheight];
                     fs.read(brgb, 0, (nwidth + npad) * 3 * nheight);
                     int nindex = 0;
+                    int[] ndata = new int[nheight * nwidth];
                     for (int j = 0; j < nheight; j++) {
                         for (int i = 0; i < nwidth; i++) {
                             ndata[nwidth * (nheight - j - 1) + i] = (255 & 0xff) << 24
@@ -271,10 +266,10 @@ public class ClipBMP extends Component {
                     int npad8 = (nsizeimage / nheight) - nwidth;
 
 
-                    int[] ndata8 = new int[nwidth * nheight];
                     byte[] bdata = new byte[(nwidth + npad8) * nheight];
                     fs.read(bdata, 0, (nwidth + npad8) * nheight);
                     nindex8 = 0;
+                    int[] ndata8 = new int[nwidth * nheight];
                     for (int j8 = 0; j8 < nheight; j8++) {
                         for (int i8 = 0; i8 < nwidth; i8++) {
                             ndata8[nwidth * (nheight - j8 - 1) + i8] = npalette[(bdata[nindex8] & 0xff)]
@@ -335,10 +330,10 @@ public class ClipBMP extends Component {
                     int npad8 = (nsizeimage / nheight) - nwidth;
 
 
-                    int[] ndata8 = new int[nwidth * nheight];
                     byte[] bdata = new byte[(nwidth + npad8) * nheight];
                     fs.read(bdata, 0, (nwidth + npad8) * nheight);
                     nindex8 = 0;
+                    int[] ndata8 = new int[nwidth * nheight];
                     for (int j8 = 0; j8 < nheight; j8++) {
                         for (int i8 = 0; i8 < nwidth; i8++) {
                             ndata8[nwidth * (nheight - j8 - 1) + i8] = npalette[(bdata[nindex8] & 0xff)];
@@ -394,15 +389,15 @@ public class ClipBMP extends Component {
                     if (npad8 == 4)
                         npad8 = 0;
 
-                    int[] ndata8 = new int[nwidth * nheight];
                     byte[] bdata = new byte[(nwidth / 2 + npad8) * nheight];
                     fs.read(bdata, 0, (nwidth / 2 + npad8) * nheight);
 
                     
                     
                     nindex8 = 0;
-                    
-                    
+
+
+                    int[] ndata8 = new int[nwidth * nheight];
                     for (int j8 = 0; j8 < nheight; j8++) {
                         for (int i8 = 0; i8 < (nwidth) - 1; i8 += 2) {
                             ndata8[nwidth * (nheight - j8 - 1) + i8] = npalette[bdata[nindex8] & 0x0f];
@@ -533,28 +528,25 @@ public class ClipBMP extends Component {
      * Each scan line must be padded to an even 4-byte boundary.
      */
     private void writeBitmap() {
-        int value;
-        int j;
-        int i;
-        byte[] rgb = new byte[3];
         int size = (biWidth * biHeight) - 1;
         int pad = 4 - ((biWidth * 3) % 4);
         if (pad == 4) 
             pad = 0;
-        int rowCount = 1;
-        int padCount = 0;
         int rowIndex = size - biWidth;
         int lastRowIndex = rowIndex;
         try {
-            for (j = 0; j < size; j++) {
-                value = bitmap[rowIndex];
+            int padCount = 0;
+            int rowCount = 1;
+            byte[] rgb = new byte[3];
+            for (int j = 0; j < size; j++) {
+                int value = bitmap[rowIndex];
                 rgb[0] = (byte) (value & 0xFF);
                 rgb[1] = (byte) ((value >> 8) & 0xFF);
                 rgb[2] = (byte) ((value >> 16) & 0xFF);
                 fo.write(rgb);
                 if (rowCount == biWidth) {
                     padCount += pad;
-                    for (i = 1; i <= pad; i++) {
+                    for (int i = 1; i <= pad; i++) {
                         fo.write(0x00);
                     }
                     rowCount = 1;

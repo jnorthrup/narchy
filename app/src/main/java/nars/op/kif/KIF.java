@@ -302,7 +302,6 @@ public class KIF implements Iterable<Task> {
         String root = xCar;
         Term y = null;
         boolean includeDoc = false;
-        boolean includeRelatedInternalConcept = true;
         switch (root) {
             case "ListFn":
                 y = $.p(args);
@@ -353,6 +352,7 @@ public class KIF implements Iterable<Task> {
 
             case "relatedInternalConcept":
                 /*(documentation relatedInternalConcept EnglishLanguage "Means that the two arguments are related concepts within the SUMO, i.e. there is a significant similarity of meaning between them. To indicate a meaning relation between a SUMO concept and a concept from another source, use the Predicate relatedExternalConcept.")            */
+                boolean includeRelatedInternalConcept = true;
                 if (includeRelatedInternalConcept) {
                     if (args.size() != 2) {
                         throw new UnsupportedOperationException("relatedInternalConcept expects 2 arguments");

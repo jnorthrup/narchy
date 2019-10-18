@@ -81,7 +81,7 @@ class FloatAveragedWindowTest {
 
     @Test void testDirectionality() {
         for (float alpha : new float[] {  0.1f, 0.25f, 0.5f, 0.75f, 0.9f }) {
-            float inc, dec;
+            float inc;
             {
                 FloatAveragedWindow f = new FloatAveragedWindow(4, alpha);
                 f.next(1);
@@ -90,6 +90,7 @@ class FloatAveragedWindowTest {
                 f.next(4);
                 inc = f.asFloat();
             }
+            float dec;
             {
                 FloatAveragedWindow g = new FloatAveragedWindow(4, alpha);
                 g.next(4);

@@ -1199,10 +1199,9 @@ public enum Util {
 
 		double avg = dd.average();
 
-		double variance;
 		int n = dd.size();
 		double sum = IntStream.range(0, n).mapToDouble(dd::get).map(p -> p - avg).map(d -> d * d).sum();
-		variance = sum;
+		double variance = sum;
 		variance /= n;
 
 		return new double[]{avg, variance};
@@ -1867,9 +1866,9 @@ public enum Util {
 	public static String uuid128() {
 		UUID u = UUID.randomUUID();
 		long a = u.getLeastSignificantBits();
-		long b = u.getMostSignificantBits();
 		StringBuilder sb = new StringBuilder(6);
 		BinTxt.append(sb, a);
+		long b = u.getMostSignificantBits();
 		BinTxt.append(sb, b);
 		return sb.toString();
 	}
@@ -2588,8 +2587,6 @@ public enum Util {
 	}
 
 	public static int concurrencyExcept(int reserve) {
-		int minThreads = 2;
-		int maxThreads = Integer.MAX_VALUE;
 
 		String specifiedThreads = System.getenv("threads");
 		int threads;
@@ -2598,6 +2595,8 @@ public enum Util {
 		else
 			threads = Runtime.getRuntime().availableProcessors() - reserve;
 
+		int maxThreads = Integer.MAX_VALUE;
+		int minThreads = 2;
 		return Util.clamp(
 			threads, minThreads, maxThreads);
 	}
@@ -2859,7 +2858,6 @@ public enum Util {
 		if (iEnd == iStart)
 			return data.valueOf(iStart);
 
-		double sum = 0;
 		int i = iStart - 1;
 
 		if (i < 0) {
@@ -2871,6 +2869,7 @@ public enum Util {
 			i = 0; //wrap?
 		}
 
+		double sum = 0;
 		sum += iStart > 0 ? (iStart - sStart) * data.valueOf(i++) : 0;
 
 		for (int k = iStart; k < iEnd; k++) {

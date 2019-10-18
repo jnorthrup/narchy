@@ -223,7 +223,6 @@ final class RayTracer extends JPanel {
         }
 
         private void render(long sceneTimeNS) {
-            float iterCoverage = 0.03f;
             float statRelax = 0.004f;  //determines a passive refresh rate, or fundamental duration
 
             //TODO trigger total reset when bitmap resized
@@ -232,10 +231,10 @@ final class RayTracer extends JPanel {
             long start = System.nanoTime();
 
 
+            float iterCoverage = 0.03f;
             iterPixels = (int)Math.ceil(iterCoverage * ((x2-x1)*(y2-y1)*W*H));
 
 
-            double ePixelAverage;
             float grainMax = RayTracer.this.grainMax.floatValue();
             do {
 
@@ -259,7 +258,7 @@ final class RayTracer extends JPanel {
 
                 int i = iterPixels;
                 if (i > 0) {
-                    ePixelAverage = renderStochastic(
+                    double ePixelAverage = renderStochastic(
                             x1 * W, y1 * H, x2 * W, y2 * H,
                             alphaEffective,
                             grainPixels, i);
@@ -315,9 +314,9 @@ final class RayTracer extends JPanel {
             if (depth == 0) {
                 return render(alpha, x1, y1, x2, y2);
             } else {
-                float mx = (x2 - x1) / 2f + x1;
-                float my = (y2 - y1) / 2f + y1;
                 depth--;
+                float my = (y2 - y1) / 2f + y1;
+                float mx = (x2 - x1) / 2f + x1;
                 return
                     renderRecurse(alpha, depth, x1, y1, mx, my) +
                     renderRecurse(alpha, depth, mx, y1, x2, my) +

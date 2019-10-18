@@ -805,7 +805,6 @@ class DemoThreeViewControls extends StandardAlgConfigPanel implements ChangeList
 
     @Override
     public void stateChanged(ChangeEvent e) {
-        boolean compute = true;
         if (e.getSource() == sMinDisparity) {
             minDisparity = ((Number) sMinDisparity.getValue()).intValue();
             stereoChanged = true;
@@ -825,6 +824,7 @@ class DemoThreeViewControls extends StandardAlgConfigPanel implements ChangeList
             maxImageSize = ((Number) sMaxSize.getValue()).intValue();
             scaleChanged = true;
         }
+        boolean compute = true;
         if (compute)
             bCompute.setEnabled(true);
     }

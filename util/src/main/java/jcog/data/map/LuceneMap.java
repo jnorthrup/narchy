@@ -60,7 +60,6 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
         IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         writerConfig.setCommitOnClose(true);
         writerConfig.setOpenMode(OpenMode.CREATE_OR_APPEND);
-        int numDocs;
 
         try {
             Directory directory;
@@ -75,7 +74,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
                 directory = new SimpleFSDirectory(folder.toPath());
             }
             writer = new IndexWriter(directory, writerConfig);
-            numDocs = writer.getDocStats().numDocs;
+            int numDocs = writer.getDocStats().numDocs;
             searcherManager = new SearcherManager(writer, true, true, null);
             log.info("Map loaded, size: " + numDocs);
 

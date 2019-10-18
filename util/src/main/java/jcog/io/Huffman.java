@@ -113,13 +113,12 @@ public class Huffman {
      * @param in Stored HuffData from getHuffData()
      */
     public Huffman(byte[] in) {
-        int inIdx = 29, count, hashIdx, codeIdx;
-        byte[] symbol;
         Inflater inflater = new Inflater();
         inflater.setInput(in);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(in.length * 2);
-        byte[] buffer = new byte[8192];
+        int count;
         try {
+            byte[] buffer = new byte[8192];
             while (!inflater.finished()) {
                 count = inflater.inflate(buffer);
                 outputStream.write(buffer, 0, count);
@@ -139,17 +138,18 @@ public class Huffman {
         codeIdx2Symbols = new byte[byteArrayToInt(in, 25)][][];
         symbol2Code = new byte[symbl2CodLstIdx + 1][];
         codeValues = new byte[symbol2Code.length][];
+        int inIdx = 29;
         for (int i = 1; i < codeIdx2Symbols.length; i++) {
             count = byteArrayToInt(in, inIdx);
             inIdx += 4;
             codeIdx2Symbols[i] = new byte[1 << i][];
             for (int w = 0; w < count; w++) {
-                symbol = new byte[in[inIdx++]];
+                byte[] symbol = new byte[in[inIdx++]];
                 inIdx = bytesFromByteArray(in, symbol, inIdx);
-                codeIdx = byteArrayToInt(in, inIdx);
+                int codeIdx = byteArrayToInt(in, inIdx);
                 inIdx += 4;
                 codeIdx2Symbols[i][codeIdx] = symbol;
-                hashIdx = byteArrayToInt(in, inIdx);
+                int hashIdx = byteArrayToInt(in, inIdx);
                 inIdx += 4;
                 symbol2Code[hashIdx] = symbol;
                 codeValues[hashIdx] = createCode((byte) i, codeIdx);
@@ -227,14 +227,13 @@ public class Huffman {
     private static int findSymblIdx(int startIdx, int endIdx, byte[] data, int symbLastIdx, byte[][] symKeySet) {
         int hash = 1;
         int curMatchIdx = -1;
-        int symbolIdx, tmpIdx;
-        byte[] aKey;
         for (int i = startIdx; i < endIdx; i++) {
             hash = longHash(hash(data, startIdx, (i - startIdx) + 1, -1640531527));
-            symbolIdx = hash & symbLastIdx;
+            int symbolIdx = hash & symbLastIdx;
+            byte[] aKey;
             probe:
             while ((aKey = symKeySet[symbolIdx]) != null) {
-                tmpIdx = symbolIdx;
+                int tmpIdx = symbolIdx;
                 if (++symbolIdx == symKeySet.length) symbolIdx = 0;
                 if (aKey.length == (i - startIdx) + 1) {
                     for (int w = 0; w < aKey.length; w++)
@@ -437,26 +436,22 @@ public class Huffman {
     public byte[] decompress(byte[] codes) {
         if (codes.length == 0) return ArrayUtil.EMPTY_BYTE_ARRAY;
         byte[] data = new byte[codes.length * 20];
-        byte[] finalData;
         int dataIdx = 0;
         byte unCompSymb = 0;
         int codeIdx = 3;
-        byte[] symbol;
-        int symbolLen;
         int symbolIdx = 0;
         int codesLen = (codes.length * 8) - (byte) (codes[0] & 0b111);
-        int bitLen;
         while (codeIdx < codesLen) {
             symbolIdx = 0;
-            symbol = null;
-            bitLen = 0;
+            byte[] symbol = null;
+            int bitLen = 0;
             //add codes to symbolIdx bit by bit until symbol is found, &7 == % 8, this loop takes up the majority of the total decompress time
             while (symbol == null && codeIdx < codesLen) {
                 symbolIdx |= ((byte) ((codes[codeIdx / 8]) >>> (codeIdx++ & 7)) & (byte) 1) << bitLen;
                 symbol = codeIdx2Symbols[++bitLen][symbolIdx];
             }
             if (symbol == null) break;
-            symbolLen = symbol.length;
+            int symbolLen = symbol.length;
             if (symbolLen == 0) {
                 if (((codes[codeIdx / 8] >> (codeIdx & 7)) & 1) == 1) {
                     unCompSymb = 0;
@@ -496,7 +491,7 @@ public class Huffman {
             }
         }
         if (dataIdx != data.length) {
-            finalData = Arrays.copyOfRange(data, 0, dataIdx);
+            byte[] finalData = Arrays.copyOfRange(data, 0, dataIdx);
             return finalData;
         }
         return data;
@@ -509,13 +504,12 @@ public class Huffman {
         int startIdx = 0;
         int endIdx = maxSymbolLength;
         int dataLen = data.length;
-        byte[] aCode;
         int curMatchIdx = -1;
         while (true) {
             if (endIdx > dataLen) endIdx = dataLen;
             curMatchIdx = findSymblIdx(startIdx, endIdx, data, symbl2CodLstIdx, symbol2Code);
             if (curMatchIdx == -1) curMatchIdx = altCodeIdx;
-            aCode = codeValues[curMatchIdx];
+            byte[] aCode = codeValues[curMatchIdx];
             if (curMatchIdx != altCodeIdx && (aCode[0] + 7) / 8 > symbol2Code[curMatchIdx].length + altCodeBytes) {
                 aCode = codeValues[altCodeIdx];
                 curMatchIdx = altCodeIdx;
@@ -609,10 +603,10 @@ public class Huffman {
 
     //convert freqList hashmap to priorty queue ordered by frequency (lowest first)
     private void freqToTree(int freqDivide, boolean addAltNode) {
-        int removedBytes = 1;
         int maxSymbols = config.maxSymbols;
-        Entry<ByteAry, Integer> ent;
         trees = new PriorityQueue<>();
+        Entry<ByteAry, Integer> ent;
+        int removedBytes = 1;
         if (freqDivide < 2) {
             for (Entry<ByteAry, Integer> byteAryIntegerEntry: freqList.asMap().entrySet()) {
                 ent = byteAryIntegerEntry;
@@ -625,11 +619,10 @@ public class Huffman {
             while (trees.size() > maxSymbols) trees.poll();
             if (addAltNode) trees.add(new TmpNode(removedBytes, ArrayUtil.EMPTY_BYTE_ARRAY));
         } else {
-            int freq;
             for (Entry<ByteAry, Integer> byteAryIntegerEntry: freqList.asMap().entrySet()) {
                 ent = byteAryIntegerEntry;
                 if (ent.getValue() > 3) {
-                    freq = (ent.getValue() / freqDivide) * ent.getKey().ary.length;
+                    int freq = (ent.getValue() / freqDivide) * ent.getKey().ary.length;
                     if (freq == 0) freq = 1;
                     trees.add(new TmpNode(freq, ent.getKey().ary));
                 } else {
@@ -655,7 +648,6 @@ public class Huffman {
 
     private void buildHuffTree(boolean isAlt, boolean isFinal) {
         // remove the two trees with least frequency then put them into a new node and insert into the queue
-        int longTreeId;
         totalSymbols = trees.size();
         //System.out.println("total symbols=" + totalSymbols);
         int maxTreeDepth;
@@ -667,7 +659,7 @@ public class Huffman {
         int freqDivide = 1;
         HuffmanTree objectTree;
         while (true) {
-            longTreeId = 0;
+            int longTreeId = 0;
             nodeId = 0;
             while (trees.size() > 1) {
                 HuffmanTree hf1 = nextTree();
@@ -838,9 +830,6 @@ public class Huffman {
      */
     public byte[] codec() {
         byte[] out = new byte[(totalSymbols * (maxSymbolLength * 10)) * 500];
-        int count = 0, hashIdx;
-        byte[] aKey, symbol;
-        int idx = 29;
         intToByteArray(totalSymbols, out, 0);
         intToByteArray(symbl2CodLstIdx, out, 4);
         intToByteArray(maxSymbolLength, out, 8);
@@ -849,6 +838,8 @@ public class Huffman {
         intToByteArray(highestLevel, out, 17);
         intToByteArray(altCodeBytes, out, 21);
         intToByteArray(codeIdx2Symbols.length, out, 25);
+        int idx = 29;
+        int count = 0;
         for (int i = 1; i < codeIdx2Symbols.length; i++) {
             count = 0;
             for (int w = 0; w < codeIdx2Symbols[i].length; w++) if (codeIdx2Symbols[i][w] != null) count++;
@@ -860,8 +851,9 @@ public class Huffman {
                     out[idx++] = (byte) codeIdx2Symbols[i][w].length;
                     idx = bytesToByteArray(codeIdx2Symbols[i][w], out, idx);
                     idx = intToByteArray(w, out, idx);
-                    symbol = codeIdx2Symbols[i][w];
-                    hashIdx = aryHash(symbol) & symbl2CodLstIdx;
+                    byte[] symbol = codeIdx2Symbols[i][w];
+                    int hashIdx = aryHash(symbol) & symbl2CodLstIdx;
+                    byte[] aKey;
                     while ((aKey = symbol2Code[hashIdx]) != null) {
                         if (Arrays.equals(aKey, symbol)) {
                             idx = intToByteArray(hashIdx, out, idx);
@@ -989,16 +981,14 @@ public class Huffman {
         public void run() {
 
             workQueue.forEach(dV -> {
-                Integer weight, oldWeight;
-                byte[] symbol;
-                ByteAry ba;
                 int VLen = dV.length;
                 for (int i = 0; i < VLen; i += maxSymbolLength) {
                     for (int j = i; j < VLen && j < i + maxSymbolLength; j++) {
-                        symbol = Arrays.copyOfRange(dV, i, j + 1);
-                        ba = new ByteAry(symbol);
+                        byte[] symbol = Arrays.copyOfRange(dV, i, j + 1);
+                        ByteAry ba = new ByteAry(symbol);
                         while (true) {
-                            oldWeight = freqList.getIfPresent(ba);
+                            Integer oldWeight = freqList.getIfPresent(ba);
+                            Integer weight;
                             if (oldWeight != null) {
                                 weight = oldWeight + symbol.length;
                                 if (freqList.asMap().replace(ba, oldWeight, weight)) break;

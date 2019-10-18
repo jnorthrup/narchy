@@ -177,9 +177,9 @@ public class XoRoShiRo128PlusRandom extends Random implements Rand {
 
     @Override
     public void nextBytes(byte[] bytes) {
-        int i = bytes.length, n;
+        int i = bytes.length;
         while (i != 0) {
-            n = Math.min(i, 8);
+            int n = Math.min(i, 8);
             for (long bits = nextLong(); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
         }
     }

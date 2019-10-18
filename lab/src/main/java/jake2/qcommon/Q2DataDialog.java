@@ -617,10 +617,6 @@ public class Q2DataDialog extends javax.swing.JDialog {
                 running = true;
             }
 
-            InputStream in = null;
-            OutputStream out = null;
-            File outFile = null;
-
             label.setText("downloading...");
 
             File dir = null;
@@ -639,6 +635,9 @@ public class Q2DataDialog extends javax.swing.JDialog {
                 return;
             }
 
+            File outFile = null;
+            OutputStream out = null;
+            InputStream in = null;
             try {
                 URL url = new URL(mirror);
                 URLConnection conn = url.openConnection();

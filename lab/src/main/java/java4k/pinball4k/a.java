@@ -390,86 +390,9 @@ public class a extends JFrame {
      */
 	public a() throws Exception {
  		super("Pinball 4K");
-		
 
 
- 		
- 		long lastFrame = 0;
-	    
-		
-		float bally = 0;
-		float ballx = 0;
-		
-		
-		float ballVely = 0;
-		float ballVelx = 0;
-
-		
-		float flipperAngle = 0;
-		
-		
-		int flipperUpDelta = 0;
-		
-		
-		float flipperAngleVel = 0;
-		
-		
-		float[] floatData = new float[MAX_OBJ_COUNT];
-		
-		
-		int[] groupData = null;
-		
-		
-		int numGroups = 0;
-		
-		
-		int[] intData = new int[MAX_OBJ_COUNT];
-		
-		
-		int[] behaviourObjMap = new int[MAX_OBJ_COUNT];
-		
-		
-		int[] blinkData = null;
-
-	    
-		int objx = 0;
-		int objy = 0;
-		        
-		int objCount = 0;
-
-		
-		int frameIdx = 0;
-		
-		
-		int score = 0;
-		
-		
-		int multiplier = 0;
-		
-		
-		int levely = 0;
-		
-		
-		int state = LOADING;
-
-		
-		boolean tilt = false;
-		boolean pushed = false;
-		boolean pushedBall = false;
-		boolean wasTiltKeyPressed = false;
-		int pushTime = 0;
-		
-		
-		int extraBallTarget = 0;
-
-		
-		Font font = new Font("", FONT_ITALIC_BOLD, 32);
-		
-		
-		int flashFrameIdx = 0;
-		
-		
-		setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        setSize(FRAME_WIDTH, FRAME_HEIGHT);
 		
 		
 		if (DISABLE_RESIZE) {
@@ -482,8 +405,38 @@ public class a extends JFrame {
 		
 		createBufferStrategy(2);
 		BufferStrategy b = getBufferStrategy();
-		
-		do {
+
+        int flashFrameIdx = 0;
+        Font font = new Font("", FONT_ITALIC_BOLD, 32);
+        int extraBallTarget = 0;
+        int pushTime = 0;
+        boolean wasTiltKeyPressed = false;
+        boolean pushedBall = false;
+        boolean pushed = false;
+        boolean tilt = false;
+        int state = LOADING;
+        int levely = 0;
+        int multiplier = 0;
+        int score = 0;
+        int frameIdx = 0;
+        int objCount = 0;
+        int objy = 0;
+        int objx = 0;
+        int[] blinkData = null;
+        int[] behaviourObjMap = new int[MAX_OBJ_COUNT];
+        int[] intData = new int[MAX_OBJ_COUNT];
+        int numGroups = 0;
+        int[] groupData = null;
+        float[] floatData = new float[MAX_OBJ_COUNT];
+        float flipperAngleVel = 0;
+        int flipperUpDelta = 0;
+        float flipperAngle = 0;
+        float ballVelx = 0;
+        float ballVely = 0;
+        float ballx = 0;
+        float bally = 0;
+        long lastFrame = 0;
+        do {
 			
 			int bonus = 0;
 
@@ -909,9 +862,7 @@ public class a extends JFrame {
 						
 						int groupOr = 0;
 						int groupAnd = 0x7f;
-						int or = 0;
-						int and = 0x7f;
-						int blinkTime = 0;
+                        int blinkTime = 0;
 						for (int i=0; i<groupData[groupIdx*2]; i++) {
 							int objIdx = groupData[groupIdx*2+GRP_FIRST_INDEX] + i;
 							groupOr |= intData[objIdx * STRIDE];
@@ -920,9 +871,10 @@ public class a extends JFrame {
 								blinkTime = blinkData[objIdx];
 							}
 						}
-						
-						
-						if ((groupOr & VISIBLE_MASK) == 0 && (groupOr & DROP_DOWN_MASK) != 0) {
+
+
+                        int or = 0;
+                        if ((groupOr & VISIBLE_MASK) == 0 && (groupOr & DROP_DOWN_MASK) != 0) {
 							
 							bonus += BONUS_DROPDOWN;
 							
@@ -936,9 +888,10 @@ public class a extends JFrame {
 							
 							or = VISIBLE_MASK | COLLIDABLE_MASK;
 						}
-						
-						
-						if ((groupAnd & VISIBLE_MASK) != 0 && (groupAnd & ROLL_OVER_MASK) != 0) {
+
+
+                        int and = 0x7f;
+                        if ((groupAnd & VISIBLE_MASK) != 0 && (groupAnd & ROLL_OVER_MASK) != 0) {
 							
 							bonus += BONUS_ROLLOVER;
 							
@@ -1041,9 +994,8 @@ public class a extends JFrame {
 
 			g.setFont(font);
 			Rectangle2D bounds = null;
-			String text = null;
-			
-			final int SHADOW_COLOR = 0x2f2f2f;
+
+            final int SHADOW_COLOR = 0x2f2f2f;
 
 			
 			for (int objIdx=0; objIdx<objCount; objIdx++) {
@@ -1171,7 +1123,8 @@ public class a extends JFrame {
 			
 			
 			g.setColor(new Color(0xffffff));
-			for (int i=0; i<8; i++) {
+            String text = null;
+            for (int i = 0; i<8; i++) {
 				text = String.valueOf((i+1));
 				g.drawString(text, 484-14, 1260-i*84);				
 				intData[(groupData[21]+i)*STRIDE] = (i < multiplier ? VISIBLE_MASK : 0); 

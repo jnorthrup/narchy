@@ -1501,17 +1501,16 @@ public class M_Boss32 {
         public boolean think(edict_t self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
 
-            float[] start = { 0, 0, 0 };
-            float[] dir = { 0, 0, 0 };
-            float[] vec = { 0, 0, 0 };
-
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[Defines.MZ2_MAKRON_BFG],
                     forward, right, start);
 
+            float[] vec = {0, 0, 0};
             Math3D.VectorCopy(self.enemy.s.origin, vec);
             vec[2] += self.enemy.viewheight;
+            float[] dir = {0, 0, 0};
             Math3D.VectorSubtract(vec, start, dir);
             Math3D.VectorNormalize(dir);
             game_import_t.sound(self, Defines.CHAN_VOICE, sound_attack_bfg, 1,
@@ -1542,16 +1541,16 @@ public class M_Boss32 {
         public String getID() { return "MakronRailgun"; }
         @Override
         public boolean think(edict_t self) {
-            float[] start = { 0, 0, 0 };
-            float[] dir = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[Defines.MZ2_MAKRON_RAILGUN_1],
                     forward, right, start);
 
-            
+
+            float[] dir = {0, 0, 0};
             Math3D.VectorSubtract(self.pos1, start, dir);
             Math3D.VectorNormalize(dir);
 
@@ -1569,20 +1568,20 @@ public class M_Boss32 {
         public String getID() { return "MakronHyperblaster"; }
         @Override
         public boolean think(edict_t self) {
-            float[] dir = { 0, 0, 0 };
-            float[] vec = { 0, 0, 0 };
-            float[] start = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
 
             int flash_number = Defines.MZ2_MAKRON_BLASTER_1
                     + (self.s.frame - FRAME_attak405);
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[flash_number], forward, right,
                     start);
 
+            float[] dir = {0, 0, 0};
             if (self.enemy != null) {
+                float[] vec = {0, 0, 0};
                 Math3D.VectorCopy(self.enemy.s.origin, vec);
                 vec[2] += self.enemy.viewheight;
                 Math3D.VectorSubtract(vec, start, vec);
@@ -1732,8 +1731,6 @@ public class M_Boss32 {
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
 
-            int n;
-
             self.s.sound = 0;
             
             if (self.health <= self.gib_health) {
@@ -1741,6 +1738,7 @@ public class M_Boss32 {
                         .sound(self, Defines.CHAN_VOICE, game_import_t
                                 .soundindex("misc/udeath.wav"), 1,
                                 Defines.ATTN_NORM, 0);
+                int n;
                 for (n = 0; n < 1 /* 4 */; n++)
                     GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
@@ -1779,29 +1777,28 @@ public class M_Boss32 {
         public String getID() { return "Makron_CheckAttack"; }
         @Override
         public boolean think(edict_t self) {
-            float[] spot1 = { 0, 0, 0 }, spot2 = { 0, 0, 0 };
-            float[] temp = { 0, 0, 0 };
-            float chance;
-            trace_t tr;
 
             if (self.enemy.health > 0) {
-                
+
+                float[] spot1 = {0, 0, 0};
                 Math3D.VectorCopy(self.s.origin, spot1);
                 spot1[2] += self.viewheight;
+                float[] spot2 = {0, 0, 0};
                 Math3D.VectorCopy(self.enemy.s.origin, spot2);
                 spot2[2] += self.enemy.viewheight;
 
-                tr = game_import_t.trace(spot1, null, null, spot2, self,
+                trace_t tr = game_import_t.trace(spot1, null, null, spot2, self,
                         Defines.CONTENTS_SOLID | Defines.CONTENTS_MONSTER
                                 | Defines.CONTENTS_SLIME
                                 | Defines.CONTENTS_LAVA);
 
-                
+
                 if (tr.ent != self.enemy)
                     return false;
             }
 
             int enemy_range = GameUtil.range(self, self.enemy);
+            float[] temp = {0, 0, 0};
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, temp);
             float enemy_yaw = Math3D.vectoyaw(temp);
 
@@ -1826,6 +1823,7 @@ public class M_Boss32 {
             if (enemy_range == Defines.RANGE_FAR)
                 return false;
 
+            float chance;
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0) {
                 chance = 0.4f;
             } else if (enemy_range == Defines.RANGE_MELEE) {
@@ -1934,7 +1932,6 @@ public class M_Boss32 {
         public String getID() { return "MakronSpawn"; }
         @Override
         public boolean think(edict_t self) {
-            float[] vec = { 0, 0, 0 };
 
             SP_monster_makron(self);
 
@@ -1943,6 +1940,7 @@ public class M_Boss32 {
             if (player == null)
                 return true;
 
+            float[] vec = {0, 0, 0};
             Math3D.VectorSubtract(player.s.origin, self.s.origin, vec);
             self.s.angles[Defines.YAW] = Math3D.vectoyaw(vec);
             Math3D.VectorNormalize(vec);

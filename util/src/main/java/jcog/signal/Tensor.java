@@ -181,9 +181,8 @@ public interface Tensor  {
     default int volume() {
         int[] s = shape();
         int v = s[0];
-        int acc;
         int bound = s.length;
-        acc = Arrays.stream(s, 1, bound).reduce(1, (a, b) -> a * b);
+        int acc = Arrays.stream(s, 1, bound).reduce(1, (a, b) -> a * b);
         v *= acc;
         return v;
     }

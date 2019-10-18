@@ -353,7 +353,6 @@ abstract class HashedWheelTimerTest {
 
         int delayTime = 250;
         int tolerance = 50;
-        int maxTimeout = (delayTime) + tolerance;
 
         int scheduledTasks =
                 
@@ -377,6 +376,7 @@ abstract class HashedWheelTimerTest {
 
         double delay = queue.getMean();
 
+        int maxTimeout = (delayTime) + tolerance;
         assertTrue(delay >= delayTime - tolerance && delay <= delayTime + tolerance,
                 () -> "Timeout + " + scheduledTasks + " delay must be " + delayTime + " < " + delay + " < " + maxTimeout);
 

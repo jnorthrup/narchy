@@ -98,12 +98,10 @@ public abstract class IIRFilter {
 	
 			//calculate y based on a and b coefficients
 			//and in and out.
-            double y;
             int bound1 = a.length;
-			y = IntStream.range(0, bound1).mapToDouble(j1 -> a[j1] * in[j1]).sum();
-            double sum;
+            double y = IntStream.range(0, bound1).mapToDouble(j1 -> a[j1] * in[j1]).sum();
             int bound = b.length;
-			sum = IntStream.range(0, bound).mapToDouble(j -> b[j] * out[j]).sum();
+            double sum = IntStream.range(0, bound).mapToDouble(j -> b[j] * out[j]).sum();
             y += sum;
 			//shift the out array
 			//TODO use ring buffer to avoid these copies

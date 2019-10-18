@@ -16,7 +16,6 @@ class RBMTest {
         int k = 1;
 
         int train_N = 6;
-        int test_N = 2;
         int n_visible = 6;
         int n_hidden = 3;
 
@@ -53,6 +52,7 @@ class RBMTest {
                 {0, 0, 0, 1, 1, 0}
         };
 
+        int test_N = 2;
         double[][] reconstructed_X = new double[test_N][n_visible];
 
         for(int i=0; i<test_N; i++) {

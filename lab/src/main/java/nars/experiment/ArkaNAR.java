@@ -157,9 +157,6 @@ public class ArkaNAR extends GameX {
         //initBipolarRelative();
         //initPushButton();
 
-        float resX = 0.02f;
-        float resY = 0.02f;
-
         if (cam) {
 
             cc = senseCamera((x, y) -> $.inh(id, $.p(x, y)), new ScaledBitmap2D(
@@ -172,12 +169,14 @@ public class ArkaNAR extends GameX {
 
         if (numeric) {
             float numRes = 0.2f;
+            float resX = 0.02f;
             AbstractSensor px = senseNumberBi($.inh(id,"px"), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
             px.resolution(numRes);
             AbstractSensor dx = senseNumberBi($.inh(id, "dx"), (() -> 0.5f + 0.5f * (noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
             dx.resolution(numRes);
             AbstractSensor cx = senseNumberBi($.inh(id, $.p("b", "x")), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
             cx.resolution(numRes);
+            float resY = 0.02f;
             AbstractSensor cy = senseNumberBi($.inh(id ,$.p("b", "y")), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
             cy.resolution(numRes);
 //            window(NARui.beliefCharts(dx.components(), nar), 500, 500);

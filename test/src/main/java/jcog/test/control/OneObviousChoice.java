@@ -20,8 +20,6 @@ public class OneObviousChoice extends AbstractAgentTest {
             assert (agent.inputs >= 1);
             assert (agent.actions == 2);
 
-            final float minRatio = 2f;
-
 
             Random r = new XoRoShiRo128PlusRandom(1);
             float nextReward = 0;
@@ -43,6 +41,7 @@ public class OneObviousChoice extends AbstractAgentTest {
             }
             System.out.println(this.getClass().getSimpleName() + '\t' + agent.getClass() + ' ' + agent.summary() + '\n' + acts);
             assertTrue(acts.get(1) > acts.get(0));
+            final float minRatio = 2f;
             assertTrue(acts.get(1) / minRatio > acts.get(0));
         }
     }

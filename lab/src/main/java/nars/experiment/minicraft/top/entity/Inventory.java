@@ -54,9 +54,8 @@ public class Inventory {
             ResourceItem ri = findResource(((ResourceItem) item).resource);
             if (ri != null) return ri.count;
         } else {
-            long result;
             int bound = items.size();
-            result = IntStream.range(0, bound).filter(i -> items.get(i).matches(item)).count();
+            long result = IntStream.range(0, bound).filter(i -> items.get(i).matches(item)).count();
             int count = (int) result;
             return count;
         }

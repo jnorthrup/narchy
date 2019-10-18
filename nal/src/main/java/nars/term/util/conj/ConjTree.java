@@ -562,11 +562,10 @@ public class ConjTree implements ConjBuilder {
         if (terminal != null)
             return terminal;
 
-        Term s;
         if (seq != null && !seq.isEmpty()) {
 
 
-            s = termSeq(B);
+            Term s = termSeq(B);
 
             shift(); //cache the shift before clearing seq
             seq = null;

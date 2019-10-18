@@ -132,7 +132,6 @@ public class SV_GAME {
      * Also sets mins and maxs for inline bmodels.
      */
     public static void PF_setmodel(edict_t ent, String name) {
-        cmodel_t mod;
 
         if (name == null)
             Com.Error(Defines.ERR_DROP, "PF_setmodel: NULL");
@@ -143,7 +142,7 @@ public class SV_GAME {
 
         
         if (name.startsWith("*")) {
-            mod = CM.InlineModel(name);
+            cmodel_t mod = CM.InlineModel(name);
             Math3D.VectorCopy(mod.mins, ent.mins);
             Math3D.VectorCopy(mod.maxs, ent.maxs);
             SV_WORLD.SV_LinkEdict(ent);

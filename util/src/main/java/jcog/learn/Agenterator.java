@@ -51,7 +51,6 @@ public class Agenterator implements FloatSupplier {
 
     /** returns the next reward value */
     @Override public float asFloat() {
-        float r;
 
         /* @Deprecated  */
         for (Tensor _sensor : _sensors) {
@@ -59,6 +58,7 @@ public class Agenterator implements FloatSupplier {
         }
         sensorsNow.update(); sensorsHistory.setSpin(sensorsNow.snapshot()); //HACK bad
 
+        float r;
         action.accept(agent.act(r = reward.asFloat(), sensorsHistory));
         return r;
     }

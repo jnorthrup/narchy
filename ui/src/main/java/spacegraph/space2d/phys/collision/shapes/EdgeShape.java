@@ -145,11 +145,7 @@ public class EdgeShape extends Shape {
         float p2x = xfq.c * tempx + xfq.s * tempy;
         float p2y = -xfq.s * tempx + xfq.c * tempy;
 
-        float dx = p2x - p1x;
-        float dy = p2y - p1y;
 
-        
-        
         normal.x = v2.y - v1.y;
         normal.y = v1.x - v2.x;
         normal.normalize();
@@ -162,6 +158,8 @@ public class EdgeShape extends Shape {
         tempx = v1.x - p1x;
         tempy = v1.y - p1y;
         float numerator = normalx * tempx + normaly * tempy;
+        float dy = p2y - p1y;
+        float dx = p2x - p1x;
         float denominator = normalx * dx + normaly * dy;
 
         if (denominator == 0.0f) {
@@ -173,20 +171,16 @@ public class EdgeShape extends Shape {
             return false;
         }
 
-        
-        float qx = p1x + t * dx;
-        float qy = p1y + t * dy;
 
-        
-        
-        
         float rx = v2.x - v1.x;
         float ry = v2.y - v1.y;
         float rr = rx * rx + ry * ry;
         if (rr == 0.0f) {
             return false;
         }
+        float qx = p1x + t * dx;
         tempx = qx - v1.x;
+        float qy = p1y + t * dy;
         tempy = qy - v1.y;
         
         float s = (tempx * rx + tempy * ry) / rr;

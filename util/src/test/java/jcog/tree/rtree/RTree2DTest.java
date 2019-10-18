@@ -87,9 +87,8 @@ class RTree2DTest {
             List<RectDouble> results = new ArrayList();
 
             rTree.intersectsWhile(searchRect, results::add);
-            long count;
             int bound = results.size();
-            count = IntStream.range(0, bound).filter(i1 -> results.get(i1) != null).count();
+            long count = IntStream.range(0, bound).filter(i1 -> results.get(i1) != null).count();
             int resultCount = (int) count;
 
             final int expectedCount = 9;

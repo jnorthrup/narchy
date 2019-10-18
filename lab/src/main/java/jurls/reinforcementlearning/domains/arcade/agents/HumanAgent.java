@@ -91,13 +91,13 @@ public class HumanAgent extends AbstractAgent {
 
     @Override
     public long getPauseLength() {
-        
-        
-        long targetDelta = 1000 / framesPerSecond;
+
+
         long deltaRemainder = 1000 % framesPerSecond;
         millisFraction += deltaRemainder;
 
-        
+
+        long targetDelta = 1000 / framesPerSecond;
         while (millisFraction > framesPerSecond) {
             targetDelta += 1;
             millisFraction -= framesPerSecond;

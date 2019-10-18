@@ -67,8 +67,6 @@ class QueryVariableTest {
 
     private static void testQuestionAnswer(String question, String belief) throws Narsese.NarseseException {
 
-        int time = 32;
-
         AtomicBoolean valid = new AtomicBoolean();
 
         NAR nar = NARS.shell();
@@ -89,6 +87,7 @@ class QueryVariableTest {
 
         nar.believe(beliefTerm, 1f, 0.9f);
 
+        int time = 32;
         nar.run(time);
         assertTrue(valid.get());
         

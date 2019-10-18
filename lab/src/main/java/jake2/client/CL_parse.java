@@ -352,13 +352,7 @@ public class CL_parse {
      * ================
      */
     public static void LoadClientinfo(clientinfo_t ci, String s) {
-        
-        
-        
-        
-        
 
-        String model_name, skin_name, model_filename, skin_filename, weapon_filename;
 
         ci.cinfo = s;
         
@@ -376,6 +370,9 @@ public class CL_parse {
             
         }
 
+        String weapon_filename;
+        String skin_filename;
+        String model_filename;
         if (Globals.cl_noskins.value != 0 || s.length() == 0) {
 
             model_filename = ("players/male/tris.md2");
@@ -402,12 +399,12 @@ public class CL_parse {
                 Com.Error(Defines.ERR_FATAL, "Invalid model name:" + s);
             }
 
-            model_name = s.substring(0, pos);
+            String model_name = s.substring(0, pos);
 
-            
-            skin_name = s.substring(pos + 1);
 
-            
+            String skin_name = s.substring(pos + 1);
+
+
             model_filename = "players/" + model_name + "/tris.md2";
             ci.model = Globals.re.RegisterModel(model_filename);
 

@@ -15,8 +15,6 @@ class MIDI {
     public MIDI() {
 
 
-        
-        MidiDevice device;
         MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
 
         MidiInReceiver receiver = null;
@@ -24,7 +22,7 @@ class MIDI {
             try {
                 MidiDevice.Info ii = info;
 
-                device = MidiSystem.getMidiDevice(ii);
+                MidiDevice device = MidiSystem.getMidiDevice(ii);
 
                 System.out.println(device + "\t" + device.getClass());
                 System.out.println("\t" + device.getDeviceInfo());

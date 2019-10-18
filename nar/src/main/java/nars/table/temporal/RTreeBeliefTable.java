@@ -401,11 +401,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 	@Override
 	public void removeIf(Predicate<Task> remove, long s, long e) {
-		FasterList<Task> deleteAfter = new FasterList<>(0);
 
 		long l = readLock();
 		try {
 
+			FasterList<Task> deleteAfter = new FasterList<>(0);
 			tree.intersectsWhile(new TimeRange(s, e), (_t) -> {
 				Task t = (Task) _t;
 				if (remove.test(t)) {

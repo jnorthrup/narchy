@@ -341,10 +341,8 @@ public class A extends Applet implements Runnable {
 			bg[BKBUFFER].drawImage(buf[MAP1], null, this);
 
             int baselife = 18;
-            int energyboost = 16;
-            int addlife = 4;
-            int firerate_div = 6;
-            int HOLDFIRE = 1;
+			int addlife = 4;
+			int HOLDFIRE = 1;
             final int GAMELOOSE = 3;
             switch (gamestatus) {
 			case GAMESTART:
@@ -393,6 +391,7 @@ public class A extends Applet implements Runnable {
 				rand.setSeed(10);
 				if (level == 1)
 					score = 0;
+				int energyboost = 16;
 				emax = 80 + energyboost * level;
 				movespeed = 8;
 				shootdmg = 8;
@@ -460,6 +459,7 @@ public class A extends Applet implements Runnable {
 				if (frame % regeneration_div == 0)
 					if (energy < emax)
 						energy++;
+				int firerate_div = 6;
 				if (firestatus1 == HOLDFIRE && frame % firerate_div == 0)
 					firestatus1 = SHOOT1;
 				

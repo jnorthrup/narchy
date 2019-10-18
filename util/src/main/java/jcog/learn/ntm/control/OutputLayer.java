@@ -49,16 +49,14 @@ public class OutputLayer {
         double[] out = outputs.value;
 
         for (int i = 0; i < _outputSize; i++) {
-            
-            double sum;
+
             Unit[] weights = _hiddenToOutputLayerWeights[i];
 
-            double result;
             int bound = controllerSize;
-            result = IntStream.range(0, bound).mapToDouble(j -> weights[j].value * hiddenLayerNeurons[j]).sum();
-            sum = result;
+            double result = IntStream.range(0, bound).mapToDouble(j -> weights[j].value * hiddenLayerNeurons[j]).sum();
+            double sum = result;
 
-            
+
             sum += weights[controllerSize].value;
             out[i] = Sigmoid.getValue(sum);
         }
@@ -70,15 +68,13 @@ public class OutputLayer {
             Head head = heads[i];
 
             for (int j = 0; j < headsWeights.length; j++) {
-                double sum;
                 Unit[] headWeights = headsWeights[j];
 
-                double result;
                 int bound = controllerSize;
-                result = IntStream.range(0, bound).mapToDouble(k -> headWeights[k].value * hiddenLayerNeurons[k]).sum();
-                sum = result;
+                double result = IntStream.range(0, bound).mapToDouble(k -> headWeights[k].value * hiddenLayerNeurons[k]).sum();
+                double sum = result;
 
-                
+
                 sum += headWeights[controllerSize].value;
                 head.get(j).value += sum;
             }

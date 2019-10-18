@@ -74,8 +74,7 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
                 float lp = (pan >= 0 ? 1 : 1 - pan) * amp;
 
                 int l = leftBuf.length;
-                int j;
-                for (j = 0; j < l; j++) {
+                for (int j = 0; j < l; j++) {
                     float bj = buf[j];
                     leftBuf[j] += bj * lp;
                     rightBuf[j] += bj * rp;

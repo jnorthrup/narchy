@@ -668,12 +668,12 @@ public class FZero extends GameX {
                 for (int x = 0; x < 32; x++) {
                     double dx = 15.5 - x;
                     double dy = 15.5 - y;
-                    double dist = Math.sqrt(dx * dx + dy * dy);
                     bitmaps[0][y][x] = 0xFF98A8A8;
                     bitmaps[4][y][x] = 0xFF90A0A0;
                     bitmaps[5][y][x]
                             = (((x >> 3) + (y >> 3)) & 1) == 0 ? 0xFF000000 : 0xFFFFFFFF;
                     bitmaps[2][y][x] = C(4.5, Math.abs(dy) / 16, 1);
+                    double dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < 16) {
                         bitmaps[3][y][x] = 0xFFFFFFFF;
                         bitmaps[1][y][x] = C(5.3, dist / 16, 1 + dist / 256);
@@ -800,12 +800,12 @@ public class FZero extends GameX {
                             vehicleMetrics[i][6] += 0.2 + i * 0.2;
                         }
                         double targetZ = 11 + vehicleMetrics[i][1];
-                        double tz = (targetZ / 32) % 512;
                         double targetX = 7984 + (i & 0x03) * 80;
                         if (i >= 4) {
                             targetX += 32;
                         }
 
+                        double tz = (targetZ / 32) % 512;
                         if (tz >= 128) {
                             double angle = tz * Math.PI / 64;
                             targetX += ((8 * Math.cos(angle) + 24) * Math.sin(angle)) * 32;
@@ -1017,11 +1017,11 @@ public class FZero extends GameX {
 
             if (power <= 0 || (vehicleMetrics[0][1] >= 81984 && rank > 3)) {
 
-                String failString = "FAIL";
                 imageGraphics.setFont(largeFont);
+                String failString = "FAIL";
                 int width = imageGraphics.getFontMetrics().stringWidth(failString);
-                int x = (320 - width) / 2;
                 imageGraphics.setColor(darkColor);
+                int x = (320 - width) / 2;
                 imageGraphics.fillRect(x, 65, width + 5, 90);
                 imageGraphics.setColor(Color.RED);
                 imageGraphics.drawString(failString, x, 145);
@@ -1030,8 +1030,8 @@ public class FZero extends GameX {
                 String rankString = Integer.toString(rank);
                 imageGraphics.setFont(largeFont);
                 int width = imageGraphics.getFontMetrics().stringWidth(rankString);
-                int x = (320 - width) / 2;
                 imageGraphics.setColor(darkColor);
+                int x = (320 - width) / 2;
                 imageGraphics.fillRect(x - 5, 65, width + 15, 90);
                 imageGraphics.setColor((wiresBitmapIndex & 4) == 0
                         ? Color.WHITE : Color.GREEN);

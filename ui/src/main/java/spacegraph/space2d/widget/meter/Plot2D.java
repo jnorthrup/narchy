@@ -86,11 +86,10 @@ public class Plot2D extends Widget {
             int histSize = s.size(), histCap = s.capacity();
 
             float dx = (w / histCap);
-            float x = (histCap - histSize) * dx;
 
 
             float[] color = s.color();
-            float r = color[0], g = color[1], b = color[2], a = 0;
+            float r = color[0], g = color[1], b = color[2];
 
             if (!filled) {
                 gl.glLineWidth(3);
@@ -99,6 +98,8 @@ public class Plot2D extends Widget {
 
             float laneOffset = laneHeight * i;
 
+            float a = 0;
+            float x = (histCap - histSize) * dx;
             for (int j = 0; j < histSize; j++) {
 
                 float y = s.get(j);

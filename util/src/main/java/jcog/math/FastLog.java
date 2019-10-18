@@ -39,11 +39,11 @@ public class FastLog {
      *             requires 32 KB.
      */
     public FastLog(double base, int q) {
-        int tabSize = 1 << (24 - q);
 
         this.q = q;
         qM1 = q - 1;
         korr = (float) (LN2 / Math.log(base));
+        int tabSize = 1 << (24 - q);
         data = new float[tabSize];
 
         for (int i = 0; i < tabSize; i++) {

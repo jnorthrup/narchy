@@ -621,14 +621,16 @@ public class M_Parasite {
         public String getID(){ return "parasite_drain_attack"; }
         @Override
         public boolean think(edict_t self) {
-            float[] offset = { 0, 0, 0 }, start = { 0, 0, 0 }, f = { 0, 0, 0 }, r = {
-                    0, 0, 0 }, end = { 0, 0, 0 }, dir = { 0, 0, 0 };
-            int damage;
+            float[] f = { 0, 0, 0 }, r = {
+                    0, 0, 0 };
 
             Math3D.AngleVectors(self.s.angles, f, r, null);
+            float[] offset = {0, 0, 0};
             Math3D.VectorSet(offset, 24, 0, 6);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin, offset, f, r, start);
 
+            float[] end = {0, 0, 0};
             Math3D.VectorCopy(self.enemy.s.origin, end);
             if (!parasite_drain_attack_ok(start, end)) {
                 end[2] = self.enemy.s.origin[2] + self.enemy.maxs[2] - 8;
@@ -645,6 +647,7 @@ public class M_Parasite {
             if (tr.ent != self.enemy)
                 return true;
 
+            int damage;
             if (self.s.frame == FRAME_drain03) {
                 damage = 5;
                 game_import_t.sound(self.enemy, Defines.CHAN_AUTO, sound_impact,
@@ -664,6 +667,7 @@ public class M_Parasite {
             game_import_t.WritePosition(end);
             game_import_t.multicast(self.s.origin, Defines.MULTICAST_PVS);
 
+            float[] dir = {0, 0, 0};
             Math3D.VectorSubtract(start, end, dir);
             GameCombat.T_Damage(self.enemy, self, self, dir, self.enemy.s.origin,
                     Globals.vec3_origin, damage, 0,
@@ -788,14 +792,14 @@ public class M_Parasite {
         @Override
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
-            int n;
 
-            
+
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
                                 .soundindex("misc/udeath.wav"), 1,
                                 Defines.ATTN_NORM, 0);
+                int n;
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
                             damage, Defines.GIB_ORGANIC);
@@ -885,14 +889,15 @@ public class M_Parasite {
     };
 
     static boolean parasite_drain_attack_ok(float[] start, float[] end) {
-        float[] dir = { 0, 0, 0 }, angles = { 0, 0, 0 };
+        float[] dir = { 0, 0, 0 };
 
-        
+
         Math3D.VectorSubtract(start, end, dir);
         if (Math3D.VectorLength(dir) > 256)
             return false;
 
-        
+
+        float[] angles = {0, 0, 0};
         Math3D.vectoangles(dir, angles);
         if (angles[0] < -180)
             angles[0] += 360;

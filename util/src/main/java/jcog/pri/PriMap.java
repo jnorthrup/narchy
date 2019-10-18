@@ -54,7 +54,6 @@ public class PriMap<Y> {
      * */
     @Paper
     public static <X,Y> Map<X,Y> newMap(boolean linked) {
-        float load = 0.5f;
         if (Exe.concurrent()) {
             return linked ?
                 new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0)
@@ -67,7 +66,8 @@ public class PriMap<Y> {
                 //new CustomConcurrentHashMap()
                 ;
         } else {
-             return
+            float load = 0.5f;
+            return
                  linked ?
                     new LinkedHashMap(0, load)
                     //new HashMap<>(0, load)

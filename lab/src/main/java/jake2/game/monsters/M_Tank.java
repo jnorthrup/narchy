@@ -965,10 +965,6 @@ public class M_Tank {
         public String getID(){ return "TankBlaster"; }
         @Override
         public boolean think(edict_t self) {
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-            float[] start = { 0, 0, 0 };
-            float[] end = { 0, 0, 0 };
-            float[] dir = { 0, 0, 0 };
             int flash_number;
 
             if (self.s.frame == FRAME_attak110)
@@ -979,13 +975,18 @@ public class M_Tank {
                 
                 flash_number = Defines.MZ2_TANK_BLASTER_3;
 
+            float[] right = {0, 0, 0};
+            float[] forward = {0, 0, 0};
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[flash_number], forward, right,
                     start);
 
+            float[] end = {0, 0, 0};
             Math3D.VectorCopy(self.enemy.s.origin, end);
             end[2] += self.enemy.viewheight;
+            float[] dir = {0, 0, 0};
             Math3D.VectorSubtract(end, start, dir);
 
             Monster.monster_fire_blaster(self, start, dir, 30, 800,
@@ -1012,10 +1013,6 @@ public class M_Tank {
         public String getID(){ return "TankRocket"; }
         @Override
         public boolean think(edict_t self) {
-            float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-            float[] start = { 0, 0, 0 };
-            float[] dir = { 0, 0, 0 };
-            float[] vec = { 0, 0, 0 };
             int flash_number;
 
             if (self.s.frame == FRAME_attak324)
@@ -1026,13 +1023,18 @@ public class M_Tank {
                 
                 flash_number = Defines.MZ2_TANK_ROCKET_3;
 
+            float[] right = {0, 0, 0};
+            float[] forward = {0, 0, 0};
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[flash_number], forward, right,
                     start);
 
+            float[] vec = {0, 0, 0};
             Math3D.VectorCopy(self.enemy.s.origin, vec);
             vec[2] += self.enemy.viewheight;
+            float[] dir = {0, 0, 0};
             Math3D.VectorSubtract(vec, start, dir);
             Math3D.VectorNormalize(dir);
 
@@ -1049,20 +1051,20 @@ public class M_Tank {
         @Override
         public boolean think(edict_t self) {
 
-            float[] dir = { 0, 0, 0 };
-            float[] vec = { 0, 0, 0 };
-            float[] start = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
 
             int flash_number = Defines.MZ2_TANK_MACHINEGUN_1
                     + (self.s.frame - FRAME_attak406);
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
+            float[] start = {0, 0, 0};
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[flash_number], forward, right,
                     start);
 
+            float[] dir = {0, 0, 0};
             if (self.enemy != null) {
+                float[] vec = {0, 0, 0};
                 Math3D.VectorCopy(self.enemy.s.origin, vec);
                 vec[2] += self.enemy.viewheight;
                 Math3D.VectorSubtract(vec, start, vec);
@@ -1349,7 +1351,6 @@ public class M_Tank {
         public String getID(){ return "tank_attack"; }
         @Override
         public boolean think(edict_t self) {
-            float[] vec = { 0, 0, 0 };
 
             if (self.enemy.health < 0) {
                 self.monsterinfo.currentmove = tank_move_attack_strike;
@@ -1357,6 +1358,7 @@ public class M_Tank {
                 return true;
             }
 
+            float[] vec = {0, 0, 0};
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, vec);
             float range = Math3D.VectorLength(vec);
 
@@ -1450,14 +1452,14 @@ public class M_Tank {
         @Override
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
-            int n;
 
-            
+
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
                                 .soundindex("misc/udeath.wav"), 1,
                                 Defines.ATTN_NORM, 0);
+                int n;
                 for (n = 0; n < 1 /* 4 */; n++)
                     GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,

@@ -117,8 +117,6 @@ public class DFA {
     }
 
     private int[][] minimize(Map<Set<NFAState>, CharObjectHashMap<Set<NFAState>>> oriDFATransitionMap, Set<NFAState> initClosure, NFAState finalNFAState) {
-        Map<Integer, int[]> renamedDFATransitionTable = new HashMap<>();
-        Map<Integer, Boolean> finalFlags = new HashMap<>();
         Map<Set<NFAState>, Integer> stateRenamingMap = new HashMap<>();
         int initStateAfterRenaming = -1;
         int renamingStateID = 1;
@@ -131,7 +129,9 @@ public class DFA {
             stateRenamingMap.put(nfaState, renamingStateID++);
         }
 
-        renamedDFATransitionTable.put(0, newRejectState()); 
+        Map<Integer, int[]> renamedDFATransitionTable = new HashMap<>();
+        renamedDFATransitionTable.put(0, newRejectState());
+        Map<Integer, Boolean> finalFlags = new HashMap<>();
         finalFlags.put(0, false);
 
         

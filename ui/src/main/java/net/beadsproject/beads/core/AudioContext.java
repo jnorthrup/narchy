@@ -450,9 +450,8 @@ public class AudioContext {
      **/
     public void record(double timeMS, String filename) throws Exception {
         Sample s = new Sample(timeMS, audioFormat.outputs, audioFormat.sampleRate);
-        RecordToSample r;
         try {
-            r = new RecordToSample(this, s);
+            RecordToSample r = new RecordToSample(this, s);
             r.in(out);
             out.dependsOn(r);
             r.start();

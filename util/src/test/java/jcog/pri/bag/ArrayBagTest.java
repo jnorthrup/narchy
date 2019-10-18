@@ -225,7 +225,6 @@ class ArrayBagTest {
         int cap = 32;
         float dynamicRange = 0.25f;
         float dynamicFloor = 0;
-        int samples = cap * 1000;
         int bins = cap/2;
 
         ArrayBag<PLink<String>, PLink<String>> b = newBag(cap, plus);
@@ -243,6 +242,7 @@ class ArrayBagTest {
 
         {
             Histogram h = new Histogram(1, cap+1, 3);
+            int samples = cap * 1000;
             for (int i = 0; i < samples; i++) {
                 int s = b.sampleNext(rng, b.size());
                 h.recordValue(s);

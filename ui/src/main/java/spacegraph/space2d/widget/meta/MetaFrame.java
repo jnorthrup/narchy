@@ -220,9 +220,9 @@ public class MetaFrame extends Bordering  {
     }
 
     protected Surface label() {
-        Surface label;
         Surface x = the();
         if (x!=null) {
+            Surface label;
             if (x instanceof Labeled)
                 label = ((Labeled) x).label();
             else

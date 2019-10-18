@@ -186,10 +186,8 @@ public final class Com
 
 	
 	public static String Parse(ParseHelp hlp) {
-		int c;
-		int len = 0;
 
-		if (hlp.data == null) {
+        if (hlp.data == null) {
 			return "";
 		}
 
@@ -215,8 +213,10 @@ public final class Com
 				break;
 		}
 
-		
-		if (hlp.getchar() == '\"') {
+
+        int len = 0;
+        int c;
+        if (hlp.getchar() == '\"') {
 			hlp.nextchar();
 			while (true) {
 				c = hlp.getchar();
@@ -370,12 +370,11 @@ public final class Com
 		
 		if (Globals.logfile_active != null && Globals.logfile_active.value != 0)
 		{
-			String name;
 
-			if (Globals.logfile == null)
+            if (Globals.logfile == null)
 			{
-				name= FS.Gamedir() + "/qconsole.log";
-				if (Globals.logfile_active.value > 2)
+                String name = FS.Gamedir() + "/qconsole.log";
+                if (Globals.logfile_active.value > 2)
 					try
 					{
 						Globals.logfile = new RandomAccessFile(name, "rw");
@@ -697,14 +696,12 @@ public final class Com
 		if (sequence < 0)
 			Sys.Error("sequence < 0, this shouldn't happen\n");
 
-		
-		int p_ndx = (sequence % (1024 - 4));
-		
-		
-		length = Math.min(60, length);
+
+        length = Math.min(60, length);
 		System.arraycopy(base, offset , chkb, 0, length);
-		
-		chkb[length] = chktbl[p_ndx + 0];
+
+        int p_ndx = (sequence % (1024 - 4));
+        chkb[length] = chktbl[p_ndx + 0];
 		chkb[length + 1] = chktbl[p_ndx + 1];
 		chkb[length + 2] = chktbl[p_ndx + 2];
 		chkb[length + 3] = chktbl[p_ndx + 3];

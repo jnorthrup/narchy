@@ -63,138 +63,46 @@ public class ap extends GamePanel {
         + "gaaaaggaaaaggaaaaagaaaaaaaaaaagaaaaaagaaaaaggaaaaagggggggggaggggbgaa"
         + "gggbgaaaggbgaagggggaagggggaggggaaaggaaaaaaaaaagaaaaaggaaaagggaaaaggg"
         + "aaaagbgaaaagbgaaaagbgaaaagggaaaaggggaagggaggggggaaggggaa";
-    
-    final int KEY_LEFT = 1006;
-    final int KEY_RIGHT = 1007;
-    final int KEY_X = 120;
-    final int KEY_C = 99;
-    
-    final int ELEMENT_X = 0;
-    final int ELEMENT_D = 1;
-    final int ELEMENT_SPRITE = 2;
-    final int ELEMENT_Z = 3;
-    final int ELEMENT_VISIBLE = 4;
-    final int ELEMENT_PROJECTED_X = 5;
-    final int ELEMENT_PROJECTED_Y = 6;
-    final int ELEMENT_PROJECTED_NX = 7;
-    final int ELEMENT_PROJECTED_NY = 8; 
-    final int ELEMENT_VD = 9;
-    final int ELEMENT_VX = 10;
-    final int ELEMENT_TIMER = 11;
-    final int ELEMENT_ITEM_RANDOMIZER = 12;
-    final int ELEMENT_ITEM = 13;
-    final int ELEMENT_ITEM_COUNT = 14;
-    final int ELEMENT_MUSHROOMING = 15;
-    final int ELEMENT_STARING = 16;
-    final int ELEMENT_EXPLODING = 17;
-    final int ELEMENT_TINYING = 18;
-    final int ELEMENT_BANANAING = 19;
-    final int ELEMENT_ORBITING = 20;
-    final int ELEMENT_PLAYER = 21;
-    final int ELEMENT_FALLING = 22;
-    final int ELEMENT_ITEM_TRIGGER = 23;
-    
-    final int SPRITE_PLAYER_0 = 0;
+
+      final int SPRITE_PLAYER_0 = 0;
     final int SPRITE_PLAYER_1 = 1;
     final int SPRITE_PLAYER_2 = 2;
     final int SPRITE_PLAYER_3 = 3;
     final int SPRITE_PLAYER_4 = 4;
     final int SPRITE_PLAYER_5 = 5;
     final int SPRITE_PLAYER_6 = 6;
-    final int SPRITE_PLAYER_7 = 7;
-    final int SPRITE_RED_SHELL = 8;
-    final int SPRITE_GREEN_SHELL = 9;
-    final int SPRITE_BLUE_SHELL = 10;
-    final int SPRITE_MUSHROOM = 11;
-    final int SPRITE_ITEM_BOX = 12;    
-    final int SPRITE_FAKE_ITEM_BOX = 13;
-    final int SPRITE_THUNDERBOLT = 14;    
-    final int SPRITE_STAR = 15; 
-    final int SPRITE_BANANA = 16; 
-    final int SPRITE_NONE = 17;
-    
-    final int GAME_STATE_ATTRACT_MODE = 0;
-    final int GAME_STATE_PLAYING = 1;
-    final int GAME_STATE_ENDING = 2;
+      final int SPRITE_GREEN_SHELL = 9;
+      final int SPRITE_FAKE_ITEM_BOX = 13;
+
+      final int GAME_STATE_ENDING = 2;
     
     final int MAP_O = 0;
-    final int MAP_U = 1;
-    final int MAP_V = 2;
-    final int MAP_W = 3;
-    
-    final int MAP_X = 0;
-    final int MAP_Y = 1;
-    final int MAP_Z = 2;
+
+      final int MAP_X = 0;
+      final int MAP_Z = 2;
     
     final int SCREEN_WIDTH = 800;
     final int SCREEN_HEIGHT = 600;
-    final int SCREEN_CENTER_X = SCREEN_WIDTH / 2;
-    final int SCREEN_CENTER_Y = SCREEN_HEIGHT / 2;
-    
-    final int CAMERA_Y = 200;
-    final int CAMERA_Z = 800;
-    
-    final int SCALE = 512;
-    final int ROAD_COLORS = 8;
+
+      final int ROAD_COLORS = 8;
     final int PLAYERS = 8;
-    final int HUMAN = 0;
-    final int MAP_LENGTH = 707;
-    final int SHELL_TIME_OUT = 2048;
-    final float HUMAN_EDGE_X = 1.1f;
-    final float ENEMY_EDGE_X = 0.95f;
-    final float VX = 0.02f;
-    final float AD = 0.001f;
-    final float MAX_ENEMY_VD = 0.09f;
-    final float MAX_VD = 0.1f;
-    final float FAST_VD = 0.15f;
-    final float SHELL_VD = 0.2f;
-    final float ORBIT_VANG = 0.05f;
-    final float ORBIT_RADIUS_X = 0.2f;
-    final float ORBIT_RADIUS_D = 0.25f;
-    final int GAME_RESET_DELAY = 1024;
-    
-    Color[] roadColors = new Color[ROAD_COLORS];
-    float[][] players = new float[PLAYERS][];
-    ArrayList<float[]>[] shells = new ArrayList[PLAYERS];
-    float[][] onb = new float[4][3];
-    float[][] onb2 = new float[4][3];
-    float[][] onb3 = new float[4][3];
-    int[] polygonXs = new int[4];
-    int[] polygonYs = new int[4];
-    float[][] ps = new float[2][3];
-    
-    ArrayList<float[]> elements = new ArrayList<>();
-    BufferedImage[] sprites = new BufferedImage[17];
-    BufferedImage imageBuffer = new BufferedImage(
+      final int MAP_LENGTH = 707;
+
+      BufferedImage imageBuffer = new BufferedImage(
         800, 600, BufferedImage.TYPE_INT_RGB);
     Graphics2D g = imageBuffer.createGraphics();
     Font bigFont = g.getFont().deriveFont(Font.BOLD | Font.ITALIC, 90f);
-    Font smallFont = bigFont.deriveFont(45f);
-    AffineTransform defaultTransform = new AffineTransform();
+      AffineTransform defaultTransform = new AffineTransform();
     AffineTransform transform = new AffineTransform();
-    Graphics2D g2 = null;    
-    
-    int i;
+
+      int i;
     int j;
     int k;
-    int p;
-    int q;
-    int r;    
-    int band0;
-    int band1;
-    int rank = 0;
-    int lap = 0;
-    float bandOffset;
-    float[] element;        
-    boolean releasedC = true;
-    boolean flash = true;
-    int lightning = 0;
-    int gameState = GAME_STATE_ENDING;
-    int gameReset = 1;
-    int startingLine = 0;
-    
-    
-    float[][][] map = new float[MAP_LENGTH][4][3]; 
+      int q;
+    int r;
+
+
+      float[][][] map = new float[MAP_LENGTH][4][3];
     float vy = -1;
     float py = 1;    
     float px = 0;
@@ -233,10 +141,10 @@ public class ap extends GamePanel {
           float cos = (float)Math.cos(j / (float)r);
           float sin = (float)Math.sin(j / (float)r);
           float X2 = X * cos - Y * sin;
-          float Y2 = X * sin + Y * cos;
 
-          vx = centerX + X2 - px;
-          vy = centerY + Y2 - py;
+            vx = centerX + X2 - px;
+            float Y2 = X * sin + Y * cos;
+            vy = centerY + Y2 - py;
           float mag = (float)Math.hypot(vx, vy);
           vx /= mag;
           vy /= mag;
@@ -249,16 +157,20 @@ public class ap extends GamePanel {
           m[MAP_O][MAP_Z] = py;           
         }
       }
-    } 
-    
-    
-    for(i = 0; i < MAP_LENGTH; i++) {
+    }
+
+
+      final int MAP_Y = 1;
+      for(i = 0; i < MAP_LENGTH; i++) {
       map[i][MAP_O][MAP_Y] = 5 
           * (((float)Math.cos(0.088871f * i - 0.6f)) - 1);
     }
-    
-    
-    for(i = 0; i < MAP_LENGTH; i++) {
+
+
+      final int MAP_W = 3;
+      final int MAP_V = 2;
+      final int MAP_U = 1;
+      for(i = 0; i < MAP_LENGTH; i++) {
       float[][] m0 = map[i];
       float[][] m1 = map[(i + 1) % MAP_LENGTH];
       float x = m0[MAP_O][MAP_X] - m1[MAP_O][MAP_X];
@@ -276,10 +188,12 @@ public class ap extends GamePanel {
       m0[MAP_V][MAP_X] = -x * y;
       m0[MAP_V][MAP_Y] = x * x + z * z;
       m0[MAP_V][MAP_Z] = -y * z;
-    }   
-    
-    
-    for(i = 0; i < 17; i++) {
+    }
+
+
+      int p;
+      BufferedImage[] sprites = new BufferedImage[17];
+      for(i = 0; i < 17; i++) {
       if (i < 8) {
         sprites[i] = new BufferedImage(28, 30, BufferedImage.TYPE_INT_ARGB_PRE);
         p = Color.getHSBColor(i / 8f, 1, 1).hashCode();
@@ -325,9 +239,90 @@ public class ap extends GamePanel {
     }
     
     long nextFrameStartTime = 0;
-    while(true) {
+      int startingLine = 0;
+      int gameReset = 1;
+      int gameState = GAME_STATE_ENDING;
+      int lightning = 0;
+      boolean flash = true;
+      boolean releasedC = true;
+      int lap = 0;
+      int rank = 0;
+      Graphics2D g2 = null;
+      Font smallFont = bigFont.deriveFont(45f);
+      ArrayList<float[]> elements = new ArrayList<>();
+      float[][] ps = new float[2][3];
+      int[] polygonYs = new int[4];
+      int[] polygonXs = new int[4];
+      float[][] onb3 = new float[4][3];
+      float[][] onb2 = new float[4][3];
+      float[][] onb = new float[4][3];
+      ArrayList<float[]>[] shells = new ArrayList[PLAYERS];
+      float[][] players = new float[PLAYERS][];
+      Color[] roadColors = new Color[ROAD_COLORS];
+      final int GAME_RESET_DELAY = 1024;
+      final float ORBIT_RADIUS_D = 0.25f;
+      final float ORBIT_RADIUS_X = 0.2f;
+      final float ORBIT_VANG = 0.05f;
+      final float SHELL_VD = 0.2f;
+      final float FAST_VD = 0.15f;
+      final float MAX_VD = 0.1f;
+      final float MAX_ENEMY_VD = 0.09f;
+      final float AD = 0.001f;
+      final float VX = 0.02f;
+      final float ENEMY_EDGE_X = 0.95f;
+      final float HUMAN_EDGE_X = 1.1f;
+      final int SHELL_TIME_OUT = 2048;
+      final int HUMAN = 0;
+      final int SCALE = 512;
+      final int CAMERA_Z = 800;
+      final int CAMERA_Y = 200;
+      final int SCREEN_CENTER_Y = SCREEN_HEIGHT / 2;
+      final int SCREEN_CENTER_X = SCREEN_WIDTH / 2;
+      final int GAME_STATE_PLAYING = 1;
+      final int GAME_STATE_ATTRACT_MODE = 0;
+      final int SPRITE_NONE = 17;
+      final int SPRITE_BANANA = 16;
+      final int SPRITE_STAR = 15;
+      final int SPRITE_THUNDERBOLT = 14;
+      final int SPRITE_ITEM_BOX = 12;
+      final int SPRITE_MUSHROOM = 11;
+      final int SPRITE_BLUE_SHELL = 10;
+      final int SPRITE_RED_SHELL = 8;
+      final int SPRITE_PLAYER_7 = 7;
+      final int ELEMENT_ITEM_TRIGGER = 23;
+      final int ELEMENT_FALLING = 22;
+      final int ELEMENT_PLAYER = 21;
+      final int ELEMENT_ORBITING = 20;
+      final int ELEMENT_BANANAING = 19;
+      final int ELEMENT_TINYING = 18;
+      final int ELEMENT_EXPLODING = 17;
+      final int ELEMENT_STARING = 16;
+      final int ELEMENT_MUSHROOMING = 15;
+      final int ELEMENT_ITEM_COUNT = 14;
+      final int ELEMENT_ITEM = 13;
+      final int ELEMENT_ITEM_RANDOMIZER = 12;
+      final int ELEMENT_TIMER = 11;
+      final int ELEMENT_VX = 10;
+      final int ELEMENT_VD = 9;
+      final int ELEMENT_PROJECTED_NY = 8;
+      final int ELEMENT_PROJECTED_NX = 7;
+      final int ELEMENT_PROJECTED_Y = 6;
+      final int ELEMENT_PROJECTED_X = 5;
+      final int ELEMENT_VISIBLE = 4;
+      final int ELEMENT_Z = 3;
+      final int ELEMENT_SPRITE = 2;
+      final int ELEMENT_D = 1;
+      final int ELEMENT_X = 0;
+      final int KEY_C = 99;
+      final int KEY_X = 120;
+      final int KEY_RIGHT = 1007;
+      final int KEY_LEFT = 1006;
+      while(true) {
 
-      do {
+          float[] element;
+          int band1;
+          int band0;
+          do {
         nextFrameStartTime += 10000000; 
 
         
@@ -730,10 +725,10 @@ public class ap extends GamePanel {
               element[ELEMENT_TIMER]--;
 
               if (element[ELEMENT_SPRITE] == SPRITE_RED_SHELL) {
-                
-                float best = 1024;
-                j = 0;
-                for(i = 0; i < PLAYERS; i++) {
+
+                  j = 0;
+                  float best = 1024;
+                  for(i = 0; i < PLAYERS; i++) {
                   float dd = players[i][ELEMENT_D] - element[ELEMENT_D];                
                   if (dd >= 0 && dd < best) {
                     best = dd;
@@ -775,10 +770,10 @@ public class ap extends GamePanel {
 
       
       g.setColor(((lightning >> 1) & 1) == 1 ? Color.WHITE : Color.BLACK);
-      g.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);            
+      g.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-      bandOffset = players[HUMAN][ELEMENT_D] % 1;
-      band0 = ((int)players[HUMAN][ELEMENT_D]) % MAP_LENGTH;        
+          float bandOffset = players[HUMAN][ELEMENT_D] % 1;
+          band0 = ((int)players[HUMAN][ELEMENT_D]) % MAP_LENGTH;
       band1 = (band0 + 1) % MAP_LENGTH;
 
       

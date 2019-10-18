@@ -222,11 +222,11 @@ public class a extends GamePanel {
 				int height = j & 0xFF;
 				alphaSprites[z][i] = new BufferedImage(width, height, 2);
 				for (y = 0; y < height; y++) {
-					int[] pixels = new int[16];
-					if (width != 8 || (y & 1) == 0) {
+                    if (width != 8 || (y & 1) == 0) {
 						j = S.charAt(k++);
 					}
-					for (x = 0; x < width; x++) {
+                    int[] pixels = new int[16];
+                    for (x = 0; x < width; x++) {
 						if ((j & 1) == 1) {
 							pixels[x] = z << 24;
 						}
@@ -913,16 +913,16 @@ public class a extends GamePanel {
 	public void processAWTEvent(AWTEvent e) {
 		if (e instanceof KeyEvent) {
 			KeyEvent keyEvent = (KeyEvent) e;
-			final int VK_LEFT = 0x25;
-			final int VK_RIGHT = 0x27;
-			final int VK_DOWN = 0x28;
-			final int VK_WHIP = 0x53; 
-			final int VK_SUBWEAPON = 0x41; 
-			final int VK_JUMP = 1;
 
-			int k = keyEvent.getKeyCode();
+            int k = keyEvent.getKeyCode();
 			if (k > 0) {
-				a[(k == VK_LEFT || k == VK_RIGHT || k == VK_DOWN || k == VK_WHIP || k == VK_SUBWEAPON) ? k : VK_JUMP] = keyEvent.getID() != 402;
+                final int VK_JUMP = 1;
+                final int VK_SUBWEAPON = 0x41;
+                final int VK_WHIP = 0x53;
+                final int VK_DOWN = 0x28;
+                final int VK_RIGHT = 0x27;
+                final int VK_LEFT = 0x25;
+                a[(k == VK_LEFT || k == VK_RIGHT || k == VK_DOWN || k == VK_WHIP || k == VK_SUBWEAPON) ? k : VK_JUMP] = keyEvent.getID() != 402;
 			}
 		}
 	}

@@ -189,7 +189,6 @@ public enum Draw {
 
                             int tris = hull.numTriangles();
                             if (tris > 0) {
-                                int index = 0;
                                 spacegraph.space3d.phys.util.IntArrayList idx = hull.getIndexPointer();
                                 FasterList<v3> vtx = hull.getVertexPointer();
 
@@ -199,6 +198,7 @@ public enum Draw {
 
                                 gl.glBegin(GL.GL_TRIANGLES);
 
+                                int index = 0;
                                 for (int i = 0; i < tris; i++) {
 
                                     v3 v1 = vtx.get(idx.get(index++));
@@ -297,8 +297,7 @@ public enum Draw {
                     vbo.glBegin(GL.GL_LINES);
 
 
-                    int i;
-                    for (i = 0; i < polyshape.getNumEdges(); i++) {
+                    for (int i = 0; i < polyshape.getNumEdges(); i++) {
                         polyshape.getEdge(i, a, b);
 
                         vbo.glVertex3f(a.x, a.y, a.z);
@@ -443,12 +442,12 @@ public enum Draw {
         float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
         float c = (float) Math.cos(theta);
         float s = (float) Math.sin(theta);
-        float x = radius;
-        float y = 0;
         float cx = center.x;
         float cy = center.y;
         gl.glBegin(solid ? GL_TRIANGLE_FAN : GL_LINE_LOOP);
 
+        float y = 0;
+        float x = radius;
         for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
             gl.glVertex3f(x + cx, y + cy, 0);
 

@@ -124,9 +124,9 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
     @Override
     public void evolutionStarted(RunStrategy strategy) {
         int jobId = strategy.getConfiguration().getJobId();
-        String print = "[                     ] 0% Gen --> 0 job: " + jobId;
 
         synchronized (screen) {
+            String print = "[                     ] 0% Gen --> 0 job: " + jobId;
             screen.put(jobId, print);
         }
 

@@ -112,7 +112,8 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
         if (t.isEmpty())
             return null;
 
-        int limit = componentsMax, tries = (int)Math.ceil(limit * NAL.ANSWER_TRYING);
+        int limit = componentsMax;
+        int tries = (int)Math.ceil(limit * NAL.ANSWER_TRYING);
 
         long s = g.start+shift, e = g.end+shift;
         Answer a = Answer.taskStrength(true, limit, s, e, term, null, g.x.nar);

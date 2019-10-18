@@ -108,12 +108,13 @@ public class PixelBag implements Bitmap2D {
         if (inBoundsOnly) {
 
 
-            float mw, mh;
+            float mw;
             if (ew > sw) {
                 mw = 0;
             } else {
                 mw = sw - ew;
             }
+            float mh;
             if (eh > sh) {
                 mh = 0;
             } else {

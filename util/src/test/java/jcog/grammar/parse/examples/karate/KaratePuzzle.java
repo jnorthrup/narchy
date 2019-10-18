@@ -94,17 +94,15 @@ public class KaratePuzzle {
 	 * @exception CombinatoricException Shouldn't happen
 	 */
     private void solve() throws CombinatoricException {
-		Object[] lasts, specs;
-		Permutations specPerm;
         Permutations lastNamePerm = new Permutations(lastNames);
 
 		while (lastNamePerm.hasNext()) {
-			lasts = (Object[]) lastNamePerm.next();
-			specPerm = new Permutations(specialties);
+            Object[] lasts = (Object[]) lastNamePerm.next();
+            Permutations specPerm = new Permutations(specialties);
 
-			while (specPerm.hasNext()) {
-				specs = (Object[]) specPerm.next();
-				assembleStudents(lasts, specs);
+            while (specPerm.hasNext()) {
+                Object[] specs = (Object[]) specPerm.next();
+                assembleStudents(lasts, specs);
 				if (cluesVerify()) {
 					System.out.println("Solution:");
 					showStudents();

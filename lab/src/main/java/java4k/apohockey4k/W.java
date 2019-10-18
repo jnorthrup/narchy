@@ -191,9 +191,8 @@ public class W extends GamePanel {
 					double angle2 = 0.0d;
 					float newX = ((paddleVec[0] + 15 - (playerspaddle[i] + 30)) * (paddleVec[0] + 15 - (playerspaddle[i] + 30)));
 					float newY = ((paddleVec[1] + 15 - (playerspaddle[i + 1] + 30)) * (paddleVec[1] + 15 - (playerspaddle[i + 1] + 30)));
-					float newRadius = ((45) * (45));
 
-					for (int j = 0; j < 2; j++) {
+                    for (int j = 0; j < 2; j++) {
 						double dx = paddleVec[0] + 15 - (playerspaddle[i] + 30);
 						double dy = paddleVec[1] + 15 - (playerspaddle[i + 1] + 30);
 
@@ -259,7 +258,8 @@ public class W extends GamePanel {
 						}
 					}
 
-					if (newX + newY <= newRadius) {
+                    float newRadius = ((45) * (45));
+                    if (newX + newY <= newRadius) {
 						playerspaddle[i + 2] = 3000;
 						paddleVec[2] = (float) (angle);
 						float speed = (Math.abs(oldValues[i] - playerspaddle[i]) + Math.abs(oldValues[i + 1] - playerspaddle[i + 1])) * 0.015f;
@@ -351,8 +351,8 @@ public class W extends GamePanel {
 									
 									int count = 0;
 									while ((count < 30) && (new Rectangle2D.Float(WALLS[i], WALLS[i + 1], WALLS[i + 2], WALLS[i + 3]).intersects(paddleVec[0], paddleVec[1], 30, 30))) {
-										float radiusOne = 0.5f;
-										count++;
+                                        count++;
+                                        float radiusOne = 0.5f;
                                         paddleVec[0] -= radiusOne * (float) Math.sin(Math.toRadians(paddleVec[2]));
                                         paddleVec[1] += radiusOne * (float) Math.cos(Math.toRadians(paddleVec[2]));
 									}

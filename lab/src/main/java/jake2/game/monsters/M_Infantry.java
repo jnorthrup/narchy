@@ -699,9 +699,8 @@ public class M_Infantry {
         public String getID() { return "InfantryMachineGun"; }
         @Override
         public boolean think(edict_t self) {
-            float[] start = { 0, 0, 0 }, target = { 0, 0, 0 };
+            float[] start = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-            float[] vec = { 0, 0, 0 };
             int flash_number;
 
             if (self.s.frame == FRAME_attak111) {
@@ -712,6 +711,7 @@ public class M_Infantry {
                         right, start);
 
                 if (self.enemy != null) {
+                    float[] target = {0, 0, 0};
                     Math3D.VectorMA(self.enemy.s.origin, -0.2f,
                             self.enemy.velocity, target);
                     target[2] += self.enemy.viewheight;
@@ -729,6 +729,7 @@ public class M_Infantry {
                         M_Flash.monster_flash_offset[flash_number], forward,
                         right, start);
 
+                float[] vec = {0, 0, 0};
                 Math3D.VectorSubtract(self.s.angles, aimangles[flash_number
                         - Defines.MZ2_INFANTRY_MACHINEGUN_2], vec);
                 Math3D.AngleVectors(vec, forward, null, null);

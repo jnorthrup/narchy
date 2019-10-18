@@ -113,10 +113,10 @@ public enum BitVectors {
 	
 	public static void writeFast( BitVector v, DataOutput dos ) throws IOException {
 		long length = v.length();
-		long l = length - length % Long.SIZE;
-		dos.writeLong( length );
+        dos.writeLong( length );
 		long i;
-		for( i = 0; i < l; i += Long.SIZE ) dos.writeLong( v.getLong( i, i + Long.SIZE ) );
+        long l = length - length % Long.SIZE;
+        for(i = 0; i < l; i += Long.SIZE ) dos.writeLong( v.getLong( i, i + Long.SIZE ) );
 		if ( i < length ) dos.writeLong( v.getLong( i, length ) );
 	}
 	

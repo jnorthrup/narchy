@@ -261,11 +261,10 @@ public class Polygon implements Iterable<v2>, Cloneable {
      * Otoci poradie prvkov v poli.
      */
     public void flip() {
-        v2 temp;
         int size = size();
         int n = size() >> 1;
         for (int i = 0; i < n; i++) {
-            temp = vertices[i];
+            v2 temp = vertices[i];
             int j = size - 1 - i;
             vertices[i] = vertices[j];
             vertices[j] = temp;

@@ -349,14 +349,11 @@ public abstract class NQuadsRDF {
                                     @Nullable Atomic subject,
                                     @Nullable Atomic predicate, @Nullable Term object) {
 
-        
-
-        Term belief = null;
-
 
         if (predicatesIgnored.contains(predicate))
             return null;
 
+        Term belief = null;
         if (Arrays.asList(type, subClassOf, subPropertyOf).contains(predicate)) {
             if (object.equals(owlClass)) {
                 belief = $.inst($.varDep(1), subject); 

@@ -50,11 +50,10 @@ public class CRCGen implements Settings {
         int crc = 0xFFFF; // initial value
         int polynomial = 0x1021; // 0001 0000 0010 0001 (0, 5, 12)
 
-        boolean bit, c15;
         for (int b = 0; b < len; b++) {
             for (int i = 0; i < 8; i++) {
-                bit = ((msg[b] >> (7 - i) & 1) == 1);
-                c15 = ((crc >> 15 & 1) == 1);
+                boolean bit = ((msg[b] >> (7 - i) & 1) == 1);
+                boolean c15 = ((crc >> 15 & 1) == 1);
                 crc <<= 1;
                 if (c15 ^ bit)
                     crc ^= polynomial;
@@ -70,11 +69,10 @@ public class CRCGen implements Settings {
         int crc = (byte) 0xFF; // initial value
         int polynomial = 0x07; // (0, 1, 2) : 0x07 / 0xE0 / 0x83
 
-        boolean bit, c7;
         for (int b = 0; b < len; b++) {
             for (int i = 0; i < 8; i++) {
-                bit = ((msg[b] >> (7 - i) & 1) == 1);
-                c7 = ((crc >> 7 & 1) == 1);
+                boolean bit = ((msg[b] >> (7 - i) & 1) == 1);
+                boolean c7 = ((crc >> 7 & 1) == 1);
                 crc <<= 1;
                 if (c7 ^ bit)
                     crc ^= polynomial;

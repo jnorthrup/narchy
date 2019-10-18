@@ -243,7 +243,6 @@ public class ConceptGraph2D extends Graph2D<Term> {
             Term from = l.from().concept();
             EdgeVis<Term> e = graph.edge(from, targetTerm);
             if (e != null) {
-                int r, g, b;
                 /*
                 https://www.colourlovers.com/palette/848743/(_%E2%80%9D_)
                 BELIEF   Red     189,21,80
@@ -257,6 +256,9 @@ public class ConceptGraph2D extends Graph2D<Term> {
                     if (ppi < ScalarValue.EPSILON)
                         continue;
 
+                    int b;
+                    int g;
+                    int r;
                     switch (i) {
                         case 0:
                             r = 189;

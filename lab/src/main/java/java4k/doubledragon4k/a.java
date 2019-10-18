@@ -47,98 +47,26 @@ public class a extends GamePanel {
 	@Override
     public void run() {
 
-		final int Z0 = 256;
-		final int FLOOR_Y = -64;
-		final int FLAT_FLOOR_Y = -59;
-		final float ENEMY_WALK_SPEED = 1;
-		final float FLYING_SPEED = 4;
-		final float FLYING_SPEED_X = 1;
-		final float GRAVITY = -0.15f;
-		final float ANGLE_SPEED = 0.03f;
-		final float STANDING_ANGLE_SPEED = 0.05f;
-		final float STANDING_Y_SPEED = 0.16f;
-
-		final int VK_LEFT = 0x25;
-		final int VK_RIGHT = 0x27;
-		final int VK_UP = 0x26;
-		final int VK_DOWN = 0x28;
-		final int VK_ATTACK = 0x42;
-
-		final int COLOR_SIDEWALK_1 = 0xB0BDC5;
-		final int COLOR_SIDEWALK_2 = 0xA5B0B7;
-		final int COLOR_CURB_1 = 0xECC158;
-		final int COLOR_CURB_2 = 0xD8A13A;
-		final int COLOR_ROAD = 0x6B7984;
-		final int COLOR_STORM_DRAIN_1 = 0x7B4A29;
+        final int COLOR_STORM_DRAIN_1 = 0x7B4A29;
 		final int COLOR_STORM_DRAIN_2 = 0x3D2414;
 
-		final int SPRITE_MAN_LEGS_1 = 0;
-		final int SPRITE_MAN_LEGS_2 = 1;
-		final int SPRITE_MAN_LEGS_3 = 2;
+        final int SPRITE_MAN_LEGS_3 = 2;
 		final int SPRITE_WOMAN_LEGS_1 = 3;
 		final int SPRITE_WOMAN_LEGS_2 = 4;
 		final int SPRITE_WOMAN_LEGS_3 = 5;
-		final int SPRITE_MAN_BODY_1 = 6;
-		final int SPRITE_MAN_BODY_2 = 7;
-		final int SPRITE_WOMAN_BODY_1 = 8;
-		final int SPRITE_WOMAN_BODY_2 = 9;
-		final int SPRITE_MAN_HEAD_1 = 10;
-		final int SPRITE_MAN_HEAD_2 = 11;
-		final int SPRITE_WOMAN_HEAD_1 = 12;
-		final int SPRITE_WOMAN_HEAD_2 = 13;
-		final int SPRITE_ARM = 14;
-		final int SPRITE_MEAT = 15;
+        final int SPRITE_MAN_HEAD_1 = 10;
+        final int SPRITE_MEAT = 15;
 		final int SPRITE_HAND = 16;
 		final int SPRITE_WINDOW = 17;
-		final int SPRITE_BRICKS = 18;
-		final int SPRITE_DRAIN = 19;
+        final int SPRITE_DRAIN = 19;
 
 		final int SPRITE_COUNT = 20;
 
-		final int OBJ_X = 0;
-		final int OBJ_Z = 1;
-		final int OBJ_REVERSED = 2;
-		final int OBJ_LEGS_INDEX = 3;
-		final int OBJ_PUNCHING = 4;
-		final int OBJ_TYPE = 5;
-		final int OBJ_STATE = 6;
-		final int OBJ_COUNTER = 7;
-		final int OBJ_VX = 8;
-		final int OBJ_VZ = 9;
-		final int OBJ_POWER = 10;
-		final int OBJ_ANGLE = 11;
-		final int OBJ_VY = 12;
-		final int OBJ_Y = 13;
-		final int OBJ_VA = 14;
-		final int OBJ_FADE = 15;
-		final int OBJ_GENDER = 16;
-		final int OBJ_COLOR = 17;
-		final int OBJ_PUNCH_DELAY = 18;
-		final int OBJ_HITS = 19;
-		final int OBJ_BOSS = 20;
+        final int GENDER_MALE = 0;
 
-		final int TYPE_PLAYER = 0;
-		final int TYPE_ENEMY = 1;
-		final int TYPE_MEAT = 2;
+        final int FADE_OUT = 2;
 
-		final int STATE_PAUSED = 0;
-		final int STATE_WALKING = 1;
-		final int STATE_STUNNED = 2;
-		final int STATE_FLYING = 3;
-		final int STATE_GROUNDED = 4;
-		final int STATE_STANDING = 5;
-
-		final int GENDER_MALE = 0;
-		final int GENDER_FEMALE = 1;
-
-		final int FADE_NONE = 0;
-		final int FADE_IN = 1;
-		final int FADE_OUT = 2;
-
-		Color COLOR_POWER_BAR_1 = new Color(0xD8C868);
-		Color COLOR_POWER_BAR_2 = new Color(0xC01810);
-
-		final String S = "\u1010\uff00\u003f\uff0a\uaa3f\ufc2a\ua28f\ufcaa\u8a8f\ufcaa\u0aa3\ufca8\ucaa3\uf2a8\uf2a3\uf0a3\uf003\uc50f\uf153\uc54f\uf14f\uc53f\uf14f\uc53f\uf14f\uc54f\uf14f\uf153\uf153\ufc03\ufc54\uffff\uff00\u1010\ufc00\u003f\uff00\uaa3f\uff0a\ua83f\uff2a\u8a3f\uff2a\u8a3f\uff2a\u8a3f\uff0a\u8a3f\uff2a\u8a3f\uff0a\u08ff\ufc50\u08ff\ufc54\u03ff\ufc50\u13ff\ufc50\u4fff\ufc54\u03ff\ufc15\u14ff\uff00\u003f\u1010\uffc0\u003f\uffc2\ua23f\uffca\ua83f\uffca\uaa3f\ufff2\uaa3f\ufff0\uaa8f\uffc0\u2a8f\uffc4\u0a8f\uff10\u000f\ufc54\u153f\ufc53\u153f\ufc0f\u14ff\ufc4f\u14ff\ufc53\u153f\uff03\uc54f\uffff\uf00f\u1010\uff2a\ua8ff\uff15\u553f\uff11\u503f\uff14\u0a3f\uffc4\u2a8f\ufff0\u2a8f\uffc2\u0aa3\uffca\u02a3\uff2a\u30a3\ufca8\uf28f\ufca3\uf28f\ufc0f\uf23f\ufc4f\uf03f\ufc53\uf13f\uff03\ufc4f\uffff\uff03\u1010\uff2a\ua8ff\ufc55\u54ff\ufc45\u54ff\ufc45\u54ff\ufc00\u00ff\ufcaa\u28ff\ufcaa\u28ff\ufca8\u23ff\ufca8\u23ff\uf0a0\ua3ff\uf280\u8fff\uf280\u8fff\uf200\u8fff\uf000\u0fff\uf050\u43ff\ufc0c\u00ff\u1010\uff2a\ua8ff\uff15\u553f\ufc55\u503f\ufc45\u4a8f\ufc00\u0a8f\ufca8\ucaa3\uf0a3\uf2a3\uf283\uf2a3\uf28f\uf2a3\uca3f\uf28f\uca3f\uf28f\uc8ff\ufc8f\uc13f\ufc8f\uf14f\ufc0f\ufc03\ufc53\uffff\uff00\u1008\ufc00\u2a3f\uf2a1\u000f\ucaa1\u284f\u2821\u2803\u2a80\u2828\u2aaa\u28a8\u2aaa\u28a8\uc0aa\u28a0\u1008\ufc15\u0000\uf214\uaaaa\uc854\uaaaa\u2154\uaaaa\u2155\u2a80\u2055\u403f\uc015\u53ff\uc155\u4fff\u1008\uff00\u2a3f\ufcaa\u00ff\uf2aa\ua8ff\uf2aa\u8a3f\uca80\u550f\uca2a\u14a3\ucaaa\u12a3\uf000\u200f\u1008\uff00\u2a00\ufcaa\u802a\uf2aa\ua8aa\uca2a\u8a2a\u2a81\u5520\u2aa8\u550f\u2aa8\u553f\uc000\ua8ff\u0808\uc003\u1554\u1414\u1284\u1280\u1023\u1223\u0aa3\u0808\uc003\u1554\u1014\u0a84\u2aa0\u20a8\u2020\uc823\u1008\ufc30\u000f\uf004\u0003\uf010\u0003\uc0c0\u020f\uc3c0\u0a0f\uf0c8\uaa3f\uffc2\uaa3f\ufff0\uaa3f\u1008\uff00\u030f\ufc00\u0403\uf000\u0103\uf002\ua0f3\uf00a\ua8ff\uf008\u0a3f\ufc20\u023f\uff08\u023f\u0806\ufc03\u02a8\uaaa8\uaaa8\ua803\u03ff\u1008\uffff\uf00f\uffff\uc453\uffff\u1554\u0ffc\u5554\u2001\u4514\uca85\u5544\u2000\u1453\u0fff\uc00f\u1010\uffff\uffff\ufffc\u57ff\ufff6\ua9ff\ud550\u5a5f\u6aaa\uaaa3\u15a6\uaaa4\uc005\uaaa9\uff56\uaaa9\uffd6\uaaa9\uffc5\uaaa9\uffca\uaa95\uffc5\u6964\ufff1\u9690\ufff5\u6940\ufff0\u540f\ufffc\u003f\u1008\u8555\u5552\u8400\u0012\u855a\u8012\u8556\u9012\u8655\u9012\u8695\u4412\u86a5\u4012\u85a9\u4012\u1008\u0000\u0000\uaa02\uaa2a\u5521\u5524\u1515\u5524\u0000\u0000\u2aaa\u2aaa\u2555\u1555\u0555\u1555\u1010\ua9a5\u56aa\ua695\u5556\u8000\u0006\u4000\u0006\ua556\uaaaa\u955a\uaaaa\u4109\u6596\u4118\u6186\u4618\u6186\u4618\u6186\u4618\u6186\u8618\u6186\u8618\u6186\u8618\u6186\u8618\u6186\uaaaa\uaaaa";
+        final String S = "\u1010\uff00\u003f\uff0a\uaa3f\ufc2a\ua28f\ufcaa\u8a8f\ufcaa\u0aa3\ufca8\ucaa3\uf2a8\uf2a3\uf0a3\uf003\uc50f\uf153\uc54f\uf14f\uc53f\uf14f\uc53f\uf14f\uc54f\uf14f\uf153\uf153\ufc03\ufc54\uffff\uff00\u1010\ufc00\u003f\uff00\uaa3f\uff0a\ua83f\uff2a\u8a3f\uff2a\u8a3f\uff2a\u8a3f\uff0a\u8a3f\uff2a\u8a3f\uff0a\u08ff\ufc50\u08ff\ufc54\u03ff\ufc50\u13ff\ufc50\u4fff\ufc54\u03ff\ufc15\u14ff\uff00\u003f\u1010\uffc0\u003f\uffc2\ua23f\uffca\ua83f\uffca\uaa3f\ufff2\uaa3f\ufff0\uaa8f\uffc0\u2a8f\uffc4\u0a8f\uff10\u000f\ufc54\u153f\ufc53\u153f\ufc0f\u14ff\ufc4f\u14ff\ufc53\u153f\uff03\uc54f\uffff\uf00f\u1010\uff2a\ua8ff\uff15\u553f\uff11\u503f\uff14\u0a3f\uffc4\u2a8f\ufff0\u2a8f\uffc2\u0aa3\uffca\u02a3\uff2a\u30a3\ufca8\uf28f\ufca3\uf28f\ufc0f\uf23f\ufc4f\uf03f\ufc53\uf13f\uff03\ufc4f\uffff\uff03\u1010\uff2a\ua8ff\ufc55\u54ff\ufc45\u54ff\ufc45\u54ff\ufc00\u00ff\ufcaa\u28ff\ufcaa\u28ff\ufca8\u23ff\ufca8\u23ff\uf0a0\ua3ff\uf280\u8fff\uf280\u8fff\uf200\u8fff\uf000\u0fff\uf050\u43ff\ufc0c\u00ff\u1010\uff2a\ua8ff\uff15\u553f\ufc55\u503f\ufc45\u4a8f\ufc00\u0a8f\ufca8\ucaa3\uf0a3\uf2a3\uf283\uf2a3\uf28f\uf2a3\uca3f\uf28f\uca3f\uf28f\uc8ff\ufc8f\uc13f\ufc8f\uf14f\ufc0f\ufc03\ufc53\uffff\uff00\u1008\ufc00\u2a3f\uf2a1\u000f\ucaa1\u284f\u2821\u2803\u2a80\u2828\u2aaa\u28a8\u2aaa\u28a8\uc0aa\u28a0\u1008\ufc15\u0000\uf214\uaaaa\uc854\uaaaa\u2154\uaaaa\u2155\u2a80\u2055\u403f\uc015\u53ff\uc155\u4fff\u1008\uff00\u2a3f\ufcaa\u00ff\uf2aa\ua8ff\uf2aa\u8a3f\uca80\u550f\uca2a\u14a3\ucaaa\u12a3\uf000\u200f\u1008\uff00\u2a00\ufcaa\u802a\uf2aa\ua8aa\uca2a\u8a2a\u2a81\u5520\u2aa8\u550f\u2aa8\u553f\uc000\ua8ff\u0808\uc003\u1554\u1414\u1284\u1280\u1023\u1223\u0aa3\u0808\uc003\u1554\u1014\u0a84\u2aa0\u20a8\u2020\uc823\u1008\ufc30\u000f\uf004\u0003\uf010\u0003\uc0c0\u020f\uc3c0\u0a0f\uf0c8\uaa3f\uffc2\uaa3f\ufff0\uaa3f\u1008\uff00\u030f\ufc00\u0403\uf000\u0103\uf002\ua0f3\uf00a\ua8ff\uf008\u0a3f\ufc20\u023f\uff08\u023f\u0806\ufc03\u02a8\uaaa8\uaaa8\ua803\u03ff\u1008\uffff\uf00f\uffff\uc453\uffff\u1554\u0ffc\u5554\u2001\u4514\uca85\u5544\u2000\u1453\u0fff\uc00f\u1010\uffff\uffff\ufffc\u57ff\ufff6\ua9ff\ud550\u5a5f\u6aaa\uaaa3\u15a6\uaaa4\uc005\uaaa9\uff56\uaaa9\uffd6\uaaa9\uffc5\uaaa9\uffca\uaa95\uffc5\u6964\ufff1\u9690\ufff5\u6940\ufff0\u540f\ufffc\u003f\u1008\u8555\u5552\u8400\u0012\u855a\u8012\u8556\u9012\u8655\u9012\u8695\u4412\u86a5\u4012\u85a9\u4012\u1008\u0000\u0000\uaa02\uaa2a\u5521\u5524\u1515\u5524\u0000\u0000\u2aaa\u2aaa\u2555\u1555\u0555\u1555\u1010\ua9a5\u56aa\ua695\u5556\u8000\u0006\u4000\u0006\ua556\uaaaa\u955a\uaaaa\u4109\u6596\u4118\u6186\u4618\u6186\u4618\u6186\u4618\u6186\u8618\u6186\u8618\u6186\u8618\u6186\u8618\u6186\uaaaa\uaaaa";
 
 		int i;
 		int j;
@@ -147,53 +75,26 @@ public class a extends GamePanel {
 		int y;
 		int z;
 
-		int fadeState = FADE_OUT;
-		int fadeCount = 247;
-
-		int counter = 0;
-		int cameraX = 0;
-		int minCameraX = 0;
-		int enemyPower = 0;
-		int enemyPowerCounter = 0;
-		int enemyCountdown = 0;
-		int enemiesRemaining = 0;
-		int enemiesAlive = 0;
-		int advancesRemaining = 0;
-		int level = 0;
-		int hitPoints = 0;
-
-		boolean fadeRed = false;
-		boolean advanceLevel = false;
-		boolean attackReleased = true;
-		boolean walking;
-		boolean createBoss = false;
-
-		AffineTransform affineTransform = new AffineTransform();
+        AffineTransform affineTransform = new AffineTransform();
 		int[] pixels = new int[32768];
-		int[][][] cityscape = new int[2][24][256];
-		BufferedImage[][][] fadedSprites = new BufferedImage[64][64][SPRITE_COUNT];
-		BufferedImage[] sprites;
-		BufferedImage skyImage = null;
-		BufferedImage image = new BufferedImage(256, 256, 1);
+        BufferedImage[][][] fadedSprites = new BufferedImage[64][64][SPRITE_COUNT];
+        BufferedImage image = new BufferedImage(256, 256, 1);
 		Graphics2D g = (Graphics2D) image.getGraphics();
-		Graphics2D g2 = null;
-		Random random = new Random();
-		ArrayList<float[]> queue = new ArrayList<>();
-		float[] player = null;
+        Random random = new Random();
 
-		
-		for (int alpha = 0; alpha < 64; alpha++) {
+
+        for (int alpha = 0; alpha < 64; alpha++) {
 			for (int colors = 0; colors < 64; colors++) {
 				for (i = 0, k = 0; i < SPRITE_COUNT; i++) {
 
-					int flesh = 0xF4C9A7;
-					float cloth = 0.58f + ((colors >> 3) & 7) / 8f;
+                    float cloth = 0.58f + ((colors >> 3) & 7) / 8f;
 
 					j = S.charAt(k++);
 					int width = j >> 8;
 					int height = j & 0xFF;
 					fadedSprites[alpha][colors][i] = new BufferedImage(width, height, 2);
-					for (y = 0; y < height; y++) {
+                    int flesh = 0xF4C9A7;
+                    for (y = 0; y < height; y++) {
 						long value = S.charAt(k++);
 						if (width == 16) {
 							value <<= 16;
@@ -231,12 +132,17 @@ public class a extends GamePanel {
 
 		
 		int[][] floorPixels = new int[128][256];
-		for (x = 0; x < 256; x++) {
+        final int COLOR_ROAD = 0x6B7984;
+        final int COLOR_CURB_2 = 0xD8A13A;
+        final int COLOR_CURB_1 = 0xECC158;
+        final int COLOR_SIDEWALK_2 = 0xA5B0B7;
+        final int COLOR_SIDEWALK_1 = 0xB0BDC5;
+        for (x = 0; x < 256; x++) {
 			for (y = 0; y < 128; y++) {
 				float s = (float) Math.sin(.049f * x);
-				float f = 1;
-				z = y < 64 ? ((x & 63) == 0 ? COLOR_SIDEWALK_2 : COLOR_SIDEWALK_1) : y < 70 ? ((x & 63) == 0 ? COLOR_CURB_2 : COLOR_CURB_1) : y < 74 ? COLOR_CURB_2 : COLOR_ROAD;
-				if (x >= 8 && x < 56 && y >= 76 && y < 105) {
+                z = y < 64 ? ((x & 63) == 0 ? COLOR_SIDEWALK_2 : COLOR_SIDEWALK_1) : y < 70 ? ((x & 63) == 0 ? COLOR_CURB_2 : COLOR_CURB_1) : y < 74 ? COLOR_CURB_2 : COLOR_ROAD;
+                float f = 1;
+                if (x >= 8 && x < 56 && y >= 76 && y < 105) {
 					z = fadedSprites[63][0][SPRITE_DRAIN].getRGB((x - 8) & 15, (y - 9) & 15);
 				} else {
 					f -= (random.nextFloat() - s * s) / 16 + (127 - y) / 512f;
@@ -253,7 +159,9 @@ public class a extends GamePanel {
 
 		
 		int[][][] floorMapping = new int[64][256][2];
-		for (y = 0; y < 64; y++) {
+        final int FLOOR_Y = -64;
+        final int Z0 = 256;
+        for (y = 0; y < 64; y++) {
 			for (x = 0; x < 256; x++) {
 				float K = FLOOR_Y / (float) (FLOOR_Y - y);
 				floorMapping[y][x][0] = (int) (128 + K * (x - 128));
@@ -262,7 +170,88 @@ public class a extends GamePanel {
 		}
 
 		long nextFrameStartTime = System.nanoTime();
-		while (true) {
+        float[] player = null;
+        ArrayList<float[]> queue = new ArrayList<>();
+        Graphics2D g2 = null;
+        BufferedImage skyImage = null;
+        int[][][] cityscape = new int[2][24][256];
+        boolean createBoss = false;
+        boolean attackReleased = true;
+        boolean advanceLevel = false;
+        boolean fadeRed = false;
+        int hitPoints = 0;
+        int level = 0;
+        int advancesRemaining = 0;
+        int enemiesAlive = 0;
+        int enemiesRemaining = 0;
+        int enemyCountdown = 0;
+        int enemyPowerCounter = 0;
+        int enemyPower = 0;
+        int minCameraX = 0;
+        int cameraX = 0;
+        int counter = 0;
+        int fadeCount = 247;
+        int fadeState = FADE_OUT;
+        Color COLOR_POWER_BAR_2 = new Color(0xC01810);
+        Color COLOR_POWER_BAR_1 = new Color(0xD8C868);
+        final int FADE_IN = 1;
+        final int FADE_NONE = 0;
+        final int GENDER_FEMALE = 1;
+        final int STATE_STANDING = 5;
+        final int STATE_GROUNDED = 4;
+        final int STATE_FLYING = 3;
+        final int STATE_STUNNED = 2;
+        final int STATE_WALKING = 1;
+        final int STATE_PAUSED = 0;
+        final int TYPE_MEAT = 2;
+        final int TYPE_ENEMY = 1;
+        final int TYPE_PLAYER = 0;
+        final int OBJ_BOSS = 20;
+        final int OBJ_HITS = 19;
+        final int OBJ_PUNCH_DELAY = 18;
+        final int OBJ_COLOR = 17;
+        final int OBJ_GENDER = 16;
+        final int OBJ_FADE = 15;
+        final int OBJ_VA = 14;
+        final int OBJ_Y = 13;
+        final int OBJ_VY = 12;
+        final int OBJ_ANGLE = 11;
+        final int OBJ_POWER = 10;
+        final int OBJ_VZ = 9;
+        final int OBJ_VX = 8;
+        final int OBJ_COUNTER = 7;
+        final int OBJ_STATE = 6;
+        final int OBJ_TYPE = 5;
+        final int OBJ_PUNCHING = 4;
+        final int OBJ_LEGS_INDEX = 3;
+        final int OBJ_REVERSED = 2;
+        final int OBJ_Z = 1;
+        final int OBJ_X = 0;
+        final int SPRITE_BRICKS = 18;
+        final int SPRITE_ARM = 14;
+        final int SPRITE_WOMAN_HEAD_2 = 13;
+        final int SPRITE_WOMAN_HEAD_1 = 12;
+        final int SPRITE_MAN_HEAD_2 = 11;
+        final int SPRITE_WOMAN_BODY_2 = 9;
+        final int SPRITE_WOMAN_BODY_1 = 8;
+        final int SPRITE_MAN_BODY_2 = 7;
+        final int SPRITE_MAN_BODY_1 = 6;
+        final int SPRITE_MAN_LEGS_2 = 1;
+        final int SPRITE_MAN_LEGS_1 = 0;
+        final int VK_ATTACK = 0x42;
+        final int VK_DOWN = 0x28;
+        final int VK_UP = 0x26;
+        final int VK_RIGHT = 0x27;
+        final int VK_LEFT = 0x25;
+        final float STANDING_Y_SPEED = 0.16f;
+        final float STANDING_ANGLE_SPEED = 0.05f;
+        final float ANGLE_SPEED = 0.03f;
+        final float GRAVITY = -0.15f;
+        final float FLYING_SPEED_X = 1;
+        final float FLYING_SPEED = 4;
+        final float ENEMY_WALK_SPEED = 1;
+        final int FLAT_FLOOR_Y = -59;
+        while (true) {
 
 			do {
 				nextFrameStartTime += 16666667;
@@ -418,8 +407,8 @@ public class a extends GamePanel {
 							player[OBJ_LEGS_INDEX] = SPRITE_MAN_LEGS_1;
 							player[OBJ_PUNCHING] = 12;
 						}
-						walking = false;
-						if (a[VK_LEFT]) {
+                        boolean walking = false;
+                        if (a[VK_LEFT]) {
 							player[OBJ_X]--;
 							player[OBJ_REVERSED] = 0;
 							walking = true;
@@ -751,9 +740,9 @@ public class a extends GamePanel {
 							g.rotate(object[OBJ_ANGLE]);
 						}
 						g.scale(object[OBJ_REVERSED] == 1 ? -K : K, K);
-						sprites = fadedSprites[(int) object[OBJ_FADE]][(int) object[OBJ_COLOR]];
+                        BufferedImage[] sprites = fadedSprites[(int) object[OBJ_FADE]][(int) object[OBJ_COLOR]];
 
-						if (object[OBJ_BOSS] == 1) {
+                        if (object[OBJ_BOSS] == 1) {
 							g.scale(2, 2);
 						}
 
@@ -836,20 +825,20 @@ public class a extends GamePanel {
 
 	@Override
 	public void processKeyEvent(KeyEvent keyEvent) {
-		final int VK_LEFT = 0x25;
-		final int VK_RIGHT = 0x27;
-		final int VK_UP = 0x26;
-		final int VK_DOWN = 0x28;
-		final int VK_ATTACK = 0x42;
-		final int VK_W = 0x57;
-		final int VK_S = 0x53;
-		final int VK_A = 0x41;
-		final int VK_D = 0x44;
 
-		int k = keyEvent.getKeyCode();
+        int k = keyEvent.getKeyCode();
 		if (k > 0) {
-			k = k == VK_W ? VK_UP : k == VK_D ? VK_RIGHT : k == VK_A ? VK_LEFT : k == VK_S ? VK_DOWN : k;
-			a[(k >= VK_LEFT && k <= VK_DOWN) ? k : VK_ATTACK] = keyEvent.getID() != 402;
+            final int VK_D = 0x44;
+            final int VK_A = 0x41;
+            final int VK_S = 0x53;
+            final int VK_W = 0x57;
+            final int VK_DOWN = 0x28;
+            final int VK_UP = 0x26;
+            final int VK_RIGHT = 0x27;
+            final int VK_LEFT = 0x25;
+            k = k == VK_W ? VK_UP : k == VK_D ? VK_RIGHT : k == VK_A ? VK_LEFT : k == VK_S ? VK_DOWN : k;
+            final int VK_ATTACK = 0x42;
+            a[(k >= VK_LEFT && k <= VK_DOWN) ? k : VK_ATTACK] = keyEvent.getID() != 402;
 		}
 	}
 

@@ -131,11 +131,11 @@ public class IntVarImpl extends IntVar {
     private void swap(int pos1, int pos2) {
         int v1 = values[pos1];
         int v2 = values[pos2];
-        int id1 = v1 - initMin;
-        int id2 = v2 - initMin;
         values[pos1] = v2;
         values[pos2] = v1;
+        int id1 = v1 - initMin;
         positions[id1] = pos2;
+        int id2 = v2 - initMin;
         positions[id2] = pos1;
     }
 

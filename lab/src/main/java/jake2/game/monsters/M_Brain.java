@@ -1109,7 +1109,6 @@ public class M_Brain {
         @Override
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
-            int n;
 
             self.s.effects = 0;
             self.monsterinfo.power_armor_type = Defines.POWER_ARMOR_NONE;
@@ -1120,6 +1119,7 @@ public class M_Brain {
                         .sound(self, Defines.CHAN_VOICE, game_import_t
                                 .soundindex("misc/udeath.wav"), 1,
                                 Defines.ATTN_NORM, 0);
+                int n;
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
                             damage, Defines.GIB_ORGANIC);

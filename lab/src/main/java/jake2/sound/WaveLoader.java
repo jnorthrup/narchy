@@ -123,9 +123,6 @@ public class WaveLoader {
 	 */
 	public static void ResampleSfx (sfx_t sfx, int inrate, int inwidth, byte[] data, int offset)
 	{
-        int             srcsample;
-        int             i;
-        int             sample;
 
         sfxcache_t sc = sfx.cache;
         
@@ -155,10 +152,11 @@ public class WaveLoader {
         int samplefrac = 0;
         int fracstep = (int) (stepscale * 256);
         
-        for (i = 0; i < outcount; i++) {
-            srcsample = samplefrac >> 8;
+        for (int i = 0; i < outcount; i++) {
+            int srcsample = samplefrac >> 8;
             samplefrac += fracstep;
 
+            int sample;
             if (inwidth == 2) {
                 sample = (data[offset + srcsample * 2] & 0xff)
                         + (data[offset + srcsample * 2 + 1] << 8);
@@ -249,7 +247,6 @@ public class WaveLoader {
 	*/
 	static wavinfo_t GetWavinfo(String name, byte[] wav, int wavlength) {
 		wavinfo_t info = new wavinfo_t();
-		int i;
 
         if (wav == null)
 			return info;
@@ -302,8 +299,8 @@ public class WaveLoader {
 					if ("MARK".equals(s)) {
 											
 						data_p += 24;
-						i = GetLittleLong(); 
-						info.samples = info.loopstart + i;
+                        int i = GetLittleLong();
+                        info.samples = info.loopstart + i;
 						
 					}
 				}

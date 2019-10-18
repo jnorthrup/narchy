@@ -229,10 +229,10 @@ public class ImpilerDeduction extends Search<Term, Task> {
 		cc.clear();
 
 		Term before = Null, next = Null;
-		int zDT = 0;
-		long range = Long.MAX_VALUE;
-		offset = 0;
-		for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
+        offset = 0;
+        long range = Long.MAX_VALUE;
+        int zDT = 0;
+        for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
 			Task e = pathTasks[i];
 
 			Term ee = e.term();

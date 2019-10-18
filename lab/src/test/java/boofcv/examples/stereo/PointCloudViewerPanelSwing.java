@@ -248,12 +248,12 @@ public class PointCloudViewerPanelSwing extends JPanel
 		int adjustment = (int)(1000*fraction);
 
 		int r = (rgb >> 16)&0xFF;
-		int g = (rgb >> 8)&0xFF;
-		int b = rgb & 0xFF;
 
-		r = (r * adjustment + ((backgroundColor>>16)&0xFF)*(1000-adjustment)) / 1000;
-		g = (g * adjustment + ((backgroundColor>>8)&0xFF)*(1000-adjustment)) / 1000;
-		b = (b * adjustment + (backgroundColor&0xFF)*(1000-adjustment)) / 1000;
+        r = (r * adjustment + ((backgroundColor>>16)&0xFF)*(1000-adjustment)) / 1000;
+        int g = (rgb >> 8) & 0xFF;
+        g = (g * adjustment + ((backgroundColor>>8)&0xFF)*(1000-adjustment)) / 1000;
+        int b = rgb & 0xFF;
+        b = (b * adjustment + (backgroundColor&0xFF)*(1000-adjustment)) / 1000;
 
 		return (r << 16) | (g << 8) | b;
 	}
@@ -376,15 +376,15 @@ public class PointCloudViewerPanelSwing extends JPanel
 
 	@Override
 	public synchronized void mouseDragged(MouseEvent e) {
-		float rotX = 0;
-		float rotY = 0;
-		float rotZ = 0;
+        float rotY = 0;
 
-		rotY += (e.getX() - prevX)*0.002;
-		rotX += (prevY - e.getY())*0.002;
+        rotY += (e.getX() - prevX)*0.002;
+        float rotX = 0;
+        rotX += (prevY - e.getY())*0.002;
 
 		Se3_F32 rotTran = new Se3_F32();
-		ConvertRotation3D_F32.eulerToMatrix(EulerType.XYZ,rotX,rotY,rotZ,rotTran.getR());
+        float rotZ = 0;
+        ConvertRotation3D_F32.eulerToMatrix(EulerType.XYZ,rotX,rotY,rotZ,rotTran.getR());
 		Se3_F32 temp = worldToCamera.concat(rotTran,null);
 		worldToCamera.set(temp);
 

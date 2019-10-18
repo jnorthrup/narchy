@@ -426,9 +426,10 @@ public class BoxCollision {
 		public PlaneIntersectionType plane_classify(Vector4f plane) {
 			v3 tmp = new v3();
 
-			float[] _fmin = new float[1], _fmax = new float[1];
-			tmp.set(plane.x, plane.y, plane.z);
-			projection_interval(tmp, _fmin, _fmax);
+            tmp.set(plane.x, plane.y, plane.z);
+            float[] _fmax = new float[1];
+            float[] _fmin = new float[1];
+            projection_interval(tmp, _fmin, _fmax);
 
 			if (plane.w > _fmax[0] + BOX_PLANE_EPSILON) {
 				return PlaneIntersectionType.BACK_PLANE; 
@@ -466,10 +467,10 @@ public class BoxCollision {
 			box.get_center_extend(cb, eb);
 
 			v3 T = new v3();
-			float t, t2;
+			float t;
 
-			
-			for (int i=0; i<3; i++) {
+
+            for (int i=0; i<3; i++) {
 				transcache.R1to0.getRow(i, tmp);
 				VectorUtil.setCoord(T, i, tmp.dot(cb) + VectorUtil.coord(transcache.T1to0, i) - VectorUtil.coord(ca, i));
 
@@ -479,8 +480,9 @@ public class BoxCollision {
 					return false;
 				}
 			}
-			
-			for (int i=0; i<3; i++) {
+
+            float t2;
+            for (int i = 0; i<3; i++) {
 				t = bt_mat3_dot_col(transcache.R1to0, T, i);
 				t2 = bt_mat3_dot_col(transcache.AR, ea, i) + VectorUtil.coord(eb, i);
 				if (BT_GREATER(t, t2)) {
@@ -489,16 +491,15 @@ public class BoxCollision {
 			}
 			
 			if (fulltest) {
-				int m, n, o, p, q, r;
-				for (int i = 0; i < 3; i++) {
-					m = (i+1) % 3;
-					n = (i+2) % 3;
-					o = (i == 0)? 1:0;
-					p = (i == 2)? 1:2;
-					for (int j=0; j<3; j++) {
-						q = j == 2 ? 1 : 2;
-						r = j == 0 ? 1 : 0;
-						t = VectorUtil.coord(T, n) * transcache.R1to0.get(m, j) - VectorUtil.coord(T, m) * transcache.R1to0.get(n, j);
+                for (int i = 0; i < 3; i++) {
+                    int m = (i + 1) % 3;
+                    int n = (i + 2) % 3;
+                    int o = (i == 0) ? 1 : 0;
+                    int p = (i == 2) ? 1 : 2;
+                    for (int j=0; j<3; j++) {
+                        int q = j == 2 ? 1 : 2;
+                        int r = j == 0 ? 1 : 0;
+                        t = VectorUtil.coord(T, n) * transcache.R1to0.get(m, j) - VectorUtil.coord(T, m) * transcache.R1to0.get(n, j);
 						t2 = VectorUtil.coord(ea, o) * transcache.AR.get(p, j) + VectorUtil.coord(ea, p) * transcache.AR.get(o, j) +
 								VectorUtil.coord(eb, r) * transcache.AR.get(i, q) + VectorUtil.coord(eb, q) * transcache.AR.get(i, r);
 						if (BT_GREATER(t, t2)) {

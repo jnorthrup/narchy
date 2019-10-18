@@ -31,7 +31,6 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
     public void learnTrack(Track t) {
         int trackSize = t.size();
         if (trackSize == 0) return;
-        List<MidiMessageWrapper> msgs = new FasterList<>();
         List<Long> times = new FasterList<>();
 
         MidiEvent event = t.get(0);
@@ -45,6 +44,7 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
 //        long beats = event.getTick() / resolution;
 //        int adds = 0;
 
+        List<MidiMessageWrapper> msgs = new FasterList<>();
         for (int i = 1; i < trackSize; i++) {
             event = t.get(i);
             msg = event.getMessage();
@@ -80,9 +80,9 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
 
         MarkovSampler<Long> mLengthSampler = mLengthChain.sample();
 
-        int ticks = 0;
-        MidiMessageWrapper wrpmsg;
         System.out.println("Max length: " + maxLength);
+        MidiMessageWrapper wrpmsg;
+        int ticks = 0;
         while ((wrpmsg = next(maxLength)) != null) {
             MidiMessage msg = wrpmsg.getMessage();
 

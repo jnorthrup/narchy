@@ -190,9 +190,8 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             @Override
             public void color(ConceptWidget cw, NAR nar) {
                 Truth beliefTruth = cw.id.beliefs().truth(nar.time(), nar);
-                float beliefTruthFreq;
                 if (beliefTruth != null) {
-                    beliefTruthFreq = beliefTruth.freq();
+                    float beliefTruthFreq = beliefTruth.freq();
                     Draw.colorUnipolarHue(cw.shapeColor, beliefTruthFreq, 0.25f, 0.75f, 0.1f + beliefTruth.conf() * 0.9f);
                 } else {
                     Draw.colorRGBA(cw.shapeColor, 0.5f, 0.5f, 0.5f, 0.1f);
@@ -414,7 +413,6 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             
 
             float volume = 1f / (1f + cw.id.term().complexity());
-            float density = 5f / (1f + volume);
             float ep = 1 + p;
             float minSize = this.minSize.floatValue();
             float nodeScale = minSize + (ep * ep) * maxSizeMult.floatValue()
@@ -437,6 +435,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
 
             if (cw.body != null) {
+                float density = 5f / (1f + volume);
                 cw.body.setMass(nodeScale * nodeScale * nodeScale /* approx */ * density);
                 cw.body.setDamping(0.99f, 0.9f);
 

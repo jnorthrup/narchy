@@ -371,8 +371,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
         }
 //        if (right - left <= BINARY_SEARCH_THRESHOLD) {
-        int i;
-        for (i = left; i < right; i++) {
+        for (int i = left; i < right; i++) {
             if (!forInsertionOrFind) {
                 if (eq(element, items[i], eqByIdentity))
                     return i;

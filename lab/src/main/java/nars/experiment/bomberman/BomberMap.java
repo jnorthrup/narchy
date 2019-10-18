@@ -252,12 +252,11 @@ public class BomberMap extends JPanel {
                 bonusGrid[r][c] = null;
             }
 
-        int x, y;
         BomberRandInt ri = new BomberRandInt(1, 15);
         /** generate random bricks */
         for (int i = 0; i < 192 * 2; i++) {
-            x = ri.draw();
-            y = ri.draw();
+            int x = ri.draw();
+            int y = ri.draw();
             if (grid[x][y] == NOTHING)
                 grid[x][y] = BRICK;
         }
@@ -298,11 +297,11 @@ public class BomberMap extends JPanel {
      * @param owner owner
      */
     public synchronized void createBonus(int x, int y) {
-        int _x = (x >> BomberMain.shiftCount) << BomberMain.shiftCount;
-        int _y = (y >> BomberMain.shiftCount) << BomberMain.shiftCount;
         int type = bonusRand.draw();
         /** create bonus : 0 = fire; 1 = bomb */
         if (type == 0 || type == 1) {
+            int _y = (y >> BomberMain.shiftCount) << BomberMain.shiftCount;
+            int _x = (x >> BomberMain.shiftCount) << BomberMain.shiftCount;
             bonusGrid[_x >> BomberMain.shiftCount][_y >> BomberMain.shiftCount] =
                     new BomberBonus(this, _x, _y, type);
             bonuses.addElement(new Bonus(_x, _y));
@@ -400,7 +399,6 @@ public class BomberMap extends JPanel {
         /** if this is a center */
         if (createFire && type == FIRE_CENTER) {
             int shiftCount = BomberMain.shiftCount;
-            int size = BomberMain.size;
             /** then create a chain of fire */
             int northStop = 0, southStop = 0, westStop = 0, eastStop = 0,
                     northBlocks = 0, southBlocks = 0, westBlocks = 0, eastBlocks = 0;
@@ -476,6 +474,7 @@ public class BomberMap extends JPanel {
                 }
             }
             /** create the north chain */
+            int size = BomberMain.size;
             for (int i = 1; i <= northBlocks; i++) {
                 /** if this is a tail */
                 if (i == northBlocks) {
@@ -593,9 +592,9 @@ public class BomberMap extends JPanel {
                 k = bonuses.size();
             }
             /** draw the bombs */
-            Bomb b = null;
             i = 0;
             k = bombs.size();
+            Bomb b = null;
             while (i < k) {
                 b = (Bomb) bombs.elementAt(i);
                 if (bombGrid[b.r][b.c] != null)

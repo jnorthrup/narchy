@@ -166,11 +166,11 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
 
     public boolean containsPoint(ReadonlyVec2D p) {
         int num = vertices.size();
-        int i, j = num - 1;
+        int j = num - 1;
         boolean oddNodes = false;
         float px = p.x();
         float py = p.y();
-        for (i = 0; i < num; i++) {
+        for (int i = 0; i < num; i++) {
             Vec2D vi = vertices.get(i);
             Vec2D vj = vertices.get(j);
             if (vi.y < py && vj.y >= py || vj.y < py && vi.y >= py) {
@@ -491,8 +491,6 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     protected static void offsetCorner(float x1, float y1, float x2, float y2,
                                        float x3, float y3, float distance, Vec2D out) {
 
-        float c1 = x2, d1 = y2, c2 = x2, d2 = y2;
-
         float dx1 = x2 - x1;
         float dy1 = y2 - y1;
         float dist1 = (float) Math.sqrt(dx1 * dx1 + dy1 * dy1);
@@ -509,14 +507,18 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
         float insetX = dy1 * dist1;
         float insetY = -dx1 * dist1;
         x1 += insetX;
+        float c1 = x2;
         c1 += insetX;
         y1 += insetY;
+        float d1 = y2;
         d1 += insetY;
         insetX = dy2 * dist2;
         insetY = -dx2 * dist2;
         x3 += insetX;
+        float c2 = x2;
         c2 += insetX;
         y3 += insetY;
+        float d2 = y2;
         d2 += insetY;
 
         if (c1 == c2 && d1 == d2) {
@@ -741,13 +743,8 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
         int corners = vertices.size();
         int maxSegs = corners * 3;
         List<Vec2D> newVerts = new ArrayList<>(corners);
-        Vec2D[] segments = new Vec2D[maxSegs];
-        Vec2D[] segEnds = new Vec2D[maxSegs];
-        float[] segAngles = new float[maxSegs];
         Vec2D start = vertices.get(0).copy();
-        float lastAngle = MathUtils.PI;
-        double angleDif, bestAngleDif;
-        int i, j = corners - 1, segs = 0;
+        int j = corners - 1;
 
         if (corners > maxSegs) {
             return false;
@@ -755,6 +752,10 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
 
         // 1,3. Reformulate the polygon as a set of line segments, and choose a
         // starting point that must be on the perimeter.
+        int segs = 0;
+        int i;
+        Vec2D[] segEnds = new Vec2D[maxSegs];
+        Vec2D[] segments = new Vec2D[maxSegs];
         for (i = 0; i < corners; i++) {
             Vec2D pi = vertices.get(i);
             Vec2D pj = vertices.get(j);
@@ -800,6 +801,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
         }
 
         // Calculate the angle of each segment.
+        float[] segAngles = new float[maxSegs];
         for (i = 0; i < segs; i++) {
             segAngles[i] = segEnds[i].sub(segments[i]).positiveHeading();
         }
@@ -809,13 +811,15 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
         float d = start.y;
         float a = c - 1;
         float b = d;
-        float e = 0;
-        float f = 0;
         newVerts.add(new Vec2D(c, d));
         corners = 1;
+        float f = 0;
+        float e = 0;
+        float lastAngle = MathUtils.PI;
         while (true) {
-            bestAngleDif = MathUtils.TWO_PI;
+            double bestAngleDif = MathUtils.TWO_PI;
             for (i = 0; i < segs; i++) {
+                double angleDif;
                 if (segments[i].x == c && segments[i].y == d
                         && (segEnds[i].x != a || segEnds[i].y != b)) {
                     angleDif = lastAngle - segAngles[i];

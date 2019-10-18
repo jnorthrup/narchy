@@ -27,10 +27,10 @@ public class TextEditView implements BufferListener {
         //float charAspect = 1.4f;
         float charsWide = v.w;
         float charsHigh = v.h;
-        float dx = 0;
         float vx = v.x, vy = v.y, vw = v.w, vh = v.h;
 
         g.glPushMatrix();
+        float dx = 0;
         g.glTranslatef(dx, 1f - (0.5f / charsHigh) + vy, 0);
         g.glScalef(1f / charsWide, 1f / charsHigh, 1f);
 

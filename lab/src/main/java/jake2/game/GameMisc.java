@@ -727,14 +727,12 @@ public class GameMisc {
     public static void ThrowGib(edict_t self, String gibname, int damage,
             int type) {
 
-        float[] vd = { 0, 0, 0 };
-        float[] origin = { 0, 0, 0 };
         float[] size = { 0, 0, 0 };
-        float vscale;
 
         edict_t gib = GameUtil.G_Spawn();
     
         Math3D.VectorScale(self.size, 0.5f, size);
+        float[] origin = {0, 0, 0};
         Math3D.VectorAdd(self.absmin, size, origin);
         gib.s.origin[0] = origin[0] + Lib.crandom() * size[0];
         gib.s.origin[1] = origin[1] + Lib.crandom() * size[1];
@@ -746,7 +744,8 @@ public class GameMisc {
         gib.flags |= Defines.FL_NO_KNOCKBACK;
         gib.takedamage = Defines.DAMAGE_YES;
         gib.die = gib_die;
-    
+
+        float vscale;
         if (type == Defines.GIB_ORGANIC) {
             gib.movetype = Defines.MOVETYPE_TOSS;
             gib.touch = gib_touch;
@@ -755,7 +754,8 @@ public class GameMisc {
             gib.movetype = Defines.MOVETYPE_BOUNCE;
             vscale = 1.0f;
         }
-    
+
+        float[] vd = {0, 0, 0};
         VelocityForDamage(damage, vd);
         Math3D.VectorMA(self.velocity, vscale, vd, gib.velocity);
         ClipGibVelocity(gib);
@@ -771,10 +771,7 @@ public class GameMisc {
 
     public static void ThrowHead(edict_t self, String gibname, int damage,
             int type) {
-        float[] vd = {0, 0, 0};
-    
-        float vscale;
-    
+
         self.s.skinnum = 0;
         self.s.frame = 0;
         Math3D.VectorClear(self.mins);
@@ -790,7 +787,8 @@ public class GameMisc {
         self.svflags &= ~Defines.SVF_MONSTER;
         self.takedamage = Defines.DAMAGE_YES;
         self.die = gib_die;
-    
+
+        float vscale;
         if (type == Defines.GIB_ORGANIC) {
             self.movetype = Defines.MOVETYPE_TOSS;
             self.touch = gib_touch;
@@ -799,7 +797,8 @@ public class GameMisc {
             self.movetype = Defines.MOVETYPE_BOUNCE;
             vscale = 1.0f;
         }
-    
+
+        float[] vd = {0, 0, 0};
         VelocityForDamage(damage, vd);
         Math3D.VectorMA(self.velocity, vscale, vd, self.velocity);
         ClipGibVelocity(self);
@@ -813,7 +812,6 @@ public class GameMisc {
     }
 
     public static void ThrowClientHead(edict_t self, int damage) {
-        float[] vd = {0, 0, 0};
         String gibname;
     
         if ((Lib.rand() & 1) != 0) {
@@ -837,6 +835,7 @@ public class GameMisc {
         self.flags |= Defines.FL_NO_KNOCKBACK;
     
         self.movetype = Defines.MOVETYPE_BOUNCE;
+        float[] vd = {0, 0, 0};
         VelocityForDamage(damage, vd);
         Math3D.VectorAdd(self.velocity, vd, self.velocity);
     
@@ -855,11 +854,11 @@ public class GameMisc {
 
     public static void ThrowDebris(edict_t self, String modelname, float speed,
             float[] origin) {
-        float[] v = { 0, 0, 0 };
 
         edict_t chunk = GameUtil.G_Spawn();
         Math3D.VectorCopy(origin, chunk.s.origin);
         game_import_t.setmodel(chunk, modelname);
+        float[] v = {0, 0, 0};
         v[0] = 100 * Lib.crandom();
         v[1] = 100 * Lib.crandom();
         v[2] = 100 + 100 * Lib.crandom();
@@ -935,8 +934,6 @@ public class GameMisc {
         @Override
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
-            float[] v = { 0, 0, 0 };
-            edict_t next;
 
             if (other.movetarget != self)
                 return;
@@ -952,11 +949,13 @@ public class GameMisc {
                 self.target = savetarget;
             }
 
+            edict_t next;
             if (self.target != null)
                 next = GameBase.G_PickTarget(self.target);
             else
                 next = null;
 
+            float[] v = {0, 0, 0};
             if ((next != null) && (next.spawnflags & 1) != 0) {
                 Math3D.VectorCopy(next.s.origin, v);
                 v[2] += next.mins[2];
@@ -996,7 +995,6 @@ public class GameMisc {
         @Override
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
-            edict_t activator;
 
             if (other.movetarget != self)
                 return;
@@ -1030,6 +1028,7 @@ public class GameMisc {
 
                 String savetarget = self.target;
                 self.target = self.pathtarget;
+                edict_t activator;
                 if (other.enemy != null && other.enemy.client != null)
                     activator = other.enemy;
                 else if (other.oldenemy != null
@@ -1186,13 +1185,11 @@ public class GameMisc {
         @Override
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
-            float[] origin = { 0, 0, 0 };
-            float[] chunkorigin = { 0, 0, 0 };
             float[] size = { 0, 0, 0 };
-            int count;
 
 
             Math3D.VectorScale(self.size, 0.5f, size);
+            float[] origin = {0, 0, 0};
             Math3D.VectorAdd(self.absmin, size, origin);
             Math3D.VectorCopy(origin, self.s.origin);
 
@@ -1214,7 +1211,9 @@ public class GameMisc {
             if (0 == mass)
                 mass = 75;
 
-            
+
+            int count;
+            float[] chunkorigin = {0, 0, 0};
             if (mass >= 100) {
                 count = mass / 100;
                 if (count > 8)
@@ -1283,12 +1282,12 @@ public class GameMisc {
         @Override
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
-            float[] v = { 0, 0, 0 };
 
             if ((null == other.groundentity) || (other.groundentity == self))
                 return;
 
             float ratio = (float) other.mass / self.mass;
+            float[] v = {0, 0, 0};
             Math3D.VectorSubtract(self.s.origin, other.s.origin, v);
             M.M_walkmove(self, Math3D.vectoyaw(v), 20 * ratio
                     * Defines.FRAMETIME);
@@ -1301,17 +1300,16 @@ public class GameMisc {
         @Override
         public boolean think(edict_t self) {
 
-            float[] org = { 0, 0, 0 };
-            float[] save = { 0, 0, 0 };
-
             GameCombat.T_RadiusDamage(self, self.activator, self.dmg, null,
                     self.dmg + 40, Defines.MOD_BARREL);
 
+            float[] save = {0, 0, 0};
             Math3D.VectorCopy(self.s.origin, save);
             Math3D.VectorMA(self.absmin, 0.5f, self.size, self.s.origin);
 
 
             float spd = 1.5f * self.dmg / 200.0f;
+            float[] org = {0, 0, 0};
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
@@ -1575,14 +1573,13 @@ public class GameMisc {
         @Override
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                         int damage, float[] point) {
-            int n;
 
             if (self.health > -80)
                 return;
 
             game_import_t.sound(self, Defines.CHAN_BODY, game_import_t
                     .soundindex("misc/udeath.wav"), 1, Defines.ATTN_NORM, 0);
-            for (n = 0; n < 4; n++)
+            for (int n = 0; n < 4; n++)
                 ThrowGib(self, "models/objects/gibs/sm_meat/tris.md2",
                         damage, Defines.GIB_ORGANIC);
             ThrowHead(self, "models/objects/gibs/head2/tris.md2",
@@ -1635,14 +1632,13 @@ public class GameMisc {
         @Override
         public boolean think(edict_t self) {
 
-            float[] v = { 0, 0, 0 };
-
             self.groundentity = null;
 
             float diff = self.timestamp - GameBase.level.time;
             if (diff < -1.0)
                 diff = -1.0f;
 
+            float[] v = {0, 0, 0};
             Math3D.VectorScale(self.moveinfo.dir, 1.0f + diff, v);
             v[2] = diff;
 
@@ -1659,7 +1655,6 @@ public class GameMisc {
         public String getID() { return "misc_viper_bomb_use";}
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
-            edict_t viper = null;
 
             self.solid = Defines.SOLID_BBOX;
             self.svflags &= ~Defines.SVF_NOCLIENT;
@@ -1673,6 +1668,7 @@ public class GameMisc {
             EdictIterator es = null;
 
             es = GameBase.G_Find(es, GameBase.findByClass, "misc_viper");
+            edict_t viper = null;
             if (es != null)
                 viper = es.o;
 
@@ -1739,21 +1735,18 @@ public class GameMisc {
         public String getID() { return "target_string_use";}
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
-            edict_t e;
-            int n;
-            char c;
 
             int l = self.message.length();
-            for (e = self.teammaster; e != null; e = e.teamchain) {
+            for (edict_t e = self.teammaster; e != null; e = e.teamchain) {
                 if (e.count == 0)
                     continue;
-                n = e.count - 1;
+                int n = e.count - 1;
                 if (n >= l) {
                     e.s.frame = 12;
                     continue;
                 }
 
-                c = self.message.charAt(n);
+                char c = self.message.charAt(n);
                 if (c >= '0' && c <= '9')
                     e.s.frame = c - '0';
                 else if (c == '-')
@@ -1870,7 +1863,6 @@ public class GameMisc {
         @Override
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
-            int i;
 
             if (other.client == null)
                 return;
@@ -1900,7 +1892,7 @@ public class GameMisc {
             other.s.event = Defines.EV_PLAYER_TELEPORT;
 
             
-            for (i = 0; i < 3; i++) {
+            for (int i = 0; i < 3; i++) {
                 other.client.ps.pmove.delta_angles[i] = (short) Math3D
                         .ANGLE2SHORT(dest.s.angles[i]
                                 - other.client.resp.cmd_angles[i]);
@@ -1961,8 +1953,7 @@ public class GameMisc {
         @Override
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
-            float[] normal_angles = { 0, 0, 0 }, right = { 0, 0, 0 };
-    
+
             if (null == self.groundentity)
                 return;
     
@@ -1971,8 +1962,10 @@ public class GameMisc {
             if (plane != null) {
                 game_import_t.sound(self, Defines.CHAN_VOICE, game_import_t
                         .soundindex("misc/fhit3.wav"), 1, Defines.ATTN_NORM, 0);
-    
+
+                float[] normal_angles = {0, 0, 0};
                 Math3D.vectoangles(plane.normal, normal_angles);
+                float[] right = {0, 0, 0};
                 Math3D.AngleVectors(normal_angles, null, right, null);
                 Math3D.vectoangles(right, self.s.angles);
     

@@ -240,7 +240,6 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
             incomingPri = Float.POSITIVE_INFINITY; /* shouldnt be used */
         }
 
-        V toAdd = null, toRemove = null, toReturn = null;
         int mutexTicket = -1;
 
         boolean locking = (mode != GET) && !unsafe();
@@ -261,6 +260,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
             mutexTicket = mutex.start(id, start);
         }
 
+        V toReturn = null;
+        V toRemove = null;
+        V toAdd = null;
         try {
 
             switch (mode) {
@@ -682,9 +684,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
                 //shift window
 
-                V v0;
-                float p = Float.NaN;
                 mapNullSeen = 0;
+                float p = Float.NaN;
+                V v0;
                 do {
                     v0 = map.getFast(i = Util.next(i, direction, c));
                     if (v0 == null) {
@@ -878,9 +880,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     public static <X> List<X> list(AtomicReferenceArray<X> a) {
-        List<X> list;
         int bound = a.length();
-        list = IntStream.range(0, bound).mapToObj(a::get).filter(Objects::nonNull).collect(Collectors.toList());
+        List<X> list = IntStream.range(0, bound).mapToObj(a::get).filter(Objects::nonNull).collect(Collectors.toList());
         return list;
     }
 

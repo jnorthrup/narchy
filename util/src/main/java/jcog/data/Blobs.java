@@ -341,11 +341,11 @@ public class Blobs {
             throw new IllegalArgumentException("id must have at least " + HASH_DIRECTORY_NAME_LENGTH + " characters!");
         }
         String hashStart = id.substring(0, HASH_DIRECTORY_NAME_LENGTH);
-        String hashRest = id.substring(HASH_DIRECTORY_NAME_LENGTH);
         File parent = new File(baseDirectory, hashStart);
         if (!parent.isDirectory()) {
             return null;
         }
+        String hashRest = id.substring(HASH_DIRECTORY_NAME_LENGTH);
         if (hashRest.length() < HASH_REMAINDER_NAME_LENGTH) {
             if (logger.isDebugEnabled())
                 logger.debug("Searching for candidates - HashStart='{}', hashRest='{}'", hashStart, hashRest);

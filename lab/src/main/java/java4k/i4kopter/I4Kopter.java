@@ -116,12 +116,10 @@ public class I4Kopter extends Applet {
         backgroundBuffer.setColor(Color.YELLOW);
         backgroundBuffer.fillRect(0,0, backgroundLength, h);
 
-        boolean up = false;
-        int currentY = 80;
-        int ocounter = 0;
         obstacles = new Point[ backgroundLength / widthBar ];
 
-        
+
+        int ocounter = 0;
         for(int i = 0; i < w; i += widthBar){
             obstacles[ocounter++] = new Point(-1,-1);
         }
@@ -135,8 +133,10 @@ public class I4Kopter extends Applet {
         headingG.drawString("I4KOPTER",32,20);
         backgroundBuffer.drawImage(heading,0,0, w, h,null);
         backgroundBuffer.setColor(Color.BLACK);
-        
 
+
+        int currentY = 80;
+        boolean up = false;
         for(int i = w; i < (backgroundLength - (2* w)); i += widthBar){
 
             currentY += (up)? -10 : 10;
@@ -246,8 +246,6 @@ public class I4Kopter extends Applet {
 
     void loop(){
 
-        BufferedImage tmp;
-        Graphics frameGraphics, bufferGraphics;
         int dx = 12, offset = 0, levelLength = w *2;
         int maxLen = backgroundLength - w;
 
@@ -258,23 +256,22 @@ public class I4Kopter extends Applet {
 
                 if(! paused){
 
-                    bufferGraphics = bufferImage.getGraphics();
+                    Graphics bufferGraphics = bufferImage.getGraphics();
                     bufferGraphics.drawImage(backgroundImage,0,0, w, h,
                                              offset, 0, (offset + w), h, null);
 
                     updateHeliY(); 
 
-                    bufferGraphics.setClip(heliX, heliY, 57, 57); 
+                    bufferGraphics.setClip(heliX, heliY, 57, 57);
 
-                    tmp = (keyPressed)? helicopterImage2 : helicopterImage1; 
+                    BufferedImage tmp = (keyPressed) ? helicopterImage2 : helicopterImage1;
 
-                    if(collides(offset, tmp)){ 
-
-                        int oldOffset, newOffset;
+                    Graphics frameGraphics;
+                    if(collides(offset, tmp)){
 
                         for(int i = 1; i < 1000; i++){
-                            oldOffset = (i-1)*2 /2;
-                            newOffset = i*2 /2;
+                            int oldOffset = (i - 1) * 2 / 2;
+                            int newOffset = i * 2 / 2;
                             frameGraphics = getGraphics();
                             frameGraphics.setColor(Color.YELLOW);
                             frameGraphics.drawOval(heliX - newOffset, heliY - newOffset, i*2, i*2);

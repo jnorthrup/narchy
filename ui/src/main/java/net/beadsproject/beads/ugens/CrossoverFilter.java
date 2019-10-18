@@ -117,14 +117,15 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
     @Override
     public void gen() {
 
-        float[] bi, lo, hi;
-
         if (freqUGen != null) {
             freqUGen.update();
             freq = freqUGen.getValue();
             calcVals();
         }
 
+        float[] hi;
+        float[] lo;
+        float[] bi;
         if (channels > 1) {
             for (int chan = 0; chan < channels; chan++) {
                 bi = bufIn[chan];

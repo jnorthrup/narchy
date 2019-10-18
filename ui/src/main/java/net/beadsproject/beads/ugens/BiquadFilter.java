@@ -719,9 +719,9 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         @Override
         public void calcVals() {
             float k = (float) Math.tan(freq * pi_over_sf);
-            float k2p1 = k * k + 1;
             b0 = b2 = 1;
             b1 = -2;
+            float k2p1 = k * k + 1;
             a0 = k2p1 + (SQRT2 * k);
             a1 = 2f * (k2p1 - 2);
             a2 = k2p1 - (SQRT2 * k);
@@ -738,9 +738,9 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
             float root = (float) Math.sqrt(1 + 4 * q * q);
             float k1 = (float) Math.tan(hbw * (root - 1));
             float k2 = (float) Math.tan(hbw * (root + 1));
-            float mp1 = k1 * k2 + 1;
             b2 = -(b0 = k2 - k1);
             b1 = 0;
+            float mp1 = k1 * k2 + 1;
             a0 = mp1 + b0;
             a1 = 2 * (mp1 - 2);
             a2 = mp1 - b0;
@@ -763,9 +763,9 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         @Override
         public void calcVals() {
             float w = (float) Math.tan(pi_over_sf * freq);
-            float w2 = w * w;
             b2 = b0 = 3;
             b1 = -6;
+            float w2 = w * w;
             a0 = w2 + 3 * w + 3;
             a1 = 2 * w2 - 6;
             a2 = w2 - 3 * w + 3;

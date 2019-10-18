@@ -53,10 +53,9 @@ class RTreeNDTest {
     @Test
     void rectNDSearchTest2() {
 
-        final int entryCount = 20;
-
         System.out.println("rectNDSearchTest2");
 
+        final int entryCount = 20;
         for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
             RTree<HyperRectFloat> rTree = RTree2DTest.createRectNDTree(8, type);
             for (int i = 0; i < entryCount; i++) {
@@ -67,9 +66,8 @@ class RTreeNDTest {
             List<HyperRectFloat> results = new ArrayList();
 
             rTree.intersectsWhile(searchRect, results::add);
-            long count;
             int bound = results.size();
-            count = IntStream.range(0, bound).filter(i1 -> results.get(i1) != null).count();
+            long count = IntStream.range(0, bound).filter(i1 -> results.get(i1) != null).count();
             int resultCount = (int) count;
 
             final int expectedCount = 9;
@@ -421,8 +419,6 @@ class RTreeNDTest {
     @Test
     void treeRemovalTestDuplicates() {
 
-        final int NENTRY = 50;
-
         RTree<RectDouble> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         RectDouble[] rect = new RectDouble[2];
@@ -432,6 +428,7 @@ class RTreeNDTest {
         }
         assertEquals(2, rTree.size());
 
+        final int NENTRY = 50;
         for (int i = 0; i < NENTRY; i++) {
             rTree.add(rect[1]);
         }
@@ -567,9 +564,8 @@ class RTreeNDTest {
     void testAddsubtreeWithSideTree() {
         RTree<RectDouble> rTree = createRectDouble2DTree(6, Spatialization.DefaultSplits.QUADRATIC);
 
-        RectDouble search;
-
         rTree.add(new RectDouble(2, 2, 4, 4));
+        RectDouble search;
         rTree.add(search = new RectDouble(5, 2, 6, 3));
 
         

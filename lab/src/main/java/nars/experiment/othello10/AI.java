@@ -73,18 +73,12 @@ public class AI {
      */
     private int minMax(boolean flag, int level) {
 
-        int value;
-
-        int childValue;
-
-        int bestX = 0;
-        int bestY = 0;
-
 
         if (level == 0) {
             return valueBoard();
         }
 
+        int value;
         if (flag) {
 
             value = Integer.MIN_VALUE;
@@ -99,6 +93,8 @@ public class AI {
         }
 
 
+        int bestY = 0;
+        int bestX = 0;
         for (int y = 0; y < MainPanel.MASU; y++) {
             for (int x = 0; x < MainPanel.MASU; x++) {
                 if (panel.canPutDown(x, y)) {
@@ -111,7 +107,7 @@ public class AI {
                     panel.nextTurn();
 
 
-                    childValue = minMax(!flag, level - 1);
+                    int childValue = minMax(!flag, level - 1);
 
                     if (flag) {
 
@@ -154,18 +150,12 @@ public class AI {
      */
     private int alphaBeta(boolean flag, int level, int alpha, int beta) {
 
-        int value;
-
-        int childValue;
-
-        int bestX = 0;
-        int bestY = 0;
-
 
         if (level == 0) {
             return valueBoard();
         }
 
+        int value;
         if (flag) {
 
             value = Integer.MIN_VALUE;
@@ -180,6 +170,8 @@ public class AI {
         }
 
 
+        int bestY = 0;
+        int bestX = 0;
         for (int y = 0; y < MainPanel.MASU; y++) {
             for (int x = 0; x < MainPanel.MASU; x++) {
                 if (panel.canPutDown(x, y)) {
@@ -192,7 +184,7 @@ public class AI {
                     panel.nextTurn();
 
 
-                    childValue = alphaBeta(!flag, level - 1, alpha, beta);
+                    int childValue = alphaBeta(!flag, level - 1, alpha, beta);
 
                     if (flag) {
 

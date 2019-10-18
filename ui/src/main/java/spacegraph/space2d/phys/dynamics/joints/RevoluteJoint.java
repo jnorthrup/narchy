@@ -144,8 +144,6 @@ public class RevoluteJoint extends Joint {
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
 
-        boolean fixedRotation = (iA + iB == 0.0f);
-
         m_mass.ex.x = mA + mB + m_rA.y * m_rA.y * iA + m_rB.y * m_rB.y * iB;
         m_mass.ey.x = -m_rA.y * m_rA.x * iA - m_rB.y * m_rB.x * iB;
         m_mass.ez.x = -m_rA.y * iA - m_rB.y * iB;
@@ -161,6 +159,7 @@ public class RevoluteJoint extends Joint {
             m_motorMass = 1.0f / m_motorMass;
         }
 
+        boolean fixedRotation = (iA + iB == 0.0f);
         if (!m_enableMotor || fixedRotation) {
             m_motorImpulse = 0.0f;
         }
@@ -356,7 +355,6 @@ public class RevoluteJoint extends Joint {
         qB.set(aB);
 
         float angularError = 0.0f;
-        float positionError = 0.0f;
 
         boolean fixedRotation = (m_invIA + m_invIB == 0.0f);
 
@@ -398,7 +396,8 @@ public class RevoluteJoint extends Joint {
             aA -= m_invIA * limitImpulse;
             aB += m_invIB * limitImpulse;
         }
-        
+
+        float positionError = 0.0f;
         {
             qA.set(aA);
             qB.set(aB);

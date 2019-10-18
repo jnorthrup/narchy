@@ -223,19 +223,19 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
     public/*synchronized*/ ScrollXY scroll(float x, float y, float w, float h) {
 
-        float x1 = x;
-        float x2 = x + w;
         boolean autoHideScroll = true;
         setScrollBar(true, (!autoHideScroll || w < viewMax.x), true);
 
         float y1 = y;
-        float y2 = y1 + h;
         setScrollBar(false, (!autoHideScroll || h < viewMax.y), true);
 
 //        viewMax(new v2(x2-x1, y2-y1)); //HACK
 
         scale.visible(scrollX.visible()||scrollY.visible());
 
+        float y2 = y1 + h;
+        float x2 = x + w;
+        float x1 = x;
         RectFloat nextView = RectFloat.X0Y0WH(x1, y1, x2 - x1, y2 - y1);
         if (!nextView.equals(view)) {
             this.view = nextView;

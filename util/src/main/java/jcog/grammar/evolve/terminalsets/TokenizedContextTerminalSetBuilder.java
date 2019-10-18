@@ -154,7 +154,6 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
     
     public static Map<String,Double> calculateWinnerMatchTokens(DataSet dataSet, double threashold, boolean discardWtokens){
         Map<String,Double> tokensCounter = new HashMap<>();
-        Map<String,Double> winnerMatchTokensLocal = new HashMap<>();
         for (Example example : dataSet.getExamples()) {
             for (String match : example.getMatchedStrings()) {
                 List<String> tokens = tokenizer.tokenize(match);
@@ -175,6 +174,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
         }
         
         int numberOfMatches = dataSet.getNumberMatches();
+        Map<String, Double> winnerMatchTokensLocal = new HashMap<>();
         for (Map.Entry<String, Double> entry : tokensCounter.entrySet()) {
             String key = entry.getKey();
             Double double1 = entry.getValue();
@@ -189,7 +189,6 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
     
     public static Map<String,Double> calculateWinnerUnmatchTokens(DataSet dataSet, double threashold, boolean discardWtokens){
         Map<String,Double> tokensCounter = new HashMap<>();
-        Map<String,Double> winnerUnmatchTokensLocal = new HashMap<>();
         int numberOfPositiveExamples = 0;
         for (Example example : dataSet.getExamples()) {
             if(example.getMatch().isEmpty()){
@@ -218,7 +217,8 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
                 }
             }    
         }
-        
+
+        Map<String, Double> winnerUnmatchTokensLocal = new HashMap<>();
         for (Map.Entry<String, Double> entry : tokensCounter.entrySet()) {
             String key = entry.getKey();
             Double double1 = entry.getValue();

@@ -832,10 +832,6 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 					(Math.pow(dimension + 2, 1.5) + 2 * mueff);
 
 
-				final double negminresidualvariance = 0.66;
-
-				final double negalphaold = 0.5;
-
 				int[] arReverseIndex = reverse(arindex);
 				RealMatrix arzneg = selectColumns(arz, MathArrays.copyOf(arReverseIndex, mu));
 				RealMatrix arnorms = sqrt(sumRows(square(arzneg)));
@@ -847,12 +843,14 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 				int[] idxInv = inverse(idxnorms);
 				RealMatrix arnormsInv = selectColumns(arnorms, idxInv);
 
+				final double negminresidualvariance = 0.66;
 				double negcovMax = (1 - negminresidualvariance) /
 					square(arnormsInv).multiply(weights).getEntry(0, 0);
 				if (negccov > negcovMax) negccov = negcovMax;
 				arzneg = times(arzneg, repmat(arnormsInv, dimension, 1));
 				RealMatrix artmp = BD.multiply(arzneg);
 				RealMatrix Cneg = artmp.multiply(diag(weights)).multiply(artmp.transpose());
+				final double negalphaold = 0.5;
 				oldFac += negalphaold * negccov;
 				C = C.scalarMultiply(oldFac)
 					.add(roneu)
@@ -1103,9 +1101,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 		 * @return Penalty value according to the violation of the bounds.
 		 */
 		private double penalty(double[] x, double[] repaired) {
-			double penalty;
 			int bound = x.length;
-			penalty = IntStream.range(0, bound).mapToDouble(i -> Math.abs(x[i] - repaired[i])).sum();
+			double penalty = IntStream.range(0, bound).mapToDouble(i -> Math.abs(x[i] - repaired[i])).sum();
 			return isMinimize ? penalty : -penalty;
 		}
 

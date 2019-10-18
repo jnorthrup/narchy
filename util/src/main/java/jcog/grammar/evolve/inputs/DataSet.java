@@ -240,8 +240,7 @@ public class DataSet implements Serializable {
      * @return
     */
     protected static List<Example> stripeExample(Example example, double marginSize){
-        List<Example> slicesExampleList = new ArrayList<>();
-        
+
 
         List<Bounds> mm = example.getMatch();
         List<Bounds> savedBounds = new ArrayList<>(mm.size());
@@ -257,8 +256,9 @@ public class DataSet implements Serializable {
         
         
         savedBounds = Bounds.mergeBounds(savedBounds);
-        
-        
+
+
+        List<Example> slicesExampleList = new ArrayList<>();
         for(Bounds slice : savedBounds){
             Example sliceExample = new Example();
             sliceExample.setString(example.getString().substring(slice.start, slice.end));

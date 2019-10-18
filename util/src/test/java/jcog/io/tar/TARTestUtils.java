@@ -15,10 +15,10 @@ class TARTestUtils {
 	}
 
 	public static String readFile(File file) throws IOException {
-		char[] buffer = new char[BUFFER];
-		StringBuilder out = new StringBuilder();
+        StringBuilder out = new StringBuilder();
 		try (Reader in = new InputStreamReader(new FileInputStream(file), "UTF-8")) {
-			return readFromStream(buffer, out, in);
+            char[] buffer = new char[BUFFER];
+            return readFromStream(buffer, out, in);
 		}
 	}
 

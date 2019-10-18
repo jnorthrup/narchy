@@ -817,8 +817,6 @@ public class Getopt  {
     checkLongOption() {
 
         longopt_handled = true;
-        boolean ambig = false;
-        boolean exact = false;
         longind = -1;
 
         int nameend = nextchar.indexOf('=');
@@ -827,6 +825,8 @@ public class Getopt  {
 
         
         LongOpt pfound = null;
+        boolean exact = false;
+        boolean ambig = false;
         for (int i = 0; i < long_options.length; i++) {
             if (long_options[i].getName().startsWith(nextchar.substring(0, nameend))) {
                 if (long_options[i].getName().equals(nextchar.substring(0, nameend))) {

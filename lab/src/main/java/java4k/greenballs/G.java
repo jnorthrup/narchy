@@ -83,66 +83,13 @@ public class G extends Applet implements Runnable {
 		Random random = new Random();
 
 		/* VARIABLES */
-		
-		BufferedImage mapImage1 = null;
-		BufferedImage mapImage2 = null;
-		BufferedImage bgImage1 = null;
-		BufferedImage bgImage2 = null;
-
-		
-		int player_x = 0;
-		int player_y = 0;
-		int player_falling = NO;
-		int player_direction = DIRECTION_RIGHT;
-		int player_climbing = NO;
-		int player_bulletCounter = 0;
 
 
-        int[] bullet_x = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
-        int[] bullet_y = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
-        int[] bullet_direction = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
-		int numberOfActiveBullets = 0;
-
-		
-		int numberOfActiveEnemies = 0;
-        int[] enemy_x = new int[MAX_NUMBER_OF_ENEMIES];
-        int[] enemy_y = new int[MAX_NUMBER_OF_ENEMIES];
-        int[] enemy_health = new int[MAX_NUMBER_OF_ENEMIES];
-        int[] enemy_direction = new int[MAX_NUMBER_OF_ENEMIES];
-        int[] enemy_climbing = new int[MAX_NUMBER_OF_ENEMIES];
-
-		
-		int balls_height = 0;
-		int balls_direction_isUp = YES;
-
-
-        int[] particle_x = new int[MAX_NUMBER_OF_PARTICLES];
-        int[] particle_y = new int[MAX_NUMBER_OF_PARTICLES];
-        float[] particle_xVelocity = new float[MAX_NUMBER_OF_PARTICLES];
-        float[] particle_yVelocity = new float[MAX_NUMBER_OF_PARTICLES];
-        int[] particle_life = new int[MAX_NUMBER_OF_PARTICLES];
-		int activeParticles = 0;
-
-		
-		int levelLoaded = NO;
-		int levelCompleted = YES;
-		int levelIndex = 0;
-		int killedEnemies = 0;
-		int draw_textTimer = 0;
-		String currentLevel = "";
-
-		
-		int mapX = 0;
-		int bgX = 0;
-
-		
-		int i;
-		int x;
+        int x;
 		int y;
-		int a;
 
-		
-		BufferedImage wallImage = new BufferedImage(TILE_SIZE, TILE_SIZE, BufferedImage.TYPE_INT_ARGB);
+
+        BufferedImage wallImage = new BufferedImage(TILE_SIZE, TILE_SIZE, BufferedImage.TYPE_INT_ARGB);
 		Graphics wallGraphics = wallImage.getGraphics();
 		for (x = 0; x < TILE_SIZE; x++) {
 			for (y = 0; y < TILE_SIZE; y++) {
@@ -164,7 +111,8 @@ public class G extends Applet implements Runnable {
 		
 		BufferedImage loadBoxImage = new BufferedImage(200, 40, BufferedImage.TYPE_INT_ARGB);
 		Graphics loadBoxGfx = loadBoxImage.getGraphics();
-		for (i = 0; i < 40; i++) {
+        int i;
+        for (i = 0; i < 40; i++) {
 			loadBoxGfx.setColor(new Color(255 - (i * 3), 255 - (i * 3), 255 - (i * 3)));
 			loadBoxGfx.drawLine(0, i, 200, i);
 		}
@@ -195,7 +143,43 @@ public class G extends Applet implements Runnable {
 
 		
 		long nextFrameStartTime = System.nanoTime();
-		while (true) {
+        int bgX = 0;
+        int mapX = 0;
+        String currentLevel = "";
+        int draw_textTimer = 0;
+        int killedEnemies = 0;
+        int levelIndex = 0;
+        int levelCompleted = YES;
+        int levelLoaded = NO;
+        int activeParticles = 0;
+        int[] particle_life = new int[MAX_NUMBER_OF_PARTICLES];
+        float[] particle_yVelocity = new float[MAX_NUMBER_OF_PARTICLES];
+        float[] particle_xVelocity = new float[MAX_NUMBER_OF_PARTICLES];
+        int[] particle_y = new int[MAX_NUMBER_OF_PARTICLES];
+        int[] particle_x = new int[MAX_NUMBER_OF_PARTICLES];
+        int balls_direction_isUp = YES;
+        int balls_height = 0;
+        int[] enemy_climbing = new int[MAX_NUMBER_OF_ENEMIES];
+        int[] enemy_direction = new int[MAX_NUMBER_OF_ENEMIES];
+        int[] enemy_health = new int[MAX_NUMBER_OF_ENEMIES];
+        int[] enemy_y = new int[MAX_NUMBER_OF_ENEMIES];
+        int[] enemy_x = new int[MAX_NUMBER_OF_ENEMIES];
+        int numberOfActiveEnemies = 0;
+        int numberOfActiveBullets = 0;
+        int[] bullet_direction = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
+        int[] bullet_y = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
+        int[] bullet_x = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
+        int player_bulletCounter = 0;
+        int player_climbing = NO;
+        int player_direction = DIRECTION_RIGHT;
+        int player_falling = NO;
+        int player_y = 0;
+        int player_x = 0;
+        BufferedImage bgImage2 = null;
+        BufferedImage bgImage1 = null;
+        BufferedImage mapImage2 = null;
+        BufferedImage mapImage1 = null;
+        while (true) {
 			
 			if (levelCompleted == YES) {
 				levelIndex++;
@@ -227,8 +211,8 @@ public class G extends Applet implements Runnable {
 				
 				x = random.nextInt(7) + 2;
 				i = random.nextInt(7) + 2;
-				a = random.nextInt(7) + 2;
-				bgImage2 = new BufferedImage(WINDOW_WIDTH, WINDOW_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+                int a = random.nextInt(7) + 2;
+                bgImage2 = new BufferedImage(WINDOW_WIDTH, WINDOW_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 				Graphics backgroundGfx = bgImage2.getGraphics();
 				for (y = 0; y < WINDOW_HEIGHT; y++) {
 					backgroundGfx.setColor(new Color(255 - (y / x), 255 - (y / i), 255 - (y / a)));

@@ -922,8 +922,7 @@ public class NARui {
         var s = new Graph2D<X>().render((node, g) -> {
             var c = node.id;
 
-                    final var epsilon = 0.01f;
-                    //float p = Math.max(Math.max(epsilon, c.pri()), epsilon);
+            //float p = Math.max(Math.max(epsilon, c.pri()), epsilon);
             var p = pri.floatValueOf(c);
             var v = p; //TODO support separate color fucntion
                     node.color(p, v, 0.25f);
@@ -933,7 +932,8 @@ public class NARui {
 //                float parentRadius = node.parent(Graph2D.class).radius(); //TODO cache ref
 //                float r = (float) ((parentRadius * 0.5f) * (sqrt(p) + 0.1f));
 
-                    node.pri = Math.max(epsilon, p);
+            final var epsilon = 0.01f;
+            node.pri = Math.max(epsilon, p);
                 })
                 //.layout(fd)
                 .update(new TreeMap2D<>())

@@ -6,8 +6,6 @@ public enum MapSwitch { ;
     /** TODO decide initialization semantics */
     public static <X> ButtonSet the(Map<X,Runnable> x) {
 
-        int[] initialButton = {-1};
-
         ToggleButton[] b = new ToggleButton[x.size()];
 
         int[] i = {0};
@@ -25,6 +23,7 @@ public enum MapSwitch { ;
         }
 
 
+        int[] initialButton = {-1};
         return EnumSwitch.newSwitch(b, initialButton[0]);
 
     }

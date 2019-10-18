@@ -63,9 +63,7 @@ public class CapsuleShape extends ConvexInternalShape {
 		v3 supVec = out;
 		supVec.set(0f, 0f, 0f);
 
-		float maxDot = -1e30f;
-
-		v3 vec = new v3(vec0);
+        v3 vec = new v3(vec0);
 		float lenSqr = vec.lengthSquared();
 		if (lenSqr < 0.0001f) {
 			vec.set(1f, 0f, 0f);
@@ -92,6 +90,7 @@ public class CapsuleShape extends ConvexInternalShape {
         vtx.add(pos, tmp1);
         vtx.sub(tmp2);
         float newDot = vec.dot(vtx);
+        float maxDot = -1e30f;
         if (newDot > maxDot) {
             maxDot = newDot;
             supVec.set(vtx);
@@ -137,13 +136,13 @@ public class CapsuleShape extends ConvexInternalShape {
 		float lx = 2f * (halfExtents.x + margin);
 		float ly = 2f * (halfExtents.y + margin);
 		float lz = 2f * (halfExtents.z + margin);
-		float x2 = lx * lx;
-		float y2 = ly * ly;
+        float y2 = ly * ly;
 		float z2 = lz * lz;
 		float scaledmass = mass * 0.08333333f;
 
 		inertia.x = scaledmass * (y2 + z2);
-		inertia.y = scaledmass * (x2 + z2);
+        float x2 = lx * lx;
+        inertia.y = scaledmass * (x2 + z2);
 		inertia.z = scaledmass * (x2 + y2);
 	}
 

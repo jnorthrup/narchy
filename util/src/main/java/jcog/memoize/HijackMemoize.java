@@ -56,10 +56,13 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 
     private float statReset(ObjectLongProcedure<String> eachStat) {
 
-        long H, M, R, E;
+        long H;
         eachStat.accept("H" /* hit */, H = hit.getAndSet(0));
+        long M;
         eachStat.accept("M" /* miss */, M = miss.getAndSet(0));
+        long R;
         eachStat.accept("R" /* reject */, R = reject.getAndSet(0));
+        long E;
         eachStat.accept("E" /* evict */, E = evict.getAndSet(0));
         return (H / ((float) (H + M + R /* + E */)));
     }

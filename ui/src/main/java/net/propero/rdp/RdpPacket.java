@@ -413,10 +413,11 @@ public abstract class RdpPacket {
      * @param len Desired length of output unicode string
      */
     public void outUnicodeString(String str, int len) {
-        int i = 0, j = 0;
 
         if (!str.isEmpty()) {
             char[] name = str.toCharArray();
+            int j = 0;
+            int i = 0;
             while (i < len) {
                 this.setLittleEndian16((short) name[j++]);
                 i += 2;

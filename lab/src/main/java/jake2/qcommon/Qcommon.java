@@ -233,25 +233,24 @@ public final class Qcommon extends Globals {
 			Cbuf.Execute();
 
 			int time_before= 0;
-			int time_between= 0;
-			int time_after= 0;
 
-			if (Globals.host_speeds.value != 0.0f)
+            if (Globals.host_speeds.value != 0.0f)
 				time_before= Timer.Milliseconds();
 			
 			Com.debugContext = "SV:";
 			SV_MAIN.SV_Frame(msec);
 
-			if (Globals.host_speeds.value != 0.0f)
+            int time_between = 0;
+            if (Globals.host_speeds.value != 0.0f)
 				time_between= Timer.Milliseconds();
 			
 			Com.debugContext = "CL:";
 			CL.Frame(msec);
 
 			if (Globals.host_speeds.value != 0.0f) {
-				time_after= Timer.Milliseconds();
+                int time_after = Timer.Milliseconds();
 
-				int all= time_after - time_before;
+                int all= time_after - time_before;
 				int sv= time_between - time_before;
 				int cl= time_after - time_between;
 				int gm= Globals.time_after_game - Globals.time_before_game;

@@ -169,9 +169,6 @@ public final class SCR extends Globals {
      * ============== SCR_DrawDebugGraph ==============
      */
     static void DrawDebugGraph() {
-        int a, i, h;
-        float v;
-        int color;
 
 
         int w = scr_vrect.width;
@@ -181,16 +178,16 @@ public final class SCR extends Globals {
         re.DrawFill(x, (int) (y - scr_graphheight.value), w,
                 (int) scr_graphheight.value, 8);
 
-        for (a = 0; a < w; a++) {
-            i = (current - 1 - a + 1024) & 1023;
-            v = values[i].value;
-            color = values[i].color;
+        for (int a = 0; a < w; a++) {
+            int i = (current - 1 - a + 1024) & 1023;
+            float v = values[i].value;
+            int color = values[i].color;
             v = v * scr_graphscale.value + scr_graphshift.value;
 
             if (v < 0)
                 v += scr_graphheight.value
                         * (1 + (int) (-v / scr_graphheight.value));
-            h = (int) v % (int) scr_graphheight.value;
+            int h = (int) v % (int) scr_graphheight.value;
             re.DrawFill(x + w - 1 - a, y - h, 1, h, color);
         }
     }
@@ -223,9 +220,8 @@ public final class SCR extends Globals {
     static void CenterPrint(String str) {
 
         StringBuilder line = new StringBuilder(64);
-        int i, j, l;
 
-        
+
         scr_centerstring = str;
         scr_centertime_off = scr_centertime.value;
         scr_centertime_start = cl.time;
@@ -247,15 +243,16 @@ public final class SCR extends Globals {
 
         if (str.length() != 0) {
             do {
-                
 
+
+                int l;
                 for (l = 0; l < 40 && (l + s) < str.length(); l++)
                     if (str.charAt(s + l) == '\n' || str.charAt(s + l) == 0)
                         break;
-                for (i = 0; i < (40 - l) / 2; i++)
+                for (int i = 0; i < (40 - l) / 2; i++)
                     line.append(' ');
 
-                for (j = 0; j < l; j++) {
+                for (int j = 0; j < l; j++) {
                     line.append(str.charAt(s + j));
                 }
 
@@ -278,34 +275,32 @@ public final class SCR extends Globals {
 
     static void DrawCenterString() {
         String cs = scr_centerstring + '\0';
-        int l;
-        int j;
-        int x, y;
 
         if (cs.length() == 0) {
             return;
         }
 
 
-        int remaining = 9999;
-
         scr_erase_center = 0;
-        int start = 0;
 
+        int y;
         if (scr_center_lines <= 4)
             y = (int) (viddef.getHeight() * 0.35);
         else
             y = 48;
 
+        int start = 0;
+        int remaining = 9999;
         do {
-            
+
+            int l;
             for (l = 0; l < 40; l++)
                 if (start + l == cs.length() - 1
                         || cs.charAt(start + l) == '\n')
                     break;
-            x = (viddef.getWidth() - l * 8) / 2;
+            int x = (viddef.getWidth() - l * 8) / 2;
             SCR.AddDirtyPoint(x, y);
-            for (j = 0; j < l; j++, x += 8) {
+            for (int j = 0; j < l; j++, x += 8) {
                 re.DrawChar(x, y, cs.charAt(start + j));
                 if (remaining == 0)
                     return;
@@ -384,17 +379,17 @@ public final class SCR extends Globals {
      * Set a specific sky and rotation speed =================
      */
     static void Sky_f() {
-        float rotate;
-        float[] axis = { 0, 0, 0 };
 
         if (Cmd.Argc() < 2) {
             Com.Printf("Usage: sky <basename> <rotate> <axis x y z>\n");
             return;
         }
+        float rotate;
         if (Cmd.Argc() > 2)
             rotate = Float.parseFloat(Cmd.Argv(2));
         else
             rotate = 0;
+        float[] axis = {0, 0, 0};
         if (Cmd.Argc() == 6) {
             axis[0] = Float.parseFloat(Cmd.Argv(3));
             axis[1] = Float.parseFloat(Cmd.Argv(4));
@@ -610,14 +605,14 @@ public final class SCR extends Globals {
      * ================ SCR_TimeRefresh_f ================
      */
     static void TimeRefresh_f() {
-        int i;
 
         if (cls.state != ca_active)
             return;
 
         int start = Timer.Milliseconds();
 
-        if (Cmd.Argc() == 2) { 
+        int i;
+        if (Cmd.Argc() == 2) {
             if ( re.BeginFrame(0) ) {
                 for (i = 0; i < 128; i++) {
                     cl.refdef.viewangles[1] = i / 128.0f * 360.0f;
@@ -657,7 +652,6 @@ public final class SCR extends Globals {
     static final dirty_t clear = new dirty_t();
 
     static void TileClear() {
-        int i;
         clear.clear();
 
         if (scr_drawall.value != 0)
@@ -673,6 +667,7 @@ public final class SCR extends Globals {
         
         
         clear.set(scr_dirty);
+        int i;
         for (i = 0; i < 2; i++) {
             if (scr_old_dirty[i].x1 < clear.x1)
                 clear.x1 = scr_old_dirty[i].x1;
@@ -775,7 +770,6 @@ public final class SCR extends Globals {
             int xor) {
 
         StringBuffer line = new StringBuffer(1024);
-        int i;
 
         int margin = x;
 
@@ -791,7 +785,7 @@ public final class SCR extends Globals {
                 x = margin + (centerwidth - line.length() * 8) / 2;
             else
                 x = margin;
-            for (i = 0; i < line.length(); i++) {
+            for (int i = 0; i < line.length(); i++) {
                 re.DrawChar(x, y, line.charAt(i) ^ xor);
                 x += 8;
             }
@@ -807,7 +801,6 @@ public final class SCR extends Globals {
      * ============== SCR_DrawField ==============
      */
     static void DrawField(int x, int y, int color, int width, int value) {
-        int frame;
 
         if (width < 1)
             return;
@@ -829,6 +822,7 @@ public final class SCR extends Globals {
 
         for (int i = 0; i < l; i++) {
             ptr = num.charAt(i);
+            int frame;
             if (ptr == '-')
                 frame = STAT_MINUS;
             else
@@ -845,10 +839,9 @@ public final class SCR extends Globals {
      * Allows rendering code to cache all needed sbar graphics ===============
      */
     static void TouchPics() {
-        int i, j;
 
-        for (i = 0; i < 2; i++)
-            for (j = 0; j < 11; j++)
+        for (int i = 0; i < 2; i++)
+            for (int j = 0; j < 11; j++)
                 re.RegisterPic(sb_nums[i][j]);
 
         if (crosshair.value != 0.0f) {
@@ -879,14 +872,12 @@ public final class SCR extends Globals {
         if (s == null || s.length() == 0)
             return;
 
-        int x = 0;
-        int y = 0;
-        int width = 3;
-        int value;
-
-        LayoutParser parser = layoutParser; 
+        LayoutParser parser = layoutParser;
         parser.init(s);
 
+        int width = 3;
+        int y = 0;
+        int x = 0;
         while (parser.hasNext()) {
             parser.next();
             if (parser.tokenEquals("xl")) {
@@ -921,7 +912,8 @@ public final class SCR extends Globals {
                 continue;
             }
 
-            if (parser.tokenEquals("pic")) { 
+            int value;
+            if (parser.tokenEquals("pic")) {
                 parser.next();
                 value = cl.frame.playerstate.stats[parser.tokenAsInt()];
                 if (value >= MAX_IMAGES)
@@ -1021,11 +1013,11 @@ public final class SCR extends Globals {
                 continue;
             }
 
-            if (parser.tokenEquals("hnum")) { 
-                int color;
+            if (parser.tokenEquals("hnum")) {
 
                 width = 3;
                 value = cl.frame.playerstate.stats[STAT_HEALTH];
+                int color;
                 if (value > 25)
                     color = 0; 
                 else if (value > 0)
@@ -1040,11 +1032,11 @@ public final class SCR extends Globals {
                 continue;
             }
 
-            if (parser.tokenEquals("anum")) { 
-                int color;
+            if (parser.tokenEquals("anum")) {
 
                 width = 3;
                 value = cl.frame.playerstate.stats[STAT_AMMO];
+                int color;
                 if (value > 5)
                     color = 0; 
                 else if (value >= 0)
@@ -1066,11 +1058,10 @@ public final class SCR extends Globals {
                 if (value < 1)
                     continue;
 
-                int color = 0;
-
                 if ((cl.frame.playerstate.stats[STAT_FLASHES] & 2) != 0)
                     re.DrawPic(x, y, "field_3");
 
+                int color = 0;
                 DrawField(x, y, color, width, value);
                 continue;
             }
@@ -1161,11 +1152,8 @@ public final class SCR extends Globals {
     private static final float[] separation = { 0, 0 };
     
     static void UpdateScreen2() {
-        int numframes;
-        int i;
-        
-        
-        
+
+
         if (cls.disable_screen != 0) {
             if (Timer.Milliseconds() - cls.disable_screen > 120000) {
                 cls.disable_screen = 0;
@@ -1186,6 +1174,7 @@ public final class SCR extends Globals {
         else if (cl_stereo_separation.value < 0)
             Cvar.SetValue("cl_stereo_separation", 0.0f);
 
+        int numframes;
         if (cl_stereo.value != 0) {
             numframes = 2;
             separation[0] = -cl_stereo_separation.value / 2;
@@ -1198,7 +1187,7 @@ public final class SCR extends Globals {
 
         boolean frameRendered = false;
         
-        for (i = 0; i < numframes; i++) {
+        for (int i = 0; i < numframes; i++) {
             if ( re.BeginFrame(separation[i]) ) {
                 frameRendered = true;
                 
@@ -1412,13 +1401,12 @@ public final class SCR extends Globals {
         int width = pcx.xmax - pcx.xmin + 1;
         int height = pcx.ymax - pcx.ymin + 1;
 
-        byte[] pix = new byte[width * height];
-
         if (palette != null) {
             raw.position(raw.limit() - 768);
             raw.get(palette);
         }
 
+        byte[] pix = new byte[width * height];
         if (cin != null) {
             cin.pic = pix;
             cin.width = width;
@@ -1431,13 +1419,12 @@ public final class SCR extends Globals {
         int count = 0;
         byte dataByte = 0;
         int runLength = 0;
-        int x, y;
 
-        
+
         int p = 0;
 
-        for (y = 0; y < height; y++) {
-            for (x = 0; x < width;) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width;) {
 
                 dataByte = pcx.data.get(p++);
 
@@ -1532,13 +1519,11 @@ public final class SCR extends Globals {
      * 
      */
     private static void Huff1TableInit() {
-        int[] node;
-        byte[] counts = new byte[256];
-        int numhnodes;
-        
+
         cin.hnodes1 = new int[256 * 256 * 2];
         Arrays.fill(cin.hnodes1, 0);
-        
+
+        byte[] counts = new byte[256];
         for (int prev = 0; prev < 256; prev++) {
             Arrays.fill(cin.h_count, 0);
             Arrays.fill(cin.h_used, 0);
@@ -1547,12 +1532,12 @@ public final class SCR extends Globals {
             cl.cinematic_file.get(counts);
             for (int j = 0; j < 256; j++)
                 cin.h_count[j] = counts[j] & 0xFF;
-            
-            
-            numhnodes = 256;
+
+
+            int numhnodes = 256;
             int nodebase = 0 + prev * 256 * 2;
+            int[] node = cin.hnodes1;
             int index = 0;
-            node = cin.hnodes1;
             while (numhnodes != 511) {
                 index = nodebase + (numhnodes - 256) * 2;
                 
@@ -1592,9 +1577,8 @@ public final class SCR extends Globals {
         int index = hnodesbase;
         int[] hnodes = cin.hnodes1;
         int nodenum = cin.numhnodes1[0];
-        int inbyte;
         while (count != 0) {
-            inbyte = in[input++] & 0xFF;
+            int inbyte = in[input++] & 0xFF;
 
             if (nodenum < 256) {
                 index = hnodesbase + (nodenum << 9);

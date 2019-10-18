@@ -99,8 +99,7 @@ public abstract class Material {
         float ln = localVel.length();
 
         
-        float r = m_radius; 
-        float rr = r * r;
+        float r = m_radius;
 
         float c = 2;
 
@@ -111,6 +110,7 @@ public abstract class Material {
             float sin = -localVel.x / ln;
             float cos = -localVel.y / ln;
 
+            float rr = r * r;
             geom.calculate(p, foceeArray, localPos, point -> {
                 float x = localPos.x - point.x;
                 float y = localPos.y - point.y;

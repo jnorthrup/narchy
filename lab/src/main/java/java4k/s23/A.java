@@ -22,8 +22,7 @@ public class A extends Applet implements Runnable {
 
 	@Override
     public void run() {
-		boolean newGame = true;
-		for (;;) {
+        for (boolean newGame = true; ;) {
 			if (newGame) {
 				l();
 				newGame = false;
@@ -49,38 +48,25 @@ public class A extends Applet implements Runnable {
 		
 		
 
-		int playerX = 225, playerY = 400, shotY = -30, playerSpeed = 1, lastShot = -1380, lives = 3, lastDeath = -120, score = 0, multiplier = 1, nextEnemy = 0, nextEnemyDiff = 180, i, j, stari;
-		double t1, t2;
+		int i;
 
-		
-		int[][] enemy = new int[enemynum][4];
+
+        int[][] enemy = new int[enemynum][4];
 		int[] enemyStack = new int[enemynum];
-		int enemyStacki = enemynum;
 
-		double[][] enemyB = new double[enemynum][9];
 
-		
-		double[][] bullet = new double[bulletnum][8];
-		
-		int[][] ibullet = new int[bulletnum][3];
+        int[][] ibullet = new int[bulletnum][3];
 		int[] bulletStack = new int[bulletnum];
-		int bulletStacki = bulletnum;
 
-		
-		double[][] item = new double[itemnum][6];
+
+        double[][] item = new double[itemnum][6];
         int[] itemStack = new int[itemnum];
-		int itemStacki = itemnum;
 
-        int[] item2 = {0, 490, 600, 1};
 
-		
-		double[][] graze = new double[grazenum][5];
+        double[][] graze = new double[grazenum][5];
 		int[] grazeStack = new int[grazenum];
-		int grazeStacki = grazenum;
 
-        double[][] star = new double[75][2];
-
-		for (i = 0; i < itemnum; ++i) {
+        for (i = 0; i < itemnum; ++i) {
 			if (i < enemynum) {
 				enemy[i][2] = 0;
 				enemyStack[i] = i;
@@ -107,11 +93,10 @@ public class A extends Applet implements Runnable {
 		BufferedImage gbullet = new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB);
 		BufferedImage gbg = new BufferedImage(480, 480, BufferedImage.TYPE_INT_RGB);
 
-        Color[] bgCol = {new Color(64, 20, 64), new Color(160, 60, 160), new Color(112, 112, 140)};
 
-		
-		long playerG = 35466898305473L, enemyG = 562949815469064L;
-		for (i = 6; i >= 0; --i)
+        long playerG = 35466898305473L, enemyG = 562949815469064L;
+        int j;
+        for (i = 6; i >= 0; --i)
 			for (j = 6; j >= 0; --j) {
 				g2 = gplayer.getGraphics();
 				g2.setColor(new Color(128, 0, 16));
@@ -141,8 +126,9 @@ public class A extends Applet implements Runnable {
 			g2.fillOval(i, i, 20 - 2 * i, 20 - 2 * i);
 		}
 
-		
-		for (i = 0; i < 75; ++i) {
+
+        double[][] star = new double[75][2];
+        for (i = 0; i < 75; ++i) {
 			star[i][0] = rndItemStar.nextInt(480);
 			star[i][1] = rndItemStar.nextInt(480);
 		}
@@ -151,7 +137,10 @@ public class A extends Applet implements Runnable {
 		g2.setColor(Color.black);
 		g2.fillRect(0, 0, 480, 480);
 
-		for (stari = 700; stari > 0; --stari) {
+        double t2;
+        double t1;
+        int stari;
+        for (stari = 700; stari > 0; --stari) {
 			t2 = rndItemStar.nextDouble() * 320 - 60;
 			t1 = t2 * t2 * 0.0034;
 
@@ -162,7 +151,8 @@ public class A extends Applet implements Runnable {
 			g2.fillRect((int) t1 + 160, (int) t2 + 220, 1, 1);
 		}
 
-		for (stari = 1200; stari > 0; --stari) {
+        Color[] bgCol = {new Color(64, 20, 64), new Color(160, 60, 160), new Color(112, 112, 140)};
+        for (stari = 1200; stari > 0; --stari) {
 			i = rndItemStar.nextInt(300);
 			int d = i - 150;
 			if (d < 0)
@@ -196,13 +186,30 @@ public class A extends Applet implements Runnable {
 		
 
 		int fps = 0, fpsout = 0, frame = 0;
-		long lastfpst, lastfpsoutt = System.nanoTime();
-		while (lives >= 0) {
-			lastfpst = System.nanoTime();
+		long lastfpsoutt = System.nanoTime();
+        int grazeStacki = grazenum;
+        int[] item2 = {0, 490, 600, 1};
+        int itemStacki = itemnum;
+        int bulletStacki = bulletnum;
+        double[][] bullet = new double[bulletnum][8];
+        double[][] enemyB = new double[enemynum][9];
+        int enemyStacki = enemynum;
+        int nextEnemyDiff = 180;
+        int nextEnemy = 0;
+        int multiplier = 1;
+        int score = 0;
+        int lastDeath = -120;
+        int lives = 3;
+        int lastShot = -1380;
+        int playerSpeed = 1;
+        int shotY = -30;
+        int playerY = 400;
+        int playerX = 225;
+        while (lives >= 0) {
+            long lastfpst = System.nanoTime();
 
-			
 
-			playerSpeed = 2;
+            playerSpeed = 2;
 			if (keys[KeyEvent.VK_Y] || keys[KeyEvent.VK_Z])
 				playerSpeed = 4;
 			if (keys[KeyEvent.VK_SHIFT])

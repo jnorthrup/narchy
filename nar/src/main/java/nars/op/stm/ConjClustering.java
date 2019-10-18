@@ -348,14 +348,10 @@ public class ConjClustering extends TaskAction {
                 return 0;
 
 
-            int count = 0;
             float confMinThresh = confMin + d.nar.confResolution.floatValue()/2f;
-
-            boolean active = true, reset = true;
 
             /** only an estimate to determine when threshold is being approached;
              * the actual conf will be computed more exactly but it wont exceed this */
-            double conf = 1;
 
             tried.clear();
             trying.clear();
@@ -364,8 +360,11 @@ public class ConjClustering extends TaskAction {
 
             ListIterator<Task> i = ArrayUtil.cycle(in);
             int volEstimate = 1;
-            long start = Long.MAX_VALUE;
-            main: for (; i.hasNext(); ) {
+            double conf = 1;
+            boolean reset = true;
+            boolean active = true;
+            int count = 0;
+            main: for (long start = Long.MAX_VALUE; i.hasNext(); ) {
 
 
                 if (--s < 0)

@@ -55,11 +55,11 @@ public class ScientificNumberState extends NumberState {
 	protected void parseRight(PushbackReader r) throws IOException {
 
 		super.parseRight(r);
-		int sign = 1;
-		if (c == 'e') {
+        if (c == 'e') {
 			absorbedE = true;
 			c = r.read();
-			if (c == '-') {
+            int sign = 1;
+            if (c == '-') {
 				c = r.read();
 				sign = -1;
 			}

@@ -246,9 +246,8 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
                 getEdgeWeight()
         );
 
-        Path<Class, Function> path;
         while (pfinder.hasNext()) {
-            path = pfinder.next();
+            Path<Class, Function> path = pfinder.next();
             if (path == null) break;
             Class lastnode = path.node(-1);
             //assert(!lastnode.equals(to));

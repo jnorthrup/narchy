@@ -144,13 +144,12 @@ public final class IN extends Globals {
     }
 
     public static void Commands() {
-		int i;
-	
-		if (!IN.mouse_avail) 
+
+        if (!IN.mouse_avail)
 			return;
 	
 		KBD kbd=Globals.re.getKeyboardHandler();
-		for (i=0 ; i<3 ; i++) {
+		for (int i = 0; i<3 ; i++) {
 			if ( (IN.mouse_buttonstate & (1<<i)) != 0 && (IN.mouse_oldbuttonstate & (1<<i)) == 0 )
 				kbd.Do_Key_Event(Key.K_MOUSE1 + i, true);
 	

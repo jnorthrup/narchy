@@ -104,8 +104,7 @@ public class SectTest {
     @Test void InvalidTemporal1() {
         String a = "(x &&+1 y)";
         String b = "(x &&+2 y)";
-        String c = "z";
-//        assertEq(Null, '(' + a + '|' + b + ')');
+        //        assertEq(Null, '(' + a + '|' + b + ')');
 //        assertEq(Null, '(' + a + '&' + b + ')');
         assertEq(Null, '{' + a + ',' + b + '}');
         assertEq(Null, '[' + a + ',' + b + ']');
@@ -121,6 +120,7 @@ public class SectTest {
         //3-ary
 //        assertEq(Null, "(|," + a + ',' + b + ',' + c + ')');
 //        assertEq(Null, "(&," + a + ',' + b + ',' + c + ')');
+        String c = "z";
         assertEq(Null, '{' + a + ',' + b + ',' + c + '}');
         assertEq(Null, '[' + a + ',' + b + ',' + c + ']');
 

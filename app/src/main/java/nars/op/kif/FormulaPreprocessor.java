@@ -890,9 +890,6 @@ public class FormulaPreprocessor {
                 form.errors.add(errStr);
                 return results;
             }
-            boolean ignoreStrings = false;
-            boolean translateIneq = true;
-            boolean translateMath = true;
             Formula f = new Formula();
             f.read(form.theFormula);
             if (StringUtil.containsNonAsciiChars(f.theFormula))
@@ -910,6 +907,9 @@ public class FormulaPreprocessor {
             if (!accumulator.isEmpty()) {
                 Formula fnew = null;
                 String theNewFormula = null;
+                boolean translateMath = true;
+                boolean translateIneq = true;
+                boolean ignoreStrings = false;
                 for (Formula formula : accumulator) {
                     fnew = formula;
                     theNewFormula = FormulaPreprocessor.preProcessRecurse(fnew, "", ignoreStrings, translateIneq, translateMath, kb);

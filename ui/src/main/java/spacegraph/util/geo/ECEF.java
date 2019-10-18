@@ -66,10 +66,10 @@ public class ECEF {
         double xy = (N + alt) * cosLat;
         double x = xy * Math.cos(lon);
         double y = xy * Math.sin(lon);
-        double z = (esqInv * N + alt) * sinLat;
 
         target[0] = x;
         target[1] = y;
+        double z = (esqInv * N + alt) * sinLat;
         target[2] = z;
         return target;
     }

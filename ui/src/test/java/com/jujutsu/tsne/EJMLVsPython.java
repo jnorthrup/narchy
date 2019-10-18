@@ -64,109 +64,106 @@ public class EJMLVsPython {
 	public void testTranspose() throws IOException {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new StringReader(s), " ");
 		DMatrixRMaj X = new DMatrixRMaj(Xin);
-		double [][] pytranspose = {
-				{ 1.,  6.,  3.,  7.,  2.,  3.,  8.},
-				{ 2.,  7.,  4.,  3.,  4.,  4.,  6.},
-				{ 3.,  8.,  2.,  6.,  7.,  3.,  9.},
-				{ 4.,  9.,  7.,  7.,  8.,  3.,  4.},
-				{ 5.,  5.,  3.,  3.,  9.,  5.,  2.},};
-		transpose(X);
+        transpose(X);
 		double [][] transpose = EjmlOps.extractDoubleArray(X);
-		assertEqualDoubleArrays(pytranspose, transpose, epsilon);
+        double[][] pytranspose = {
+                {1., 6., 3., 7., 2., 3., 8.},
+                {2., 7., 4., 3., 4., 4., 6.},
+                {3., 8., 2., 6., 7., 3., 9.},
+                {4., 9., 7., 7., 8., 3., 4.},
+                {5., 5., 3., 3., 9., 5., 2.},};
+        assertEqualDoubleArrays(pytranspose, transpose, epsilon);
 	}
 
 	@Test
 	public void testSquare() throws IOException {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new StringReader(s), " ");
 		DMatrixRMaj X = new DMatrixRMaj(Xin);
-		double [][] pysquare = {
-				{ 1.,   4.,   9.,  16.,  25.},
-				{ 36.,  49.,  64.,  81.,  25.},
-				{  9.,  16.,   4.,  49.,   9.},
-				{ 49.,   9.,  36.,  49.,   9.},
-				{  4.,  16.,  49.,  64.,  81.},
-				{  9.,  16.,   9.,   9.,  25.},
-				{ 64.,  36.,  81.,  16.,   4.},
-				};
-		DMatrixRMaj sq = new DMatrixRMaj(X.numRows,X.numCols);
+        DMatrixRMaj sq = new DMatrixRMaj(X.numRows,X.numCols);
 		elementPower(X,2,sq);
 		double [][] square = EjmlOps.extractDoubleArray(sq);
-		assertEqualDoubleArrays(pysquare, square, epsilon);
+        double[][] pysquare = {
+                {1., 4., 9., 16., 25.},
+                {36., 49., 64., 81., 25.},
+                {9., 16., 4., 49., 9.},
+                {49., 9., 36., 49., 9.},
+                {4., 16., 49., 64., 81.},
+                {9., 16., 9., 9., 25.},
+                {64., 36., 81., 16., 4.},
+        };
+        assertEqualDoubleArrays(pysquare, square, epsilon);
 	}
 	
 	@Test
 	public void testTimes() throws IOException {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new StringReader(s), " ");
 		DMatrixRMaj X = new DMatrixRMaj(Xin);
-		double [][] pydot = {
-				{  55.,  105.,   60.,   74.,  108.,   57.,   73.},
-				{ 105.,  255.,  140.,  189.,  213.,  122.,  208.},
-				{  60.,  140.,   87.,  103.,  119.,   67.,  100.},
-				{  74.,  189.,  103.,  152.,  151.,   87.,  162.},
-				{ 108.,  213.,  119.,  151.,  214.,  112.,  153.},
-				{  57.,  122.,   67.,   87.,  112.,   68.,   97.},
-				{  73.,  208.,  100.,  162.,  153.,   97.,  201.}
-				};
-		DMatrixRMaj tr = new DMatrixRMaj(X.numCols,X.numRows);
+        DMatrixRMaj tr = new DMatrixRMaj(X.numCols,X.numRows);
 		DMatrixRMaj mult = new DMatrixRMaj(X.numRows,tr.numCols);
 		transpose(X,tr);
 		mult(X,tr,mult);
-		double [][] times = EjmlOps.extractDoubleArray(mult); 
-		assertEqualDoubleArrays(pydot, times, epsilon);
+		double [][] times = EjmlOps.extractDoubleArray(mult);
+        double[][] pydot = {
+                {55., 105., 60., 74., 108., 57., 73.},
+                {105., 255., 140., 189., 213., 122., 208.},
+                {60., 140., 87., 103., 119., 67., 100.},
+                {74., 189., 103., 152., 151., 87., 162.},
+                {108., 213., 119., 151., 214., 112., 153.},
+                {57., 122., 67., 87., 112., 68., 97.},
+                {73., 208., 100., 162., 153., 97., 201.}
+        };
+        assertEqualDoubleArrays(pydot, times, epsilon);
 	}
 
 	@Test
 	public void testScaleTimes() throws IOException {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new StringReader(s), " ");
 		DMatrixRMaj X = new DMatrixRMaj(Xin);
-		double [][] pyscle = 
-				{{ -2.,  -4.,  -6.,  -8., -10.},
-				 {-12., -14., -16., -18., -10.},
-				 { -6.,  -8.,  -4., -14.,  -6.},
-				 {-14.,  -6., -12., -14.,  -6.},
-				 { -4.,  -8., -14., -16., -18.},
-				 { -6.,  -8.,  -6.,  -6., -10.},
-				 {-16., -12., -18.,  -8.,  -4.},
-				 };
-		scale(-2.0,X);
-		double [][] scale = EjmlOps.extractDoubleArray(X); 
-		assertEqualDoubleArrays(pyscle, scale, epsilon);
+        scale(-2.0,X);
+		double [][] scale = EjmlOps.extractDoubleArray(X);
+        double[][] pyscle = {{-2., -4., -6., -8., -10.},
+                {-12., -14., -16., -18., -10.},
+                {-6., -8., -4., -14., -6.},
+                {-14., -6., -12., -14., -6.},
+                {-4., -8., -14., -16., -18.},
+                {-6., -8., -6., -6., -10.},
+                {-16., -12., -18., -8., -4.},
+        };
+        assertEqualDoubleArrays(pyscle, scale, epsilon);
 	}
 
 	@Test
 	public void testScalarPlus() throws IOException {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new StringReader(s), " ");
 		DMatrixRMaj X = new DMatrixRMaj(Xin);
-		double [][] pyplus = 
-				{{  3.,   4.,   5.,   6.,   7.},
-				 {  8.,   9.,  10.,  11.,   7.},
-				 {  5.,   6.,   4.,   9.,   5.},
-				 {  9.,   5.,   8.,   9.,   5.},
-				 {  4.,   6.,   9.,  10.,  11.},
-				 {  5.,   6.,   5.,   5.,   7.},
-				 { 10.,   8.,  11.,   6.,   4.},
-				 };
-		add(X,2);
+        add(X,2);
 		double [][] plus = EjmlOps.extractDoubleArray(X);
-		assertEqualDoubleArrays(pyplus, plus, epsilon);
+        double[][] pyplus = {{3., 4., 5., 6., 7.},
+                {8., 9., 10., 11., 7.},
+                {5., 6., 4., 9., 5.},
+                {9., 5., 8., 9., 5.},
+                {4., 6., 9., 10., 11.},
+                {5., 6., 5., 5., 7.},
+                {10., 8., 11., 6., 4.},
+        };
+        assertEqualDoubleArrays(pyplus, plus, epsilon);
 	}
 	
 	@Test
 	public void testScalarInverse() throws IOException {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new StringReader(s), " ");
 		DMatrixRMaj X = new DMatrixRMaj(Xin);
-		double [][] pyinv = 
-				{{ 1.,          0.5,         0.33333333,  0.25,        0.2       },
-				 { 0.16666667,  0.14285714,  0.125,       0.11111111,  0.2       },
-				 { 0.33333333,  0.25,        0.5,         0.14285714,  0.33333333},
-				 { 0.14285714,  0.33333333,  0.16666667,  0.14285714,  0.33333333},
-				 { 0.5,         0.25,        0.14285714,  0.125,       0.11111111},
-				 { 0.33333333,  0.25,        0.33333333,  0.33333333,  0.2       },
-				 { 0.125,       0.16666667,  0.11111111,  0.25,        0.5       }
-				 };
-		divide(1.0, X);
+        divide(1.0, X);
 		double [][] inv = EjmlOps.extractDoubleArray(X);
-		assertEqualDoubleArrays(pyinv, inv, epsilon);
+        double[][] pyinv = {{1., 0.5, 0.33333333, 0.25, 0.2},
+                {0.16666667, 0.14285714, 0.125, 0.11111111, 0.2},
+                {0.33333333, 0.25, 0.5, 0.14285714, 0.33333333},
+                {0.14285714, 0.33333333, 0.16666667, 0.14285714, 0.33333333},
+                {0.5, 0.25, 0.14285714, 0.125, 0.11111111},
+                {0.33333333, 0.25, 0.33333333, 0.33333333, 0.2},
+                {0.125, 0.16666667, 0.11111111, 0.25, 0.5}
+        };
+        assertEqualDoubleArrays(pyinv, inv, epsilon);
 	}
 	
 	@Test
@@ -202,18 +199,17 @@ public class EJMLVsPython {
 	public void testScalarMultiply() throws IOException {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new StringReader(s), " ");
 		DMatrixRMaj X = new DMatrixRMaj(Xin);
-		double [][] pysm = 
-				{{  1.,   4.,   9.,  16.,  25.},
-				 { 36.,  49.,  64.,  81.,  25.},
-				 {  9.,  16.,   4.,  49.,   9.},
-				 { 49.,   9.,  36.,  49.,   9.},
-				 {  4.,  16.,  49.,  64.,  81.},
-				 {  9.,  16.,   9.,   9.,  25.},
-				 { 64.,  36.,  81.,  16.,   4.},
-				 };
-		elementMult(X,X);
+        elementMult(X,X);
 		double [][] sm = EjmlOps.extractDoubleArray(X);
-		assertEqualDoubleArrays(pysm, sm, epsilon);
+        double[][] pysm = {{1., 4., 9., 16., 25.},
+                {36., 49., 64., 81., 25.},
+                {9., 16., 4., 49., 9.},
+                {49., 9., 36., 49., 9.},
+                {4., 16., 49., 64., 81.},
+                {9., 16., 9., 9., 25.},
+                {64., 36., 81., 16., 4.},
+        };
+        assertEqualDoubleArrays(pysm, sm, epsilon);
 	}
 
 	@Test
@@ -238,18 +234,17 @@ public class EJMLVsPython {
 		double [][] Xin = MatrixUtils.simpleRead2DMatrix(new StringReader(s), " ");
 		DMatrixRMaj X = new DMatrixRMaj(Xin);
 		DMatrixRMaj mins = new DMatrixRMaj(X.numRows,X.numCols);
-		double [][] pymin = 
-				{{ 0.,  0.,  0.,  0.,  0.},
-				 { 0.,  0.,  0.,  0.,  0.},
-				 { 0.,  0.,  0.,  0.,  0.},
-				 { 0.,  0.,  0.,  0.,  0.},
-				 { 0.,  0.,  0.,  0.,  0.},
-				 { 0.,  0.,  0.,  0.,  0.},
-				 { 0.,  0.,  0.,  0.,  0.},
-				 };
-		subtract(X, X, mins);
+        subtract(X, X, mins);
 		double [][] min = EjmlOps.extractDoubleArray(mins);
-		assertEqualDoubleArrays(pymin, min, epsilon);
+        double[][] pymin = {{0., 0., 0., 0., 0.},
+                {0., 0., 0., 0., 0.},
+                {0., 0., 0., 0., 0.},
+                {0., 0., 0., 0., 0.},
+                {0., 0., 0., 0., 0.},
+                {0., 0., 0., 0., 0.},
+                {0., 0., 0., 0., 0.},
+        };
+        assertEqualDoubleArrays(pymin, min, epsilon);
 	}
 
 	@Test
@@ -279,17 +274,16 @@ public class EJMLVsPython {
 		DMatrixRMaj X = new DMatrixRMaj(Xin);
 		DMatrixRMaj sumR = new DMatrixRMaj(1,X.numCols);
 		sumCols(X,sumR);
-		double [][] pyasgn = 
-				{{  1.,   2.,   3.,   4.,   5.},
-				 {  6.,   7.,   8.,   9.,   5.},
-				 {  3.,   4.,   2.,   7.,   3.},
-				 { 30.,  30.,  38.,  42.,  32.},
-				 {  2.,   4.,   7.,   8.,   9.},
-				 {  3.,   4.,   3.,   3.,   5.},
-				 {  8.,   6.,   9.,   4.,   2.},
-				 };
-		insert(sumR,X,3,0);
-		assertEqualDoubleArrays(pyasgn, EjmlOps.extractDoubleArray(X), epsilon);
+        insert(sumR,X,3,0);
+        double[][] pyasgn = {{1., 2., 3., 4., 5.},
+                {6., 7., 8., 9., 5.},
+                {3., 4., 2., 7., 3.},
+                {30., 30., 38., 42., 32.},
+                {2., 4., 7., 8., 9.},
+                {3., 4., 3., 3., 5.},
+                {8., 6., 9., 4., 2.},
+        };
+        assertEqualDoubleArrays(pyasgn, EjmlOps.extractDoubleArray(X), epsilon);
 	}
 
 	@Test

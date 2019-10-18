@@ -265,10 +265,10 @@ public class CompoundShape extends CollisionShape {
 	public void calculatePrincipalAxisTransform(float[] masses, Transform principal, v3 inertia) {
 		int n = children.size();
 
-		float totalMass = 0;
-		v3 center = new v3();
+        v3 center = new v3();
 		center.set(0, 0, 0);
-		for (int k = 0; k < n; k++) {
+        float totalMass = 0;
+        for (int k = 0; k < n; k++) {
 			
 			center.scaleAdd(masses[k], children.get(k).transform, center);
 			totalMass += masses[k];

@@ -387,14 +387,13 @@ public class Generic6DofConstraint extends TypedConstraint {
 		v3 pointInA = new v3(calculatedTransformA);
 		v3 pointInB = new v3(calculatedTransformB);
 
-		float jacDiagABInv;
-		v3 linear_axis = new v3();
+        v3 linear_axis = new v3();
 		for (i = 0; i < 3; i++) {
 			if (linearLimits.needApplyForces(i))
                         {
-							jacDiagABInv = 1f / jacLinear[i].Adiag;
+                            float jacDiagABInv = 1f / jacLinear[i].Adiag;
 
-				if (useLinearReferenceFrameA) {
+                            if (useLinearReferenceFrameA) {
 					calculatedTransformA.basis.getColumn(i, linear_axis);
 				}
 				else {
@@ -412,15 +411,14 @@ public class Generic6DofConstraint extends TypedConstraint {
 
 		
 		v3 angular_axis = new v3();
-		float angularJacDiagABInv;
-		for (i = 0; i < 3; i++) {
+        for (i = 0; i < 3; i++) {
 			if (angularLimits[i].needApplyTorques()) { 
 				
 				getAxis(i, angular_axis);
 
-				angularJacDiagABInv = 1f / jacAng[i].Adiag;
+                float angularJacDiagABInv = 1f / jacAng[i].Adiag;
 
-				angularLimits[i].solveAngularLimits(
+                angularLimits[i].solveAngularLimits(
                         timeStep,
                                         angular_axis,
                                         angularJacDiagABInv,

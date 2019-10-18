@@ -188,9 +188,8 @@ public enum GraphIO { ;
         if (g.directed()) System.err.println(
                 "warning: you're saving a directed graph in Chaco format");
 
-        long edges;
         int bound = g.size();
-        edges = IntStream.range(0, bound).mapToLong(i1 -> g.neighborsOut(i1).size()).sum();
+        long edges = IntStream.range(0, bound).mapToLong(i1 -> g.neighborsOut(i1).size()).sum();
 
         out.println(g.size() + " " + edges / 2);
 

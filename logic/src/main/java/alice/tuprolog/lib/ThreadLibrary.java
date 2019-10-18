@@ -568,10 +568,9 @@ public class ThreadLibrary extends PrologLib {
 
 		private boolean searchLoop(Term t, Prolog engine, boolean block, boolean remove, PrologRun er) {
 			synchronized (queue) {
-				boolean found;
-				do {
-					found = search(t, engine, remove);
-					if (found)
+                do {
+                    boolean found = search(t, engine, remove);
+                    if (found)
 						return true;
 
 					er.setSolving(false);

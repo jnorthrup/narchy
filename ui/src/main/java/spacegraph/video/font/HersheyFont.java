@@ -25,7 +25,6 @@ public final class HersheyFont {
 
     static {
 
-        List<HersheyFont> glyphs = new FasterList(256);
         String[] lines = null;
 
 
@@ -46,7 +45,7 @@ public final class HersheyFont {
         }
 
         String scratch = "";
-        HersheyFont nextGlyph;
+        List<HersheyFont> glyphs = new FasterList(256);
         for (String line : lines) {
             String c = line;
             if (c.endsWith("\n"))
@@ -54,7 +53,7 @@ public final class HersheyFont {
 
 
             if (Character.isDigit(c.charAt(4))) {
-                nextGlyph = new HersheyFont(c + scratch);
+                HersheyFont nextGlyph = new HersheyFont(c + scratch);
 
                 glyphs.add(nextGlyph);
                 scratch = "";
@@ -92,20 +91,17 @@ public final class HersheyFont {
     }
 
     HersheyFont(String hspec) {
-        FasterList<byte[]> segments = new FasterList();
-
-
-        String spec = (hspec.substring(10));
 
 
         leftPos = (hspec.charAt(8)) - offsetR;
         rightPos = (hspec.charAt(9)) - offsetR;
 
-        int curX, curY;
-//        boolean penUp = true;
+        //        boolean penUp = true;
         ByteArrayList currentSeg = new ByteArrayList(8);
 
+        String spec = (hspec.substring(10));
         int ss = spec.length() - 1;
+        FasterList<byte[]> segments = new FasterList();
         for (int i = 0; i < ss; i += 2) {
 
             char ci = spec.charAt(i), cii = spec.charAt(i + 1);
@@ -117,9 +113,9 @@ public final class HersheyFont {
                 continue;
             }
 
-            curX = ci - offsetR;
+            int curX = ci - offsetR;
             currentSeg.add((byte) curX);
-            curY = cii - offsetR;
+            int curY = cii - offsetR;
             currentSeg.add((byte) (10 - curY));
         }
         if (!currentSeg.isEmpty())

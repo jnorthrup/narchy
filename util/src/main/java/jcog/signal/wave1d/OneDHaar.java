@@ -100,8 +100,8 @@ public enum OneDHaar {
                 float sampleAtKGAPSIZE = sample[KGAPSIZE];
                 float sampleAtKGAPSIZEPlusI = sample[KGAPSIZE + I];
                 float a = (sampleAtKGAPSIZE + sampleAtKGAPSIZEPlusI) / 2;
-                float c = (sampleAtKGAPSIZE - sampleAtKGAPSIZEPlusI) / 2;
                 sample[KGAPSIZE] = a;
+                float c = (sampleAtKGAPSIZE - sampleAtKGAPSIZEPlusI) / 2;
                 sample[KGAPSIZE + I] = c;
             }
             I = GAP_SIZE;
@@ -130,8 +130,8 @@ public enum OneDHaar {
                 double sampleAtKGAPSIZE = sample[KGAPSIZE];
                 double sampleAtKGAPSIZEPlusI = sample[KGAPSIZE + I];
                 double a = (sampleAtKGAPSIZE + sampleAtKGAPSIZEPlusI) / 2;
-                double c = (sampleAtKGAPSIZE - sampleAtKGAPSIZEPlusI) / 2;
                 sample[KGAPSIZE] = a;
+                double c = (sampleAtKGAPSIZE - sampleAtKGAPSIZEPlusI) / 2;
                 sample[KGAPSIZE + I] = c;
             }
             I = GAP_SIZE;
@@ -152,11 +152,9 @@ public enum OneDHaar {
             return;
         }
         NUM_SAMPLE_VALS /= (int) (Math.pow(2.0, sweep_number));
-        double c;
-        double a;
         for (int K = 0; K < NUM_SAMPLE_VALS; K++) {
-            a = (sample[GAP_SIZE * K] + sample[GAP_SIZE * K + I]) / 2;
-            c = (sample[GAP_SIZE * K] - sample[GAP_SIZE * K + I]) / 2;
+            double a = (sample[GAP_SIZE * K] + sample[GAP_SIZE * K + I]) / 2;
+            double c = (sample[GAP_SIZE * K] - sample[GAP_SIZE * K + I]) / 2;
             sample[GAP_SIZE * K] = a;
             sample[GAP_SIZE * K + I] = c;
         }
@@ -579,8 +577,8 @@ public enum OneDHaar {
                 
                 
                 double a0 = s + d / 2;
-                double a1 = s - d / 2;
                 restored_vals[2 * i] = a0;
+                double a1 = s - d / 2;
                 restored_vals[2 * i + 1] = a1;
             }
             
@@ -616,8 +614,8 @@ public enum OneDHaar {
                 
                 
                 double a0 = s + d / 2;
-                double a1 = s - d / 2;
                 restored_vals[2 * i] = a0;
+                double a1 = s - d / 2;
                 restored_vals[2 * i + 1] = a1;
             }
             

@@ -1142,8 +1142,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         double[] result = new double[10];
         int count = 0;
         for (int i = 0; i < 9; i++) {
-            double v = 0.0;
             if (result.length == count) result = Arrays.copyOf(result, count * 2);
+            double v = 0.0;
             result[count++] = v;
         }
         result = Arrays.copyOfRange(result, 0, count);
@@ -1193,8 +1193,6 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
 
         
         {
-            int j;
-            double temp;
 
             int ptr = 0;
             int rs = 0;
@@ -1202,12 +1200,12 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             
             int i = 3;
             while (i-- != 0) {
-                double big = 0.0;
 
-                
-                j = 3;
+
+                int j = 3;
+                double big = 0.0;
                 while (j-- != 0) {
-                    temp = matrix0[ptr++];
+                    double temp = matrix0[ptr++];
                     temp = Math.abs(temp);
                     if (temp > big) {
                         big = temp;
@@ -1335,28 +1333,26 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
                                            int[] row_perm,
                                            double[] matrix2) {
 
-        int ii, ip, j, k;
-        int rv;
 
-        
         int rp = 0;
 
         
-        for (k = 0; k < 3; k++) {
+        for (int k = 0; k < 3; k++) {
             
             int cv = k;
-            ii = -1;
+            int ii = -1;
 
-            
+
+            int rv;
             for (int i = 0; i < 3; i++) {
 
-                ip = row_perm[rp + i];
+                int ip = row_perm[rp + i];
                 double sum = matrix2[cv + 3 * ip];
                 matrix2[cv + 3 * ip] = matrix2[cv + 3 * i];
                 if (ii >= 0) {
                     
                     rv = i * 3;
-                    for (j = ii; j <= i - 1; j++) {
+                    for (int j = ii; j <= i - 1; j++) {
                         sum -= matrix1[rv + j] * matrix2[cv + 3 * j];
                     }
                 } else if (sum != 0.0) {

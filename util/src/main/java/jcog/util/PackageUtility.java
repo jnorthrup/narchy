@@ -17,8 +17,7 @@ public enum PackageUtility {
     ;
 
     public static List<Class> getClasses(String pkgName, boolean innerClasses) throws ClassNotFoundException {
-        List<Class> classes = new ArrayList<>();
-        
+
         File directory = null;
         String pkgPath;
         try {
@@ -33,6 +32,7 @@ public enum PackageUtility {
             throw new ClassNotFoundException(pkgName + " (" + directory
                     + ") does not appear to be a valid package");
         }
+        List<Class> classes = new ArrayList<>();
         if (directory.exists()) {
             
             String[] files = directory.list();
@@ -81,10 +81,9 @@ public enum PackageUtility {
 
         JarInputStream jarFile = new JarInputStream(new FileInputStream(
                 jarName));
-        JarEntry jarEntry;
 
         while (true) {
-            jarEntry = jarFile.getNextJarEntry();
+            JarEntry jarEntry = jarFile.getNextJarEntry();
             if (jarEntry == null)
                 break;
             if ((jarEntry.getName().startsWith(cleanedPackageName))

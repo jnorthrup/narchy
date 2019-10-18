@@ -290,25 +290,22 @@ public class Rdp {
      * @param data Packet containing capability set data at current read position
      */
     static void processServerCaps(RdpPacket_Localised data, int length) {
-        int n;
-        int next;
-        int capset_type, capset_length;
 
         int start = data.getPosition();
 
         int ncapsets = data.getLittleEndian16();
         data.incrementPosition(2); 
 
-        for (n = 0; n < ncapsets; n++) {
+        for (int n = 0; n < ncapsets; n++) {
             if (data.getPosition() > start + length)
                 return;
 
-            capset_type = data.getLittleEndian16(); 
-            
-            capset_length = data.getLittleEndian16(); 
-            
+            int capset_type = data.getLittleEndian16();
 
-            next = data.getPosition() + capset_length - 4;
+            int capset_length = data.getLittleEndian16();
+
+
+            int next = data.getPosition() + capset_length - 4;
 
             switch (capset_type) {
                 case RDP_CAPSET_GENERAL:
@@ -821,10 +818,6 @@ public class Rdp {
                                String password, String command, String directory)
             throws RdesktopException, IOException, CryptoException {
 
-        int len_ip = 2 * "127.0.0.1".length();
-        int len_dll = 2 * "C:\\WINNT\\System32\\mstscax.dll".length();
-        int packetlen = 0;
-
         int sec_flags = Constants.encryption ? (Secure.SEC_LOGON_INFO | Secure.SEC_ENCRYPT)
                 : Secure.SEC_LOGON_INFO;
         int domainlen = 2 * domain.length();
@@ -857,38 +850,41 @@ public class Rdp {
         } else {
             flags |= RDP_LOGON_BLOB;
             logger.debug("Sending RDP5-style Logon packet");
-            packetlen = /* size of TS_INFO_PACKET */
-                    4 + /* CodePage */
-                            4 + /* flags */
-                            2 + /* cbDomain */
-                            2 + /* cbUserName */
-                            2 + /* cbPassword */
-                            2 + /* cbAlternateShell */
-                            2 + /* cbWorkingDir */
-                            2 + domainlen +    /* Domain */
-                            2 + userlen +  /* UserName */
-                            2 + passlen +  /* Password */
-                            2 + commandlen +   /* AlternateShell */
-                            2 + dirlen + /* WorkingDir */
-                            /* size of TS_EXTENDED_INFO_PACKET */
-                            2 + /* clientAdressFamily */
-                            2 + /* cbClientAdress */
-                            len_ip +    /* clientAddress */
-                            2 + /* cbClientDir */
-                            len_dll +   /* clientDir */
-                            /* size of TS_TIME_ZONE_INFORMATION */
-                            4 + /* Bias, (UTC = local time + bias */
-                            64 +    /* StandardName, 32 unicode char array, Descriptive standard time on client */
-                            16 +    /* StandardDate */
-                            4 + /* StandardBias */
-                            64 +    /* DaylightName, 32 unicode char array */
-                            16 +    /* DaylightDate */
-                            4 + /* DaylightBias */
-                            4 + /* clientSessionId */
-                            4 + /* performanceFlags */
-                            2 + /* cbAutoReconnectCookie, either 0 or 0x001c */
-                            /* size of ARC_CS_PRIVATE_PACKET */
-                            28; /* autoReconnectCookie */
+            /* size of TS_INFO_PACKET */
+            /* autoReconnectCookie */
+            int len_dll = 2 * "C:\\WINNT\\System32\\mstscax.dll".length();
+            int len_ip = 2 * "127.0.0.1".length();
+            int packetlen = 4 + /* CodePage */
+                    4 + /* flags */
+                    2 + /* cbDomain */
+                    2 + /* cbUserName */
+                    2 + /* cbPassword */
+                    2 + /* cbAlternateShell */
+                    2 + /* cbWorkingDir */
+                    2 + domainlen +    /* Domain */
+                    2 + userlen +  /* UserName */
+                    2 + passlen +  /* Password */
+                    2 + commandlen +   /* AlternateShell */
+                    2 + dirlen + /* WorkingDir */
+                    /* size of TS_EXTENDED_INFO_PACKET */
+                    2 + /* clientAdressFamily */
+                    2 + /* cbClientAdress */
+                    len_ip +    /* clientAddress */
+                    2 + /* cbClientDir */
+                    len_dll +   /* clientDir */
+                    /* size of TS_TIME_ZONE_INFORMATION */
+                    4 + /* Bias, (UTC = local time + bias */
+                    64 +    /* StandardName, 32 unicode char array, Descriptive standard time on client */
+                    16 +    /* StandardDate */
+                    4 + /* StandardBias */
+                    64 +    /* DaylightName, 32 unicode char array */
+                    16 +    /* DaylightDate */
+                    4 + /* DaylightBias */
+                    4 + /* clientSessionId */
+                    4 + /* performanceFlags */
+                    2 + /* cbAutoReconnectCookie, either 0 or 0x001c */
+                    /* size of ARC_CS_PRIVATE_PACKET */
+                    28;
 
             data = SecureLayer.init(sec_flags, packetlen); 
             
@@ -994,7 +990,6 @@ public class Rdp {
     private void processDemandActive(RdpPacket_Localised data)
             throws RdesktopException, IOException, CryptoException,
             OrderException {
-        int[] type = new int[1];
 
         this.rdp_shareid = data.getLittleEndian32();
 
@@ -1004,7 +999,8 @@ public class Rdp {
         this.sendControl(RDP_CTL_COOPERATE);
         this.sendControl(RDP_CTL_REQUEST_CONTROL);
 
-        this.receive(type); 
+        int[] type = new int[1];
+        this.receive(type);
         this.receive(type); 
         this.receive(type); 
 
@@ -1029,13 +1025,13 @@ public class Rdp {
      */
     private boolean processData(RdpPacket_Localised data, int[] ext_disc_reason)
             throws RdesktopException, OrderException {
-        int clen, roff, rlen;
+        int roff, rlen;
 
         data.incrementPosition(6);
         int len = data.getLittleEndian16();
         int data_type = data.get8();
         int ctype = data.get8();
-        clen = data.getLittleEndian16(); 
+        int clen = data.getLittleEndian16();
         clen -= 18;
 
         System.out.println("data_pdu_type=" + data_type);
@@ -1270,10 +1266,11 @@ public class Rdp {
 
     private void processPointer(RdpPacket_Localised data)
             throws RdesktopException {
-        int x = 0, y = 0;
 
         int message_type = data.getLittleEndian16();
         data.incrementPosition(2);
+        int y = 0;
+        int x = 0;
         switch (message_type) {
 
             case (Rdp.RDP_POINTER_MOVE):
@@ -1328,13 +1325,9 @@ public class Rdp {
     protected void processBitmapUpdates(RdpPacket_Localised data)
             throws RdesktopException {
 
-        int left = 0, top = 0, right = 0, bottom = 0, width = 0, height = 0;
-        int cx = 0, cy = 0, bitsperpixel = 0, compression = 0, buffersize = 0, size = 0;
-        byte[] pixel = null;
+        int maxY;
 
-        int maxX, maxY;
-
-        maxX = maxY = 0;
+        int maxX = maxY = 0;
         int minX = surface.getWidth();
         int minY = surface.getHeight();
 
@@ -1342,6 +1335,19 @@ public class Rdp {
 
         ByteBuffer bb = data.bb;
 
+        byte[] pixel = null;
+        int size = 0;
+        int buffersize = 0;
+        int compression = 0;
+        int bitsperpixel = 0;
+        int cy = 0;
+        int cx = 0;
+        int height = 0;
+        int width = 0;
+        int bottom = 0;
+        int right = 0;
+        int top = 0;
+        int left = 0;
         for (int i = 0; i < n_updates; i++) {
 
             bb.order(ByteOrder.LITTLE_ENDIAN);
@@ -1439,17 +1445,16 @@ public class Rdp {
 
     protected void processPalette(RdpPacket_Localised data) {
 
-        int j = 0;
-
         data.incrementPosition(2);
         int n_colors = data.getLittleEndian16();
         data.incrementPosition(2);
         byte[] palette = new byte[n_colors * 3];
-        byte[] red = new byte[n_colors];
-        byte[] green = new byte[n_colors];
-        byte[] blue = new byte[n_colors];
         data.copyToByteArray(palette, 0, data.getPosition(), palette.length);
         data.incrementPosition(palette.length);
+        byte[] blue = new byte[n_colors];
+        byte[] green = new byte[n_colors];
+        byte[] red = new byte[n_colors];
+        int j = 0;
         for (int i = 0; i < n_colors; i++) {
             red[i] = palette[j++];
             green[i] = palette[j++];
@@ -1484,10 +1489,10 @@ public class Rdp {
         int height = data.getLittleEndian16();
         int masklen = data.getLittleEndian16();
         int datalen = data.getLittleEndian16();
-        byte[] mask = new byte[masklen];
         byte[] pixel = new byte[datalen];
         data.copyToByteArray(pixel, 0, data.getPosition(), datalen);
         data.incrementPosition(datalen);
+        byte[] mask = new byte[masklen];
         data.copyToByteArray(mask, 0, data.getPosition(), masklen);
         data.incrementPosition(masklen);
         Cursor cursor = surface.createCursor(cache_idx, x, y, width, height, mask, pixel, bpp);

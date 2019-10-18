@@ -29,10 +29,10 @@ public class Dropout {
 
         if (activation == null) activation = "ReLU";
 
-        
-        int input_size;
+
         for(int i=0; i<this.n_layers; i++) {
-            
+
+            int input_size;
             if(i == 0) {
                 input_size = n_in;
             } else {
@@ -50,21 +50,19 @@ public class Dropout {
     }
 
     public void train(int epochs, double[][] train_X, double[][] train_Y, boolean dropout, double p_dropout, double lr) {
-        List<double[]> dropout_masks;
-        List<double[]> layer_inputs;
-        double[] layer_input;
         double[] layer_output = new double[0];
 
         for(int epoch=0; epoch<epochs; epoch++) {
 
             for(int n=0; n<N; n++) {
 
-                dropout_masks = new ArrayList<>(n_layers);
-                layer_inputs = new ArrayList<>(n_layers+1);  
+                List<double[]> dropout_masks = new ArrayList<>(n_layers);
+                List<double[]> layer_inputs = new ArrayList<>(n_layers + 1);
 
-                
+
                 for(int i=0; i<n_layers; i++) {
 
+                    double[] layer_input;
                     if(i == 0) layer_input = train_X[n];
                     else layer_input = layer_output.clone();
 
@@ -88,11 +86,11 @@ public class Dropout {
 
                 
                 double[] prev_dy = logistic_layer_dy;
-                double[][] prev_W;
                 double[] dy = new double[0];
 
                 for(int i=n_layers-1; i>=0; i--) {
 
+                    double[][] prev_W;
                     if(i == n_layers-1) {
                         prev_W = logisticLayer.W;
                     } else {
@@ -118,11 +116,11 @@ public class Dropout {
     public void pretest(double p_dropout) {
         for(int i=0; i<n_layers; i++) {
             int in;
-            int out;
 
             if (i == 0) in = n_in;
             else in = hidden_layer_sizes[i];
 
+            int out;
             if (i == n_layers - 1) out = n_out;
             else out = hidden_layer_sizes[i+1];
 
@@ -137,11 +135,11 @@ public class Dropout {
 
 
     public void predict(double[] x, double[] y) {
-        double[] layer_input;
         double[] layer_output = new double[0];
 
         for(int i=0; i<n_layers; i++) {
 
+            double[] layer_input;
             if(i == 0) layer_input = x;
             else layer_input = layer_output.clone();
 
@@ -161,7 +159,6 @@ public class Dropout {
         int n_epochs = 5000;
 
         int train_N = 4;
-        int test_N = 4;
         int n_in = 2;
         int[] hidden_layer_sizes = {10, 10};
         int n_out = 2;
@@ -202,6 +199,7 @@ public class Dropout {
                 {1., 1.},
         };
 
+        int test_N = 4;
         double[][] test_Y = new double[test_N][n_out];
 
         

@@ -1767,7 +1767,6 @@ public class Dynamics2D {
     public static void staticBox(Dynamics2D world, float x1, float y1, float x2, float y2, boolean top, boolean right, boolean bottom, boolean left) {
 
         float cx = (x1 + x2) / 2f;
-        float cy = (y1 + y2) / 2f;
         float w = Math.abs(x2 - x1);
         float h = Math.abs(y2 - y1);
 
@@ -1787,6 +1786,7 @@ public class Dynamics2D {
             _top.setTransform(new v2(cx, y2), 0);
         }
 
+        float cy = (y1 + y2) / 2f;
         if (left) {
             Body2D _left = world.addBody(new BodyDef(BodyType.STATIC),
                     new FixtureDef(PolygonShape.box(thick / 2, h / 2 - thick / 2),

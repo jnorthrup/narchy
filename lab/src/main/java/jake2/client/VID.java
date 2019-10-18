@@ -743,9 +743,8 @@ public class VID extends Globals {
 	static String MenuKey( int key )
 	{
 		Menu.menuframework_s m = s_current_menu;
-		final String sound = "misc/menu1.wav";
 
-		switch ( key )
+        switch ( key )
 		{
 		case K_ESCAPE:
 			Menu.PopMenu();
@@ -769,7 +768,8 @@ public class VID extends Globals {
 			break;
 		}
 
-		return sound;
+        final String sound = "misc/menu1.wav";
+        return sound;
 	}
 
 }

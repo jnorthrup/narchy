@@ -29,9 +29,9 @@ public class GradientFitter implements ParameterizedFunction {
     @Override
     public void learn(double[] xs, double y) {
         double q = parameterizedFunction.value(xs);
-        double e = y - q;
 
         parameterGradient(gradient, xs);
+        double e = y - q;
         Utils.multiplySelf(gradient,e);
 
         double l = Utils.length(gradient);

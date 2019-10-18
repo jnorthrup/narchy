@@ -1159,9 +1159,8 @@ public enum ArrayUtil {
         if (array == null) return;
         int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
-        boolean tmp;
         while (j > i) {
-            tmp = array[j];
+            boolean tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -1187,9 +1186,8 @@ public enum ArrayUtil {
         if (array == null) return;
         int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
-        byte tmp;
         while (j > i) {
-            tmp = array[j];
+            byte tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -1215,9 +1213,8 @@ public enum ArrayUtil {
         if (array == null) return;
         int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
-        char tmp;
         while (j > i) {
-            tmp = array[j];
+            char tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -1243,9 +1240,8 @@ public enum ArrayUtil {
         if (array == null) return;
         int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
-        double tmp;
         while (j > i) {
-            tmp = array[j];
+            double tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -1271,9 +1267,8 @@ public enum ArrayUtil {
         if (array == null) return;
         int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
-        float tmp;
         while (j > i) {
-            tmp = array[j];
+            float tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -1299,9 +1294,8 @@ public enum ArrayUtil {
         if (array == null || array.length <= 1 || (endIndexExclusive - startIndexInclusive <= 1)) return;
         int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
-        int tmp;
         while (j > i) {
-            tmp = array[j];
+            int tmp = array[j];
             array[j--] = array[i];
             array[i++] = tmp;
         }
@@ -1325,9 +1319,8 @@ public enum ArrayUtil {
         if (array == null) return;
         int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
-        long tmp;
         while (j > i) {
-            tmp = array[j];
+            long tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -1353,9 +1346,8 @@ public enum ArrayUtil {
         if (array == null) return;
         int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
-        Object tmp;
         while (j > i) {
-            tmp = array[j];
+            Object tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -1381,9 +1373,8 @@ public enum ArrayUtil {
         if (array == null) return;
         int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
-        short tmp;
         while (j > i) {
-            tmp = array[j];
+            short tmp = array[j];
             array[j] = array[i];
             array[i] = tmp;
             j--;
@@ -3244,8 +3235,8 @@ public enum ArrayUtil {
         long[] result = new long[10];
         int count = 0;
         for (Long aLong : array) {
-            long l = aLong;
             if (result.length == count) result = Arrays.copyOf(result, count * 2);
+            long l = aLong;
             result[count++] = l;
         }
         result = Arrays.copyOfRange(result, 0, count);
@@ -3302,8 +3293,8 @@ public enum ArrayUtil {
         int[] result = new int[10];
         int count = 0;
         for (Integer integer : array) {
-            int i = integer;
             if (result.length == count) result = Arrays.copyOf(result, count * 2);
+            int i = integer;
             result[count++] = i;
         }
         result = Arrays.copyOfRange(result, 0, count);
@@ -3470,8 +3461,8 @@ public enum ArrayUtil {
             double[] arr = new double[10];
             int count = 0;
             for (Double aDouble : array) {
-                double v = aDouble;
                 if (arr.length == count) arr = Arrays.copyOf(arr, count * 2);
+                double v = aDouble;
                 arr[count++] = v;
             }
             arr = Arrays.copyOfRange(arr, 0, count);
@@ -5654,11 +5645,11 @@ public enum ArrayUtil {
         if (length == 0)
             return array;
 
-        int diff = 0;
         int[] clonedIndices = clone(indices);
         Arrays.sort(clonedIndices);
 
 
+        int diff = 0;
         {
             int i = clonedIndices.length;
             int prevIndex = length;
@@ -5759,9 +5750,10 @@ public enum ArrayUtil {
 
     public static byte[] removeAll(byte[] x, MetalBitSet indices) {
         int toRemove = indices.cardinality();
-        int srcLength = x.length, remain = srcLength - toRemove;
+        int srcLength = x.length;
         if (toRemove == 0)
             return x;
+        int remain = srcLength - toRemove;
         switch (remain) {
             case 0:
                 return ArrayUtil.EMPTY_BYTE_ARRAY;
@@ -5807,9 +5799,10 @@ public enum ArrayUtil {
 
     public static int[] removeAll(int[] x, MetalBitSet indices) {
         int toRemove = indices.cardinality();
-        int srcLength = x.length, remain = srcLength - toRemove;
+        int srcLength = x.length;
         if (toRemove == 0)
             return x;
+        int remain = srcLength - toRemove;
         switch (remain) {
             case 0:
                 return ArrayUtil.EMPTY_INT_ARRAY;

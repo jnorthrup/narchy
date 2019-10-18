@@ -134,9 +134,10 @@ public enum Terms {
 				(a, b) -> Integer.compare(volumes[b], volumes[a]),
 				(a, b) -> ArrayUtil.swapObjShort(y, volumes, a, b));
 
-			int s = 0; //span start
 			int vs = volumes[0];
 			nulls = 0;
+			//span start
+			int s = 0;
 			for (int i = 1; i <= n; i++) {
 				int vi = i < n ? volumes[i] : -1;
 				if (vi != vs) {

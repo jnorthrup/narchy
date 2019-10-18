@@ -261,8 +261,6 @@ public class PoleCart extends GameX {
 			public void update(Graphics g) {
 				action = -actionLeft + actionRight;
 				Dimension d = panel.getSize();
-				Color cartColor = Color.ORANGE;
-				Color trackColor = Color.GRAY;
 
 
 				if (offGraphics == null
@@ -287,10 +285,12 @@ public class PoleCart extends GameX {
 					pixxs[i] = pixX(d, xs[i]);
 					pixys[i] = pixY(d, ys[i]);
 				}
+				Color trackColor = Color.GRAY;
 				offGraphics.setColor(trackColor);
 				offGraphics.fillPolygon(pixxs, pixys, 8);
 
 
+				Color cartColor = Color.ORANGE;
 				offGraphics.setColor(cartColor);
 				offGraphics.fillRect(pixX(d, pos - 0.2), pixY(d, 0), pixDX(d, 0.4), pixDY(d, -0.2));
 
@@ -416,8 +416,6 @@ public class PoleCart extends GameX {
 			- fricPole * angleDot / poleMassLength) /
 			(halfPole * (fourthirds - poleMass * cosangle * cosangle /
 				totalMass));
-		double posDDot = common - poleMassLength * angleDDot * cosangle /
-			totalMass;
 
 
 		float tau = this.tau.floatValue();
@@ -434,6 +432,8 @@ public class PoleCart extends GameX {
 
 		}
 
+		double posDDot = common - poleMassLength * angleDDot * cosangle /
+				totalMass;
 		posDot += posDDot * tau;
 		posDot = Math.min(+velMax, Math.max(-velMax, posDot));
 

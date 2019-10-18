@@ -124,11 +124,11 @@ public final class ChainShape extends Shape {
 
         EdgeShape edgeShape = pool0;
 
-        int i1 = childIndex;
         int i2 = childIndex + 1;
         if (i2 == m_count) {
             i2 = 0;
         }
+        int i1 = childIndex;
         v2 v = m_vertices[i1];
         edgeShape.m_vertex1.x = v.x;
         edgeShape.m_vertex1.y = v.y;
@@ -145,12 +145,12 @@ public final class ChainShape extends Shape {
         v2 lower = aabb.lowerBound;
         v2 upper = aabb.upperBound;
 
-        int i1 = childIndex;
         int i2 = childIndex + 1;
         if (i2 == m_count) {
             i2 = 0;
         }
 
+        int i1 = childIndex;
         v2 vi1 = m_vertices[i1];
         v2 vi2 = m_vertices[i2];
         Rot xfq = xf;

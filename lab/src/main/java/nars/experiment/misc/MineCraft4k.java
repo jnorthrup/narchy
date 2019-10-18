@@ -266,10 +266,7 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 										}
 
 										float f28 = 1.0F / (f27 < 0.0F ? -f27 : f27);
-										float f29 = f24 * f28;
-										float f30 = f23 * f28;
-										float f31 = f25 * f28;
-										float f32 = f1 - (float)((int)f1);
+                                        float f32 = f1 - (float)((int)f1);
 										if (i18 == 1) {
 											f32 = f2 - (float)((int)f2);
 										}
@@ -283,9 +280,12 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 										}
 
 										float f33 = f28 * f32;
-										float f34 = f1 + f29 * f32;
-										float f35 = f2 + f30 * f32;
-										float f36 = f3 + f31 * f32;
+                                        float f29 = f24 * f28;
+                                        float f34 = f1 + f29 * f32;
+                                        float f30 = f23 * f28;
+                                        float f35 = f2 + f30 * f32;
+                                        float f31 = f25 * f28;
+                                        float f36 = f3 + f31 * f32;
 										if (f27 < 0.0F) {
 											if (i18 == 0) {
 												--f34;

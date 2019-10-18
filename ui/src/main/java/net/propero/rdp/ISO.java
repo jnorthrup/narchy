@@ -100,7 +100,6 @@ abstract class ISO {
      */
     public void connect(InetAddress host, int port) throws IOException,
             RdesktopException, OrderException, CryptoException {
-        int[] code = new int[1];
         doSocketConnect(host, port);
         rdpsock.setTcpNoDelay(Options.low_latency);
         
@@ -110,6 +109,7 @@ abstract class ISO {
                 .getOutputStream()));
         send_connection_request();
 
+        int[] code = new int[1];
         receiveMessage(code);
         if (code[0] != CONNECTION_CONFIRM) {
             throw new RdesktopException("Expected CC got:"
@@ -134,7 +134,6 @@ abstract class ISO {
      */
     private void sendMessage(int type) throws IOException {
         RdpPacket_Localised buffer = new RdpPacket_Localised(11);
-        byte[] packet = new byte[11];
 
         buffer.set8(PROTOCOL_VERSION); 
         buffer.set8(0); 
@@ -146,7 +145,8 @@ abstract class ISO {
 
         buffer.setBigEndian16(0); 
         
-        buffer.set8(0); 
+        buffer.set8(0);
+        byte[] packet = new byte[11];
         buffer.copyToByteArray(packet, 0, 0, packet.length);
         out.write(packet);
         out.flush();
@@ -167,8 +167,7 @@ abstract class ISO {
             throw new RdesktopException("No End Mark!");
         } else {
             int length = buffer.getEnd();
-            byte[] packet = new byte[length];
-            
+
             buffer.setPosition(0);
             buffer.set8(PROTOCOL_VERSION); 
             buffer.set8(0); 
@@ -177,6 +176,7 @@ abstract class ISO {
             buffer.set8(2); 
             buffer.set8(DATA_TRANSFER);
             buffer.set8(EOT);
+            byte[] packet = new byte[length];
             buffer.copyToByteArray(packet, 0, 0, buffer.getEnd());
 
             if (Options.debug_hexdump) {
@@ -225,7 +225,6 @@ abstract class ISO {
     private RdpPacket_Localised tcp_recv(RdpPacket_Localised p, int length)
             throws IOException {
         logger.debug("ISO.tcp_recv");
-        RdpPacket_Localised buffer = null;
         byte[] packet = new byte[length];
 
         in.readFully(packet, 0, length);
@@ -239,6 +238,7 @@ abstract class ISO {
             System.out.println(net.propero.rdp.tools.HexDump.dumpHexString(packet));
         }
 
+        RdpPacket_Localised buffer = null;
         if (p == null) {
             buffer = new RdpPacket_Localised(length);
             buffer.copyFromByteArray(packet, 0, 0, packet.length);
@@ -271,7 +271,6 @@ abstract class ISO {
             RdesktopException, OrderException, CryptoException {
         logger.debug("ISO.receiveMessage");
         RdpPacket_Localised s = null;
-        int length, version;
 
         next_packet:
         while (true) {
@@ -281,9 +280,10 @@ abstract class ISO {
             if (s == null)
                 return null;
 
-            version = s.get8();
+            int version = s.get8();
             rdpver[0] = version;
 
+            int length;
             if (version == 3) {
                 s.incrementPosition(1); 
                 length = s.getBigEndian16();
@@ -364,7 +364,6 @@ abstract class ISO {
                 .length()
                 + uname.length() + 2) : 0)/* + 8*/;
         RdpPacket_Localised buffer = new RdpPacket_Localised(length);
-        byte[] packet = new byte[length];
 
         buffer.set8(PROTOCOL_VERSION); 
         buffer.set8(0); 
@@ -394,9 +393,7 @@ abstract class ISO {
          */
 
 
-
-
-
+        byte[] packet = new byte[length];
         buffer.copyToByteArray(packet, 0, 0, packet.length);
         out.write(packet);
         out.flush();

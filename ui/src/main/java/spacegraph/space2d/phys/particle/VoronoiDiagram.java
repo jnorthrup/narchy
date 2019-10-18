@@ -111,7 +111,6 @@ public class VoronoiDiagram {
 
     public void generate(float radius) {
         assert (m_diagram == null);
-        float inverseRadius = 1 / radius;
         lower.x = Float.MAX_VALUE;
         lower.y = Float.MAX_VALUE;
         upper.x = -Float.MAX_VALUE;
@@ -121,6 +120,7 @@ public class VoronoiDiagram {
             v2.minToOut(lower, g, lower);
             v2.maxToOut(upper, g, upper);
         }
+        float inverseRadius = 1 / radius;
         m_countX = 1 + (int) (inverseRadius * (upper.x - lower.x));
         m_countY = 1 + (int) (inverseRadius * (upper.y - lower.y));
         m_diagram = new Generator[m_countX * m_countY];

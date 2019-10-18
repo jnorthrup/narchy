@@ -186,15 +186,13 @@ public final class Menu extends Key {
                 viddef.getHeight() / 2 - 110, name);
     }
 
-    static void PushMenu(xcommand_t draw, keyfunc_t key) { 
-                                                           
-        int i;
+    static void PushMenu(xcommand_t draw, keyfunc_t key) {
 
         if (Cvar.VariableValue("maxclients") == 1 && Globals.server_state != 0)
             Cvar.Set("paused", "1");
 
-        
-        
+
+        int i;
         for (i = 0; i < m_menudepth; i++)
             if (m_layers[i].draw == draw && m_layers[i].key == key) {
                 m_menudepth = i;
@@ -243,10 +241,9 @@ public final class Menu extends Key {
     }
 
     static String Default_MenuKey(menuframework_s m, int key) {
-        String sound = null;
-        menucommon_s item;
 
         if (m != null) {
+            menucommon_s item;
             if ((item = Menu_ItemAtCursor(m)) != null) {
                 if (item.type == MTYPE_FIELD) {
                     if (Field_Key((menufield_s) item, key))
@@ -255,6 +252,7 @@ public final class Menu extends Key {
             }
         }
 
+        String sound = null;
         switch (key) {
         case K_ESCAPE:
             PopMenu();
@@ -380,13 +378,13 @@ public final class Menu extends Key {
     }
 
     public static void DrawTextBox(int x, int y, int width, int lines) {
-        int n;
 
 
         int cx = x;
         int cy = y;
         DrawCharacter(cx, cy, 1);
 
+        int n;
         for (n = 0; n < lines; n++) {
             cy += 8;
             DrawCharacter(cx, cy, 4);
@@ -742,11 +740,9 @@ public final class Menu extends Key {
     static final menuaction_s s_keys_help_computer_action = new menuaction_s();
 
     static void UnbindCommand(String command) {
-        int j;
-        String b;
 
-        for (j = 0; j < 256; j++) {
-            b = keybindings[j];
+        for (int j = 0; j < 256; j++) {
+            String b = keybindings[j];
             if (b == null)
                 continue;
             if (b.equals(command))
@@ -755,14 +751,12 @@ public final class Menu extends Key {
     }
 
     static void FindKeysForCommand(String command, int[] twokeys) {
-        int j;
-        String b;
 
         twokeys[0] = twokeys[1] = -1;
         int count = 0;
 
-        for (j = 0; j < 256; j++) {
-            b = keybindings[j];
+        for (int j = 0; j < 256; j++) {
+            String b = keybindings[j];
             if (b == null)
                 continue;
 
@@ -797,9 +791,8 @@ public final class Menu extends Key {
 
             Menu_DrawString(a.x + a.parent.x + 16, a.y + a.parent.y, name);
 
-            int x = name.length() * 8;
-
             if (keys[1] != -1) {
+                int x = name.length() * 8;
                 Menu_DrawString(a.x + a.parent.x + 24 + x, a.y + a.parent.y,
                         "or");
                 Menu_DrawString(a.x + a.parent.x + 48 + x, a.y + a.parent.y,
@@ -823,8 +816,6 @@ public final class Menu extends Key {
     }
 
     static void Keys_MenuInit() {
-        int y = 0;
-        int i = 0;
 
         s_keys_menu.x = (int) (viddef.getWidth() * 0.50);
         s_keys_menu.nitems = 0;
@@ -838,6 +829,7 @@ public final class Menu extends Key {
         s_keys_attack_action.type = MTYPE_ACTION;
         s_keys_attack_action.flags = QMF_GRAYED;
         s_keys_attack_action.x = 0;
+        int y = 0;
         s_keys_attack_action.y = y;
         s_keys_attack_action.ownerdraw = new mcallback() {
             @Override
@@ -845,6 +837,7 @@ public final class Menu extends Key {
                 DrawKeyBindingFunc(o);
             }
         };
+        int i = 0;
         s_keys_attack_action.localdata[0] = i;
         s_keys_attack_action.name = bindnames[s_keys_attack_action.localdata[0]][1];
 
@@ -1895,12 +1888,12 @@ public final class Menu extends Key {
          */
         for (i = 0, y = (int) (viddef.getHeight() - ((cls.realtime - credits_start_time) / 40.0F)); credits[i] != null
                 && y < viddef.getHeight(); y += 10, i++) {
-            int j, stringoffset = 0;
-            boolean bold = false;
 
             if (y <= -8)
                 continue;
 
+            boolean bold = false;
+            int stringoffset = 0;
             if (credits[i].length() > 0 && credits[i].charAt(0) == '+') {
                 bold = true;
                 stringoffset = 1;
@@ -1909,7 +1902,7 @@ public final class Menu extends Key {
                 stringoffset = 0;
             }
 
-            for (j = 0; j + stringoffset < credits[i].length(); j++) {
+            for (int j = 0; j + stringoffset < credits[i].length(); j++) {
 
                 int x = (viddef.getWidth() - credits[i].length() * 8 - stringoffset * 8)
                         / 2 + (j + stringoffset) * 8;
@@ -1949,8 +1942,6 @@ public final class Menu extends Key {
     };
 
     static void Menu_Credits_f() {
-        int n;
-        int isdeveloper = 0;
 
         byte[] b = FS.LoadFile("credits");
 
@@ -1958,6 +1949,7 @@ public final class Menu extends Key {
             creditsBuffer = new String(b);
             String[] line = NEWLINE.split(creditsBuffer);
 
+            int n;
             for (n = 0; n < line.length; n++) {
                 creditsIndex[n] = line[n];
             }
@@ -1965,7 +1957,7 @@ public final class Menu extends Key {
             creditsIndex[n] = null;
             credits = creditsIndex;
         } else {
-            isdeveloper = FS.Developer_searchpath(1);
+            int isdeveloper = FS.Developer_searchpath(1);
 
             if (isdeveloper == 1) 
                 credits = xatcredits;
@@ -2217,17 +2209,14 @@ public final class Menu extends Key {
 
     /** Search the save dir for saved games and their names. */
     static void Create_Savestrings() {
-        int i;
-        QuakeFile f;
-        String name;
 
-        for (i = 0; i < MAX_SAVEGAMES; i++) {
+        for (int i = 0; i < MAX_SAVEGAMES; i++) {
 
             m_savestrings[i] = "<EMPTY>";
-            name = FS.Gamedir() + "/save/save" + i + "/server.ssv";
+            String name = FS.Gamedir() + "/save/save" + i + "/server.ssv";
 
             try {
-                f = new QuakeFile(name, "r");
+                QuakeFile f = new QuakeFile(name, "r");
                 if (f == null) {
                     m_savestrings[i] = "<EMPTY>";
                     m_savevalid[i] = false;
@@ -2254,7 +2243,6 @@ public final class Menu extends Key {
     }
 
     static void LoadGame_MenuInit() {
-        int i;
 
         s_loadgame_menu.x = viddef.getWidth() / 2 - 120;
         s_loadgame_menu.y = viddef.getHeight() / 2 - 58;
@@ -2262,7 +2250,7 @@ public final class Menu extends Key {
 
         Create_Savestrings();
 
-        for (i = 0; i < MAX_SAVEGAMES; i++) {
+        for (int i = 0; i < MAX_SAVEGAMES; i++) {
             s_loadgame_actions[i].name = m_savestrings[i];
             s_loadgame_actions[i].flags = QMF_LEFT_JUSTIFY;
             s_loadgame_actions[i].localdata[0] = i;
@@ -2351,7 +2339,6 @@ public final class Menu extends Key {
     }
 
     static void SaveGame_MenuInit() {
-        int i;
 
         s_savegame_menu.x = viddef.getWidth() / 2 - 120;
         s_savegame_menu.y = viddef.getHeight() / 2 - 58;
@@ -2360,7 +2347,7 @@ public final class Menu extends Key {
         Create_Savestrings();
 
         
-        for (i = 0; i < MAX_SAVEGAMES - 1; i++) {
+        for (int i = 0; i < MAX_SAVEGAMES - 1; i++) {
             s_savegame_actions[i].name = m_savestrings[i + 1];
             s_savegame_actions[i].localdata[0] = i + 1;
             s_savegame_actions[i].flags = QMF_LEFT_JUSTIFY;
@@ -2451,7 +2438,6 @@ public final class Menu extends Key {
     static int m_num_servers;
 
     static void AddToServerList(netadr_t adr, String info) {
-        int i;
 
         if (m_num_servers == MAX_LOCAL_SERVERS)
             return;
@@ -2460,7 +2446,7 @@ public final class Menu extends Key {
 
         
 
-        for (i = 0; i < m_num_servers; i++)
+        for (int i = 0; i < m_num_servers; i++)
             if (x.equals(local_server_names[i]))
                 return;
 
@@ -2494,10 +2480,9 @@ public final class Menu extends Key {
     }
 
     static void SearchLocalGames() {
-        int i;
 
         m_num_servers = 0;
-        for (i = 0; i < MAX_LOCAL_SERVERS; i++)
+        for (int i = 0; i < MAX_LOCAL_SERVERS; i++)
             local_server_names[i] = NO_SERVER_STRING;
 
         DrawTextBox(8, 120 - 48, 36, 3);
@@ -2517,7 +2502,6 @@ public final class Menu extends Key {
     }
 
     static void JoinServer_MenuInit() {
-        int i;
 
         s_joinserver_menu.x = (int) (viddef.getWidth() * 0.50 - 120);
         s_joinserver_menu.nitems = 0;
@@ -2552,6 +2536,7 @@ public final class Menu extends Key {
         s_joinserver_server_title.x = 80;
         s_joinserver_server_title.y = 30;
 
+        int i;
         for (i = 0; i < MAX_LOCAL_SERVERS; i++) {
             s_joinserver_server_actions[i].type = MTYPE_ACTION;
             local_server_names[i] = NO_SERVER_STRING;
@@ -2759,7 +2744,6 @@ public final class Menu extends Key {
         
 
         byte[] buffer = null;
-        int i;
         RandomAccessFile fp;
 
         /*
@@ -2793,7 +2777,7 @@ public final class Menu extends Key {
 
         mapnames = new String[nummaps];
 
-        for (i = 0; i < nummaps; i++) {
+        for (int i = 0; i < nummaps; i++) {
 
             Com.ParseHelp ph = new Com.ParseHelp(lines[i]);
 
@@ -2947,9 +2931,8 @@ public final class Menu extends Key {
     static String StartServer_MenuKey(int key) {
         if (key == K_ESCAPE) {
             if (mapnames != null) {
-                int i;
 
-                for (i = 0; i < nummaps; i++)
+                for (int i = 0; i < nummaps; i++)
                     mapnames[i] = null;
 
             }
@@ -3150,13 +3133,13 @@ public final class Menu extends Key {
     static void DMOptions_MenuInit() {
 
         int dmflags = (int) Cvar.VariableValue("dmflags");
-        int y = 0;
 
         s_dmoptions_menu.x = (int) (viddef.getWidth() * 0.50);
         s_dmoptions_menu.nitems = 0;
 
         s_falls_box.type = MTYPE_SPINCONTROL;
         s_falls_box.x = 0;
+        int y = 0;
         s_falls_box.y = y;
         s_falls_box.name = "falling damage";
         s_falls_box.callback = new mcallback() {
@@ -3526,14 +3509,13 @@ public final class Menu extends Key {
 
     static void DownloadOptions_MenuInit() {
 
-        int y = 0;
-
         s_downloadoptions_menu.x = (int) (viddef.getWidth() * 0.50);
         s_downloadoptions_menu.nitems = 0;
 
         s_download_title.type = MTYPE_SEPARATOR;
         s_download_title.name = "Download Options";
         s_download_title.x = 48;
+        int y = 0;
         s_download_title.y = y;
 
         s_allow_download_box.type = MTYPE_SPINCONTROL;
@@ -3834,29 +3816,19 @@ public final class Menu extends Key {
     }
 
     static boolean PlayerConfig_ScanDirectories() {
-        
-        String findname;
-        
-        String scratch;
 
-        int ndirs = 0;
-        int a, b, c;
-        String[] dirnames;
-
-        String path = null;
-
-        int i;
-
-        
 
         s_numplayermodels = 0;
 
         /*
          * * get a list of directories
          */
+        String path = null;
+        String[] dirnames;
+        int ndirs = 0;
         do {
             path = FS.NextPath(path);
-            findname = path + "/players/*.*";
+            String findname = path + "/players/*.*";
 
             if ((dirnames = FS.ListFiles(findname, 0, SFF_SUBDIR)) != null) {
                 ndirs = dirnames.length;
@@ -3874,16 +3846,13 @@ public final class Menu extends Key {
         if (npms > MAX_PLAYERMODELS)
             npms = MAX_PLAYERMODELS;
 
-        for (i = 0; i < npms; i++) {
-            int k, s;
-
-            int nskins = 0;
+        for (int i = 0; i < npms; i++) {
 
             if (dirnames[i] == null)
                 continue;
 
-            
-            scratch = dirnames[i];
+
+            String scratch = dirnames[i];
             scratch += "/tris.md2";
             if (Sys.FindFirst(scratch, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM) == null) {
                 
@@ -3904,8 +3873,9 @@ public final class Menu extends Key {
                 continue;
             }
 
-            
-            
+
+            int nskins = 0;
+            int k;
             for (k = 0; k < npcxfiles - 1; k++) {
                 if (!pcxnames[k].endsWith("_i.pcx")) {
                     
@@ -3918,10 +3888,12 @@ public final class Menu extends Key {
                 continue;
 
             String[] skinnames = new String[nskins + 1];
-                                                
-            
 
-            
+
+            int s;
+            int c;
+            int b;
+            int a;
             for (s = 0, k = 0; k < npcxfiles - 1; k++) {
 
                 if (!pcxnames[k].contains("_i.pcx")) {
@@ -3998,13 +3970,6 @@ public final class Menu extends Key {
          * extern cvar_t * name; extern cvar_t * team; extern cvar_t * skin;
          */
 
-        String currentskin;
-
-        int i = 0;
-
-        int currentdirectoryindex = 0;
-        int currentskinindex = 0;
-
         cvar_t hand = Cvar.Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
 
         PlayerConfig_ScanDirectories();
@@ -4017,6 +3982,7 @@ public final class Menu extends Key {
 
         String currentdirectory = skin.string;
 
+        String currentskin;
         if (currentdirectory.lastIndexOf('/') != -1) {
             currentskin = Lib.rightFrom(currentdirectory, '/');
             currentdirectory = Lib.leftFrom(currentdirectory, '/');
@@ -4034,14 +4000,16 @@ public final class Menu extends Key {
         
         s_pmnames = new String[MAX_PLAYERMODELS];
 
+        int currentskinindex = 0;
+        int currentdirectoryindex = 0;
+        int i = 0;
         for (i = 0; i < s_numplayermodels; i++) {
             s_pmnames[i] = s_pmi[i].displayname;
             if (Lib.Q_stricmp(s_pmi[i].directory, currentdirectory) == 0) {
-                int j;
 
                 currentdirectoryindex = i;
 
-                for (j = 0; j < s_pmi[i].nskins; j++) {
+                for (int j = 0; j < s_pmi[i].nskins; j++) {
                     if (Lib
                             .Q_stricmp(s_pmi[i].skindisplaynames[j],
                                     currentskin) == 0) {
@@ -4176,10 +4144,7 @@ public final class Menu extends Key {
     static void PlayerConfig_MenuDraw() {
 
         refdef_t refdef = new refdef_t();
-        
-        String scratch;
 
-        
 
         refdef.x = viddef.getWidth() / 2;
         refdef.y = viddef.getHeight() / 2 - 72;
@@ -4194,7 +4159,7 @@ public final class Menu extends Key {
 
             entity.clear();
 
-            scratch = "players/" + s_pmi[s_player_model_box.curvalue].directory
+            String scratch = "players/" + s_pmi[s_player_model_box.curvalue].directory
                     + "/tris.md2";
 
             entity.model = re.RegisterModel(scratch);
@@ -4245,7 +4210,6 @@ public final class Menu extends Key {
     }
 
     static String PlayerConfig_MenuKey(int key) {
-        int i;
 
         if (key == K_ESCAPE) {
 
@@ -4257,10 +4221,9 @@ public final class Menu extends Key {
 
             Cvar.Set("skin", scratch);
 
-            for (i = 0; i < s_numplayermodels; i++) {
-                int j;
+            for (int i = 0; i < s_numplayermodels; i++) {
 
-                for (j = 0; j < s_pmi[i].nskins; j++) {
+                for (int j = 0; j < s_pmi[i].nskins; j++) {
                     if (s_pmi[i].skindisplaynames[j] != null)
                         s_pmi[i].skindisplaynames[j] = null;
                 }
@@ -4458,7 +4421,6 @@ public final class Menu extends Key {
     }
 
     public static void Field_Draw(menufield_s f) {
-        int i;
 
 
         if (f.name != null)
@@ -4476,7 +4438,7 @@ public final class Menu extends Key {
         re.DrawChar(f.x + f.parent.x + 24 + f.visible_length * 8, f.y
                 + f.parent.y + 4, 26);
 
-        for (i = 0; i < f.visible_length; i++) {
+        for (int i = 0; i < f.visible_length; i++) {
             re
                     .DrawChar(f.x + f.parent.x + 24 + i * 8, f.y + f.parent.y
                             - 4, 19);
@@ -4691,21 +4653,19 @@ public final class Menu extends Key {
     }
 
     public static void Menu_Center(menuframework_s menu) {
-        int height;
 
-        height = menu.items[menu.nitems - 1].y;
+        int height = menu.items[menu.nitems - 1].y;
         height += 10;
 
         menu.y = (viddef.getHeight() - height) / 2;
     }
 
     public static void Menu_Draw(menuframework_s menu) {
-        int i;
 
         /*
          * * draw contents
          */
-        for (i = 0; i < menu.nitems; i++) {
+        for (int i = 0; i < menu.nitems; i++) {
             switch (menu.items[i].type) {
             case MTYPE_FIELD:
                 Field_Draw((menufield_s) menu.items[i]);
@@ -4762,9 +4722,9 @@ public final class Menu extends Key {
             int l = string.length();
             int maxrow = viddef.getHeight() / 8;
             int maxcol = viddef.getWidth() / 8;
-            int col = maxcol / 2 - l / 2;
 
             re.DrawFill(0, viddef.getHeight() - 8, viddef.getWidth(), 8, 4);
+            int col = maxcol / 2 - l / 2;
             Menu_DrawString(col * 8, viddef.getHeight() - 8, string);
         } else {
             re.DrawFill(0, viddef.getHeight() - 8, viddef.getWidth(), 8, 0);
@@ -4772,35 +4732,31 @@ public final class Menu extends Key {
     }
 
     public static void Menu_DrawString(int x, int y, String string) {
-        int i;
 
-        for (i = 0; i < string.length(); i++) {
+        for (int i = 0; i < string.length(); i++) {
             re.DrawChar((x + i * 8), y, string.charAt(i));
         }
     }
 
     public static void Menu_DrawStringDark(int x, int y, String string) {
-        int i;
 
-        for (i = 0; i < string.length(); i++) {
+        for (int i = 0; i < string.length(); i++) {
             re.DrawChar((x + i * 8), y, string.charAt(i) + 128);
         }
     }
 
     public static void Menu_DrawStringR2L(int x, int y, String string) {
-        int i;
 
         int l = string.length();
-        for (i = 0; i < l; i++) {
+        for (int i = 0; i < l; i++) {
             re.DrawChar((x - i * 8), y, string.charAt(l - i - 1));
         }
     }
 
     public static void Menu_DrawStringR2LDark(int x, int y, String string) {
-        int i;
 
         int l = string.length();
-        for (i = 0; i < l; i++) {
+        for (int i = 0; i < l; i++) {
             re.DrawChar((x - i * 8), y, string.charAt(l - i - 1) + 128);
         }
     }
@@ -4853,10 +4809,9 @@ public final class Menu extends Key {
     }
 
     public static int Menu_TallySlots(menuframework_s menu) {
-        int i;
         int total = 0;
 
-        for (i = 0; i < menu.nitems; i++) {
+        for (int i = 0; i < menu.nitems; i++) {
             if (menu.items[i].type == MTYPE_LIST) {
                 int nitems = 0;
                 String[] n = ((menulist_s) menu.items[i]).itemnames;
@@ -4884,7 +4839,6 @@ public final class Menu extends Key {
     }
 
     public static void MenuList_Draw(menulist_s l) {
-        int y = 0;
 
         Menu_DrawStringR2LDark(l.x + l.parent.x + LCOLUMN_OFFSET, l.y
                 + l.parent.y, l.name);
@@ -4895,6 +4849,7 @@ public final class Menu extends Key {
                 + 10, 128, 10, 16);
         int i = 0;
 
+        int y = 0;
         while (n[i] != null) {
             Menu_DrawStringR2LDark(l.x + l.parent.x + LCOLUMN_OFFSET, l.y
                     + l.parent.y + y + 10, n[i]);
@@ -4924,7 +4879,6 @@ public final class Menu extends Key {
     public static final int SLIDER_RANGE = 10;
 
     public static void Slider_Draw(menuslider_s s) {
-        int i;
 
         Menu_DrawStringR2LDark(s.x + s.parent.x + LCOLUMN_OFFSET, s.y
                 + s.parent.y, s.name);
@@ -4936,6 +4890,7 @@ public final class Menu extends Key {
         if (s.range > 1)
             s.range = 1;
         re.DrawChar(s.x + s.parent.x + RCOLUMN_OFFSET, s.y + s.parent.y, 128);
+        int i;
         for (i = 0; i < SLIDER_RANGE; i++)
             re.DrawChar(RCOLUMN_OFFSET + s.x + i * 8 + s.parent.x + 8, s.y
                     + s.parent.y, 129);

@@ -26,10 +26,10 @@ public class ShiftedAddressing
         gated = this.gatedAddressing.GatedVector;
         cells = gated.length;
         shifted = UnitFactory.getVector(cells);
-        double cellCountDbl = cells;
-        
+
         shiftWeight = Sigmoid.getValue(_shift.value);
         double maxShift = ((2.0 * shiftWeight) - 1.0);
+        double cellCountDbl = cells;
         double convolutionDbl = (maxShift + cellCountDbl) % cellCountDbl;
         simj = 1.0 - (convolutionDbl - Math.floor(convolutionDbl));
 

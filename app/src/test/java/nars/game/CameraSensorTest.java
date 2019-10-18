@@ -33,12 +33,12 @@ public class CameraSensorTest {
         n.log();
 
         //check for cause applied
-        int[] causesDetected = {0};
         Term aPixel = $$("x(0,0)");
         //Term why = c.in.why.why;
 
         tmp = new MyGame();
         n.add(tmp);
+        int[] causesDetected = {0};
         tmp.what().onTask(t -> {
            if (t.term().equals(aPixel)) {
 //               if (t.why() == null || t.why() instanceof Int) //ignore revisions

@@ -141,16 +141,13 @@ class TermutatorTest {
 
     private String assertTermutatorProducesUniqueResults(@NotNull Termutator t, int num) {
 
-        
-
-        Set<String> s = new LinkedHashSet(); 
-        int[] actual = {0};
-        
-        int[] duplicates = {0};
 
         unifier.setTTL(TTL);
-        
 
+
+        int[] duplicates = {0};
+        int[] actual = {0};
+        Set<String> s = new LinkedHashSet();
         t.mutate(new Termutator[] { t, (chain, current, u) -> {
             TreeMap t1 = new TreeMap();
             for (Map.Entry<Variable, Versioned<Term>> entry : u.xy.map.entrySet()) {

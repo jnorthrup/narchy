@@ -1067,7 +1067,6 @@ public class NAL7Test extends NALTest {
 
 
         int eventDT = 16;
-        int cycles = 10;
 
         TestNAR t = test;
 
@@ -1076,6 +1075,7 @@ public class NAL7Test extends NALTest {
 
 
         int x = 0;
+        int cycles = 10;
         for (int i = 0; i < cycles; i++) {
 
             if (i == cycles - 1) {

@@ -86,19 +86,16 @@ class RDPClientChooser {
             throws IOException {
         logger.info("RunMacRemoteDesktopConnection()");
 
-        LongOpt[] alo = new LongOpt[4];
-        int c;
-        String arg;
-
         Options.windowTitle = "Remote Desktop Connection";
 
-        
-        
 
+        LongOpt[] alo = new LongOpt[4];
         Getopt g = new Getopt("properJavaRDP", args,
                 "bc:d:f::g:k:l:n:p:s:t:T:u:", alo);
 
+        int c;
         while ((c = g.getopt()) != -1) {
+            String arg;
             switch (c) {
 
                 case 'd':
@@ -322,12 +319,10 @@ class RDPClientChooser {
             return false;
         }
 
-        
-
-        String[] rmcmd = {"/bin/sh", "-c",
-                "rm -r " + rdproot + " >/dev/null 2>/dev/null"};
 
         try {
+            String[] rmcmd = {"/bin/sh", "-c",
+                    "rm -r " + rdproot + " >/dev/null 2>/dev/null"};
             Runtime.getRuntime().exec(rmcmd);
         } catch (IOException e) {
             logger.warn("Unable to remove temporary directory {}", rdproot);

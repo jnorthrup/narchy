@@ -224,21 +224,18 @@ public class TermTestMisc {
     @Test
     void invalidTermIndep() {
 
-        String t = "($1-->({place4}~$1))";
-
-
 
         try {
+            String t = "($1-->({place4}~$1))";
             Task x = n.inputTask(t + '.');
             fail(() -> t + " is invalid compound target");
         } catch (Throwable tt) {
             assertTrue(true);
         }
 
-        Term subj = null, pred = null;
         try {
-            subj = $.varIndep(1);
-            pred = $.$("(~,{place4},$1)").term();
+            Term subj = $.varIndep(1);
+            Term pred = $.$("(~,{place4},$1)").term();
 
             assertTrue(true);
 

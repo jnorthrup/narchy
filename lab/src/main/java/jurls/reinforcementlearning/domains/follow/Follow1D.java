@@ -60,13 +60,11 @@ public class Follow1D implements RLEnvironment {
             g.fillRect(
                     0, 0, getWidth(), getHeight());
 
-            final int margin = 10;
-
-            int prevX = 0;
-            int prevY = 0;
-            int i = 0;
-
             g.setColor(Color.green);
+            int i = 0;
+            int prevY = 0;
+            int prevX = 0;
+            final int margin = 10;
             for (double _y : _targets) {
                 int x = i * getWidth() / history;
                 int y = (int) (_y * (getHeight()-margin) / maxPos) + margin/2;
@@ -108,10 +106,11 @@ public class Follow1D implements RLEnvironment {
         if (observation == null) {
             observation = new double[historyPoints*2];
         }
-        
-        double my = 0, target = 0;
+
         if (positions.isEmpty()) return observation;
 
+        double target = 0;
+        double my = 0;
         for (int i = 0; i < historyPoints;) {
             int j = positions.size() - 1 - (i * historyInterval);
             my = positions.get(j);
@@ -142,10 +141,10 @@ public class Follow1D implements RLEnvironment {
     }
 
             
-    public void updateTargetRandom(int cycle) {        
-        final double targetAcceleration = 0.002;
+    public void updateTargetRandom(int cycle) {
         targetPos += targetV * speed;
-        targetV += (Math.random() - 0.5) * targetAcceleration;        
+        final double targetAcceleration = 0.002;
+        targetV += (Math.random() - 0.5) * targetAcceleration;
     }
     public void updateTargetXOR(int cycle) {        
         int complexity = 10;

@@ -371,10 +371,8 @@ public class HingeConstraint extends TypedConstraint {
 		v3 pivotBInW = new v3(rbBFrame);
 		centerOfMassB.transform(pivotBInW);
 
-		float tau = 0.3f;
 
-		
-		if (!angularOnly) {
+        if (!angularOnly) {
 			v3 rel_pos1 = new v3();
 			rel_pos1.sub(pivotAInW, rbA.getCenterOfMassPosition(tmpVec));
 
@@ -386,7 +384,8 @@ public class HingeConstraint extends TypedConstraint {
 			v3 vel = new v3();
 			vel.sub(vel1, vel2);
 
-			for (int i = 0; i < 3; i++) {
+            float tau = 0.3f;
+            for (int i = 0; i < 3; i++) {
 				v3 normal = jac[i].linearJointAxis;
                 float jacDiagABInv = 1f / jac[i].Adiag;
 
@@ -438,8 +437,7 @@ public class HingeConstraint extends TypedConstraint {
         v3 velrelOrthog = new v3();
         velrelOrthog.sub(angAorthog, angBorthog);
 
-        
-        float relaxation = 1f;
+
         float len = velrelOrthog.length();
         if (len > 0.00001f) {
             v3 normal = new v3();
@@ -466,6 +464,7 @@ public class HingeConstraint extends TypedConstraint {
 
             float denom2 = getRigidBodyA().computeAngularImpulseDenominator(normal2) +
                     getRigidBodyB().computeAngularImpulseDenominator(normal2);
+            float relaxation = 1f;
             angularError.scaled((1f / denom2) * relaxation);
         }
 

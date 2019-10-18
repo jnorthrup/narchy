@@ -120,7 +120,6 @@ public class Var extends Term {
                 break;
             }
             default: {
-                StringBuilder c;
                 String name = this.name;
                 int extra;
                 if (idExecCtx < BinTxt.maxBase) {
@@ -131,6 +130,7 @@ public class Var extends Term {
                     extra = 3;
                     //etc.
                 }
+                StringBuilder c;
                 if (name!=null) {
                     c = new StringBuilder(1 + name.length() + extra /* estimate */).append(name);
                 } else {

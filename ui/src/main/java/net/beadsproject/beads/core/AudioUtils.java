@@ -373,8 +373,8 @@ public final class AudioUtils {
         try {
             url = new URL(s);
         } catch (Exception e) {
-            File f = new File(s);
             try {
+                File f = new File(s);
                 url = f.toURI().toURL();
             } catch (MalformedURLException e1) {
                 e1.printStackTrace();

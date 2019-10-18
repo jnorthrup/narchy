@@ -60,12 +60,9 @@ public final class SV {
 
     
     public static void SV_CheckVelocity(edict_t ent) {
-        int i;
 
-        
-        
-        
-        for (i = 0; i < 3; i++) {
+
+        for (int i = 0; i < 3; i++) {
             if (ent.velocity[i] > GameBase.sv_maxvelocity.value)
                 ent.velocity[i] = GameBase.sv_maxvelocity.value;
             else if (ent.velocity[i] < -GameBase.sv_maxvelocity.value)
@@ -118,33 +115,27 @@ public final class SV {
     public static final int MAX_CLIP_PLANES = 5;
 
     public static int SV_FlyMove(edict_t ent, float time, int mask) {
-        edict_t hit;
-        int bumpcount;
-        float[] dir = { 0.0f, 0.0f, 0.0f };
-        float d;
-        float[][] planes = new float[MAX_CLIP_PLANES][3];
-        float[] primal_velocity = { 0.0f, 0.0f, 0.0f };
         float[] original_velocity = { 0.0f, 0.0f, 0.0f };
-        float[] new_velocity = { 0.0f, 0.0f, 0.0f };
-        int i, j;
-        trace_t trace;
-        float[] end = { 0.0f, 0.0f, 0.0f };
 
-        int numbumps = 4;
-
-        int blocked = 0;
         Math3D.VectorCopy(ent.velocity, original_velocity);
+        float[] primal_velocity = {0.0f, 0.0f, 0.0f};
         Math3D.VectorCopy(ent.velocity, primal_velocity);
-        int numplanes = 0;
-
-        float time_left = time;
 
         ent.groundentity = null;
-        for (bumpcount = 0; bumpcount < numbumps; bumpcount++) {
+        float time_left = time;
+        int numplanes = 0;
+        int blocked = 0;
+        int numbumps = 4;
+        float[] end = {0.0f, 0.0f, 0.0f};
+        float[] new_velocity = {0.0f, 0.0f, 0.0f};
+        float[][] planes = new float[MAX_CLIP_PLANES][3];
+        float[] dir = {0.0f, 0.0f, 0.0f};
+        for (int bumpcount = 0; bumpcount < numbumps; bumpcount++) {
+            int i;
             for (i = 0; i < 3; i++)
                 end[i] = ent.s.origin[i] + time_left * ent.velocity[i];
 
-            trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, end,
+            trace_t trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, end,
                     ent, mask);
 
             if (trace.allsolid) { 
@@ -159,9 +150,9 @@ public final class SV {
             }
 
             if (trace.fraction == 1)
-                break; 
+                break;
 
-            hit = trace.ent;
+            edict_t hit = trace.ent;
 
             if (trace.plane.normal[2] > 0.7) {
                 blocked |= 1; 
@@ -200,6 +191,7 @@ public final class SV {
                 GameBase.ClipVelocity(original_velocity, planes[i],
                         new_velocity, 1);
 
+                int j;
                 for (j = 0; j < numplanes; j++)
                     if ((j != i)
                             && !Math3D.VectorEquals(planes[i], planes[j])) {
@@ -220,7 +212,7 @@ public final class SV {
                     return 7;
                 }
                 Math3D.CrossProduct(planes[0], planes[1], dir);
-                d = Math3D.DotProduct(dir, ent.velocity);
+                float d = Math3D.DotProduct(dir, ent.velocity);
                 Math3D.VectorScale(dir, d, ent.velocity);
             }
 
@@ -249,20 +241,19 @@ public final class SV {
      * Does not change the entities velocity at all
      */
     public static trace_t SV_PushEntity(edict_t ent, float[] push) {
-        trace_t trace;
         float[] start = { 0, 0, 0 };
-        float[] end = { 0, 0, 0 };
-        int mask;
 
         Math3D.VectorCopy(ent.s.origin, start);
+        float[] end = {0, 0, 0};
         Math3D.VectorAdd(start, push, end);
 
         
         
         boolean retry = false;
 
+        trace_t trace;
         do {
-            mask = ent.clipmask != 0 ? ent.clipmask : Defines.MASK_SOLID;
+            int mask = ent.clipmask != 0 ? ent.clipmask : Defines.MASK_SOLID;
 
             trace = game_import_t
                     .trace(start, ent.mins, ent.maxs, end, ent, mask);
@@ -296,21 +287,9 @@ public final class SV {
      * continue to slide.
      */
     public static boolean SV_Push(edict_t pusher, float[] move, float[] amove) {
-        int i, e;
-        edict_t check;
-        edict_t[] block;
-        float[] mins = { 0, 0, 0 };
-        float[] maxs = { 0, 0, 0 };
-        pushed_t p;
-        float[] org = { 0, 0, 0 };
-        float[] org2 = { 0, 0, 0 };
-        float[] move2 = { 0, 0, 0 };
-        float[] forward = { 0, 0, 0 };
-        float[] right = { 0, 0, 0 };
-        float[] up = { 0, 0, 0 };
+        int i;
 
-        
-        
+
         for (i = 0; i < 3; i++) {
             float temp = move[i] * 8.0f;
             if (temp > 0.0)
@@ -320,14 +299,20 @@ public final class SV {
             move[i] = 0.125f * (int) temp;
         }
 
-        
+
+        float[] maxs = {0, 0, 0};
+        float[] mins = {0, 0, 0};
         for (i = 0; i < 3; i++) {
             mins[i] = pusher.absmin[i] + move[i];
             maxs[i] = pusher.absmax[i] + move[i];
         }
 
-        
+
+        float[] org = {0, 0, 0};
         Math3D.VectorSubtract(Globals.vec3_origin, amove, org);
+        float[] up = {0, 0, 0};
+        float[] right = {0, 0, 0};
+        float[] forward = {0, 0, 0};
         Math3D.AngleVectors(org, forward, right, up);
 
         
@@ -347,11 +332,11 @@ public final class SV {
         Math3D.VectorAdd(pusher.s.angles, amove, pusher.s.angles);
         game_import_t.linkentity(pusher);
 
-        
 
-        
-        for (e = 1; e < GameBase.num_edicts; e++) {
-            check = GameBase.g_edicts[e];
+        float[] move2 = {0, 0, 0};
+        float[] org2 = {0, 0, 0};
+        for (int e = 1; e < GameBase.num_edicts; e++) {
+            edict_t check = GameBase.g_edicts[e];
             if (!check.inuse)
                 continue;
             if (check.movetype == Defines.MOVETYPE_PUSH
@@ -407,7 +392,7 @@ public final class SV {
                 if (check.groundentity != pusher)
                     check.groundentity = null;
 
-                block = SV_TestEntityPosition(check);
+                edict_t[] block = SV_TestEntityPosition(check);
                 if (block == null) { 
                     game_import_t.linkentity(check);
                     
@@ -433,7 +418,7 @@ public final class SV {
             
             
             for (int ip = GameBase.pushed_p - 1; ip >= 0; ip--) {
-                p = GameBase.pushed[ip];
+                pushed_t p = GameBase.pushed[ip];
                 Math3D.VectorCopy(p.origin, p.ent.s.origin);
                 Math3D.VectorCopy(p.angles, p.ent.s.angles);
                 if (p.ent.client != null) {
@@ -457,11 +442,8 @@ public final class SV {
      * Bmodel objects don't interact with each other, but push all box objects.
      */
     public static void SV_Physics_Pusher(edict_t ent) {
-        float[] move = { 0, 0, 0 };
-        float[] amove = { 0, 0, 0 };
-        edict_t part, mv;
 
-        
+
         if ((ent.flags & Defines.FL_TEAMSLAVE) != 0)
             return;
 
@@ -470,6 +452,9 @@ public final class SV {
         
         
         GameBase.pushed_p = 0;
+        edict_t part;
+        float[] amove = {0, 0, 0};
+        float[] move = {0, 0, 0};
         for (part = ent; part != null; part = part.teamchain) {
             if (part.velocity[0] != 0 || part.velocity[1] != 0
                     || part.velocity[2] != 0 || part.avelocity[0] != 0
@@ -489,7 +474,7 @@ public final class SV {
 
         if (part != null) {
             
-            for (mv = ent; mv != null; mv = mv.teamchain) {
+            for (edict_t mv = ent; mv != null; mv = mv.teamchain) {
                 if (mv.nextthink > 0)
                     mv.nextthink += Defines.FRAMETIME;
             }
@@ -535,12 +520,7 @@ public final class SV {
      */
     public static void SV_Physics_Toss(edict_t ent) {
 
-        float[] move = { 0, 0, 0 };
-        float backoff;
-        edict_t slave;
-        float[] old_origin = { 0, 0, 0 };
 
-        
         SV_RunThink(ent);
 
         
@@ -559,6 +539,7 @@ public final class SV {
         if (ent.groundentity != null)
             return;
 
+        float[] old_origin = {0, 0, 0};
         Math3D.VectorCopy(ent.s.origin, old_origin);
 
         SV_CheckVelocity(ent);
@@ -572,13 +553,15 @@ public final class SV {
         Math3D.VectorMA(ent.s.angles, Defines.FRAMETIME, ent.avelocity,
                 ent.s.angles);
 
-        
+
+        float[] move = {0, 0, 0};
         Math3D.VectorScale(ent.velocity, Defines.FRAMETIME, move);
         trace_t trace = SV_PushEntity(ent, move);
         if (!ent.inuse)
             return;
 
         if (trace.fraction < 1) {
+            float backoff;
             if (ent.movetype == Defines.MOVETYPE_BOUNCE)
                 backoff = 1.5f;
             else
@@ -620,7 +603,7 @@ public final class SV {
                     game_import_t.soundindex("misc/h2ohit1.wav"), 1, 1, 0);
 
         
-        for (slave = ent.teamchain; slave != null; slave = slave.teamchain) {
+        for (edict_t slave = ent.teamchain; slave != null; slave = slave.teamchain) {
             Math3D.VectorCopy(ent.s.origin, slave.s.origin);
             game_import_t.linkentity(slave);
         }
@@ -629,13 +612,12 @@ public final class SV {
 
     
     public static void SV_AddRotationalFriction(edict_t ent) {
-        int n;
 
         Math3D.VectorMA(ent.s.angles, Defines.FRAMETIME, ent.avelocity,
                 ent.s.angles);
         float adjustment = Defines.FRAMETIME * Defines.sv_stopspeed
                 * Defines.sv_friction;
-        for (n = 0; n < 3; n++) {
+        for (int n = 0; n < 3; n++) {
             if (ent.avelocity[n] > 0) {
                 ent.avelocity[n] -= adjustment;
                 if (ent.avelocity[n] < 0)
@@ -658,13 +640,8 @@ public final class SV {
      */
 
     public static void SV_Physics_Step(edict_t ent) {
-        boolean hitsound = false;
-        float[] vel;
-        float speed, newspeed, control;
-        float friction;
-        int mask;
 
-        
+
         if (ent.groundentity == null)
             M.M_CheckGround(ent);
 
@@ -679,6 +656,7 @@ public final class SV {
         }
 
 
+        boolean hitsound = false;
         if (!wasonground)
             if (0 == (ent.flags & Defines.FL_FLY))
                 if (!((ent.flags & Defines.FL_SWIM) != 0 && (ent.waterlevel > 2))) {
@@ -688,7 +666,11 @@ public final class SV {
                         SV_AddGravity(ent);
                 }
 
-        
+
+        float friction;
+        float control;
+        float newspeed;
+        float speed;
         if ((ent.flags & Defines.FL_FLY) != 0 && (ent.velocity[2] != 0)) {
             speed = Math.abs(ent.velocity[2]);
             control = speed < Defines.sv_stopspeed ? Defines.sv_stopspeed
@@ -721,7 +703,7 @@ public final class SV {
             if ((wasonground)
                     || 0 != (ent.flags & (Defines.FL_SWIM | Defines.FL_FLY)))
                 if (!(ent.health <= 0.0 && !M.M_CheckBottom(ent))) {
-                    vel = ent.velocity;
+                    float[] vel = ent.velocity;
                     speed = (float) Math
                             .sqrt(vel[0] * vel[0] + vel[1] * vel[1]);
                     if (speed != 0) {
@@ -741,6 +723,7 @@ public final class SV {
                     }
                 }
 
+            int mask;
             if ((ent.svflags & Defines.SVF_MONSTER) != 0)
                 mask = Defines.MASK_MONSTERSOLID;
             else
@@ -774,30 +757,25 @@ public final class SV {
     
     
     public static boolean SV_movestep(edict_t ent, float[] move, boolean relink) {
-        float dz;
         float[] oldorg = { 0, 0, 0 };
-        float[] neworg = { 0, 0, 0 };
-        float[] end = { 0, 0, 0 };
 
-        trace_t trace = null; 
-        int i;
-        float stepsize;
-        float[] test = { 0, 0, 0 };
-        int contents;
 
-        
         Math3D.VectorCopy(ent.s.origin, oldorg);
+        float[] neworg = {0, 0, 0};
         Math3D.VectorAdd(ent.s.origin, move, neworg);
 
-        
+
+        int contents;
+        float[] test = {0, 0, 0};
+        trace_t trace = null;
         if ((ent.flags & (Defines.FL_SWIM | Defines.FL_FLY)) != 0) {
             
-            for (i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++) {
                 Math3D.VectorAdd(ent.s.origin, move, neworg);
                 if (i == 0 && ent.enemy != null) {
                     if (ent.goalentity == null)
                         ent.goalentity = ent.enemy;
-                    dz = ent.s.origin[2] - ent.goalentity.s.origin[2];
+                    float dz = ent.s.origin[2] - ent.goalentity.s.origin[2];
                     if (ent.goalentity.client != null) {
                         if (dz > 40)
                             neworg[2] -= 8;
@@ -858,13 +836,15 @@ public final class SV {
             return false;
         }
 
-        
+
+        float stepsize;
         if ((ent.monsterinfo.aiflags & Defines.AI_NOSTEP) == 0)
             stepsize = GameBase.STEPSIZE;
         else
             stepsize = 1;
 
         neworg[2] += stepsize;
+        float[] end = {0, 0, 0};
         Math3D.VectorCopy(neworg, end);
         end[2] -= stepsize * 2;
 
@@ -944,21 +924,20 @@ public final class SV {
      * it.
      */
     public static boolean SV_StepDirection(edict_t ent, float yaw, float dist) {
-        float[] move = { 0, 0, 0 };
-        float[] oldorigin = { 0, 0, 0 };
-        float delta;
 
         ent.ideal_yaw = yaw;
         M.M_ChangeYaw(ent);
 
         yaw = (float) (yaw * Math.PI * 2 / 360);
+        float[] move = {0, 0, 0};
         move[0] = (float) Math.cos(yaw) * dist;
         move[1] = (float) Math.sin(yaw) * dist;
         move[2] = 0;
 
+        float[] oldorigin = {0, 0, 0};
         Math3D.VectorCopy(ent.s.origin, oldorigin);
         if (SV_movestep(ent, move, false)) {
-            delta = ent.s.angles[Defines.YAW] - ent.ideal_yaw;
+            float delta = ent.s.angles[Defines.YAW] - ent.ideal_yaw;
             if (delta > 45 && delta < 315) { 
                                              
                 Math3D.VectorCopy(oldorigin, ent.s.origin);
@@ -981,8 +960,6 @@ public final class SV {
     }
 
     public static void SV_NewChaseDir(edict_t actor, edict_t enemy, float dist) {
-        float[] d = {0, 0, 0};
-        float tdir;
 
 
         if (enemy == null) {
@@ -994,6 +971,7 @@ public final class SV {
 
         float deltax = enemy.s.origin[0] - actor.s.origin[0];
         float deltay = enemy.s.origin[1] - actor.s.origin[1];
+        float[] d = {0, 0, 0};
         if (deltax > 10)
             d[1] = 0;
         else if (deltax < -10)
@@ -1007,7 +985,8 @@ public final class SV {
         else
             d[2] = DI_NODIR;
 
-        
+
+        float tdir;
         if (d[1] != DI_NODIR && d[2] != DI_NODIR) {
             if (d[1] == 0)
                 tdir = d[2] == 90 ? 45 : 315;
@@ -1067,9 +1046,8 @@ public final class SV {
      * given dist.  
      */
     public static boolean SV_CloseEnough(edict_t ent, edict_t goal, float dist) {
-        int i;
 
-        for (i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             if (goal.absmin[i] > ent.absmax[i] + dist)
                 return false;
             if (goal.absmax[i] < ent.absmin[i] - dist)

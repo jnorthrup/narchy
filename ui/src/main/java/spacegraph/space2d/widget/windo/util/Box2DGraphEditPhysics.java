@@ -74,7 +74,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         private transient float prw;
         private transient float prh;
         void pre(Dynamics2D physics, RectFloat r) {
-            boolean resized = false, moved = false;
+            boolean resized = false;
 
             float nrw = r.w, nrh = r.h;
 
@@ -87,6 +87,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             }
 
             float ncx = r.cx(), ncy = r.cy();
+            boolean moved = false;
             if (body.setTransform(new v2(ncx / scaling, ncy / scaling), 0, SHAPE_SIZE_EPSILON))
                 moved = true;
 

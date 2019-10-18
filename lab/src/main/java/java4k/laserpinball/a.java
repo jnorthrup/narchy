@@ -40,91 +40,13 @@ public class a extends GamePanel {
 	@Override
 	public void run() {
 
-		final float GRAVITY = 0.15f;
-		final float DAMPENING = 1.5f;
-		final float BALL_RADIUS = 19.5f;
+        final float BALL_RADIUS = 19.5f;
 		final int MAX_VELOCITY = 32;
-		final int BUMPER_VELOCITY = 16;
-		final int FLIPPER_DELAY = 8;
-		final int FLIPPER_VELOCITY = 24;
-		final int ITEMS = 12;
-		final int EXTRA_BALL_BONUS = 15000;
 
-		final float BALL_RADIUS2 = BALL_RADIUS * BALL_RADIUS;
-		final float MAX_VELOCITY2 = MAX_VELOCITY * MAX_VELOCITY;
+        int i;
 
-		final int VK_ENTER = 10;
-		final int VK_SPACE = 32;
-		final int VK_LEFT_0 = 97;
-		final int VK_LEFT_1 = 113;
-		final int VK_RIGHT_0 = 39;
-		final int VK_RIGHT_1 = 108;
 
-		final int BALL_LAYER = 0;
-		final int BALL_X = 1;
-		final int BALL_Y = 2;
-		final int BALL_VX = 3;
-		final int BALL_VY = 4;
-		final int BALL_TIME = 5;
-		final int BALL_STUCK = 6;
-
-		final int IMAGE_BUFFER = 0;
-		final int IMAGE_LAYER_0 = 1;
-		final int IMAGE_LAYER_1 = 2;
-		final int IMAGE_BALL = 3;
-		final int IMAGE_PLUNGER = 4;
-		final int IMAGE_GATE = 5;
-		final int IMAGE_BUMPER = 6;
-		final int IMAGE_SLINGSHOT = 7;
-		final int IMAGE_FLIPPER = 8;
-
-		int i;
-		int j;
-		int k;
-		int p;
-		int q;
-		int u;
-		int x;
-		int y;
-		int z;
-		int x1;
-		int y1;
-		int x2;
-		int y2;
-		int cameraY = 0;
-		int plungerX = 0;
-		int leftBumper = 0;
-		int rightBumper = 0;
-		int leftSlingshot = 0;
-		int rightSlingshot = 0;
-		int leftFlipperCounter = 0;
-		int rightFlipperCounter = 0;
-		int score = 0;
-		int lastScore = 0;
-		int extraBalls = 0;
-		int multiplier = 0;
-		int ballCount = 0;
-		float fx;
-		float fy;
-		float vx;
-		float vy;
-		float mag;
-		float t;
-		float leftFlipperAngle = 0;
-		float rightFlipperAngle = 0;
-		float[] ball;
-		float[] ball2;
-		boolean lowerLeftGateEnabled = false;
-		boolean railGateEnabled = false;
-		boolean cameraOnTarget = false;
-		boolean hit = false;
-		boolean gameOver = true;
-
-		int[][] itemsTable = null;
-
-		
-		
-		final String S = "ubc1bubcffua829ua81aua81aub127ub127ub1ffu9554" + "u8e66u8e66u9168u9168ua153uaf57u9290u9290u9593u9e9bub1ae" + "u700fu760fu760fu7615u7615u7015u7015u700fu830fu890fu890f"
+        final String S = "ubc1bubcffua829ua81aua81aub127ub127ub1ffu9554" + "u8e66u8e66u9168u9168ua153uaf57u9290u9290u9593u9e9bub1ae" + "u700fu760fu760fu7615u7615u7015u7015u700fu830fu890fu890f"
 				+ "u8916u8916u8316u8316u830fu9711u9d11u9d11u9d1cu9d1cu971c" + "u971cu9711ub1e0u9aeeu9aeeu9affu25ffu25f1u25f1u19eau19ea" + "u19f5u19f5u0df5u0df5u0dabu1ca0u1c84u1c84u013eu013eu010c"
 				+ "u0f0cu0f3eu0f3eu2162u2162u2560u2560u1d4bu440au7401u7401" + "ua301u19d4u19dcu19dcu31e9u31e9u34e7u34e7u19d4ua4d4ua4dc" + "ua4dcu8ce9u8ce9u89e7u89e7ua4d4u29b2u37d6u37d6u32d8u32d8"
 				+ "u24ccu24ccu24b4u24b4u29b2u93b2u85d6u85d6u8ad8u8ad8u98cc" + "u98ccu98b4u98b4u93b2u2c4au3748u3748u302du3d28u5558u5558" + "u5858u5858u5f40u5f3fu7a44u6316u6319u19b3u19d4ua4b3ua4d4"
@@ -137,28 +59,43 @@ public class a extends GamePanel {
 
 		BufferedImage[] images = new BufferedImage[9];
 
-		float[][] balls = new float[3][8];
-		float[][][][][] layers = new float[2][48][32][67][2];
-		int[][][] boxSizes = new int[2][48][32];
-		float[][] box;
-		Graphics2D[] imageGraphics = new Graphics2D[9];
-		Graphics2D g = null;
-		Graphics2D g2 = null;
+        Graphics2D[] imageGraphics = new Graphics2D[9];
 
-		
-		for (i = 0; i < 9; i++) {
+
+        for (i = 0; i < 9; i++) {
 			(imageGraphics[i] = (Graphics2D) (images[i] = new BufferedImage((S.charAt(i + 297) >> 8) << 2, (S.charAt(i + 297) & 0xFF) << 2, i < 2 ? BufferedImage.TYPE_INT_RGB
 					: BufferedImage.TYPE_INT_ARGB_PRE)).getGraphics()).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		}
 
-		
-		for (q = 0; q < 2; q++) {
+
+        Graphics2D g = null;
+        int[][][] boxSizes = new int[2][48][32];
+        float[][][][][] layers = new float[2][48][32][67][2];
+        float[] ball;
+        float mag;
+        float vy;
+        float vx;
+        float fy;
+        float fx;
+        int y2;
+        int x2;
+        int x1;
+        int z;
+        int y;
+        int x;
+        int k;
+        int j;
+        final int IMAGE_LAYER_0 = 1;
+        for (int q = 0; q < 2; q++) {
 			g = imageGraphics[IMAGE_LAYER_0 + q];
 
-			for (j = 63; j >= 0; j--) { 
+			for (j = 63; j >= 0; j--) {
 
-				
-				for (i = 0; i < (q == 0 ? 70 : 32); i++) {
+
+                int y1;
+                int u;
+                int p;
+                for (i = 0; i < (q == 0 ? 70 : 32); i++) {
 					p = q == 0 ? 0 : 176;
 					k = (i << 1) + p;
 					x1 = (S.charAt(k) >> 8) << 2;
@@ -222,45 +159,51 @@ public class a extends GamePanel {
 			}
 		}
 
-		
-		g = imageGraphics[IMAGE_BALL];
+
+        final int IMAGE_BALL = 3;
+        g = imageGraphics[IMAGE_BALL];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color(255, 0, 0, (63 - j) >> 3));
 			g.fillOval(65 - j, 65 - j, 39 + (j << 1), 39 + (j << 1));
 		}
 
-		
-		g = imageGraphics[IMAGE_BUMPER];
+
+        final int IMAGE_BUMPER = 6;
+        g = imageGraphics[IMAGE_BUMPER];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color(255, 255, 255, (63 - j) >> 3));
 			g.fillOval(63 - j, 63 - j, 100 + (j << 1), 100 + (j << 1));
 		}
 
-		
-		g = imageGraphics[IMAGE_SLINGSHOT];
+
+        final int IMAGE_SLINGSHOT = 7;
+        g = imageGraphics[IMAGE_SLINGSHOT];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(new Color(255, 255, 255, (63 - j) >> 3));
 			g.fillOval(63 - j, 63 - j, 100 + (j << 1), 100 + (j << 1));
 		}
 
-		
-		g = imageGraphics[IMAGE_GATE];
+
+        final int IMAGE_GATE = 5;
+        g = imageGraphics[IMAGE_GATE];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color(0, 128, 255, (63 - j) >> 3));
 			g.setStroke(new BasicStroke(j + 5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 			g.drawLine(32, 32, 64, 32);
 		}
 
-		
-		g = imageGraphics[IMAGE_PLUNGER];
+
+        final int IMAGE_PLUNGER = 4;
+        g = imageGraphics[IMAGE_PLUNGER];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color(255, 0, 255, (63 - j) >> 3));
 			g.setStroke(new BasicStroke(j + 5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 			g.drawLine(32, 32, 32, 160);
 		}
 
-		
-		g = imageGraphics[IMAGE_FLIPPER];
+
+        final int IMAGE_FLIPPER = 8;
+        g = imageGraphics[IMAGE_FLIPPER];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color((63 - j) << 2, 0, (63 - j) << 2));
 			for (i = 0; i < 106; i++) {
@@ -280,14 +223,61 @@ public class a extends GamePanel {
 		g.drawImage(images[IMAGE_PLUNGER], 640, -60, null);
 		g.drawImage(images[IMAGE_PLUNGER], 45, 946, null);
 
-		g = imageGraphics[IMAGE_BUFFER];
+        final int IMAGE_BUFFER = 0;
+        g = imageGraphics[IMAGE_BUFFER];
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g.setFont(new Font(Font.DIALOG, Font.PLAIN, 40));
 		AffineTransform transform = new AffineTransform();
 
-		a[VK_ENTER] = true;
+        final int VK_ENTER = 10;
+        a[VK_ENTER] = true;
 		long nextFrameStartTime = System.nanoTime();
-		while (true) {
+        Graphics2D g2 = null;
+        float[][] balls = new float[3][8];
+        int[][] itemsTable = null;
+        boolean gameOver = true;
+        boolean hit = false;
+        boolean cameraOnTarget = false;
+        boolean railGateEnabled = false;
+        boolean lowerLeftGateEnabled = false;
+        float rightFlipperAngle = 0;
+        float leftFlipperAngle = 0;
+        int ballCount = 0;
+        int multiplier = 0;
+        int extraBalls = 0;
+        int lastScore = 0;
+        int score = 0;
+        int rightFlipperCounter = 0;
+        int leftFlipperCounter = 0;
+        int rightSlingshot = 0;
+        int leftSlingshot = 0;
+        int rightBumper = 0;
+        int leftBumper = 0;
+        int plungerX = 0;
+        int cameraY = 0;
+        final int IMAGE_LAYER_1 = 2;
+        final int BALL_STUCK = 6;
+        final int BALL_TIME = 5;
+        final int BALL_VY = 4;
+        final int BALL_VX = 3;
+        final int BALL_Y = 2;
+        final int BALL_X = 1;
+        final int BALL_LAYER = 0;
+        final int VK_RIGHT_1 = 108;
+        final int VK_RIGHT_0 = 39;
+        final int VK_LEFT_1 = 113;
+        final int VK_LEFT_0 = 97;
+        final int VK_SPACE = 32;
+        final float MAX_VELOCITY2 = MAX_VELOCITY * MAX_VELOCITY;
+        final float BALL_RADIUS2 = BALL_RADIUS * BALL_RADIUS;
+        final int EXTRA_BALL_BONUS = 15000;
+        final int ITEMS = 12;
+        final int FLIPPER_VELOCITY = 24;
+        final int FLIPPER_DELAY = 8;
+        final int BUMPER_VELOCITY = 16;
+        final float DAMPENING = 1.5f;
+        final float GRAVITY = 0.15f;
+        while (true) {
 
 			do {
 				nextFrameStartTime += 16666667;
@@ -434,9 +424,9 @@ public class a extends GamePanel {
 
 					do {
 
-						
-						t = ball[BALL_TIME];
-						vx = t * ball[BALL_VX];
+
+                        float t = ball[BALL_TIME];
+                        vx = t * ball[BALL_VX];
 						vy = t * ball[BALL_VY];
 						mag = vx * vx + vy * vy;
 						if (mag > 1) {
@@ -672,8 +662,9 @@ public class a extends GamePanel {
 
 													score += multiplier * 125;
 
-													
-													if (ballCount < 3) {
+
+                                                    float[] ball2;
+                                                    if (ballCount < 3) {
 														ball2 = balls[ballCount++] = new float[8];
 														ball2[BALL_X] = 475;
 														ball2[BALL_Y] = 369;
@@ -715,8 +706,8 @@ public class a extends GamePanel {
 							collision = false;
 							for (; y <= y2; y++) {
 								for (x = x1; x <= x2; x++) {
-									box = layers[(int) ball[BALL_LAYER]][y][x];
-									for (z = boxSizes[(int) ball[BALL_LAYER]][y][x] - 1; z >= 0; z--) {
+                                    float[][] box = layers[(int) ball[BALL_LAYER]][y][x];
+                                    for (z = boxSizes[(int) ball[BALL_LAYER]][y][x] - 1; z >= 0; z--) {
 										vx = ball[BALL_X] - box[z][0];
 										vy = ball[BALL_Y] - box[z][1];
 										if (vx * vx + vy * vy <= BALL_RADIUS2) {
@@ -735,9 +726,9 @@ public class a extends GamePanel {
 								float sin = (float) Math.sin(angle);
 								float cos = (float) Math.cos(angle);
 								float X1 = 126 * cos + 21 * sin;
-								float Y1 = 126 * sin - 21 * cos;
-								vx = ball[BALL_X] - X1 - 221;
-								vy = ball[BALL_Y] - Y1 - 949;
+                                vx = ball[BALL_X] - X1 - 221;
+                                float Y1 = 126 * sin - 21 * cos;
+                                vy = ball[BALL_Y] - Y1 - 949;
 								float px = -21 * cos + 21 * sin - X1;
 								float py = -21 * sin - 21 * cos - Y1;
 								mag = (vx * px + vy * py) / (px * px + py * py);
@@ -759,9 +750,9 @@ public class a extends GamePanel {
 								float sin = (float) Math.sin(angle);
 								float cos = (float) Math.cos(angle);
 								float X1 = 126 * cos + 21 * sin;
-								float Y1 = 126 * sin - 21 * cos;
-								vx = ball[BALL_X] + X1 - 540;
-								vy = ball[BALL_Y] - Y1 - 949;
+                                vx = ball[BALL_X] + X1 - 540;
+                                float Y1 = 126 * sin - 21 * cos;
+                                vy = ball[BALL_Y] - Y1 - 949;
 								float px = 21 * cos - 21 * sin + X1;
 								float py = -21 * sin - 21 * cos - Y1;
 								mag = (vx * px + vy * py) / (px * px + py * py);

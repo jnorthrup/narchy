@@ -80,10 +80,6 @@ public class Rdp5 extends Rdp {
             CryptoException {
 
 
-        int length, count;
-        int type;
-        int next;
-
         byte[] packet = null;
         if (encryption) {
             s.incrementPosition(8); /* signature */
@@ -101,11 +97,12 @@ public class Rdp5 extends Rdp {
         bf.setPosition(0);
 
         while (bf.getPosition() < bf.getEnd()) {
-            type = bf.get8();
-            length = bf.getLittleEndian16();
+            int type = bf.get8();
+            int length = bf.getLittleEndian16();
             /* next_packet = */
-            next = bf.getPosition() + length;
+            int next = bf.getPosition() + length;
             logger.debug("RDP5: type = {}", type);
+            int count;
             switch (type) {
                 case 0: /* orders */
                     count = bf.getLittleEndian16();

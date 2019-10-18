@@ -40,10 +40,10 @@ public class SlidingDFT {
     public SlidingDFT(int fftSize, int numChannels) {
         this.fftSize = fftSize;
 
-        int bins = fftSize / 2;
         fftSizeP2 = fftSize + 2;
         fftBufD = new float[numChannels][fftSizeP2];
 
+        int bins = fftSize / 2;
         cos = new float[bins + 1];
         sin = new float[bins + 1];
         timeBuf = new float[numChannels][fftSize];
@@ -93,26 +93,24 @@ public class SlidingDFT {
         float[] fftBufDC = fftBufD[chan];
         float[] timeBufC = timeBuf[chan];
         int timeBufIdxC = timeBufIdx[chan];
-        float delta, re1, im1, re2, im2;
-        float f1;
 
 
         for (int i = 0, j = inOff; i < inLen; i++, j++) {
-            f1 = inBuf[j];
+            float f1 = inBuf[j];
 
 //            if (f1!=f1)
 //                throw new NumberException("NaN", f1); //TEMPORARY
 
-            delta = f1 - timeBufC[timeBufIdxC];
+            float delta = f1 - timeBufC[timeBufIdxC];
 
             timeBufC[timeBufIdxC] = f1;
             for (int k = 0, m = 0; m < fftSizeP2; k++) {
 
-                re1 = fftBufDC[m] + ((k & 1) == 0 ? +1 : -1) * delta;
-                im1 = fftBufDC[m + 1];
+                float re1 = fftBufDC[m] + ((k & 1) == 0 ? +1 : -1) * delta;
+                float im1 = fftBufDC[m + 1];
 
-                re2 = cos[k];
-                im2 = sin[k];
+                float re2 = cos[k];
+                float im2 = sin[k];
 
                 fftBufDC[m++] = re1 * re2 - im1 * im2;
                 fftBufDC[m++] = re1 * im2 + re2 * im1;

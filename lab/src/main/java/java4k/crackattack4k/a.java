@@ -979,15 +979,15 @@ public class a extends GamePanel {
 		if (awtEvent instanceof MouseEvent) {
 			MouseEvent e = (MouseEvent)awtEvent;
 			final int MOUSE_X = 0;
-			final int MOUSE_Y = 1;
-			final int MOUSE_DOWN = 2;
-			final int MOUSE_BUTTON = 3;
 
-			a[MOUSE_X] = e.getX();
-			a[MOUSE_Y] = e.getY();
-			if (e.getID() == MouseEvent.MOUSE_PRESSED) {
+            a[MOUSE_X] = e.getX();
+            final int MOUSE_Y = 1;
+            a[MOUSE_Y] = e.getY();
+            final int MOUSE_DOWN = 2;
+            if (e.getID() == MouseEvent.MOUSE_PRESSED) {
 				a[MOUSE_DOWN] = 1;
-				a[MOUSE_BUTTON] = ((e.getModifiers() & InputEvent.BUTTON1_MASK) == InputEvent.BUTTON1_MASK) ? 1 : 0;
+                final int MOUSE_BUTTON = 3;
+                a[MOUSE_BUTTON] = ((e.getModifiers() & InputEvent.BUTTON1_MASK) == InputEvent.BUTTON1_MASK) ? 1 : 0;
 			} else {
 				a[MOUSE_DOWN] = 0;
 			}

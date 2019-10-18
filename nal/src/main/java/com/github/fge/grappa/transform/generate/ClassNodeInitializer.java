@@ -70,14 +70,12 @@ public final class ClassNodeInitializer
         // walk up the parser parent class chain
         ownerClass = classNode.getParentClass();
         try (Closer closer = Closer.create()) {
-            ClassReader reader;
-            InputStream in;
             while (Object.class != ownerClass) {
                 annotations.removeAll(CLASS_FLAGS_CLEAR);
 
 
-                in = getInputStream(ownerClass);
-                reader = new ClassReader(closer.register(in));
+                InputStream in = getInputStream(ownerClass);
+                ClassReader reader = new ClassReader(closer.register(in));
                 reader.accept(this, ClassReader.SKIP_FRAMES);
 
                 ownerClass = ownerClass.getSuperclass();

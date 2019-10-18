@@ -109,12 +109,12 @@ public class Screen {
         int x1 = x + r;
         int y0 = y - r;
         int y1 = y + r;
-        int rr = r * r;
         if (x0 < 0) x0 = 0;
         if (y0 < 0) y0 = 0;
         if (x1 > w) x1 = w;
         if (y1 > h) y1 = h;
 
+        int rr = r * r;
         for (int yy = y0; yy < y1; yy++) {
             int yd = yy - y;
             yd *= yd;

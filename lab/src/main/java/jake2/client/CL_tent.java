@@ -219,12 +219,8 @@ public class CL_tent {
      * ================= CL_RegisterTEntSounds =================
      */
     static void RegisterTEntSounds() {
-        int i;
-        String name;
 
-        
-        
-        
+
         cl_sfx_ric1 = S.RegisterSound("world/ric1.wav");
         cl_sfx_ric2 = S.RegisterSound("world/ric2.wav");
         cl_sfx_ric3 = S.RegisterSound("world/ric3.wav");
@@ -243,9 +239,9 @@ public class CL_tent {
         S.RegisterSound("player/fall2.wav");
         S.RegisterSound("player/fall1.wav");
 
-        for (i = 0; i < 4; i++) {
-            
-            name = "player/step" + (i + 1) + ".wav";
+        for (int i = 0; i < 4; i++) {
+
+            String name = "player/step" + (i + 1) + ".wav";
             cl_sfx_footsteps[i] = S.RegisterSound(name);
         }
 
@@ -383,16 +379,16 @@ public class CL_tent {
      */
     static int ParseBeam(model_t model) {
         float[] start = new float[3];
-        float[] end = new float[3];
-        int i;
 
         int ent = MSG.ReadShort(Globals.net_message);
 
         MSG.ReadPos(Globals.net_message, start);
+        float[] end = new float[3];
         MSG.ReadPos(Globals.net_message, end);
 
 
         beam_t[] b = cl_beams;
+        int i;
         for (i = 0; i < MAX_BEAMS; i++)
             if (b[i].entity == ent) {
                 b[i].entity = ent;
@@ -426,18 +422,18 @@ public class CL_tent {
      */
     static int ParseBeam2(model_t model) {
         float[] start = new float[3];
-        float[] end = new float[3];
-        float[] offset = new float[3];
-        int i;
 
         int ent = MSG.ReadShort(Globals.net_message);
 
         MSG.ReadPos(Globals.net_message, start);
+        float[] end = new float[3];
         MSG.ReadPos(Globals.net_message, end);
+        float[] offset = new float[3];
         MSG.ReadPos(Globals.net_message, offset);
 
 
         beam_t[] b = cl_beams;
+        int i;
         for (i = 0; i < MAX_BEAMS; i++)
             if (b[i].entity == ent) {
                 b[i].entity = ent;
@@ -473,15 +469,14 @@ public class CL_tent {
      */
     static int ParsePlayerBeam(model_t model) {
         float[] start = new float[3];
-        float[] end = new float[3];
-        float[] offset = new float[3];
-        int i;
 
         int ent = MSG.ReadShort(Globals.net_message);
 
         MSG.ReadPos(Globals.net_message, start);
+        float[] end = new float[3];
         MSG.ReadPos(Globals.net_message, end);
-        
+
+        float[] offset = new float[3];
         if (model == cl_mod_heatbeam)
             Math3D.VectorSet(offset, 2, 7, -3);
         else if (model == cl_mod_monster_heatbeam) {
@@ -492,6 +487,7 @@ public class CL_tent {
 
 
         beam_t[] b = cl_playerbeams;
+        int i;
         for (i = 0; i < MAX_BEAMS; i++) {
             if (b[i].entity == ent) {
                 b[i].entity = ent;
@@ -532,7 +528,6 @@ public class CL_tent {
      * ================= CL_ParseLightning =================
      */
     static int ParseLightning(model_t model) {
-        int i;
 
         int srcEnt = MSG.ReadShort(Globals.net_message);
         int destEnt = MSG.ReadShort(Globals.net_message);
@@ -542,6 +537,7 @@ public class CL_tent {
 
 
         beam_t[] b = cl_beams;
+        int i;
         for (i = 0; i < MAX_BEAMS; i++)
             if (b[i].entity == srcEnt && b[i].dest_entity == destEnt) {
                 
@@ -581,13 +577,12 @@ public class CL_tent {
      * ================= CL_ParseLaser =================
      */
     static void ParseLaser(int colors) {
-        int i;
 
         MSG.ReadPos(Globals.net_message, start);
         MSG.ReadPos(Globals.net_message, end);
 
         laser_t[] l = cl_lasers;
-        for (i = 0; i < MAX_LASERS; i++) {
+        for (int i = 0; i < MAX_LASERS; i++) {
             if (l[i].endtime < Globals.cl.time) {
                 l[i].ent.flags = Defines.RF_TRANSLUCENT | Defines.RF_BEAM;
                 Math3D.VectorCopy(start, l[i].ent.origin);
@@ -608,21 +603,18 @@ public class CL_tent {
     
     
     static void ParseSteam() {
-        int i;
         int r;
         int cnt;
-        int color;
         int magnitude;
-        cl_sustain_t[] s;
-        cl_sustain_t free_sustain;
 
         int id = MSG.ReadShort(Globals.net_message);
                                                  
         if (id != -1) 
         {
-            
-            free_sustain = null;
-            s = cl_sustains;
+
+            cl_sustain_t free_sustain = null;
+            cl_sustain_t[] s = cl_sustains;
+            int i;
             for (i = 0; i < MAX_SUSTAINS; i++) {
                 if (s[i].id == 0) {
                     free_sustain = s[i];
@@ -665,7 +657,7 @@ public class CL_tent {
             MSG.ReadDir(Globals.net_message, dir);
             r = MSG.ReadByte(Globals.net_message);
             magnitude = MSG.ReadShort(Globals.net_message);
-            color = r & 0xff;
+            int color = r & 0xff;
             CL_newfx.ParticleSteamEffect(pos, dir, color, cnt, magnitude);
             
         }
@@ -1280,16 +1272,10 @@ public class CL_tent {
      * ================= CL_AddBeams =================
      */
     static void AddBeams() {
-        int i, j;
-        float d;
-        float yaw, pitch;
-        float forward;
-        float len, steps;
-        float model_length;
 
 
         beam_t[] b = cl_beams;
-        for (i = 0; i < MAX_BEAMS; i++) {
+        for (int i = 0; i < MAX_BEAMS; i++) {
             if (b[i].model == null || b[i].endtime < Globals.cl.time)
                 continue;
 
@@ -1305,6 +1291,8 @@ public class CL_tent {
             
             Math3D.VectorSubtract(b[i].end, org, dist);
 
+            float pitch;
+            float yaw;
             if (dist[1] == 0 && dist[0] == 0) {
                 yaw = 0;
                 if (dist[2] > 0)
@@ -1322,32 +1310,29 @@ public class CL_tent {
                 if (yaw < 0)
                     yaw += 360;
 
-                forward = (float) Math.sqrt(dist[0] * dist[0] + dist[1]
+                float forward = (float) Math.sqrt(dist[0] * dist[0] + dist[1]
                         * dist[1]);
                 pitch = (float) (Math.atan2(dist[2], forward) * -180.0 / Math.PI);
                 if (pitch < 0)
                     pitch += 360.0;
             }
 
-            
-            d = Math3D.VectorNormalize(dist);
 
-            
+            float d = Math3D.VectorNormalize(dist);
+
+
             ent.clear();
+            float model_length;
             if (b[i].model == cl_mod_lightning) {
                 model_length = 35.0f;
                 d -= 20.0; 
             } else {
                 model_length = 30.0f;
             }
-            steps = (float) Math.ceil(d / model_length);
-            len = (d - model_length) / (steps - 1);
+            float steps = (float) Math.ceil(d / model_length);
+            float len = (d - model_length) / (steps - 1);
 
-            
-            
-            
-            
-            
+
             if ((b[i].model == cl_mod_lightning) && (d <= model_length)) {
                 
                 Math3D.VectorCopy(b[i].end, ent.origin);
@@ -1381,7 +1366,7 @@ public class CL_tent {
                 
                 V.AddEntity(ent);
 
-                for (j = 0; j < 3; j++)
+                for (int j = 0; j < 3; j++)
                     org[j] += dist[j] * len;
                 d -= model_length;
             }
@@ -1401,19 +1386,10 @@ public class CL_tent {
      * =================
      */
     static void AddPlayerBeams() {
-        float d;
-        
-        float yaw, pitch;
-        float forward;
-        float len, steps;
-        int framenum = 0;
-        float model_length;
 
         float hand_multiplier;
-        frame_t oldframe;
-        player_state_t ps, ops;
 
-        
+
         if (Globals.hand != null) {
             if (Globals.hand.value == 2)
                 hand_multiplier = 0;
@@ -1428,6 +1404,7 @@ public class CL_tent {
 
         
         beam_t[] b = cl_playerbeams;
+        int framenum = 0;
         for (int i = 0; i < MAX_BEAMS; i++) {
 
             if (b[i].model == null || b[i].endtime < Globals.cl.time)
@@ -1439,19 +1416,19 @@ public class CL_tent {
                 if (b[i].entity == Globals.cl.playernum + 1) 
                                                              
                 {
-                    
-                    
-                    ps = Globals.cl.frame.playerstate;
+
+
+                    player_state_t ps = Globals.cl.frame.playerstate;
                     int j = (Globals.cl.frame.serverframe - 1)
                             & Defines.UPDATE_MASK;
-                    oldframe = Globals.cl.frames[j];
+                    frame_t oldframe = Globals.cl.frames[j];
 
                     if (oldframe.serverframe != Globals.cl.frame.serverframe - 1
                             || !oldframe.valid)
-                        oldframe = Globals.cl.frame; 
-                                                     
+                        oldframe = Globals.cl.frame;
 
-                    ops = oldframe.playerstate;
+
+                    player_state_t ops = oldframe.playerstate;
                     for (j = 0; j < 3; j++) {
                         b[i].start[j] = Globals.cl.refdef.vieworg[j]
                                 + ops.gunoffset[j] + Globals.cl.lerpfrac
@@ -1487,7 +1464,8 @@ public class CL_tent {
             
             Math3D.VectorSubtract(b[i].end, org, dist);
 
-            
+
+            float len;
             if (cl_mod_heatbeam != null && (b[i].model == cl_mod_heatbeam)
                     && (b[i].entity == Globals.cl.playernum + 1)) {
 
@@ -1501,8 +1479,10 @@ public class CL_tent {
                     Math3D.VectorMA(org, -1, Globals.cl.v_up, org);
                 }
             }
-            
 
+
+            float pitch;
+            float yaw;
             if (dist[1] == 0 && dist[0] == 0) {
                 yaw = 0;
                 if (dist[2] > 0)
@@ -1520,7 +1500,7 @@ public class CL_tent {
                 if (yaw < 0)
                     yaw += 360;
 
-                forward = (float) Math.sqrt(dist[0] * dist[0] + dist[1]
+                float forward = (float) Math.sqrt(dist[0] * dist[0] + dist[1]
                         * dist[1]);
                 pitch = (float) (Math.atan2(dist[2], forward) * -180.0 / Math.PI);
                 if (pitch < 0)
@@ -1558,12 +1538,13 @@ public class CL_tent {
                 CL_newfx.Heatbeam(org, dist);
             }
 
-            
-            d = Math3D.VectorNormalize(dist);
 
-            
+            float d = Math3D.VectorNormalize(dist);
+
+
             ent.clear();
 
+            float model_length;
             if (b[i].model == cl_mod_heatbeam) {
                 model_length = 32.0f;
             } else if (b[i].model == cl_mod_lightning) {
@@ -1572,7 +1553,7 @@ public class CL_tent {
             } else {
                 model_length = 30.0f;
             }
-            steps = (float) Math.ceil(d / model_length);
+            float steps = (float) Math.ceil(d / model_length);
             len = (d - model_length) / (steps - 1);
 
             
@@ -1633,18 +1614,15 @@ public class CL_tent {
      * ================= CL_AddExplosions =================
      */
     static void AddExplosions() {
-        int i;
-        float frac;
-        int f;
 
 
         entity_t ent = null;
         explosion_t[] ex = cl_explosions;
-        for (i = 0; i < MAX_EXPLOSIONS; i++) {
+        for (int i = 0; i < MAX_EXPLOSIONS; i++) {
             if (ex[i].type == ex_free)
                 continue;
-            frac = (Globals.cl.time - ex[i].start) / 100.0f;
-            f = (int) Math.floor(frac);
+            float frac = (Globals.cl.time - ex[i].start) / 100.0f;
+            int f = (int) Math.floor(frac);
 
             ent = ex[i].ent;
 
@@ -1723,10 +1701,9 @@ public class CL_tent {
      * ================= CL_AddLasers =================
      */
     static void AddLasers() {
-        int i;
 
         laser_t[] l = cl_lasers;
-        for (i = 0; i < MAX_LASERS; i++) {
+        for (int i = 0; i < MAX_LASERS; i++) {
             if (l[i].endtime >= Globals.cl.time)
                 V.AddEntity(l[i].ent);
         }
@@ -1734,10 +1711,9 @@ public class CL_tent {
 
     /* PMM - CL_Sustains */
     static void ProcessSustain() {
-        int i;
 
         cl_sustain_t[] s = cl_sustains;
-        for (i = 0; i < MAX_SUSTAINS; i++) {
+        for (int i = 0; i < MAX_SUSTAINS; i++) {
             if (s[i].id != 0)
                 if ((s[i].endtime >= Globals.cl.time)
                         && (Globals.cl.time >= s[i].nextthink)) {

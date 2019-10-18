@@ -298,11 +298,10 @@ public class AutoclassifiedBitmap extends VectorSensor {
                     ae.recode(ins, true, false);
                 }
 
-                float mult;
-
                 float[] peij = encoded[i][j];
 
                 Arrays.fill(peij, 0);
+                float mult;
                 if (po != null && po.length > 0) {
                     mult = +1;
                     float f = 0.5f + 0.5f / po.length;

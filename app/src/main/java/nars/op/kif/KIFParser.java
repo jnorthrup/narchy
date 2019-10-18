@@ -164,12 +164,9 @@ public class KIFParser {
 
         int mode = this.getParseMode();
         StringBuilder expression = new StringBuilder();
-        int lastVal;
         Formula f = new Formula();
         String filename = "";
-        String errStart = "Parsing error in " + filename;
         String errStr = null;
-        int duplicateCount = 0;
 
         if (r == null) {
             errStr = "No Input Reader Specified";
@@ -177,6 +174,7 @@ public class KIFParser {
             System.err.println("Error in KIF.parse(): " + errStr);
             return warningSet;
         }
+        int duplicateCount = 0;
         try {
             count++;
             StreamTokenizer_s st = new StreamTokenizer_s(r);
@@ -189,8 +187,9 @@ public class KIFParser {
             HashSet<String> keySet = new HashSet<>();
             
             boolean isEOL = false;
+            String errStart = "Parsing error in " + filename;
             do {
-                lastVal = st.ttype;
+                int lastVal = st.ttype;
                 st.nextToken();
                 
                 
@@ -486,9 +485,8 @@ public class KIFParser {
     public String parseStatement(String formula) {
 
         StringReader r = new StringReader(formula);
-        boolean isError = false;
         try {
-            isError = !parse(r).isEmpty();
+            boolean isError = !parse(r).isEmpty();
             if (isError) {
                 String msg = "Error parsing " + formula;
                 return msg;

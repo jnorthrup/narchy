@@ -74,12 +74,12 @@ public class SyntaxTree {
             switch (ch) {
                 case '[':
                     tryConcat();
-                    List<Character> all = new FasterList<>();
                     boolean isComplementarySet;
                     if (r.charAt(index) == '^') {
                         isComplementarySet = true;
                         index++;
                     } else isComplementarySet = false;
+                    List<Character> all = new FasterList<>();
                     for (char next = r.charAt(index++); next != ']'; next = r.charAt(index++)) {
                         if (next == '\\' || next == '.') {
                             String token;

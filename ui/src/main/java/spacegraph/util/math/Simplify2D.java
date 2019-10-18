@@ -137,13 +137,12 @@ public class Simplify2D {
 			throw new InvalidParameterException(
 					"areaTolerance: must be equal to or greater then zero.");
 		}
-		FasterList<v2> result = new FasterList<>();
-		jcog.math.v2 v3;
-		float old1, old2, new1;
         v2 v1 = vertices.get(vertices.size() - 2);
         v2 v2 = vertices.get(vertices.size() - 1);
 		areaTolerance *= 2;
-		for (int index = 0; index < vertices.size(); ++index, v2 = v3) {
+        v2 v3;
+        FasterList<v2> result = new FasterList<>();
+        for (int index = 0; index < vertices.size(); ++index, v2 = v3) {
 			if (index == vertices.size() - 1) {
 				if (result.isEmpty()) {
 					throw new InvalidParameterException("areaTolerance: The tolerance is too high!");
@@ -152,10 +151,10 @@ public class Simplify2D {
 			} else {
 				v3 = vertices.get(index);
 			}
-			old1 = cross(v1, v2);
-			old2 = cross(v2, v3);
-			new1 = cross(v1, v3);
-			if (Math.abs(new1 - (old1 + old2)) > areaTolerance) {
+            float old1 = cross(v1, v2);
+            float old2 = cross(v2, v3);
+            float new1 = cross(v1, v3);
+            if (Math.abs(new1 - (old1 + old2)) > areaTolerance) {
 				result.add(v2);
 				v1 = v2;
 			}
@@ -207,11 +206,11 @@ public class Simplify2D {
 				mergeMe[i] = false;
 		}
 		if (newNVertices == vertices.size() || newNVertices == 0) return;
-		int currIndex = 0;
-		
-		FasterList<v2> oldVertices = new FasterList<>(vertices);
+
+        FasterList<v2> oldVertices = new FasterList<>(vertices);
 		vertices.clear();
-		for (int i = 0; i < oldVertices.size(); ++i) {
+        int currIndex = 0;
+        for (int i = 0; i < oldVertices.size(); ++i) {
 			if (mergeMe[i] || currIndex == newNVertices) continue;
 			
 			vertices.add(oldVertices.get(i));

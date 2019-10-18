@@ -431,9 +431,8 @@ class TestTrie
    @Test
    void testIterate()
    {
-      String LS = System.lineSeparator();
-      
-      Trie<String, Boolean> t = Tries.forStrings();
+
+       Trie<String, Boolean> t = Tries.forStrings();
 
       t.put( "java.lang.", Boolean.TRUE );
       t.put( "java.io.", Boolean.TRUE );
@@ -441,7 +440,8 @@ class TestTrie
       t.put( "java.util.", Boolean.FALSE );
       t.put( "java.lang.Boolean", Boolean.FALSE );
 
-      String expected =
+       String LS = System.lineSeparator();
+       String expected =
               String.join(LS, "java.", "     io. = true", "     lang. = true", "          Boolean = false", "     util. = false", "          concurrent. = true") + LS;
       
       StringBuilder printed = print( t );

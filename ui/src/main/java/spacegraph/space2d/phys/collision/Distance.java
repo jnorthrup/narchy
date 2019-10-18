@@ -376,7 +376,6 @@ public class Distance {
             e12.set(w2).subbed(w1);
             float w1e12 = v2.dot(w1, e12);
             float w2e12 = v2.dot(w2, e12);
-            float d12_1 = w2e12;
             float d12_2 = -w1e12;
 
             
@@ -386,7 +385,6 @@ public class Distance {
             e13.set(w3).subbed(w1);
             float w1e13 = v2.dot(w1, e13);
             float w3e13 = v2.dot(w3, e13);
-            float d13_1 = w3e13;
             float d13_2 = -w1e13;
 
             
@@ -396,7 +394,6 @@ public class Distance {
             e23.set(w3).subbed(w2);
             float w2e23 = v2.dot(w2, e23);
             float w3e23 = v2.dot(w3, e23);
-            float d23_1 = w3e23;
             float d23_2 = -w2e23;
 
             
@@ -413,7 +410,8 @@ public class Distance {
                 return;
             }
 
-            
+
+            float d12_1 = w2e12;
             if (d12_1 > 0.0f && d12_2 > 0.0f && d123_3 <= 0.0f) {
                 float inv_d12 = 1.0f / (d12_1 + d12_2);
                 m_v1.a = d12_1 * inv_d12;
@@ -422,7 +420,8 @@ public class Distance {
                 return;
             }
 
-            
+
+            float d13_1 = w3e13;
             if (d13_1 > 0.0f && d13_2 > 0.0f && d123_2 <= 0.0f) {
                 float inv_d13 = 1.0f / (d13_1 + d13_2);
                 m_v1.a = d13_1 * inv_d13;
@@ -440,7 +439,8 @@ public class Distance {
                 return;
             }
 
-            
+
+            float d23_1 = w3e23;
             if (d13_1 <= 0.0f && d23_1 <= 0.0f) {
                 m_v3.a = 1.0f;
                 m_count = 1;
@@ -636,10 +636,6 @@ public class Distance {
         
         SimplexVertex[] vertices = simplex.vertices;
 
-        
-        
-        
-        int saveCount = 0;
 
         simplex.getClosestPoint(closestPoint);
         float distanceSqr1 = closestPoint.lengthSquared();
@@ -647,6 +643,7 @@ public class Distance {
 
         
         int iter = 0;
+        int saveCount = 0;
         while (iter < MAX_ITERS) {
 
             

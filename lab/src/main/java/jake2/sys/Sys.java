@@ -126,15 +126,12 @@ public final class Sys extends Defines {
 
             StringBuilder sb = new StringBuilder();
 
-            char c;
             boolean escape = false;
 
-            String subst;
 
-            
             for (int i = 0; i < pattern.length(); i++) {
-                c = pattern.charAt(i);
-                subst = null;
+                char c = pattern.charAt(i);
+                String subst = null;
                 switch (c) {
                 case '*':
                     subst = (!escape) ? ".*" : "*";

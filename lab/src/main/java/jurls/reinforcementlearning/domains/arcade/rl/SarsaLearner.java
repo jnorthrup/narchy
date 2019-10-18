@@ -238,19 +238,17 @@ public class SarsaLearner {
     public int selectAction(double[] pState) {
         double[] values = new double[numActions];
 
-        double bestValue = Double.NEGATIVE_INFINITY;
-        double worstValue = Double.POSITIVE_INFINITY;
 
-        int bestAction = -1;
-        ArrayList<Integer> ties = new ArrayList<>();
-
-        
         if (Math.random() < epsilon) {
             int r = (int)(Math.random() * numActions);
             return r;
         }
 
-        
+
+        ArrayList<Integer> ties = new ArrayList<>();
+        int bestAction = -1;
+        double worstValue = Double.POSITIVE_INFINITY;
+        double bestValue = Double.NEGATIVE_INFINITY;
         for (int a = 0; a < numActions; a++) {
             double v = valueFunction[a].predict(pState);
 

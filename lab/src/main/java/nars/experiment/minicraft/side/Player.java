@@ -48,8 +48,6 @@ public class Player extends LivingEntity {
         handStartY = y;
 
         float tMax = (float) Math.ceil(armLength);
-        int hitX = -1;
-        int hitY = -1;
         handEndX = -1;
         handEndY = -1;
 
@@ -63,6 +61,8 @@ public class Player extends LivingEntity {
             m = (y - mouseY) / (x - mouseX);
         }
 
+        int hitY = -1;
+        int hitX = -1;
         for (float i = 0; i <= Math.ceil(armLength) * 2; i++) {
             for (float j = 0; j <= Math.ceil(armLength) * 2; j++) {
                 float px = (float) (x - Math.ceil(armLength) + i) - .5f;
@@ -75,11 +75,6 @@ public class Player extends LivingEntity {
                 float left = -1;
                 float up = -1;
                 float right = -1;
-
-                float downY = py + 1;
-                float rightX = px + 1;
-                float upY = py - 1;
-                float leftX = px;
 
                 if ((x >= px && x >= mouseX) &&
                         (y >= py && y >= mouseY)) {
@@ -112,23 +107,27 @@ public class Player extends LivingEntity {
 
                     if (up != -1) {
                         handEndX = up;
+                        float upY = py - 1;
                         handEndY = upY;
                         handBuildPos.x = (int) px;
                         handBuildPos.y = (int) py - 1;
                     }
                     if (down != -1) {
                         handEndX = down;
+                        float downY = py + 1;
                         handEndY = downY;
                         handBuildPos.x = (int) px;
                         handBuildPos.y = (int) py + 1;
                     }
                     if (left != -1) {
+                        float leftX = px;
                         handEndX = leftX;
                         handEndY = left;
                         handBuildPos.x = (int) px - 1;
                         handBuildPos.y = (int) py;
                     }
                     if (right != -1) {
+                        float rightX = px + 1;
                         handEndX = rightX;
                         handEndY = right;
                         handBuildPos.x = (int) px + 1;

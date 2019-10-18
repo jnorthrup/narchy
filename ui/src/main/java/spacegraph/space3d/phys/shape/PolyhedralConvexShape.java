@@ -62,13 +62,10 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 	
 	@Override
 	public v3 localGetSupportingVertexWithoutMargin(v3 vec0, v3 out) {
-		int i;
-		v3 supVec = out;
+        v3 supVec = out;
 		supVec.set(0f, 0f, 0f);
 
-		float maxDot = -1e30f;
-
-		v3 vec = new v3(vec0);
+        v3 vec = new v3(vec0);
 		float lenSqr = vec.lengthSquared();
 		if (lenSqr < 0.0001f) {
 			vec.set(1f, 0f, 0f);
@@ -79,12 +76,12 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 		}
 
 		v3 vtx = new v3();
-		float newDot;
 
-		for (i = 0; i < getNumVertices(); i++) {
+        float maxDot = -1e30f;
+        for (int i = 0; i < getNumVertices(); i++) {
 			getVertex(i, vtx);
-			newDot = vec.dot(vtx);
-			if (newDot > maxDot) {
+            float newDot = vec.dot(vtx);
+            if (newDot > maxDot) {
 				maxDot = newDot;
 				supVec = vtx;
 			}
@@ -98,11 +95,9 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 		int i;
 
 		v3 vtx = new v3();
-		float newDot;
 
-		
-		
-		float[] wcoords = new float[numVectors];
+
+        float[] wcoords = new float[numVectors];
 
 		for (i = 0; i < numVectors; i++) {
 			
@@ -115,9 +110,9 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 
 			for (i = 0; i < getNumVertices(); i++) {
 				getVertex(i, vtx);
-				newDot = vec.dot(vtx);
-				
-				if (newDot > wcoords[j]) {
+                float newDot = vec.dot(vtx);
+
+                if (newDot > wcoords[j]) {
 					
 					supportVerticesOut[j].set(vtx);
 					
@@ -148,10 +143,10 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 		float x2 = lx * lx;
 		float y2 = ly * ly;
 		float z2 = lz * lz;
-		float scaledmass = mass * 0.08333333f;
 
-		inertia.set(y2 + z2, x2 + z2, x2 + y2);
-		inertia.scaled(scaledmass);
+        inertia.set(y2 + z2, x2 + z2, x2 + y2);
+        float scaledmass = mass * 0.08333333f;
+        inertia.scaled(scaledmass);
 	}
 
 	private void getNonvirtualAabb(Transform trans, v3 aabbMin, v3 aabbMax, float margin) {

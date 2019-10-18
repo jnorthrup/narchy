@@ -586,14 +586,7 @@ public class Quat4f extends Tuple4f {
      * @param alpha the alpha interpolation parameter
      */
     public final void interpolate(Quat4f q1, float alpha) {
-        
-        
-        
-        
-        
-        
 
-        float s1, s2, om, sinom;
 
         float dot = x * q1.x + y * q1.y + z * q1.z + w * q1.w;
 
@@ -606,9 +599,11 @@ public class Quat4f extends Tuple4f {
             dot = -dot;
         }
 
+        float s2;
+        float s1;
         if ((1.0 - dot) > EPS) {
-            om = (float) Math.acos(dot);
-            sinom = (float) Math.sin(om);
+            float om = (float) Math.acos(dot);
+            float sinom = (float) Math.sin(om);
             s1 = (float) (Math.sin((1.0 - alpha) * om) / sinom);
             s2 = (float) (Math.sin(alpha * om) / sinom);
         } else {

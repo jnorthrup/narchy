@@ -79,12 +79,12 @@ public class MatrixOpTest {
 				trmatrix[j][i] = matrix[i][j];
 			}
 		}
-		int noLaps = 50;
-		long trtime = 0;
-		long partrtime = 0;
-		long time = 0;
-		System.out.println("Size is: " + rows + " x" + cols + "...");
-		for (int laps = 0; laps < noLaps; laps++) {
+        System.out.println("Size is: " + rows + " x" + cols + "...");
+        long time = 0;
+        long partrtime = 0;
+        long trtime = 0;
+        int noLaps = 50;
+        for (int laps = 0; laps < noLaps; laps++) {
 			if((laps%10)==0) System.out.println("Iter " + laps + "...");
 			time = System.currentTimeMillis();
 			double [][] tr1 = MatrixOps.transposeSerial(matrix);
@@ -116,12 +116,12 @@ public class MatrixOpTest {
 		double [][] matrix2 = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/datasets/mnist2500_X.txt"), " ");
 		int rows = matrix1.length;
 		int cols = matrix1[0].length;
-		int noLaps = 50;
-		long trtime = 0;
-		long partrtime = 0;
-		long time = 0;
-		System.out.println("Size is " + rows + " x " + cols + "...");
-		for (int laps = 0; laps < noLaps; laps++) {
+        System.out.println("Size is " + rows + " x " + cols + "...");
+        long time = 0;
+        long partrtime = 0;
+        long trtime = 0;
+        int noLaps = 50;
+        for (int laps = 0; laps < noLaps; laps++) {
 			if((laps%10)==0) System.out.println("Iter " + laps + "...");
 			time = System.currentTimeMillis();
 

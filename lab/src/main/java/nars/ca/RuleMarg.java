@@ -32,28 +32,25 @@ public class RuleMarg {
 	
 	
 	public void InitFromString(String sStr) {
-		String sTok, sSwaps;
-		int i, iNum, iVal;
-		
-		StringTokenizer std;
+        int i;
 
-		ResetToDefaults();
+        ResetToDefaults();
 
         StringTokenizer st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
-			sTok = st.nextToken();
-			if (sTok.length() > 0 && sTok.charAt(0) == 'M') 
+            String sTok = st.nextToken();
+            if (sTok.length() > 0 && sTok.charAt(0) == 'M')
 															
 			{
 				iTyp = TYPE_MS; 
 			} else if (sTok.length() > 0 && sTok.charAt(0) == 'D') 
 			{
-				std = new StringTokenizer(sTok.substring(1), ";", false);
-				iNum = 0;
-				while (std.hasMoreTokens() && (iNum <= 15)) {
-					sSwaps = std.nextToken();
-					iVal = Integer.valueOf(sSwaps);
-					if ((iVal >= 0) && (iVal <= 15))
+                StringTokenizer std = new StringTokenizer(sTok.substring(1), ";", false);
+                int iNum = 0;
+                while (std.hasMoreTokens() && (iNum <= 15)) {
+                    String sSwaps = std.nextToken();
+                    int iVal = Integer.valueOf(sSwaps);
+                    if ((iVal >= 0) && (iVal <= 15))
 						swapArray[iNum] = iVal;
 					iNum++;
 				}
@@ -107,13 +104,12 @@ public class RuleMarg {
 	
 	
 	private void SwapMargCells(int[] mgCells) {
-		int iCnt, iNewCnt;
 
 
-		boolean b = IntStream.of(0, 1, 2, 3).noneMatch(i -> (mgCells[i] >= 2));
+        boolean b = IntStream.of(0, 1, 2, 3).noneMatch(i -> (mgCells[i] >= 2));
 		if (b) {
-			iCnt = 0;
-			if (mgCells[0] > 0)
+            int iCnt = 0;
+            if (mgCells[0] > 0)
 				iCnt += 1;
 			if (mgCells[1] > 0)
 				iCnt += 2;
@@ -121,9 +117,9 @@ public class RuleMarg {
 				iCnt += 4;
 			if (mgCells[3] > 0)
 				iCnt += 8;
-			iNewCnt = swapArray[iCnt];
+            int iNewCnt = swapArray[iCnt];
 
-			mgCells[0] = (1 & iNewCnt) > 0 ? 1 : 0;
+            mgCells[0] = (1 & iNewCnt) > 0 ? 1 : 0;
 			mgCells[1] = (2 & iNewCnt) > 0 ? 1 : 0;
 			mgCells[2] = (4 & iNewCnt) > 0 ? 1 : 0;
 			mgCells[3] = (8 & iNewCnt) > 0 ? 1 : 0;
@@ -134,32 +130,30 @@ public class RuleMarg {
 	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
-		int modCnt = 0;
-		int j, ic;
-		int c1, c2, r1, r2;
-		int[] mgCells = new int[4]; 
-		int[] mgCellsOld = new int[4];
 
         boolean isOdd = ((mjb.Cycle % 2) != 0);
         int i = 0;
 		if (isOdd)
-			i--; 
-		while (i < sizX) {
-			c1 = i;
-			if (c1 < 0)
-				c1 = (isWrap) ? sizX - 1 : sizX; 
-			c2 = i + 1;
-			if (c2 >= sizX)
+			i--;
+        int[] mgCellsOld = new int[4];
+        int[] mgCells = new int[4];
+        int modCnt = 0;
+        while (i < sizX) {
+            int c1 = i;
+            if (c1 < 0)
+				c1 = (isWrap) ? sizX - 1 : sizX;
+            int c2 = i + 1;
+            if (c2 >= sizX)
 				c2 = (isWrap) ? 0 : sizX;
-			j = 0;
-			if (isOdd)
+            int j = 0;
+            if (isOdd)
 				j--; 
 			while (j < sizY) {
-				r1 = j;
-				if (r1 < 0)
-					r1 = (isWrap) ? sizY - 1 : sizY; 
-				r2 = j + 1;
-				if (r2 >= sizY)
+                int r1 = j;
+                if (r1 < 0)
+					r1 = (isWrap) ? sizY - 1 : sizY;
+                int r2 = j + 1;
+                if (r2 >= sizY)
 					r2 = (isWrap) ? 0 : sizY;
 				mgCellsOld[0] = mgCells[0] = tmpState[c1][r1] = crrState[c1][r1]; 
 				mgCellsOld[1] = mgCells[1] = tmpState[c2][r1] = crrState[c2][r1]; 
@@ -171,7 +165,7 @@ public class RuleMarg {
 						|| (swapArray[0] > 0)) {
 					SwapMargCells(mgCells); 
 
-					for (ic = 0; ic <= 3; ic++) 
+					for (int ic = 0; ic <= 3; ic++)
 												
 					{
 						if (mgCellsOld[ic] != mgCells[ic]) 

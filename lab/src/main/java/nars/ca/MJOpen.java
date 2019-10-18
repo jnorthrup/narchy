@@ -41,13 +41,9 @@ public class MJOpen {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public boolean OpenFile(String sFileName) {
-		String sBff;
-        boolean fOk = false;
-		int i;
 
 		m_vCells = new Vector();
-        Vector vLines = new Vector();
-		m_vDescr = new Vector(); 
+		m_vDescr = new Vector();
 		m_vDiv = new Vector(); 
 
 		m_sRules = "";
@@ -66,15 +62,17 @@ public class MJOpen {
 
 
         MJTools mjT = new MJTools();
+		Vector vLines = new Vector();
+		boolean fOk = false;
 		if (MJTools.LoadTextFile(sFilePath, vLines))
 		{
 			if (!vLines.isEmpty()) 
 			{
-				
-				i = 0;
+
+				int i = 0;
 				String sFirstLine = "";
 				while (i < vLines.size()) {
-					sBff = (String) vLines.elementAt(i);
+					String sBff = (String) vLines.elementAt(i);
 					if ((sBff.isEmpty()) || (sBff.startsWith("#C"))
 							|| (sBff.startsWith("#D"))
 							|| (sBff.length() > 0 && sBff.charAt(0) == '!')) {
@@ -121,8 +119,7 @@ public class MJOpen {
 	
 	
 	private static String CorrectFileName(String sFileName) {
-		String sNew;
-		sNew = sFileName.replace(' ', '_');
+		String sNew = sFileName.replace(' ', '_');
 		sNew = sNew.replace('\'', '_');
 		return sNew;
 	}
@@ -131,8 +128,7 @@ public class MJOpen {
 	
 	private void AddPattern() {
 		int minX, maxX, minY, maxY;
-		int x, y;
-        int i, state;
+		int state;
 		CACell cell = new CACell();
 
 		
@@ -153,6 +149,7 @@ public class MJOpen {
 
 		
 		mjb.Div.m_Enabled = false;
+		int i;
 		for (i = 0; i < m_vDiv.size(); i++)
 			mjb.Div.ItemFromString(m_vDiv.get(i),
 					mjb.UnivSize.x, mjb.UnivSize.y);
@@ -163,8 +160,8 @@ public class MJOpen {
         int dy = mjb.GameType == MJRules.GAMTYP_2D ? mjb.UnivSize.y / 2 - (m_rectMaxY + m_rectMinY) / 2 - 1 : 0;
 		for (i = 0; i < m_vCells.size(); i++) {
 			cell = m_vCells.get(i);
-			x = cell.x + dx;
-			y = cell.y + dy;
+			int x = cell.x + dx;
+			int y = cell.y + dy;
 			mjb.SetCell(x, y, cell.state);
 		}
 
@@ -222,17 +219,15 @@ public class MJOpen {
 	
 	
 	private boolean ReadLife105(Vector vLines) {
-		String bff;
-		int i;
-		boolean fOk = false;
 
 		iBlkX = 0;
 		iBlkY = 0;
 		iRow105 = 0;
 
-		
-		for (i = 0; i < vLines.size(); i++) {
-			bff = (String) vLines.elementAt(i);
+
+		boolean fOk = false;
+		for (int i = 0; i < vLines.size(); i++) {
+			String bff = (String) vLines.elementAt(i);
 			if (ProcessOneLIF105Line(bff))
 				fOk = true; 
 		}
@@ -249,20 +244,18 @@ public class MJOpen {
 
 	@SuppressWarnings("HardcodedFileSeparator")
 	boolean ProcessOneLIF105Line(String bff) {
-		boolean fOk = false;
 		int iPos;
-		String sTok;
-		int iCol;
-		int i, j, iNum;
 
 		bff = bff.trim();
 
+		boolean fOk = false;
 		if (!bff.isEmpty()) {
 			
 			if ((bff.charAt(0) == '#') || (bff.charAt(0) == '!')
 					|| (bff.charAt(0) == '/')) {
-				
-				if (bff.startsWith("#P")) 
+
+				String sTok;
+				if (bff.startsWith("#P"))
 				{
 					
 					StringTokenizer st = new StringTokenizer(bff);
@@ -306,9 +299,9 @@ public class MJOpen {
 				}
 			} else 
 			{
-				iCol = 0;
-				iNum = 0;
-				for (i = 0; i < bff.length(); i++) {
+				int iCol = 0;
+				int iNum = 0;
+				for (int i = 0; i < bff.length(); i++) {
 					if ((bff.charAt(i) >= '0') && (bff.charAt(i) <= '9')) {
 						iNum = iNum * 10 + (bff.charAt(i) - '0');
 					} else {
@@ -317,7 +310,7 @@ public class MJOpen {
 						
 						if ((bff.charAt(i) == '*') || (bff.charAt(i) == 'o')
 								|| (bff.charAt(i) == 'O')) {
-							for (j = 0; j <= iNum - 1; j++)
+							for (int j = 0; j <= iNum - 1; j++)
 								m_vCells.add(new CACell(
                                         iCol + j + iBlkX, iRow105 + iBlkY,
                                         (short) 1));
@@ -345,8 +338,6 @@ public class MJOpen {
 	private int iNumMCL; 
 
 	private boolean ReadMCL(Vector vLines) {
-        int i;
-		boolean fOk = false;
 
 		iColMCL = 0;
 		iRowMCL = 0;
@@ -367,8 +358,9 @@ public class MJOpen {
 		}
 
 		
-		m_sRules = ""; 
-		for (i = 0; i < vLines.size(); i++) {
+		m_sRules = "";
+		boolean fOk = false;
+		for (int i = 0; i < vLines.size(); i++) {
 			bff = (String) vLines.elementAt(i);
 			if (ProcessOneMCLLine(bff))
 				fOk = true; 
@@ -383,16 +375,14 @@ public class MJOpen {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	private boolean ProcessOneMCLLine(String bff) {
-		boolean fOk = false;
-		int i, j;
-		String sTok;
-		int iAdd = 0; 
 
 		bff = bff.trim();
 
+		boolean fOk = false;
 		if (!bff.isEmpty()) {
-			
-			if (bff.startsWith("#RULE")) 
+
+			String sTok;
+			if (bff.startsWith("#RULE"))
 			{
 				sTok = bff.substring(5);
 
@@ -449,7 +439,8 @@ public class MJOpen {
 			} else if (bff.startsWith("#L")) 
 			{
 				bff = bff.substring(2).trim();
-				for (i = 0; i < bff.length(); i++) {
+				int iAdd = 0;
+				for (int i = 0; i < bff.length(); i++) {
 					if ((bff.charAt(i) >= '0') && (bff.charAt(i) <= '9')) {
 						iNumMCL = iNumMCL * 10 + (bff.charAt(i) - '0');
 					} else {
@@ -475,7 +466,7 @@ public class MJOpen {
 							} else if ((bff.charAt(i) >= 'A')
 									&& (bff.charAt(i) <= 'X')) {
 								
-								for (j = 0; j < iNumMCL; j++) {
+								for (int j = 0; j < iNumMCL; j++) {
 									m_vCells
 											.add(new CACell(
                                                     iColMCL + j,
@@ -515,9 +506,6 @@ public class MJOpen {
 	private int iNum; 
 
 	private boolean ReadRLE(Vector vLines) {
-		String bff;
-		int i;
-		boolean fOk = false;
 
 		iCol = 0;
 		iRow = 0;
@@ -526,9 +514,10 @@ public class MJOpen {
 		fEndFlg = false;
 		fXYFound = false;
 
-		
-		for (i = 0; i < vLines.size(); i++) {
-			bff = (String) vLines.elementAt(i);
+
+		boolean fOk = false;
+		for (int i = 0; i < vLines.size(); i++) {
+			String bff = (String) vLines.elementAt(i);
 			if (ProcessOneRLELine(bff))
 				fOk = true; 
 		}
@@ -539,15 +528,13 @@ public class MJOpen {
 	
 	
 	private boolean ProcessOneRLELine(String bff) {
-		boolean fOk = false;
-		int i, j, iTmp;
-		String sTok;
 
 		bff = bff.trim();
 
-		if (bff.startsWith("#D") || bff.startsWith("#C")) 
+		boolean fOk = false;
+		if (bff.startsWith("#D") || bff.startsWith("#C"))
 		{
-			sTok = bff.substring(2);
+			String sTok = bff.substring(2);
 			if (!sTok.isEmpty()) 
 				if (sTok.charAt(0) == ' ')
 					sTok = sTok.substring(1);
@@ -597,7 +584,7 @@ public class MJOpen {
 						}
 					} else 
 					{
-						for (i = 0; (i < bff.length()) && (!fEndFlg); i++) {
+						for (int i = 0; (i < bff.length()) && (!fEndFlg); i++) {
 							if ((bff.charAt(i) >= '0')
 									&& (bff.charAt(i) <= '9')) {
 								iNum = iNum * 10 + (bff.charAt(i) - '0');
@@ -625,6 +612,7 @@ public class MJOpen {
 											.charAt(i) <= 'z'))
 											|| ((bff.charAt(i) >= 'A') && (bff
 													.charAt(i) <= 'Z'))) {
+										int iTmp;
 										switch (bff.charAt(i)) {
 										case 'x':
 										case 'X':
@@ -645,7 +633,7 @@ public class MJOpen {
 											iTmp = 1;
 											break;
 										}
-										for (j = 0; j <= iNum - 1; j++)
+										for (int j = 0; j <= iNum - 1; j++)
 											m_vCells.add(new CACell(iCol
                                                     + j, iRow, (short) iTmp));
 
@@ -669,9 +657,6 @@ public class MJOpen {
 	
 	
 	boolean ReadLife106(Vector vLines) {
-		String bff;
-		int i;
-		boolean fOk = false;
 
 		iCol = 0;
 		iRow = 0;
@@ -680,9 +665,10 @@ public class MJOpen {
 		fEndFlg = false;
 		fXYFound = false;
 
-		
-		for (i = 0; i < vLines.size(); i++) {
-			bff = (String) vLines.elementAt(i);
+
+		boolean fOk = false;
+		for (int i = 0; i < vLines.size(); i++) {
+			String bff = (String) vLines.elementAt(i);
 			if (ProcessOneLIF106Line(bff))
 				fOk = true; 
 		}
@@ -695,19 +681,18 @@ public class MJOpen {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	boolean ProcessOneLIF106Line(String bff) {
-		int iCol, iRow;
 		int iPos;
-		String sTok;
-		boolean fOk = false;
 
 		bff = bff.trim();
 
+		boolean fOk = false;
 		if (!bff.isEmpty()) {
 			
 			if ((bff.charAt(0) == '#') || (bff.charAt(0) == '/')
 					|| (bff.charAt(0) == '!')) {
-				
-				if (bff.startsWith("#N")) 
+
+				String sTok;
+				if (bff.startsWith("#N"))
 				{
 					m_sRules = "23/3"; 
 				} else if (bff.startsWith("#R")) 
@@ -744,9 +729,9 @@ public class MJOpen {
 				
 				StringTokenizer st = new StringTokenizer(bff);
 				if (st.hasMoreTokens()) {
-					iCol = Integer.parseInt(st.nextToken());
+					int iCol = Integer.parseInt(st.nextToken());
 					if (st.hasMoreTokens()) {
-						iRow = Integer.parseInt(st.nextToken());
+						int iRow = Integer.parseInt(st.nextToken());
 						m_vCells.add(new CACell(iCol, iRow, (short) 1));
 						fOk = true;
 					}

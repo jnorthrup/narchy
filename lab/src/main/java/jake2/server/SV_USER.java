@@ -88,8 +88,6 @@ public class SV_USER {
      * ================
      */
     public static void SV_New_f() {
-        int playernum;
-        edict_t ent;
 
         Com.DPrintf("New() from " + SV_MAIN.sv_client.name + '\n');
 
@@ -119,6 +117,7 @@ public class SV_USER {
                 SV_INIT.sv.attractloop ? 1 : 0);
         MSG.WriteString(SV_MAIN.sv_client.netchan.message, gamedir);
 
+        int playernum;
         if (SV_INIT.sv.state == Defines.ss_cinematic
                 || SV_INIT.sv.state == Defines.ss_pic)
             playernum = -1;
@@ -136,8 +135,8 @@ public class SV_USER {
         
         
         if (SV_INIT.sv.state == Defines.ss_game) {
-            
-            ent = GameBase.g_edicts[playernum + 1];
+
+            edict_t ent = GameBase.g_edicts[playernum + 1];
             ent.s.number = playernum + 1;
             SV_MAIN.sv_client.edict = ent;
             SV_MAIN.sv_client.lastcmd = new usercmd_t();
@@ -207,7 +206,6 @@ public class SV_USER {
      * ================== SV_Baselines_f ==================
      */
     public static void SV_Baselines_f() {
-        entity_state_t base;
 
         Com.DPrintf("Baselines() from " + SV_MAIN.sv_client.name + '\n');
 
@@ -232,7 +230,7 @@ public class SV_USER {
 
         while (SV_MAIN.sv_client.netchan.message.cursize < Defines.MAX_MSGLEN / 2
                 && start < Defines.MAX_EDICTS) {
-            base = SV_INIT.sv.baselines[start];
+            entity_state_t base = SV_INIT.sv.baselines[start];
             if (base.modelindex != 0 || base.sound != 0 || base.effects != 0) {
                 MSG.WriteByte(SV_MAIN.sv_client.netchan.message,
                         Defines.svc_spawnbaseline);
@@ -456,7 +454,6 @@ public class SV_USER {
     public static void SV_ExecuteUserCommand(String s) {
         
         Com.dprintln("SV_ExecuteUserCommand:" + s );
-        SV_USER.ucmd_t u = null;
 
         Cmd.TokenizeString(s.toCharArray(), true);
         SV_USER.sv_player = SV_MAIN.sv_client.edict;
@@ -464,7 +461,7 @@ public class SV_USER {
         
 
         int i = 0;
-        for (; i < SV_USER.ucmds.length; i++) {
+        for (ucmd_t u = null; i < SV_USER.ucmds.length; i++) {
             u = SV_USER.ucmds[i];
             if (Cmd.Argv(0).equals(u.name)) {
                 u.r.run();
@@ -504,15 +501,9 @@ public class SV_USER {
      * ===================
      */
     public static void SV_ExecuteClientMessage(client_t cl) {
-        int c;
-        String s;
 
         usercmd_t nullcmd = new usercmd_t();
         usercmd_t oldest = new usercmd_t(), oldcmd = new usercmd_t(), newcmd = new usercmd_t();
-        int net_drop;
-        int checksum, calculatedChecksum;
-        int checksumIndex;
-        int lastframe;
 
         SV_MAIN.sv_client = cl;
         SV_USER.sv_player = SV_MAIN.sv_client.edict;
@@ -529,10 +520,15 @@ public class SV_USER {
                 return;
             }
 
-            c = MSG.ReadByte(Globals.net_message);
+            int c = MSG.ReadByte(Globals.net_message);
             if (c == -1)
                 break;
 
+            int lastframe;
+            int checksumIndex;
+            int calculatedChecksum;
+            int checksum;
+            String s;
             switch (c) {
             default:
                 Com.Printf("SV_ReadClientMessage: unknown command char\n");
@@ -591,7 +587,7 @@ public class SV_USER {
                 }
 
                 if (0 == SV_MAIN.sv_paused.value) {
-                    net_drop = cl.netchan.dropped;
+                    int net_drop = cl.netchan.dropped;
                     if (net_drop < 20) {
 
                         

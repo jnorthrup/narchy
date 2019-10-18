@@ -105,18 +105,18 @@ public class MemberTest {
 		NAR n = NARS.shell();
 		TestNAR t = new TestNAR(n);
 
-		int cycles = 2;
-		final double initPri = 0.5f;
-		double[] priSum = {0};
+        double[] priSum = {0};
 		n.onTask((x)-> priSum[0] += x.pri());
 
 		String belief = "(member(#x,{a,b}) " + op + " #x)";
 
-		t.mustBelieve(cycles, belief,1f,0.9f); //the belief itself
+        int cycles = 2;
+        t.mustBelieve(cycles, belief,1f,0.9f); //the belief itself
 		t.mustBelieve(cycles,"a",1f,0.9f);
 		t.mustBelieve(cycles,"b",1f,0.9f);
 
-		t.input("$" + initPri + " " + belief + ".");
+        final double initPri = 0.5f;
+        t.input("$" + initPri + " " + belief + ".");
 
 
 		t.run(cycles);

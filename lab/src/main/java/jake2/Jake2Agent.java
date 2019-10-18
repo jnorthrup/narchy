@@ -138,11 +138,12 @@ public class Jake2Agent extends GameX implements Runnable {
 
 
         //int px = 64, py = 48, nx = 4, aeStates = 8;
-        int px = 64, py = 48, nx = 8, aeStates = 16;
 
         rgb = new GLScreenShot(true);
         depth = new GLScreenShot(false);
 
+        int py = 48;
+        int px = 64;
         PixelBag rgbVision = new PixelBag(
                 new BrightnessNormalize(
                         new ImageFlip(false, true, new ScaledBitmap2D(rgb, px, py))
@@ -154,6 +155,8 @@ public class Jake2Agent extends GameX implements Runnable {
         )));
 
 
+        int aeStates = 16;
+        int nx = 8;
         AutoclassifiedBitmap rgbAE = new AutoclassifiedBitmap($.the("gray"), rgbVision, nx, nx, aeStates, this);
         rgbAE.alpha(0.03f);
         rgbAE.noise.set(0.05f);
@@ -273,13 +276,13 @@ public class Jake2Agent extends GameX implements Runnable {
                 byte[] b = SND_JAVA.dma.buffer;
                 if (b == null)
                     return;
-                int samples = 1024;
                 int sample = SND_JAVA.SNDDMA_GetDMAPos();
                 if (sample != lastSamplePos) {
 
 
                     //System.out.println(sample + " " + SND_MIX.paintedtime);
 
+                    int samples = 1024;
                     if (hear.buf.available() < samples * 2)
                         hear.buf.skip(samples * 2);
 

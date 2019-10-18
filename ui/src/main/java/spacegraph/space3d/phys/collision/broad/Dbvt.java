@@ -388,17 +388,17 @@ public final class Dbvt {
 	public static void collideKDOP(Node root, v3[] normals, float[] offsets, int count, ICollide policy) {
 		
 		if (root != null) {
-			int inside = (1 << count) - 1;
-			OArrayList<sStkNP> stack = new OArrayList<>(SIMPLE_STACKSIZE);
-			int[] signs = new int[4 * 8];
-			assert (count < (/*sizeof(signs)*/128 / /*sizeof(signs[0])*/ 4));
-			for (int i=0; i<count; ++i) {
+            assert (count < (/*sizeof(signs)*/128 / /*sizeof(signs[0])*/ 4));
+            int[] signs = new int[4 * 8];
+            for (int i = 0; i<count; ++i) {
 				signs[i] = ((normals[i].x >= 0) ? 1 : 0) +
 						((normals[i].y >= 0) ? 2 : 0) +
 						((normals[i].z >= 0) ? 4 : 0);
 			}
-			stack.add(new sStkNP(root, 0));
-			do {
+            OArrayList<sStkNP> stack = new OArrayList<>(SIMPLE_STACKSIZE);
+            stack.add(new sStkNP(root, 0));
+            int inside = (1 << count) - 1;
+            do {
 				sStkNP se = stack.remove(stack.size() - 1);
 				boolean out = false;
 				for (int i = 0, j = 1; (!out) && (i < count); ++i, j <<= 1) {
@@ -440,22 +440,21 @@ public final class Dbvt {
 			int srtsgns = (sortaxis.x >= 0 ? 1 : 0) +
 					(sortaxis.y >= 0 ? 2 : 0) +
 					(sortaxis.z >= 0 ? 4 : 0);
-			int inside = (1 << count) - 1;
-			OArrayList<sStkNPS> stock = new OArrayList<>();
-			IntArrayList ifree = new IntArrayList();
+            IntArrayList ifree = new IntArrayList();
 			IntArrayList stack = new IntArrayList();
-			int[] signs = new int[/*sizeof(unsigned)*8*/4 * 8];
-			assert (count < (/*sizeof(signs)*/128 / /*sizeof(signs[0])*/ 4));
-			for (int i = 0; i < count; i++) {
+            assert (count < (/*sizeof(signs)*/128 / /*sizeof(signs[0])*/ 4));
+            int[] signs = new int[/*sizeof(unsigned)*8*/4 * 8];
+            for (int i = 0; i < count; i++) {
 				signs[i] = ((normals[i].x >= 0) ? 1 : 0) +
 						((normals[i].y >= 0) ? 2 : 0) +
 						((normals[i].z >= 0) ? 4 : 0);
 			}
-			
-			
-			
-			stack.add(allocate(ifree, stock, new sStkNPS(root, 0, root.volume.ProjectMinimum(sortaxis, srtsgns))));
-			do {
+
+
+            OArrayList<sStkNPS> stock = new OArrayList<>();
+            stack.add(allocate(ifree, stock, new sStkNPS(root, 0, root.volume.ProjectMinimum(sortaxis, srtsgns))));
+            int inside = (1 << count) - 1;
+            do {
 				
 				int id = stack.remove(stack.size() - 1);
                 
@@ -790,8 +789,7 @@ public final class Dbvt {
 				DbvtAabbMm vol = bounds(leaves);
 				v3 org = vol.center(new v3());
 				FasterList[] sets = IntStream.range(0, 2).mapToObj(i -> new FasterList()).toArray(FasterList[]::new);
-                int bestaxis = -1;
-				int bestmidp = leaves.size();
+                int bestmidp = leaves.size();
 				int[][] splitcount = {{0, 0}, {0, 0}, {0, 0}};
 
 				v3 x = new v3();
@@ -804,7 +802,8 @@ public final class Dbvt {
 						splitcount[j][x.dot(axis[j]) > 0f ? 1 : 0]++;
 					}
 				}
-				for (int i=0; i<3; i++) {
+                int bestaxis = -1;
+                for (int i = 0; i<3; i++) {
 					if ((splitcount[i][0] > 0) && (splitcount[i][1] > 0)) {
 						int midp = Math.abs(splitcount[i][0] - splitcount[i][1]);
 						if (midp < bestmidp) {

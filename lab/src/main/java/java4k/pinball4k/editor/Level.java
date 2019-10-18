@@ -142,8 +142,7 @@ public class Level {
 	 * @param lines line soup
 	 */
 	private static ArrayList<Line> createStrip(ArrayList<Line> lines) {
-		ArrayList<Line> strip = new ArrayList<>();
-		
+
 		ArrayList<Line> searchList = (ArrayList<Line>) lines.clone();
 		Line start = searchList.get(0);
 		
@@ -155,8 +154,9 @@ public class Level {
 			}
 			start = newStart;
 		}
-		
-		
+
+
+		ArrayList<Line> strip = new ArrayList<>();
 		while (start != null) {
 			lines.remove(start);
 			strip.add(start);
@@ -271,11 +271,11 @@ public class Level {
 		sortGroups(lines);
 		sortGroups(sircles);
 
-		
-		HashMap<ArrayList<Line>, Integer> stripLineMap = new HashMap<>();
+
 		ArrayList<ArrayList<Line>> strips = createLineStrips(lines);
 		lines.clear();
-		for (int stripIdx=0; stripIdx<strips.size(); stripIdx++) {
+		HashMap<ArrayList<Line>, Integer> stripLineMap = new HashMap<>();
+		for (int stripIdx = 0; stripIdx<strips.size(); stripIdx++) {
 			ArrayList<Line> strip = strips.get(stripIdx);
 			Line firstLine = strip.remove(0);
 			if (strip.size() == 0) {
@@ -533,7 +533,6 @@ public class Level {
 		}
 		
 		int groupCnt = dataIn.readByte();
-		int groupBytes = 1+groupCnt*2;
 		for (int groupIdx = 0; groupIdx < groupCnt; groupIdx++) {
 			int objCnt = dataIn.readByte();
 			int firstIdx = dataIn.readByte();
@@ -558,12 +557,13 @@ public class Level {
 		
 		int flipperBytes = 1 + (flippers * 9);
 		int sircleBytes = 1 + (sircles * 6);
-		int arrowBytes = 1 + (arrows * 6);
 		int lineBytes = 1 + (lineCnt * 7);
+		int groupBytes = 1 + groupCnt * 2;
 		int total = flipperBytes + sircleBytes + stripBytes + groupBytes + lineBytes;
 		System.out.println("reading level");
 		System.out.println(flippers+" flippers (9) "+flipperBytes);
 		System.out.println(sircles+" sircles (6) "+sircleBytes);
+		int arrowBytes = 1 + (arrows * 6);
 		System.out.println(arrows+" arrows (6) "+arrowBytes);
 		System.out.println(lineCnt+" lines (7) "+lineBytes);
 		System.out.println(strips+" strips "+stripBytes);

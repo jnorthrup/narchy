@@ -74,8 +74,8 @@ public class LongBitsetBloomFilter {
         long[] data = new long[10];
         int count = 0;
         for (Long aLong : bitSet) {
-            long l = aLong;
             if (data.length == count) data = Arrays.copyOf(data, count * 2);
+            long l = aLong;
             data[count++] = l;
         }
         data = Arrays.copyOfRange(data, 0, count);

@@ -150,8 +150,7 @@ public class MIDITaskifier {
     }
 
     public MidiInReceiver MIDI(Timed timed) {
-        
-        MidiDevice device;
+
         MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
 
 
@@ -159,7 +158,7 @@ public class MIDITaskifier {
             try {
                 MidiDevice.Info ii = infos[i];
 
-                device = MidiSystem.getMidiDevice(ii);
+                MidiDevice device = MidiSystem.getMidiDevice(ii);
 
                 System.out.println(device + "\t" + device.getClass());
                 System.out.println("\t" + device.getDeviceInfo());

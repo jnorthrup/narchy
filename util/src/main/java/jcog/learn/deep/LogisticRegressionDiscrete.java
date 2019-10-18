@@ -59,7 +59,6 @@ public class LogisticRegressionDiscrete extends LogisticRegression {
         int n_epochs = 500;
 
         int train_N = 6;
-        int test_N = 2;
         int n_in = 6;
         int n_out = 2;
 
@@ -98,6 +97,7 @@ public class LogisticRegressionDiscrete extends LogisticRegression {
                 {0, 0, 1, 1, 1, 0}
         };
 
+        int test_N = 2;
         double[][] test_Y = new double[test_N][n_out];
 
 

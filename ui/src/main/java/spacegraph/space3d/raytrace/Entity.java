@@ -24,12 +24,12 @@ public abstract class Entity {
             this.position = position;
             this.sideLength = sideLength;
             this.surface = surface;
-            double hs = sideLength / 2;
             try {
                 this.texture = ImageIO.read(new File(texture));
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            double hs = sideLength / 2;
             faces = new Ray3[]{
                 new Ray3(
                     position.add(new vv3(-hs, 0, 0)),

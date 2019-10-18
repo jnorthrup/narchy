@@ -54,8 +54,6 @@ public class Fireball extends Sprite {
 
         if (facing != 0) anim++;
 
-        float sideWaysSpeed = 8f;
-
 
         if (xa > 2) {
             facing = 1;
@@ -64,6 +62,7 @@ public class Fireball extends Sprite {
             facing = -1;
         }
 
+        float sideWaysSpeed = 8f;
         xa = facing * sideWaysSpeed;
 
         world.checkFireballCollide(this);

@@ -798,10 +798,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     final V doPut(K key, V value, boolean onlyIfNull) {
         if (key == null || value == null)
             throw new NullPointerException();
-        V oldValue = null;
         int hash = spreadHash(keyEquivalence.hash(key));
         Segment seg = addSegment(hash);
         seg.lock();
+        V oldValue = null;
         try {
             Node r = findNode(key, hash, seg);
             if (r != null) {
@@ -1245,9 +1245,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         if (key == null || remappingFunction == null)
             throw new NullPointerException();
         int hash = spreadHash(keyEquivalence.hash(key));
-        V value = null;
         Segment seg = addSegment(hash);
         seg.lock();
+        V value = null;
         try {
             Node[] tab = seg.getTableForAdd(this);
             int i = hash & (tab.length - 1);
@@ -1786,9 +1786,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
          * @return the hash code
          */
         public int hashCode() {
-            int h;
             Equivalence<? super K> equivalence = cchm.keyEquivalence;
-            h = this.stream().mapToInt(equivalence::hash).sum();
+            int h = this.stream().mapToInt(equivalence::hash).sum();
             return h;
         }
     }

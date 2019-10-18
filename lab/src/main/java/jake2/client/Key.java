@@ -291,12 +291,10 @@ public class Key extends Globals {
 	/**
 	 * Called by the system between frames for both key up and key down events.
 	 */
-	public static void Event(int key, boolean down, int time) {		
-		String kb;
-		String cmd;
+	public static void Event(int key, boolean down, int time) {
 
-		
-		if (key_waiting == -1) {
+
+        if (key_waiting == -1) {
 			if (down)
 				key_waiting = key;
 			return;
@@ -372,14 +370,10 @@ public class Key extends Globals {
 				Key.anykeydown = 0;
 		}
 
-		
-		
-		
-		
-		
-		
-		
-		if (!down) {
+
+        String cmd;
+        String kb;
+        if (!down) {
 			kb = Globals.keybindings[key];
 			if (kb != null && kb.length()>0 && kb.charAt(0) == '+') {
 				cmd = '-' + kb.substring(1) + ' ' + key + ' ' + time + '\n';
@@ -811,11 +805,10 @@ public class Key extends Globals {
 	}
 
 	static void ClearStates() {
-		int i;
 
-		Key.anykeydown = 0;
+        Key.anykeydown = 0;
 
-		for (i = 0; i < 256; i++) {
+		for (int i = 0; i < 256; i++) {
 			if (keydown[i] || key_repeats[i]!=0)
 				Event(i, false, 0);
 			keydown[i] = false;

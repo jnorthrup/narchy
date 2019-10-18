@@ -132,9 +132,8 @@ public abstract class TerminalEmulator {
         if (len > buflen)
             len = buflen;
         int foo = len;
-        byte tmp;
         while (len > 0) {
-            tmp = buf[bufs++];
+            byte tmp = buf[bufs++];
             if (0x20 <= tmp && tmp <= 0x7f) {
                 buflen--;
                 len--;
@@ -337,9 +336,6 @@ public abstract class TerminalEmulator {
 
     void draw_text() throws IOException {
 
-        int w;
-        int h;
-
         check_region();
 
         int rx = x;
@@ -347,7 +343,9 @@ public abstract class TerminalEmulator {
 
         byte b = getChar();
         term.draw_cursor();
-        
+
+        int h;
+        int w;
         if ((b & 0x80) != 0) {
             term.clear_area(x, y - char_height, x + char_width * 2, y);
             b2[0] = b;

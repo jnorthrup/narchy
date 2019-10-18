@@ -74,9 +74,9 @@ public abstract class UDiscover<P> {
 //                ms.setNetworkInterface(bestNic);
                 //System.out.println("nic=" + ms.getNetworkInterface());
 
-                byte[] theirID = new byte[MAX_PAYLOAD_ID];
                 myID = Util.toBytes(id);
                 p = new DatagramPacket(myID, myID.length, ia, port);
+                byte[] theirID = new byte[MAX_PAYLOAD_ID];
                 q = new DatagramPacket(theirID, theirID.length);
 
                 busy.set(false);
@@ -113,13 +113,12 @@ public abstract class UDiscover<P> {
             try {
                 //logger.info("recv... {}", Thread.currentThread());
                 ms.receive(q);
-                P theirPayload;
                 try {
 
                     int len = q.getLength();
                     byte[] qd = q.getData();
                     if (!Arrays.equals(p.getData(), qd) && !Arrays.equals(myID, 0, myID.length, qd, 0, len)) {
-                        theirPayload = (P) Util.fromBytes(qd, len, id.getClass());
+                        P theirPayload = (P) Util.fromBytes(qd, len, id.getClass());
                         found(theirPayload, q.getAddress(), q.getPort());
 
                     }

@@ -124,8 +124,6 @@ public class Shell extends Sprite {
 
         if (facing != 0) anim++;
 
-        float sideWaysSpeed = 11f;
-
 
         if (xa > 2) {
             facing = 1;
@@ -134,6 +132,7 @@ public class Shell extends Sprite {
             facing = -1;
         }
 
+        float sideWaysSpeed = 11f;
         xa = facing * sideWaysSpeed;
 
         if (facing != 0) {

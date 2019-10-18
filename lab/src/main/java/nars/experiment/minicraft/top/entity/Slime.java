@@ -68,7 +68,6 @@ public class Slime extends Mob {
     @Override
     public void render(Screen screen) {
         int xt = 0;
-        int yt = 18;
 
         int xo = x - 8;
         int yo = y - 11;
@@ -87,6 +86,7 @@ public class Slime extends Mob {
             col = Color.get(-1, 555, 555, 555);
         }
 
+        int yt = 18;
         screen.render(xo + 0, yo + 0, xt + yt * 32, col, 0);
         screen.render(xo + 8, yo + 0, xt + 1 + yt * 32, col, 0);
         screen.render(xo + 0, yo + 8, xt + (yt + 1) * 32, col, 0);

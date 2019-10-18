@@ -373,11 +373,11 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     private static void hbCreateDecodeTables(int[] limit, int[] base,
                                              int[] perm, char[] length,
                                              int minLen, int maxLen, int alphaSize) {
-        int i, j;
+        int i;
 
         int pp = 0;
         for (i = minLen; i <= maxLen; i++) {
-            for (j = 0; j < alphaSize; j++) {
+            for (int j = 0; j < alphaSize; j++) {
                 if (length[j] == i) {
                     perm[pp++] = j;
                 }
@@ -411,9 +411,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     }
 
     private void recvDecodingTables() {
-        char[][] len = new char[N_GROUPS][MAX_ALPHA_SIZE];
-        int i, j, t;
-        int minLen, maxLen;
+        int i;
         boolean[] inUse16 = new boolean[16];
 
         /* Receive the mapping table */
@@ -423,6 +421,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
         inUse.clear();
 
+        int j;
         for (i = 0; i < 16; i++) {
             if (inUse16[i]) {
                 for (j = 0; j < 16; j++) {
@@ -450,14 +449,14 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         /* Undo the MTF values for the selectors. */
         {
             char[] pos = new char[N_GROUPS];
-            char tmp, v;
+            char v;
             for (v = 0; v < nGroups; v++) {
                 pos[v] = v;
             }
 
             for (i = 0; i < nSelectors; i++) {
                 v = selectorMtf[i];
-                tmp = pos[v];
+                char tmp = pos[v];
                 while (v > 0) {
                     pos[v] = pos[v - 1];
                     v--;
@@ -468,6 +467,8 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         }
 
         /* Now the coding tables */
+        int t;
+        char[][] len = new char[N_GROUPS][MAX_ALPHA_SIZE];
         for (t = 0; t < nGroups; t++) {
             int curr = bsR(5);
             for (i = 0; i < alphaSize; i++) {
@@ -484,8 +485,8 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
         /* Create the Huffman decoding tables */
         for (t = 0; t < nGroups; t++) {
-            minLen = 32;
-            maxLen = 0;
+            int minLen = 32;
+            int maxLen = 0;
             for (i = 0; i < alphaSize; i++) {
                 if (len[t][i] > maxLen) {
                     maxLen = len[t][i];
@@ -501,16 +502,12 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     }
 
     private void getAndMoveToFrontDecode() {
-        char[] yy = new char[256];
-        int i, j, nextSym;
 
         int limitLast = baseBlockSize * blockSize100k;
         origPtr = bsGetIntVS(24);
 
         recvDecodingTables();
         int EOB = nInUse + 1;
-        int groupNo = -1;
-        int groupPos = 0;
 
         /*
           Setting up the unzftab entries here is not strictly
@@ -518,18 +515,22 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
           in a separate pass, and so saves a block's worth of
           cache misses.
         */
+        int i;
         for (i = 0; i <= 255; i++) {
             unzftab[i] = 0;
         }
 
+        char[] yy = new char[256];
         for (i = 0; i <= 255; i++) {
             yy[i] = (char) i;
         }
 
         last = -1;
 
+        int groupPos = 0;
+        int groupNo = -1;
+        int nextSym;
         {
-            int zj;
             if (groupPos == 0) {
                 groupNo++;
                 groupPos = G_SIZE;
@@ -540,6 +541,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
             int zvec = bsR(zn);
             while (zvec > limit[zt][zn]) {
                 zn++;
+                int zj;
                 {
                     {
                         while (bsLive < 1) {
@@ -578,7 +580,6 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                     }
                     N *= 2;
                     {
-                        int zj;
                         if (groupPos == 0) {
                             groupNo++;
                             groupPos = G_SIZE;
@@ -589,6 +590,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                         int zvec = bsR(zn);
                         while (zvec > limit[zt][zn]) {
                             zn++;
+                            int zj;
                             {
                                 {
                                     while (bsLive < 1) {
@@ -645,7 +647,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                   for (j = nextSym-1; j > 0; j--) yy[j] = yy[j-1];
                 */
 
-                j = nextSym - 1;
+                int j = nextSym - 1;
                 for (; j > 3; j -= 4) {
                     yy[j] = yy[j - 1];
                     yy[j - 1] = yy[j - 2];
@@ -658,7 +660,6 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
                 yy[0] = tmp;
                 {
-                    int zj;
                     if (groupPos == 0) {
                         groupNo++;
                         groupPos = G_SIZE;
@@ -669,6 +670,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                     int zvec = bsR(zn);
                     while (zvec > limit[zt][zn]) {
                         zn++;
+                        int zj;
                         {
                             {
                                 while (bsLive < 1) {
@@ -696,7 +698,6 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
     private void setupBlock() {
         int[] cftab = new int[257];
-        char ch;
 
         cftab[0] = 0;
         int i;
@@ -708,7 +709,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         }
 
         for (i = 0; i <= last; i++) {
-            ch = ll8[i];
+            char ch = ll8[i];
             tt[cftab[ch]] = i;
             cftab[ch]++;
         }
