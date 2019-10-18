@@ -125,13 +125,10 @@ public class AStarGoalFind<F extends Solution> {
                     
                     
                     openSet.remove(successorNode);
-                    successorNode.setG(tentativeG);
-                    openSet.add(successorNode);
-                } else {
-                    successorNode.setG(tentativeG);
-                    openSet.add(successorNode);
-                }
-            }
+				}
+				successorNode.setG(tentativeG);
+				openSet.add(successorNode);
+			}
             closedSet.add(currentNode);
             this.iteration += 1;
         }

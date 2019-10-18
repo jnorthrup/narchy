@@ -164,10 +164,9 @@ public class HyperIterator<X>  {
     }
 
     public final X next() {
-        X n = this.next;
-//        if (n == null)
+        //        if (n == null)
 //            throw new NoSuchElementException();
-        return n;
+        return this.next;
     }
 
     public static final class HyperIteratorRanker<X,R extends HyperRegion> implements FloatRank<Object> {

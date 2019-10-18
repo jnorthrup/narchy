@@ -22,8 +22,6 @@ import jcog.constraint.discrete.trail.Trail;
 import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.function.IntUnaryOperator;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Superclass to be instantiated by any integer variable.

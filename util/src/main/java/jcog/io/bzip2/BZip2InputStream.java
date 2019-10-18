@@ -207,17 +207,11 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         } else {
             int retChar = currentChar;
             switch(currentState) {
-                case START_BLOCK_STATE:
-                    break;
-                case RAND_PART_A_STATE:
-                    break;
                 case RAND_PART_B_STATE:
                     setupRandPartB();
                     break;
                 case RAND_PART_C_STATE:
                     setupRandPartC();
-                    break;
-                case NO_RAND_PART_A_STATE:
                     break;
                 case NO_RAND_PART_B_STATE:
                     setupNoRandPartB();
@@ -574,7 +568,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                 int N = 1;
                 do {
                     if (nextSym == RUNA) {
-                        s += (0 + 1) * N;
+                        s += N;
                     } else if (nextSym == RUNB) {
                         s += (1 + 1) * N;
                     }

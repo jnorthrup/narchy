@@ -112,10 +112,7 @@ public class Quantiler {
                     if (jq < nq && (jd >= nd || qile[jq] < dbuf[jd])) {
                         qnew = qile[jq];
                         tnew = jd + nt * pval[jq++];
-                        if (tnew >= target) {
-                            break;
-                        }
-                    } else {
+					} else {
                         qnew = dbuf[jd];
                         tnew = told;
                         if (qile[jq] > qile[jq - 1]) {
@@ -127,11 +124,11 @@ public class Quantiler {
                         }
                         told = tnew++;
                         qold = qnew;
-                        if (tnew >= target) {
-                            break;
-                        }
-                    }
-                    told = tnew;
+					}
+					if (tnew >= target) {
+						break;
+					}
+					told = tnew;
                     qold = qnew;
                 }
             }

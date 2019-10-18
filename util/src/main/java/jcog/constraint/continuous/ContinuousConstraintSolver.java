@@ -7,8 +7,6 @@ import jcog.constraint.continuous.exceptions.UnknownConstraintException;
 import jcog.constraint.continuous.exceptions.UnsatisfiableConstraintException;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by alex on 30/01/15.

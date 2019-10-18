@@ -58,23 +58,21 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
 
         if (p1.x < p2.x) {
             minX = p1.x;
-            maxX = p2.x;
-        } else {
+		} else {
             minX = p2.x;
-            maxX = p2.x;
-        }
+		}
+		maxX = p2.x;
 
-        double minY;
+		double minY;
         double maxY;
         if (p1.y < p2.y) {
             minY = p1.y;
-            maxY = p2.y;
-        } else {
+		} else {
             minY = p2.y;
-            maxY = p2.y;
-        }
+		}
+		maxY = p2.y;
 
-        min = new Double2D(minX, minY);
+		min = new Double2D(minX, minY);
         max = new Double2D(maxX, maxY);
     }
 
@@ -182,7 +180,7 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
 
     public String toString() {
 
-        String sb = "(" +
+        return "(" +
                 min.x +
                 ',' +
                 min.y +
@@ -193,15 +191,13 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
                 ',' +
                 max.y +
                 ')';
-        return sb;
     }
 
     @Override
     public int compareTo(RectDouble o) {
         int a = min.compareTo(o.min);
         if (a != 0) return a;
-        int b = max.compareTo(o.max);
-        return b;
+        return max.compareTo(o.max);
     }
 
 }

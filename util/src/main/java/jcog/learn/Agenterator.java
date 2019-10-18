@@ -38,8 +38,7 @@ public class Agenterator implements FloatSupplier {
         sensorsNow = new TensorSerial(_sensors);
         int numSensors = sensorsNow.volume();
 
-        TensorRing sensors = new TensorRing(numSensors, history);
-        this.sensorsHistory = sensors;
+        this.sensorsHistory = new TensorRing(numSensors, history);
 
         int sum = actions.stream().mapToInt(IntObjectPair::getOne).sum();
         int numActions = sum + (NOP_ACTION ? 1 : 0);

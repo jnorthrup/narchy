@@ -39,7 +39,7 @@ public class Configurator {
                     new FileInputStream(new File(filename)))));
     }
 
-    public static Configuration configure(BufferedReader r) throws IOException {
+    public static Configuration configure(BufferedReader r) {
 
         String sb = r.lines().collect(Collectors.joining());
 

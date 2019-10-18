@@ -5,8 +5,6 @@ import jcog.learn.ntm.control.Unit;
 import jcog.learn.ntm.memory.address.ShiftedAddressing;
 import jcog.learn.ntm.memory.address.content.ContentAddressing;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 public class HeadSetting   

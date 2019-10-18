@@ -95,7 +95,7 @@ public final class TrieSet<E> implements Set<E> {
    @Override
    public boolean addAll( Collection<? extends E> collection )
    {
-      Boolean acc = false;
+      boolean acc = false;
       for (E e : collection) {
          Boolean add = add(e);
          acc = acc || add;
@@ -151,7 +151,7 @@ public final class TrieSet<E> implements Set<E> {
    @Override
    public boolean removeAll( Collection<?> collection )
    {
-      Boolean acc = false;
+      boolean acc = false;
       for (Object o : collection) {
          Boolean remove = remove(o);
          acc = acc || remove;

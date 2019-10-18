@@ -82,18 +82,18 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
         Map<String, String> parameters = configuration.getPopulationBuilderParameters();
         boolean DISCARD_W_TOKENS = true; 
         boolean ADD_NO_CONTEXT_INDIVIDUALS = true;
-        Double TOKEN_UNMATCH_THREASHOLD = 80.0;
-        Double TOKEN_THREASHOLD = 80.0;
+        double TOKEN_UNMATCH_THREASHOLD = 80.0;
+        double TOKEN_THREASHOLD = 80.0;
         if(parameters!=null){
             
             if(parameters.containsKey("tokenThreashold")){
-                TOKEN_THREASHOLD = Double.valueOf(parameters.get("tokenThreashold"));
+                TOKEN_THREASHOLD = Double.parseDouble(parameters.get("tokenThreashold"));
             }
             if(parameters.containsKey("discardWtokens")){
                 DISCARD_W_TOKENS = Boolean.parseBoolean(parameters.get("discardWtokens"));
             }
             if(parameters.containsKey("tokenUnmatchThreashold")){
-                TOKEN_UNMATCH_THREASHOLD = Double.valueOf(parameters.get("tokenUnmatchThreashold"));
+                TOKEN_UNMATCH_THREASHOLD = Double.parseDouble(parameters.get("tokenUnmatchThreashold"));
             }
             if(parameters.containsKey("addNoContextIndividuals")){
                 ADD_NO_CONTEXT_INDIVIDUALS = Boolean.parseBoolean(parameters.get("addNoContextIndividuals"));

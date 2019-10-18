@@ -52,7 +52,7 @@ class Row {
      */
     void insert(Symbol symbol, double _coefficient) {
         cells.merge(symbol, _coefficient, (existingCoefficient, coefficient) -> {
-            Double coefficient1 = coefficient;
+            double coefficient1 = coefficient;
             if (existingCoefficient != null)
                 coefficient1 += existingCoefficient;
 

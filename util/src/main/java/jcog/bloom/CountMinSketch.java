@@ -303,7 +303,6 @@ public class CountMinSketch {
                 multiset[i][j] = bb.getInt();
             }
         }
-        CountMinSketch cms = new CountMinSketch(width, depth, multiset);
-        return cms;
+        return new CountMinSketch(width, depth, multiset);
     }
 }

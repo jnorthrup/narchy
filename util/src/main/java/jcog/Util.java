@@ -1376,7 +1376,7 @@ public enum Util {
 
 	@SafeVarargs
     public static <X> double sum(ToDoubleFunction<X> value, X... xx) {
-		double y = stream(xx).mapToDouble(value::applyAsDouble).sum();
+		double y = stream(xx).mapToDouble(value).sum();
 		return y;
 	}
 
@@ -1418,7 +1418,7 @@ public enum Util {
 
 	@SafeVarargs
     public static <X> long sum(ToLongFunction<X> value, X... xx) {
-		long y = stream(xx).mapToLong(value::applyAsLong).sum();
+		long y = stream(xx).mapToLong(value).sum();
 		return y;
 	}
 
@@ -2165,7 +2165,7 @@ public enum Util {
 
 
 	public static <X> int count(Predicate<X> p, X[] xx) {
-		long count = stream(xx).filter(p::test).count();
+		long count = stream(xx).filter(p).count();
 		int i = (int) count;
         return i;
 	}

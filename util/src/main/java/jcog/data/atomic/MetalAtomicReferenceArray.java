@@ -154,7 +154,7 @@ public class MetalAtomicReferenceArray<E>  {
 		setRaw(byteOffset(i), newValue);
 	}
 
-	private final void setRaw(long i, E newValue) {
+	private void setRaw(long i, E newValue) {
 		unsafe.putObjectVolatile(array, i, newValue);
 	}
 

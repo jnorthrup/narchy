@@ -122,9 +122,7 @@ public class PrecisionCharmaskLengthObjective implements Objective {
 
     
     private static int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
-        int identicalRanges = (int) Arrays.stream(rangesA).filter(boundsA -> {
-            return rangesB.stream().anyMatch(boundsA::equals);
-        }).count();
+        int identicalRanges = (int) Arrays.stream(rangesA).filter(boundsA -> rangesB.stream().anyMatch(boundsA::equals)).count();
 
         return identicalRanges;
     }

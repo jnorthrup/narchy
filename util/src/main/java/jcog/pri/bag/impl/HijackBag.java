@@ -881,8 +881,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
     public static <X> List<X> list(AtomicReferenceArray<X> a) {
         int bound = a.length();
-        List<X> list = IntStream.range(0, bound).mapToObj(a::get).filter(Objects::nonNull).collect(Collectors.toList());
-        return list;
+        return IntStream.range(0, bound).mapToObj(a::get).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
 

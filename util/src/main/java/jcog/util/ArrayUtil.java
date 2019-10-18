@@ -3216,8 +3216,7 @@ public enum ArrayUtil {
     public static Character[] toObject(char[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_CHARACTER_OBJECT_ARRAY;
-        Character[] result = IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Character[]::new);
-        return result;
+        return IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Character[]::new);
     }
 
     /**
@@ -3274,8 +3273,7 @@ public enum ArrayUtil {
     public static Long[] toObject(long[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_LONG_OBJECT_ARRAY;
-        Long[] result = Arrays.stream(array).boxed().toArray(Long[]::new);
-        return result;
+        return Arrays.stream(array).boxed().toArray(Long[]::new);
     }
 
     /**
@@ -3332,8 +3330,7 @@ public enum ArrayUtil {
     public static Integer[] toObject(int[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_INTEGER_OBJECT_ARRAY;
-        Integer[] result = Arrays.stream(array).boxed().toArray(Integer[]::new);
-        return result;
+        return Arrays.stream(array).boxed().toArray(Integer[]::new);
     }
 
     /**
@@ -3384,8 +3381,7 @@ public enum ArrayUtil {
     public static Short[] toObject(short[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_SHORT_OBJECT_ARRAY;
-        Short[] result = IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Short[]::new);
-        return result;
+        return IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Short[]::new);
     }
 
     /**
@@ -3440,8 +3436,7 @@ public enum ArrayUtil {
     public static Byte[] toObject(byte[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_BYTE_OBJECT_ARRAY;
-        Byte[] result = IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Byte[]::new);
-        return result;
+        return IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Byte[]::new);
     }
 
     /**
@@ -3502,8 +3497,7 @@ public enum ArrayUtil {
     public static Double[] toObject(double[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_DOUBLE_OBJECT_ARRAY;
-        Double[] result = Arrays.stream(array).boxed().toArray(Double[]::new);
-        return result;
+        return Arrays.stream(array).boxed().toArray(Double[]::new);
     }
 
     /**
@@ -3554,8 +3548,7 @@ public enum ArrayUtil {
     public static Float[] toObject(float[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_FLOAT_OBJECT_ARRAY;
-        Float[] result = IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Float[]::new);
-        return result;
+        return IntStream.range(0, array.length).mapToObj(i -> array[i]).toArray(Float[]::new);
     }
 
     /**
@@ -3606,8 +3599,7 @@ public enum ArrayUtil {
     public static Boolean[] toObject(boolean[] array) {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_BOOLEAN_OBJECT_ARRAY;
-        Boolean[] result = IntStream.range(0, array.length).mapToObj(i -> (array[i] ? Boolean.TRUE : Boolean.FALSE)).toArray(Boolean[]::new);
-        return result;
+        return IntStream.range(0, array.length).mapToObj(i -> (array[i] ? Boolean.TRUE : Boolean.FALSE)).toArray(Boolean[]::new);
     }
 
     /**
@@ -5988,9 +5980,7 @@ public enum ArrayUtil {
         if (array == null) return null;
         if (array.length == 0) return EMPTY_STRING_ARRAY;
 
-        String[] result = Arrays.stream(array).map(Object::toString).toArray(String[]::new);
-
-        return result;
+        return Arrays.stream(array).map(Object::toString).toArray(String[]::new);
     }
 
     /**

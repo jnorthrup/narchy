@@ -20,7 +20,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.Arrays;
-import java.util.stream.LongStream;
 
 /**
  * CPU Time, in milliseconds

@@ -142,9 +142,9 @@ public class VectorizingUtils {
 
 
                 layers[val][j+1][i+1] = 1 + (n5 * 2) + (n8 * 4) + (n7 * 8) ;
-				if(n4==0){ layers[val][j+1][i  ] = 0 + 2 + (n7 * 4) + (n6 * 8) ; }
-				if(n2==0){ layers[val][j  ][i+1] = 0 + (n3*2) + (n5 * 4) + 8 ; }
-				if(n1==0){ layers[val][j  ][i  ] = 0 + (n2*2) + 4 + (n4 * 8) ; }
+				if(n4==0){ layers[val][j+1][i  ] = 2 + (n7 * 4) + (n6 * 8); }
+				if(n2==0){ layers[val][j  ][i+1] = (n3 * 2) + (n5 * 4) + 8; }
+				if(n1==0){ layers[val][j  ][i  ] = (n2 * 2) + 4 + (n4 * 8); }
 
 			}
 		}

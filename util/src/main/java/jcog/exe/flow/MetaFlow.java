@@ -19,8 +19,6 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.function.BooleanSupplier;
 
@@ -156,7 +154,7 @@ public class MetaFlow {
 
     static final String thisClassName = MetaFlow.class.getName();
 
-    public final class StackCursor extends DynBytes {
+    public static final class StackCursor extends DynBytes {
 
         final StackWalker.StackFrame base;
         final FasterList<StackWalker.StackFrame> buffer = new FasterList(256);
@@ -305,7 +303,7 @@ public class MetaFlow {
             return cn.equals(MetaFlow.class.getName()) || cn.startsWith(ThreadLocal.class.getName());
         })
                 .findFirst().get());
-        cursors = ThreadLocal.withInitial(()->new StackCursor(base));
+        cursors = ThreadLocal.withInitial(()-> new StackCursor(base));
     }
 
 

@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 /**
     based on Chronicle Core's ParsingCache<E>

@@ -7,7 +7,7 @@ public interface SpinMutex {
 
     /** returns ticket to exit */
     default int start(int context, int key) {
-        long hash = (context << 32) | key;
+        long hash = (((long)context) << 32) | key;
         if (hash == 0) hash = 1; 
         return start(hash);
     }

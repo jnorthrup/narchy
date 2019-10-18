@@ -11,8 +11,7 @@ public abstract class NumberX extends Number {
 
     public float getAndSet(float r) {
         set(r);
-        float p = floatValue();
-        return p;
+        return floatValue();
     }
 
     public final void subtract(float x) {

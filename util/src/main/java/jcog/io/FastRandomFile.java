@@ -469,12 +469,12 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
         write((byte) ((utflen >>> 24) & 0xFF));
         write((byte) ((utflen >>> 16) & 0xFF));
         write((byte) ((utflen >>> 8) & 0xFF));
-        write((byte) ((utflen >>> 0) & 0xFF));
+        write((byte) ((utflen) & 0xFF));
       }
       else
       {
         write((byte) ((utflen >>> 8) & 0xFF));
-        write((byte) ((utflen >>> 0) & 0xFF));
+        write((byte) ((utflen) & 0xFF));
       }
       for (int i = 0; i < strlen; i++) {
         c = s.charAt(i);

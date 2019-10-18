@@ -359,10 +359,10 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     public boolean isEmpty() { return size() == 0; }
 
     public boolean AND(Predicate<X> o) {
-        return Arrays.stream(array()).allMatch(o::test);
+        return Arrays.stream(array()).allMatch(o);
     }
     public boolean OR(Predicate<X> o) {
-        return Arrays.stream(array()).anyMatch(o::test);
+        return Arrays.stream(array()).anyMatch(o);
     }
     public boolean whileEach(Predicate<X> o) {
         return Arrays.stream(array()).noneMatch(x -> x != null && !o.test(x));
@@ -373,12 +373,10 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
 
     public double sumBy(FloatFunction<X> each) {
-        double s = Arrays.stream(array()).mapToDouble(each::floatValueOf).sum();
-        return s;
+        return Arrays.stream(array()).mapToDouble(each::floatValueOf).sum();
     }
     public double sumBy(ToDoubleFunction<X> each) {
-        double s = Arrays.stream(array()).mapToDouble(each::applyAsDouble).sum();
-        return s;
+        return Arrays.stream(array()).mapToDouble(each::applyAsDouble).sum();
     }
 
     /** NaN valued items are not included */

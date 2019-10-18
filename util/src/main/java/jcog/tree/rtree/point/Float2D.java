@@ -83,8 +83,7 @@ public class Float2D implements HyperPoint, Comparable<Float2D> {
         if (this == o) return 0;
         int a = Float.compare(x, o.x);
         if (a != 0) return a;
-        int b = Float.compare(y, o.y);
-        return b;
+        return Float.compare(y, o.y);
     }
 
 }

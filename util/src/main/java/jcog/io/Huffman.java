@@ -330,7 +330,7 @@ public class Huffman {
             int limit = end - 32;
             long v1 = seed + PRIME64_1 + PRIME64_2;
             long v2 = seed + PRIME64_2;
-            long v3 = seed + 0;
+            long v3 = seed;
             long v4 = seed - PRIME64_1;
             do {
                 v1 += readLongLE(buf, off) * PRIME64_2;
@@ -473,7 +473,7 @@ public class Huffman {
                         symbol = defCodeIdx2Symbols[++bitLen][symbolIdx];
                     }
                     if (symbol == null) {
-                        while ((symbol = defCodeIdx2Symbols[bitLen++][symbolIdx = (symbolIdx << 1) | 0]) == null) ;
+                        while ((symbol = defCodeIdx2Symbols[bitLen++][symbolIdx = (symbolIdx << 1)]) == null) ;
                         symbolLen = symbol.length;
                         //if(dataIdx + symbolLen >= data.length) data = expand(data,symbolLen);
                         System.arraycopy(symbol, 0, data, dataIdx, symbolLen);
@@ -585,17 +585,15 @@ public class Huffman {
             //System.out.println("Compress Huffman: dummy compress to find unused symbols, Stage three of four");
             generateSymbolFreqs(data, true);
             //System.out.println("Compress Huffman: build final huffTree, Stage four of four");
-            freqToTree(1, true);
-            buildHuffTree(false, true);
             //System.out.println("Compress Huffman: Done building HuffTree! Use getHuffData() to store tree");
         } else {
             //System.out.println("Compress Huffman: compiling symbol freq, Stage one of two");
             generateSymbolFreqs(data, false);
             //System.out.println("Compress Huffman: building huffTree Stage two of two");
-            freqToTree(1, true);
-            buildHuffTree(false, true);
             //System.out.println("Compress Huffman: Done building HuffTree! Use getHuffData() to store tree");
         }
+        freqToTree(1, true);
+        buildHuffTree(false, true);
         altCodeBytes = (codeValues[1][0] + 7) / 8;
         switchFields(true);
         buildAltTree(false);
@@ -988,7 +986,7 @@ public class Huffman {
                         ByteAry ba = new ByteAry(symbol);
                         while (true) {
                             Integer oldWeight = freqList.getIfPresent(ba);
-                            Integer weight;
+                            int weight;
                             if (oldWeight != null) {
                                 weight = oldWeight + symbol.length;
                                 if (freqList.asMap().replace(ba, oldWeight, weight)) break;

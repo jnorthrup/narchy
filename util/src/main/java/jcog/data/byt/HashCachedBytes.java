@@ -26,9 +26,9 @@ public class HashCachedBytes extends DynBytes {
 
     /** must be called after construction */
     @Override public byte[] compact() {
-        super.compact();
+        byte[] b = super.compact();
         hash = super.hashCode();
-        return new byte[0];
+        return b;
     }
 
 }

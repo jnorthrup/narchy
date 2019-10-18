@@ -575,9 +575,8 @@ public enum Texts {
 	public static int countRows(String s, char x) {
 		int bound = s.length();
 		long count = IntStream.range(0, bound).filter(i -> s.charAt(i) == x).count();
-		int c = (int) count;
 
-        return c;
+		return (int) count;
 	}
 	public static int countCols(String next) {
 		int cols = 0;
@@ -631,9 +630,7 @@ public enum Texts {
 	 */
 	public static String n2(byte... v) {
         int s = v.length;
-		String result = IntStream.range(0, s).mapToObj(i -> Integer.toHexString(Byte.toUnsignedInt(v[i])) + ' ').collect(Collectors.joining());
-		String sb = result;
-		return sb;
+		return IntStream.range(0, s).mapToObj(i -> Integer.toHexString(Byte.toUnsignedInt(v[i])) + ' ').collect(Collectors.joining());
 	}
 
 	/**

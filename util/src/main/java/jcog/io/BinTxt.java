@@ -1,8 +1,6 @@
 package jcog.io;
 
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Binar <-> Text Transducers

@@ -82,8 +82,7 @@ public abstract class AbstractBitVector implements BitVector {
 	@Override
 	public long getLong(long from, long to ) {
 		if ( to - from > 64 ) throw new IllegalArgumentException( "Range too large for a long: [" + from + ".." + to + ')');
-		long result = LongStream.range(from, to).filter(this::getBoolean).map(i -> 1L << i - from).reduce(0, (a, b) -> a | b);
-		return result;
+		return LongStream.range(from, to).filter(this::getBoolean).map(i -> 1L << i - from).reduce(0, (a, b) -> a | b);
 	}
 	public boolean getBoolean( int index ) { return getBoolean( (long)index ); }
 
@@ -278,7 +277,7 @@ public abstract class AbstractBitVector implements BitVector {
 		long length = length();
 		if ( length != v.length() ) return false;
 		long fullLength = length - length % Long.SIZE;
-        return LongStream.iterate(0, i -> i < fullLength, i -> (long) (i + Long.SIZE)).noneMatch(i -> getLong(i, i + Long.SIZE) != v.getLong(i, i + Long.SIZE)) && getLong(fullLength, length) == v.getLong(fullLength, length);
+        return LongStream.iterate(0, i -> i < fullLength, i -> i + Long.SIZE).noneMatch(i -> getLong(i, i + Long.SIZE) != v.getLong(i, i + Long.SIZE)) && getLong(fullLength, length) == v.getLong(fullLength, length);
 	}
 
 	@Override
@@ -645,9 +644,7 @@ public abstract class AbstractBitVector implements BitVector {
 	
 	public String toString() {
         long size = size64();
-		String sb = LongStream.range(0, size).mapToObj(i -> String.valueOf(getInt(i))).collect(Collectors.joining());
-		String s = sb;
-		return s;
+		return LongStream.range(0, size).mapToObj(i -> String.valueOf(getInt(i))).collect(Collectors.joining());
 	}
 
 	/** A subvector of a given bit vector, specified by an initial and a final bit. */

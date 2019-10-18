@@ -97,25 +97,23 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     @Override
     public boolean addAll(Collection<? extends X> c) {
         //throw new TODO("optimized bulk addAt");
-        Boolean acc = false;
+        boolean acc = false;
         for (X x : c) {
             Boolean add = add(x);
             acc = acc || add;
         }
-        boolean added = acc;
-        return added;
+        return acc;
     }
 
     @SafeVarargs
     public final boolean addAll(X... c) {
         //throw new TODO("optimized bulk addAt");
-        Boolean acc = false;
+        boolean acc = false;
         for (X x : c) {
             Boolean add = add(x);
             acc = acc || add;
         }
-        boolean added = acc;
-        return added;
+        return acc;
     }
 
     @Override

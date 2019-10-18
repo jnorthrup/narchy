@@ -21,47 +21,45 @@ public class LambdaStampedLock extends StampedLock {
 
     public <T> T write(Supplier<T> writeProcedure) {
         long stamp = writeLock();
-        T result;
+
         try {
-            result = writeProcedure.get();
+            return writeProcedure.get();
         } finally {
             unlockWrite(stamp);
         }
-        return result;
+
     }
 
 
     public boolean write(BooleanSupplier writeProcedure) {
         long stamp = writeLock();
-        boolean result;
+
         try {
-            result = writeProcedure.getAsBoolean();
+            return writeProcedure.getAsBoolean();
         } finally {
             unlockWrite(stamp);
         }
-        return result;
+
     }
 
     public int write(IntSupplier writeProcedure) {
         long stamp = writeLock();
-        int result;
         try {
-            result = writeProcedure.getAsInt();
+            return writeProcedure.getAsInt();
         } finally {
             unlockWrite(stamp);
         }
-        return result;
     }
 
     public <T> T read(Supplier<T> readProcedure) {
         long stamp = readLock();
-        T result;
+
         try {
-            result = readProcedure.get();
+            return readProcedure.get();
         } finally {
             unlockRead(stamp);
         }
-        return result;
+
     }
 
     public int read(IntSupplier readProcedure) {

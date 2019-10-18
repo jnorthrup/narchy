@@ -153,12 +153,11 @@ public class Classpath {
                 Classpath.ClasspathEntry entry;
                 if (wr != null) {
                     entry = wr.get();
-                    return entry;
                 } else {
                     entry = newEntry(url);
                     CUSTOM_ENTRIES.put(url, new WeakReference(entry));
-                    return entry;
                 }
+                return entry;
             } catch (MalformedURLException | URISyntaxException var4) {
                 throw new IOException(var4);
             }

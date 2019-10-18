@@ -613,7 +613,7 @@ public class LongArrayBitVector extends AbstractBitVector implements Cloneable, 
 		
 		int arrayLength = array.length;
 		int lastWord = (int)( size / Long.SIZE );
-		if ( lastWord < arrayLength && ( array[ lastWord ] & ~ ( ( 1L << size % Long.SIZE ) - 1 ) ) != 0 )  throw new IllegalArgumentException( "Garbage beyond size in bit array" );
+		if ( lastWord < arrayLength && ( array[ lastWord ] & -(1L << size % Long.SIZE)) != 0 )  throw new IllegalArgumentException( "Garbage beyond size in bit array" );
 		for( int i = lastWord + 1; i < arrayLength; i++ ) if ( array[ i ] != 0 ) throw new IllegalArgumentException( "Garbage beyond size in bit array" );
 		return result;
 	}

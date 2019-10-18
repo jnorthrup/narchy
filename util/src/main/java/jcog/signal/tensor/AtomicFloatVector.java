@@ -6,8 +6,6 @@ import jcog.util.FloatFloatToFloatFunction;
 
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicIntegerArray;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static java.lang.Float.floatToIntBits;
 import static java.lang.Float.intBitsToFloat;

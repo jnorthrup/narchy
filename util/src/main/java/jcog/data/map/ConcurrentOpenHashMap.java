@@ -51,8 +51,6 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
     private static final Object DeletedKey = new Object();
 
-    private final float MapFillFactor;
-
     private static final int DefaultExpectedItems = 1024;
     private static final int DefaultConcurrencyLevel = Runtime.getRuntime().availableProcessors();
 
@@ -77,7 +75,8 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
         int numSections = concurrencyLevel;
         int perSectionExpectedItems = expectedItems / numSections;
-        int perSectionCapacity = (int) (perSectionExpectedItems / (this.MapFillFactor = MapFillFactor));
+        float mapFillFactor;
+        int perSectionCapacity = (int) (perSectionExpectedItems / (mapFillFactor = MapFillFactor));
         this.sections = (Section<K, V>[]) new Section[numSections];
 
         for (int i = 0; i < numSections; i++) {
@@ -295,10 +294,8 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                         if (!onlyIfAbsent) {
                             if (value!=storedValue)
                                 table.set(bucket + 1, value);
-                            return storedValue;
-                        } else {
-                            return storedValue;
                         }
+                        return storedValue;
                     } else if (storedKey == null) {
 
 

@@ -111,8 +111,8 @@ public final class QuickLZ {
 					cword_val = ((cword_val >>> 1) | 0x80000000L);
 					if (in[o + 3] != in[src + 3]) {
 						int f = 3 - 2 | (hash << 4);
-						out[dst + 0] = (byte) (f >>> 0 * 8);
-						out[dst + 1] = (byte) (f >>> 1 * 8);
+						out[dst] = (byte) (f >>> 0);
+						out[dst + 1] = (byte) (f >>> 8);
 						src += 3;
 						dst += 2;
 					} else {
@@ -135,8 +135,8 @@ public final class QuickLZ {
 						if (matchlen < 18) {
 							int f = hash | (matchlen - 2);
 
-							out[dst + 0] = (byte) (f >>> 0 * 8);
-							out[dst + 1] = (byte) (f >>> 1 * 8);
+							out[dst] = (byte) (f >>> 0);
+							out[dst + 1] = (byte) (f >>> 8);
 							dst += 2;
 						} else {
                             fast_write(out, dst, hash | (matchlen << 16), 3);

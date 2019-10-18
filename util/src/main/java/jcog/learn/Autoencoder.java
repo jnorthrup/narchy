@@ -73,8 +73,7 @@ public class Autoencoder {
 
     public void randomize() {
         float a = 1f / W[0].length;
-        for (int i = 0; i < W.length; i++) {
-            float[] wi = this.W[i];
+        for (float[] wi : W) {
             randomize(a, wi);
         }
         fill(hbias, 0);
@@ -179,8 +178,7 @@ public class Autoencoder {
 
         if (normalize) {
             float lengthSq = 0;
-            for (int i = 0; i < outs; i++)
-                lengthSq += Util.sqr(y[i]);
+            for (float v : y) lengthSq += Util.sqr(v);
 
             if (lengthSq > NORMALIZATION_EPSILON) {
                 float length = (float) Math.sqrt(lengthSq);
@@ -213,8 +211,7 @@ public class Autoencoder {
         float mult = 1f - rate;
         float[][] w = this.W;
         int O = w.length;
-        for (int o = 0; o < O; o++)
-            Util.mul(mult, w[o]);
+        for (float[] floats : w) Util.mul(mult, floats);
         Util.mul(mult, hbias);
         Util.mul(mult, this.L_hbias);
         Util.mul(mult, vbias);

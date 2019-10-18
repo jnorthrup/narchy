@@ -80,13 +80,13 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
 
         DataSet dataSet = usedTrainingDataset;
         
-        Double TOKEN_THREASHOLD = 80.0; 
+        double TOKEN_THREASHOLD = 80.0;
         boolean DISCARD_W_TOKENS = true; 
         Map<String, String> parameters = configuration.getPopulationBuilderParameters();
         if(parameters!=null){
             
             if(parameters.containsKey("tokenThreashold")){
-                TOKEN_THREASHOLD = Double.valueOf(parameters.get("tokenThreashold"));
+                TOKEN_THREASHOLD = Double.parseDouble(parameters.get("tokenThreashold"));
             }
             if(parameters.containsKey("discardWtokens")){
                 DISCARD_W_TOKENS = Boolean.parseBoolean(parameters.get("discardWtokens"));

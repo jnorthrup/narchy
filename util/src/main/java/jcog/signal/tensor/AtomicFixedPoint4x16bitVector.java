@@ -6,7 +6,6 @@ import jcog.util.FloatFloatToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static jcog.Texts.n4;

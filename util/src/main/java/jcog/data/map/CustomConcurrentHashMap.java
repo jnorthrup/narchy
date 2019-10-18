@@ -800,8 +800,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             throw new NullPointerException();
         int hash = spreadHash(keyEquivalence.hash(key));
         Segment seg = addSegment(hash);
-        seg.lock();
         V oldValue = null;
+        seg.lock();
         try {
             Node r = findNode(key, hash, seg);
             if (r != null) {

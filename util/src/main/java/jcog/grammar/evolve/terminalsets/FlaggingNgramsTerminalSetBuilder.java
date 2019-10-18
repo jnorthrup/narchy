@@ -170,11 +170,9 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
                 if(compare == 0){
                     compare = s1.compareTo(s2);
                 }
-                return compare;
-            } else {
-                return compare;
-            }
-        };
+			}
+			return compare;
+		};
         Map<K, V> sortedByValues = new TreeMap<>(valueComparator);
         sortedByValues.putAll(map);
         return sortedByValues;

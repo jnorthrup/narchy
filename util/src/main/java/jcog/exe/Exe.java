@@ -56,11 +56,9 @@ public enum Exe { ;
         return executor;
     }
 
-    public static void setExecutor(Executor e) {
-        synchronized (Exe.class) {
-            logger.info("global executor = {} ", e);
-            executor = e;
-        }
+    public static synchronized void setExecutor(Executor e) {
+        logger.info("global executor = {} ", e);
+        executor = e;
     }
 
 //    /**

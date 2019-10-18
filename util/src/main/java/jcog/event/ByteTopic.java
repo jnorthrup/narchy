@@ -3,11 +3,8 @@ package jcog.event;
 import jcog.TODO;
 import jcog.data.bit.MetalBitSet;
 
-import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /** topic whose transmissions are keyed by a 'byte' selector.  receivers can register for one or more of the channels */
 public class ByteTopic<X> {
@@ -51,7 +48,7 @@ public class ByteTopic<X> {
     }
 
     protected Topic<X> newTopic(byte c) {
-        return new ByteSubTopic<>(c);
+        return new ByteSubTopic(c);
     }
 
 //TODO
@@ -111,7 +108,7 @@ public class ByteTopic<X> {
     }
 
 
-    private final class ByteSubTopic<X> extends ListTopic<X> {
+    private final class ByteSubTopic extends ListTopic<X> {
         private final byte c;
 
         ByteSubTopic(byte c) {

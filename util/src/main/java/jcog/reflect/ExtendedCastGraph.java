@@ -822,9 +822,7 @@ public class ExtendedCastGraph extends CastGraph {
         @Override
         public Object apply(Object from) {
             Character[] ca = (Character[]) from;
-            String result = Arrays.stream(ca).map(String::valueOf).collect(Collectors.joining());
-            String sb = result;
-            return sb;
+            return Arrays.stream(ca).map(String::valueOf).collect(Collectors.joining());
         }
 
         @Override
@@ -855,8 +853,7 @@ public class ExtendedCastGraph extends CastGraph {
         public Object apply(Object from) {
             String str = ((String) from);
             int bound = str.length();
-            Character[] arr = IntStream.range(0, bound).mapToObj(str::charAt).toArray(Character[]::new);
-            return arr;
+            return IntStream.range(0, bound).mapToObj(str::charAt).toArray(Character[]::new);
         }
 
         @Override
@@ -964,12 +961,11 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function<String, URL> String2URL = new Function<>() {
         @Override
         public URL apply(String from) {
-            String url = from;
             try {
-                return new java.net.URL(url);
+                return new java.net.URL(from);
             } catch (MalformedURLException ex) {
                 throw new ClassCastException(
-                        "can't cast from " + url + " to java.net.URL\n" +
+                        "can't cast from " + from + " to java.net.URL\n" +
                                 ex.getMessage()
                 );
             }

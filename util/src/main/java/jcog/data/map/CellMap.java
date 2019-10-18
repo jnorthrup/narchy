@@ -3,7 +3,6 @@ package jcog.data.map;
 import jcog.data.pool.MetalPool;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.*;

@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
@@ -284,7 +283,7 @@ public class WeightedQueue<T> implements BlockingQueue<T>
         int weight = weigher.weigh(weighable);
         if (weight < 1)
         {
-            throw new IllegalArgumentException(String.format("Weighable: \"%s\" had illegal weight %d", Objects.toString(weighable), weight));
+            throw new IllegalArgumentException(String.format("Weighable: \"%s\" had illegal weight %d", weighable, weight));
         }
 
         //Allow exactly one overweight element
@@ -306,7 +305,7 @@ public class WeightedQueue<T> implements BlockingQueue<T>
         int weight = weigher.weigh(weighable);
         if (weight < 1)
         {
-            throw new IllegalArgumentException(String.format("Weighable: \"%s\" had illegal weight %d", Objects.toString(weighable), weight));
+            throw new IllegalArgumentException(String.format("Weighable: \"%s\" had illegal weight %d", weighable, weight));
         }
 
         //Allow exactly one overweight element
@@ -325,7 +324,7 @@ public class WeightedQueue<T> implements BlockingQueue<T>
         int weight = weigher.weigh(weighable);
         if (weight < 1)
         {
-            throw new IllegalArgumentException(String.format("Weighable: \"%s\" had illegal weight %d", Objects.toString(weighable), weight));
+            throw new IllegalArgumentException(String.format("Weighable: \"%s\" had illegal weight %d", weighable, weight));
         }
 
         //Allow exactly one overweight element

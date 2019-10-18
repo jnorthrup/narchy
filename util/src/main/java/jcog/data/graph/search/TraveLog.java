@@ -16,7 +16,7 @@ public interface TraveLog {
 
     boolean hasVisited(int n);
 
-    public static int id(Node n) {
+    static int id(Node n) {
         return ((NodeGraph.AbstractNode)n).serial;
     }
 

@@ -1,14 +1,12 @@
 package jcog.signal.meter.event;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 
 import java.io.*;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 import java.util.stream.StreamSupport;
 
 /**

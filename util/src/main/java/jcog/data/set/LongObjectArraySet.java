@@ -1,7 +1,6 @@
 package jcog.data.set;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
@@ -15,7 +14,6 @@ import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.iterator.MutableLongIterator;
 import org.eclipse.collections.impl.iterator.ImmutableEmptyLongIterator;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;

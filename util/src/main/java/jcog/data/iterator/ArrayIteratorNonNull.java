@@ -30,11 +30,10 @@ public class ArrayIteratorNonNull<E> implements Iterator<E>, Iterable<E> {
 
 	private E find() {
 		E next = null;
-		E[] a = this.array;
 		int index = this.index;
 		int limit = this.limit;
 		while (++index < limit) {
-			if ((next = a[index])!=null)
+			if ((next = this.array[index])!=null)
 				break;
 		}
 		this.index = index;

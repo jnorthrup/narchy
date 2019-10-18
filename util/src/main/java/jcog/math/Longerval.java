@@ -83,8 +83,7 @@ public class Longerval implements LongInterval, Comparable<Longerval> {
             return Longerval.Eternal;
         if (as == TIMELESS || bs == TIMELESS)
             throw new UnsupportedOperationException();
-        long ae = this.end;
-        return new Longerval(min(as, bs), max(ae, be));
+        return new Longerval(min(as, bs), max(this.end, be));
     }
 
     public final @Nullable Longerval intersection(long bs, long be) {

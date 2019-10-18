@@ -17,6 +17,7 @@ public final class AtomicFloatFieldUpdater<X>  {
 
     public static final int iNaN = floatToIntBits(Float.NaN);
     public static final int iZero = floatToIntBits(0f);
+    /** @noinspection AtomicFieldUpdaterNotStaticFinal*/
     public final MetalAtomicIntegerFieldUpdater<X> INT;
 
 

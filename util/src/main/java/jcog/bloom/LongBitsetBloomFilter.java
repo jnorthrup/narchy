@@ -218,14 +218,14 @@ public class LongBitsetBloomFilter {
     }
 
     public static byte[] intToByteArrayLE(int val) {
-        return new byte[]{(byte) (val >> 0),
+        return new byte[]{(byte) (val),
                 (byte) (val >> 8),
                 (byte) (val >> 16),
                 (byte) (val >> 24)};
     }
 
     private static byte[] longToByteArrayLE(long val) {
-        return new byte[]{(byte) (val >> 0),
+        return new byte[]{(byte) (val),
                 (byte) (val >> 8),
                 (byte) (val >> 16),
                 (byte) (val >> 24),

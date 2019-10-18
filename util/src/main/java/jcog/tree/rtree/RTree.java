@@ -47,7 +47,7 @@ public class RTree<X> implements Space<X> {
 
     private static final MetalAtomicIntegerFieldUpdater<RTree> SIZE = new MetalAtomicIntegerFieldUpdater(RTree.class, "_size");
 
-    private volatile RNode<X> root;
+    private RNode<X> root;
 
     private volatile int _size;
 

@@ -141,10 +141,7 @@ public class MarkovSampler<T> {
         if (current == model.END) {
             if (loop == true) {
 
-                if (maxLength > 0 && chainSize >= maxLength)
-                    current = model.START.next(rng);
-                else
-                    current = model.START.next(rng);
+                current = model.START.next(rng);
 
                 tupleIndex = 0;
             }
@@ -162,8 +159,7 @@ public class MarkovSampler<T> {
         
         if (tupleIndex >= current.length()) {
 
-            if (maxLength > 0 && chainSize >= maxLength) current = current.next(rng);
-            else current = current.next(rng);
+            current = current.next(rng);
 
             tupleIndex = 0;
         }

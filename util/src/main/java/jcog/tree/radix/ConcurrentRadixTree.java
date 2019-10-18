@@ -44,6 +44,7 @@ public class ConcurrentRadixTree<X> extends MyRadixTree<X> {
         return writes.intValue();
     }
 
+    /** @noinspection LockAcquiredButNotSafelyReleased*/
     public final int acquireWriteLock() {
         writeLock.lock();
         return writes.incrementAndGet();
@@ -54,6 +55,7 @@ public class ConcurrentRadixTree<X> extends MyRadixTree<X> {
     }
 
 
+    /** @noinspection LockAcquiredButNotSafelyReleased*/
     public final void acquireReadLockIfNecessary() {
         if (readLock != null)
             readLock.lock();

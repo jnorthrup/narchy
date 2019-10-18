@@ -370,7 +370,7 @@ public class TemporalConstraints<E> {
                     
                     ci.set(k, cik);
                     
-                    Short iCon = TemporalConstraints.inverseConstraintsShort(cik);
+                    short iCon = TemporalConstraints.inverseConstraintsShort(cik);
                     cnk.set(i, iCon);
 
 

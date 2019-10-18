@@ -229,8 +229,7 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
     public int compareTo(HyperRectFloat o) {
         int a = min.compareTo(o.min);
         if (a != 0) return a;
-        int b = max.compareTo(o.max);
-        return b;
+        return max.compareTo(o.max);
     }
 
     @Override
@@ -244,12 +243,11 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
         if (min.equals(max)) {
             return min.toString();
         } else {
-            String sb = "(" +
+            return "(" +
                     min +
                     ',' +
                     max +
                     ')';
-            return sb;
         }
     }
 

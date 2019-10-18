@@ -6,7 +6,6 @@ import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 /** modified from https://github.com/fujiawu/burrows-wheeler-compression/blob/master/BurrowsWheeler.java */
 public class BurrowsWheeler {
@@ -90,8 +89,8 @@ public class BurrowsWheeler {
 
 		int[] next = new int[10];
 		int count = 0;
-		for (int i1 = 0; i1 < n; i1++) {
-			int removeAtIndex = positions.get(in[i1]).removeAtIndex(0);
+		for (byte b : in) {
+			int removeAtIndex = positions.get(b).removeAtIndex(0);
 			if (next.length == count) next = Arrays.copyOf(next, count * 2);
 			next[count++] = removeAtIndex;
 		}

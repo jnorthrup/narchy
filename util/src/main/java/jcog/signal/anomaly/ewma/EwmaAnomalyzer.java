@@ -54,7 +54,7 @@ public final class EwmaAnomalyzer {
     final EwmaParams params = new EwmaParams();
 
     public EwmaAnomalyzer() {
-        this.mean = params.initMeanEstimate;
+        this.mean = EwmaParams.initMeanEstimate;
     }
 
 
@@ -64,8 +64,8 @@ public final class EwmaAnomalyzer {
         //val params = getParams();
 
         double stdDev = sqrt(this.variance);
-        double weakDelta = params.weakSigmas * stdDev;
-        double strongDelta = params.strongSigmas * stdDev;
+        double weakDelta = EwmaParams.weakSigmas * stdDev;
+        double strongDelta = EwmaParams.strongSigmas * stdDev;
 
         Anomalysis.AnomalyThresholds thresholds = new Anomalysis.AnomalyThresholds(
                 this.mean + strongDelta,
@@ -86,7 +86,7 @@ public final class EwmaAnomalyzer {
         // https://en.wikipedia.org/wiki/Moving_average#Exponentially_weighted_moving_variance_and_standard_deviation
         // http://people.ds.cam.ac.uk/fanf2/hermes/doc/antiforgery/stats.pdf
         double diff = value - this.mean;
-        double alpha = params.alpha;
+        double alpha = EwmaParams.alpha;
         double incr = alpha * diff;
         this.mean += incr;
 

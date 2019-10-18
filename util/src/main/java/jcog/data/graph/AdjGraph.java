@@ -19,7 +19,6 @@
 package jcog.data.graph;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
 import jcog.func.TriConsumer;
 import jcog.func.TriFunction;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;

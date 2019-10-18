@@ -87,8 +87,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     private static int sizePlusFiftyPercent(int oldSize) {
-        int result = oldSize + (oldSize / 2) + 1;
-        return result;
+        return oldSize + (oldSize / 2) + 1;
         //return result < oldSize ? (Integer.MAX_VALUE - 8) : result;
     }
 
@@ -273,7 +272,7 @@ public class FasterList<X> extends FastList<X> {
     public int indexOf(int atOrAfter, IntPredicate p) {
         int s = size;
         if (s > 0) {
-            return IntStream.range(Math.max(0, atOrAfter), s).filter(p::test).findFirst().orElse(-1);
+            return IntStream.range(Math.max(0, atOrAfter), s).filter(p).findFirst().orElse(-1);
         }
         return -1;
     }
@@ -748,7 +747,7 @@ public class FasterList<X> extends FastList<X> {
         //if (n > 0) {
         X[] items = this.items;
         int size = this.size;
-        if (n >= 0) System.arraycopy(x, 0, items, size + 0, n);
+        if (n >= 0) System.arraycopy(x, 0, items, size, n);
         this.size += n;
         //}
     }

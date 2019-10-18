@@ -1494,7 +1494,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         }
     }
 
-    private class DescendantKeys extends LazyIterator<AbstractBytes> implements Iterable<AbstractBytes> {
+    private static class DescendantKeys extends LazyIterator<AbstractBytes> implements Iterable<AbstractBytes> {
         private final AbstractBytes startKey;
         private final Node startNode;
         private Iterator<NodeKeyPair> descendantNodes;
@@ -1520,10 +1520,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                 if (value != null) {
 
 
-                    AbstractBytes optionallyTransformedKey = transformKeyForResult(nodeKeyPair.key);
-
-
-                    return optionallyTransformedKey;
+                    return transformKeyForResult(nodeKeyPair.key);
                 }
             }
 

@@ -5,15 +5,12 @@ package jcog.event;
 import jcog.exe.Exe;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.*;
-import java.util.stream.Stream;
 
 /**
  * notifies subscribers when a value is emitted (publisher)
@@ -45,9 +42,7 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
 
 
         for (Field field : fieldCache.computeIfAbsent(c, (cc) ->
-                {
-                    return Arrays.stream(cc.getFields()).filter(x -> x.getType() == Topic.class).toArray(Field[]::new);
-                }
+            Arrays.stream(cc.getFields()).filter(x -> x.getType() == Topic.class).toArray(Field[]::new)
         )) {
             f.accept(field);
         }

@@ -110,7 +110,7 @@ public class Configuration {
         );
         
         this.evaluator = new CachedTreeEvaluator();
-        this.evaluator.setup(Collections.<String, String>emptyMap());
+        this.evaluator.setup(Collections.emptyMap());
         
         this.outputFolderName = ".";
         
@@ -137,11 +137,11 @@ public class Configuration {
         
         this.postprocessorParameters = new HashMap<>();
         this.postprocessor = new BasicPostprocessor();
-        this.postprocessor.setup(Collections.<String, String>emptyMap());
+        this.postprocessor.setup(Collections.emptyMap());
          
         this.bestSelectorParameters = new HashMap<>();
         this.bestSelector = new BasicLearningBestSelector();
-        this.bestSelector.setup(Collections.<String, String>emptyMap());
+        this.bestSelector.setup(Collections.emptyMap());
     }      
     
     /**
@@ -376,7 +376,7 @@ public class Configuration {
 
     public void setBestSelector(BestSelector bestSelector) {
         this.bestSelector = bestSelector;
-        this.bestSelector.setup(Collections.<String, String>emptyMap());
+        this.bestSelector.setup(Collections.emptyMap());
     }
     
     public Map<String, String> getBestSelectorParameters() {

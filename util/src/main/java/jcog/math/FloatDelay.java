@@ -27,8 +27,7 @@ public class FloatDelay implements FloatSupplier {
 
     @Override
     public float asFloat() {
-        float v = data[data.length-1];
-        return v;
+        return data[data.length-1];
     }
 
     public void next() {

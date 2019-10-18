@@ -1,10 +1,3 @@
-
-//     B, (X ==> A), --is(B,"==>"), --isVar(X) |- unisubst(X,A,B,"$"), (Belief:AbductionPP, Time:TaskEvent)
-//     B, (X ==> A), --is(B,"==>"), --isVar(X) |- unisubst(X,A,B,"$"), (Belief:AbductionNN, Time:TaskEvent)
-//
-//     B, (X ==> A), --is(B,"==>"), --isVar(X) |- unisubst(X,A,B,"$"), (Goal:DeductionPP, Time:TaskEvent)
-//     B, (X ==> A), --is(B,"==>"), --isVar(X) |- unisubst(X,A,B,"$"), (Goal:DeductionNN, Time:TaskEvent)
-
 post {
     B, (X ==> A), --is(B,"==>"), --isVar(X) |- unisubst(X,A,B,"$"), (Belief:PostWeak, Time:TaskEvent)
 
@@ -19,11 +12,6 @@ post_antigoal {
     //SUSPECT
      B, (X ==> A), --is(B,"==>"), --isVar(X)   |- --unisubst(X,A,B,"$"), (Goal:PostNP, Time:TaskEvent)
        B, (X ==> A), --is(B,"==>"), --isVar(X) |- --unisubst(X,A,B,"$"), (Goal:PostNP, Time:TaskImmediate)
-         //softer:
-         //B, (X ==> A), --is(B,"==>"), --isVar(X)   |- unisubst((polarizeTask(B) && --X),A,B,"$"), (Goal:PostNP, Time:TaskEvent)
-    //weak antigoal SUSPECT
-//     B, (X ==> A), --is(B,"==>"), --isVar(X)   |- --unisubst(X,A,B,"$"), (Goal:PostWeakNP, Time:TaskEvent)
-//       B, (X ==> A), --is(B,"==>"), --isVar(X) |- --unisubst(X,A,B,"$"), (Goal:PostWeakNP, Time:TaskImmediate)
 }
 
 pre {
@@ -36,18 +24,8 @@ pre {
            B, (--X ==> C), --is(X,"--"),--is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionRecursiveNN,  Time:TaskEvent)
            (--X ==> C), B, --is(X,"--"),--is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionRecursiveNN,                   Time:BeliefEvent)
 
-        B, (  X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:DesireWeakPPX, Time:TaskEvent)
-        B, (--X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:DesireWeakNPX, Time:TaskEvent)
-            B, (  X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  --unisubst(C,X,B,"$"),  (Goal:DesireWeakPNX, Time:TaskEvent)
-            B, (--X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  --unisubst(C,X,B,"$"),  (Goal:DesireWeakNNX, Time:TaskEvent)
-
-//        B, (  X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Belief:PrePP, Time:TaskEvent)
-//        B, (--X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Belief:PreNP, Time:TaskEvent)
-//        //goal prediction
-//        B, (  X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:PreWeakPP, Time:TaskEvent)
-//        B, (--X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:PreWeakNP, Time:TaskEvent)
-
-        //induction antigoal not valid since it will assume only one precondition polarity applies yet it may be the case that both pos and neg precondition apply
+    B, (  X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:DesireWeakPPX, Time:TaskEvent)
+    B, (--X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:DesireWeakNPX, Time:TaskEvent)
 }
 
 
@@ -58,7 +36,11 @@ impl_question_unify_subj {
 }
 impl_question_unify_pred {
       B,     (C ==> A), task("?@"), --is(B,"==>") |- unisubst((C ==> A),A,B,novel), (Punctuation:Question, Time:Task)
-      B,     (C ==> A), task("?@"), --is(C,{"--","#"}), --is(B,"==>") |- unisubst(C,A,B,novel), (Punctuation:Question, Time:TaskEvent)
+}
+impl_question_unify_subj_component {
       B,     (C ==> A), task("?@"), --is(C,{"--","#"}), --is(B,"==>") |- unisubst(A,C,B,novel), (Punctuation:Question, Time:TaskEvent)
         B, (--C ==> A), task("?@"), --is(C,{"--","#"}), --is(B,"==>") |- unisubst(A,C,B,novel), (Punctuation:Question, Time:TaskEvent)
+}
+impl_question_unify_pred_component {
+      B,     (C ==> A), task("?@"), --is(C,{"--","#"}), --is(B,"==>") |- unisubst(C,A,B,novel), (Punctuation:Question, Time:TaskEvent)
 }

@@ -27,7 +27,6 @@ package jcog.learn.markov;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Vector;
-import java.util.stream.IntStream;
 
 /**
  * This is a Hidden Markov Model implementation which internally provides

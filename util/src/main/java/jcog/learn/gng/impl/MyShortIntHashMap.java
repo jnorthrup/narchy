@@ -236,7 +236,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         int result = 0;
         if (this.sentinelValues != null) {
             if (this.sentinelValues.containsZeroKey) {
-                result += 0 ^ this.sentinelValues.zeroValue;
+                result += this.sentinelValues.zeroValue;
             }
 
             if (this.sentinelValues.containsOneKey) {
@@ -650,11 +650,10 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
             int index = this.probe(key);
             if (this.keys[index] == key) {
                 this.values[index] += toBeAdded;
-                return this.values[index];
             } else {
                 this.addKeyValueAtIndex(key, toBeAdded, index);
-                return this.values[index];
             }
+            return this.values[index];
         }
     }
 

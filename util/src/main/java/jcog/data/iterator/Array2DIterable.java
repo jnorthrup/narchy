@@ -37,8 +37,8 @@ public class Array2DIterable<X> implements Iterable<X> {
         int area = rows * cols;
         order = new FasterList(area);
 
-        for (int j = 0; j < rows; j++) {
-            order.addAll(Arrays.asList(x[j]).subList(0, cols));
+        for (X[] xes : x) {
+            order.addAll(Arrays.asList(xes).subList(0, cols));
         }
 
         

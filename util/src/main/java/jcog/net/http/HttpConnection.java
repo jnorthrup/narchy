@@ -17,7 +17,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.*;
 import java.util.regex.Matcher;
-import java.util.stream.Stream;
 
 /**
  * @author Joris

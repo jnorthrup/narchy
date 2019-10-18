@@ -3,8 +3,6 @@ package jcog.learn.ntm.memory;
 import jcog.learn.ntm.control.UVector;
 import jcog.learn.ntm.control.Unit;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 /** TODO extend UVector for 'read' */

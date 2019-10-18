@@ -65,7 +65,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
             new MetalAtomicIntegerFieldUpdater(SortedArray.class, "size");
     private static final float GROWTH_RATE = 1.25f;
     public /*volatile*/ X[] items = (X[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
-    protected volatile int size;
+    protected int size;
 
 
     protected static int grow(int oldSize) {
@@ -448,7 +448,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         if (s > 0) {
             X[] ii = items;
             //(X) ITEM.getOpaque(ii,i)
-            return Arrays.stream(ii, 0, s).filter(Objects::nonNull).allMatch(action::test);
+            return Arrays.stream(ii, 0, s).filter(Objects::nonNull).allMatch(action);
         }
         return true;
     }

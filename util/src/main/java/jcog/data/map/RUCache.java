@@ -35,14 +35,14 @@ public class RUCache<K, V> {
         synchronized (mru) {
             return mru.compute(k, (key, value) -> {
                 V value1 = value;
-                if (value1 != null)
-                    return value1;
+                if (value1 != null) {
+				}
                 else {
                     if ((value1 = lru.remove(key)) != null)
                         mru.put(key, value1);
-                    return value1;
-                }
-            });
+				}
+				return value1;
+			});
         }
     }
 

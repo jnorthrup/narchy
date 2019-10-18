@@ -1,7 +1,5 @@
 package jcog.learn.deep;
 
-import java.util.Arrays;
-
 public class LogisticRegression {
     public int n_in;
     public int n_out;

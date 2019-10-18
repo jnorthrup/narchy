@@ -179,8 +179,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     public int compareTo(RectLongND o) {
         int a = min.compareTo(o.min);
         if (a != 0) return a;
-        int b = max.compareTo(o.max);
-        return b;
+        return max.compareTo(o.max);
     }
 
     @Override
@@ -194,12 +193,11 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
         if (min.equals(max)) {
             return min.toString();
         } else {
-            String sb = "(" +
+            return "(" +
                     min +
                     ',' +
                     max +
                     ')';
-            return sb;
         }
     }
 

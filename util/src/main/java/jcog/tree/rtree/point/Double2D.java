@@ -104,8 +104,7 @@ public class Double2D implements HyperPoint, Comparable<Double2D> {
     public int compareTo( Double2D o) {
         int a = Double.compare(x, o.x);
         if (a != 0) return a;
-        int b = Double.compare(y, o.y);
-        return b;
+        return Double.compare(y, o.y);
     }
 
     public static final class Builder implements Function<Double2D, HyperRegion> {

@@ -784,9 +784,7 @@ public class DataSet implements Serializable {
             Collections.sort(zoneRanges);
              
             
-            int overallEOAA = (int) Arrays.stream(ranges).filter(extractedBounds -> {
-                return zoneRanges.stream().takeWhile(expectedBounds -> expectedBounds.start < extractedBounds.end).anyMatch(extractedBounds::overlaps);
-            }).count();
+            int overallEOAA = (int) Arrays.stream(ranges).filter(extractedBounds -> zoneRanges.stream().takeWhile(expectedBounds -> expectedBounds.start < extractedBounds.end).anyMatch(extractedBounds::overlaps)).count();
             return overallEOAA;
         }
 

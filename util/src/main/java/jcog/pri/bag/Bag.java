@@ -239,11 +239,10 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
         return i[0] < target.length ? Arrays.copyOf(target, i[0]) : target;
     }
 
-    public @Nullable <X> X reduce(BiFunction<Y,X,X> each, X init) {
+    public @Nullable X reduce(BiFunction<Y,X,X> each, X init) {
         X x = init;
-        for (Y y : this) {
+        for (Y y : this)
             x = each.apply(y, x);
-        }
         return x;
     }
 

@@ -374,7 +374,7 @@ public class Grok implements Serializable {
         int index = 0;
         /** flag for infinite recurtion */
         int iterationLeft = 1000;
-        Boolean continueIteration = true;
+        boolean continueIteration = true;
 
 
         String namedRegex = pattern;

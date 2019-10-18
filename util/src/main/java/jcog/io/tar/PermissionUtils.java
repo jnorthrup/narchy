@@ -5,10 +5,7 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Helps dealing with file permissions.
@@ -82,7 +79,7 @@ public class PermissionUtils {
 	}
 
 	private static Set<StandardFilePermission> readStandardPermissions(File f) {
-		Set<StandardFilePermission> permissions = new HashSet<>();
+		Set<StandardFilePermission> permissions = EnumSet.noneOf(StandardFilePermission.class);
 		if(f.canExecute()) {
 			permissions.add(StandardFilePermission.EXECUTE);
 		}
