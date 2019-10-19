@@ -41,18 +41,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-
-    <!--  <repositories>-->
-    <!--    <repository>-->
-    <!--      <id>jcenter</id>-->
-    <!--      <url>http://jcenter.bintray.com</url>-->
-    <!--    </repository>-->
-    <!--    <repository>-->
-    <!--      <id>jenkins-ci</id>-->
-    <!--      <url>http://repo.jenkins-ci.org/releases</url>-->
-    <!--    </repository>-->
-    <!--  </repositories>-->
     <build>
         <plugins>
             <plugin>
@@ -68,7 +56,7 @@
             </plugin>
 
 
-            <plugin>
+            <plugin><!--ghetto shade plugin, needs -cp lib/*-->
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.1.1</version>
                 <executions>
@@ -84,43 +72,11 @@
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <!-- <minimizeJar>true</minimizeJar> -->
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <include>META-INF/BenchmarkList</include>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                            <!--<transformers>
-                              <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                              <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                <mainClass>com.stackoverflow.nullpointer.expression.SwitchExpressions</mainClass>
-                              </transformer>
-                            </transformers>-->
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <release>13</release>
-                    <target>13</target>
+                    <release>12</release>
+                     <target>12</target>
                     <useIncrementalCompilation>true</useIncrementalCompilation>
                 </configuration>
             </plugin>

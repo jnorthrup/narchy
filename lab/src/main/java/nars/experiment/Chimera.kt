@@ -28,7 +28,7 @@ object Chimera {
         //            reduce con io
         System.setProperty("avg.err", "false")
 
-        GameX.runRT(FPS * thinkPerFrame, { nar: NAR ->
+        GameX.runRT(FPS * thinkPerFrame, Function{ nar: NAR ->
             /** "withg" is unnecessary here, but can be used to scope an object variable as "this" */
             with(nar) {
                 //destructuring on RHS of a Pair

@@ -3,18 +3,7 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>13</source>
-                    <target>13</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+
 
     <parent>
         <groupId>automenta</groupId>
@@ -22,13 +11,6 @@
         <version>1.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-
-    <!--    <repositories>-->
-    <!--        <repository>-->
-    <!--            <id>teavm-dev</id>-->
-    <!--            <url>https://dl.bintray.com/konsoletyper/teavm</url>-->
-    <!--        </repository>-->
-    <!--    </repositories>-->
 
     <groupId>narchy</groupId>
     <artifactId>os</artifactId>
