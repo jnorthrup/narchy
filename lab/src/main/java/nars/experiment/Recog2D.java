@@ -250,7 +250,7 @@ public class Recog2D extends GameX {
     public static void main(String[] arg) {
 
 
-        GameX.runRT((n) -> {
+        GameX.runRT(FPS*2, (n) -> {
 
             Recog2D a = new Recog2D(n);
             n.add(a);
@@ -258,7 +258,7 @@ public class Recog2D extends GameX {
 
             return a;
 
-        }, FPS*2);
+        });
     }
 
 //    public static class Training {

@@ -361,14 +361,14 @@ public class Jake2Agent extends GameX implements Runnable {
 
     public static void main(String[] args) {
 
-        runRT(nar1 -> {
+        runRT(FPS, nar1 -> {
             try {
                 return new Jake2Agent(nar1);
             } catch (Narsese.NarseseException e) {
                 e.printStackTrace();
                 return null;
             }
-        }, FPS);
+        });
     }
 
 }

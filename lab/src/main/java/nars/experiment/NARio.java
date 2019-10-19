@@ -230,7 +230,7 @@ public class NARio extends GameX {
 	public static void main(String[] args) {
 
 
-		runRT(n -> {
+		runRT(2 * fps, n -> {
 
 
             NARio x = new NARio(n);
@@ -242,7 +242,7 @@ public class NARio extends GameX {
 			return x;
 
 
-		}, 2 * fps);
+		});
 
 
 	}

@@ -26,14 +26,14 @@ public class SideCraft extends GameX {
     private final SideScrollMinicraft craft;
 
     public static void main(String[] args) {
-        runRT(nar1 -> {
+        runRT(30, nar1 -> {
             try {
                 return new SideCraft(nar1);
             } catch (Narsese.NarseseException e) {
                 e.printStackTrace();
                 return null;
             }
-        }, 30);
+        });
     }
 
     public SideCraft(NAR nar) throws Narsese.NarseseException {

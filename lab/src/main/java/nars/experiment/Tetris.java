@@ -181,14 +181,14 @@ public class Tetris extends GameX {
     public static void main(String[] args) {
 
 
-        GameX.runRT(n -> {
+        GameX.runRT(FPS * thinkPerFrame, n -> {
 
             var t = new Tetris(n, tetris_width, tetris_height);
             n.add(t);
 
             window(new VectorSensorChart(t.gridVision, t).withControls(), 400, 800);
 
-        }, FPS * thinkPerFrame);
+        });
 
 
     }
