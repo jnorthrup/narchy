@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static nars.Op.CONJ;
 import static nars.Op.INT;
@@ -208,7 +209,7 @@ public enum Arithmeticize {
         int[] ii = iii.val;
 
         FasterList<ArithmeticOp> ops = new FasterList(2);
-        IntObjectHashMap<FasterList<Pair<Term, Function<Term, Term>>>> eqMods = new IntObjectHashMap<>(ii.length);
+        IntObjectHashMap<FasterList<Pair<Term, UnaryOperator<Term>>>> eqMods = new IntObjectHashMap<>(ii.length);
 
         for (int bIth = 0; bIth < ii.length; bIth++) {
             int b = ii[bIth];
@@ -265,7 +266,7 @@ public enum Arithmeticize {
         return ops.isEmpty() ? ArithmeticOp.EmptyArray : ops.toArray(ArithmeticOp.EmptyArray);
     }
 
-    private static FasterList<Pair<Term, Function<Term, Term>>> maybe(IntObjectHashMap<FasterList<Pair<Term, Function<Term, Term>>>> mods, int ia) {
+    private static FasterList<Pair<Term, UnaryOperator<Term>>> maybe(IntObjectHashMap<FasterList<Pair<Term, UnaryOperator<Term>>>> mods, int ia) {
         return mods.getIfAbsentPut(ia, FasterList::new);
     }
 
@@ -283,9 +284,9 @@ public enum Arithmeticize {
 
     static class BaseEqualExpressionArithmeticOp extends ArithmeticOp {
         final int base;
-        private final Pair<Term, Function<Term, Term>>[] mods;
+        private final Pair<Term, UnaryOperator<Term>>[] mods;
 
-        BaseEqualExpressionArithmeticOp(int base, Pair<Term, Function<Term, Term>>[] mods) {
+        BaseEqualExpressionArithmeticOp(int base, Pair<Term, UnaryOperator<Term>>[] mods) {
             super(mods.length);
             this.base = base;
             this.mods = mods;
@@ -305,7 +306,7 @@ public enum Arithmeticize {
 
             Term yy = x.replace(baseTerm, var);
 
-            for (Pair<Term, Function<Term, Term>> s : mods) {
+            for (Pair<Term, UnaryOperator<Term>> s : mods) {
                 Term s0 = s.getOne();
                 if (anon != null)
                     s0 = anon.put(s0);

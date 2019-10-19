@@ -1216,14 +1216,14 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public final NAR outputBinary(File f, boolean append) throws IOException {
-        return outputBinary(f, append, Function.identity());
+        return outputBinary(f, append, (Predicate<Task>) Function.identity());
     }
 
     public final NAR outputBinary(File f, boolean append, Predicate<Task> each) throws IOException {
         return outputBinary(f, append, (Task t) -> each.test(t) ? t : null);
     }
 
-    public NAR outputBinary(File f, boolean append, Function<Task, Task> each) throws IOException {
+    public NAR outputBinary(File f, boolean append, UnaryOperator<Task> each) throws IOException {
         FileOutputStream f1 = new FileOutputStream(f, append);
         OutputStream ff = new GZIPOutputStream(f1, IO.gzipWindowBytesDefault);
         outputBinary(ff, each);
@@ -1244,7 +1244,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * the each function allows transforming each task to an optional output form.
      * if this function returns null it will not output that task (use as a filter).
      */
-    public NAR outputBinary(OutputStream o, Function<Task, Task> each) {
+    public NAR outputBinary(OutputStream o, UnaryOperator<Task> each) {
 
         Util.time(logger, "outputBinary", () -> {
 
@@ -1284,7 +1284,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         return this;
     }
 
-    public NAR outputText(OutputStream o, Function<Task, Task> each) {
+    public NAR outputText(OutputStream o, UnaryOperator<Task> each) {
 
 
         PrintStream ps = new PrintStream(o);
@@ -1316,7 +1316,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         return output(new BufferedOutputStream(new FileOutputStream(o), IO.outputBufferBytesDefault), binary);
     }
 
-    public NAR output(File o, Function<Task, Task> f) throws FileNotFoundException {
+    public NAR output(File o, UnaryOperator<Task> f) throws FileNotFoundException {
         return outputBinary(new BufferedOutputStream(new FileOutputStream(o), IO.outputBufferBytesDefault), f);
     }
 

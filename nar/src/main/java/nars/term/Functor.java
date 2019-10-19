@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 import static nars.Op.*;
 import static nars.term.Terms.atomOrNull;
@@ -147,15 +148,15 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
     /**
      * one argument functor (convenience method)
      */
-    public static LambdaFunctor f1(Atom termAtom, Function<Term, Term> ff) {
+    public static LambdaFunctor f1(Atom termAtom, UnaryOperator<Term> ff) {
         return f(termAtom, 1, (tt) -> ff.apply(tt.sub(0)));
     }
 
-    public static LambdaFunctor f1(String termAtom, Function<Term, Term> ff) {
+    public static LambdaFunctor f1(String termAtom, UnaryOperator<Term> ff) {
         return f1(fName(termAtom), /*safeFunctor*/(ff));
     }
 
-    public static AbstractInlineFunctor f1Inline(String termAtom, Function<Term, Term> ff) {
+    public static AbstractInlineFunctor f1Inline(String termAtom, UnaryOperator<Term> ff) {
         return new AbstractInlineFunctor1.MyAbstractInlineFunctor1Inline(termAtom, ff);
     }
 
@@ -199,7 +200,7 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
     }
 
 
-//    private static Function<Term, Term> safeFunctor(Function<Term, Term> ff) {
+//    private static UnaryOperator<Term> safeFunctor(UnaryOperator<Term> ff) {
 //        return x -> x == null ? null : ff.apply(x);
 //    }
 

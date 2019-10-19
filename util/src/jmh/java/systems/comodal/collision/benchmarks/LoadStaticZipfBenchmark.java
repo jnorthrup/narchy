@@ -28,7 +28,7 @@ public class LoadStaticZipfBenchmark {
   // have to sleep for at least 1ms, so amortize 10 microsecond disk calls,
   // by sleeping (10 / 1000.0)% of calls.
   private static final double SLEEP_RAND = 10 / 1000.0;
-  private static final Function<Long, Long> LOADER = num -> {
+  private static final UnaryOperator<Long> LOADER = num -> {
     amortizedSleep();
     return punishMiss(num);
   };
@@ -40,7 +40,7 @@ public class LoadStaticZipfBenchmark {
       "Collision_Aggressive"
   })
   private BenchmarkFunctionFactory cacheType;
-  private Function<Long, Long> benchmarkFunction;
+  private UnaryOperator<Long> benchmarkFunction;
   private Long[] keys = new Long[SIZE];
 
   private static void amortizedSleep() {
@@ -95,7 +95,7 @@ public class LoadStaticZipfBenchmark {
     System.out.println("Estimating memory usage for " + cacheType);
     final double baseUsage = memEstimate(rt);
     System.out.format("%.2fmB base usage.%n", baseUsage);
-    final Function<Long, Long> benchmarkFunction = cacheFactory.create();
+    final UnaryOperator<Long> benchmarkFunction = cacheFactory.create();
     for (final Long key : keys) {
       if (!key.equals(benchmarkFunction.apply(key))) {
         throw new IllegalStateException(cacheType + " returned invalid value.");
@@ -136,7 +136,7 @@ public class LoadStaticZipfBenchmark {
   public enum BenchmarkFunctionFactory {
     Cache2k {
       @Override
-      public Function<Long, Long> create() {
+      public UnaryOperator<Long> create() {
         final Cache<Long, Long> cache = Cache2kBuilder
             .of(Long.class, Long.class)
             .disableStatistics(true)
@@ -153,7 +153,7 @@ public class LoadStaticZipfBenchmark {
     },
     Caffeine {
       @Override
-      public Function<Long, Long> create() {
+      public UnaryOperator<Long> create() {
         final LoadingCache<Long, Long> cache = com.github.benmanes.caffeine.cache.Caffeine
             .newBuilder()
             .initialCapacity(CAPACITY)
@@ -164,7 +164,7 @@ public class LoadStaticZipfBenchmark {
     },
     Collision {
       @Override
-      public Function<Long, Long> create() {
+      public UnaryOperator<Long> create() {
         final CollisionCache<Long, Long> cache = startCollision()
             .buildSparse(5.0);
         System.out.println(cache);
@@ -173,7 +173,7 @@ public class LoadStaticZipfBenchmark {
     },
     Collision_Packed {
       @Override
-      public Function<Long, Long> create() {
+      public UnaryOperator<Long> create() {
         final CollisionCache<Long, Long> cache = startCollision()
                 .buildPacked();
         System.out.println(cache);
@@ -182,7 +182,7 @@ public class LoadStaticZipfBenchmark {
     },
     Collision_Aggressive {
       @Override
-      public Function<Long, Long> create() {
+      public UnaryOperator<Long> create() {
         final CollisionCache<Long, Long> cache = startCollision()
             .buildSparse(3.0);
         System.out.println(cache);
@@ -190,7 +190,7 @@ public class LoadStaticZipfBenchmark {
       }
     };
 
-    public abstract Function<Long, Long> create();
+    public abstract UnaryOperator<Long> create();
   }
 
   @State(Scope.Thread)

@@ -37,8 +37,8 @@ public class NARAudio extends WaveIn {
 //        }
         CircularFloatBuffer hearBuf = new CircularFloatBuffer(in.data);
         /* hack */
-        FreqVectorSensor hear = new FreqVectorSensor(hearBuf /* hack */,
-                f -> $.inh(id, $.the(f)), 512, 16, nar);
+        FreqVectorSensor hear = new FreqVectorSensor(nar, hearBuf /* hack */,
+                512, 16, f -> $.inh(id, $.the(f)));
         h.addSensor(hear);
 
         //addSensor(hear);

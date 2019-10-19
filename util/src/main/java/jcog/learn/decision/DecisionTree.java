@@ -13,10 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -55,18 +52,20 @@ public class DecisionTree<K, V> {
     /**
      * Returns Label if data is homogeneous.
      */
-    protected static <K, V> V label(K value, Stream<Function<K, V>> data, float homogenityPercentage) {
+    protected static <K, V> V label(V value, float homogenityPercentage, Stream<UnaryOperator<V>> data) {
+        V result = null;
 
         Map<V, Long> labelCount = data.collect(groupingBy((x) -> x.apply(value), counting()));
 
         long totalCount = labelCount.values().stream().mapToLong(x -> x).sum();
-        for (Map.Entry<V, Long> e: labelCount.entrySet()) {
+        for (Map.Entry<V, Long> e : labelCount.entrySet()) {
             long nbOfLabels = e.getValue();
             if ((nbOfLabels / (double) totalCount) >= homogenityPercentage) {
-                return e.getKey();
+                result = e.getKey();
+                break;
             }
         }
-        return null;
+        return result;
     }
 
     protected static <K, V> Stream<List<Function<K, V>>> split(Predicate<Function<K, V>> p, List<Function<K, V>> data) {
@@ -201,9 +200,8 @@ public class DecisionTree<K, V> {
 
 
         V currentNodeLabel;
-        if ((currentNodeLabel = label(key, d.get(), depthToPrecision.valueOf(currentDepth))) != null) {
+        if ((currentNodeLabel = (V) label((V)key, depthToPrecision.valueOf(currentDepth),  (Stream ) d.get())) != null)
             return leaf(currentNodeLabel);
-        }
 
         boolean stoppingCriteriaReached = currentDepth >= maxDepth;
         if (stoppingCriteriaReached) {

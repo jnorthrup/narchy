@@ -174,8 +174,8 @@ public class Jake2Agent extends GameX implements Runnable {
 
         SpaceGraph.window(grid(rgbView, rgbAE.newChart(), depthView ), 500, 500);
 
-        hear = new FreqVectorSensor(new CircularFloatBuffer(8*1024),
-                f->$.inh($.the(f), "hear"), 512,16, nar);
+        hear = new FreqVectorSensor(nar, new CircularFloatBuffer(8*1024),
+                512, 16, f->$.inh($.the(f), "hear"));
         addSensor(hear);
         WaveBitmap hearView = new WaveBitmap(hear.buf, 300, 64);
         onFrame(hearView::update);

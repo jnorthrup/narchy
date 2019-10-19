@@ -35,7 +35,7 @@ public class LinearSplit<X> implements Split<X> {
 
     }
     @Override
-    public RNode<X> split(X x, RLeaf<X> leaf, Spatialization<X> m) {
+    public RNode<X> apply(X x, RLeaf<X> leaf, Spatialization<X> m) {
 
 
 

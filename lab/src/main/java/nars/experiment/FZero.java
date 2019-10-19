@@ -164,7 +164,7 @@ public class FZero extends GameX {
 
 
         int angles = 8;
-        DigitizedScalar ang = senseAngle(()->(float)fz.playerAngle, angles, Atomic.the("ang"),
+        DigitizedScalar ang = senseAngle(angles, Atomic.the("ang"), ()->(float)fz.playerAngle,
                 a->$.inh(id, $.p($.the("ang"), $.the(a))));
         ang.resolution(r);
 //        window(new VectorSensorView(ang,1, angles, this).withControls(), 400, 400);
@@ -445,9 +445,9 @@ public class FZero extends GameX {
                 //$.func("rotate", id),
                 //pn -> CONJ.the(XTERNAL, $.the("rotate"), $.func("rotate", id).negIf(!pn) ),
                 //pn -> CONJ.the(XTERNAL, $.func("rotate", id),
-                pn -> $.inh(pn ? "left" : "right", id)
+                fair, pn -> $.inh(pn ? "left" : "right", id)
                 //)
-                , fair, d);
+                , d);
 
         A.resolution(0.04f);
 

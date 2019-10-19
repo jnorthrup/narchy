@@ -104,7 +104,7 @@ public abstract class EventIntroduction extends Introduction {
         return applyUnnormalized(x, volMax, w);
     }
 
-//    public static Term conjSeq(Term x, int volMax, Term subj, Term pred, ObjectIntToObjectFunction<Term, Term> each) {
+//    public static Term conjSeq(Term x, int volMax, Term subj, Term pred, ObjectIntToObjectUnaryOperator<Term> each) {
 //        int dt = x.dt();
 //        if (dt == DTERNAL) dt = 0; //HACK
 //        Term subjFactored = apply(subj, each,volMax - pred.volume() - 1);
@@ -118,7 +118,7 @@ public abstract class EventIntroduction extends Introduction {
 //            return x; //unchanged
 //    }
 
-//    public static Term impl(Term x, int volMax, Term subj, Term pred, ObjectIntToObjectFunction<Term, Term> each) {
+//    public static Term impl(Term x, int volMax, Term subj, Term pred, ObjectIntToObjectUnaryOperator<Term> each) {
 //        int dt = x.dt();
 //        if (dt == DTERNAL) dt = 0; //HACK
 //

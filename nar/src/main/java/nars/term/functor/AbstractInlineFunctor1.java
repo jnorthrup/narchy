@@ -7,6 +7,7 @@ import nars.term.atom.Bool;
 import nars.term.util.transform.InstantFunctor;
 
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 public abstract class AbstractInlineFunctor1 extends AbstractInlineFunctor {
 
@@ -28,9 +29,9 @@ public abstract class AbstractInlineFunctor1 extends AbstractInlineFunctor {
     }
 
     public static class MyAbstractInlineFunctor1Inline extends AbstractInlineFunctor1 {
-        final Function<Term, Term> ff;
+        final UnaryOperator<Term> ff;
 
-        public MyAbstractInlineFunctor1Inline(String termAtom, Function<Term, Term> ff) {
+        public MyAbstractInlineFunctor1Inline(String termAtom, UnaryOperator<Term> ff) {
             super(termAtom);
             this.ff = ff;
         }

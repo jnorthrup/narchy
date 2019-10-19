@@ -243,7 +243,7 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
     }
 
 //    /** TODO test */
-//    public boolean compute(/*X*/X key, Function<Y,Y> f) {
+//    public boolean compute(/*X*/X key, UnaryOperator<Y> f) {
 //        final boolean[] result = {false};
 //        map.compute(key, (k, v)->{
 //

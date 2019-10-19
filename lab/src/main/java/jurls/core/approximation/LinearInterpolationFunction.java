@@ -8,12 +8,13 @@ package jurls.core.approximation;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  *
  * @author me
  */
-public class LinearInterpolationFunction implements ParameterizedFunction, Function<Double,Double> {
+public class LinearInterpolationFunction implements ParameterizedFunction, UnaryOperator< Double> {
     
     protected int numPoints = 64;
     protected TreeMap<Double,Double> evidence = new TreeMap();

@@ -855,12 +855,12 @@ public abstract class GameX extends Game {
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable IntIntToObjectFunction<nars.term.Term> id, C bc) {
-        Bitmap2DSensor c = new Bitmap2DSensor(id, bc, nar());
+        Bitmap2DSensor c = new Bitmap2DSensor(nar(), bc, id);
         addSensor(c);
         return c;
     }
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable IntIntToObjectFunction<nars.term.Term> id, C bc, float defaultFreq) {
-        Bitmap2DSensor c = new Bitmap2DSensor(id, bc, defaultFreq, nar());
+        Bitmap2DSensor c = new Bitmap2DSensor(nar(), defaultFreq, bc, id);
         addSensor(c);
         return c;
     }

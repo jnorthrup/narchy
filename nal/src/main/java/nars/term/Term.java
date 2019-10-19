@@ -271,7 +271,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     }
 
     default boolean pathsTo(Predicate<Term> selector, Predicate<Term> descendIf, BiPredicate<ByteList, Term> receiver) {
-        return pathsTo((Function<Term, Term>) (x) -> selector.test(x) ? x : null, descendIf, receiver);
+        return pathsTo((UnaryOperator<Term>) (x) -> selector.test(x) ? x : null, descendIf, receiver);
     }
 
 

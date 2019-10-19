@@ -13,7 +13,7 @@ public class SelectorSensor extends VectorSensor {
 
     final List<ComponentSignal> choices;
 
-    public SelectorSensor(IntSupplier value, int[] values, IntFunction<Term> termizer, NAR n) {
+    public SelectorSensor(NAR n, int[] values, IntSupplier value, IntFunction<Term> termizer) {
         super(termizer.apply(values.length) /* n+1*/, n);
         assert(values.length > 1);
         choices = new FasterList<>(values.length);

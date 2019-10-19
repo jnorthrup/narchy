@@ -46,6 +46,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.Set;
 import java.util.*;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -96,8 +97,8 @@ public class KIF implements Iterable<Task> {
 
     private final KIFParser kif;
 
-    private final transient Map<Term, FnDef> fn = new HashMap();
-    private final Set<Term> symmetricRelations = new HashSet();
+    private final transient Map<Term, FnDef> fn = new HashMap<>();
+    private final Set<Term> symmetricRelations = new HashSet<>();
     {
         symmetricRelations.add(SYMMETRIC_RELATION);
     }
@@ -234,7 +235,7 @@ public class KIF implements Iterable<Task> {
         }
     }
 
-    private static Function<Term, Term> domainRangeMerger(Term type) {
+    private static UnaryOperator<Term> domainRangeMerger(Term type) {
         return (existing) -> {
             if (existing.equals(type))
                 return existing;
@@ -439,7 +440,7 @@ public class KIF implements Iterable<Task> {
                                     }
                                     FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
 
-                                    d.domain.updateValue(((Int) arg).i, () -> type, domainRangeMerger(type));
+                                    d.domain.updateValue(((Int) arg).i, () -> type, (Function<? super Term, ? extends Term>) domainRangeMerger(type));
 
                                 } else {
                                     throw new UnsupportedOperationException("unrecognized domain spec");
@@ -622,20 +623,20 @@ public class KIF implements Iterable<Task> {
         a = tmp.sub(0);
         b = tmp.sub(1);
 
-        MutableSet<Term> _aVars = new UnifiedSet();
+        MutableSet<Term> _aVars = new UnifiedSet<>();
         Set<Term> aVars = new VarOnlySet(_aVars);
         if (a instanceof Compound)
             ((Compound) a).recurseSubtermsToSet(Op.Variable, aVars, true);
         else if (a.op().var)
             aVars.add(a);
-        MutableSet<Term> _bVars = new UnifiedSet();
+        MutableSet<Term> _bVars = new UnifiedSet<>();
         Set<Term> bVars = new VarOnlySet(_bVars);
         if (b instanceof Compound)
             ((Compound) b).recurseSubtermsToSet(Op.Variable, bVars, true);
         else if (b.op().var)
             bVars.add(b);
 
-        Map<Term, Term> remap = new HashMap();
+        Map<Term, Term> remap = new HashMap<>();
 
         MutableSet<Term> common = _aVars.intersect(_bVars);
         if (!common.isEmpty()) {
@@ -688,7 +689,7 @@ public class KIF implements Iterable<Task> {
 
 
     static class FnDef {
-        final IntObjectHashMap<Term> domain = new IntObjectHashMap();
+        final IntObjectHashMap<Term> domain = new IntObjectHashMap<>();
         Term range;
     }
 

@@ -118,14 +118,14 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
 //     * @param incChildren true - включать в поиск дочерние классы
 //     * @return Возможные альтернативы преобразований
 //     */
-//    public Map<Class,Function<Object,Object>> getConvertorsFrom(
+//    public Map<Class,UnaryOperator<Object>> getConvertorsFrom(
 //        Class type,
 //        boolean strongCompare,
 //        boolean childToParent,
 //        boolean incParent,
 //        boolean incChildren
 //    ){
-//        Map<Class,Function<Object,Object>> convs
+//        Map<Class,UnaryOperator<Object>> convs
 //            = new TreeMap<Class, Function>(
 //                new ClassSet.ClassHeirarchyComparer( childToParent )
 //            );
@@ -135,8 +135,8 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
 //            classes.getAssignableFrom(type, incParent, incChildren);
 //
 //        for( Class cnode : fromClasses ){
-//            for( Edge<Class,Function<Object,Object>> e : this.edgesOfNodeA(cnode) ){
-//                Function<Object,Object> conv = e.getEdge();
+//            for( Edge<Class,UnaryOperator<Object>> e : this.edgesOfNodeA(cnode) ){
+//                UnaryOperator<Object> conv = e.getEdge();
 //                Class target = e.getNodeB();
 //                convs.put(target, conv);
 //            }

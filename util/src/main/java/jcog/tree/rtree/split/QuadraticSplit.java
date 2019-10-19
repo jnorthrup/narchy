@@ -24,6 +24,7 @@ import jcog.Util;
 import jcog.tree.rtree.*;
 
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * Guttmann's Quadratic split
@@ -33,23 +34,23 @@ import java.util.function.Function;
 public class QuadraticSplit<X> implements Split<X> {
 
     /**  find the two bounds that are most wasteful */
-    @Override public RNode<X> split(X x, RLeaf<X> leaf, Spatialization<X> m) {
+    @Override public RNode<X> apply(X x, RLeaf<X> leaf, Spatialization<X> m) {
 
-        double maxWaste = Double.NEGATIVE_INFINITY;
-        short size = leaf.size;
+        var maxWaste = Double.NEGATIVE_INFINITY;
+        var size = leaf.size;
         int r1 = -1, r2 = -1;
-        X[] data = leaf.data;
-        double[] COST = Util.map(i -> m.bounds(data[i]).cost(), new double[size]); //cache
-        for (int i = 0; i < size-1; i++) {
-            HyperRegion ii = m.bounds(data[i]);
-            double iic = COST[i];
-            Function<HyperRegion, HyperRegion> iiMbr = ii.mbrBuilder();
-            for (int j = i + 1; j < size; j++) {
-                HyperRegion jj = m.bounds(data[j]);
-                HyperRegion ij = iiMbr.apply(jj);
-                double jjc = COST[j];
-                double ijc = (ij==ii ? iic : (ij ==jj ? jjc : ij.cost())); //assert(ijc >= iic && ijc >= iic);
-                double waste = (ijc - iic) + (ijc - jjc);
+        var data = leaf.data;
+        var COST = Util.map(i -> m.bounds(data[i]).cost(), new double[size]); //cache
+        for (var i = 0; i < size-1; i++) {
+            var ii = m.bounds(data[i]);
+            var iic = COST[i];
+            var iiMbr =   ii.mbrBuilder();
+            for (var j = i + 1; j < size; j++) {
+                var jj = m.bounds(data[j]);
+                var ij = iiMbr.apply(jj);
+                var jjc = COST[j];
+                var ijc = (ij==ii ? iic : (ij ==jj ? jjc : ij.cost())); //assert(ijc >= iic && ijc >= iic);
+                var waste = (ijc - iic) + (ijc - jjc);
                 if (waste > maxWaste) {
                     r1 = i;
                     r2 = j;

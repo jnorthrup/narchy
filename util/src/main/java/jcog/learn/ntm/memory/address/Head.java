@@ -4,6 +4,7 @@ import jcog.learn.ntm.control.Unit;
 import jcog.learn.ntm.control.UnitFactory;
 
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
 
 public class Head   
@@ -66,7 +67,7 @@ public class Head
         return getUnitSize(width);
     }
 
-    public static Head[] getVector(int length, Function<Integer, Integer> constructorParamGetter) {
+    public static Head[] getVector(int length, UnaryOperator<Integer> constructorParamGetter) {
         return IntStream.range(0, length).mapToObj(i -> new Head(constructorParamGetter.apply(i))).toArray(Head[]::new);
     }
 

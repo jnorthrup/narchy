@@ -359,7 +359,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     @SuppressWarnings("LambdaUnfriendlyMethodOverload")
-    default /*@NotNull*/ SortedSet<Term> toSetSorted(Function<Term,Term> map) {
+    default /*@NotNull*/ SortedSet<Term> toSetSorted(UnaryOperator<Term> map) {
         MetalTreeSet<Term> u = new MetalTreeSet();
         for (Term z : this) {
             u.add(map.apply(z));
@@ -1331,7 +1331,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return toRemove.cardinality() == 0 ? null : removing(toRemove);
     }
 
-    default Subterms transformSub(int which, Function<Term,Term> f) {
+    default Subterms transformSub(int which, UnaryOperator<Term> f) {
         Term x = sub(which);
         Term y = f.apply(x);
         //if (x == y)
@@ -1360,7 +1360,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * providing a hint about the target operator the subterms is being constructed for
      * this allows certain fail-fast cases
      */
-    default @Nullable Subterms transformSubs(Function<Term,Term> f, Op superOp) {
+    default @Nullable Subterms transformSubs(UnaryOperator<Term> f, Op superOp) {
 
         TermList y = null;
 
@@ -1431,7 +1431,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        );
     }
 
-    static @Nullable TermList transformSubInline(Subterms e, Function<Term,Term> f, TermList out, int subsTotal, int i) {
+    static @Nullable TermList transformSubInline(Subterms e, UnaryOperator<Term> f, TermList out, int subsTotal, int i) {
         int xes = e.subs();
 
         if (out == null)

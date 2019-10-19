@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -100,7 +101,7 @@ public class PremiseRuleSet {
         return compile(a -> a);
     }
 
-    public final DeriverProgram compile(Function<How, How> actionTransform) {
+    public final DeriverProgram compile(UnaryOperator<How> actionTransform) {
         return PremiseRuleCompiler.the(rules, nar, actionTransform);
     }
 

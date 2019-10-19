@@ -10,6 +10,7 @@ import java.lang.ref.Reference;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /** a container for time-stamped expiring cache of data that can be stored in Concept meta maps */
 public class Snapshot<X> {
@@ -49,7 +50,7 @@ public class Snapshot<X> {
 
 	/** ttl = cycles of cached value before next expiration ( >= 0 )
 	 * 			or -1 to never expire */
-	public X get(long now, int ttl, Function<X,X> updater) {
+	public X get(long now, int ttl,  UnaryOperator<X> updater) {
 		long e = expires;
 		X current = get();
 		if ((now >= e || current == null) && busy.compareAndSet(false, true)) {

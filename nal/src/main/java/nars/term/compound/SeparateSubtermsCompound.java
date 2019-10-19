@@ -275,7 +275,7 @@ public abstract class SeparateSubtermsCompound implements Compound {
     }
 
     @Override
-    public final @Nullable Subterms transformSubs(Function<Term,Term> f, Op superOp) {
+    public final @Nullable Subterms transformSubs(UnaryOperator<Term> f, Op superOp) {
         return subterms().transformSubs(f, superOp);
     }
 

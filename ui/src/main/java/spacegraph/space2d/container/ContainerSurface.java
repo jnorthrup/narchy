@@ -181,7 +181,7 @@ public abstract class ContainerSurface extends Surface {
 
     public abstract boolean whileEach(Predicate<Surface> o);
 
-    /** TODO make whileNullReverse(Function<Surface,Surface> o) */
+    /** TODO make whileNullReverse(UnaryOperator<Surface> o) */
     public abstract boolean whileEachReverse(Predicate<Surface> o);
 
     /** default implementation */

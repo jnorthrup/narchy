@@ -160,7 +160,7 @@ public class NALData {
 
 
     /** any (query) variables are qualified by wrapping in conjunction specifying their type in the data model */
-    public static Function<Term[], Term> typed(Function<Term[], Term> pointGenerator, DataTable dataset) {
+    public static Function<Term[], Term> typed(DataTable dataset, Function<Term[], Term> pointGenerator) {
         return x -> {
             Term y = pointGenerator.apply(x);
             if (y.hasAny(Op.VAR_QUERY)) {

@@ -18,7 +18,7 @@ public class AutoConceptualizerTest extends CameraSensorTest {
 
         int H = 4;
         int W = 4;
-        Bitmap2DSensor c = new Bitmap2DSensor<>((x, y) -> $.p(x,y), new Bitmap2D() {
+        Bitmap2DSensor c = new Bitmap2DSensor<>(n, new Bitmap2D() {
             @Override
             public int width() {
                 return W;
@@ -33,7 +33,7 @@ public class AutoConceptualizerTest extends CameraSensorTest {
             public float brightness(int xx, int yy) {
                 return (((xx + yy + n.time())) % 2) > 0 ? 1f : 0f;
             }
-        }, n);
+        }, (x, y) -> $.p(x,y));
 
         AutoConceptualizer ac = new AutoConceptualizer($.inh(c.id, "auto"),
                 c.concepts.order() /* HACK */, true, 2, n);

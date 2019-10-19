@@ -6,6 +6,7 @@ import spacegraph.space2d.container.unit.MutableUnitContainer;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 /**
  * Created by me on 12/2/16.
@@ -17,7 +18,7 @@ public abstract class Menu extends MutableUnitContainer {
     public final Map<String, Supplier<Surface>> options;
 
 
-    protected Function<Surface, Surface> wrapper = x->x;
+    protected UnaryOperator<Surface> wrapper = x->x;
 
 
     /** view model */
@@ -36,7 +37,7 @@ public abstract class Menu extends MutableUnitContainer {
         this.content = view;
     }
 
-//    public Menu setWrapper(Function<Surface,Surface> wrapper) {
+//    public Menu setWrapper(UnaryOperator<Surface> wrapper) {
 //        synchronized (this) {
 //            this.wrapper = wrapper;
 //            return this;

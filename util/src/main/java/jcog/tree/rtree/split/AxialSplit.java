@@ -41,7 +41,7 @@ public class AxialSplit<X> implements Split<X> {
     public AxialSplit() { }
 
     @Override
-    public RBranch<X> split(X x, RLeaf<X> leaf, Spatialization<X> model) {
+    public RBranch<X> apply(X x, RLeaf<X> leaf, Spatialization<X> model) {
 
 
         HyperRegion rCombined = leaf.bounds.mbr(model.bounds(x));

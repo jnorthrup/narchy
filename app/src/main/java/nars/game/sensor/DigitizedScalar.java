@@ -155,12 +155,11 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
                 ///*,$.quote(Util.toString(input))*/, $.the(freqer.getClass().getSimpleName())
                  //   )
                 ,
-            (prev, next) -> {
+                nar, (prev, next) -> {
                 if (next < 0 || next > 1)
                     throw new OutOfRangeException(next, 0, 1);
                 return next == next ? $.t(next, nar.confDefault(BELIEF)) : null;
-            },
-            nar
+            }
         );
 
 

@@ -52,7 +52,7 @@ public class Spatialization<X> {
     }
 
     public RNode<X> split(X x, RLeaf<X> leaf) {
-        return split.split(x, leaf, this);
+        return split.apply(x, leaf, this);
     }
 
     public RLeaf<X> transfer(X[] sortedMbr, int from, int to) {

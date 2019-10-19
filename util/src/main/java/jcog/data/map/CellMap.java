@@ -104,7 +104,7 @@ public class CellMap<K, V> {
         return update(key, entry, entry.key!=null);
     }
 
-    public CacheCell<K, V> compute(K key, Function<V, V> builder) {
+    public CacheCell<K, V> compute(K key, UnaryOperator<V> builder) {
         return compute(key, (z, w)->builder.apply(w));
     }
 
@@ -213,7 +213,7 @@ public class CellMap<K, V> {
         }
 
 
-        public final void update(K nextKey, Function<V, V> update) {
+        public final void update(K nextKey, UnaryOperator<V> update) {
             update(nextKey, (k, v) -> update.apply(v));
         }
 

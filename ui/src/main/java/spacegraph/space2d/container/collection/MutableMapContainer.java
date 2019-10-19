@@ -98,7 +98,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
         return cells.getValue(x);
     }
 
-    public CellMap.CacheCell<K, V> compute(K key, Function<V, V> builder) {
+    public CellMap.CacheCell<K, V> compute(K key, UnaryOperator<V> builder) {
         CellMap.CacheCell<K, V> y = cells.compute(key, builder);
         V v = y.value;
         if(v instanceof Surface)

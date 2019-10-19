@@ -102,7 +102,7 @@ public class PoleCart extends GameX {
 
 							for (Concept a : p.actions()) {
 								ImpilerDeduction d = new ImpilerDeduction(n);
-								@Nullable LongToObjectFunction<Truth> dd = d.estimator(a.term(), false);
+								@Nullable LongToObjectFunction<Truth> dd = d.estimator(false, a.term());
 								if (dd != null)
 									a.meta("impiler", (Object) dd);
 
@@ -129,12 +129,12 @@ public class PoleCart extends GameX {
 
 					if (rl) {
 
-						RLBooster bb = new RLBooster(p, (ii, o) ->
+						RLBooster bb = new RLBooster(false, p, 2, 3, (ii, o) ->
 							//new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
 							new DQN3(ii, o, Map.of(
 
-							)),
-							2, 3, false);
+							))
+						);
 						bb.conf.set(0.01f);
 						window(NARui.rlbooster(bb), 500, 500);
 

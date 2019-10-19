@@ -78,17 +78,17 @@ public interface NSense {
 
     /** TODO move to a SelectorSensor constuctor */
     default SelectorSensor senseSwitch(Term term, IntSupplier value, int min, int max) {
-        return senseSwitch((e) -> switchTerm(term, the(e)), value, min, max);
+        return senseSwitch(min, max, value, (e) -> switchTerm(term, the(e)));
     }
 
     /**
      * min inclusive, max exclusive
      * TODO move to a SelectorSensor constuctor */
-    default SelectorSensor senseSwitch(IntFunction<Term> termer, IntSupplier value, int min, int max) {
+    default SelectorSensor senseSwitch(int min, int max, IntSupplier value, IntFunction<Term> termer) {
         return senseSwitch(value, Util.intArray(min, max), termer);
     }
-    default SelectorSensor senseSwitch(IntFunction<Term> termer, IntSupplier value, int N) {
-        return senseSwitch(termer, value, 0, N);
+    default SelectorSensor senseSwitch(int N, IntSupplier value, IntFunction<Term> termer) {
+        return senseSwitch(0, N, value, termer);
     }
 
 //    static class EnumSignal extends AbstractSensor {
@@ -108,7 +108,7 @@ public interface NSense {
      * interpret an int as a selector between (enumerated) integer values
      */
     default SelectorSensor senseSwitch(IntSupplier value, int[] values, IntFunction<Term> termizer) {
-        SelectorSensor ss = new SelectorSensor(value, values, termizer, nar());
+        SelectorSensor ss = new SelectorSensor(nar(), values, value, termizer);
         addSensor(ss);
         return ss;
     }
@@ -234,7 +234,7 @@ public interface NSense {
     Off onFrame(Consumer r);
 
     
-    default DigitizedScalar senseNumber(IntFunction<Term> levelTermizer, FloatSupplier v, int precision, DigitizedScalar.ScalarEncoder model) {
+    default DigitizedScalar senseNumber(int precision, DigitizedScalar.ScalarEncoder model, FloatSupplier v, IntFunction<Term> levelTermizer) {
 
 
         return senseNumber(v, model,
@@ -243,22 +243,19 @@ public interface NSense {
     }
 
     default DigitizedScalar senseAngle(FloatSupplier angleInRadians, int divisions, Term root) {
-        return senseAngle(angleInRadians, divisions, root,
+        return senseAngle(divisions, root, angleInRadians,
                 angle -> $.inh(root,the(angle))
                 //angle -> $.inh($.pRadix(angle, 2, divisions-1), root)
         );
     }
 
-    default DigitizedScalar senseAngle(FloatSupplier angleInRadians, int divisions, Term root, IntFunction<Term> termizer) {
-        DigitizedScalar ang = senseNumber(termizer,
+    default DigitizedScalar senseAngle(int divisions, Term root, FloatSupplier angleInRadians, IntFunction<Term> termizer) {
+        DigitizedScalar ang = senseNumber(divisions, DigitizedScalar.FuzzyNeedle, ()->(float) (0.5 + 0.5 * MathUtils.normalizeAngle(angleInRadians.asFloat(), 0) / (2 * Math.PI)), termizer
                 //$.inst($.the(angle), ANGLE),
                 //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
                 //$.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
                 //$.inh( /*id,*/ $.the(angle),"ang") /*SETe.the($.the(angle)))*/,
-                ()->(float) (0.5 + 0.5 * MathUtils.normalizeAngle(angleInRadians.asFloat(), 0) / (2 * Math.PI)),
-                divisions,
                 //DigitizedScalar.Needle
-                DigitizedScalar.FuzzyNeedle
         );
         return ang;
     }
@@ -293,10 +290,10 @@ public interface NSense {
 
         Term t = template;
         return actionBipolarFrequencyDifferential(
-                posOrNeg -> t.replace($.varQuery(1), posOrNeg ? POS : NEG),
-                fair, motor);
+                fair, posOrNeg -> t.replace($.varQuery(1), posOrNeg ? POS : NEG),
+                motor);
     }
-    default BiPolarAction actionBipolarFrequencyDifferential(BooleanToObjectFunction<Term> s, boolean fair, FloatToFloatFunction motor) {
+    default BiPolarAction actionBipolarFrequencyDifferential(boolean fair, BooleanToObjectFunction<Term> s, FloatToFloatFunction motor) {
         BiPolarAction pn = new BiPolarAction(s,
                 new BiPolarAction.DefaultPolarization(fair),
                 motor, nar());

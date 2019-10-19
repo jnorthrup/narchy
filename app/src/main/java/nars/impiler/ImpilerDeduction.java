@@ -60,7 +60,7 @@ public class ImpilerDeduction extends Search<Term, Task> {
 	}
 
 
-	public @Nullable LongToObjectFunction<Truth> estimator(Termed target, boolean beliefOrGoal) {
+	public @Nullable LongToObjectFunction<Truth> estimator(boolean beliefOrGoal, Termed target) {
 		List<Task> t = get(target, nar.time(), false);
 		if (t.isEmpty())
 			return null;

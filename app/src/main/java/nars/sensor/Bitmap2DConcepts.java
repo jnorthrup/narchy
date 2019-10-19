@@ -36,7 +36,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
     public final Array2DIterable<ComponentSignal> iter;
     private final float defaultFreq;
 
-    protected Bitmap2DConcepts(P src, @Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, float defaultFreq, Bitmap2DSensor<?> s) {
+    protected Bitmap2DConcepts(P src, float defaultFreq, Bitmap2DSensor<?> s, @Nullable IntIntToObjectFunction<Term> pixelTerm) {
 
         this.width = src.width();
         this.height = src.height();

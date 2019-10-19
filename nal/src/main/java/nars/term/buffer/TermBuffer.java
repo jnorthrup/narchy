@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
@@ -88,7 +89,7 @@ public class TermBuffer {
         }
     }
 
-    public boolean updateMap(Function<Term, Term> m) {
+    public boolean updateMap(UnaryOperator<Term> m) {
         return sub.updateMap(m);
     }
 
@@ -420,7 +421,7 @@ public class TermBuffer {
         return code.len==0 && (sub==null || sub.isEmpty());
     }
 
-    public boolean append(Term x, Function<Term,Term> f) {
+    public boolean append(Term x, UnaryOperator<Term> f) {
         if (x instanceof Compound) {
             byte interned = this.term(x);
             if (interned!=Byte.MIN_VALUE) {
@@ -454,12 +455,12 @@ public class TermBuffer {
     }
 
 
-    public boolean appendCompound(Compound x, Function<Term,Term> f, int volRemain) {
+    public boolean appendCompound(Compound x, UnaryOperator<Term> f, int volRemain) {
         this.volRemain = volRemain;
         return appendCompound(x, f);
     }
 
-    private boolean appendCompound(Compound x, Function<Term, Term> f) {
+    private boolean appendCompound(Compound x, UnaryOperator<Term> f) {
         int c = this.change(), u = this.uniques();
         int p = this.pos();
 
@@ -490,7 +491,7 @@ public class TermBuffer {
         return true;
     }
 
-    private boolean transformSubterms(Subterms s, Function<Term, Term> t) {
+    private boolean transformSubterms(Subterms s, UnaryOperator<Term> t) {
         this.subsStart((byte) s.subs());
         if (s.ANDwithOrdered(this::append, t)) {
             this.subsEnd();

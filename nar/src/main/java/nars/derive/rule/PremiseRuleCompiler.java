@@ -20,6 +20,7 @@ import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * high-level interface for compiling premise deriver rules
@@ -27,7 +28,7 @@ import java.util.function.Function;
 public enum PremiseRuleCompiler {
     ;
 
-    public static DeriverProgram the(Collection<PremiseRule> rr, NAR nar, Function<How, How> functionTransform) {
+    public static DeriverProgram the(Collection<PremiseRule> rr, NAR nar, UnaryOperator<How> functionTransform) {
         return compile(rr,
             new PreDeriver.CentralMemoizer()
             //PreDeriver.DIRECT_DERIVATION_RUNNER
@@ -37,7 +38,7 @@ public enum PremiseRuleCompiler {
         );
     }
 
-    public static DeriverProgram compile(Collection<PremiseRule> rr, PreDeriver preDeriver, NAR n, Function<How, How> actionTransform) {
+    public static DeriverProgram compile(Collection<PremiseRule> rr, PreDeriver preDeriver, NAR n, UnaryOperator<How> actionTransform) {
 
         /** indexed by local (deriver-specific) id */
         int s = rr.size();

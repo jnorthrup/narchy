@@ -70,11 +70,11 @@ public class RLBooster  {
 //    }
 
     /**
+     * @param nothingAction        reserve 0 for nothing
      * @param g
      * @param agent
-     * @param nothingAction        reserve 0 for nothing
      */
-    public RLBooster(Game g, IntIntToObjectFunction<Agent> agent, int history, int actionDiscetization, boolean nothingAction) {
+    public RLBooster(boolean nothingAction, Game g, int history, int actionDiscetization, IntIntToObjectFunction<Agent> agent) {
 
         this.actionDiscretization = actionDiscetization;
 

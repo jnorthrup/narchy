@@ -5,8 +5,9 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
-public interface TermTransform extends Function<Term,Term> {
+public interface TermTransform extends UnaryOperator<Term> {
 
     @Override default /* final */ Term apply(Term x) {
         return (x instanceof Compound) ?

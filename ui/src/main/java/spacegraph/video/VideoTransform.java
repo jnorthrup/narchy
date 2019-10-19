@@ -5,6 +5,7 @@ import jcog.signal.wave2d.RGBBufImgBitmap2D;
 
 import java.awt.image.BufferedImage;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 public abstract class VideoTransform<T extends VideoSource> extends VideoSource {
     public final T src;
@@ -34,7 +35,7 @@ public abstract class VideoTransform<T extends VideoSource> extends VideoSource 
         //src.close();
     }
 
-    public static VideoTransform<?> the(VideoSource src, Function<BufferedImage,BufferedImage> frameOp) {
+    public static VideoTransform<?> the(VideoSource src, UnaryOperator<BufferedImage> frameOp) {
         return new VideoTransform(src) {
             @Override
             protected BufferedImage apply(BufferedImage frame) {

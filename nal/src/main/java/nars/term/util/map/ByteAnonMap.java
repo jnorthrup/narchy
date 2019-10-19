@@ -6,6 +6,7 @@ import nars.term.Term;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /** this assumes < 127 unique elements */
 public class ByteAnonMap {
@@ -89,7 +90,7 @@ public class ByteAnonMap {
         return idToTerm.toString();
     }
 
-    public boolean updateMap(Function<Term, Term> m) {
+    public boolean updateMap(UnaryOperator<Term> m) {
         boolean changed = false;
         for (int i = 0, idToTermSize = idToTerm.size(); i < idToTermSize; i++) {
             Term x = idToTerm.get(i);

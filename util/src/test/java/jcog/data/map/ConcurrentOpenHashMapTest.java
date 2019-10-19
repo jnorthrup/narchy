@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -318,7 +319,7 @@ public class ConcurrentOpenHashMapTest {
     public void testComputeIfAbsent() {
         ConcurrentOpenHashMap<Integer, Integer> map = new ConcurrentOpenHashMap<>(16, 1);
         AtomicInteger counter = new AtomicInteger();
-        Function<Integer, Integer> provider = key -> counter.getAndIncrement();
+        UnaryOperator<Integer> provider = key -> counter.getAndIncrement();
 
         assertEquals(0, map.computeIfAbsent(0, provider).intValue());
         assertEquals(0, map.get(0).intValue());

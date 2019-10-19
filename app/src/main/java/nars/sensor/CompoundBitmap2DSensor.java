@@ -2,6 +2,7 @@ package nars.sensor;
 
 import jcog.func.IntIntToObjectFunction;
 import jcog.signal.wave2d.Bitmap2D;
+import nars.term.Term;
 import nars.util.Timed;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
  * */
 public class CompoundBitmap2DSensor<P extends Bitmap2D>  {
 
-    public CompoundBitmap2DSensor(@Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, P src, int divW, int divH, Timed n) {
+    public CompoundBitmap2DSensor(P src, int divW, int divH, Timed n, @Nullable IntIntToObjectFunction<Term> pixelTerm) {
 
     }
 }

@@ -9,10 +9,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
+import java.util.function.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -542,7 +539,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         assert (inserted != -1);
 
     }
-    public void replace(Function<X,X> each) {
+    public void replace(UnaryOperator<X> each) {
         X[] items = this.items;
         for (int i = 0; i < size; i++) {
             items[i] = each.apply(items[i]);

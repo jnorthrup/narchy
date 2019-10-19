@@ -33,17 +33,17 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     private FloatFloatToObjectFunction<Truth> mode;
 
     public Bitmap2DSensor(@Nullable Term root, P src, NAR n) {
-        this(src.height() > 1 ?
+        this(n, src, src.height() > 1 ?
                         /* 2D default */ RadixProduct(root, src.width(), src.height(), /*RADIX*/1) :
                         /* 1D default */ (x, y) -> root != null ? $.inh(root,$.the(x)) : $.p(x) //y==1
-                , src, n);
+        );
     }
 
-    public Bitmap2DSensor(@Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, P src, NAR n) {
-        this(pixelTerm, src, Float.NaN, n);
+    public Bitmap2DSensor(NAR n, P src, @Nullable IntIntToObjectFunction<Term> pixelTerm) {
+        this(n, Float.NaN, src, pixelTerm);
     }
 
-    public Bitmap2DSensor(@Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, P src, float defaultFreq, NAR n) {
+    public Bitmap2DSensor(NAR n, float defaultFreq, P src, @Nullable IntIntToObjectFunction<Term> pixelTerm) {
         super(pixelTerm.apply(0,1)
                     .replace(Map.of(
                         Int.the(0), $.func("range", Int.the(0), Int.the(src.width()-1)),
@@ -52,7 +52,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         this.width = src.width();
         this.height = src.height();
 
-        this.concepts = new Bitmap2DConcepts<>(src, pixelTerm, defaultFreq, this);
+        this.concepts = new Bitmap2DConcepts<>(src, defaultFreq, this, pixelTerm);
         this.src = concepts.src;
 
 

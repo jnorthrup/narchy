@@ -12,14 +12,14 @@
 //public class CachedTermTransform implements TermTransform {
 //
 //    private final TermTransform proxy;
-//    private final BiFunction<Term,Function<Term,Term>,Term> cache;
+//    private final BiFunction<Term,UnaryOperator<Term>,Term> cache;
 ////    private final Logger logger = LoggerFactory.getLogger(CachedTermTransform.class);
 //
 //    public CachedTermTransform(TermTransform proxy, Map<Term, Term> cache) {
 //        this(proxy, cache::computeIfAbsent);
 //    }
 //
-//    private CachedTermTransform(TermTransform proxy, BiFunction<Term, Function<Term, Term>, Term> cache) {
+//    private CachedTermTransform(TermTransform proxy, BiFunction<Term, UnaryOperator<Term>, Term> cache) {
 //        this.proxy = proxy;
 //        this.cache = cache;
 //    }

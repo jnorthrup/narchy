@@ -24,7 +24,7 @@ public class LoadMovingZipfBenchmark {
           "Collision_Aggressive"
   })
   private LoadStaticZipfBenchmark.BenchmarkFunctionFactory cacheType;
-  private Function<Long, Long> benchmarkFunction;
+  private UnaryOperator<Long> benchmarkFunction;
 
   @Setup(Level.Iteration)
   public void setup() {

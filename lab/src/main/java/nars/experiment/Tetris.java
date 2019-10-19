@@ -116,8 +116,8 @@ public class Tetris extends GameX {
         };
         gridVision = addSensor(
                 pixels = new Bitmap2DSensor<>(
-                        (x, y) -> $.inh(id, $.p(x, y)),
-                        grid, n));
+                        n, grid, (x, y) -> $.inh(id, $.p(x, y))
+                ));
 
         if (TETRIS_USE_DENSITY) {
             reward("density", 1, () -> {

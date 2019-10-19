@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static nars.Op.CONJ;
 import static nars.time.Tense.XTERNAL;
@@ -177,7 +178,7 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
          * <p>
          * <p>
          * zero or more "constant" (non-pattern var) terms
-         * all of which Y must contain
+         * all of which Y must containFunction<(\w+),\1>
          * <p>
          * zero or more (non-ellipsis) pattern variables,
          * each of which may be matched or not.
@@ -191,7 +192,7 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
          * <p>
          * *        proceed to collect the remaining zero or more terms as the ellipse's match using a predicate filter
          *
-         * @param y the compound being matched to this
+         * @param Y the compound being matched to this
          */
         @Override
         public boolean unifySubterms(Compound Y, Unify u) {
@@ -208,7 +209,7 @@ public abstract class PatternCompound extends CachedCompound.TemporalCachedCompo
             //uc==null ? y.toSetSorted() : y.toSetSorted(yy -> MatchConstraint.valid(yy, uc, u));
             //y.toSetSorted();
             boolean seq = op() == CONJ && dt() == XTERNAL && Conj.isSeq(Y);
-            SortedSet<Term> yFree = seq ? Y.eventSet() : Y.subterms().toSetSorted((Function<Term, Term>) u::resolveTerm);
+            SortedSet<Term> yFree = seq ? Y.eventSet() : Y.subterms().toSetSorted((UnaryOperator<Term>) u::resolveTerm);
 
             Subterms xx = subterms();
             int s = xx.subs();

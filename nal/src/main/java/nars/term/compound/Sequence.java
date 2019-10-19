@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 import java.util.function.IntPredicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
 
 import static nars.Op.CONJ;
@@ -41,12 +42,12 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
 
 
             @Override
-            public @Nullable Subterms transformSubs(Function<Term, Term> f, Op superOp) {
+            public @Nullable Subterms transformSubs(UnaryOperator<Term> f, Op superOp) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            public Subterms transformSub(int which, Function<Term, Term> f) {
+            public Subterms transformSub(int which, UnaryOperator<Term> f) {
                 throw new UnsupportedOperationException();
             }
 

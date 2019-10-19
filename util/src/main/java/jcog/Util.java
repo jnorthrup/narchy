@@ -1342,7 +1342,7 @@ public enum Util {
 	}
 
 	@SafeVarargs
-    public static <X> X[] mapIfChanged(Function<X, X> f, X... src) {
+    public static <X> X[] mapIfChanged(UnaryOperator<X> f, X... src) {
 		X[] target = null;
 		for (int i = 0, srcLength = src.length; i < srcLength; i++) {
 			X x = src[i];
@@ -2613,11 +2613,11 @@ public enum Util {
 		return xx;
 	}
 
-	public static <X> X[] replaceDirect(X[] xx, Function<X, X> f) {
+	public static <X> X[] replaceDirect(X[] xx, UnaryOperator<X> f) {
 		return replaceDirect(xx, 0, xx.length, f);
 	}
 
-	public static <X> X[] replaceDirect(X[] xx, int start, int end, Function<X, X> f) {
+	public static <X> X[] replaceDirect(X[] xx, int start, int end, UnaryOperator<X> f) {
 		for (int i = start; i < end; i++) {
 			X x = xx[i];
 			xx[i] = f.apply(x);

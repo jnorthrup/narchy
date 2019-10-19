@@ -63,7 +63,7 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
 
     public final int buttons;
 
-    //@Deprecated protected transient Function<v2, v2> _screenToGlobalRect;
+    //@Deprecated protected transient UnaryOperator<v2> _screenToGlobalRect;
     private final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
     private final AtomicFloat[] rotation = new AtomicFloat[3];
     public RectFloat boundsScreen;
@@ -88,8 +88,8 @@ public abstract class Finger extends Part<SpaceGraph> implements Predicate<Finge
      * warning: the vector instance returned by this and other methods are mutable.  so they may need to be cloned when accessed to record the state across time.
      */
     public v2 posGlobal() {
-        //Function<v2,v2> z = this._screenToGlobal;
-        //Function<v2,v2> z = _z !=null ? _z : (c instanceof Zoomed ? ((Zoomed)c) : c.parentOrSelf(Zoomed.class));
+        //UnaryOperator<v2> z = this._screenToGlobal;
+        //UnaryOperator<v2> z = _z !=null ? _z : (c instanceof Zoomed ? ((Zoomed)c) : c.parentOrSelf(Zoomed.class));
         return posGlobal;
     }
 

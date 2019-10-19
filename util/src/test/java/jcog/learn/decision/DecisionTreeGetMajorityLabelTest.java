@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 import static jcog.learn.decision.label.BooleanLabel.FALSE_LABEL;
 import static jcog.learn.decision.label.BooleanLabel.TRUE_LABEL;
@@ -22,24 +24,22 @@ class DecisionTreeGetMajorityLabelTest {
     
     @Test
     void testGetMajorityLabel() {
-//        DecisionTree<Object, Object> tree = new DecisionTree();
-        List<Function<Object,Object>> data = Lists.newArrayList();
+        List<UnaryOperator<Object>> data = Lists.newArrayList();
         data.add(new TestValue(TRUE_LABEL));
         data.add(new TestValue(FALSE_LABEL));
         data.add(new TestValue(TRUE_LABEL));
         data.add(new TestValue(FALSE_LABEL));
         data.add(new TestValue(FALSE_LABEL));
-        assertEquals("false", DecisionTree.majority(null, data.stream()).toString());
+        assertEquals("false", DecisionTree.majority(null, (Stream)data.stream()).toString());
     }
 
     @Test
     void testGetMajorityLabelWhenEqualCounts() {
-//        DecisionTree<Object, Object> tree = new DecisionTree();
-        List<Function<Object,Object>> data = Lists.newArrayList();
+        List<UnaryOperator<Object>> data = Lists.newArrayList();
         data.add(new TestValue(TRUE_LABEL));
         data.add(new TestValue(FALSE_LABEL));
         data.add(new TestValue(TRUE_LABEL));
         data.add(new TestValue(FALSE_LABEL));
-        assertEquals("false", DecisionTree.majority(null, data.stream()).toString());
+        assertEquals(""+Boolean.FALSE, DecisionTree.majority(null, (Stream ) data.stream()).toString());
     }
 }

@@ -103,11 +103,11 @@ public abstract class MetaAgent extends Game {
 
 	public MetaAgent addRLBoost() {
 //        meta.what().pri(0.05f);
-		RLBooster metaBoost = new RLBooster(this, (i, o) ->
+		RLBooster metaBoost = new RLBooster(true, this, 4, 5, (i, o) ->
 			//new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
 			new DQN3(i, o, Map.of(
-			)),
-			4, 5, true);
+			))
+		);
 //        window(grid(NARui.rlbooster(metaBoost), 800, 800);
 		return this;
 	}

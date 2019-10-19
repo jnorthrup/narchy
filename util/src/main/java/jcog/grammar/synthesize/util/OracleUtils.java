@@ -16,10 +16,11 @@ package jcog.grammar.synthesize.util;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 public class OracleUtils {
 
-    public interface Oracle extends Function<String,String> {
+    public interface Oracle extends UnaryOperator<String> {
 
     }
 
@@ -27,7 +28,7 @@ public class OracleUtils {
     public interface DiscriminativeOracle extends Predicate<String> {
     }
 
-    public interface Wrapper extends Function<String,String> {
+    public interface Wrapper extends UnaryOperator<String> {
 
     }
 

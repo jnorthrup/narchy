@@ -263,8 +263,8 @@ public class NARio extends GameX {
 	}
 
 	private SelectorSensor tileSwitch(int dx, int dy) {
-		return senseSwitch(i -> $.inh($.p(dx, dy), $.p($.the("tile"), $.the(i))),
-			() -> tile(dx, dy), tileTypes);
+		return senseSwitch(tileTypes, () -> tile(dx, dy), i -> $.inh($.p(dx, dy), $.p($.the("tile"), $.the(i)))
+		);
 	}
 
 	int tile(int dx, int dy) {

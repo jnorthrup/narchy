@@ -90,10 +90,10 @@ public class Recog2D extends GameX {
                 /*new Blink*/(new ScaledBitmap2D(() -> canvas, sw, sh)/*, 0.8f*/));
 
 
-        outs = new BeliefVector(ii ->
+        outs = new BeliefVector(this, maxImages, ii ->
                 //$.inst($.the( ii), $.the("x"))
                 $.inh(id,$.the(ii))
-                , maxImages, this);
+        );
 //        train = new Training(
 //                sp.src instanceof PixelBag ?
 //                    new FasterList(sensors).with(((PixelBag) sp.src).actions) : sensors,
@@ -413,7 +413,7 @@ public class Recog2D extends GameX {
         boolean verify;
 
 
-        public BeliefVector(IntFunction<Term> namer, int maxStates, Game a) {
+        public BeliefVector(Game a, int maxStates, IntFunction<Term> namer) {
 
             this.states = maxStates;
             this.neurons = new Neuron[maxStates];

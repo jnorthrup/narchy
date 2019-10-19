@@ -9,6 +9,7 @@ import nars.term.atom.Atomic;
 
 import java.io.IOException;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
@@ -37,7 +38,7 @@ public enum TermAppender {
     }
 
     /** auto-infix if subs == 2 */
-    static void compoundAppend(String o, Subterms c, Function<Term, Term> filter, Appendable p) throws IOException {
+    static void compoundAppend(String o, Subterms c, Appendable p, UnaryOperator<Term > filter) throws IOException {
 
         p.append(Op.COMPOUND_TERM_OPENER);
 
@@ -81,7 +82,7 @@ public enum TermAppender {
         }
     }
 
-    static void appendArgs(Subterms c, Function<Term, Term> filter, Appendable p) throws IOException {
+    static void appendArgs(Subterms c, UnaryOperator<Term> filter, Appendable p) throws IOException {
         int nterms = c.subs();
 
         boolean bb = nterms > 1;
@@ -93,7 +94,7 @@ public enum TermAppender {
         }
     }
 
-    private static void appendArg(Subterms c, int i, Function<Term, Term> filter, Appendable p) throws IOException {
+    private static void appendArg(Subterms c, int i, UnaryOperator<Term> filter, Appendable p) throws IOException {
         filter.apply(c.sub(i)).appendTo(p);
     }
 
@@ -199,7 +200,7 @@ public enum TermAppender {
     }
 
     private static void disjAppend(Subterms cxx, int dt, Appendable p) throws IOException {
-        compoundAppend(disjStr(dt), cxx, Term::neg, p);
+        compoundAppend(disjStr(dt), cxx, p, Term::neg);
     }
 
     private static String disjStr(int dt) {
