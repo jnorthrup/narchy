@@ -725,6 +725,11 @@ public class NARui {
 
                                     @Override
                                     public void read(float[] buf, int readRate) {
+                                        if (a.parent==null) {
+                                            sound.stop();
+                                            return;
+                                        }
+
                                         if (filter == null)
                                             filter = new IIRFilter.LowPassFS(filterFreq.asFloat(), readRate);
 
