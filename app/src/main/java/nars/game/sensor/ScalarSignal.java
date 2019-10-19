@@ -6,7 +6,6 @@ import nars.attention.PriNode;
 import nars.game.Game;
 import nars.table.BeliefTable;
 import nars.term.Term;
-import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 /** unisignal from float value source */
@@ -34,18 +33,8 @@ public class ScalarSignal extends UniSignal {
 
     @Override
     public void accept(Game g) {
-        input(next(g), this.pri(), why(), g.nowLoop);
+        input(truth(source.asFloat(), g), this.pri(), why(), g.nowLoop);
     }
 
-    public final Truth next(Game g) {
-        return truth(source.asFloat(), g);
-    }
-
-    protected Truth truth(float nextValue, Game g) {
-        return nextValue == nextValue ?
-            Signal.truthDithered(nextValue, Math.max(g.nar.freqResolution.floatValue(),
-                resolution().floatValue()), g) :
-            null;
-    }
 
 }

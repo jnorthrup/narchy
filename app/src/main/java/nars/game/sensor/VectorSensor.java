@@ -85,6 +85,7 @@ public abstract class VectorSensor extends AbstractSensor implements Iterable<Co
             this.f = f;
         }
 
+
         @Override
         protected float value(Game g) {
             return f.asFloat();

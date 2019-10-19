@@ -20,17 +20,17 @@ import nars.game.Game;
 import nars.game.Reward;
 import nars.game.action.ActionSignal;
 import nars.game.sensor.GameLoop;
-import nars.table.dynamic.SeriesBeliefTable;
+import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
 import nars.time.When;
+import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -212,10 +212,12 @@ public class RLBooster  {
 
         int a = agent.act(actionFeedback(w), (float) reward, Util.toFloat(history.doubleArray()));
         int buttons = (actionDiscretization - 1) * actions.length;
+
         //nothing action, or otherwise beyond range of action buttons
         if (a < buttons) {
-            int A = a / (actionDiscretization);
-            int level = a % (actionDiscretization);//        float OFFfreq =
+            int A = a / (actionDiscretization - 1);
+
+            int level = a % (actionDiscretization - 1);//        float OFFfreq =
 //                //0f;
 //                Float.NaN;
 //        float ONfreq = 1f;
@@ -226,20 +228,28 @@ public class RLBooster  {
 //long nextStart = start, nextEnd = end;
 //TODO modify Agent API to provide a continuous output vector and use that to interpolate across the different states
 
-            in.acceptAll(IntStream.range(0, actions.length).mapToObj(o -> {
+
+            What W = w.x;
+            for (int o= 0; o < actions.length; o++) {
                 float freq = (o == A) ?
-                    ((actionDiscretization > 2) ? (((float) level) / (actionDiscretization - 1)) : 1)
+                    ((actionDiscretization > 2) ? (((float) 1+level) / (actionDiscretization - 1)) : 1)
                     :
                     ((actionDiscretization > 2) ? Float.NaN : 0);
 
-                if (freq == freq) {
-                    return new SeriesBeliefTable.SeriesTask(actions[o].term(), GOAL,
-                        $.t(freq, conf), start, end,
-                        new long[]{nar.time.nextStamp()}
-                    ).pri(nar.priDefault(GOAL));
-                } else
-                    return null;
-            }), g.what());
+//                System.out.println(actions[o].term() + " " + freq);
+
+                if (freq==freq) {
+                    PreciseTruth tt = $.t(freq, conf);
+
+                    in.accept(
+                        NALTask.the(
+                            actions[o].term(), GOAL,
+                            tt, start, start, end,
+                            new long[]{nar.time.nextStamp()}
+                        ).pri(nar.priDefault(GOAL)), W);
+                }
+            }
+
         }
 
 
