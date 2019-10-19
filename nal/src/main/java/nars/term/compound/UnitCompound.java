@@ -138,11 +138,6 @@ public abstract class UnitCompound implements SameSubtermsCompound {
 //    }
 
     @Override
-    public final int subStructure() {
-        return sub().structure();
-    }
-
-    @Override
     public final int dt() {
         return DTERNAL;
     }
