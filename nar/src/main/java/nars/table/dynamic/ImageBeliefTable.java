@@ -58,7 +58,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
 
         if (r.store) {
             //r.link = r.notify = false; //proxy store
-            TaskConcept c = (TaskConcept) r.nar.conceptualize(normal);
+            TaskConcept c = (TaskConcept) r.nar().conceptualize(normal);
             if (c == null)
                 return;
             Task normalized;

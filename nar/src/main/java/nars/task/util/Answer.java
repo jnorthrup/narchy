@@ -32,8 +32,6 @@ public final class Answer implements Timed, Predicate<Task> {
 
     public final NAR nar;
 
-    /** whether to store any dynamically created tasks that match the query */
-    public boolean storeDynamic = NAL.CACHE_DYNAMIC_TASKS;
 
 	private @Nullable Term term = null;
 

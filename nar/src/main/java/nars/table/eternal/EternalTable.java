@@ -318,7 +318,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         float aProp = Float.NaN;
         double ie = input.evi();
 
-        NAR nar = r.nar;
+        NAR nar = r.nar();
         long[] inputStamp = input.stamp();
 
         for (Object _x : list) {

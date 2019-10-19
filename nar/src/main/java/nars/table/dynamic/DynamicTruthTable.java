@@ -1,7 +1,6 @@
 package nars.table.dynamic;
 
 import nars.Task;
-import nars.control.op.Remember;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.truth.dynamic.AbstractDynamicTruth;
@@ -29,31 +28,31 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         Task y = new DynTaskify(model, beliefOrGoal, a).eval(a.start, a.end);
         if (y!=null) {
 
-            if (a.storeDynamic)
-                a.test(y, DynamicTruthTable::cacheDynamic);
-            else
+//            if (a.storeDynamic)
+//                a.test(y, DynamicTruthTable::cacheDynamic);
+//            else
                 a.test(y);
 
         }
     }
 
-    /** insertion resolver
-     *  if r.result!=y replace y in a with r.result to re-use cached Task */
-    private static Task cacheDynamic(Task y, Answer a) {
-        float pBefore = y.pri(); //HACK
-        Remember r = Remember.the(y, true, false, false, a.nar);
-        if (r!=null && r.store(false)) {
-            Task z = r.result;
-            if (z != null && z != y)
-                return z;
-
-            if (y.isDeleted())
-                y.pri(pBefore); //HACK
-
-        }
-
-        return y;
-    }
+//    /** insertion resolver
+//     *  if r.result!=y replace y in a with r.result to re-use cached Task */
+//    private static Task cacheDynamic(Task y, Answer a) {
+//        float pBefore = y.pri(); //HACK
+//        Remember r = Remember.the(y, true, false, false, a.what);
+//        if (r!=null && r.store(false)) {
+//            Task z = r.result;
+//            if (z != null && z != y)
+//                return z;
+//
+//            if (y.isDeleted())
+//                y.pri(pBefore); //HACK
+//
+//        }
+//
+//        return y;
+//    }
 
 }
 

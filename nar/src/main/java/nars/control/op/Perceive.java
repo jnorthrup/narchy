@@ -52,16 +52,8 @@ public enum Perceive {
 
             }
         }
-
-
-        Remember perceived = !cmd ? Remember.the(x, n) : null;
-
-        if (perceived!=null) {
-//        if (x instanceof UnevaluatedTask) {
-            perceived.next(w);
-        }
-//            return;
-//        }
+        //SeriesTask already will have been added directly by the table to itself
+        Remember perceived = (!cmd && !(x instanceof SeriesBeliefTable.SeriesTask)) ? Remember.the(x, w) : null;
 
 
 
