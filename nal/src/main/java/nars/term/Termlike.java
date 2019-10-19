@@ -56,7 +56,7 @@ public interface Termlike {
      * recursion height; atomic=1, compound>1
      */
     default int height() {
-		return subs() == 0 ? 1 : 1 + max(Term::height);
+        return subs() == 0 ? 1 : 1 + max(Term::height);
     }
 
     /**
@@ -107,16 +107,11 @@ public interface Termlike {
 
     default int intifyRecurse(int _v, IntObjectToIntFunction<Term> reduce) {
         return intifyShallow(_v, (v, s) -> s.intifyRecurse(v, reduce));
-//        int n = subs();
-//        for (int i = 0; i < n; i++)
-//            v = sub(i).intifyRecurse(reduce, v);
-//        return v;
     }
 
     boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
 
     boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, Compound parent);
-
 
 
     /**
@@ -138,18 +133,19 @@ public interface Termlike {
      * false if target is atomic since it can contain nothing
      * TODO move to Subterms
      */
-    @Deprecated boolean contains(Term t);
+    @Deprecated
+    boolean contains(Term t);
 
-    /** TODO move to Subterms */
-    @Deprecated boolean containsInstance(Term t);
+    /**
+     * TODO move to Subterms
+     */
+    @Deprecated
+    boolean containsInstance(Term t);
 
     boolean hasXternal();
 
 
     boolean impossibleSubTerm(Termlike target);
-
-
-
 
 
     default boolean hasAll(int structuralVector) {
@@ -169,7 +165,9 @@ public interface Termlike {
         return Op.has(s, all, true) && Op.has(s, any, false);
     }
 
-    default boolean hasVarIndep() { return hasAny(Op.VAR_INDEP.bit); }
+    default boolean hasVarIndep() {
+        return hasAny(Op.VAR_INDEP.bit);
+    }
 
     default boolean hasVarDep() {
         return hasAny(Op.VAR_DEP.bit);
@@ -182,7 +180,6 @@ public interface Termlike {
     default boolean hasVarPattern() {
         return hasAny(Op.VAR_PATTERN.bit);
     }
-
 
 
     boolean impossibleSubStructure(int structure);
@@ -203,8 +200,6 @@ public interface Termlike {
 //        return ((!hasAll(target.structure())) ||
 //                (impossibleSubTermOrEqualityVolume(target.volume())));
 //    }
-
-
 
 
     default int vars() {
@@ -235,9 +230,6 @@ public interface Termlike {
     }
 
 
-
-
-
     /**
      * structure of the first layer (surface) only
      */
@@ -254,7 +246,7 @@ public interface Termlike {
 
     default int addAllTo(Term[] t, int offset) {
         int s = subs();
-        for (int i = 0; i < s;)
+        for (int i = 0; i < s; )
             t[offset++] = sub(i++);
         return s;
     }

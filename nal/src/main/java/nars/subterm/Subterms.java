@@ -62,7 +62,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	}
 
 	static int hash(Subterms container) {
-		return container.intifyShallow(Util::hashCombine, 1);
+		return container.intifyShallow(1, Util::hashCombine);
 	}
 
 	static boolean commonSubtermsRecursive(/*@NotNull*/ Term a, /*@NotNull*/ Term b, boolean excludeVariables) {
@@ -567,7 +567,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 	@Override
 	default int structure() {
-		return intifyShallow((s, x) -> s | x.structure(), 0);
+		return intifyShallow(0, (s, x) -> s | x.structure());
 	}
 
 	default void forEachI(ObjectIntProcedure<Term> t) {
@@ -924,7 +924,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	 * counts subterms matching the predicate
 	 */
 	default int count(Predicate<Term> match) {
-		return intifyShallow((c, sub) -> match.test(sub) ? c + 1 : c, 0);
+		return intifyShallow(0, (c, sub) -> match.test(sub) ? c + 1 : c);
 	}
 
 	default boolean countEquals(Predicate<Term> match, int n) {
