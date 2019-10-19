@@ -744,7 +744,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         return i != 0 ? -i : Integer.compare(System.identityHashCode(a), System.identityHashCode(b));
     };
 
-    public boolean doubt(float ratio) {
+    public boolean doubt(double ratio) {
         return Util.equals(ratio, 1f) || concTruthEvi(ratio * truth.evi());
     }
 

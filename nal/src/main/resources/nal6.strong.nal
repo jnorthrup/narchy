@@ -2,11 +2,11 @@ post {
     B, (X ==> A), --is(B,"==>"), --isVar(X) |- unisubst(X,A,B,"$"), (Belief:PostWeak, Time:TaskEvent)
 
     //goal
-    //      taskevent = subjunctive ("would have"),
-    //      taskimmediate = present
+    //      taskimmediate = task time
+    //      beliefevent = subjunctive ("would have"),
     //         producing differently tensed (occurrence) results depending on the timing involved
-     B, (X ==> A), --is(B,"==>"), --isVar(X)   |-   unisubst(X,A,B,"$"), (Goal:PostPP, Time:TaskEvent)
-       B, (X ==> A), --is(B,"==>"), --isVar(X) |-   unisubst(X,A,B,"$"), (Goal:PostPP, Time:TaskImmediate)
+   B, (X ==> A), --is(B,"==>"), --isVar(X) |-   unisubst(X,A,B,"$"), (Goal:PostPP, Time:TaskImmediate)
+     //B, (X ==> A), --is(B,"==>"), --isVar(X)   |-   unisubst(X,A,B,"$"), (Goal:PostPP, Time:BeliefEvent)
 }
 //post_antigoal {
 //    //SUSPECT

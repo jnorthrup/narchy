@@ -57,15 +57,15 @@ conjBeliefBefore {
 }
 
 conjGoalAfter {
-      D, X                                                 |-  --conjAfter(D,   X),  (  Goal:DeductionNP, Time:TaskEvent)
+      D, X                                                 |-  --conjAfter(D,   X),  (  Goal:DeductionNP, Time:BeliefEvent)
     //  D, X                                                 |-  --conjAfter(D,   X),  (  Goal:DeductionRecursiveNP, Time:BeliefEvent)
-      D, X, has(D,"--")                                    |-  --conjAfter(D, --X),  (  Goal:DeductionNN, Time:TaskEvent)
+      D, X, has(D,"--")                                    |-  --conjAfter(D, --X),  (  Goal:DeductionNN, Time:BeliefEvent)
     //  D, X, has(D,"--")                                    |-  --conjAfter(D, --X),  (  Goal:DeductionRecursiveNN, Time:BeliefEvent)
 
-//    //C, X                                                 |-  conjAfter(C,   X),  (  Goal:DesirePP, Time:TaskImmediate)
-      C, X                                                 |-  conjAfter(C,   X),  (  Goal:DeductionPP, Time:TaskEvent)
-//    //C, X, has(C,"--")                                    |-  conjAfter(C, --X),  (  Goal:DesirePN, Time:TaskImmediate)
-      C, X, has(C,"--")                                    |-  conjAfter(C, --X),  (  Goal:DeductionPN, Time:TaskEvent)
+////    //C, X                                                 |-  conjAfter(C,   X),  (  Goal:DesirePP, Time:TaskImmediate)
+      C, X                                                 |-  conjAfter(C,   X),  (  Goal:DeductionPP, Time:BeliefEvent)
+////    //C, X, has(C,"--")                                    |-  conjAfter(C, --X),  (  Goal:DesirePN, Time:TaskImmediate)
+      C, X, has(C,"--")                                    |-  conjAfter(C, --X),  (  Goal:DeductionPN, Time:BeliefEvent)
 
 }
 

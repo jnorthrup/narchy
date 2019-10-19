@@ -1186,7 +1186,17 @@ public class NAL8Test extends NALTest {
                 .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0.1f, 1f, 0, 1, t->true)
         ;
     }
-
+    @Test
+    void condition_goal_disj() {
+        test
+            .termVolMax(13)
+            .input("--on(t2,t3).")
+            .input("(on(t2,#1) || at(#1))!")
+            .mustGoal(cycles, "at(t3)", 1.0f, 0.81f, ETERNAL)
+            .mustNotOutput(cycles, "at(t3)", GOAL, 0f, 0.9f, 0, 1, t->true)
+            .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0f, 1f, 0, 1, t->true)
+        ;
+    }
     @Test
     void condition_goal_conjunction_2_neg_conj_var_simple_neg() {
         test
