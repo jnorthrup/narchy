@@ -210,12 +210,12 @@ public abstract class ScalarReward extends Reward {
     protected abstract float reward(Game a);
 
     @Override
-    public final float happiness(long start, long end, float dur) {
+    public final double happiness(long start, long end, float dur) {
 
-        float b = rewardFreq(true, start, end, dur);
+        double b = rewardFreq(true, start, end, dur);
         if (b!=b) return NaN;
 
-        float g = rewardFreq(false, start, end, dur);
+        double g = rewardFreq(false, start, end, dur);
         if (g!=g) return NaN;
 
         return (1 - Math.abs(b - g));

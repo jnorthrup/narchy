@@ -190,7 +190,7 @@ public class RLBooster  {
     public void accept(Game g) {
         NAR nar = env.nar();
 
-        double reward = ((HAPPINESS.valueOf(env.happiness()) - 0.5f) * 2);
+        double reward = ((HAPPINESS.valueOf((float)env.happiness()) - 0.5f) * 2);
 
         //System.out.println(reward);
         lastReward = reward;

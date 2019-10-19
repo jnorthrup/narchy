@@ -35,45 +35,37 @@ import static nars.$.$$;
  */
 public abstract class MetaAgent extends Game {
 
-	private static final float PRI_ACTION_RESOLUTION =
-		//0.01f;
-		0.05f;
-
-	//private static final Logger logger = Log.logger(MetaAgent.class);
-
 	static final Atomic CURIOSITY =
 		/** curiosity rate */
 		Atomic.the("curi");
 
+	//private static final Logger logger = Log.logger(MetaAgent.class);
 	static final Atomic /**
 	 * tasklink forget factor
 	 */
-	forget = Atomic.the("forget");
+		forget = Atomic.the("forget");
 	static final Atomic grow = Atomic.the("grow");
-
-
 	static final Atomic /**
 	 * internal truth frequency precision
 	 */
-	precise = Atomic.the("precise"); //frequency resolution
+		precise = Atomic.the("precise"); //frequency resolution
 	static final Atomic careful = Atomic.the("careful"); //conf resolution
 	static final Atomic ignore = Atomic.the("ignore"); //min conf
-
 	static final Atomic belief = Atomic.the("belief");
 	static final Atomic goal = Atomic.the("goal");
-
 	static final Atomic conf = Atomic.the("conf");
 	static final Atomic pri = Atomic.the("pri");
-
 	static final Atomic play = Atomic.the("play");
 	static final Atomic input = Atomic.the("input");
 	static final Atomic duration = Atomic.the("dur");
 	static final Atomic happy = Atomic.the("happy");
-
 	static final Atomic dex = Atomic.the("dex");
 	static final Atomic now = Atomic.the("now");
 	static final Atomic past = Atomic.the("past");
 	static final Atomic future = Atomic.the("future");
+	private static final float PRI_ACTION_RESOLUTION =
+		//0.01f;
+		0.05f;
 
 
 //    public final GoalActionConcept forgetAction;
@@ -121,11 +113,13 @@ public abstract class MetaAgent extends Game {
 //	}
 
 	void priAction(PriSource a) {
-		priAction($.inh(a.id,pri), a);
+		priAction($.inh(a.id, pri), a);
 	}
+
 	void priAction(PriAmp a) {
-		floatAction($.inh(a.id,pri), 2, a.amp).resolution(PRI_ACTION_RESOLUTION);
+		floatAction($.inh(a.id, pri), 2, a.amp).resolution(PRI_ACTION_RESOLUTION);
 	}
+
 	void priAction(Term id, PriSource a) {
 		floatAction(id, 2, a.amp).resolution(PRI_ACTION_RESOLUTION);
 	}
@@ -165,7 +159,7 @@ public abstract class MetaAgent extends Game {
 		return actionUnipolar(t, true, (v) -> v, (x) -> {
 			//float y = f.valueOf(x);
 			if (x == x)
-				r.accept(Util.lerp((float)Math.pow(x, exp), min, max));
+				r.accept(Util.lerp((float) Math.pow(x, exp), min, max));
 			return x;
 		});
 	}
@@ -198,14 +192,14 @@ public abstract class MetaAgent extends Game {
 			sense($.inh(SELF, $$("lag")), new FloatNormalized(e.durLoopLag));
 
 			for (MetaGoal mg : MetaGoal.values()) {
-                GoalActionConcept a = actionUnipolar($.inh(SELF, $.the(mg.name())), (x) -> {
-                    nar.emotion.want(mg,
+				GoalActionConcept a = actionUnipolar($.inh(SELF, $.the(mg.name())), (x) -> {
+					nar.emotion.want(mg,
 						x >= 0.5f ?
 							(float) Util.lerp(Math.pow((x - 0.5f) * 2, 1 /* 2 */), 0, +1) //positive (0.5..1)
 							:
 							Util.lerp((x) * 2, -0.02f, 0) //negative (0..0.5): weaker
 					);
-                });
+				});
 //                a.resolution(0.1f);
 			}
 
@@ -275,7 +269,7 @@ public abstract class MetaAgent extends Game {
 //			});
 
 			//top-level priority controls of other NAR components
-			nar.parts(Game.class).filter(g -> g!=this).forEach(g -> priAction(g.what().pri));
+			nar.parts(Game.class).filter(g -> g != this).forEach(g -> priAction(g.what().pri));
 
 			//shouldnt be necessary, manipulate the downstream PriNodes instead and leave these constant
 //			priAction($.inh(SELF, $.p(belief, pri)), nar.beliefPriDefault);
@@ -291,18 +285,18 @@ public abstract class MetaAgent extends Game {
 			float durMeasured = 0;
 
 			reward($.inh(SELF, $.p(happy, now)), () -> {
-				return happiness( nowPercept.start, nowPercept.end, durMeasured, nar);
+				return happiness(nowPercept.start, nowPercept.end, durMeasured, nar);
 			});
 
 			/** past happiness ~= gradient momentum / echo effect */
 			float emotionalMomentumDurs = 4;
 			reward($.inh(SELF, $.p(happy, past)), () -> {
-				return happiness( Math.round(nowPercept.start - dur() * emotionalMomentumDurs), nowPercept.start, durMeasured, nar);
+				return happiness(Math.round(nowPercept.start - dur() * emotionalMomentumDurs), nowPercept.start, durMeasured, nar);
 			});
 
 			/** optimism */
 			reward($.inh(SELF, $.p(happy, future)), () -> {
-				return happiness(  nowPercept.end, Math.round(nowPercept.end + dur() * emotionalMomentumDurs), durMeasured, nar);
+				return happiness(nowPercept.end, Math.round(nowPercept.end + dur() * emotionalMomentumDurs), durMeasured, nar);
 			});
 
 //        ThreadCPUTimeTracker.getCPUTime()
@@ -337,10 +331,10 @@ public abstract class MetaAgent extends Game {
 		 */
 		private static final long autoResumePeriod = 256;
 
-        public GameMetaAgent(Game g, boolean allowPause) {
+		public GameMetaAgent(Game g, boolean allowPause) {
 			super($.inh(g.what().id, $$("meta")), g.time.chain(2 /* nyquist */), g.nar);
 
-            What w = g.what();
+			What w = g.what();
 
 			Term gid = w.id; //$.p(w.nar.self(), w.id);
 			//this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
@@ -390,21 +384,21 @@ public abstract class MetaAgent extends Game {
 				float nextDur =
 					//(float) Math.pow(initialDur, Util.sqr((x + 0.5f)*2));
 					//ditherDT + initialDur * (float) Math.pow(2, ((x - 0.5f)*2));
-					(float) (ditherDT + Util.lerp(Math.pow(x,4), 0, initialDur*16));
+					(float) (ditherDT + Util.lerp(Math.pow(x, 4), 0, initialDur * 16));
 				//System.out.println(x + " dur=" + nextDur);
-				((TaskLinkWhat) w).dur.set(Math.max(1,nextDur));
+				((TaskLinkWhat) w).dur.set(Math.max(1, nextDur));
 			});
 
 			if (w.inBuffer instanceof PriBuffer.BagTaskBuffer)
 				floatAction($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.inBuffer)).valve);
 
 
-			Reward h = reward($.inh(gid, happy), () -> {
-				return g.isOn() ? g.happiness(nowPercept.start, nowPercept.end, 0) : Float.NaN;
+			reward($.inh(gid, happy), () -> {
+				return g.isOn() ? (float) g.happiness(nowPercept.start, nowPercept.end, 0) : Float.NaN;
 			});
 
 
-			Reward d = rewardNormalized($.inh(gid, dex), 1, 0, ScalarValue.EPSILON,
+			rewardNormalized($.inh(gid, dex), 1, 0, ScalarValue.EPSILON,
 				() -> {
 ////            float p = a.proficiency();
 ////            float hp = Util.or(h, p);
@@ -414,10 +408,8 @@ public abstract class MetaAgent extends Game {
 				});
 
 			for (GameLoop s : g.sensors) {
-				if (s instanceof VectorSensor) {
-					Term t = $.inh(((AbstractSensor) s).id, pri);
-					floatAction(t, ((VectorSensor) s).pri.amp);
-				}
+				if (s instanceof VectorSensor)
+					floatAction($.inh(((AbstractSensor) s).id, pri), ((VectorSensor) s).pri.amp);
 			}
 
 
@@ -433,10 +425,7 @@ public abstract class MetaAgent extends Game {
 
 			if (allowPause) {
 				float playThresh = 0.25f;
-				Term play =
-					$.inh(gid, MetaAgent.play);
-
-				GoalActionConcept enableAction = actionPushButton(play, new BooleanProcedure() {
+				actionPushButton($.inh(gid, MetaAgent.play), new BooleanProcedure() {
 
 					private volatile int autoResumeID = 0;
 					private volatile ScheduledTask autoResume;

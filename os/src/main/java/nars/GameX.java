@@ -276,7 +276,7 @@ public abstract class GameX extends Game {
     private static void addClock(NAR n) {
         n.parts(Game.class).forEach(g -> g.onFrame(() -> {
             long now = n.time();
-            int X = g.frame();
+            int X = g.iterationCount();
             int radix = 16;
             Term x = $.pRecurse(false, $.radixArray(X, radix, Integer.MAX_VALUE));
 
