@@ -39,7 +39,7 @@ public class Tetris extends GameX {
     public static final String TETRIS_FALL_MAX = Config.get2("TETRIS_FALL_MAX", "" + 4f, false);
     public static final boolean TETRIS_CAN_FALL = Config.configIs("TETRIS_CAN_FALL", false);
     public static final boolean TETRIS_USE_DENSITY = Config.configIs("TETRIS_USE_DENSITY", true);
-    public static final boolean TETRIS_USE_SCORE = Config.configIs("TETRIS_USE_SCORE", true);
+    //public static final boolean TETRIS_USE_SCORE = Config.configIs("TETRIS_USE_SCORE", true);
     static final int tetris_width = 8;
     static final int tetris_height = 16;
     //    public static final boolean TETRIS_V2_REWARDS = Config.configIs("TETRIS_V2_REWARDS", true);

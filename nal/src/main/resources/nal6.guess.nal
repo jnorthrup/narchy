@@ -10,8 +10,9 @@ questionImplBelief_DrillDown {
 //  originally this only unified depvar (dep var elimination)
 //  TODO merge these ules into one, requires a variation on unisubst that can apply chooseUnifiableSubEvent in 2 ways
 anonymous_analogy {
-    C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- conjWithoutUnify(C,chooseUnifiableSubEvent(C,Y)), (Belief:AnonymousAnalogyPP, Time:BeliefEvent)
-    C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- conjWithoutUnify(C,chooseUnifiableSubEvent(C,--Y)), (Belief:AnonymousAnalogyPN, Time:BeliefEvent)
+  C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- conjWithoutUnify(C,chooseUnifiableSubEvent(C,polarizeBelief(Y))), (Belief:AnonymousAnalogyPD, Time:BeliefEvent)
+  //  C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- conjWithoutUnify(C,chooseUnifiableSubEvent(C,Y)), (Belief:AnonymousAnalogyPP, Time:BeliefEvent)
+  //  C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- conjWithoutUnify(C,chooseUnifiableSubEvent(C,--Y)), (Belief:AnonymousAnalogyPN, Time:BeliefEvent)
 }
     //C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,"#",novel), (Belief:AnonymousAnalogyPP, Time:TaskEvent)
     //C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,"#",novel), (Belief:AnonymousAnalogyPN, Time:TaskEvent)
@@ -19,7 +20,7 @@ anonymous_analogy {
 
 //Conjunction containing both pos/neg X drill-down question
 C, X, eventOf(C,X), eventOfNeg(C,X) |- (conjWithoutPN(X) ==> X), (Punctuation:AskAll)
-
+  X, C, eventOf(C,X), eventOfNeg(C,X) |- (conjWithoutPN(X) ==> X), (Punctuation:AskAll)
 
 //((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDD, Time:TaskEvent)
 

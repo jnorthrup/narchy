@@ -199,8 +199,8 @@ public class MIDIPiano extends JPanel {
             (instrumentControl = new JComboBox()).setFocusable(false);
 
             (synthesizer = MidiSystem.getSynthesizer()).open();
-    //        MidiSystem.getTransmitter();
-            var v = MidiSystem.getMidiDevice(MidiSystem.getMidiDeviceInfo()[1]).getReceiver();
+
+            Receiver v = MidiSystem.getMidiDevice(MidiSystem.getMidiDeviceInfo()[1]).getReceiver();
             System.out.println(v);
 
     //        Sequencer seq = MidiSystem.getSequencer();

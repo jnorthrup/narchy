@@ -72,6 +72,8 @@ public class WorkerExec extends ThreadedExec {
 
 	private static final class WorkPlayLoop implements ThreadedExec.Worker {
 
+		long loopNS_recorded_max = 5_000_000; //initial guess at cycle per loop
+		long naptime = 2_000_000;
 
 
 		final Random rng;
@@ -120,7 +122,6 @@ public class WorkerExec extends ThreadedExec {
 		public void run() {
 
 
-			long loopNS_recorded_max = 5_000_000; //initial guess at cycle per loop
 			//Histogram loopTime = new Histogram(30_000, loopNS_recorded_max, 3);
 			//loopTime.recordValue(loopNS_recorded_max);
 			FloatAveragedWindow loopTime = new FloatAveragedWindow(16, 0.5f, false).mode(FloatAveragedWindow.Mode.Mean);
@@ -145,20 +146,18 @@ public class WorkerExec extends ThreadedExec {
 //				long cycleRemaining = cycleTimeNS;
 
 
-
-				float throttle = nar.loop.throttle.floatValue();
+				boolean running = nar.loop.isRunning();
+				float throttle = running ? nar.loop.throttle.floatValue() : 0;
 				if (throttle < 1) {
 					//sleep at most until next cycle
 					long cycleSleepNS = Math.min(cycleRemaining, (int)(cycleTimeNS * (1.0-throttle)));
-					long naptime = 2_000_000;
 					Util.sleepNSwhile(cycleSleepNS, naptime, ()->{
 						work();
 						return true;
 					});
-					//Util.sleepNS(cycleSleepNS);
 					long afterSleep = System.nanoTime();
 					cycleRemaining = cycleTimeNS - (afterSleep - cycleStart);
-					if (cycleRemaining < 0)
+					if (cycleRemaining < 0 || !running)
 						continue; //slept all day
 				}
 
