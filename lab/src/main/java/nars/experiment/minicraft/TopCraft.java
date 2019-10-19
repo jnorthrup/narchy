@@ -89,7 +89,7 @@ public class TopCraft extends GameX {
     }
 
     public static void main(String[] args) {
-        runRT(n -> {
+        runRT(20, n -> {
             try {
                 TopCraft tc = new TopCraft(n);
 
@@ -99,7 +99,7 @@ public class TopCraft extends GameX {
                 e.printStackTrace();
                 return null;
             }
-        }, 20);
+        });
     }
 
 

@@ -23,7 +23,7 @@ class Chimera {
         System.setProperty("tetris.easy", "true");
 //            reduce con io
         System.setProperty("avg.err", "false");
-        GameX.runRT(n -> {
+        GameX.runRT(FPS * thinkPerFrame, n -> {
 
 
             var t = new Tetris(n, tetris_width, tetris_height);
@@ -48,7 +48,7 @@ class Chimera {
             window(new VectorSensorChart(t.gridVision, t).withControls(), 400, 800);
             n.add(g);
             return g;
-        }, FPS * thinkPerFrame);
+        });
 
     }
 }
