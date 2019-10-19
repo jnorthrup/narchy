@@ -8,11 +8,11 @@ post {
    B, (X ==> A), --is(B,"==>"), --isVar(X) |-   unisubst(X,A,B,"$"), (Goal:PostPP, Time:TaskImmediate)
      //B, (X ==> A), --is(B,"==>"), --isVar(X)   |-   unisubst(X,A,B,"$"), (Goal:PostPP, Time:BeliefEvent)
 }
-//post_antigoal {
+post_antigoal {
 //    //SUSPECT
 //     B, (X ==> A), --is(B,"==>"), --isVar(X)   |- --unisubst(X,A,B,"$"), (Goal:PostNP, Time:TaskEvent)
 //       B, (X ==> A), --is(B,"==>"), --isVar(X) |- --unisubst(X,A,B,"$"), (Goal:PostNP, Time:TaskImmediate)
-//}
+}
 
 pre {
      B, (  X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   unisubst(C,X,B,"$"),  (Belief:DeductionRecursivePP, Time:TaskEvent)
