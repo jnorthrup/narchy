@@ -70,20 +70,12 @@ public abstract class GameX extends Game {
 
     static final boolean initMeta = true;
     static final boolean initMetaRL = false;
-    static final boolean metaAllowPause = false; //TODO
-
+    static final boolean metaAllowPause = false;
+    static final Atom FRAME = Atomic.atom("frame");
     /**
      * determines memory strength
      */
     static float durationsPerFrame = 1f;
-
-//    static {
-//        try {
-//            Exe.setProfiler(new Exe.UDPeerProfiler());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     @Deprecated
     public GameX(String id) {
@@ -94,21 +86,21 @@ public abstract class GameX extends Game {
         super(id, gameTime, n);
     }
 
-    @Deprecated public static NAR runRT(Function<NAR, Game> init, float narFPS) {
-        return runRT(init, -1, narFPS);
+    @Deprecated
+    public static NAR runRT(float narFPS, Function<NAR, Game> init) {
+        return runRT(-1, narFPS, init);
     }
 
-
-    public static NAR runRT(Consumer<NAR> init, float narFPS) {
-        return runRT(init, -1, narFPS);
+    public static NAR runRT(float narFPS, Consumer<NAR> init) {
+        return runRT(-1, narFPS, init);
     }
 
-    @Deprecated public static NAR runRT(Function<NAR,Game> init, int threads, float narFPS) {
-        return runRT((Consumer<NAR>) init::apply, threads, narFPS);
+    @Deprecated
+    public static NAR runRT(int threads, float narFPS, Function<NAR, Game> init) {
+        return runRT(threads, narFPS, (Consumer<NAR>) init::apply);
     }
 
-
-    public static NAR runRT(Consumer<NAR> init, int threads, float narFPS) {
+    public static NAR runRT(int threads, float narFPS, Consumer<NAR> init) {
 
         NAR n = baseNAR(narFPS * durationsPerFrame, threads);
 
@@ -118,15 +110,15 @@ public abstract class GameX extends Game {
 
         if (initMeta) {
 
-            float metaFPS = narFPS / 2; //half rate
+            float metaFPS = narFPS / 2;
 
             n.parts(Game.class).filter(
-                g -> !(g instanceof MetaAgent)
+                    g -> !(g instanceof MetaAgent)
             ).forEach(g -> {
-                float fps = metaFPS; //TODO specific to each game
+                float fps = metaFPS;
                 MetaAgent gm = new MetaAgent.GameMetaAgent(g, metaAllowPause);
                 n.add(gm);
-                //gm.pri(0.1f);
+
             });
 
             MetaAgent.SelfMetaAgent self = new MetaAgent.SelfMetaAgent(n);
@@ -139,50 +131,8 @@ public abstract class GameX extends Game {
 
         Loop loop = n.startFPS(narFPS);
 
-//
-//        Exe.invokeLater(()-> {
-//            GraphEdit2D g = GraphEdit2D.window(1024, 800);
-//            g.physics.invokeLater(()-> {
-//            //Exe.invokeLater(() -> {
-//                n.parts(Game.class).forEach((SubPart pp) -> {
-//                    Game gg = (Game)pp;
-//                    SupplierPort sg = new SupplierPort(gg.term().toString(), Surface.class, () -> NARui.game(gg));
-//                    g.add(sg).posRel(0,0,0.25f,0.25f);
-//                });
-//                g.add(new SupplierPort<>("att", Surface.class, () -> NARui.attentionUI(n))).posRel(0, 0, 0.25f, 0.25f);
-//                g.add(new SupplierPort<>("top", Surface.class, () -> NARui.top(n))).posRel(0, 0, 0.25f, 0.25f);
-//            });
-//        } );
 
-
-
-
-//        //DurSurface.get()
-//
-//            n.parts(Game.class).map((Game g) ->
-//                Surplier.button(g.toString(), ()->
-////                    new ObjectSurface(List.of(
-//                        NARui.game(g)
-////                        g.sensors.list,
-////                        g.actions.list,
-////                        g.rewards.list
-////                    ))
-//            )).forEach(l::add);
-//
-//            n.parts(VectorSensor.class).map((VectorSensor v) -> {
-//                if (v instanceof Bitmap2DSensor) {
-//                    int w = ((Bitmap2DSensor) v).width, h = ((Bitmap2DSensor) v).height;
-//                    return new AspectAlign(new VectorSensorChart(v, w, h, n).withControls(), ((float)h)/w );
-//                } else {
-//                    return Surplier.button(v.toString(), () -> new VectorSensorChart(v, n).withControls());
-//                }
-//            }).forEach(l::add);
-
-            //l.add(Surplier.button("top", () -> NARui.top(n)));
-            //l.add(Surplier.button("att", () -> NARui.attentionUI(n)));
-
-
-        n.runLater(()-> {
+        n.runLater(() -> {
             n.synch();
             window(NARui.top(n), 1024, 800);
             window(new Gridding(n.parts(Game.class).map(NARui::game).collect(toList())), 1024, 768);
@@ -197,62 +147,14 @@ public abstract class GameX extends Game {
      * ex: new PoleCart($.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()), n);
      */
     @Deprecated
-    public static NAR runRTNet(Function<NAR, Game> a, int threads, float narFPS, float netFPS) {
-        return runRT((n) -> {
-
+    public static NAR runRTNet(int threads, float narFPS, float netFPS, Function<NAR, Game> a) {
+        return runRT(threads, narFPS, (n) -> {
             Game aa = a.apply(n);
-
-//            new InterNAR(n).fps(netFPS);
-
             return aa;
-
-        }, threads, narFPS);
+        });
     }
-
-//    public static NAR runRL(Function<NAR, Game> init, float narFPS, float clockFPS) {
-//        NAR n = baseNAR(clockFPS, 1);
-//
-//        Game a = init.apply(n);
-//        a.curiosity.enable.set(false);
-//
-//        n.runLater(() -> {
-//
-//
-//
-//
-////            n.start(a);
-//
-//
-//            SpaceGraph.surfaceWindow(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
-//
-//
-//
-//
-//            new RLBooster(a,
-//                    //DQN2::new,
-//                    HaiQae::new,
-//                    //HaiQ::new,
-//                    true
-//            );
-//        });
-//
-//        Loop loop = n.startFPS(narFPS);
-//
-//        return n;
-//    }
 
     public static NAR baseNAR(float durFPS, int _threads) {
-    /*
-    try {
-        Exe.UDPeerProfiler prof = new Exe.UDPeerProfiler();
-
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-    */
-
-
-        //Param.STRONG_COMPOSITION = true;
 
         RealTime clock =
                 new RealTime.MS();
@@ -262,70 +164,36 @@ public abstract class GameX extends Game {
         int threads = _threads <= 0 ? Util.concurrencyExcept(1) : _threads;
 
         double ramGB = Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024.0);
-        return new NARS()
-
-                .what(
+        return new NARS()                  .what(
                         (w) -> new TaskLinkWhat(w,
-                            256,
-                            //512,
-                            //    1024,
+                                256,
                                 new PriBuffer.DirectTaskBuffer()
-                                //new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */)
-                                //new PriBuffer.MapTaskBuffer()
-
                         )
-                )
-//                .attention(() -> new ActiveConcepts(1024))
-                .exe(
-                        //new UniExec()
+                ).exe(
+
 
                         new WorkerExec(
                                 threads,
                                 false/* affinity */)
 
-                        //new ForkJoinExec()
 
-                        //new ForkJoinExec(Math.max(1, Runtime.getRuntime().availableProcessors() - 1))
-
-//                new SuperExec(
-//                    new Valuator.DefaultValuator(0.9f), threads <= 0 ? Util.concurrencyExcept(1) : threads
-//                )
                 )
-//                .exe(MixMultiExec.get(
-//                            1024,
-//                             Util.concurrency()))
-//                .exe(new WorkerMultiExec(
-//
-//                             new Focus.AERevaluator(new SplitMix64Random(1)),
-//                             Util.concurrencyDefault(2),
-//                             1024, 1024) {
-//
-//                         {
-//                             //Exe.setExecutor(this);
-//                         }
-//                     }
-//                )
 
 
                 .time(clock)
                 .index(
 
-                        //new RadixTreeMemory(64*1024)
 
                         ramGB >= 0.5 ?
                                 new CaffeineMemory(
-                                        //8 * 1024
-                                        //16*1024
-                                        //32*1024
-                                        //64 * 1024
-                                        //128*1024
+
+
                                         Math.round(ramGB * 96 * 1024)
                                 )
                                 :
                                 CaffeineMemory.soft()
 
 
-//                        new HijackMemory((int)Math.round(ramGB * 128 * 1024), 3)
                 )
                 .get(GameX::config);
     }
@@ -333,114 +201,26 @@ public abstract class GameX extends Game {
     private static void initPlugins2(NAR n, Game a) {
 
 
-
-//        List<Concept> rewardConcepts = a.rewards.stream().flatMap(x -> stream(x.spliterator(), false)).map(n::concept).collect(toList());
-//        List<Termed> sensorConcepts = a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false)).collect(toList());
-//        List<Concept> actionConcepts = a.actions.stream().flatMap(x -> stream(x.components().spliterator(), false)).map(n::concept).collect(toList());
-
-        // virtual tasklinks to sensors (sampler)
-//        BiFunction<Concept, Derivation, BeliefSource.LinkModel> sensorLinker = ListTermLinker(sensorConcepts);
-//        BiFunction<Concept, Derivation, BeliefSource.LinkModel> actionLinker = ListTermLinker(actionConcepts);
-//        BiFunction<Concept, Derivation, BeliefSource.LinkModel> rewardLinker = ListTermLinker(rewardConcepts);
-
-//        ZipperDeriver senseReward = BeliefSource.forConcepts(n, rules,
-//                actionConcepts,
-//                //sensorConcepts,
-//                rewardLinker
-//                //ConceptTermLinker
-//        );
-//        senseReward.timing = new ActionTiming(n);
-
-        //Impiler.init(n);
     }
 
-//    private static void initMeta(Game g, boolean rl, boolean allowPause) {
-
-
-//        Gridding g = new Gridding();
-//        g.add(NARui.game(meta));
-//
-
-
-
-        //n.start(new SpaceGraphPart(() -> g, 500, 500));
-
-//        window(NARui.beliefCharts(n, meta.sensors.stream().flatMap(x -> Streams.stream(x.components())).collect(toList())), 400, 300);
-
-//        window(AttentionUI.attentionGraph(n), 600, 600);
-
-        //d.durs(0.25f);
-
-//                if (a instanceof NAgentX) {
-//                    NAgent m = metavisor(a);
-//                    m.pri.setAt(0.1f);
-//                    window(NARui.agent(m), 400, 400);
-//                }
-        //new AgentControlFeedback(a);
-
-        //new Spider(n, Iterables.concat(Iterables.concat(java.util.List.of(a.id, n.self()), a.actions), a.sensors));
-
-        //new NARSpeak.VocalCommentary(n);
-
-//        AudioContext cc = new AudioContext();
-//        Clock c = cc.clock(200f);
-//        new Metronome(a.id.target(), c, n);
-//        cc.printCallChain();
-
-
-//        String experiencePath = System.getProperty("java.io.tmpdir") + "/" + a.getClass().getSimpleName() + ".nal";
-//        File f = new File(experiencePath);
-//        if (f.exists()) {
-//            n.runLater(()->{
-//                try {
-//                    n.inputBinary(f);
-//                } catch (IOException e) {
-//                    //e.getCause().printStackTrace();
-//                    e.printStackTrace();
-//                }
-//            });
-//        }
-
-
-//        Runtime.getRuntime().addShutdownHook(new Thread(()->{
-//            //n.pause();
-//            //a.off();
-//
-//            try {
-//                n.outputBinary(new File(experiencePath), false,
-//                        (Task t) -> !t.isGoal() ?
-//                                Task.eternalized(t,1, c2wSafe(n.confMin.floatValue()), n) : null
-//                );
-//
-//                n.logger.info("eternalized memory saved to: " + experiencePath);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }));
-//    }
-
-
     public static void config(NAR n) {
-        n.main.pri(0);  //HACK
-        n.what.remove(n.main.id); //HACK
+        n.main.pri(0);
+        n.what.remove(n.main.id);
 
         n.dtDither.set(
-                //1
+
                 10
-                //20
-                //40
+
+
         );
 
         n.causeCapacity.set(16);
         n.termVolMax.set(
-            //64
-            48
-            //36
+
+                48
+
         );
 
-        //n.confMin.set(1e-10);
-//        n.freqResolution.set(0.1f);
-//        n.confResolution.set(0.02f);
 
         n.beliefPriDefault.pri(0.5f);
         n.goalPriDefault.pri(0.5f);
@@ -456,246 +236,61 @@ public abstract class GameX extends Game {
         n.emotion.want(MetaGoal.Desire, 0.05f);
 
 
-//
-//        n.attn.forgetting = new Forgetting.AsyncForgetting() {
-//            @Override
-//            protected Consumer<TaskLink> forgetTasklinks(Concept cc, Bag<Tasklike, TaskLink> tasklinks) {
-//                Consumer<TaskLink> c = super.forgetTasklinks(cc, tasklinks);
-//
-//                if (c==null) return null;
-//
-//                Term cct = cc.target();
-//
-//                Consumer<TaskLink> cSpecial = new PriForget<>(  Util.lerp(0.25f, 0, 1-((PriForget)c).mult));
-//                return (tl)->{
-//                      if (tl.punc()==GOAL || (tl.target().op()==IMPL && tl.target().sub(1).equals(cct)))
-//                          cSpecial.accept(tl);
-//                      else
-//                          c.accept(tl);
-//                };
-//            }
-//        };
-
-        //n.emotion.want(MetaGoal.Answer, 0f);
     }
 
     private static void initPlugins(NAR n) {
 
-//        Consumer<Why[]> governor = (cc) -> {
-////           final Random rng = n.random();
-//           for (Why c : cc) {
-//               if (c==null) continue;
-//               float v = c.amp();
-//               c.pri(v + rng.nextFloat()*0.1f);
-//           }
-//        };
-
 
         n.exe.governor = Should.predictMLP;
 
-        Loop.of(()->{
-            //n.how.forEach(w -> w.printPerf(System.out));
+        Loop.of(() -> {
+
             n.stats(false, true, System.out);
-            //n.control.stats(System.out);
+
             System.out.println();
         }).setFPS(0.25f);
 
 
-//        n.runLater(()-> {
-//            //addFuelInjection(n);
-//            addClock(n);
-//        });
-
-//        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
-//                "motivation.nal"
-//                //"nal6.to.nal1.nal"
-//                //"equivalence.nal"
-//                //  "induction.goal.nal"
-//        ));
-//        bd.timing = new ActionTiming(n);
-//        bd.tasklinksPerIteration.set(8);
-
-
-//        Deriver bd1 = new Deriver(Derivers.nal(n, 1, 1));
-//        Deriver bd2_4 = new Deriver(Derivers.nal(n, 2, 4));
-//        Deriver bd6 = new Deriver(Derivers.nal(n, 1, 8));
-//        Deriver bd3_act = new Deriver(Derivers.nal(n, 1, 3));
-//        bd3_act.time(new ActionTiming());
-
         ConjClustering cc;
 
         Deriver bd6_act = new Deriver(
-            Derivers.nal(n, 1,8,"motivation.nal")
-                .add(new STMLinker(1))
-                .add(new Arithmeticize.ArithmeticIntroduction())
-                .add(new Factorize.FactorIntroduction())
-                .add(new Inperience())
-                .add(cc = new ConjClustering(n, BELIEF,  BELIEF, 6, 32, t->true))
-                //.add(new ConjClustering(n, GOAL, GOAL, 3, 8, t->true))
-                //.add(new AdjacentLinks(new FirstOrderIndexer())) //<- slow
+                Derivers.nal(n, 1, 8, "motivation.nal")
+                        .add(new STMLinker(1))
+                        .add(new Arithmeticize.ArithmeticIntroduction())
+                        .add(new Factorize.FactorIntroduction())
+                        .add(new Inperience())
+                        .add(cc = new ConjClustering(n, BELIEF, BELIEF, 6, 32, t -> true))
 
-//                .add(new Abbreviation.AbbreviateRecursive(4, 8))
-//                .add(new Abbreviation.UnabbreviateRecursive())
-//                //.add(new Abbreviation.AbbreviateRoot(4, 9))
-//                //.add(new Abbreviation.UnabbreviateRoot())
 
-            ,
-            new MixedTimeFocus(
-                new NonEternalTaskOccurenceOrPresentDeriverTiming(),
-                //new TaskOccurenceTiming(),
-                new ActionTiming()
-            )
+                ,
+                new MixedTimeFocus(
+                        new NonEternalTaskOccurenceOrPresentDeriverTiming(),
+
+                        new ActionTiming()
+                )
         );
-
-        //window(NARui.clusterView(cc, n), 800, 600);
-
-        //BasicDeriver bd6_curi = new Deriver(Derivers.files(n, "curiosity.nal"));
-
-//        BatchDeriver bdExtra = new BatchDeriver(Derivers.files(n,
-//                "motivation.nal"
-//                "nal4.sect.nal",
-//                //, "nal6.to.nal3.nal"
-//        ));
-
-
-//        inputInjectionPID(injection, n);
-
-        //bd2.timing = new ActionTiming(n);
-//        bd.tasklinksPerIteration.set(8);
-        //bd.timing = bd.timing; //default
-
-
-        //new StatementLinker(n);
-        //new PuncNoise(n);
-        //n.start(new Eternalizer(n));
-
-//        new STMLinkage(n, 1);
-
-        //tiered
-
-
-                //,new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 32, 256, t->!t.isInput())//t instanceof DerivedTask),
-                //new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 2, 16, t->!(t instanceof DerivedTask) && !t.isInput())
-                //, new ConjClustering(n, GOAL,  QUEST /* GOAL*/, 16, 64)
-                //, new ConjClustering(n, GOAL,  GOAL /* GOAL*/, 16, 64)
-
-
-//        SpaceGraph.window(grid(conjClusters, c -> NARui.clusterView(c, n)), 700, 700);
-
-
-//        ConjClustering conjClusterBderived = new ConjClustering(n, BELIEF,
-//                t->!t.isInput(),
-//                4, 16);
-//        {
-//
-//            SpaceGraph.window(
-//                    new ConjClusterView(conjClusterBinput),
-//                    500, 500);
-//
-//        }
-
-
-
-
-
-
-
-
-        //new Abbreviation("z", 2, 5, n);
-
-
-//        try {
-//            InterNAR i = new InterNAR(n, 0) {
-//                @Override
-//                protected void starting(NAR nar) {
-//                    super.starting(nar);
-//                    runFPS(4);
-//                }
-//            };
-//
-//
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
 
 
     }
 
-    static final Atom FRAME = Atomic.atom("frame");
-
     private static void addClock(NAR n) {
-        n.parts(Game.class).forEach(g -> g.onFrame(()->{
+        n.parts(Game.class).forEach(g -> g.onFrame(() -> {
             long now = n.time();
             int X = g.frame();
             int radix = 16;
-            Term x =
-                //Int.the(X);
-                //$.pRadix(X, 8, Integer.MAX_VALUE);
-                //$.p( $.radixArray(X, radix, Integer.MAX_VALUE));
-                $.pRecurse(false, $.radixArray(X, radix, Integer.MAX_VALUE));
+            Term x = $.pRecurse(false, $.radixArray(X, radix, Integer.MAX_VALUE));
 
             Term f = $.funcImg(FRAME, g.id, x);
             Task t = new SeriesBeliefTable.SeriesTask(f, BELIEF, $.t(1f, n.confDefault(BELIEF)),
-				now, Math.round(now + g.durLoop()),
-				new long[]{n.time.nextStamp()});
-            t.pri(n.priDefault(BELIEF)*g.what().pri());
-            //System.out.println(t);
+                    now, Math.round(now + g.durLoop()),
+                    new long[]{n.time.nextStamp()});
+            t.pri(n.priDefault(BELIEF) * g.what().pri());
+
             g.what().accept(t);
         }));
     }
+
     private static void addFuelInjection(NAR n) {
-        //                //TODO use AgentBuilder
-        //                float inc = 0.1f;
-        //
-        //                AgentBuilder ab = new AgentBuilder(() -> {
-        //                    float load = b.load();
-        //                    float error = load - ideal; //in -1..+1
-        //                    return (1 - Util.sqrt(Math.abs(error))*4);
-        //                })
-        //                    .in(b.valve)
-        //                    .in(b::load)
-        //                    .in(()->Math.max(0,b.load() - ideal))
-        //                    .in(()->Math.max(0,ideal - b.load()))
-        //                    .out(5, (o) -> {
-        //                        float rate = 0.005f;
-        //
-        //                        float d = b.load() - ideal;
-        //                        float delta = d;
-        //                        float change = 0;
-        //                        switch (o) {
-        //                            case 0:
-        //                                change = -rate*1f * delta; //away
-        //                                break;
-        //                            case 1:
-        //                                change = 0;
-        //                                break;
-        //                            case 2:
-        //                                change = +rate*1f * delta; //closer
-        //                                break;
-        //                            case 3:
-        //                                change = +rate*2f * delta; //closer
-        //                                break;
-        //                            case 4:
-        //                                change = +rate*4f * delta; //closer
-        //                                break;
-        //                        }
-        //                        b.valve.add(change);
-        //                    })
-        ////                    .out(8, (v) -> b.valve.set( lerp(0.9f, b.valve.get(), v/7f)) )
-        //                ;
-        //
-        //                System.out.println(ab);
-        //                Agenterator a = ab.get((i,o)->
-        //                        new DQN3(i,o));
-        //
-        //                ((DQN3)a.agent).gamma = 0.75f;
-        //                n.onDur(()->{
-        ////                    float reward = a.asFloat();
-        ////                    System.out.println(reward);
-        //                n.onDur(()->{
-        //                    b.valve.add(0.005f * (b.load() - ideal)); //simple proportional control
-        //                });
         n.parts(What.class).filter(w -> w.inBuffer instanceof PriBuffer.BagTaskBuffer).map(w -> (PriBuffer.BagTaskBuffer) w.inBuffer).forEach(b -> {
             MiniPID pid = new MiniPID(0.007f, 0.005, 0.0025, 0);
             pid.outLimit(0, 1);
@@ -705,110 +300,6 @@ public abstract class GameX extends Game {
         });
 
     }
-
-    //    static void inputInjectionQ(NAR n) {
-//        //TODO
-//    }
-
-//    /** https://www.controlglobal.com/blogs/controltalkblog/how-to-avoid-a-common-pid-tuning-mistake-tips/ */
-//    static void inputInjectionPID(PriBuffer b, NAR n) {
-//        //perception injection control
-////        MiniPID pid = new MiniPID(0.01, 0.01, 0.002);
-////        pid.outLimit(-1, +1);
-////        pid.setSetpointRange(+1);
-////        pid.f(100);
-//
-//        //pid.setOutRampRate(0.5);
-//
-//        FloatRange valve = ((PriBuffer.BagTaskBuffer) b).valve;
-//        //DurService.on(n,
-////        n.onCycle(
-////        ()->{
-////            double vol = b.volume();
-////            double nextV = pid.out(vol,0.5);
-//////                System.out.println(nextV);
-////            valve.set(Util.unitize(nextV ));
-////        });
-//
-//        EditGraph2D<Surface> g = EditGraph2D.window(800, 800);
-//        g.add(NARui.taskBufferView(b, n)).sizeRel(0.75f,0.25f);
-//        //g.add(new PIDChip(pid)).sizeRel(0.2f,0.2f);
-//
-//        TensorRing history = new TensorRing(3, 8);
-//        HaiQae q = new HaiQae(history.volume(), 32,5);
-//
-//        HaiQChip haiQChip = new HaiQChip(q);
-//
-//        g.add(LabeledPane.the("Q", haiQChip)).sizeRel(0.2f, 0.2f);
-//
-////        n.onCycle(()->haiQChip.next(reward));
-//        //n.onCycle(
-//        //-((2 * Math.abs(v - 0.5f))-0.5f)*2;
-//        //nothing
-//        //                case 0: valve.set(0); break;
-//        //                case 1: valve.set(0.5); break;
-//        //                case 2: valve.set(1); break;
-//        n.onDur(new Runnable() {
-//
-//            private float[] sense;
-//            float dv = 0.1f;
-//
-//            @Override
-//            public void run() {
-//
-//                float v = b.load();
-//                float reward =
-//                        //-((2 * Math.abs(v - 0.5f))-0.5f)*2;
-//                        (float) (Math.log(n.feel.busyVol.asFloat())/5f);
-//
-//                haiQChip.rewardSum.addAndGet(reward);
-//                haiQChip.next();
-//
-//                float x = ((PriBuffer.BagTaskBuffer) b).valve.floatValue();
-//                sense = history.set(new float[]{
-//                        x, v, 0.5f + 0.5f * Util.tanhFast((float) -Math.log(dv))
-//                }).snapshot(sense);
-//
-//
-//                int decision = q.act(reward, sense);
-//                float w = x;
-//                switch (decision) {
-//                    case 0: //nothing
-//                        break;
-//                    case 1:
-//                        w = Math.max(0, x - dv);
-//                        break;
-//                    case 2:
-//                        w = Math.min(1, x + dv);
-//                        break;
-//                    case 3:
-//                        dv = Math.max(0.001f, dv - dv*dv);
-//                        break;
-//                    case 4:
-//                        dv = Math.min(0.2f, dv + dv*dv);
-//                        break;
-////                case 0: valve.set(0); break;
-////                case 1: valve.set(0.5); break;
-////                case 2: valve.set(1); break;
-//                }
-//                valve.set(w);
-//            }
-//        });
-//
-//        //Loop.of(() -> {
-//
-//            //int a = q.act(new float[] { (((float) Math.random()) - 0.5f) * 2, in);
-//            //outs.out(a);
-////            int n = outs.size();
-////            for (int i = 0; i < n; i++) {
-////                outs.out(i, (i == a));
-////            }
-//        //}).setFPS(25);
-//
-////        SwitchChip outDemultiplexer = new SwitchChip (4);
-////        p.addAt(outDemultiplexer).pos(450, 450, 510, 510);
-//
-//    }
 
     /**
      * pixelTruth defaults to linear monochrome brightness -> frequency
@@ -859,6 +350,7 @@ public abstract class GameX extends Game {
         addSensor(c);
         return c;
     }
+
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable IntIntToObjectFunction<nars.term.Term> id, C bc, float defaultFreq) {
         Bitmap2DSensor c = new Bitmap2DSensor(nar(), defaultFreq, bc, id);
         addSensor(c);
@@ -909,16 +401,10 @@ public abstract class GameX extends Game {
                     ),
                     plot = new Plot2D(1024, Plot2D.Line)
             );
-//        hw.add(LabeledPane.the("input", new TypedPort<>(float[].class, (i) -> {
-//            System.arraycopy(i, 0, in, 0, i.length);
-//        })));
-            //hw.add(LabeledPane.the("act", new IntPort(q.actions)));
 
 
             rewardSum = new AtomicDouble();
-//            plot.add("Reward", ()->{
-//                return rewardSum.getAndSet(0); //clear
-//            });
+
 
             set(inner);
         }

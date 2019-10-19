@@ -141,13 +141,13 @@ public class Pacman extends GameX {
 
 
     public static void main(String[] args) {
-        GameX.runRT((n) -> {
+        GameX.runRT(fps*2, (n) -> {
 
             Pacman a = new Pacman(n);
             n.add(a);
             return a;
 
-        }, fps*2);
+        });
     }
 
 }

@@ -25,14 +25,14 @@ public class Launcher {
         @Override
         public void run() {
 
-            new Thread(()-> GameX.runRT((n) -> {
+            new Thread(()-> GameX.runRT(fps, (n) -> {
                 try {
 
                     return env.getConstructor(NAR.class).newInstance(n);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-            }, fps)).start();
+            })).start();
         }
 
         @Override

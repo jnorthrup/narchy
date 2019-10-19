@@ -69,7 +69,7 @@ public class PoleCart extends GameX {
 		int instances = 1;
 		int threadsEach = 4;
 		for (int i = 0; i < instances; i++)
-			runRTNet(n -> {
+			runRTNet(threadsEach, fps * 2, 8, n -> {
 					PoleCart p = new PoleCart(
 						instances > 1 ?
 							$.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
@@ -142,8 +142,8 @@ public class PoleCart extends GameX {
 					n.add(p);
 
 					return p;
-				},
-				threadsEach, fps * 2, 8);
+				}
+            );
 
 
 	}

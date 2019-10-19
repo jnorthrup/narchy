@@ -108,7 +108,7 @@ public class ArkaNAR extends GameX {
     public static class MultiArkaNAR {
         public static void main(String[] args) {
 
-            NAR n = runRT(nn -> {
+            NAR n = runRT(40, nn -> {
 
                 ArkaNAR a = new ArkaNAR($$("(noid,a)"), nn, cam, numeric);
                 a.ballSpeed.set( 0.7f * a.ballSpeed.floatValue() );
@@ -120,20 +120,20 @@ public class ArkaNAR extends GameX {
 //                        new Gridding(NARui.game(a), new VectorSensorView(a.cc, a).withControls()),
 //                        new Gridding( NARui.game(b), new VectorSensorView(b.cc, b).withControls())), 800, 800);
 
-            }, 40);
+            });
 
         }
     }
 
     public static void main(String[] args) {
 
-        runRT(n -> {
+        runRT(fps*2, n -> {
 
             ArkaNAR a = new ArkaNAR(n, cam, numeric);
             n.add(a);
             window( new VectorSensorChart(a.cc, a).withControls(), 800, 800);
 
-        },fps*2);
+        });
 
     }
 
