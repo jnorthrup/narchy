@@ -2,23 +2,29 @@ package spacegraph.audio;
 
 import jcog.math.FloatRange;
 
-/** Monaural sound source */
+/** Monaural sound source
+ *
+ * TODO remove Amplifiable subclass, make this @FunctionalInterface that only requires read() to be impl
+ * move all mutable state to Sound which is created and returned when this is played.
+ * */
 public abstract class SoundProducer {
-    private boolean live = true;
-
 
     public abstract void read(float[] buf, int readRate);
 
-    public abstract void skip(int samplesToSkip, int readRate);
+    /** implement to provide skip handling */
+    public void skip(int samplesToSkip, int readRate) {
 
-    public final void stop() {
+    }
+
+    @Deprecated private boolean live = true;
+    @Deprecated public final void stop() {
         live = false;
     }
-    public final boolean isLive() {
+    @Deprecated public final boolean isLive() {
         return live;
     }
 
-    public abstract static class Amplifiable extends SoundProducer {
+    @Deprecated public abstract static class Amplifiable extends SoundProducer {
 
         public final FloatRange amp = new FloatRange(1f, 0, 1f);
 

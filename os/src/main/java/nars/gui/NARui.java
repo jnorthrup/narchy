@@ -5,18 +5,15 @@ import com.google.common.util.concurrent.AtomicDouble;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
-import jcog.data.list.FasterList;
 import jcog.data.list.table.Table;
 import jcog.event.Off;
 import jcog.exe.Exe;
 import jcog.learn.ql.HaiQae;
 import jcog.learn.ql.dqn3.DQN3;
 import jcog.pri.VLink;
+import jcog.signal.wave1d.IIRFilter;
 import jcog.thing.Thing;
-import nars.AttentionUI;
-import nars.NAR;
-import nars.Narsese;
-import nars.Task;
+import nars.*;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.Concept;
@@ -27,17 +24,21 @@ import nars.gui.concept.ConceptColorIcon;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
 import nars.link.TaskLink;
+import nars.link.TaskLinkSnapshot;
 import nars.op.stm.ConjClustering;
 import nars.task.util.PriBuffer;
 import nars.term.Termed;
 import nars.time.part.DurLoop;
 import nars.util.MemorySnapshot;
+import net.beadsproject.beads.data.Pitch;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
+import spacegraph.audio.Audio;
+import spacegraph.audio.Sound;
+import spacegraph.audio.SoundProducer;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.ScrollXY;
@@ -63,6 +64,7 @@ import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.meter.ScatterPlot2D;
 import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.space2d.widget.port.FloatRangePort;
+import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
@@ -73,6 +75,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -631,38 +634,143 @@ public class NARui {
 
     public static Surface tasklinkSpectrogram(NAR n, Table<?,nars.link.TaskLink> active, int history, int width) {
 
+        //mode select menu
+        var m = new Gridding();
+
         var s = new Spectrogram(true, history, width);
 
-        return DurSurface.get(s, n, new Runnable() {
+        /** audio control */
+        CheckBox sonifyButton;
+        FloatSlider freqSlider = new FloatSlider("freq", 500, 10, 1700);
+        FloatSlider ampSlider = new FloatSlider("amp", 1f, 0, 1);
+        FloatSlider filterFreq = new FloatSlider("filt", 1000, 60, 5000);
+        var a = new Gridding(sonifyButton = new CheckBox("Sonify"), freqSlider, ampSlider, filterFreq);
 
-            final FasterList<TaskLink> snapshot = new FasterList(active.capacity());
-
-            @Override
-            public void run() {
-                snapshot.clearFast();
-                var c = active.capacity();
-                snapshot.ensureCapacity(c);
-                for (TaskLink taskLink : active) {
-                    snapshot.addFast(taskLink);
-                }
-                s.next(color);
-            }
-
-            final IntToIntFunction color = _x -> {
-                var x = snapshot.get(_x);
+        var tls = new TaskLinkSnapshot(active) {
+            final int[] opColors = new int[]{
+                Draw.rgbInt(1, 0, 0),
+                Draw.rgbInt(0, 1, 0),
+                Draw.rgbInt(0, 0, 1),
+                Draw.rgbInt(0.5f, 0.5f, 0f),
+                Draw.rgbInt(0.5f, 0f, 0.5f),
+                Draw.rgbInt(0f, 0.5f, 0.5f),
+                Draw.rgbInt(0.5f, 0.5f, 0.5f), //TODO
+                Draw.rgbInt(0.5f, 0.5f, 0.5f),//TODO
+                Draw.rgbInt(0.5f, 0.5f, 0.5f),//TODO
+                Draw.rgbInt(0.5f, 0.5f, 0.5f),//TODO
+                Draw.rgbInt(0.5f, 0.5f, 0.5f),//TODO
+                Draw.rgbInt(0.5f, 0.5f, 0.5f),//TODO
+                Draw.rgbInt(0.5f, 0.5f, 0.5f),
+                Draw.rgbInt(0.5f, 0.5f, 0.5f),
+                Draw.rgbInt(0.5f, 0.5f, 0.5f),
+                Draw.rgbInt(0.5f, 0.5f, 0.5f)
+            };
+            final IntToIntFunction opColor = _x -> {
+                TaskLink x = items[_x];
+                if (x == null) return 0;
+                Op o = x.term().op();
+                return opColors[o.id];
+            };
+            final IntToIntFunction volColor = _x -> {
+                TaskLink x = items[_x];
+                if (x == null) return 0;
+                float v = (float) Math.log(1 + x.term().volume());
+                return Draw.colorHSB(v / 10f, 0.5f + 0.5f * v / 10f, v / 10f); //TODO
+            };
+            final IntToIntFunction puncColor = _x -> {
+                var x = items[_x];
                 if (x == null)
                     return 0;
 
-//                float[] bgqq = x.priPuncSnapshot();
                 var r = x.priPunc(BELIEF);
                 var g = x.priPunc(GOAL);
                 var b = (x.priPunc(QUESTION) + x.priPunc(QUEST)) / 2;
                 return Draw.rgbInt(r, g, b);
-
-
             };
 
-        });
+            IntToIntFunction color = puncColor;
+
+            {
+                m.set(List.of(
+                    new PushButton("Punc", () -> color = puncColor),
+                    new PushButton("Op", () -> color = opColor),
+                    new PushButton("Vol", () -> color = volColor)
+                ));
+            }
+
+            @Override
+            protected void next() {
+                s.next(color);
+            }
+
+            {
+                sonifyButton.on(new BooleanProcedure() {
+                    private Sound<SoundProducer> sound;
+
+                    @Override
+                    public void value(boolean play) {
+                        synchronized (s) {
+                            if (play) {
+                                sound = Audio.the().play(new SoundProducer() {
+
+
+                                    /** TODO use BiQuadFilter */
+                                    private IIRFilter filter;
+
+                                    @Override
+                                    public void skip(int samplesToSkip, int readRate) {
+                                        //System.out.println("skip " + samplesToSkip);
+                                    }
+
+
+                                    @Override
+                                    public void read(float[] buf, int readRate) {
+                                        if (filter == null)
+                                            filter = new IIRFilter.LowPassFS(filterFreq.asFloat(), readRate);
+
+                                        filter.setFrequency(filterFreq.asFloat());
+                                        TaskLink[] ii = items;
+                                        int n = ii.length;
+                                        Random rng = ThreadLocalRandom.current();
+                                        float baseFreq = freqSlider.asFloat();
+                                        float vol = ampSlider.asFloat();
+                                        for (int i = 0; i < n; i++) {
+                                            TaskLink x = items[i];
+                                            if (x == null) continue;
+                                            float amp = vol * (float)((Math.exp(x.pri()*10)-1)/Util.sqrt(n));
+                                            Op o = x.op();
+
+                                            //stupid grain synth
+                                            float f = baseFreq * (1+Pitch.forceToScale(o.id + 1, Pitch.dorian));
+                                            float grainTime = Util.lerp(Math.min(1, x.term().volume()/30f), 0.1f, 0.33f);
+                                            int sw = Math.round(buf.length * grainTime);
+                                            int ss = (int)( rng.nextFloat() * (buf.length - sw - 1));
+                                            int se = ss + sw;
+                                            for (int s = ss; s < se; s++) {
+                                                float env = 2 * Math.min(Math.abs(s - ss), Math.abs(s - se))/(sw+1f); //triangular
+                                                buf[s] += amp * (float) Math.sin(f * s * 2 * 1f / readRate) * env;
+                                            }
+                                        }
+                                        filter.process(buf, 0, buf.length);
+                                    }
+                                });
+                                System.out.println("tasklinks " + active + " sonify START " + sound);
+                            } else {
+                                if (sound!=null) {
+                                    sound.stop();
+                                    sound = null;
+                                }
+                                System.out.println("tasklinks " + active + " sonify STOP");
+                            }
+                        }
+                    }
+                });
+
+            }
+        };
+
+
+        return DurSurface.get(new Bordering(s).west(m).south(a), n, tls);
     }
 
 //    @Deprecated public static void agentOld(NAgent a) {
@@ -913,7 +1021,7 @@ public class NARui {
 
     }
 
-    public static @NotNull PaintUpdateMatrixView matrix(double[] dw) {
+    public static PaintUpdateMatrixView matrix(double[] dw) {
         return dw.length > 2048 ?
             PaintUpdateMatrixView.scroll(dw, false, 64, 8) :
             new PaintUpdateMatrixView(()->dw, dw.length, dw.length/Math.max(1, (int) Math.ceil(sqrt(dw.length))));
@@ -949,4 +1057,6 @@ public class NARui {
             nar,
             () -> s.set(all) );
     }
+
+
 }

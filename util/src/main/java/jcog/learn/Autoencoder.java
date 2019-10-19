@@ -90,10 +90,9 @@ public class Autoencoder {
 
     /** preprocessing filter, applied to each x[]'s value */
     public static float pre(float x) {
-        if(!Float.isFinite(x))
-            return 0;
-        return x;
+        return !Float.isFinite(x) ? 0 : x;
     }
+
     public static float post(float x) {
         return pre(x);
     }
@@ -143,7 +142,7 @@ public class Autoencoder {
 
         //float max = Float.NEGATIVE_INFINITY, min = Float.POSITIVE_INFINITY;
         for (int i = 0; i < outs; i++) {
-            float yi = hbias[i];
+            double yi = hbias[i];
             if (yi!=yi) {
                 hbias[i] = 0; //corrupted hbias
                 y[i] = 0;
@@ -160,18 +159,14 @@ public class Autoencoder {
                     yi += wij * pre(x[j]);
             }
 
-            yi = post(yi);
-
-            if (sigmoid)
-                yi = Util.sigmoid(yi);
-            //TODO tanH as modular output functions
+            //TODO tanH as modular activation functions
 
 //            if (yi > max)
 //                max = yi;
 //            if (yi < min)
 //                min = yi;
 
-            y[i] = yi;
+            y[i] = post((float)(sigmoid ? Util.sigmoid(yi) : yi));
 
         }
 
@@ -210,12 +205,12 @@ public class Autoencoder {
     public void forget(float rate) {
         float mult = 1f - rate;
         float[][] w = this.W;
-        int O = w.length;
-        for (float[] floats : w) Util.mul(mult, floats);
+        for (float[] floats : w)
+            Util.mul(mult, floats);
         Util.mul(mult, hbias);
-        Util.mul(mult, this.L_hbias);
+        Util.mul(mult, L_hbias);
         Util.mul(mult, vbias);
-        Util.mul(mult, this.L_vbias);
+        Util.mul(mult, L_vbias);
     }
 
 
@@ -228,7 +223,7 @@ public class Autoencoder {
         float[] z = this.z;
 
         for (int i = 0; i < ins; ) {
-            float zi = vbias[i];
+            double zi = vbias[i];
 
             for (int j = 0; j < outs; ) {
                 zi += w[j][i] * y[j++];
@@ -241,7 +236,7 @@ public class Autoencoder {
                     zi;
 
 
-            z[i++] = pre(zi);
+            z[i++] = pre((float)zi);
         }
 
         return z;
@@ -307,12 +302,11 @@ public class Autoencoder {
             L_hbias[i] = 0f;
             float[] wi = W[i];
 
-            float lbi = 0f;
-            for (int j = 0; j < ins; j++) {
+            double lbi = 0f;
+            for (int j = 0; j < ins; j++)
                 lbi += wi[j] * L_vbias[j];
-            }
-            L_hbias[i] += lbi;
 
+            L_hbias[i] += (float)lbi;
             float yi = y[i];
             L_hbias[i] *= yi * (1f - yi);
             hbias[i] += learningRate * L_hbias[i];

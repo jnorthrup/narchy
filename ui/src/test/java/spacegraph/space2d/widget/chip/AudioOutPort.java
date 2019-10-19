@@ -54,12 +54,12 @@ public class AudioOutPort extends Gridding  {
                 }
             }
 
-            @Override
-            public void skip(int samplesToSkip, int readRate) {
-                //TODO
-                //buffer.skip(..);
-                //System.out.println("skip " + samplesToSkip);
-            }
+//            @Override
+//            public void skip(int samplesToSkip, int readRate) {
+//                //TODO
+//                //buffer.skip(..);
+//                //System.out.println("skip " + samplesToSkip);
+//            }
         });
     }
 

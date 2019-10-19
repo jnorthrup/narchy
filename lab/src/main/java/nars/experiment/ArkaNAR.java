@@ -73,7 +73,6 @@ public class ArkaNAR extends GameX {
             //GameX a = new FZero(id, n);
             //GameX a = new ArkaNAR(id, n, true, false);
             GameX a = new PoleCart(id, n, 0.03f);
-            n.add(a);
 
             RLBooster rl = new RLBooster(true, a,
                     2, 4, (i, o) -> new DQN3(i, o, Map.of(

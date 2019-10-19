@@ -64,7 +64,7 @@ public class BiQuadFilter {
 		  i1 = mir - in[2];
 		  i2 = mir - in[1];
 		  /* apply filtering */
-		  doBiQuad(in);
+		  accept(in);
 		  /* invert  */
 		  for (int j = 0; j < in.length; j++){
 		    tmp[in.length-j-1] = in[j];
@@ -74,14 +74,14 @@ public class BiQuadFilter {
 		  i1 = mir - tmp[2];
 		  i2 = mir - tmp[1];
 		  /* apply filtering */
-		  doBiQuad(tmp);
+		  accept(tmp);
 		  /* invert back */
 		  for (int j = 0; j < in.length; j++){
 		    in[j] = tmp[in.length-j-1];
 		  }
 	}
 
-	private void doBiQuad(float[] in) {
+	private void accept(float[] in) {
 		double i1 = this.i1, i2 = this.i2, o2 = this.o2, o1 = this.o1;
 		for (int j = 0; j < in.length; j++) {
 			double i0 = in[j];

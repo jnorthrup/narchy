@@ -64,6 +64,7 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
 
             if (i < audibleSources) {
                 float[] buf = this.buf;
+                Arrays.fill(buf, 0);
 
                 sound.producer.read(buf, readRate);
 

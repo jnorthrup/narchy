@@ -17,13 +17,11 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
     public float pan;
     public float amplitude;
     
-    public Sound(S producer, SoundSource source, float volume, float priority)
-    {
+    public Sound(S producer, SoundSource source, float volume, float priority) {
         this.producer = producer;
         this.source = source;
         this.volume = volume;
         this.priority = priority;
-
     }
     
     public boolean update(SoundSource listener, float alpha) {
@@ -106,5 +104,9 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
 
     public float volume() {
         return volume;
+    }
+
+    public void stop() {
+        producer.stop();
     }
 }
