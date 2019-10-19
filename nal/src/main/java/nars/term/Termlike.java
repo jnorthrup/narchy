@@ -84,29 +84,29 @@ public interface Termlike {
 //            x += value.applyAsInt(sub(i));
 //
 //        return x;
-        return intifyShallow((x, t) -> x + value.applyAsInt(t), 0);
+        return intifyShallow(0, (x, t) -> x + value.applyAsInt(t));
     }
 
     /**
      * only 1-layer (shallow, non-recursive)
      */
     default int max(ToIntFunction<Term> value) {
-        return intifyShallow((x, t) -> Math.max(value.applyAsInt(t), x), Integer.MIN_VALUE);
+        return intifyShallow(Integer.MIN_VALUE, (x, t) -> Math.max(value.applyAsInt(t), x));
     }
 
 
     /**
      * non-recursive, visits only 1 layer deep, and not the current if compound
      */
-    default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
+    default int intifyShallow(int v, IntObjectToIntFunction<Term> reduce) {
         int n = subs();
         for (int i = 0; i < n; i++)
             v = reduce.intValueOf(v, sub(i));
         return v;
     }
 
-    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int _v) {
-        return intifyShallow((v, s) -> s.intifyRecurse(reduce, v), _v);
+    default int intifyRecurse(int _v, IntObjectToIntFunction<Term> reduce) {
+        return intifyShallow(_v, (v, s) -> s.intifyRecurse(v, reduce));
 //        int n = subs();
 //        for (int i = 0; i < n; i++)
 //            v = sub(i).intifyRecurse(reduce, v);
@@ -242,7 +242,7 @@ public interface Termlike {
      * structure of the first layer (surface) only
      */
     default int structureSurface() {
-        return intifyShallow((s, x) -> s | x.opBit(), 0);
+        return intifyShallow(0, (s, x) -> s | x.opBit());
     }
 
     /**

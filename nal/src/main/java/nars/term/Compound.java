@@ -140,8 +140,8 @@ public interface Compound extends Term, IPair, Subterms {
     int hashCode();
 
     @Override
-    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        return reduce.intValueOf(subterms().intifyRecurse(reduce, v), this);
+    default int intifyRecurse(int v, IntObjectToIntFunction<Term> reduce) {
+        return reduce.intValueOf(subterms().intifyRecurse(v, reduce), this);
     }
 
     @Override

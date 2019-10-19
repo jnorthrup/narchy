@@ -329,8 +329,8 @@ public enum Terms {
 	 *
 	 * @param superterm filter applies to the immediate superterm of a potential subterm
 	 */
-	public static @Nullable Term[] nextRepeat(Subterms c, ToIntFunction<Term> countIf, int minCount) {
-		ObjectIntHashMap<Term> oi = Terms.subtermScore(c, countIf, minCount);
+	public static @Nullable Term[] nextRepeat(Subterms c, int minCount, ToIntFunction<Term> countIf) {
+		ObjectIntHashMap<Term> oi = Terms.subtermScore(c, minCount, countIf);
 		if (oi == null)
 			return null;
 
@@ -350,7 +350,7 @@ public enum Terms {
 	/**
 	 * counts the repetition occurrence count of each subterm within a compound
 	 */
-	public static @Nullable ObjectIntHashMap<Term> subtermScore(Subterms c, ToIntFunction<Term> score, int minTotalScore) {
+	public static @Nullable ObjectIntHashMap<Term> subtermScore(Subterms c, int minTotalScore, ToIntFunction<Term> score) {
 		ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(8); //c.volume());
 
 

@@ -359,6 +359,7 @@ public final class Answer implements Timed, Predicate<Task> {
         int remain = --ttl;
         if (remain >= 0 && (filter == null || filter.test(t)))
             tasks.add(ifSuccessfulInsert.apply(t,this));
+        // a tiny curry:            ifSuccessfulInsert.andThen(tasks::add).apply(t, this);
     }
 
     @Override

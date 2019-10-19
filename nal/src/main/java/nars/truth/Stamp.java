@@ -499,7 +499,7 @@ public interface Stamp {
         return false;
     }
 
-    static boolean overlap(Task a, IntToObjectFunction<Task> b, int from, int to) {
+    static boolean overlap(Task a, int from, int to, IntToObjectFunction<Task> b) {
         return IntStream.range(from, to).anyMatch(i -> Stamp.overlap(a, b.apply(i)));
     }
 

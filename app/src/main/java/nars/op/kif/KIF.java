@@ -60,71 +60,45 @@ import static nars.op.rdfowl.NQuadsRDF.equi;
  * http:
  * https:
  * https:
- * https://github.com/TeamSPoon/sigma_ace/blob/master/engine/sigma_functions.pl
- *
+ * https:
+ * <p>
  * holdsDuring(ImmediateFutureFn(WhenFn($1)),$2) is
- *          when($1, ?W) & immediateFuture(?W,?P) & holdsDurrent(?P, $2)
- *
- * https://en.wikipedia.org/wiki/Linear_temporal_logic#Equivalences
+ * when($1, ?W) & immediateFuture(?W,?P) & holdsDurrent(?P, $2)
+ * <p>
+ * https:
  **/
 public class KIF implements Iterable<Task> {
 
     private static final Logger logger = LoggerFactory.getLogger(KIF.class);
     private static final Term SYMMETRIC_RELATION = $$("SymmetricRelation");
     private static final Term ASYMMETRIC_RELATION = $$("AsymmetricRelation");
-
-//    public static MemoryExternal.BytesToTasks load = new MemoryExternal.BytesToTasks("kif") {
-//
-//        @Override
-//        public Stream<Task> apply(InputStream i) {
-//            try {
-//                return new KIF(i).tasks();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//            return null;
-//        }
-//    };
-
-
-	public Stream<Task> tasks() {
-        return assertions.stream().map(Op::believe);
-    }
-
-
-    public final ArrayHashSet<Term> assertions = new ArrayHashSet<>();
-            //new TreeSet();
-
-    private final KIFParser kif;
-
-    private final transient Map<Term, FnDef> fn = new HashMap<>();
-    private final Set<Term> symmetricRelations = new HashSet<>();
-    {
-        symmetricRelations.add(SYMMETRIC_RELATION);
-    }
-    
-    
-    
     private static final boolean includePredArgCounts = false;
     private static final Set<Term> predExclusions = java.util.Set.of(
-            
+
             $$("UnaryPredicate"),
-            $$("BinaryPredicate"),$$("TernaryPredicate"),
+            $$("BinaryPredicate"), $$("TernaryPredicate"),
             $$("QuaternaryPredicate"), $$("QuintaryPredicate"),
 
             $$("UnaryFunction"), $$("BinaryFunction"), $$("TernaryFunction"),
             $$("QuaternaryRelation"),
             $$("QuintaryRelation"),
-            $$("SingleValuedRelation"),$$("TotalValuedRelation"),
+            $$("SingleValuedRelation"), $$("TotalValuedRelation"),
 
             $$("AsymmetricRelation")
     );
+    public final ArrayHashSet<Term> assertions = new ArrayHashSet<>();
+    private final KIFParser kif;
+    private final transient Map<Term, FnDef> fn = new HashMap<>();
+    private final Set<Term> symmetricRelations = new HashSet<>();
 
+    {
+        symmetricRelations.add(SYMMETRIC_RELATION);
+    }
     public KIF() {
         this.kif = new KIFParser();
     }
 
-    public KIF(String s)  {
+    public KIF(String s) {
         this();
         kif.parse(new StringReader(s));
         process();
@@ -134,6 +108,112 @@ public class KIF implements Iterable<Task> {
         this();
         kif.read(is);
         process();
+    }
+
+    private static Term atomic(String sx) {
+        sx = sx.replace("?", "#");
+        try {
+            return $.$(sx);
+        } catch (Narsese.NarseseException e) {
+            return $.quote(sx);
+        }
+    }
+
+    private static UnaryOperator<Term> domainRangeMerger(Term type) {
+        return (existing) -> {
+            if (existing.equals(type))
+                return existing;
+            else
+                return SETi.the(List.of(existing, type));
+        };
+    }
+
+    public static KIF file(String filePath) throws IOException {
+        return new KIF(new FileInputStream(filePath));
+    }
+
+    private static Term disjoint(List<Term> args, Term v0) {
+        return Op.INH.the(
+                DISJ(args.toArray(Op.EmptyTermArray)), v0
+        ).neg();
+    }
+
+    public static Term impl(Term a, Term b, boolean implOrEquiv) {
+
+
+        Term tmp = IMPL.the(a, b);
+        if (tmp.unneg().op() != IMPL) {
+            logger.warn("un-impl: {} ==> {} ", a, b);
+            return Bool.Null;
+        }
+        boolean negated = tmp.op() == NEG;
+
+        tmp = tmp.unneg();
+        a = tmp.sub(0);
+        b = tmp.sub(1);
+
+        MutableSet<Term> _aVars = new UnifiedSet<>();
+        Set<Term> aVars = new VarOnlySet(_aVars);
+        if (a instanceof Compound)
+            ((Compound) a).recurseSubtermsToSet(Op.Variable, aVars, true);
+        else if (a.op().var)
+            aVars.add(a);
+        MutableSet<Term> _bVars = new UnifiedSet<>();
+        Set<Term> bVars = new VarOnlySet(_bVars);
+        if (b instanceof Compound)
+            ((Compound) b).recurseSubtermsToSet(Op.Variable, bVars, true);
+        else if (b.op().var)
+            bVars.add(b);
+
+        Map<Term, Term> remap = new HashMap<>();
+
+        MutableSet<Term> common = _aVars.intersect(_bVars);
+        if (!common.isEmpty()) {
+            common.forEach(t -> {
+                Variable u = $.v(
+                        Op.VAR_INDEP,
+
+
+                        t.toString().substring(1));
+                if (!t.equals(u) && !remap.containsKey(u))
+                    remap.put(t, u);
+            });
+        }
+        for (MutableSet<Term> ab : new MutableSet[]{_aVars, _bVars}) {
+            for (Term aa : ab) {
+                if (aa.op() == VAR_INDEP && !common.contains(aa)) {
+                    String str = aa.toString().substring(1);
+                    Variable bb = $.v(VAR_DEP, str);
+                    if (!remap.containsKey(bb))
+                        remap.put(aa, bb);
+                }
+            }
+        }
+
+        if (!remap.isEmpty()) {
+            a = a.replace(remap);
+            if (a == null)
+                throw new NullPointerException("transform failure");
+
+            b = b.replace(remap);
+            if (b == null)
+                throw new NullPointerException("transform failure");
+        }
+
+        try {
+            return
+                    (implOrEquiv ?
+                            IMPL.the(a, b) :
+                            equi(a, b)).negIf(negated)
+                    ;
+        } catch (Exception ignore) {
+            ignore.printStackTrace();
+        }
+        return null;
+    }
+
+    public Stream<Task> tasks() {
+        return assertions.stream().map(Op::believe);
     }
 
     private void process() {
@@ -151,10 +231,6 @@ public class KIF implements Iterable<Task> {
                     e.printStackTrace();
                 }
             }
-
-
-
-            /*Unknown operators: {=>=466, rangeSubclass=5, inverse=1, relatedInternalConcept=7, documentation=128, range=29, exhaustiveAttribute=1, trichotomizingOn=4, subrelation=22, not=2, partition=12, contraryAttribute=1, subAttribute=2, disjoint=5, domain=102, disjointDecomposition=2, domainSubclass=9, <=>=70}*/
         }
 
 
@@ -189,7 +265,7 @@ public class KIF implements Iterable<Task> {
 
         }
 
-        if (symmetricRelations.size()>1 /*SymmetricRelation exists in the set initially */) {
+        if (symmetricRelations.size() > 1 /*SymmetricRelation exists in the set initially */) {
 
             assertions.removeIf(belief -> {
                 if (belief.op() == INH) {
@@ -200,7 +276,7 @@ public class KIF implements Iterable<Task> {
                         if (ab.op() != PROD) {
                             return false;
                         }
-                        assert(ab.subs()==2);
+                        assert (ab.subs() == 2);
                         Term a = ab.sub(0);
                         Term b = ab.sub(1);
                         Term symmetric = INH.the(CONJ.the(PROD.the(a, b), PROD.the(b, a)), fn);
@@ -226,28 +302,6 @@ public class KIF implements Iterable<Task> {
         });
     }
 
-    private static Term atomic(String sx) {
-        sx = sx.replace("?", "#"); 
-        try {
-            return $.$(sx);
-        } catch (Narsese.NarseseException e) {
-            return $.quote(sx);
-        }
-    }
-
-    private static UnaryOperator<Term> domainRangeMerger(Term type) {
-        return (existing) -> {
-            if (existing.equals(type))
-                return existing;
-            else
-                return SETi.the(List.of(existing, type));
-        };
-    }
-
-    public static KIF file(String filePath) throws IOException {
-        return new KIF(new FileInputStream(filePath));
-    }
-
     Term formulaToTerm(String sx, int level) {
         return formulaToTerm(new Formula(sx.replace("?", "#")), level);
     }
@@ -259,10 +313,8 @@ public class KIF implements Iterable<Task> {
         int l = x.listLength();
         switch (l) {
             case -1:
-//            if (x.theFormula.contains("(")) {
-//                if (!x.listP())
-//                    return null;
-//            } else
+
+
                 result = atomic(x.theFormula);
                 break;
             case 1:
@@ -385,13 +437,6 @@ public class KIF implements Iterable<Task> {
 
                             y = impl(args.get(0), args.get(1), false);
                             break;
-                        //                if (!(args.get(0).hasVars() || args.get(1).hasVars())) {
-//
-//                    //y = impl(args.get(0), args.get(1), false);
-//                    y = SIM.the(args.get(0), args.get(1));
-//                } else {
-//
-//                }
 
 
                         case "forall":
@@ -415,17 +460,11 @@ public class KIF implements Iterable<Task> {
                             break;
 
 
-//            case "causes":
-//                y = IMPL.the(args.get(0), 1, args.get(1));
-//                break;
-
                         case "cooccur":
                         case "during":
                             y = CONJ.the(args.get(0), 0, args.get(1));
                             break;
-//            case "meetsTemporally":
-//                y = CONJ.the(args.get(0), +1, args.get(1));
-//                break;
+
 
                         case "domain":
 
@@ -482,11 +521,6 @@ public class KIF implements Iterable<Task> {
                                 throw new TODO();
                             break;
 
-//                if (args.size() > 2)
-//                    y = disjoint(args.subList(1, args.size()), args.get(0));
-//                else
-//                    y = Equal.the(args.get(0), args.get(1)).neg();
-//                break;
 
                         case "disjointDecomposition":
                         case "partition":
@@ -495,10 +529,9 @@ public class KIF implements Iterable<Task> {
                         case "inverse":
                         case "contraryAttribute":
 
-//                if (args.size() > 2)
+
                             y = $.inh(VarAuto, SETe.the(args));
-//                else
-//                    y = Equal.the(args.get(0), args.get(1)).neg();
+
 
                             break;
 
@@ -591,97 +624,6 @@ public class KIF implements Iterable<Task> {
         return result;
     }
 
-    private static Term disjoint(List<Term> args, Term v0) {
-        return Op.INH.the(
-                DISJ(args.toArray(Op.EmptyTermArray)), v0
-        ).neg();
-    }
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    public static Term impl(Term a, Term b, boolean implOrEquiv) {
-
-        
-        Term tmp = IMPL.the(a, b);
-        if (tmp.unneg().op() != IMPL) {
-            logger.warn("un-impl: {} ==> {} ", a, b);
-            return Bool.Null;
-        }
-        boolean negated = tmp.op()==NEG;
-
-        tmp = tmp.unneg();
-        a = tmp.sub(0);
-        b = tmp.sub(1);
-
-        MutableSet<Term> _aVars = new UnifiedSet<>();
-        Set<Term> aVars = new VarOnlySet(_aVars);
-        if (a instanceof Compound)
-            ((Compound) a).recurseSubtermsToSet(Op.Variable, aVars, true);
-        else if (a.op().var)
-            aVars.add(a);
-        MutableSet<Term> _bVars = new UnifiedSet<>();
-        Set<Term> bVars = new VarOnlySet(_bVars);
-        if (b instanceof Compound)
-            ((Compound) b).recurseSubtermsToSet(Op.Variable, bVars, true);
-        else if (b.op().var)
-            bVars.add(b);
-
-        Map<Term, Term> remap = new HashMap<>();
-
-        MutableSet<Term> common = _aVars.intersect(_bVars);
-        if (!common.isEmpty()) {
-            common.forEach(t -> {
-                Variable u = $.v(
-                        Op.VAR_INDEP,
-                        
-                        
-                        t.toString().substring(1));
-                if (!t.equals(u) && !remap.containsKey(u))
-                    remap.put(t, u);
-            });
-        }
-        for (MutableSet<Term> ab : new MutableSet[]{_aVars, _bVars}) {
-            for (Term aa : ab) {
-                if (aa.op() == VAR_INDEP && !common.contains(aa)) {
-                    String str = aa.toString().substring(1);
-                    Variable bb = $.v(VAR_DEP, str);
-                    if (!remap.containsKey(bb))
-                        remap.put(aa, bb);
-                }
-            }
-        }
-
-        if (!remap.isEmpty()) {
-            a = a.replace(remap);
-            if (a == null)
-                throw new NullPointerException("transform failure");
-
-            b = b.replace(remap);
-            if (b == null)
-                throw new NullPointerException("transform failure");
-        }
-
-        try {
-            return
-                    (implOrEquiv ?
-                            IMPL.the(a, b) :
-                            equi(a, b)).negIf(negated)
-                    ;
-        } catch (Exception ignore) {
-            ignore.printStackTrace();
-        }
-        return null;
-    }
     @Override
     public Iterator<Task> iterator() {
         return tasks().iterator();

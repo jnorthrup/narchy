@@ -18,15 +18,15 @@ public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Der
     private static final BiFunction<Term, Term, Term> TASK = (t, b) -> t;
     private static final BiFunction<Term, Term, Term> BELIEF = (t, b) -> b;
 
-    private ConstraintAsPremisePredicate(Term p, C m, BiFunction<Term, Term, Term> extractX, BiFunction<Term, Term, Term> extractY, float v) {
-        super(p, m, extractX, extractY, v);
+    private ConstraintAsPremisePredicate(Term p, C m, float v, BiFunction<Term, Term, Term> extractX, BiFunction<Term, Term, Term> extractY) {
+        super(p, v, m, extractX, extractY);
     }
 
     /**
      * TODO generify a version of this allowing: U extends Unify
      * @return
      */
-    public static ConstraintAsPredicate the(UnifyConstraint m, Variable x, Variable y, byte[] xInTask, byte[] xInBelief, byte[] yInTask, byte[] yInBelief) {
+    public static ConstraintAsPredicate the(Variable x, Variable y, byte[] xInTask, byte[] xInBelief, byte[] yInTask, byte[] yInBelief, UnifyConstraint m) {
 
         int costPath = 0;
 
@@ -58,17 +58,17 @@ public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Der
                 costPath += yInBelief.length;
             }
             Term t = m.ref.replace(x, extractXterm).replace(y, extractYterm);
-            return new RelationConstraintAsPremisePredicate(t, (RelationConstraint) m, extractX, extractY, cost + costPath * 0.01f);
+            return new RelationConstraintAsPremisePredicate(t, cost + costPath * 0.01f, (RelationConstraint) m, extractX, extractY);
         } else {
             Term t = m.ref.replace(x, extractXterm);
-            return new UnaryConstraintAsPremisePredicate(t, (UnaryConstraint) m, extractX, cost + costPath * 0.01f);
+            return new UnaryConstraintAsPremisePredicate(t, cost + costPath * 0.01f, (UnaryConstraint) m, extractX);
         }
     }
 
     public static final class UnaryConstraintAsPremisePredicate extends ConstraintAsPredicate<PreDerivation, UnaryConstraint<Derivation.PremiseUnify>> {
 
-        UnaryConstraintAsPremisePredicate(Term id, UnaryConstraint<Derivation.PremiseUnify> m, BiFunction<Term, Term, Term> extractX, float cost) {
-            super(id, m, extractX, null, cost);
+        UnaryConstraintAsPremisePredicate(Term id, float cost, UnaryConstraint<Derivation.PremiseUnify> m, BiFunction<Term, Term, Term> extractX) {
+            super(id, cost, m, extractX, null);
         }
 
         @Override
@@ -81,8 +81,8 @@ public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Der
 
     public static final class RelationConstraintAsPremisePredicate extends ConstraintAsPredicate<Derivation, RelationConstraint<Derivation.PremiseUnify>> {
 
-        RelationConstraintAsPremisePredicate(Term id, RelationConstraint<Derivation.PremiseUnify> m, BiFunction<Term, Term, Term> extractX, BiFunction<Term, Term, Term> extractY, float cost) {
-            super(id, m, extractX, extractY, cost);
+        RelationConstraintAsPremisePredicate(Term id, float cost, RelationConstraint<Derivation.PremiseUnify> m, BiFunction<Term, Term, Term> extractX, BiFunction<Term, Term, Term> extractY) {
+            super(id, cost, m, extractX, extractY);
         }
 
         @Override

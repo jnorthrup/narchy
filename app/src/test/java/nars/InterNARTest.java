@@ -172,7 +172,6 @@ public class InterNARTest {
 
 
             a.believe($$("(b --> c)"));
-
             b.believe($$("(a --> b)"));
             b.believe($$("(c --> d)"));
             b.question($$("(a --> d)"));

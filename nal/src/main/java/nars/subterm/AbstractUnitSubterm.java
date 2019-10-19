@@ -182,12 +182,12 @@ abstract class AbstractUnitSubterm implements Subterms {
     }
 
     @Override
-    public final int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        return sub().intifyRecurse(reduce, v);
+    public final int intifyRecurse(int v, IntObjectToIntFunction<Term> reduce) {
+        return sub().intifyRecurse(v, reduce);
     }
 
     @Override
-    public final int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
+    public final int intifyShallow(int v, IntObjectToIntFunction<Term> reduce) {
         return reduce.intValueOf(v, sub());
     }
 

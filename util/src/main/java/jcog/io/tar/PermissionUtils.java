@@ -5,10 +5,9 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
+import static java.nio.file.attribute.PosixFilePermission.*;
 
 /**
  * Helps dealing with file permissions.
@@ -29,21 +28,21 @@ public class PermissionUtils {
 		}
 	}
 
-	private static final Map<PosixFilePermission, Integer> posixPermissionToInteger = new HashMap<>();
+	private static final Map<PosixFilePermission, Integer> posixPermissionToInteger = new EnumMap<>(PosixFilePermission.class){{
+	 put(OWNER_EXECUTE, 0100);
+	 put(OWNER_WRITE, 0200);
+	 put(OWNER_READ, 0400);
 
-	static {
-		posixPermissionToInteger.put(PosixFilePermission.OWNER_EXECUTE, 0100);
-		posixPermissionToInteger.put(PosixFilePermission.OWNER_WRITE, 0200);
-		posixPermissionToInteger.put(PosixFilePermission.OWNER_READ, 0400);
+	 put(GROUP_EXECUTE, 0010);
+	 put(GROUP_WRITE, 0020);
+	 put(GROUP_READ, 0040);
 
-		posixPermissionToInteger.put(PosixFilePermission.GROUP_EXECUTE, 0010);
-		posixPermissionToInteger.put(PosixFilePermission.GROUP_WRITE, 0020);
-		posixPermissionToInteger.put(PosixFilePermission.GROUP_READ, 0040);
+	 put(OTHERS_EXECUTE, 0001);
+	 put(OTHERS_WRITE, 0002);
+	 put(OTHERS_READ, 0004);
+	}};
 
-		posixPermissionToInteger.put(PosixFilePermission.OTHERS_EXECUTE, 0001);
-		posixPermissionToInteger.put(PosixFilePermission.OTHERS_WRITE, 0002);
-		posixPermissionToInteger.put(PosixFilePermission.OTHERS_READ, 0004);
-	}
+
 
 	/**
 	 * Get file permissions in octal mode, e.g. 0755.

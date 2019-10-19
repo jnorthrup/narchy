@@ -25,6 +25,7 @@ public class TemporalStabilityTests {
         private final int maxT;
         static final int tolerance = 0;
 
+
         T1(IntToObjectFunction<String> eventer, int... whens) {
             this.whens = new IntHashSet(whens).toImmutable();
             minT = this.whens.min();
@@ -32,7 +33,7 @@ public class TemporalStabilityTests {
             this.eventer = eventer;
         }
 
-        T1(IntToObjectFunction<String> eventer, int[] whens, int minT, int maxT) {
+        T1(int[] whens, int minT, int maxT, IntToObjectFunction<String> eventer) {
             this.whens = new IntHashSet(whens).toImmutable();
             this.minT = minT;
             this.maxT = maxT;
@@ -151,13 +152,13 @@ public class TemporalStabilityTests {
 
     @Test
     void testTemporalStabilityLinkedTemporalConjSmall() {
-        new T1(conjSeq2, new int[] { 1, 6 }, 1, 16).test(100, NARS.tmp());
+        new T1(new int[] { 1, 6 }, 1, 16, conjSeq2).test(100, NARS.tmp());
     }
 
 
     @Test
     void testTemporalStabilityLinkedTemporalConj() {
-        new T1(conjSeq2, new int[] { 1, 6, 11 }, 1, 16).test(CYCLES*2, NARS.tmp());
+        new T1(new int[] { 1, 6, 11 }, 1, 16, conjSeq2).test(CYCLES*2, NARS.tmp());
     }
 
     @Test

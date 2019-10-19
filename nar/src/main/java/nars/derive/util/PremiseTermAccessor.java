@@ -23,7 +23,7 @@ public abstract class PremiseTermAccessor implements Function<PreDerivation, Ter
     @Override
     public final String toString() { return term.toString(); }
 
-    public Function<PreDerivation, Term> path(byte... path) {
+    public Function<PreDerivation, Term> path(byte[] path) {
         return path.length == 0 ? this : new SubRootTermAccessor(path);
     }
 

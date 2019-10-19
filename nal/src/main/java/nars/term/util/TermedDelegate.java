@@ -52,13 +52,13 @@ public interface TermedDelegate extends Termlike, Termed {
 
 
     @Override
-    default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
-        return term().intifyShallow(reduce, v);
+    default int intifyShallow(int v, IntObjectToIntFunction<Term> reduce) {
+        return term().intifyShallow(v, reduce);
     }
 
     @Override
-    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        return term().intifyRecurse(reduce, v);
+    default int intifyRecurse(int v, IntObjectToIntFunction<Term> reduce) {
+        return term().intifyRecurse(v, reduce);
     }
 
 

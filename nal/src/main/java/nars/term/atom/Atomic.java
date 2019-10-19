@@ -110,13 +110,13 @@ public abstract class Atomic implements Term {
 
 
     @Override
-    public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
+    public int intifyShallow(int v, IntObjectToIntFunction<Term> reduce) {
         return reduce.intValueOf(v, this);
     }
 
     @Override
-    public int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        return intifyShallow(reduce, v);
+    public int intifyRecurse(int v, IntObjectToIntFunction<Term> reduce) {
+        return intifyShallow(v, reduce);
     }
 
     public static Atom atom(String id) {

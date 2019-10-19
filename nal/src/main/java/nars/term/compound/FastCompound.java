@@ -338,7 +338,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         }
 
         @Override
-        public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
+        public int intifyShallow(int v, IntObjectToIntFunction<Term> reduce) {
             int o = offset;
             int[] vv = {v};
             c.subtermOffsets(o, (subterm, at) -> {
@@ -354,7 +354,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         public int hashCode() {
 
             int h = _hash;
-			return h == 0 ? (_hash = intifyShallow((i, t) -> Util.hashCombine(i, t.hashCode()), 1)) : h;
+			return h == 0 ? (_hash = intifyShallow(1, (i, t) -> Util.hashCombine(i, t.hashCode()))) : h;
         }
 
 

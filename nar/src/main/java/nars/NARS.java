@@ -46,10 +46,7 @@ public class NARS {
         NAR n = new NAR(
             index.get(),
             exec.get(),
-                what,
-            time,
-            rng,
-            conceptBuilder.get()
+                time, rng, conceptBuilder.get(), what
         );
         step.forEachWith(Consumer::accept, n);
         return n;

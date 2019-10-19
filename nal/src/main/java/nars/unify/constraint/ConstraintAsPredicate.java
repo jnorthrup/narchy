@@ -14,7 +14,7 @@ public abstract class ConstraintAsPredicate<U, C extends UnifyConstraint> extend
     protected final BiFunction<Term,Term,Term> extractY;
     private final float cost;
 
-    protected ConstraintAsPredicate(Term id, C m, BiFunction<Term, Term, Term> extractX, BiFunction<Term, Term, Term> extractY, float cost) {
+    protected ConstraintAsPredicate(Term id, float cost, C m, BiFunction<Term, Term, Term> extractX, BiFunction<Term, Term, Term> extractY) {
         super(id);
         this.constraint = m;
         this.cost = cost;

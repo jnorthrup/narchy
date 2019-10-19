@@ -6,7 +6,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class supports 'one-shot'  reading and writing of wav files.
@@ -143,10 +145,8 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
      * See {@link net.beadsproject.beads.data.audiofile.AudioFileReader#getSupportedFileTypesForReading}
      */
     @Override
-    public HashSet<AudioFileType> getSupportedFileTypesForReading() {
-        HashSet<AudioFileType> types = new HashSet<>();
-        types.add(AudioFileType.WAV);
-        return types;
+    public Set<AudioFileType> getSupportedFileTypesForReading() {
+        return EnumSet.of( AudioFileType.WAV);
     }
 
     /**

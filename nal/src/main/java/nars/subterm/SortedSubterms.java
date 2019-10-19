@@ -13,11 +13,11 @@ public enum SortedSubterms {
     ;
 
     public static Subterms the(Term[] x, Function<Term[],Subterms> b) {
-        return the(x, b, false);
+        return the(x, false, b);
     }
 
     /** @noinspection ArrayEquality*/
-    public static Subterms the(Term[] x, Function<Term[],Subterms> b, boolean dedup) {
+    public static Subterms the(Term[] x, boolean dedup, Function<Term[], Subterms> b) {
 
         switch (x.length) {
             case 1:

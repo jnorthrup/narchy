@@ -138,7 +138,7 @@ public class TaskLinks implements Sampler<TaskLink> {
     }
 
     @Override
-    public final void sample(Random rng, Function<? super TaskLink, Sampler.SampleReaction> each) {
+    public final void sample(Random rng, Function<? super TaskLink, SampleReaction> each) {
         links.sample(rng, each);
     }
 

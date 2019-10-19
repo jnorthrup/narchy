@@ -330,11 +330,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     @Deprecated
     static @Nullable <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult) {
-        return tryTask(t, punc, tr, withResult, !NAL.test.DEBUG_EXTRA);
+        return tryTask(t, punc, tr, !NAL.test.DEBUG_EXTRA, withResult);
     }
 
     @Deprecated
-    static @Nullable <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult, boolean safe) {
+    static @Nullable <T extends Task> T tryTask(Term t, byte punc, Truth tr, boolean safe, BiFunction<Term, Truth, T> withResult) {
         if (punc == BELIEF || punc == GOAL) {
             if (tr == null)
                 throw new TaskException("non-null truth required for belief or goal", t);

@@ -116,7 +116,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public final What main;
 
 
-    public NAR(Memory memory, Exec exe, Function<Term, What> whatBuilder, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
+    public NAR(Memory memory, Exec exe, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder, Function<Term, What> whatBuilder) {
         super(exe, time, rng);
 
         this.memory = memory;

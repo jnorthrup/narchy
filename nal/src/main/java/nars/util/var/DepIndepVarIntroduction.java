@@ -75,7 +75,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     private static Term[] _select(Intermed.SubtermsKey input) {
         Term[] n = Terms.nextRepeat(input.subs,
-                NAL.term.VAR_INTRODUCTION_NEG_FILTER ? nonNegdepIndepFilter : depIndepFilter, 2);
+                2, NAL.term.VAR_INTRODUCTION_NEG_FILTER ? nonNegdepIndepFilter : depIndepFilter);
         return Objects.requireNonNullElse(n, Op.EmptyTermArray);
     }
 

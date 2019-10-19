@@ -63,7 +63,7 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
 
     
     @Deprecated
-    public SummaryStatistics costAnalyze(FloatFunction<K> costFn, @Nullable PrintStream o) {
+    public SummaryStatistics costAnalyze(@Nullable PrintStream o, FloatFunction<K> costFn) {
 
         SummaryStatistics termCost = new SummaryStatistics();
         SummaryStatistics sequenceLength = new SummaryStatistics();

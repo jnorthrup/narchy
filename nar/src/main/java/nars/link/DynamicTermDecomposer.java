@@ -184,7 +184,7 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
 //            if (parent.op()==CONJ && s.hasAny(CONJ) && Conj.isSeq(parent) && rng.nextBoolean()) {
 //                s = ConjList.events(parent).asSubterms(false);
 //            }
-            return s.subRoulette(this, rng);
+            return s.subRoulette(rng, this);
         }
 
         @Override public float floatValueOf(Term subterm) {

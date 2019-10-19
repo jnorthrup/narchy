@@ -82,12 +82,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
         atoms = new HijackMemoize<>(super::atom, cacheSizePerOp, 3);
 
         subterms = newOpCache("subterms",
-                x -> super.subterms(null, resolve(x.subs)), cacheSizePerOp * 2);
+                cacheSizePerOp * 2, x -> super.subterms(null, resolve(x.subs)));
 
         anonSubterms = newOpCache("intrinSubterms",
-                x -> new IntrinSubterms(x.subs), cacheSizePerOp);
+                cacheSizePerOp, x -> new IntrinSubterms(x.subs));
 
-        Function statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
+        Function statements = newOpCache("statement", cacheSizePerOp * 3, this::_statement);
 
         for (int i = 0; i < ops.length; i++) {
             Op o = ops[i];
@@ -98,12 +98,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
             Function<Intermed.InternedCompoundByComponents, Term> c;
             if (o == CONJ) {
                 c = newOpCache("conj",
-                        x -> super.conj(true, x.dt, x.subs()), cacheSizePerOp);
+                        cacheSizePerOp, x -> super.conj(true, x.dt, x.subs()));
             } else if (o.statement) {
                 c = statements;
             } else {
                 c = newOpCache(o.str,
-                        x -> newCompound(ops[x.op], x.dt, x.subs(), x.key), cacheSizePerOp);
+                        cacheSizePerOp, x -> newCompound(ops[x.op], x.dt, x.subs(), x.key));
             }
             terms[i] = c;
         }
@@ -116,7 +116,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
-    protected <I extends ByteKeyExternal, Y> Function<I, Y> newOpCache(String name, Function<I, Y> f, int capacity) {
+    protected <I extends ByteKeyExternal, Y> Function<I, Y> newOpCache(String name, int capacity, Function<I, Y> f) {
         return Memoizers.the.memoizeByte(
                 id + '_' + InterningTermBuilder.class.getSimpleName() + '_' + name,
                 capacity, f);
@@ -124,7 +124,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
 
-    private static Subterms subsInterned(Function<InternedSubterms, Subterms> m, Term[] t) {
+    private static Subterms subsInterned(Term[] t, Function<InternedSubterms, Subterms> m) {
         return m.apply(new InternedSubterms(t));
     }
 
@@ -175,7 +175,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private Subterms subtermsInterned(Term[] t) {
         //TODO separate cache for anon's
         if (Intrin.intrinsic(t))
-            return subsInterned(anonSubterms, t);
+            return subsInterned(t, anonSubterms);
         else if (sortCanonically)
             return SortedSubterms.the(t, this::subsInterned);
         else
@@ -183,7 +183,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private Subterms subsInterned(Term... u) {
-        return subsInterned(subterms, u);
+        return subsInterned(u, subterms);
     }
 
 

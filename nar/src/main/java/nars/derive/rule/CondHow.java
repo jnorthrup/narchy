@@ -504,7 +504,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 
 
-		TermMatcher.constrain(t, depth, rr, pre);
+		TermMatcher.constrain(t, depth, pre, rr);
 
 		int n = t.subs();
 		if (!o.commutative || (n == 1 && o!=CONJ)) {
@@ -708,7 +708,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 						if (yInB.length < yInT.length) yInT = null;
 						else yInB = null;
 					}
-					return ConstraintAsPremisePredicate.the(cc, x, y, xInT, xInB, yInT, yInB);
+					return ConstraintAsPremisePredicate.the(x, y, xInT, xInB, yInT, yInB, cc);
 				}
 			}
 
@@ -721,7 +721,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 					if (xInB.length < xInT.length) xInT = null;
 					else xInB = null;
 				}
-				return ConstraintAsPremisePredicate.the(cc, x, null, xInT, xInB, null, null);
+				return ConstraintAsPremisePredicate.the(x, null, xInT, xInB, null, null, cc);
 			}
 
 		}

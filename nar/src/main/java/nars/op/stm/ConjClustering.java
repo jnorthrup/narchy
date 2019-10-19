@@ -194,7 +194,7 @@ public class ConjClustering extends TaskAction {
         //round-robin visit each centroid one task at a time.  dont finish a centroid completely and then test kontinue, it is unfair
 
         int iterations = ITERATIONS;
-        conjoiner.centroids = data.forEachCentroid(TaskList::new, conjoiner.centroids, iterations, tasksPerIterationPerCentroid * eventBatchMin /* TODO by volume, ie volMax */);
+        conjoiner.centroids = data.forEachCentroid(conjoiner.centroids, iterations, tasksPerIterationPerCentroid * eventBatchMin, TaskList::new    /* TODO by volume, ie volMax */);
         TaskList[] centroids = conjoiner.centroids;
         int N = centroids.length;
 
@@ -414,7 +414,7 @@ public class ConjClustering extends TaskAction {
 
                 if (volEstimate + xtv <= volMax) {
 
-                    if (!Stamp.overlap(t, tryer, 0, trying.size())) {
+                    if (!Stamp.overlap(t, 0, trying.size(), tryer)) {
 
                         long tStart = t.start();
                         //                        if (vv.isEmpty() || !vv.containsKey(pair(tStart, term.neg()))) {

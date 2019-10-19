@@ -22,7 +22,7 @@ import static nars.Op.VAR_PATTERN;
 public abstract class TermMatcher {
 
     /** basic term constraints */
-    public static void constrain(Term x, int depth, Function<?, Term> accessor, MutableSet pre) {
+    public static void constrain(Term x, int depth, MutableSet pre, Function<?, Term> accessor) {
 
         {
             //structure constraint

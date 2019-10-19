@@ -693,12 +693,12 @@ public class Opjects extends DefaultTermizer {
 
 
     @RuntimeType
-    public final Object intercept(@AllArguments Object[] args, @SuperMethod Method method, @SuperCall Callable supercall, @This Object obj) {
+    public final Object intercept(@AllArguments Object[] args, @SuperMethod Method method, @SuperCall Callable supercall, @This final Object obj) {
 //        try {
             try {
-                Object returned = supercall.call();
-                return tryInvoked(obj, method, args, returned);
-            } catch (Exception e) {
+                final Object returned = supercall.call();
+                return this.tryInvoked(obj, method, args, returned);
+            } catch (final Exception e) {
                 //e.printStackTrace();
                 throw new RuntimeException(e);
             }
@@ -710,32 +710,32 @@ public class Opjects extends DefaultTermizer {
     }
 
 
-    private <T> T register(Term id, T wrappedInstance) {
+    private <T> T register(final Term id, final T wrappedInstance) {
 
-        put(new Instance(id, wrappedInstance), wrappedInstance);
+        this.put(new Instance(id, wrappedInstance), wrappedInstance);
 
         return wrappedInstance;
     }
 
 
-    protected boolean evoked(Term method, Object instance, Object[] params) {
+    protected boolean evoked(final Term method, final Object instance, final Object[] params) {
         return true;
     }
 
-    protected static Subterms validArgs(Subterms args) {
+    protected static Subterms validArgs(final Subterms args) {
         if (args.sub(0).op() != ATOM)
             return null;
 
 
-        int a = args.subs();
+        final int a = args.subs();
         switch (a) {
 
             case 1:
                 return args;
 
             case 2: {
-                Op o1 = args.sub(1).op();
-                if (validParamTerm(o1)) {
+                final Op o1 = args.sub(1).op();
+                if (Opjects.validParamTerm(o1)) {
                     return args;
                 }
                 break;
@@ -743,9 +743,9 @@ public class Opjects extends DefaultTermizer {
 
             case 3: {
 
-                Op o1 = args.sub(1).op();
-                if (validParamTerm(o1)) {
-                    Op o2 = args.sub(2).op();
+                final Op o1 = args.sub(1).op();
+                if (Opjects.validParamTerm(o1)) {
+                    final Op o2 = args.sub(2).op();
                     if (o2 == VAR_DEP)
                         return args;
                 }
@@ -756,39 +756,39 @@ public class Opjects extends DefaultTermizer {
         return null;
     }
 
-    static final int VALID_PARAM_TERM = Op.or(ATOM, INT, VAR_DEP, PROD, BOOL);
-    private static boolean validParamTerm(Op o1) {
-        return o1.isAny(VALID_PARAM_TERM);
+    static final int VALID_PARAM_TERM = or(ATOM, INT, VAR_DEP, PROD, BOOL);
+    private static boolean validParamTerm(final Op o1) {
+        return o1.isAny(Opjects.VALID_PARAM_TERM);
     }
 
 
-    protected static boolean validMethod(Method m) {
-        if (methodExclusions.contains(m.getName()))
+    protected static boolean validMethod(final Method m) {
+        if (Opjects.methodExclusions.contains(m.getName()))
             return false;
         else {
-            int mm = m.getModifiers();
+            final int mm = m.getModifiers();
 
             return Modifier.isPublic(mm) && !Modifier.isStatic(mm);
         }
     }
 
 
-    private static Method findMethod(Class<?> clazz, Predicate<Method> predicate) {
+    private static Method findMethod(final Class<?> clazz, final Predicate<Method> predicate) {
 
 
         for (Class<?> current = clazz; current != null; current = current.getSuperclass()) {
 
 
-            Method[] methods = current.isInterface() ? current.getMethods() : current.getDeclaredMethods();
-            for (Method method: methods) {
+            final Method[] methods = current.isInterface() ? current.getMethods() : current.getDeclaredMethods();
+            for (final Method method: methods) {
                 if (predicate.test(method)) {
                     return method;
                 }
             }
 
 
-            for (Class<?> ifc: current.getInterfaces()) {
-                Method m = findMethod(ifc, predicate);
+            for (final Class<?> ifc: current.getInterfaces()) {
+                final Method m = Opjects.findMethod(ifc, predicate);
                 if (m != null)
                     return m;
             }
@@ -803,7 +803,7 @@ public class Opjects extends DefaultTermizer {
      * has the supplied name and parameter types, taking method sub-signatures
      * and generics into account.
      */
-    private static boolean hasCompatibleSignature(Method candidate, String method, Class<?>[] parameterTypes) {
+    private static boolean hasCompatibleSignature(final Method candidate, final String method, final Class<?>[] parameterTypes) {
 
         if (!method.equals(candidate.getName())) {
             return false;
@@ -818,15 +818,15 @@ public class Opjects extends DefaultTermizer {
         }
 
 
-        Class<?>[] ctp = candidate.getParameterTypes();
+        final Class<?>[] ctp = candidate.getParameterTypes();
         if (Arrays.equals(parameterTypes, ctp)) {
             return true;
         }
 
 
         for (int i = 0; i < parameterTypes.length; i++) {
-            Class<?> lowerType = parameterTypes[i];
-            Class<?> upperType = ctp[i];
+            final Class<?> lowerType = parameterTypes[i];
+            final Class<?> upperType = ctp[i];
             if (!upperType.isAssignableFrom(lowerType)) {
                 return false;
             }
@@ -839,33 +839,33 @@ public class Opjects extends DefaultTermizer {
     }
 
 
-    public final Object invoke(Object wrapper, Object obj, Method method, Object[] args) {
+    public final Object invoke(final Object wrapper, final Object obj, final Method method, final Object[] args) {
 
         Object result;
         try {
             result = method.invoke(obj, args);
-        } catch (Throwable t) {
-            logger.error("{} args={}: {}", obj, args, t);
+        } catch (final Throwable t) {
+            Opjects.logger.error("{} args={}: {}", obj, args, t);
             result = t;
         }
 
-        return tryInvoked(wrapper, method, args, result);
+        return this.tryInvoked(wrapper, method, args, result);
     }
 
 
-    protected final @Nullable Object tryInvoked(Object obj, Method m, Object[] args, Object result) {
-        if (methodExclusions.contains(m.getName()))
+    protected final @Nullable Object tryInvoked(final Object obj, final Method m, final Object[] args, final Object result) {
+        if (Opjects.methodExclusions.contains(m.getName()))
             return result;
 
 
-        return invoked(obj, m, args, result);
+        return this.invoked(obj, m, args, result);
 
 
     }
 
 
-    protected Object invoked(Object obj, Method m, Object[] args, Object result) {
-        Instance in = (Instance) objToTerm.get(obj);
+    protected Object invoked(final Object obj, final Method m, final Object[] args, final Object result) {
+        final Instance in = (Instance) this.objToTerm.get(obj);
         return (in == null) ?
                 result :
                 in.update(obj, m, args, result);
@@ -876,11 +876,11 @@ public class Opjects extends DefaultTermizer {
     /**
      * @see org.junit.platform.commons.support.ReflectionSupport#findMethod(Class, String, Class...)
      */
-    static Method findMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
+    static Method findMethod(final Class<?> clazz, final String methodName, final Class<?>... parameterTypes) {
         Preconditions.notNull(clazz, "Class must not be null");
         Preconditions.notNull(parameterTypes, "Parameter types array must not be null");
         Preconditions.containsNoNullElements(parameterTypes, "Individual parameter types must not be null");
 
-        return findMethod(clazz, method -> hasCompatibleSignature(method, methodName, parameterTypes));
+        return Opjects.findMethod(clazz, method -> Opjects.hasCompatibleSignature(method, methodName, parameterTypes));
     }
 }

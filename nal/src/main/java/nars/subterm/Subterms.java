@@ -122,7 +122,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return IntStream.range(0, n).noneMatch(i -> sub(i) != x.sub(i));
     }
 
-    default @Nullable Term subRoulette(FloatFunction<Term> subValue, Random rng) {
+    default @Nullable Term subRoulette(Random rng, FloatFunction<Term> subValue) {
         int s = subs();
         switch (s) {
             case 0: return null;
@@ -182,7 +182,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     static int hash(Subterms container) {
-        return container.intifyShallow(Util::hashCombine, 1);
+        return container.intifyShallow(1, Util::hashCombine);
     }
 
 //    /**

@@ -39,7 +39,7 @@ class DepIndepVarIntroductionTest {
     void testIntroduceIndepVar2() {
         String x = "((a-->(x,#1))==>(b-->(x,#1)))";
         Term input = $$(x);
-        @Nullable Term[] r = Terms.nextRepeat(input.subterms(), depIndepFilter, 2);
+        @Nullable Term[] r = Terms.nextRepeat(input.subterms(), 2, depIndepFilter);
         assertEquals(2, r.length);
         Arrays.sort(r);
         assertEq("(x,#1)", r[0]);
@@ -54,7 +54,7 @@ class DepIndepVarIntroductionTest {
     void testDontIntroduceIndepVarInNeg() {
         String x = "((a,--(x,#1))==>(b,--(x,#1)))";
         Term input = $$(x);
-        @Nullable Term[] r = Terms.nextRepeat(input.subterms(), nonNegdepIndepFilter, 2);
+        @Nullable Term[] r = Terms.nextRepeat(input.subterms(), 2, nonNegdepIndepFilter);
         assertNotNull(r);
         assertEquals(2, r.length);
         Arrays.sort(r);
@@ -66,13 +66,13 @@ class DepIndepVarIntroductionTest {
     @Test
     void testSubtermScore() {
         assertEquals("{y=3, x=4}",
-                Terms.subtermScore($$("((x,x,x,x),(y,y,y))"), (t1) -> 1, 2).toString());
+                Terms.subtermScore($$("((x,x,x,x),(y,y,y))"), 2, (t1) -> 1).toString());
     }
 
     @Test
     void testSubtermScore_Intrinsic() {
         assertEquals("{%1=4, %2=3}",
-            Terms.subtermScore($$("((%1,%1,%1,%1),(%2,%2,%2))"), t -> 1, 2).toString());
+            Terms.subtermScore($$("((%1,%1,%1,%1),(%2,%2,%2))"), 2, t -> 1).toString());
     }
 
     @Test
