@@ -31,7 +31,7 @@ object Chimera {
         GameX.runRT(FPS * thinkPerFrame, Function{ nar: NAR ->
             /** "withg" is unnecessary here, but can be used to scope an object variable as "this" */
             with(nar) {
-                //destructuring on RHS of a Pair
+                //destructuring on LHS of a Pair
                 val (a, b) = Pair(ArkaNAR(`$$`<Term>("(noid,a)"), nar, cam, numeric),
                         ArkaNAR(`$$`<Term>("(noid,b)"), nar, cam, numeric)).apply {
                     first.ballSpeed.set(0.7f * first.ballSpeed.toFloat())
