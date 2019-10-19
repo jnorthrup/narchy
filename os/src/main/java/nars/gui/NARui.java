@@ -568,6 +568,11 @@ public class NARui {
         return g;
     }
 
+
+    public static Surface tasklinkSpectrogram(What w, int history) {
+        return tasklinkSpectrogram(((TaskLinkWhat)w).links.links, history, w.nar);
+    }
+
     public static Surface tasklinkSpectrogram(Table<?, TaskLink> b, int history, NAR n) {
         return tasklinkSpectrogram(n, b, history, b.capacity());
     }
@@ -599,7 +604,7 @@ public class NARui {
         var attn = ((TaskLinkWhat)w).links;
         m.center(new TabMenu(Map.of(
                 "Input", () -> taskBufferView(w.inBuffer, n),
-                "Spectrum", ()->tasklinkSpectrogram(attn.links, 300, n),
+                "Spectrum", ()->tasklinkSpectrogram(w,  300),
                 "Histogram", ()->new BagView(attn.links, n),
                 "ConceptGraph", ()->BagregateConceptGraph2D.get(attn, n),
                 "TaskList", ()->new TaskListView(w, 32),
