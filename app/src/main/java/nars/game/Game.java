@@ -43,66 +43,52 @@ import static nars.time.Tense.ETERNAL;
 /**
  * an integration of sensor concepts and motor functions
  * interfacing with an environment forming a sensori-motor loop.
- *
+ * <p>
  * these include all forms of problems including
- *   optimization
- *   reinforcement learning
- *   etc
- *
+ * optimization
+ * reinforcement learning
+ * etc
+ * <p>
  * the name 'Game' is used, in the most general sense of the
  * word 'game'.
- *
  */
-@Paper @Skill({"Game_studies", "Game_theory"})
+@Paper
+@Skill({"Game_studies", "Game_theory"})
 public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit when it updates */ implements NSense, NAct, Timed, NARLoop.Pausing {
 
-    private final Topic<NAR> eventFrame = new ListTopic();
-
+    static final Atom GAME = Atomic.atom(Game.class.getSimpleName().toLowerCase());
     private static final Logger logger = Log.logger(Game.class);
-
-    public final GameTime time;
-
-    private final AtomicBoolean busy = new AtomicBoolean(false);
-    public final AtomicBoolean trace = new AtomicBoolean(false);
-
     private static final Atom ACTION = Atomic.atom("action");
     private static final Atom SENSOR = Atomic.atom("sensor");
     private static final Atom REWARD = Atomic.atom("reward");
-
+    public final GameTime time;
+    public final AtomicBoolean trace = new AtomicBoolean(false);
     public final FastCoWList<GameLoop> sensors = new FastCoWList<>(GameLoop[]::new);
     public final FastCoWList<ActionSignal> actions = new FastCoWList<>(ActionSignal[]::new);
     public final FastCoWList<Reward> rewards = new FastCoWList<>(Reward[]::new);
-
     public final AtomicInteger iteration = new AtomicInteger(0);
+    public final Term id;
+    public final When<What> nowPercept = new When();
+    public final When<What> nowLoop = new When();
+    final AtomicInteger frame = new AtomicInteger();
+    private final Topic<NAR> eventFrame = new ListTopic();
+    private final AtomicBoolean busy = new AtomicBoolean(false);
+    private final NAgentCycle cycle =
 
+            Cycles.Interleaved;
     public PriSource rewardPri;
     public PriSource actionPri;
     public PriSource sensorPri;
-
-    /** the context representing the experience of the game */
-    @Deprecated private What what;
-
-    public final Term id;
-
-
     public volatile long now = ETERNAL;
-
-    public final When<What> nowPercept = new When();
-    public final When<What> nowLoop = new When();
-
-    private final NAgentCycle cycle =
-            //Cycles.Biphasic;
-            Cycles.Interleaved;
-
     public float confDefaultBelief;
+    /**
+     * the context representing the experience of the game
+     */
+    @Deprecated
+    private What what;
+    private transient float _freqRes = Float.NaN;
+    private transient float _confRes = Float.NaN;
 
-
-
-    static final Atom GAME = Atomic.atom(Game.class.getSimpleName().toLowerCase());
-
-    static Term env(Term x) {
-        return $.func(GAME, x);
-    }
 
     public Game(String id) {
         this(id, GameTime.durs(1));
@@ -112,15 +98,15 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         this($.$$(id), time);
     }
 
-    //@Deprecated private final static InheritableThreadLocal<NAR> _nar = new InheritableThreadLocal<>();
-
-    /** TODO make final */
-    @Deprecated public Game(Term id, GameTime time, NAR n) {
+    /**
+     * TODO make final
+     */
+    @Deprecated
+    public Game(Term id, GameTime time, NAR n) {
         this(id, time);
         this.nar = n;
-        //_nar.set(n);
 
-//        nar.runLater(()->n.start(this));
+
     }
 
     public Game(Term id, GameTime time) {
@@ -132,7 +118,16 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         add(time.clock(this));
     }
 
-    @Override public final What what() {
+    static Term env(Term x) {
+        return $.func(GAME, x);
+    }
+
+    public static FloatSupplier normalize(FloatSupplier rewardFunc, float min, float max) {
+        return new FloatClamped(new FloatNormalized(rewardFunc, min, max, false), 0, 1);
+    }
+
+    @Override
+    public final What what() {
         return what;
     }
 
@@ -157,36 +152,12 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     }
 
     /**
-     *
      * avg reward satisfaction, current measurement
      * happiness metric applied to all reward concepts
      */
     @Paper
     public final float happiness(long start, long end, float dur) {
         return (float) rewards.meanBy(rr -> rr.happiness(start, end, dur));
-    }
-
-    /** happiness metric applied to all sensor concepts */
-    @Paper public static float happinessSensorsMean() {
-        throw new TODO();
-    }
-    /** happiness metric applied to all action concepts */
-    @Paper public static float happinessActionsMean() {
-        throw new TODO();
-    }
-
-    //TODO weighted happiness function
-
-    /**
-     * proficiency = happiness * dexterity
-     * current measurement
-     * professional satori
-     */
-    public final double proficiency() {
-        double x = happiness() * dexterity();
-        if (x!=x)
-            x = 0; //NaN > 0
-        return x;
     }
 
     @Override
@@ -197,7 +168,6 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         actions.add(c);
         return c;
     }
-
 
     @Override
     public final <S extends GameLoop> S addSensor(S s) {
@@ -223,7 +193,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         } else if (s instanceof Reward) {
 
             nar.control.input(((Reward) s).pri, target);
-            ((Reward)s).init(this);
+            ((Reward) s).init(this);
 
         } else if (s instanceof BiPolarAction)
             nar.control.input(((BiPolarAction) s).pri, target);
@@ -236,7 +206,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
             nar.add(((NARPart) s));
 
         if (s instanceof ActionSignal)
-            nar.add((ActionSignal)s); //register action concepts
+            nar.add((ActionSignal) s);
     }
 
     public Random random() {
@@ -264,7 +234,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
      * registers sensor, action, and reward concepts with the NAR
      * TODO call this in the constructor
      */
-    //@Override
+
     protected void starting(NAR nar) {
         super.starting(nar);
 
@@ -274,16 +244,16 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
         nowPercept.the(what);
         nowLoop.the(what);
-        nowPercept.end = (int)(now - what.dur()/2); //HACK
+        nowPercept.end = (int) (now - what.dur() / 2);
 
         init();
 
-        nar.control.add(actionPri = new PriSource($.inh(id,ACTION),
-            nar.goalPriDefault.pri()));
-        nar.control.add(sensorPri = new PriSource($.inh(id,SENSOR),
-            nar.beliefPriDefault.pri()));
-        nar.control.add(rewardPri = new PriSource($.inh(id,REWARD),
-            Util.or(nar.beliefPriDefault.pri(),nar.goalPriDefault.pri())));
+        nar.control.add(actionPri = new PriSource($.inh(id, ACTION),
+                nar.goalPriDefault.pri()));
+        nar.control.add(sensorPri = new PriSource($.inh(id, SENSOR),
+                nar.beliefPriDefault.pri()));
+        nar.control.add(rewardPri = new PriSource($.inh(id, REWARD),
+                Util.or(nar.beliefPriDefault.pri(), nar.goalPriDefault.pri())));
 
         for (GameLoop s : sensors) {
             init(sensorPri, s);
@@ -296,17 +266,17 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         }
     }
 
-    /** subclasses can safely add sensors, actions, rewards by implementing this.  NAR and What will be initialized prior */
+    /**
+     * subclasses can safely add sensors, actions, rewards by implementing this.  NAR and What will be initialized prior
+     */
     protected void init() {
 
     }
 
-
-    //@Override
     protected void stopping(NAR nar) {
 
-        sensors.stream().filter(x -> x instanceof NARPart).forEach(s -> nar.remove((NARPart)s));
-        //actions.forEach(a -> nar.remove((PermanentConcept)a)); //TODO
+        sensors.stream().filter(x -> x instanceof NARPart).forEach(s -> nar.remove((NARPart) s));
+
 
         nar.control.removeAll(actionPri, sensorPri, rewardPri);
         actionPri = null;
@@ -326,9 +296,11 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     public SimpleReward reward(String reward, FloatSupplier rewardFunc) {
         return reward(reward, 1f, rewardFunc);
     }
+
     public SimpleReward reward(Term reward, FloatSupplier rewardFunc) {
         return reward(reward, 1f, rewardFunc);
     }
+
     public SimpleReward reward(String reward, float freq, FloatSupplier rewardFunc) {
         return reward(rewardTerm(reward), freq, rewardFunc);
     }
@@ -337,7 +309,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
      * default reward target builder from String
      */
     protected Term rewardTerm(String reward) {
-        //return $.func($$(reward), id);
+
         return $.inh(id, reward);
     }
 
@@ -349,60 +321,19 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         return rewardNormalized(rewardTerm(reward), freq, min, max, rewardFunc);
     }
 
-
     public SimpleReward reward(Term reward, float freq, FloatSupplier rewardFunc) {
         SimpleReward r = new SimpleReward(reward, freq, rewardFunc, this);
-//        r.addGuard(
-//            NAL.DEBUG,false
-//            //true,false
-//            );
         reward(r);
         return r;
-    }
-
-    public Reward rewardNormalized(Term reward, float min, float max, FloatSupplier rewardFunc) {
-        return rewardNormalized(reward, 1, min, max, rewardFunc);
     }
 
     /**
      * set a default (bi-polar) reward supplier
      */
     public Reward rewardNormalized(Term reward, float freq, float min, float max, FloatSupplier rewardFunc) {
-        //.relax(Param.HAPPINESS_RE_SENSITIZATION_RATE);
+
         return reward(reward, freq, normalize(rewardFunc, min, max));
     }
-
-    public static FloatSupplier normalize(FloatSupplier rewardFunc, float min, float max) {
-        return new FloatClamped(new FloatNormalized(rewardFunc, min, max, false), 0, 1);
-    }
-
-//    @Deprecated
-//    public Reward rewardDetailed(String reward, FloatSupplier rewardFunc) {
-//        return rewardDetailed(rewardTerm(reward), rewardFunc);
-//    }
-//
-//    @Deprecated
-//    public Reward rewardDetailed(Term reward, FloatSupplier rewardFunc) {
-//        return reward(new DetailedReward(reward, rewardFunc, this));
-//    }
-//
-//    public Reward rewardDetailed(String reward, float min, float max, FloatSupplier rewardFunc) {
-//        return rewardDetailed(rewardTerm(reward), min, max, rewardFunc);
-//    }
-//
-//    public Reward rewardDetailed(Term reward, float min, float max, FloatSupplier rewardFunc) {
-//        return reward(new DetailedReward(reward, normalize(rewardFunc, min, max), this));
-//    }
-//
-//    @Deprecated
-//    public Reward rewardDetailed(FloatSupplier rewardfunc) {
-//        return rewardDetailed(rewardTerm("reward"), rewardfunc);
-//    }
-//
-//    @Deprecated
-//    public Reward rewardDetailed(float min, float max, FloatSupplier rewardfunc) {
-//        return rewardDetailed(rewardTerm("reward"), min, max, rewardfunc);
-//    }
 
     /**
      * default reward module
@@ -415,19 +346,24 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         return r;
     }
 
-    /** perceptual duration */
+    /**
+     * perceptual duration
+     */
     public final float dur() {
         return nowPercept.dur;
     }
 
-    /** physical/sensory duration */
+    /**
+     * physical/sensory duration
+     */
     public final float durLoop() {
         return time.dur();
     }
 
     public final float ditherFreq(float f, float res) {
-		return Truth.freqSafe(f, Math.max(res, _freqRes));
+        return Truth.freqSafe(f, Math.max(res, _freqRes));
     }
+
     public final float ditherConf(float c) {
         return (float) Truth.confSafe(c, _confRes);
     }
@@ -441,22 +377,105 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         time.pause(pause);
     }
 
-    @FunctionalInterface
-    public interface NAgentCycle {
-        /**
-         * in each iteration,
-         * responsible for invoking some or all of the following agent operations, and
-         * supplying their necessary time bounds:
-         * <p>
-         * a.frame() - executes attached per-frame event handlers
-         * <p>
-         * a.reinforce(...) - inputs 'always' tasks
-         * <p>
-         * a.sense(...) - reads sensors
-         * <p>
-         * a.act(...) - reads/invokes goals and feedback
-         */
-        void next(Game a, int iteration, long prev, long now);
+    /**
+     * iteration
+     */
+    protected final void next() {
+
+        if (!isOn() || !busy.compareAndSet(false, true))
+            return;
+
+
+        try {
+
+
+            long now =
+                    nar.time();
+
+
+            long prev = this.now;
+            if (now < prev)
+                return;
+
+            time.next(this.now = now);
+
+
+            float durLoop = durLoop();
+            long lastEnd = nowPercept.end;
+            long nextStart = Math.max(lastEnd + 1, (long) Math.floor(now - durLoop / 2));
+            long nextEnd = Math.max(nextStart, Math.round(Math.ceil(now + durLoop / 2 - 1)));
+
+            nowPercept.range(nextStart, nextEnd).dur(what.dur());
+            nowLoop.range(nextStart, nextEnd).dur(durLoop);
+
+            this.confDefaultBelief = nar.confDefault(BELIEF);
+
+            cycle.next(this, iteration.getAndIncrement(), prev, now);
+
+            if (trace.getOpaque())
+                logger.info(summary());
+
+        } finally {
+            busy.set(false);
+        }
+
+    }
+
+    @Override
+    public final NAR nar() {
+        return nar;
+    }
+
+    protected void act() {
+
+        ActionSignal[] aaa = actions.array().clone();
+        ArrayUtil.shuffle(aaa, random());
+
+
+        for (ActionSignal a : aaa)
+            update(a);
+    }
+
+    protected void sense() {
+
+        _freqRes = nar.freqResolution.floatValue();
+        _confRes = nar.confResolution.floatValue();
+
+        for (GameLoop sensor : sensors) {
+            update(sensor);
+        }
+        for (Reward reward : rewards) {
+            update(reward);
+        }
+    }
+
+    private void update(GameLoop s) {
+        if (s instanceof Part) {
+            if (!((Part) s).isOn())
+                return;
+        }
+        s.accept(this);
+    }
+
+    private void nextFrame() {
+        eventFrame.emit(nar);
+        frame.incrementAndGet();
+    }
+
+    public final int frame() {
+        return frame.getOpaque();
+    }
+
+    public Off onFrame(Consumer/*<NAR>*/ each) {
+        return eventFrame.on(each);
+    }
+
+    public Off onFrame(Runnable each) {
+        return eventFrame.on((x) -> each.run());
+    }
+
+    public FastCoWList<ActionSignal> actions() {
+        return actions;
     }
 
     public enum Cycles implements NAgentCycle {
@@ -481,15 +500,14 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
             @Override
             public void next(Game a, int iteration, long prev, long now) {
 
-                //System.out.println(a.nar.time() + ": " + (iteration%2) + " " + prev + " " + now + " " + next);
 
                 switch (iteration % 2) {
                     case 0:
-                        //SENSE
+
                         a.sense();
                         break;
                     case 1:
-                        //ACT
+
                         a.act();
                         a.nextFrame();
                         break;
@@ -499,301 +517,21 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     }
 
 
-    /**
-     * iteration
-     */
-    protected final void next() {
-
-        if (!isOn() || !busy.compareAndSet(false, true))
-            return;
-
-
-        try {
-//            int dither = nar.dtDither();
-
-            long now =
-                nar.time();
-                //Tense.dither(nar.time(), dither);
-
-            long prev = this.now;
-            if (now < prev)
-                return; //too early
-
-            time.next(this.now = now);
-
-//            System.out.println(this + " "  + state().toString() + " " + (now - prev));
-
-            float durLoop = durLoop();
-            long lastEnd = nowPercept.end;
-            long nextStart = Math.max(lastEnd+1, (long)Math.floor(now - durLoop/2));
-            long nextEnd = Math.max(nextStart, Math.round(Math.ceil(now + durLoop/2 - 1)));
-
-            nowPercept.range(nextStart, nextEnd).dur(what.dur());
-            nowLoop.range(nextStart, nextEnd).dur(durLoop);
-
-            this.confDefaultBelief = nar.confDefault(BELIEF);
-
-            cycle.next(this, iteration.getAndIncrement(), prev, now);
-
-            if (trace.getOpaque())
-                logger.info(summary());
-
-        } finally {
-            busy.set(false);
-        }
-
+    @FunctionalInterface
+    public interface NAgentCycle {
+        /**
+         * in each iteration,
+         * responsible for invoking some or all of the following agent operations, and
+         * supplying their necessary time bounds:
+         * <p>
+         * a.frame() - executes attached per-frame event handlers
+         * <p>
+         * a.reinforce(...) - inputs 'always' tasks
+         * <p>
+         * a.sense(...) - reads sensors
+         * <p>
+         * a.act(...) - reads/invokes goals and feedback
+         */
+        void next(Game a, int iteration, long prev, long now);
     }
-
-    @Override
-    public final NAR nar() {
-        return nar;
-    }
-
-    protected void act() {
-        //ActionConcept[] aaa = actions.array();
-        ActionSignal[] aaa = actions.array().clone();
-        ArrayUtil.shuffle(aaa, random()); //HACK shuffle cloned copy for thread safety
-
-        //TODO fork here
-        for (ActionSignal a : aaa)
-            update(a);
-    }
-
-
-    private transient float _freqRes = Float.NaN;
-    private transient float _confRes = Float.NaN;
-
-    protected void sense() {
-
-        _freqRes = nar.freqResolution.floatValue();
-        _confRes = nar.confResolution.floatValue();
-
-        //TODO fork here
-        for (GameLoop sensor : sensors) {
-            update(sensor);
-        }
-        for (Reward reward : rewards) {
-            update(reward);
-        }
-    }
-
-    private void update(GameLoop s) {
-        if (s instanceof Part) {
-            if (!((Part)s).isOn())
-                return; //the part is disabled
-        }
-        s.accept(this);
-    }
-
-//    @Deprecated protected void reinforce(long prev, long now, long next) {
-//
-//        in.input(always.stream().map(x -> x.get(prev, now, next)).filter(Objects::nonNull).peek(x -> {
-//            throw new UnsupportedOperationException();
-////            x.pri(
-////                    pri.floatValue() * nar.priDefault(x.punc())
-////            );
-//        }));
-//    }
-
-    final AtomicInteger frame = new AtomicInteger();
-
-    private void nextFrame() {
-        eventFrame.emit(nar);
-        frame.incrementAndGet();
-    }
-
-    public final int frame() {
-        return frame.getOpaque();
-    }
-
-
-
-
-//    public float dexterity() {
-//        return dexterity(nar.time());
-//    }
-
-//    public float dexterity(long when) {
-////        long now = nar.time();
-////        long d = frameTrigger.next(now) - now;
-////        return dexterity(when - d / 2, when + d / 2);
-//        return dexterity(when,when);
-//    }
-
-//    /**
-//     * average confidence of actions
-//     * see: http:
-//     */
-//    public float dexterity(long start, long end) {
-//        int n = actions.size();
-//        if (n == 0)
-//            return 0;
-//
-//        final double[] m = {0};
-//        actions.forEach(a -> {
-//            m[0] += a.dexterity(start, end, nar);
-//        });
-//
-//        return (float) (m[0] / n);
-//    }
-
-
-    public Off onFrame(Consumer/*<NAR>*/ each) {
-        return eventFrame.on(each);
-    }
-
-    public Off onFrame(Runnable each) {
-        return eventFrame.on((x) -> each.run());
-    }
-
-//    public Off onFrameWeak(Runnable each) {
-//        return eventFrame.onWeak((x) -> each.run());
-//    }
-
-
-    public FastCoWList<ActionSignal> actions() {
-        return actions;
-    }
-
-//    /**
-//     * creates an activator specific to this agent context
-//     */
-//    public Consumer<Predicate<Activate>> sampleActions() {
-//
-//
-//        return p -> {
-//            Activate a;
-//
-//            final int numConcepts = actions.size();
-//            int remainMissing = numConcepts;
-//            if (remainMissing == 0) return;
-//
-//
-//            Random rng = nar.random();
-//            do {
-//                Concept cc = actions.get(rng.nextInt(numConcepts));
-//                //Concept cc = nar.conceptualize(cc);
-//                if (cc != null) {
-//                    a = new Activate(cc, 0f);
-//                    //nar.activate(cc, 1f);
-//                    ///a = new Activate(cc, 0);
-//                    //a.delete();
-//                } else {
-//                    a = null;
-//                    if (remainMissing-- <= 0)
-//                        break;
-//
-//                }
-//            } while (a == null || p.test(a));
-//        };
-//    }
-
 }
-
-//    public final Bitmap2DSensor sense(Bitmap2DSensor bmp) {
-//        return addCamera(bmp);
-////        addSensor(bmp);
-////        onFrame(bmp::input); //TODO support adaptive input mode
-////        return bmp;
-//    }
-//
-//    @Deprecated public Task alwaysWantEternally(Termed x, float conf) {
-//        Task t = new NALTask(x.target(), GOAL, $.t(1f, conf), nar.time(),
-//                ETERNAL, ETERNAL,
-//                nar.evidence()
-//                //Stamp.UNSTAMPED
-//        );
-//
-//        always.addAt((prev, now, next) -> t);
-//        return t;
-//    }
-//    public void alwaysWant(Termed x, float confFactor) {
-//        //long[] evidenceShared = nar.evidence();
-//
-//        always.addAt((prev, now, next) ->
-//
-//                new NALTask(x.target(), GOAL, $.t(1f, confFactor * nar.confDefault(GOAL)), now,
-//                        now, next,
-//                        //evidenceShared
-//                        nar.evidence()
-//                        //Stamp.UNSTAMPED
-//
-//                )
-//        );
-//
-//    }
-//
-//    public void alwaysQuestion(Termed x, boolean stamped) {
-//        alwaysQuestionDynamic(() -> x, true, stamped);
-//    }
-//
-//    public void alwaysQuest(Termed x, boolean stamped) {
-//        alwaysQuestionDynamic(() -> x, false, stamped);
-//    }
-//
-//    public void alwaysQuestionDynamic(Supplier<Termed> x, boolean questionOrQuest, boolean stamped) {
-//
-//        always.addAt((prev, now, next) -> {
-//
-//            long[] stamp = stamped ? nar.evidence() : Stamp.UNSTAMPED;
-//
-//            Termed tt = x.get();
-//            if (tt == null) return null;
-//
-//            return new NALTask(tt.target(), questionOrQuest ? QUESTION : QUEST, null, now,
-//                    now, next,
-//                    stamp
-//            )/* {
-//                @Override
-//                public boolean isInput() {
-//                    return false;
-//                }
-//            }*/;
-//        });
-//
-//    }
-//
-//    private void alwaysQuestionEternally(Termed x, boolean questionOrQuest, boolean stamped) {
-//
-//        NALTask etq = new NALTask(x.target(), questionOrQuest ? QUESTION : QUEST, null, nar.time(),
-//                ETERNAL, ETERNAL,
-//                //evidenceShared
-//                stamped ? nar.evidence() : Stamp.UNSTAMPED
-//
-//        );
-//        always.addAt((prev, now, next) -> etq);
-//    }
-
-
-//    /** creates a new loop to run this */
-//    public Loop startFPS(float fps) {
-//        synchronized (this) {
-//            if (this.loop == null) {
-//                return this.loop = new Loop(fps) {
-//                    @Override
-//                    public boolean next() {
-//                        NAgent.this.run();
-//                        return true;
-//                    }
-//                };
-//            } else {
-//                throw new RuntimeException("already started: " + loop);
-//            }
-//        }
-//    }
-
-//    protected <A extends ActionConcept> void actionAdded(A a) {
-//
-//        //alwaysQuest(a, true);
-//        //alwaysQuestionEternally(Op.IMPL.the($.varQuery(1), a.target), true, false);
-//
-////        alwaysQuestionEternally(a,
-////                false,
-////                false
-////        );
-//
-//
-////        alwaysQuestion(IMPL.the(c.target, 0, $$("reward:#x")), true);
-////        alwaysQuestion(IMPL.the(c.target.neg(), 0, $$("reward:#x")), true);
-//        //alwaysQuestionEternally(Op.CONJ.the($.varDep(1), a.target.neg()));
-//    }
