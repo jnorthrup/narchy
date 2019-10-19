@@ -77,7 +77,7 @@ class SetFuncTest {
 
         for (int i = 0; i < 32; i++) {
             List<Term> f = new FasterList();
-            Evaluation.eval(s, n::axioms, f::add);
+            Evaluation.eval(s, f::add, n::axioms);
             permutes.add(f);
         }
 

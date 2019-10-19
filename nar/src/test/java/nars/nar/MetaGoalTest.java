@@ -43,7 +43,7 @@ class MetaGoalTest {
         assertTrue(tasks.size() > 2);
         Collection<Task> tt = tasks.values();
         Predicate<Task> isDerived = x -> !x.isInput();
-        long count = tt.stream().filter(isDerived::test).count();
+        long count = tt.stream().filter(isDerived).count();
         assertTrue(count >= 1);
 
         assertTrue(tt.stream().allMatch(x -> {
@@ -88,15 +88,5 @@ class MetaGoalTest {
             Object v = entry.getValue();
             System.out.println(k + '\t' + v);
         }
-
-//        n.control.why.forEach(c -> {
-//            c.commit();
-////            double perceive = c.credit[MetaGoal.PerceiveCmplx.ordinal()].total();
-////            double believe = c.credit[MetaGoal.Believe.ordinal()].total();
-////            double desire = c.credit[MetaGoal.Desire.ordinal()].total();
-////            if (perceive > 0) {
-//            //    c.print(System.out);
-////            }
-//        });
     }
 }

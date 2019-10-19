@@ -376,7 +376,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         return Arrays.stream(array()).mapToDouble(each::floatValueOf).sum();
     }
     public double sumBy(ToDoubleFunction<X> each) {
-        return Arrays.stream(array()).mapToDouble(each::applyAsDouble).sum();
+        return Arrays.stream(array()).mapToDouble(each).sum();
     }
 
     /** NaN valued items are not included */

@@ -31,12 +31,12 @@ public class Evaluation extends Termerator {
 
 	private final Predicate<Term> each;
 
-	public static void eval(Term x, Function<Atom, Functor> resolver, Predicate<Term> each) {
+	public static void eval(Term x, Predicate<Term> each, Function<Atom, Functor> resolver) {
 		if (evalable(x))
 			new Evaluation(each).evalTry((Compound) x, new Evaluator(resolver), false);
 	}
 
-	private static void eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver, Predicate<Term> each) {
+	private static void eval(Term x, boolean includeTrues, boolean includeFalses, Predicate<Term> each, Function<Atom, Functor> resolver) {
 
 		if (evalable(x)) {
 			new Evaluator(resolver).eval(each, includeTrues, includeFalses, x);
@@ -265,14 +265,14 @@ public class Evaluation extends Termerator {
 
 	public static Term solveFirst(Term x, Function<Atom, Functor> axioms) {
 		Term[] y = new Term[1];
-		Evaluation.eval(x, true, true, axioms, (what) -> {
+		Evaluation.eval(x, true, true, (what) -> {
 			if (what instanceof Bool) {
 				if (y[0] != null)
 					return true; //ignore and continue try to find a non-bool solution
 			}
 			y[0] = what;
 			return false;
-		});
+		}, axioms);
 		return y[0];
 	}
 
@@ -295,11 +295,11 @@ public class Evaluation extends Termerator {
 
 		UnifiedSet<Term> ee = new UnifiedSet<>(0);
 
-		Evaluation.eval(x, includeTrues, includeFalses, resolver, t -> {
+		Evaluation.eval(x, includeTrues, includeFalses, t -> {
 			if (t != Null)
 				ee.add(t);
 			return true;
-		});
+		}, resolver);
 
 		return ee.isEmpty() ? Set.of() : ee;
 		//java.util.Set.of($.func(Inperience.wonder, x))
