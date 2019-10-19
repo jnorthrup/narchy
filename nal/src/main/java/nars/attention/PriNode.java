@@ -22,7 +22,7 @@ public class PriNode implements Prioritized {
     protected Merge input = Merge.Plus;
 
     /** internal priority storage variable */
-    protected final UnitPri pri = new UnitPri(0);
+    public final UnitPri pri = new UnitPri(0);
 
     public PriNode(Object id) {
         this.id = $.identity(id);

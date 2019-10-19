@@ -43,9 +43,10 @@ public class DefaultDerivePri implements DerivePri {
                     //= factorComplexityRelative2(t, d);
 
         float factor = factorCmpl;
-		/* ^2 */
-		factor *= t.isBeliefOrGoal() ? factorPolarity(t.freq()) : questionGain.floatValue()
-			* factor;
+
+		factor *= t.isBeliefOrGoal() ?
+            factorPolarity(t.freq()) :
+            questionGain.floatValue() * factor; /* ^2 */
 
         factor *= //factorEviAbsolute(t,d);
                   factorMaintainRangeAndAvgEvi(t,d);

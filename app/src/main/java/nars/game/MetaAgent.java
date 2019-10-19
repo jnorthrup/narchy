@@ -5,6 +5,7 @@ import jcog.learn.ql.dqn3.DQN3;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
+import jcog.pri.UnitPri;
 import jcog.thing.Part;
 import jcog.util.FloatConsumer;
 import nars.$;
@@ -121,7 +122,7 @@ public abstract class MetaAgent extends Game {
 	}
 
 	void priAction(Term id, PriSource a) {
-		floatAction(id, 2, a.amp).resolution(PRI_ACTION_RESOLUTION);
+		floatAction(id, 2, a.pri).resolution(PRI_ACTION_RESOLUTION);
 	}
 
 //    @Override
@@ -151,6 +152,9 @@ public abstract class MetaAgent extends Game {
 
 	protected GoalActionConcept floatAction(Term t, float exp, FloatRange r) {
 		return floatAction(t, r.min, r.max, exp, r::set);
+	}
+	protected GoalActionConcept floatAction(Term t, float exp, UnitPri r) {
+		return floatAction(t, 0, 1, exp, r::pri);
 	}
 
 	protected GoalActionConcept floatAction(Term t, float min, float max, float exp, FloatConsumer r) {
