@@ -127,7 +127,7 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
         Task y = preMerge(x);
         if (y == null) {
             x = put(x);
-            commit(forget(r.nar.questionForgetRate.floatValue() /* estimate */));
+            commit(forget(r.nar().questionForgetRate.floatValue() /* estimate */));
             r.remember(x);
         } else
             r.merge(y);

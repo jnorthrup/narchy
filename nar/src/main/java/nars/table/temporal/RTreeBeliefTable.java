@@ -83,9 +83,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	 * returns true if at least one net task has been removed from the table.
 	 */
 	/*@NotNull*/
-	private static void compress(Space<TaskRegion> tree, Remember remember) {
+	private static void compress(Space<TaskRegion> tree, Remember r) {
 
-		long now = remember.nar.time();
+		long now = r.time();
 		//long tableDur = tableDur(now);
 
 		Top<Task> weakest = new Top<>(new FurthestWeakest(now, 1));
@@ -96,7 +96,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 		);
 
 		if (findEvictable(tree, tree.root(), weakest, mergeableLeaf))
-			compress(tree, weakest, mergeableLeaf, remember);
+			compress(tree, weakest, mergeableLeaf, r);
 
 	}
 
@@ -125,11 +125,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 	private static @Nullable Pair<Task, TruthProjection> mergeLeaf(Top<RLeaf<TaskRegion>> mergeableLeaf, Remember r) {
 		RLeaf<TaskRegion> leaf = mergeableLeaf.get();
-		return Revision.merge(r.nar, false, 2, leaf.size, leaf.data);
+		return Revision.merge(r.what.nar, false, 2, leaf.size, leaf.data);
 	}
 
 	private static boolean mergeOrEvict(Task weakest, Task merged, TruthProjection merging, Remember r) {
-		long now = r.nar.time();
+		long now = r.time();
 		double weakEvictionValue = -eviFast(weakest, now);
 		double mergeValue = eviFast(merged, now) - merging.sumOfDouble(t -> eviFast(t, now));
 

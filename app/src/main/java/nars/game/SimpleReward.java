@@ -67,7 +67,7 @@ public class SimpleReward extends ScalarReward {
                 if (Math.abs(i.freq() - goal.freq()) > 0.5f) {
                     if (log) {
                         //logger.info("goal contradicts reward:\n{}", i.proof());
-                        System.out.print("goal contradicts reward\t"); r.nar.proofPrint(i);
+                        System.out.print("goal contradicts reward\t"); r.nar().proofPrint(i);
                     }
                     if (forget) {
                         r.forget(i);

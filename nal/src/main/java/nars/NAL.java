@@ -236,8 +236,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //-0.5f;
 
 
-    /** store dynamic and intermediate dynamic results in belief tables after computing each task/subtask */
-    public static final boolean CACHE_DYNAMIC_TASKS = false;
+//    /** store dynamic and intermediate dynamic results in belief tables after computing each task/subtask */
+//    public static final boolean CACHE_DYNAMIC_TASKS = false;
 
 
 	protected static final boolean CONCEPTUALIZE_DYNAMIC_TRANSIENT = false;

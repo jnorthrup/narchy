@@ -8,7 +8,6 @@ import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.MetaGoal;
-import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.util.TaskException;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -34,25 +33,22 @@ public class Remember {
     public boolean link;
     public boolean notify;
 
+    public final What what;
 
-    @Deprecated public final NAR nar;
-    public transient What what = null;
-
-    public static @Nullable Remember the(Task x, NAR n) {
-        return the(x, true, true, true, n);
+    public static @Nullable Remember the(Task x, What w) {
+        return the(x, true, true, true, w);
     }
 
-    public static @Nullable Remember the(Task x, boolean store, boolean link, boolean emit, NAR n) {
-        if (x instanceof SeriesBeliefTable.SeriesTask)
-            return null; //already will have been added directly by the table to itself
 
-        verify(x, n);
+    public static @Nullable Remember the(Task x, boolean store, boolean link, boolean emit, What w) {
 
-        return new Remember(x, store, link, emit, n);
+        verify(x, w.nar);
+
+        return new Remember(x, store, link, emit, w);
     }
 
     /** misc verification tests which are usually disabled */
-    private static void verify(Task x, NAR n) {
+    protected static void verify(Task x, NAR n) {
 
         if ((NAL.VOLMAX_RESTRICTS) && (x.isInput() || !NAL.VOLMAX_RESTRICTS_INPUT)) {
             int termVol = x.term().volume();
@@ -87,12 +83,27 @@ public class Remember {
         }
     }
 
-    private Remember(Task input, boolean store, boolean link, boolean notify, NAR n) {
+    Remember(Task input, boolean store, boolean link, boolean notify, What w) {
         this.store = store;
         this.link = link;
         this.notify = notify;
-        this.nar = n;
+        this.what = w;
         this.input = input;
+
+        if (store) {
+            if (!store())
+                return;
+        } else {
+            result = input;
+        }
+
+        if (complete() && !this.result.isDeleted()) {
+            link();
+        }
+
+        if (result!=input)
+            input.delete();
+
     }
 
     @Override
@@ -100,27 +111,9 @@ public class Remember {
         return Remember.class.getSimpleName() + '(' + input + ')';
     }
 
-    public void next(What w) {
-        this.what = w;
-        if (store) {
-            if (!store(true))
-                return;
-        } else {
-           result = input;
-       }
 
-        if (complete() && !this.result.isDeleted()) {
-            link(this.result, w);
-        }
-
-        if (result!=input)
-            input.delete();
-
-
-    }
-
-    public boolean store(boolean conceptualize) {
-        Concept cc = nar.concept(input,conceptualize);
+    public boolean store() {
+        Concept cc = concept();
         if (!(cc instanceof TaskConcept))
             return false;
         else {
@@ -129,13 +122,19 @@ public class Remember {
         }
     }
 
+    protected Concept concept() {
+        boolean conceptualize = true;
+        return what.nar.concept(input,conceptualize);
+    }
+
     public final boolean complete() {
         return result!=null;
     }
 
-    private void link(Task t, What w) {
+    protected void link() {
 
-        NAR n = w.nar;
+        Task t = this.result;
+        NAR n = nar();
 
         /* 1. resolve */
 //        Termed cc = c == null ? t : c;
@@ -160,11 +159,11 @@ public class Remember {
 
         if (link) {
             //emit the result, but using the input pri (which may be different on merge)
-            w.link(t, input.priElseZero());
+            what.link(t, input.priElseZero());
         }
 
         if (notify)
-            w.emit(t); //notify regardless of whether it was conceptualized, linked, etc..
+            what.emit(t); //notify regardless of whether it was conceptualized, linked, etc..
 
     }
 
@@ -221,20 +220,15 @@ public class Remember {
             }
         }
 
-
-        NAR n = nar;
-
         long prevCreation = prev.creation();
-        long nextCreation = prev != next ? next.creation() : n.time();
+        long nextCreation = prev != next ? next.creation() : what.time();
 
         boolean novel;
         if (priChange) { //dont compare time if pri already detected changed
             novel = true;
         } else {
             long dCycles = Math.max(0, nextCreation - prevCreation);
-            float dur =
-                //n.dur();
-                (what==null ? n : what).dur(); //HACK
+            float dur = what.dur();
             float dDurs = dCycles == 0 ? 0 : (dCycles / dur); //maybe what.dur()
             novel = dDurs >= NAL.belief.REMEMBER_REPEAT_THRESH_DURS;
         }
@@ -245,6 +239,16 @@ public class Remember {
         }
 
         return false;
+    }
+
+
+    /** current time */
+    public final long time() {
+        return what.time();
+    }
+
+    public final NAR nar() {
+        return what.nar;
     }
 
 

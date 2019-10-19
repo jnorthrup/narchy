@@ -44,7 +44,7 @@ class RTreeBeliefTableTest {
     private static Task add(BeliefTable r, Termed x, float freq, float conf, long start, long end, long evi, NAR n) {
         Task a = task(x.term(), BELIEF, freq, conf).time(start, start, end).evidence(evi).apply(n);
         a.pri(0.5f);
-        r.remember(Remember.the(a, n));
+        r.remember(Remember.the(a, n.what()));
         return a;
     }
     static final Term x = Atomic.atom("x");
@@ -142,7 +142,7 @@ class RTreeBeliefTableTest {
         assertEquals(1, r.size());
 
 
-        r.remember(Remember.the(a, n));
+        r.remember(Remember.the(a, n.what()));
         r.print(System.out);
         assertEquals(1, r.size());
 

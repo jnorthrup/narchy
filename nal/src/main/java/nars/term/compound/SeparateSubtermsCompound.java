@@ -22,9 +22,9 @@ public abstract class SeparateSubtermsCompound implements Compound {
 
     private final int hash;
 
-    protected SeparateSubtermsCompound(Op o, Subterms x) {
-        this(x.hashWith(o.id));
-    }
+//    protected SeparateSubtermsCompound(Op o, Subterms x) {
+//        this(x.hashWith(o.id));
+//    }
 
     SeparateSubtermsCompound(byte op, Subterms x) {
         this(x.hashWith(op));
@@ -157,9 +157,8 @@ public abstract class SeparateSubtermsCompound implements Compound {
 
     @Override
     public final void forEach(/*@NotNull*/ Consumer<? super Term> c) {
-        for (Term term : subterms()) {
+        for (Term term : subterms())
             c.accept(term);
-        }
     }
     @Override
     public final void forEach(/*@NotNull*/ Consumer<? super Term> action, int start, int stop) {

@@ -60,7 +60,7 @@ public class GameTest {
         DataTable s = new DataTable();
         s.addColumns(DoubleColumn.create("reward"),DoubleColumn.create("dex"),DoubleColumn.create("x"));
         n.onCycle(()->{
-            float reward = a.happiness();
+            double reward = a.happiness();
             if (reward!=reward) reward = 0;
             double dex = a.dexterity();
             try {

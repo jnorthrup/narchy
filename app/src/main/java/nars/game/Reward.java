@@ -7,6 +7,7 @@ import nars.NAR;
 import nars.Task;
 import nars.attention.PriNode;
 import nars.concept.Concept;
+import nars.control.op.Rememorize;
 import nars.game.sensor.GameLoop;
 import nars.table.eternal.EternalDefaultTable;
 import nars.task.NALTask;
@@ -18,8 +19,6 @@ import nars.truth.DiscreteTruth;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
-
-import java.util.function.Supplier;
 
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
@@ -37,7 +36,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
     final PriNode pri;
 
 	@Skill({"Curiosity", "Central_pattern_generator","Phantom_limb"})
-    protected final FasterList<Supplier<Task>> reinforcement = new FasterList<>();
+    protected final FasterList<Rememorize> reinforcement = new FasterList<>();
 
     protected Reward(Term id, Game g) {
     	this.id = id;
@@ -85,19 +84,19 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
         }
     }
 
-	public void reinforceTemporal(Termed x, byte punc, Truth truth, long[] stamp) {
-		Term goal = x.term();
-
-		if (goal instanceof Neg) {
-			throw new UnsupportedOperationException();
-		}
-
-		synchronized (reinforcement) {
-			reinforcement.add(() ->
-				NALTask.the(goal, punc, truth, nar().time(), game.nowPercept.start, game.nowPercept.end, stamp)
-			);
-		}
-	}
+//	public void reinforceTemporal(Termed x, byte punc, Truth truth, long[] stamp) {
+//		Term goal = x.term();
+//
+//		if (goal instanceof Neg) {
+//			throw new UnsupportedOperationException();
+//		}
+//
+//		synchronized (reinforcement) {
+//			reinforcement.add(() ->
+//				NALTask.the(goal, punc, truth, nar().time(), game.nowPercept.start, game.nowPercept.end, stamp)
+//			);
+//		}
+//	}
 
     public void reinforce(Termed x, byte punc, Truth truth, long[] stamp) {
         Term goal = x.term();
@@ -112,7 +111,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 		//t.setCyclic(true); //TODO permanent
 
 		synchronized(reinforcement) {
-			reinforcement.add(()->t);
+			reinforcement.add(Rememorize.the(t, game.what()));
 		}
         //return t;
 //        @Nullable EternalTable eteTable = ((BeliefTables) ((TaskConcept) g).goals()).tableFirst(EternalTable.class);
@@ -155,13 +154,8 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 //			game.what().acceptAll(reinforcement);
 
 			//Supplier<Task> t = reinforcement.get(nar().random());
-			for (Supplier<Task> t : reinforcement) {
-				if (t != null) {
-					Task tt = t.get();
-					if (tt != null)
-						in(tt.pri(pri));
-				}
-			}
+			for (Rememorize t : reinforcement)
+				t.input(pri);
 		}
 
 		//            DynamicTaskLink l = new DynamicTaskLink(lt) {

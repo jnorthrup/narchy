@@ -64,7 +64,7 @@ public enum ConjMatch { ;
                     //simple parallel remove match case
                     Subterms cs = conj.subterms();
                     Subterms csNext = cs.remove(event);
-                    if (csNext==null)
+                    if (csNext==cs)
                         return Null;
                     return cs != csNext ? (csNext.subs() > 1 ? CONJ.the(csNext) : csNext.sub(0)) : Null;
                 } else
