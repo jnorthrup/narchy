@@ -138,11 +138,6 @@ public abstract class UnitCompound implements SameSubtermsCompound {
 //    }
 
     @Override
-    public final int subStructure() {
-        return sub().structure();
-    }
-
-    @Override
     public final int dt() {
         return DTERNAL;
     }
@@ -199,13 +194,13 @@ public abstract class UnitCompound implements SameSubtermsCompound {
 
 
     @Override
-    public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
+    public int intifyShallow(int v, IntObjectToIntFunction<Term> reduce) {
         return reduce.intValueOf(v, sub()); 
     }
 
     @Override
-    public int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        return reduce.intValueOf(sub().intifyRecurse(reduce, v), this);
+    public int intifyRecurse(int v, IntObjectToIntFunction<Term> reduce) {
+        return reduce.intValueOf(sub().intifyRecurse(v, reduce), this);
     }
 
     @Override

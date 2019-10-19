@@ -799,7 +799,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 		recurseTerms(
 			tt -> tt.hasAny(onlyType),
 			tt -> {
-				if (tt.opID() == onlyType)
+				if (tt.opBit() == onlyType)
 					t.add(tt);
 				return true;
 			}, null);

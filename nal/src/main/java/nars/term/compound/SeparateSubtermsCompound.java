@@ -249,13 +249,13 @@ public abstract class SeparateSubtermsCompound implements Compound {
     }
 
     @Override
-    public final int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        return subterms().intifyRecurse(reduce, v);
+    public final int intifyRecurse(int v, IntObjectToIntFunction<Term> reduce) {
+        return subterms().intifyRecurse(v, reduce);
     }
 
     @Override
-    public final int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
-        return subterms().intifyShallow(reduce, v);
+    public final int intifyShallow(int v, IntObjectToIntFunction<Term> reduce) {
+        return subterms().intifyShallow(v, reduce);
     }
 
     @Override
