@@ -199,7 +199,7 @@ class NAL8EternalMixTest extends NALTest {
     void further_detachment() {
 
         test
-                .input("reachable(SELF,{t002}). :|:")
+                .input("reachable(SELF,{t002}). |")
                 .inputAt(10, "(reachable(SELF,{t002}) &&+5 pick({t002}))!")
                 .mustGoal(cycles, "pick({t002})", 1.0f, 0.81f, 5);
 
@@ -209,10 +209,10 @@ class NAL8EternalMixTest extends NALTest {
     void condition_goal_deduction_eternal_belief() {
         test.termVolMax(18);
         test
-                .input("reachable(SELF,{t002})! :|:")
+                .input("reachable(SELF,{t002})! |")
                 .inputAt(5, "((on($1,#2) &&+0 at(SELF,#2)) ==> reachable(SELF,$1)).")
-                .mustGoal(cycles, "(on({t002},#1) &| at(SELF,#1))", 1.0f, 0.45f, 0)
-                .mustNotOutput(cycles, "(at(SELF,#1) &| on({t002},#1))", GOAL, t -> t == ETERNAL || t == 5);
+                .mustGoal(cycles, "(on({t002},#1) && at(SELF,#1))", 1.0f, 0.45f, 0)
+                .mustNotOutput(cycles, "(at(SELF,#1) && on({t002},#1))", GOAL, t -> t == ETERNAL || t == 5);
 
     }
 

@@ -2,6 +2,7 @@ package nars.truth.dynamic;
 
 import jcog.WTF;
 import jcog.util.ObjectLongLongPredicate;
+import nars.NAL;
 import nars.Task;
 import nars.task.util.Revision;
 import nars.term.Compound;
@@ -276,8 +277,11 @@ public enum DynamicConjTruth {
 
                 //TODO prefer smaller non-conj, non-disj event
 
-                if (cc == 0)
-                    throw new WTF(); //nothing remains
+                if (cc == 0) {
+                    if (NAL.DEBUG)
+                        throw new WTF(); //nothing remains
+                    return false;
+                }
 
                 long vWhen = c.when(i);
                 Random rng = ThreadLocalRandom.current();

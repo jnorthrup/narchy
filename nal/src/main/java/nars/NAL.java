@@ -16,6 +16,7 @@ import nars.term.atom.Atom;
 import nars.term.util.transform.Conceptualization;
 import nars.term.util.transform.Retemporalize;
 import nars.time.Time;
+import nars.truth.func.TruthFunctions;
 import nars.truth.proj.LinearTruthProjection;
 import nars.truth.proj.TruthProjection;
 import nars.truth.util.ConfRange;
@@ -236,9 +237,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //-0.5f;
 
 
-//    /** store dynamic and intermediate dynamic results in belief tables after computing each task/subtask */
-//    public static final boolean CACHE_DYNAMIC_TASKS = false;
-
 
 	protected static final boolean CONCEPTUALIZE_DYNAMIC_TRANSIENT = false;
 
@@ -329,7 +327,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     @Deprecated public final FloatRange questionForgetRate = new FloatRange(1f, 0, 1);
 
-    @Deprecated public final IntRange deriveBranchTTL = new IntRange(12, 1, 256);
+    @Deprecated public final IntRange deriveBranchTTL = new IntRange(20, 1, 256);
 
     /**
      * how many cycles above which to dither dt and occurrence time
@@ -405,6 +403,11 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     static Atom randomSelf() {
         return $.uuid(/*"I_"*/);
+    }
+
+    public static double eviEternalizable(double evi, long dt, float dur) {
+        double ete = TruthFunctions.eternalize(evi);
+        return ete + evi(evi-ete, dt, dur);
     }
 
     /**

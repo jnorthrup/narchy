@@ -23,10 +23,7 @@ public final class Rememorize extends Remember {
 	@Override
 	protected Concept concept() {
 		Concept c = this.concept;
-		if (c == null || c.isDeleted())
-			return this.concept = super.concept();
-		else
-			return c;
+		return ((c == null) || c.isDeleted()) ? ((this.concept = super.concept())) : c;
 	}
 
 	public void input(float pri) {

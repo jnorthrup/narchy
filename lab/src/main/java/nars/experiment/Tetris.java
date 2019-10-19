@@ -44,6 +44,8 @@ public class Tetris extends GameX {
     static final int tetris_height = 16;
     //    public static final boolean TETRIS_V2_REWARDS = Config.configIs("TETRIS_V2_REWARDS", true);
     public static AtomicBoolean easy = new AtomicBoolean(Config.configIs("TETRIS_EASY", false));
+    public static boolean opjects = true;
+
     public static int[][] CENTER_5_X_5 = {TetrisPiece.EMPTY_ROW
             , TetrisPiece.EMPTY_ROW
             , TetrisPiece.CENTER
@@ -99,7 +101,6 @@ public class Tetris extends GameX {
         );
 
 
-        boolean opjects = false;
         state = opjects ?
                 actionsReflect(n) :
                 new TetrisState(width, height, timePerFall);

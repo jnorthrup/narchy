@@ -160,7 +160,7 @@ public class Occurrify extends TimeGraph {
                             double pct = Math.max(tRange, bRange) / (uRange);
                             //assert(pct <= 1.0);
 
-                            if (d.doubt((float) pct))
+                            if (d.doubt(pct))
                                 return u; //union accepted, diluted as needed
 
 
@@ -515,13 +515,19 @@ public class Occurrify extends TimeGraph {
 
             private void filter(Derivation d, long[] x) {
                 if (x!=null && x[0]!=ETERNAL && x[0]!=TIMELESS) {
-                    long taskStart = d.taskStart;
-                    if (taskStart == ETERNAL) taskStart = d.time;
+                    long imm = d.taskStart;
+                    if (imm == ETERNAL) imm = d.time;
                     //if (taskStart != ETERNAL) { // && taskStart > x[0]){
+
+                    long delta = imm - x[0];
+
                     long r = x[1] - x[0];
-                    x[0] = taskStart;
-                    x[1] = taskStart + r;
-                    //}
+                    x[0] = imm;
+                    x[1] = imm + r;
+
+                    if (delta > 0)
+                        d.doubt(NAL.eviEternalizable(1, delta, d.dur));
+
                 }
                 if (x == null) {
                     //TODO may be solvable directly if no xternal etc
