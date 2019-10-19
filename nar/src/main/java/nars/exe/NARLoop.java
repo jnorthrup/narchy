@@ -22,6 +22,22 @@ public abstract class NARLoop extends InstrumentedLoop {
         nar = n;
     }
 
+    public interface Pausing {
+        void pause(boolean pause);
+    }
+
+    @Override
+    protected void starting() {
+        super.starting();
+        nar.parts(Pausing.class).forEach(g->g.pause(false));
+    }
+
+    @Override
+    protected void stopping() {
+        nar.parts(Pausing.class).forEach(g->g.pause(true));
+        super.stopping();
+    }
+
     public static final class NARLoopSync extends NARLoop {
 
         public NARLoopSync(NAR n) { super(n); }

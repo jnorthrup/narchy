@@ -36,7 +36,7 @@ public class LoopPanel extends Gridding {
                     .add("dutyTime", iloop.dutyTime::asFloat)
             ;
         } else {
-            cycleTimePlot = null; 
+            cycleTimePlot = new Plot2D(8,Plot2D.Line); //HACK
         }
 
         heapPlot = new Plot2D(128, Plot2D.Line)
@@ -84,6 +84,7 @@ public class LoopPanel extends Gridding {
     }
 
     final AtomicBoolean busy = new AtomicBoolean(false); //HACK
+
     public void update() {
         if (busy.compareAndSet(false, true)) {
             if (!pause) {

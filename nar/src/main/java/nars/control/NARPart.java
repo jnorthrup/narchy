@@ -86,10 +86,6 @@ public abstract class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
     }
 
 
-    @Override
-    public final boolean equals(Object obj) {
-        return this == obj;
-    }
 
     //    @Deprecated protected final void whenDelete(Off... x) {
 //        for (Off xx : x)
@@ -206,7 +202,7 @@ public abstract class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
     /**
      * pause, returns a one-use resume ticket
      */
-    public final Runnable pause() {
+    @Deprecated public final Runnable pause() {
         NAR n = this.nar;
         if (n != null) {
             if (n.stop(this)) {

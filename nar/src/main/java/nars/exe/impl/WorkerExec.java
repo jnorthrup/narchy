@@ -1,6 +1,7 @@
 package nars.exe.impl;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.exe.Exe;
 import jcog.math.FloatAveragedWindow;
 import jcog.random.XoRoShiRo128PlusRandom;
@@ -9,6 +10,7 @@ import nars.attention.What;
 import nars.control.PartBag;
 import nars.derive.Deriver;
 import nars.derive.DeriverExecutor;
+import nars.exe.NARLoop;
 import org.jctools.queues.MpmcArrayQueue;
 
 import java.util.Random;
@@ -21,10 +23,10 @@ public class WorkerExec extends ThreadedExec {
 
 
 	/**
-	 * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
+	 * value of 1 means a worker will attempt all of the work.  this is safest option
+	 * lesser values load balance across workers at expense of avg throughput
 	 */
-	static final float workResponsibility =
-		Util.PHIf * 2;
+	static final float workResponsibility = 1;
 	//1f;
 	//1.5f;
 	//2f;
@@ -81,7 +83,6 @@ public class WorkerExec extends ThreadedExec {
 		private final NAR nar;
 		private final MpmcArrayQueue in;
 		private transient DeriverExecutor deriver;
-		private transient long nextUpdate;
 		@Deprecated
 		private transient int concurrency;
 
@@ -89,33 +90,17 @@ public class WorkerExec extends ThreadedExec {
 			this.nar = nar;
 			in = ((ThreadedExec)nar.exe).in;
 			rng = new XoRoShiRo128PlusRandom((31L * System.identityHashCode(this)) + nanoTime());
-			nextUpdate = nar.time();
 		}
 
 		/**
 		 * updated each system dur
 		 */
 		private DeriverExecutor deriver() {
-			long now = nar.time();
-			if (now < nextUpdate) {
-				return deriver; //same cycle
-			} else {
-
-				nextUpdate = now +
-					1; //per-cycle
-				//Math.round(updateDurs * nar.dur()); //per-dur
-
-				DeriverExecutor d = this.deriver;
-				Deriver systemDeriver = nar.exe.deriver;
-				if (systemDeriver != null) {
-					if (d == null || d.deriver != systemDeriver) {
-						//deriver has changed; create new executor
-						return this.deriver = new DeriverExecutor.QueueDeriverExecutor(systemDeriver);
-					}
-				}
-
-				return null;
-			}
+			DeriverExecutor d = this.deriver;
+			Deriver systemDeriver = nar.exe.deriver;
+			return systemDeriver != null && (d == null || d.deriver != systemDeriver) ?
+				(this.deriver = new DeriverExecutor.QueueDeriverExecutor(systemDeriver)) : //deriver has changed; create new executor
+				d;
 		}
 
 		@Override
@@ -124,39 +109,28 @@ public class WorkerExec extends ThreadedExec {
 
 			//Histogram loopTime = new Histogram(30_000, loopNS_recorded_max, 3);
 			//loopTime.recordValue(loopNS_recorded_max);
-			FloatAveragedWindow loopTime = new FloatAveragedWindow(16, 0.5f, false).mode(FloatAveragedWindow.Mode.Mean);
+			FloatAveragedWindow loopTime = new FloatAveragedWindow(8, 0.5f, false).mode(FloatAveragedWindow.Mode.Mean);
 			loopTime.fill(loopNS_recorded_max);
+
+			NARLoop loop = nar.loop;
 
 			while (alive.getOpaque()) {
 
 				concurrency = Math.max(1,nar.exe.concurrency());
-
-				long cycleTimeNS = nar.loop.cycleTimeNS;
+				long cycleTimeNS = loop.cycleTimeNS;
 
 				long cycleStart = System.nanoTime();
-//
 
 				work();
-//
-				long afterWork = System.nanoTime();
-				long workTime = afterWork - cycleStart;
-				long cycleRemaining = cycleTimeNS - workTime;
+
+				long cycleRemaining = cycleTimeNS - (System.nanoTime() - cycleStart);
 				if (cycleRemaining < 0)
 					continue; //worked until next morning so start again
-//				long cycleRemaining = cycleTimeNS;
 
-
-				boolean running = nar.loop.isRunning();
-				float throttle = running ? nar.loop.throttle.floatValue() : 0;
+				boolean running = loop.isRunning();
+				float throttle = running ? loop.throttle.floatValue() : 0;
 				if (throttle < 1) {
-					//sleep at most until next cycle
-					long cycleSleepNS = Math.min(cycleRemaining, (int)(cycleTimeNS * (1.0-throttle)));
-					Util.sleepNSwhile(cycleSleepNS, naptime, ()->{
-						work();
-						return true;
-					});
-					long afterSleep = System.nanoTime();
-					cycleRemaining = cycleTimeNS - (afterSleep - cycleStart);
+					cycleRemaining = sleep(throttle, cycleTimeNS, cycleStart, cycleRemaining);
 					if (cycleRemaining < 0 || !running)
 						continue; //slept all day
 				}
@@ -171,36 +145,31 @@ public class WorkerExec extends ThreadedExec {
 				float whatGranularity = 1; //increase what slicing
 
 				double meanLoopTimeNS = loopTime.mean(); //getMean();
+				if (loopTime.mean() < 1)
+					throw new WTF();
 				int minWhatLoops = 2;
-				int loopsPlanned = Math.max(minWhatLoops, (int)(cycleRemaining / meanLoopTimeNS));
+				int loopsPlanned = (int)(cycleRemaining / meanLoopTimeNS);
 				int maxWhatLoops = minWhatLoops + Math.round(loopsPlanned / Math.max(1f,(N * whatGranularity)/concurrency)); //TODO tune
-
 
 				//StringBuilder y = new StringBuilder();
 
 				int loopsRemain = loopsPlanned;
 
-				//long totalPlayTimeNS = 0;
 				long beforePlay = System.nanoTime();
 
 				while (loopsRemain > 0) {
 
 					What w = ww.get(rng);
 					if (w == null)  break;
+					float p = w.priElseZero();
+//					if (p < ScalarValue.EPSILON) continue; //HACK
 
-					int loops = Math.min(loopsRemain, (int) Util.lerpSafe(w.priElseZero() / ww.mass(), minWhatLoops, maxWhatLoops));
+					int loops = Math.min(loopsRemain, (int) Util.lerpSafe(p / ww.mass(), minWhatLoops, maxWhatLoops));
 					loopsRemain -= loops;
-
-
 
 					d.next(w, loops);
 
-					//float nsPerLoop = (float) ((double) playTimeNS) / loops;
-					//loopTime.next(nsPerLoop);
-					//y.append(w + " x " + loops + "\t");
-
 					//work();
-
 				}
 
 				long playTimeNS = System.nanoTime() - beforePlay;
@@ -209,25 +178,19 @@ public class WorkerExec extends ThreadedExec {
 				if (loopsRun > 0)
 					loopTime.next/*recordValue*/(/*Math.min(loopNS_recorded_max,*/ (((float)playTimeNS)/ loopsRun));
 
-				//work();
-
-				//System.out.println(loopTime.getMean());
-
-				//System.out.println(loopsPlanned + ": " + y + " @ " + Texts.timeStr(playTimeNS) + "\t" + " (" + Texts.timeStr(nsPerLoop) + " per loop avg)");
-
-//						long deadline = nanoTime() + t;
-//
-//						//int cycles = 0;
-//						do {
-//
-//							d.next();
-//						//		cycles++;
-//
-//						} while (nanoTime() < deadline);
-//						//System.out.println(dExe.d.what + " " + cycles + " cyc");
-
-
 			}
+		}
+
+		public long sleep(float throttle, long cycleTimeNS, long cycleStart, long cycleRemaining) {
+			//sleep at most until next cycle
+			long cycleSleepNS = Math.min(cycleRemaining, (int)(cycleTimeNS * (1.0-throttle)));
+			Util.sleepNSwhile(cycleSleepNS, naptime, ()->{
+				work();
+				return true;
+			});
+			long afterSleep = System.nanoTime();
+			cycleRemaining = cycleTimeNS - (afterSleep - cycleStart);
+			return cycleRemaining;
 		}
 
 		protected void work() {
@@ -247,7 +210,7 @@ public class WorkerExec extends ThreadedExec {
 
 					batchSize = //Util.lerp(throttle,
 						//available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-						Util.clamp((int) Math.ceil(workResponsibility / concurrency * available), 1, available);
+						Util.clamp((int) Math.ceil(workResponsibility * available), 1, available);
 
 				} else if (--batchSize == 0)
 					break; //enough

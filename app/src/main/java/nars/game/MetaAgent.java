@@ -124,10 +124,10 @@ public abstract class MetaAgent extends Game {
 		priAction($.inh(a.id,pri), a);
 	}
 	void priAction(PriAmp a) {
-		floatAction($.inh(a.id,pri), a.amp).resolution(PRI_ACTION_RESOLUTION);
+		floatAction($.inh(a.id,pri), 2, a.amp).resolution(PRI_ACTION_RESOLUTION);
 	}
 	void priAction(Term id, PriSource a) {
-		floatAction(id, a.amp).resolution(PRI_ACTION_RESOLUTION);
+		floatAction(id, 2, a.amp).resolution(PRI_ACTION_RESOLUTION);
 	}
 
 //    @Override
@@ -152,19 +152,22 @@ public abstract class MetaAgent extends Game {
 //    }
 
 	protected GoalActionConcept floatAction(Term t, FloatRange r) {
-		return floatAction(t, r.min, r.max, r::set);
+		return floatAction(t, 1, r);
 	}
 
-	protected GoalActionConcept floatAction(Term t, float min, float max, FloatConsumer r) {
+	protected GoalActionConcept floatAction(Term t, float exp, FloatRange r) {
+		return floatAction(t, r.min, r.max, exp, r::set);
+	}
+
+	protected GoalActionConcept floatAction(Term t, float min, float max, float exp, FloatConsumer r) {
 		//FloatAveraged f = new FloatAveraged(/*0.75*/ 1);
 		//FloatToFloatFunction f = (z)->z;
 		return actionUnipolar(t, true, (v) -> v, (x) -> {
 			//float y = f.valueOf(x);
 			if (x == x)
-				r.accept(Util.lerp(x, min, max));
+				r.accept(Util.lerp((float)Math.pow(x, exp), min, max));
 			return x;
 		});
-		//.resolution(0.1f);
 	}
 
 //	private float dur(int initialDur, float d) {

@@ -1,5 +1,5 @@
 //how goal
-//G, G, task("!") |-         (?1 ==> G) , (Punctuation:Question, Time:Task)
+G, G, task("!") |-         (?1 ==> G) , (Punctuation:Question, Time:Task)
 
 
 //Inheritance -> Quest - generally a plain inheritance is underivable.  here it is reflected into a quest about its desirability
@@ -57,10 +57,10 @@
     //(X && Y), (X && Y) |- ((X && ?1) && --(Y && ?2)), (Punctuation:Ask)
 
     //implication look-ahead
-    //(X==>Y), (X==>Y), task("."), --isVar(X), --isVar(Y), neqPN(X,Y) |- ((X && polarizeTask(Y)) ==> ?1), (Punctuation:Question, Time:BeliefEvent)
+    (X==>Y), (X==>Y), task("."), --isVar(X), --isVar(Y), neqPN(X,Y) |- ((X && polarizeTask(Y)) ==> ?1), (Punctuation:Question, Time:BeliefEvent)
 
     //implication look-behind
-    //(X==>Y), (X==>Y), task("."), --isVar(X), --isVar(Y), neqPN(X,Y) |- (?1 ==> (  X && polarizeTask(Y))), (Punctuation:Question)
+    (X==>Y), (X==>Y), task("."), --isVar(X), --isVar(Y), neqPN(X,Y) |- (?1 ==> (  X && polarizeTask(Y))), (Punctuation:Question)
 
 
     //sequence possibility quest
@@ -83,7 +83,7 @@
 //quest to 'how' impl question
 //    B, X, task("@"), --is(B,"==>") |- (polarizeBelief(X) ==> B), (Punctuation:Question, Time:TaskRelative)
      //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
-     B, C, task("@"), is(C,"&&"), --is(B,"==>") |- (C ==> B), (Punctuation:Question, Time:Task)
+//     B, C, task("@"), is(C,"&&"), --is(B,"==>") |- (C ==> B), (Punctuation:Question, Time:Task)
 
 //contrasting conjunction to implication
 //TODO test
@@ -106,14 +106,14 @@
 
 
     //anti-specific deduction: "conjunction contraposition"
-//    G, C, eventOfNeg(C,G), --isVar(G)    |-   (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
-//    G, C, eventOf(C,G), --isVar(G)       |-   (--G && negateEvents(conjWithout(C,  G))), (Goal:DeductionWeakNP, Time:TaskEvent)
+    G, C, eventOfNeg(C,G), --isVar(G)    |-   (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
+    G, C, eventOf(C,G), --isVar(G)       |-   (--G && negateEvents(conjWithout(C,  G))), (Goal:DeductionWeakNP, Time:TaskEvent)
 
     //anti-desire for sub-sequence leading to anti-goal. truth function may be Desire or Deduction (option: __Weak, __WeakN)
-  //  G, C, is(C,"&&"), has(C,"--")       |-              --conjBefore(C, --G),  (Goal:DesireWeakPP)
-  //  G, C, is(C,"&&")                    |-              --conjBefore(C,   G),  (Goal:DesireWeakNP)
-      //G, C, is(C,"&&"), has(C,"--")     |-   negateEvents(conjBefore(C, --G)), (Goal:DesireWeak)
-      //G, C, is(C,"&&")                  |-   negateEvents(conjBefore(C,   G)), (Goal:DesireWeakN)
+  //  G, C, is(C,"&&"), has(C,"--")       |-              --conjBefore(C, --G),  (Goal:DesireWeakPP, Time:TaskEvent)
+  //  G, C, is(C,"&&")                    |-              --conjBefore(C,   G),  (Goal:DesireWeakNP, Time:TaskEvent)
+      G, C, is(C,"&&"), has(C,"--")     |-   negateEvents(conjBefore(C, --G)), (Goal:DesireWeakPP, Time:TaskEvent)
+      G, C, is(C,"&&")                  |-   negateEvents(conjBefore(C,   G)), (Goal:DesireWeakNP, Time:TaskEvent)
 
 
 //inverted condition question/quest TODO: invertAll(C,X)..

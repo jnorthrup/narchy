@@ -16,6 +16,7 @@ import nars.attention.PriNode;
 import nars.attention.PriSource;
 import nars.attention.What;
 import nars.control.NARPart;
+import nars.exe.NARLoop;
 import nars.game.action.ActionSignal;
 import nars.game.action.BiPolarAction;
 import nars.game.sensor.GameLoop;
@@ -53,7 +54,7 @@ import static nars.time.Tense.ETERNAL;
  *
  */
 @Paper @Skill({"Game_studies", "Game_theory"})
-public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit when it updates */ implements NSense, NAct, Timed {
+public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit when it updates */ implements NSense, NAct, Timed, NARLoop.Pausing {
 
     private final Topic<NAR> eventFrame = new ListTopic();
 
@@ -433,6 +434,11 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     public final void pri(float v) {
         what.pri(v);
+    }
+
+    @Override
+    public synchronized void pause(boolean pause) {
+        time.pause(pause);
     }
 
     @FunctionalInterface

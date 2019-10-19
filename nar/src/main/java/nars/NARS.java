@@ -176,7 +176,7 @@ public class NARS {
 
         time = new CycleTime();
 
-        exec = () -> new UniExec(8);
+        exec = () -> new UniExec(6);
 
         what = w -> new TaskLinkWhat(w, 32,
                        new PriBuffer.DirectTaskBuffer<>()

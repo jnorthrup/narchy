@@ -1,5 +1,6 @@
 package nars.game;
 
+import jcog.data.list.FastCoWList;
 import jcog.event.Off;
 import jcog.exe.Loop;
 import nars.NAR;
@@ -31,6 +32,8 @@ public abstract class GameTime {
 
     public final GameTime chain() { return chain(1); }
 
+    abstract public void pause(boolean pause);
+
 
     /** measured in realtime
      * TODO async loop for extended sleep periods
@@ -53,10 +56,17 @@ public abstract class GameTime {
             };
         }
 
+        final FastCoWList<FPS> children = new FastCoWList<>(FPS.class);
+
         @Override
         public GameTime chain(float periodMultiplier) {
             FPS parent = this;
             return new FPS(initialFPS /* HACK */ / periodMultiplier) {
+
+                {
+                    children.add(this);
+                }
+
                 @Override
                 public float dur() {
                     return parent.dur * periodMultiplier;
@@ -78,6 +88,23 @@ public abstract class GameTime {
             double unitsPerFrame = unitsPerSec * secondsPerFrame;
             this.dur = (float) Math.max(1, unitsPerFrame);
             return now + Math.round(t.secondsToUnits(loop.periodS()));
+        }
+
+        private transient int loopMS;
+        private transient boolean wasPaused = false;
+
+        @Override
+        public synchronized void pause(boolean pause) {
+            if (!wasPaused && pause) {
+                loopMS = loop.periodMS();
+                loop.stop();
+                wasPaused = true;
+                children.forEach(c -> c.pause(true));
+            } else if (wasPaused && !pause) {
+                loop.setPeriodMS(loopMS);
+                wasPaused = false;
+                children.forEach(c -> c.pause(false));
+            }
         }
 
         @Override protected NARPart clock(Game g) {
@@ -129,6 +156,11 @@ public abstract class GameTime {
             loop = new DurLoop.DurRunnable(a::next);
             loop.durs(durPeriod);
             return loop;
+        }
+
+        @Override
+        public void pause(boolean pause) {
+            //nothing necessary to do
         }
 
         @Override

@@ -568,7 +568,7 @@ public enum Builtin {
         });
 
         nar.addOp2("assertEquals", (x, y, nn) -> {
-            if (!x.op().var && !y.op().var)
+            if (!/*x.hasVars*/x.op().var && !y.op().var)
                 assertEquals(/*msg,*/ x, y);
         });
 

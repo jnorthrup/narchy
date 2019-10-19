@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.meta;
 
 import com.google.common.collect.Streams;
 import jcog.data.list.FasterList;
+import jcog.exe.Loop;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.math.IntRange;
@@ -165,14 +166,16 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
         builtin.put(Map.Entry.class, (Map.Entry x, Object relation) ->
                 new VectorLabel(x.toString())
         );
-        builtin.put(FloatRange.class, (FloatRange x, Object relation) -> new BindingFloatSlider(objLabel(x, relation), x.min, x.max, x, x::set));
+        builtin.put(FloatRange.class, (FloatRange x, Object relation) -> new LiveFloatSlider(objLabel(x, relation), x.min, x.max, x, x::set));
 
-        builtin.put(PLink.class, (PLink x, Object relation) -> new BindingFloatSlider(objLabel(x, relation), 0, 1, x, x::pri));
+        builtin.put(PLink.class, (PLink x, Object relation) -> new LiveFloatSlider(objLabel(x, relation), 0, 1, x, x::pri));
 
         builtin.put(IntRange.class, (IntRange x, Object relation) -> !(x instanceof MutableEnum) ? new MyIntSlider(x, relationLabel(relation)) : null);
 
         builtin.put(Runnable.class, (Runnable x, Object relation) -> new PushButton(objLabel(x, relation), x));
         builtin.put(AtomicBoolean.class, (AtomicBoolean x, Object relation) -> new MyAtomicBooleanCheckBox(objLabel(x, relation), x));
+
+        builtin.put(Loop.class, (Loop l, Object relation)-> new LoopPanel(l));
 
         builtin.put(MutableEnum.class, (MutableEnum x, Object relation) -> EnumSwitch.the(x, relationLabel(relation)));
 
@@ -353,7 +356,7 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
         }
     }
 
-    public static final class BindingFloatSlider extends FloatPort {
+    public static final class LiveFloatSlider extends FloatPort {
 
         //private static final float EPSILON = 0.001f;
 
@@ -362,7 +365,7 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
         private final FloatSupplier get;
 
 
-        public BindingFloatSlider(String label, float min, float max, FloatSupplier get, FloatConsumer set) {
+        public LiveFloatSlider(String label, float min, float max, FloatSupplier get, FloatConsumer set) {
             super();
 
             this.get = get;

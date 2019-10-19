@@ -39,6 +39,9 @@ analogy_transitive {
       (M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Resemblance, Time:Compose)
         (M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |-   (S <-> P), (Goal:Desire, Time:Task)
 
+        (M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |-   (S <-> P), (Punctuation:AskAsk, Time:Task)
+
+
       (P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Time:Compose)
          (P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Goal:DesireWeak, Time:Task)
       (M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Time:Compose)
