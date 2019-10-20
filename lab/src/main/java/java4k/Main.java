@@ -171,8 +171,6 @@ public class Main extends JFrame {
           float Rz = ray[2];
 
           float rx = ux * Rx + vx * Ry + wx * Rz;
-          float ry = uy * Rx + vy * Ry + wy * Rz;
-          float rz = uz * Rx + vz * Ry + wz * Rz;
 
           float irx = 1f / rx;
 
@@ -190,6 +188,7 @@ public class Main extends JFrame {
           float ty = 0;
           int dgy = 0;
           int gy = GY;
+          float ry = uy * Rx + vy * Ry + wy * Rz;
           float iry = 1f / ry;
         if (ry > 0) {
           dgy = 1;
@@ -201,6 +200,7 @@ public class Main extends JFrame {
           float tz = 0;
           int dgz = 0;
           int gz = GZ;
+          float rz = uz * Rx + vz * Ry + wz * Rz;
           float irz = 1f / rz;
         if (rz > 0) {
           dgz = 1;

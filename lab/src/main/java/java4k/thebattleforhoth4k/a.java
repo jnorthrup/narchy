@@ -47,19 +47,17 @@ public class a extends GamePanel {
 
         final int SPRITE_ATST = 1;
 
-        final int SCREEN_SIZE = 362;
-
 		int i;
 
-        AffineTransform transform = new AffineTransform();
-        BufferedImage image = new BufferedImage(362, 362, 1);
-        BufferedImage image2 = new BufferedImage(512, 512, 1);
-        Graphics2D g = (Graphics2D) image.getGraphics();
-        Graphics2D g2 = (Graphics2D) image2.getGraphics();
+        final AffineTransform transform = new AffineTransform();
+        final BufferedImage image = new BufferedImage(362, 362, 1);
+        final BufferedImage image2 = new BufferedImage(512, 512, 1);
+        final Graphics2D g = (Graphics2D) image.getGraphics();
+        final Graphics2D g2 = (Graphics2D) image2.getGraphics();
 
-        Random random = new Random();
+        final Random random = new Random();
 
-        Color[] firePalette = new Color[32];
+        final Color[] firePalette = new Color[32];
 
 		
 		for (i = 0; i < 32; i++) {
@@ -67,8 +65,8 @@ public class a extends GamePanel {
 		}
 
 
-        BufferedImage[] sprites = new BufferedImage[2];
-        int[] pixels = new int[362];
+        final BufferedImage[] sprites = new BufferedImage[2];
+        final int[] pixels = new int[362];
         int y;
         int x;
         int k;
@@ -94,7 +92,7 @@ public class a extends GamePanel {
 		}
 
 
-        int[][] floorTexture = new int[256][256];
+        final int[][] floorTexture = new int[256][256];
         for (y = 0; y < 256; y++) {
 			for (x = 0; x < 256; x++) {
 				floorTexture[y][x] = 128;
@@ -123,7 +121,7 @@ public class a extends GamePanel {
 				}
 			}
 		}
-        int[][] skyTexture = new int[256][256];
+        final int[][] skyTexture = new int[256][256];
         for (y = 0; y < 256; y++) {
 			for (x = 0; x < 256; x++) {
 				i = floorTexture[y][x];
@@ -133,12 +131,12 @@ public class a extends GamePanel {
 		}
 
         long nextFrameStartTime = System.nanoTime();
-        int[][] scaledSprites = new int[4096][9];
-        int[] yPoints = new int[4];
-        int[] xPoints = new int[4];
+        final int[][] scaledSprites = new int[4096][9];
+        final int[] yPoints = new int[4];
+        final int[] xPoints = new int[4];
         Graphics2D g3 = null;
-        ArrayList<int[]> enemies = new ArrayList<int[]>();
-        ArrayList<float[]> lasers = new ArrayList<float[]>();
+        final ArrayList<int[]> enemies = new ArrayList<int[]>();
+        final ArrayList<float[]> lasers = new ArrayList<float[]>();
         float yawSin = 0;
         float yawCos = 0;
         float heightVelocity = 0;
@@ -179,6 +177,7 @@ public class a extends GamePanel {
         final int LASER_SPEED = 512;
 		final int SKY_Y = 8192;
 		final int MAX_Y = SKY_Y / 2;
+		final int SCREEN_SIZE = 362;
 		final int HALF_SCREEN_SIZE = SCREEN_SIZE / 2;
 		final int MIN_Y = HALF_SCREEN_SIZE;
         final int SCREEN_DISTANCE = SCREEN_SIZE;
@@ -271,7 +270,7 @@ public class a extends GamePanel {
 						for (i = 0; i < (level << 2) + 3; i++) {
 							X = random.nextFloat() * 6.28f;
 							Y = random.nextFloat() * 16384;
-                            int[] atat = new int[8];
+                            final int[] atat = new int[8];
 							atat[ENEMY_X] = (int) (Y * Math.cos(X));
 							atat[ENEMY_Z] = (int) (Y * Math.sin(X));
 							atat[ENEMY_TYPE] = random.nextInt(2);
@@ -315,15 +314,15 @@ public class a extends GamePanel {
 					enemyLaserDelay = LASER_DELAY;
 					if (lastEnemyDrawn >= 0 && enemies.size() > 0) {
 
-                        int[] enemy = enemies.get(lastEnemyDrawn);
-                        float[] laser = new float[8];
+                        final int[] enemy = enemies.get(lastEnemyDrawn);
+                        final float[] laser = new float[8];
 						laser[LASER_X] = enemy[ENEMY_X];
 						laser[LASER_Y] = enemy[ENEMY_TYPE] == ENEMY_TYPE_ATAT ? 640 : 128;
 						laser[LASER_Z] = enemy[ENEMY_Z];
 						laser[LASER_RX] = random.nextInt(768) - 384 + xo - enemy[ENEMY_X];
 						laser[LASER_RY] = random.nextInt(768) - 384 + yo - laser[LASER_Y];
 						laser[LASER_RZ] = random.nextInt(768) - 384 + zo - enemy[ENEMY_Z];
-                        float mag = (float) Math.sqrt(laser[LASER_RX] * laser[LASER_RX] + laser[LASER_RY] * laser[LASER_RY] + laser[LASER_RZ] * laser[LASER_RZ]);
+                        final float mag = (float) Math.sqrt(laser[LASER_RX] * laser[LASER_RX] + laser[LASER_RY] * laser[LASER_RY] + laser[LASER_RZ] * laser[LASER_RZ]);
 						laser[LASER_RX] /= mag;
 						laser[LASER_RY] /= mag;
 						laser[LASER_RZ] /= mag;
@@ -431,7 +430,7 @@ public class a extends GamePanel {
 
                 float Z;
                 for (i = lasers.size() - 1; i >= 0; i--) {
-                    float[] laser = lasers.get(i);
+                    final float[] laser = lasers.get(i);
 					laser[LASER_X] += LASER_SPEED * laser[LASER_RX];
 					laser[LASER_Y] += LASER_SPEED * laser[LASER_RY];
 					laser[LASER_Z] += LASER_SPEED * laser[LASER_RZ];
@@ -455,7 +454,7 @@ public class a extends GamePanel {
 
 				
 				outter2: for (j = enemies.size() - 1; j >= 0; j--) {
-                    int[] enemy = enemies.get(j);
+                    final int[] enemy = enemies.get(j);
 					if (enemy[ENEMY_TYPE] == ENEMY_TYPE_EXPLOSION) {
 						
 						if (++enemy[ENEMY_POWER] >= 32) {
@@ -511,7 +510,7 @@ public class a extends GamePanel {
 
 						
 						outter: for (i = lasers.size() - 1; i >= 0; i--) {
-                            float[] laser = lasers.get(i);
+                            final float[] laser = lasers.get(i);
 							if (laser[LASER_TYPE] == LASER_TYPE_PLAYER) {
 								for (k = 0; k < 512; k += 32) {
 									X = enemy[ENEMY_X] - (laser[LASER_X] + k * laser[LASER_RX]);
@@ -564,7 +563,7 @@ public class a extends GamePanel {
 
 											
 											for (u = 0; u < v; u++) {
-                                                int[] explosion = new int[8];
+                                                final int[] explosion = new int[8];
 												explosion[ENEMY_TYPE] = ENEMY_TYPE_EXPLOSION;
 												explosion[ENEMY_X] = (int) (laser[LASER_X] + k * laser[LASER_RX]);
 												explosion[ENEMY_Y] = (int) (laser[LASER_Y] + k * laser[LASER_RY]);
@@ -606,26 +605,26 @@ public class a extends GamePanel {
 				
 				float ry = HALF_SCREEN_SIZE - i;
 				float rz = -SCREEN_DISTANCE;
-                float mag = (float) Math.sqrt(ry * ry + rz * rz);
+                final float mag = (float) Math.sqrt(ry * ry + rz * rz);
 				ry /= mag;
 				rz /= mag;
 
 				
 				for (k = 0; k < 2; k++) {
-                    float t = (SKY_Y * k - yo) / ry;
-                    int[][] texture = k == 0 ? floorTexture : skyTexture;
-                    int textureScale = k == 0 ? 4 : 8;
+                    final float t = (SKY_Y * k - yo) / ry;
+                    final int[][] texture = k == 0 ? floorTexture : skyTexture;
+                    final int textureScale = k == 0 ? 4 : 8;
 					if (t > 0) {
 
-                        float scale = t / SCREEN_DISTANCE;
-                        float floorX = -scale * HALF_SCREEN_SIZE;
-                        float floorZ = rz * t;
+                        final float scale = t / SCREEN_DISTANCE;
+                        final float floorX = -scale * HALF_SCREEN_SIZE;
+                        final float floorZ = rz * t;
 
 
                         float fx = floorX * yawCos - floorZ * yawSin;
                         float fz = floorX * yawSin + floorZ * yawCos;
-                        float dfx = scale * yawCos;
-                        float dfz = scale * yawSin;
+                        final float dfx = scale * yawCos;
+                        final float dfz = scale * yawSin;
 
 						
 						for (j = 0; j < 362; j++) {
@@ -643,17 +642,17 @@ public class a extends GamePanel {
 			
 			spriteCount = 0;
 			for (i = enemies.size() - 1; i >= 0; i--) {
-                int[] enemy = enemies.get(i);
+                final int[] enemy = enemies.get(i);
 
-                float x0 = enemy[ENEMY_X] - xo;
-                float z0 = enemy[ENEMY_Z] - zo;
+                final float x0 = enemy[ENEMY_X] - xo;
+                final float z0 = enemy[ENEMY_Z] - zo;
 
 
-                float x1 = yawCos * x0 + yawSin * z0;
-                float z1 = yawCos * z0 - yawSin * x0;
+                final float x1 = yawCos * x0 + yawSin * z0;
+                final float z1 = yawCos * z0 - yawSin * x0;
 
 				if (z1 < 0) {
-                    float K = SCREEN_DISTANCE / -z1;
+                    final float K = SCREEN_DISTANCE / -z1;
 
                     int width = 1024;
                     int height = 864;
@@ -676,7 +675,7 @@ public class a extends GamePanel {
                     }
 
 					if (spriteCount < 4096) {
-                        int[] scaledSprite = scaledSprites[spriteCount++];
+                        final int[] scaledSprite = scaledSprites[spriteCount++];
 						scaledSprite[SPRITE_X] = 181 + (int) ((x1 - offsetX) * K);
 						scaledSprite[SPRITE_Y] = 181 - (int) ((offsetY - yo) * K);
 						scaledSprite[SPRITE_Z] = (int) z1;
@@ -715,28 +714,28 @@ public class a extends GamePanel {
 			
 			g.setColor(Color.RED);
 			for (i = lasers.size() - 1; i >= 0; i--) {
-                float[] laser = lasers.get(i);
+                final float[] laser = lasers.get(i);
 
 
-                float x1 = laser[LASER_X] - xo;
-                float y1 = laser[LASER_Y] - yo;
-                float z1 = laser[LASER_Z] - zo;
+                final float x1 = laser[LASER_X] - xo;
+                final float y1 = laser[LASER_Y] - yo;
+                final float z1 = laser[LASER_Z] - zo;
 
-                float x2 = x1 + LASER_LENGTH * laser[LASER_RX];
-                float y2 = y1 + LASER_LENGTH * laser[LASER_RY];
-                float z2 = z1 + LASER_LENGTH * laser[LASER_RZ];
+                final float x2 = x1 + LASER_LENGTH * laser[LASER_RX];
+                final float y2 = y1 + LASER_LENGTH * laser[LASER_RY];
+                final float z2 = z1 + LASER_LENGTH * laser[LASER_RZ];
 
 
-                float _x1 = yawCos * x1 + yawSin * z1;
-                float _x2 = yawCos * x2 + yawSin * z2;
+                final float _x1 = yawCos * x1 + yawSin * z1;
+                final float _x2 = yawCos * x2 + yawSin * z2;
 
-                float _z1 = yawCos * z1 - yawSin * x1;
-                float _z2 = yawCos * z2 - yawSin * x2;
+                final float _z1 = yawCos * z1 - yawSin * x1;
+                final float _z2 = yawCos * z2 - yawSin * x2;
 
 				
 				if (_z1 < 0 && _z2 < 0) {
-                    float k1 = SCREEN_DISTANCE / -_z1;
-                    float k2 = SCREEN_DISTANCE / -_z2;
+                    final float k1 = SCREEN_DISTANCE / -_z1;
+                    final float k2 = SCREEN_DISTANCE / -_z2;
 
 					xPoints[0] = 181 + (int) ((_x1 - LASER_HALF_WIDTH) * k1);
 					xPoints[1] = 181 + (int) ((_x1 + LASER_HALF_WIDTH) * k1);
@@ -778,7 +777,7 @@ public class a extends GamePanel {
 				g2.drawLine(0, 0, ((int) (-xo)) >> 9, ((int) (-zo)) >> 9);
 				g2.drawOval((((int) (-xo)) >> 9) - 4, (((int) (-zo)) >> 9) - 4, 6, 6);
 				for (i = 0; i < enemies.size(); i++) {
-                    int[] enemy = enemies.get(i);
+                    final int[] enemy = enemies.get(i);
 					j = ((int) (enemy[ENEMY_X] - xo)) >> 9;
 					k = ((int) (enemy[ENEMY_Z] - zo)) >> 9;
 					if (j * j + k * k <= 1024) {
@@ -816,7 +815,7 @@ public class a extends GamePanel {
 	}
 
 	@Override
-	public void processKeyEvent(KeyEvent keyEvent) {
+	public void processKeyEvent(final KeyEvent keyEvent) {
 
         int k = keyEvent.getKeyCode();
 		if (k > 0) {
@@ -835,11 +834,11 @@ public class a extends GamePanel {
 	}
 
 	
-	public static void main(String[] args) throws Throwable {
-        JFrame frame = new javax.swing.JFrame(
+	public static void main(final String[] args) throws Throwable {
+        final JFrame frame = new javax.swing.JFrame(
 	      "Star Wars: The Battle for Hoth 4K");
 	  frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        java4k.thebattleforhoth4k.a applet = new a();
+        final java4k.thebattleforhoth4k.a applet = new a();
 	  applet.setPreferredSize(new java.awt.Dimension(512, 512));
 	  frame.add(applet, java.awt.BorderLayout.CENTER);
 	  frame.setResizable(false);

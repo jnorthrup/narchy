@@ -31,11 +31,11 @@ public class WorkerExec extends ThreadedExec {
 	//2f;
 
 
-	public WorkerExec(int threads) {
+	public WorkerExec(final int threads) {
 		super(threads);
 	}
 
-	public WorkerExec(int threads, boolean affinity) {
+	public WorkerExec(final int threads, final boolean affinity) {
 		super(threads, affinity);
 
 		Exe.setExecutor(this);
@@ -85,7 +85,7 @@ public class WorkerExec extends ThreadedExec {
 		@Deprecated
 		private transient int concurrency;
 
-		WorkPlayLoop(NAR nar) {
+		WorkPlayLoop(final NAR nar) {
 			this.nar = nar;
 			in = ((ThreadedExec)nar.exe).in;
 			rng = new XoRoShiRo128PlusRandom((31L * System.identityHashCode(this)) + nanoTime());
@@ -95,8 +95,8 @@ public class WorkerExec extends ThreadedExec {
 		 * updated each system dur
 		 */
 		private DeriverExecutor deriver() {
-            DeriverExecutor d = this.deriver;
-            Deriver systemDeriver = nar.exe.deriver;
+            final DeriverExecutor d = this.deriver;
+            final Deriver systemDeriver = nar.exe.deriver;
 			return systemDeriver != null && (d == null || d.deriver != systemDeriver) ?
 				(this.deriver = new DeriverExecutor.QueueDeriverExecutor(systemDeriver)) : //deriver has changed; create new executor
 				d;
@@ -108,17 +108,17 @@ public class WorkerExec extends ThreadedExec {
 
 			//Histogram loopTime = new Histogram(30_000, loopNS_recorded_max, 3);
 			//loopTime.recordValue(loopNS_recorded_max);
-            FloatAveragedWindow loopTime = new FloatAveragedWindow(8, 0.5f, false).mode(FloatAveragedWindow.Mode.Mean);
+            final FloatAveragedWindow loopTime = new FloatAveragedWindow(8, 0.5f, false).mode(FloatAveragedWindow.Mode.Mean);
 			loopTime.fill(loopNS_recorded_max);
 
-            NARLoop loop = nar.loop;
+            final NARLoop loop = nar.loop;
 
 			while (alive.getOpaque()) {
 
 				concurrency = Math.max(1,nar.exe.concurrency());
-                long cycleTimeNS = loop.cycleTimeNS;
+                final long cycleTimeNS = loop.cycleTimeNS;
 
-                long cycleStart = System.nanoTime();
+                final long cycleStart = System.nanoTime();
 
 				work();
 
@@ -126,32 +126,32 @@ public class WorkerExec extends ThreadedExec {
 				if (cycleRemaining < 0)
 					continue; //worked until next morning so start again
 
-                boolean running = loop.isRunning();
-                float throttle = running ? loop.throttle.floatValue() : 0;
+                final boolean running = loop.isRunning();
+                final float throttle = running ? loop.throttle.floatValue() : 0;
 				if (throttle < 1) {
 					cycleRemaining = sleep(throttle, cycleTimeNS, cycleStart, cycleRemaining);
 					if (cycleRemaining < 0 || !running)
 						continue; //slept all day
 				}
 
-                DeriverExecutor d = deriver();
+                final DeriverExecutor d = deriver();
 				if (d == null) continue;
 
-                PartBag<What> ww = nar.what;
-                int N = ww.size();
+                final PartBag<What> ww = nar.what;
+                final int N = ww.size();
 				if (N == 0) continue;
 
-				float whatGranularity = 1; //increase what slicing
-
-                double meanLoopTimeNS = loopTime.mean(); //getMean();
-				int maxWhatLoops;
-                int minWhatLoops = 2;
-				int loopsPlanned;
+				final double meanLoopTimeNS = loopTime.mean(); //getMean();
+				final int maxWhatLoops;
+                final int minWhatLoops = 2;
+				final int loopsPlanned;
 				if (loopTime.mean() < 1) {
 					//TODO this means it has been measuring empty loops, add some safety limit
 					loopsPlanned = maxWhatLoops = minWhatLoops;
 				} else {
 					loopsPlanned = (int) (cycleRemaining / meanLoopTimeNS);
+					//increase what slicing
+					final float whatGranularity = 1;
 					maxWhatLoops = minWhatLoops + Math.round(loopsPlanned / Math.max(1f, (N * whatGranularity) / concurrency)); //TODO tune
 				}
 
@@ -159,16 +159,16 @@ public class WorkerExec extends ThreadedExec {
 
                 int loopsRemain = loopsPlanned;
 
-                long beforePlay = System.nanoTime();
+                final long beforePlay = System.nanoTime();
 
 				while (loopsRemain > 0) {
 
-                    What w = ww.get(rng);
+                    final What w = ww.get(rng);
 					if (w == null)  break;
-                    float p = w.priElseZero();
+                    final float p = w.priElseZero();
 //					if (p < ScalarValue.EPSILON) continue; //HACK
 
-                    int loops = Math.min(loopsRemain, (int) Util.lerpSafe(p / ww.mass(), minWhatLoops, maxWhatLoops));
+                    final int loops = Math.min(loopsRemain, (int) Util.lerpSafe(p / ww.mass(), minWhatLoops, maxWhatLoops));
 					loopsRemain -= loops;
 
 					d.next(w, loops);
@@ -176,23 +176,23 @@ public class WorkerExec extends ThreadedExec {
 					//work();
 				}
 
-                long playTimeNS = System.nanoTime() - beforePlay;
+                final long playTimeNS = System.nanoTime() - beforePlay;
 				//totalPlayTimeNS += playTimeNS;
-                int loopsRun = loopsPlanned - loopsRemain;
+                final int loopsRun = loopsPlanned - loopsRemain;
 				if (loopsRun > 0)
 					loopTime.next/*recordValue*/(/*Math.min(loopNS_recorded_max,*/ (((float)playTimeNS)/ loopsRun));
 
 			}
 		}
 
-		public long sleep(float throttle, long cycleTimeNS, long cycleStart, long cycleRemaining) {
+		public long sleep(final float throttle, final long cycleTimeNS, final long cycleStart, long cycleRemaining) {
 			//sleep at most until next cycle
-            long cycleSleepNS = Math.min(cycleRemaining, (int)(cycleTimeNS * (1.0-throttle)));
+            final long cycleSleepNS = Math.min(cycleRemaining, (int)(cycleTimeNS * (1.0-throttle)));
 			Util.sleepNSwhile(cycleSleepNS, naptime, ()->{
 				work();
 				return true;
 			});
-            long afterSleep = System.nanoTime();
+            final long afterSleep = System.nanoTime();
 			cycleRemaining = cycleTimeNS - (afterSleep - cycleStart);
 			return cycleRemaining;
 		}
@@ -208,7 +208,7 @@ public class WorkerExec extends ThreadedExec {
 
 				if (batchSize == -1) {
 					//initialization once for subsequent attempts
-					int available; //estimate
+					final int available; //estimate
 					if ((available = in.size()) <= 0)
 						break;
 

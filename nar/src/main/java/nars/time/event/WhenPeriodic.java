@@ -13,17 +13,16 @@ class WhenPeriodic extends WhenInternal {
     protected final Term id;
 
     WhenPeriodic(Term id, Consumer<NAR> x) {
-        this.run = x;
+        run = x;
         this.id = id;
     }
 
     WhenPeriodic(Consumer<NAR> x) {
-        this.run = x;
+        run = x;
 
-        Object y;
-        y = x instanceof ConsumerAdapter ? ((ConsumerAdapter) x).r : x;
+        var y = x instanceof ConsumerAdapter ? ((ConsumerAdapter) x).r : x;
 
-        this.id = $.identity(y);
+        id = $.identity(y);
     }
 
     @Override

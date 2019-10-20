@@ -186,7 +186,6 @@ public class Grid2DRelative implements World {
 
         double dx = (positionX - focusPositionX);
         double dy = (positionY - focusPositionY);
-        double dist = Math.sqrt(dx * dx + dy * dy);
 
         int ix = (int)Math.round(positionX);
         int iy = (int)Math.round(positionY);
@@ -220,6 +219,7 @@ public class Grid2DRelative implements World {
             if (time % displayPeriod == 0)
                 image.updateImage();
         }
+        double dist = Math.sqrt(dx * dx + dy * dy);
 
         double match = 1.0 / (1.0 + dist);
         double energyCost = 0;

@@ -46,17 +46,17 @@ public enum DynamicConjTruth {
             especially if the separation is less than NAR's dt dithering which will produce invalid dynamic result
 		 * @return
 		 */
-        @Override public @Nullable Task task(Compound template, long earliest, long s, long e, DynTaskify d) {
+        @Override public @Nullable Task task(final Compound template, final long earliest, final long s, final long e, final DynTaskify d) {
 
             //TODO generalize beyond n=2
             if (d.size() == 2 && d.get(0).term().equals(d.get(1).term())) {
 
-                long sep = d.get(0).minTimeTo(d.get(1));
-                int dither = sep == 0 ? 0 : d.nar.dtDither();
+                final long sep = d.get(0).minTimeTo(d.get(1));
+                final int dither = sep == 0 ? 0 : d.nar.dtDither();
                 if (sep <= dither) {
                     //collapse to a point smaller than dither time:  same starting time and all terms are the same.
                     //try revision
-                    Pair<Task, TruthProjection> ab = Revision._merge(d.nar, d.ditherTruth, 2, new Task[]{d.get(0), d.get(1)});
+                    final Pair<Task, TruthProjection> ab = Revision._merge(d.nar, d.ditherTruth, 2, new Task[]{d.get(0), d.get(1)});
                     if (ab != null)
                         return Revision.afterMerge(ab);
                 }
@@ -71,19 +71,19 @@ public enum DynamicConjTruth {
         }
 
         @Override
-        public Term reconstruct(Compound superterm, long seqStart, long seqEnd, DynTaskify d) {
+        public Term reconstruct(final Compound superterm, final long seqStart, final long seqEnd, final DynTaskify d) {
 
 
-            long end;
+            final long end;
             boolean aligned = true;
             if (seqStart==ETERNAL) {
                 end = ETERNAL;
             } else {
-                long sequenceLatestStart = d.latestStart(); assert(sequenceLatestStart!=ETERNAL);
+                final long sequenceLatestStart = d.latestStart(); assert(sequenceLatestStart!=ETERNAL);
 
                 //sequenceStart = sequenceStart; //dither now for comparisons in loop
 
-                long range = seqEnd - seqStart;
+                final long range = seqEnd - seqStart;
                 end = sequenceLatestStart + range; //the actual total end of the sequence
 
                 if (d.size() <= 1) {
@@ -91,9 +91,9 @@ public enum DynamicConjTruth {
                 } else {
                     //determine what method to use.  if all the non-eternal tasks have similar spans, then reconstructSequence otherwise reconstructInterval
                     long s = Long.MAX_VALUE, e = Long.MAX_VALUE;
-                    int dither = d.nar.dtDither();
-                    for (Task t : d) {
-                        long ts = t.start();
+                    final int dither = d.nar.dtDither();
+                    for (final Task t : d) {
+                        final long ts = t.start();
                         if (ts == ETERNAL) continue;
                         if (s == Long.MAX_VALUE) {
                             s = ts;
@@ -109,8 +109,8 @@ public enum DynamicConjTruth {
             }
 
             //new ConjTree();
-            ConjBuilder c = new ConjList();
-            boolean result = aligned ?
+            final ConjBuilder c = new ConjList();
+            final boolean result = aligned ?
                 reconstructSequence(seqStart, end, d, c) :
                 reconstructInterval(d, c);
 
@@ -118,9 +118,9 @@ public enum DynamicConjTruth {
         }
 
         @Override
-        public boolean evalComponents(Compound conj, long start, long end, ObjectLongLongPredicate<Term> each) {
+        public boolean evalComponents(final Compound conj, final long start, final long end, final ObjectLongLongPredicate<Term> each) {
 
-            ConjList c = conj.dt()!=XTERNAL ? ConjList.events(conj, start) : ConjList.eventsXternal(conj, start);
+            final ConjList c = conj.dt()!=XTERNAL ? ConjList.events(conj, start) : ConjList.eventsXternal(conj, start);
 
             //special cases:
             //  1. parallel / xternal with co-negated events that need separated in time
@@ -132,7 +132,7 @@ public enum DynamicConjTruth {
             //TODO sort the testing order of sub-events to fail fastest
 
 
-            long range = end-start;
+            final long range = end-start;
             return c.AND((when,what)-> each.accept(what, when, when + range));
         }
 
@@ -239,19 +239,19 @@ public enum DynamicConjTruth {
 
     };
 
-    public static void spreadCoNegations(Compound conj, long start, long end, ConjList c) {
-        int cc = c.size();
-        long start2 = end!=start ?
+    public static void spreadCoNegations(final Compound conj, final long start, final long end, final ConjList c) {
+        final int cc = c.size();
+        final long start2 = end!=start ?
                 end :
                 start+(Math.max(conj.eventRange(), 1)); //HACK TODO use a dur
 
         for (int i = 0; i < cc; i++) {
-            Term ci = c.get(i);
+            final Term ci = c.get(i);
             if (ci instanceof Neg) {
-                Term ciu = ci.unneg();
+                final Term ciu = ci.unneg();
                 for (int j = 0; j < cc; j++) {
                     if (j == i) continue;
-                    Term cj = c.get(j);
+                    final Term cj = c.get(j);
                     if (!(cj instanceof Neg) && cj.equals(ciu)) {
                         //conegation between i and j
                         //push one randomly to different dt
@@ -262,13 +262,14 @@ public enum DynamicConjTruth {
         }
     }
 
-    static boolean pairVars(ConjList c) {
-        int cc = c.size(), ccs = cc;
+    static boolean pairVars(final ConjList c) {
+        int cc = c.size();
+        final int ccs = cc;
         boolean removed = false;
         nextEvent: for (int i = 0; i < ccs; i++) {
-            Term v = c.get(i);
+            final Term v = c.get(i);
             if (v == null) continue;
-            Term vu = v.unneg();
+            final Term vu = v.unneg();
             if (vu instanceof Variable && vu.op()==VAR_DEP) {
                 c.setFast(i, null);
                 removed = true;
@@ -283,15 +284,15 @@ public enum DynamicConjTruth {
                     return false;
                 }
 
-                long vWhen = c.when(i);
-                Random rng = ThreadLocalRandom.current();
+                final long vWhen = c.when(i);
+                final Random rng = ThreadLocalRandom.current();
                 for (int r = 0; r < ccs; r++) { //max tries
-                    int pair = rng.nextInt(ccs);
+                    final int pair = rng.nextInt(ccs);
                     if (pair == i) continue;
-                    Term p = c.get(pair);
+                    final Term p = c.get(pair);
                     if (p !=null) {
-                        int dt = (int) (vWhen - c.when(pair));
-                        Term paired = CONJ.the(dt, p, v);
+                        final int dt = (int) (vWhen - c.when(pair));
+                        final Term paired = CONJ.the(dt, p, v);
                         if (!(paired instanceof IdempotentBool)) {
                             c.setFast(pair, paired);
                             continue nextEvent;
@@ -306,22 +307,21 @@ public enum DynamicConjTruth {
         return true;
     }
 
-    static boolean reconstructSequence(long sequenceStart, long end, DynTaskify d, ConjBuilder b) {
-        int n = d.size();
+    static boolean reconstructSequence(final long sequenceStart, final long end, final DynTaskify d, final ConjBuilder b) {
+        final int n = d.size();
 
         for (int i = 0; i < n; i++) {
-            Task t = d.get(i);
-            long s = t.start();
-            long when;
+            final Task t = d.get(i);
+            final long s = t.start();
 
             //spans entire event
             //Tense.dither(s, dtDither);
-            when = s == ETERNAL || (sequenceStart != ETERNAL && s <= sequenceStart && t.end() >= end) ? ETERNAL : s;
+            final long when = s == ETERNAL || (sequenceStart != ETERNAL && s <= sequenceStart && t.end() >= end) ? ETERNAL : s;
 
-            Term _x = t.term();
-            boolean cp = d.componentPolarity.get(i);
+            final Term _x = t.term();
+            final boolean cp = d.componentPolarity.get(i);
 
-            Term x = _x.negIf(!cp); //HACK
+            final Term x = _x.negIf(!cp); //HACK
 
             if (!b.add(when, x))
                 return false;
@@ -329,11 +329,11 @@ public enum DynamicConjTruth {
         return true;
     }
 
-    static boolean reconstructInterval(DynTaskify d, ConjBuilder b) {
+    static boolean reconstructInterval(final DynTaskify d, final ConjBuilder b) {
         return ConjSpans.add(d, d.nar.dtDither(), d.componentPolarity, b) != null;
     }
 
-	public static boolean decomposeableConj(Term conj) {
+	public static boolean decomposeableConj(final Term conj) {
         return !conj.hasVars() || conj.subterms().count(x -> !(x instanceof nars.term.Variable)) > 1;
 	}
 

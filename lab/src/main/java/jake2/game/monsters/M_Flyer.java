@@ -970,8 +970,6 @@ public class M_Flyer {
 
     static void flyer_fire(edict_t self, int flash_number) {
 
-        int effect;
-
         boolean b = false;
         for (int i : new int[]{FRAME_attak204, FRAME_attak207, FRAME_attak210}) {
             if ((self.s.frame == i)) {
@@ -979,6 +977,7 @@ public class M_Flyer {
                 break;
             }
         }
+        int effect;
         if (b)
             effect = Defines.EF_HYPERBLASTER;
         else

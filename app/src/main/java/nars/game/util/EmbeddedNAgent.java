@@ -28,17 +28,17 @@ public class EmbeddedNAgent extends Agent {
     private float nextReward = Float.NaN;
 
     private static final NAR defaultNAR() {
-        NAR n = NARS.tmp();
+        final NAR n = NARS.tmp();
         n.termVolMax.set(10);
         n.freqResolution.set(0.1f);
         return n;
     }
 
-    public EmbeddedNAgent(int inputs, int actions) {
+    public EmbeddedNAgent(final int inputs, final int actions) {
         this(defaultNAR(), inputs, actions);
     }
 
-    public EmbeddedNAgent(NAR n, int inputs, int actions) {
+    public EmbeddedNAgent(final NAR n, final int inputs, final int actions) {
         super(inputs, actions);
 
         senseValue = new float[inputs];
@@ -47,20 +47,20 @@ public class EmbeddedNAgent extends Agent {
 
         this.env = new Game("agent");
 
-        List<Signal> result = new ArrayList<>();
+        final List<Signal> result = new ArrayList<>();
         for (int j = 0; j < inputs; j++) {
-            int i1 = j;
-            Signal signal = env.sense($.inh($.the(i1), env.id), () -> senseValue[i1]);
+            final int i1 = j;
+            final Signal signal = env.sense($.inh($.the(i1), env.id), () -> senseValue[i1]);
             result.add(signal);
         }
-        GameLoop[] sense = result.toArray(new GameLoop[0]);
+        final GameLoop[] sense = result.toArray(new GameLoop[0]);
 
-        SwitchAction act;
-        List<Object> list = new ArrayList<>();
+        final List<Object> list = new ArrayList<>();
         for (int i = 0; i < actions; i++) {
-            Object inh = $.inh($.the(i), env.id);
+            final Object inh = $.inh($.the(i), env.id);
             list.add(inh);
         }
+        final SwitchAction act;
         this.env.addSensor(act = new SwitchAction(n, (a) -> {
                 nextAction = a;
                 return true;
@@ -72,7 +72,7 @@ public class EmbeddedNAgent extends Agent {
     }
 
     @Override
-    public int decide(float[] actionFeedback, float reward, float[] input) {
+    public int decide(final float[] actionFeedback, final float reward, final float[] input) {
 
         this.nextReward = reward;
 

@@ -78,8 +78,6 @@ public class a extends Applet implements Runnable {
     final int SPRITE_SMALL_DIGIT_8 = 74;
     final int SPRITE_SMALL_DIGIT_9 = 75;
 
-      final int SPRITE_COUNT = 84;
-
       final int VK_W = 0x57;
     final int VK_S = 0x53;
     final int VK_A = 0x41;
@@ -102,12 +100,12 @@ public class a extends Applet implements Runnable {
 
       int playerX = cameraX + 144;
 
-      int[][] vines = new int[1024][4];
+      final int[][] vines = new int[1024][4];
 
-      Random random = new Random();
+      final Random random = new Random();
 
-      BufferedImage image = new BufferedImage(SCREEN_WIDTH, SCREEN_HEIGHT, 1);
-      Graphics2D g = (Graphics2D)image.getGraphics();
+      final BufferedImage image = new BufferedImage(SCREEN_WIDTH, SCREEN_HEIGHT, 1);
+      final Graphics2D g = (Graphics2D)image.getGraphics();
 
 
       for(i = 0; i < 1024; i++) {
@@ -118,8 +116,9 @@ public class a extends Applet implements Runnable {
     }
 
 
+      final int SPRITE_COUNT = 84;
       final int SPRITE_DOUBLE_COUNT = SPRITE_COUNT * 2;
-      BufferedImage[] sprites = new BufferedImage[SPRITE_DOUBLE_COUNT];
+      final BufferedImage[] sprites = new BufferedImage[SPRITE_DOUBLE_COUNT];
       int u;
       int z;
       int y;
@@ -247,7 +246,7 @@ public class a extends Applet implements Runnable {
       boolean jumpReleased = true;
       boolean playerDucking = false;
       int[][] crocs = null;
-      int[] vinePoints = new int[384];
+      final int[] vinePoints = new int[384];
       int level = 0;
       int crocSpawnX = 0;
       int remaining = 10;
@@ -269,12 +268,12 @@ public class a extends Applet implements Runnable {
       int time = 5000;
       int score = 0;
       int counter = 0;
-      Color COLOR_BLACK = new Color(0);
-      Color COLOR_WATER = new Color(HEX_WATER);
-      Color COLOR_LEAVES = new Color(HEX_LEAVES_1);
-      Color COLOR_DIRT = new Color(HEX_LEAVES_3);
-      Color COLOR_VINE = new Color(HEX_VINE);
-      Color COLOR_SKY = new Color(0x185080);
+      final Color COLOR_BLACK = new Color(0);
+      final Color COLOR_WATER = new Color(HEX_WATER);
+      final Color COLOR_LEAVES = new Color(HEX_LEAVES_1);
+      final Color COLOR_DIRT = new Color(HEX_LEAVES_3);
+      final Color COLOR_VINE = new Color(HEX_VINE);
+      final Color COLOR_SKY = new Color(0x185080);
       final int CANNIBAL_JUMP_SPEED = -1;
       final float JUMP_SPEED_2 = -3.04f;
       final float JUMP_SPEED = -1.1f;
@@ -359,7 +358,7 @@ public class a extends Applet implements Runnable {
                   int w = 0;
                   int vineIndex = -1;
                   for (i = 0; i < 3; i++) {
-                      int[] vine = vines[i + j];
+                      final int[] vine = vines[i + j];
                       if (i + j == playerVine) {
                           vineIndex = i << 7;
                           playerSprite = vine[VINE_RADIUS] > 1200 ? SPRITE_CLING_2
@@ -387,7 +386,7 @@ public class a extends Applet implements Runnable {
                       }
 
 
-                      int radius = vine[VINE_RADIUS];
+                      final int radius = vine[VINE_RADIUS];
                       u = 1;
                       z = x = 0;
                       y = radius;
@@ -571,7 +570,7 @@ public class a extends Applet implements Runnable {
 
 
                   for (i = 0; i < 3; i++) {
-                      int[] croc = crocs[i];
+                      final int[] croc = crocs[i];
                       if (croc[CROC_DELAY] > 0) {
                           if (--croc[CROC_DELAY] == 0) {
                               croc[CROC_X] = cameraX + SCREEN_WIDTH;
@@ -1037,7 +1036,7 @@ public class a extends Applet implements Runnable {
 
 
                   for (i = 0; i < 3; i++) {
-                      int[] croc = crocs[i];
+                      final int[] croc = crocs[i];
                       g.drawImage(sprites[croc[CROC_SPRITE_1]],
                               croc[CROC_X] - cameraX, croc[CROC_Y], null);
                       g.drawImage(sprites[croc[CROC_SPRITE_2]],
@@ -1118,7 +1117,7 @@ public class a extends Applet implements Runnable {
   }
 
   @Override
-  public void processKeyEvent(KeyEvent keyEvent) {
+  public void processKeyEvent(final KeyEvent keyEvent) {
 
       int k = keyEvent.getKeyCode();
     if (k > 0) {

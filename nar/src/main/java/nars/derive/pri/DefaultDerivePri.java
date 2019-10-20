@@ -36,8 +36,8 @@ public class DefaultDerivePri implements DerivePri {
     public final FloatRange polarityImportance = new FloatRange(0.01f, 0f, 1f);
 
     @Override
-    public float pri(Task t, Derivation d) {
-        float factorCmpl =
+    public float pri(final Task t, final Derivation d) {
+        final float factorCmpl =
                     factorComplexityRelative(t, d, simplicityExponent.floatValue());
                     //= factorComplexityAbsolute(t, d);
                     //= factorComplexityRelative2(t, d);
@@ -51,19 +51,19 @@ public class DefaultDerivePri implements DerivePri {
         factor *= //factorEviAbsolute(t,d);
                   factorMaintainRangeAndAvgEvi(t,d);
 
-        float y = postAmp(t, d.parentPri(), factor);
+        final float y = postAmp(t, d.parentPri(), factor);
         return y;
     }
 
     /** default impl: pass-thru */
-    protected float postAmp(Task t, float derivePri, float factor) {
+    protected float postAmp(final Task t, final float derivePri, final float factor) {
         return derivePri * factor;
     }
 
-    float factorComplexityAbsolute(Task t, Derivation d) {
-        int max = d.termVolMax + 1;
+    float factorComplexityAbsolute(final Task t, final Derivation d) {
+        final int max = d.termVolMax + 1;
 
-        float weight = Math.min(1, t.voluplexity() / max);
+        final float weight = Math.min(1, t.voluplexity() / max);
         //float parentWeight = Math.min(1, ((d.parentVoluplexitySum / 2)/*avg*/) / max);
         //float f = (1f - Util.lerp(parentWeight,weight,parentWeight * weight));
         //return Util.lerp(simplicityImportance.floatValue(), 1f, f);
@@ -77,17 +77,17 @@ public class DefaultDerivePri implements DerivePri {
 //        return Util.lerp(simplicityImportance.floatValue(), 1f, f);
 //    }
 
-    float factorComplexityRelative(Task t, Derivation d, float simplicityExponent) {
+    float factorComplexityRelative(final Task t, final Derivation d, final float simplicityExponent) {
 
-        float pCompl =
+        final float pCompl =
                 d.single ?
                     d.taskTerm.volume()
                     :
                     ((float) (d.taskTerm.volume() + d.beliefTerm.volume())) / 2; //average
 
-        int dCompl = t.volume();
+        final int dCompl = t.volume();
 
-        float basePenalty = 0.5f; //if derivation is simpler, this is the maximum complexity increase seen
+        final float basePenalty = 0.5f; //if derivation is simpler, this is the maximum complexity increase seen
         float f = 1 - (basePenalty + Math.max(0, dCompl - pCompl)) / (basePenalty + dCompl);
         f = (float) Math.pow(f, simplicityExponent);
 
@@ -102,25 +102,24 @@ public class DefaultDerivePri implements DerivePri {
         return Util.lerp(simplicityImportance.floatValue(), 1f, f);
     }
 
-    float factorPolarity(float freq) {
-        float polarity = Truth.polarity(freq);
+    float factorPolarity(final float freq) {
+        final float polarity = Truth.polarity(freq);
         return Util.lerp(polarityImportance.floatValue(), 1f, polarity);
     }
 
-    float factorEviAbsolute(Task t, Derivation d) {
-        double rangeRatio = rangeRatio(t, d);
+    float factorEviAbsolute(final Task t, final Derivation d) {
+        final double rangeRatio = rangeRatio(t, d);
 
-        double y;
-		//conf integrated
-		y = t.isBeliefOrGoal() ? t.truth().confDouble() * rangeRatio : rangeRatio * rangeRatio;
+        //conf integrated
+        final double y = t.isBeliefOrGoal() ? t.truth().confDouble() * rangeRatio : rangeRatio * rangeRatio;
         return (float) Util.lerp(eviImportance.floatValue(), 1f, y);
     }
 
-    private static double rangeRatio(Task t, Derivation d) {
+    private static double rangeRatio(final Task t, final Derivation d) {
         //eternal=1 dur
-        long taskRange = d._task.rangeIfNotEternalElse(TIMELESS);
-        long beliefRange = d.single ? taskRange : (d._belief.rangeIfNotEternalElse(TIMELESS));
-        long taskBeliefRange;
+        final long taskRange = d._task.rangeIfNotEternalElse(TIMELESS);
+        final long beliefRange = d.single ? taskRange : (d._belief.rangeIfNotEternalElse(TIMELESS));
+        final long taskBeliefRange;
         if (taskRange == TIMELESS && beliefRange != TIMELESS) {
             taskBeliefRange = beliefRange;
         } else if (taskRange != TIMELESS && beliefRange == TIMELESS) {
@@ -135,21 +134,21 @@ public class DefaultDerivePri implements DerivePri {
     }
 
 
-    double factorMaintainRangeAndAvgEvi(Task t, Derivation d) {
-        double rangeRatio = rangeRatio(t, d);
+    double factorMaintainRangeAndAvgEvi(final Task t, final Derivation d) {
+        final double rangeRatio = rangeRatio(t, d);
 
         if (t.isQuestionOrQuest())
             return rangeRatio;
 
-        double eParent = d.evi();
-        double eDerived = t.evi();
+        final double eParent = d.evi();
+        final double eDerived = t.evi();
         if (eParent <= eDerived)
 //            throw new WTF("spontaneous belief inflation"); //not actually
             return rangeRatio;
         else {
-            double cDerived = w2cSafeDouble(eDerived);
-            double cParent = w2cSafeDouble(eParent);
-            float eRatio = (float) (1 - ((cParent - cDerived) / cParent));
+            final double cDerived = w2cSafeDouble(eDerived);
+            final double cParent = w2cSafeDouble(eParent);
+            final float eRatio = (float) (1 - ((cParent - cDerived) / cParent));
             //double f = (float) (1 - ((eParent - eDerived) / eParent));
 
             Util.assertUnitized(eRatio);
@@ -158,7 +157,7 @@ public class DefaultDerivePri implements DerivePri {
     }
 
 
-    @Override public float prePri(Derivation d) {
+    @Override public float prePri(final Derivation d) {
 
         return 1;
 

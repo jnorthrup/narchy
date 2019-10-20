@@ -40,7 +40,7 @@ public class DeriverProgram {
     public final NAR nar;
 
 
-    DeriverProgram(PREDICATE<PreDerivation> what, How[] actions, PreDeriver pre, NAR nar) {
+    DeriverProgram(final PREDICATE<PreDerivation> what, final How[] actions, final PreDeriver pre, final NAR nar) {
 
         this.nar = nar;
 
@@ -48,9 +48,9 @@ public class DeriverProgram {
 
         this.branch = actions; assert (actions.length > 0);
 
-        List<RuleCause> list = new ArrayList<>();
-        for (How b : actions) {
-            for (RuleCause ruleCause : Arrays.asList(b.why)) {
+        final List<RuleCause> list = new ArrayList<>();
+        for (final How b : actions) {
+            for (final RuleCause ruleCause : Arrays.asList(b.why)) {
                 list.add(ruleCause);
             }
         }
@@ -64,47 +64,46 @@ public class DeriverProgram {
         return print(System.out);
     }
 
-    public DeriverProgram print(PrintStream p) {
+    public DeriverProgram print(final PrintStream p) {
         print(p, 0);
         return this;
     }
 
-    public void print(PrintStream p, int indent) {
+    public void print(final PrintStream p, final int indent) {
         print(what, p, indent);
     }
 
-    protected void print(Object x, PrintStream out, int indent) {
+    protected void print(final Object x, final PrintStream out, final int indent) {
 
         Texts.indent(indent);
 
         if (x instanceof DeriverProgram) {
 
-            DeriverProgram r = (DeriverProgram) x;
+            final DeriverProgram r = (DeriverProgram) x;
             r.print(out, indent);
 
         } else if (x instanceof Forkable) {
 
-            Forkable b = (Forkable)x;
+            final Forkable b = (Forkable)x;
 
             out.println(b.getClass().getSimpleName().toLowerCase() + " {");
-            for (short c : b.can) {
+            for (final short c : b.can) {
                 print(branch[c], out, indent+2);
             }
             Texts.indent(indent);out.println("}");
 
 
         } else if (x instanceof How) {
-            How a = (How)x;
+            final How a = (How)x;
 
             out.println(a.why.id + " ==> {");
-            Object aa;
             // + ((PremisePatternAction.TruthifyDeriveAction) a).unify;
             //TODO
             //                out.println(((DirectPremiseUnify)x).taskPat + ", " + ((DirectPremiseUnify)x).beliefPat + " ==> {");
             //                print(((DirectPremiseUnify)x).taskify, out, indent + 2);
             //                Texts.indent(indent);
             //                out.println("}");
-            aa = a instanceof PatternHow.TruthifyDeriveAction ? Arrays.toString(((PatternHow.TruthifyDeriveAction) a).constraints) + " ..." : a.toString();
+            final Object aa = a instanceof PatternHow.TruthifyDeriveAction ? Arrays.toString(((PatternHow.TruthifyDeriveAction) a).constraints) + " ..." : a.toString();
 
             print(aa, out, indent + 2);
 
@@ -112,7 +111,7 @@ public class DeriverProgram {
 
         } else if (x instanceof AND) {
             out.println("and {");
-            AND ac = (AND) x;
+            final AND ac = (AND) x;
             ac.subStream().forEach(b->
                 print(b, out, indent + 2)
             );
@@ -133,16 +132,16 @@ public class DeriverProgram {
         } */ else if (x instanceof FORK) {
 
             out.println("fork {");
-            for (PREDICATE b : ((FORK) x).branch)
+            for (final PREDICATE b : ((FORK) x).branch)
                 print(b, out, indent + 2);
             Texts.indent(indent);
             out.println("}");
 
         } else if (x instanceof SWITCH) {
-            SWITCH sw = (SWITCH) x;
+            final SWITCH sw = (SWITCH) x;
             out.println("switch(op(" + (sw.taskOrBelief ? "task" : "belief") + ")) {");
             int i = -1;
-            for (PREDICATE b : sw.swtch) {
+            for (final PREDICATE b : sw.swtch) {
                 i++;
                 if (b == null) continue;
 

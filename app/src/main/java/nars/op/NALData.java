@@ -71,7 +71,6 @@ public class NALData {
      * beliefs representing the schema's metadata
      */
     private static Stream<Task> metaBeliefs(NAR nar, DataTable a, BiFunction<Term, Term[], Term> pointGenerator) {
-        FasterList<Term> meta = new FasterList<Term>();
 
         int n = a.columnCount();
         List<nars.term.Variable> list = new ArrayList<>();
@@ -83,6 +82,7 @@ public class NALData {
                 name(a),
                 list.toArray(new Term[0])
         );
+        FasterList<Term> meta = new FasterList<Term>();
         for (int i = 0; i < n; i++) {
             String ai = a.attrName(i);
             Term attr = attrTerm(ai);

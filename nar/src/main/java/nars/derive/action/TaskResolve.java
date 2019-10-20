@@ -67,8 +67,7 @@ public class TaskResolve extends NativeHow {
 //            boolean beliefOrGoal = punc == BELIEF || punc == GOAL;
 
 		//TODO abstract TaskLinkResolver strategy
-		Task y;
-		y = (punc == BELIEF && NAL.TASKLINK_ANSWER_BELIEF) || (punc == GOAL && NAL.TASKLINK_ANSWER_GOAL) ? table.match(w, null, filter, w.dur, false) : table.sample(w, null, filter);
+		Task y = (punc == BELIEF && NAL.TASKLINK_ANSWER_BELIEF) || (punc == GOAL && NAL.TASKLINK_ANSWER_GOAL) ? table.match(w, null, filter, w.dur, false) : table.sample(w, null, filter);
 
 //            if (y == null) {
 //                if (!beliefOrGoal) {

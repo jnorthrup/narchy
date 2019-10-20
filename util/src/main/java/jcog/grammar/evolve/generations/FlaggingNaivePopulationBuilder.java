@@ -61,42 +61,42 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
      * @param useDottification
      * @param useWordClasses
      */
-    public FlaggingNaivePopulationBuilder(boolean useDottification, boolean useWordClasses) {
+    public FlaggingNaivePopulationBuilder(final boolean useDottification, final boolean useWordClasses) {
         this.useDottification = useDottification;
         this.useWordClasses = useWordClasses;
     }
 
 
     @Override
-    public void init(List<Node> target) {
+    public void init(final List<Node> target) {
         target.addAll(population);
     }
 
     @Override
-    public void setup(Configuration configuration) {
-        DataSet trainingDataset = configuration.getDatasetContainer().getTrainingDataset();
+    public void setup(final Configuration configuration) {
+        final DataSet trainingDataset = configuration.getDatasetContainer().getTrainingDataset();
         this.population.addAll(this.setup(configuration, trainingDataset));
     }
     
-    private List<Node> setup(Configuration configuration, DataSet usedTrainingDataset) {
-        List<Node> newPopulation = new LinkedList<>();
-        DataSet dataSet = usedTrainingDataset;
+    private List<Node> setup(final Configuration configuration, final DataSet usedTrainingDataset) {
+        final DataSet dataSet = usedTrainingDataset;
 
 
-        Set<String> phrases = new HashSet<>();
-        for (Example example : dataSet.getExamples()) {
+        final Set<String> phrases = new HashSet<>();
+        for (final Example example : dataSet.getExamples()) {
             if (!example.match.isEmpty()) {
-                String string = example.getString();
+                final String string = example.getString();
                 phrases.add(string);
             }
         }
 
-        int examples = Math.min(configuration.getEvolutionParameters().getPopulationSize() / 3, phrases.size());
+        final int examples = Math.min(configuration.getEvolutionParameters().getPopulationSize() / 3, phrases.size());
 
-        List<String> uniquePhrases = new ArrayList<>(phrases);
+        final List<String> uniquePhrases = new ArrayList<>(phrases);
 
         int counter = 0;
-        for (String node : uniquePhrases) {
+        final List<Node> newPopulation = new LinkedList<>();
+        for (final String node : uniquePhrases) {
             if (this.useDottification) {
                 newPopulation.add(createByExample(node, true, false));
                 newPopulation.add(createByExample(node, true, true));
@@ -110,13 +110,13 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
         return newPopulation;
     }
 
-    private Node createByExample(String example, boolean replace, boolean compact) {
+    private Node createByExample(final String example, final boolean replace, final boolean compact) {
 
 
-        String d = this.useWordClasses ? "\\d" : ".";
-        Node letters;
+        final String d = this.useWordClasses ? "\\d" : ".";
+        final Node letters;
         if(useWordClasses){
-            ListMatch l = new ListMatch();
+            final ListMatch l = new ListMatch();
             l.add(new RegexRange("A-Za-z"));
             letters = l;
         } else {
@@ -124,7 +124,7 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
         }
 
         Deque<Node> nodes = new LinkedList<>();
-        for (char c : example.toCharArray()) {
+        for (final char c : example.toCharArray()) {
             if (replace) {
                 if (Character.isLetter(c)) {
                     nodes.add(letters.cloneTree());
@@ -141,16 +141,16 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
         
         
         if(compact){
-            Deque<Node> newNodes = new LinkedList<>();
+            final Deque<Node> newNodes = new LinkedList<>();
             
             
             while (nodes.size()>0) {
                 Node node = nodes.pollFirst();
-                String nodeValue = node.toString();
+                final String nodeValue = node.toString();
                 boolean isRepeat = false;
                 while (nodes.size()>0){
-                    Node next = nodes.peek();
-                    String nextValue = next.toString();
+                    final Node next = nodes.peek();
+                    final String nextValue = next.toString();
 
                     if(nodeValue.equals(nextValue)){
                         isRepeat = true;
@@ -162,7 +162,7 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
                     } 
                 }    
                 if(isRepeat){
-                    Node finalNode = new MatchOneOrMore(node);
+                    final Node finalNode = new MatchOneOrMore(node);
                     node = finalNode;
                 }
                 newNodes.add(node);                
@@ -174,8 +174,8 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
         while (nodes.size() > 1) {
 
             while (nodes.size() > 0) {
-                Node first = nodes.pollFirst();
-                Node second = nodes.pollFirst();
+                final Node first = nodes.pollFirst();
+                final Node second = nodes.pollFirst();
 
                 if (second != null) {
                     tmp.addLast(new Concatenator(first, second));
@@ -194,7 +194,7 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
     }
 
     @Override
-    public List<Node> init(Context context) {
+    public List<Node> init(final Context context) {
          return setup(context.getConfiguration(), context.getCurrentDataSet());
     }
 }

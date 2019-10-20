@@ -8,10 +8,11 @@ import java.util.function.Supplier;
 /**
  * https://www.javaspecialists.eu/archive/Issue215.html
  */
+@SuppressWarnings("TooBroadScope")
 public class LambdaStampedLock extends StampedLock {
 
-    public void write(Runnable writeProcedure) {
-        long stamp = writeLock();
+    public void write(final Runnable writeProcedure) {
+        final long stamp = writeLock();
         try {
             writeProcedure.run();
         } finally {
@@ -19,8 +20,8 @@ public class LambdaStampedLock extends StampedLock {
         }
     }
 
-    public <T> T write(Supplier<T> writeProcedure) {
-        long stamp = writeLock();
+    public <T> T write(final Supplier<T> writeProcedure) {
+        final long stamp = writeLock();
 
         try {
             return writeProcedure.get();
@@ -31,8 +32,8 @@ public class LambdaStampedLock extends StampedLock {
     }
 
 
-    public boolean write(BooleanSupplier writeProcedure) {
-        long stamp = writeLock();
+    public boolean write(final BooleanSupplier writeProcedure) {
+        final long stamp = writeLock();
 
         try {
             return writeProcedure.getAsBoolean();
@@ -42,8 +43,8 @@ public class LambdaStampedLock extends StampedLock {
 
     }
 
-    public int write(IntSupplier writeProcedure) {
-        long stamp = writeLock();
+    public int write(final IntSupplier writeProcedure) {
+        final long stamp = writeLock();
         try {
             return writeProcedure.getAsInt();
         } finally {
@@ -51,8 +52,8 @@ public class LambdaStampedLock extends StampedLock {
         }
     }
 
-    public <T> T read(Supplier<T> readProcedure) {
-        long stamp = readLock();
+    public <T> T read(final Supplier<T> readProcedure) {
+        final long stamp = readLock();
 
         try {
             return readProcedure.get();
@@ -62,8 +63,8 @@ public class LambdaStampedLock extends StampedLock {
 
     }
 
-    public int read(IntSupplier readProcedure) {
-        long stamp = readLock();
+    public int read(final IntSupplier readProcedure) {
+        final long stamp = readLock();
         int result;
         try {
             result = readProcedure.getAsInt();
@@ -73,8 +74,8 @@ public class LambdaStampedLock extends StampedLock {
         return result;
     }
 
-    public void read(Runnable readProcedure) {
-        long stamp = readLock();
+    public void read(final Runnable readProcedure) {
+        final long stamp = readLock();
         try {
             readProcedure.run();
         } finally {
@@ -82,8 +83,8 @@ public class LambdaStampedLock extends StampedLock {
         }
     }
 
-    public void readOptimistic(Runnable readProcedure) {
-        long stamp = tryOptimisticRead();
+    public void readOptimistic(final Runnable readProcedure) {
+        final long stamp = tryOptimisticRead();
 
         if (stamp != 0) {
             readProcedure.run();
@@ -94,11 +95,11 @@ public class LambdaStampedLock extends StampedLock {
         read(readProcedure);
     }
 
-    public boolean writeConditional(BooleanSupplier condition, Runnable action) {
+    public boolean writeConditional(final BooleanSupplier condition, final Runnable action) {
         long stamp = readLock();
         try {
             while (condition.getAsBoolean()) {
-                long writeStamp = tryConvertToWriteLock(stamp);
+                final long writeStamp = tryConvertToWriteLock(stamp);
                 if (writeStamp != 0) {
                     action.run();
                     stamp = writeStamp;

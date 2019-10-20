@@ -1119,8 +1119,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 			dt = 0;
 		else {
 			assert (aWhen != TIMELESS && bWhen != TIMELESS);
-			long d;
-			d = o == IMPL || aWhen <= bWhen ? (bWhen - aWhen) - a.id.eventRange() : (aWhen - bWhen) - b.id.eventRange();
+			long d = o == IMPL || aWhen <= bWhen ? (bWhen - aWhen) - a.id.eventRange() : (aWhen - bWhen) - b.id.eventRange();
 
 			dt = occToDT(d);
 		}
@@ -1156,8 +1155,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	 */
 	protected int occToDT(long x) {
 		assert (x != TIMELESS);
-		int idt;
-		idt = x == ETERNAL ? DTERNAL : Tense.occToDT(x);
+		int idt = x == ETERNAL ? DTERNAL : Tense.occToDT(x);
 		return idt;
 	}
 

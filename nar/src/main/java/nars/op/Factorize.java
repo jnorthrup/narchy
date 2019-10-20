@@ -58,11 +58,11 @@ public enum Factorize {
             Intermed.SubtermsKey::new,
             Factorize::_factorize, 32 * 1024);
 
-    private static Term[] _factorize(Intermed.SubtermsKey x) {
-        Subterms xx = x.subs;
+    private static Term[] _factorize(final Intermed.SubtermsKey x) {
+        final Subterms xx = x.subs;
 
-        Term[] xxx = distribute(xx), yyy;
-        yyy = xxx != null ? applyConj(xxx, xx.hasVarDep() ? f : fIfNoDep) : null;
+        final Term[] xxx = distribute(xx);
+        final Term[] yyy = xxx != null ? applyConj(xxx, xx.hasVarDep() ? f : fIfNoDep) : null;
 
         return yyy == null ?
                 Op.EmptyTermArray  //not worth changing
@@ -71,8 +71,8 @@ public enum Factorize {
     }
 
     /** returns null if detects no reason to re-process */
-    private static @Nullable Term[] distribute(Subterms xx) {
-        TermList x = xx.toList();
+    private static @Nullable Term[] distribute(final Subterms xx) {
+        final TermList x = xx.toList();
 
         //TODO track what subterms (if any) are totally un-involved and exclude them from processing in subsequent stages
         //TODO sort the subterms for optimal processing order
@@ -81,8 +81,8 @@ public enum Factorize {
             stable = true;
 
             for (int i = 0, xLength = x.size(); i < xLength; i++) {
-                Term s = x.get(i);
-                Term var;
+                final Term s = x.get(i);
+                final Term var;
 
                 //TODO optimization step: distribute any equal(#x,constant) terms
 //                if (Functor.func(s).equals(Equal.the)) {
@@ -90,7 +90,7 @@ public enum Factorize {
 //                }
 
                 if (Functor.func(s).equals(Member.member) && (var = s.subPath((byte) 0, (byte) 0)) instanceof Variable) {
-                    Term r = s.subPath((byte) 0, (byte) 1);
+                    final Term r = s.subPath((byte) 0, (byte) 1);
                     if (r.op().set) {
                         if (xLength == 2) {
                             //special case: there is no reason to process this because it consists of one member and one non-member
@@ -103,14 +103,14 @@ public enum Factorize {
 
                         Subterms rs = null;
 
-                        ListIterator<Term> jj = x.listIterator();
+                        final ListIterator<Term> jj = x.listIterator();
                         while (jj.hasNext()) {
-                            Term xj = jj.next();
+                            final Term xj = jj.next();
                             if (xj.containsRecursively(var)) {
                                 jj.remove();
                                 if (rs == null)
                                      rs = r.subterms();
-                                for (Term rr : rs) {
+                                for (final Term rr : rs) {
                                     jj.add(xj.replace(var, rr));
                                 }
                             }
@@ -137,23 +137,23 @@ public enum Factorize {
 
     //TODO static class ShadowCompound extends Compound(Compound base, ByteList masked)
 
-    static Term shadow(Term base, ByteList path, Variable f) {
+    static Term shadow(final Term base, final ByteList path, final Variable f) {
         return base.replaceAt(path, f);
     }
 
     /**
      * returns the subterms, as a sorted target array setAt, for the new conjunction.  or null if there was nothing factorable
      */
-    private static @Nullable Term[] applyConj(Term[] x, Variable f) {
+    private static @Nullable Term[] applyConj(final Term[] x, final Variable f) {
 
         /** shadow target -> replacements */
-        UnifiedSetMultimap<Term, ObjectBytePair<Term>>[] pp = new UnifiedSetMultimap[]{null};
-        byte n = (byte) x.length;
+        final UnifiedSetMultimap<Term, ObjectBytePair<Term>>[] pp = new UnifiedSetMultimap[]{null};
+        final byte n = (byte) x.length;
         for (int i = 0; i < n; i++) {
-            Term s = x[i];
-            int pathMin = s.subs() == 1 ? 2 : 1; //dont factor the direct subterm of 1-arity compound (ex: negation, {x}, (x) )
+            final Term s = x[i];
+            final int pathMin = s.subs() == 1 ? 2 : 1; //dont factor the direct subterm of 1-arity compound (ex: negation, {x}, (x) )
             if (s instanceof Compound) {
-                int ii = i;
+                final int ii = i;
                 s.pathsTo((Term v) -> true, v -> true, (path, what) -> {
 
                     //if (what.unneg().volume() > 1) { //dont remap any atomics
@@ -161,7 +161,7 @@ public enum Factorize {
                         if (path.size() >= pathMin) {
                             if (pp[0] == null)
                                 pp[0] = UnifiedSetMultimap.newMultimap();
-                            Term v1 = shadow(s, path, f);
+                            final Term v1 = shadow(s, path, f);
                             if (!(v1 instanceof IdempotentBool))
                                 pp[0].put(v1, pair(what, (byte)ii));
                         }
@@ -172,30 +172,30 @@ public enum Factorize {
             }
         }
 
-        UnifiedSetMultimap<Term, ObjectBytePair<Term>> p = pp[0];
+        final UnifiedSetMultimap<Term, ObjectBytePair<Term>> p = pp[0];
         if (p == null)
             return null;
 
-        MutableList<Pair<Term, RichIterable<ObjectBytePair<Term>>>> r = p.keyMultiValuePairsView().select((pathwhat) -> pathwhat.getTwo().size() > 1).toSortedList(c);
+        final MutableList<Pair<Term, RichIterable<ObjectBytePair<Term>>>> r = p.keyMultiValuePairsView().select((pathwhat) -> pathwhat.getTwo().size() > 1).toSortedList(c);
 
         if (r.isEmpty())
             return null;
 
 
-        Pair<Term, RichIterable<ObjectBytePair<Term>>> rr = r.get(0);
-        ByteSet masked = rr.getTwo().collectByte(ObjectBytePair::getTwo).toSet();
-        Set<Term> t = new UnifiedSet<>(n - masked.size() + 1);
+        final Pair<Term, RichIterable<ObjectBytePair<Term>>> rr = r.get(0);
+        final ByteSet masked = rr.getTwo().collectByte(ObjectBytePair::getTwo).toSet();
+        final Set<Term> t = new UnifiedSet<>(n - masked.size() + 1);
         for (byte i = 0; i < n; i++)
             if (!masked.contains(i)) {
                 t.add(x[i]);
             }
-        Term s = $.sete(rr.getTwo().collect((ob) -> {
-            Term y = ob.getOne();
+        final Term s = $.sete(rr.getTwo().collect((ob) -> {
+            final Term y = ob.getOne();
             return y.op() == CONJ && y.dt() == DTERNAL ? SETe.the(y.subterms()) : y; //flatten
         }));
         if (s instanceof IdempotentBool)
             return null;
-        Term m = $.func(Member.member, f, s);
+        final Term m = $.func(Member.member, f, s);
         if (m == Null)
             return null;
 
@@ -218,14 +218,14 @@ public enum Factorize {
         }
 
         @Override
-        protected boolean filter(Term next) {
+        protected boolean filter(final Term next) {
             return next.op()!=IMPL; //HACK doesnt always work well when CONJ'd with
         }
 
         @Override
-        protected Term applyUnnormalized(Term x, int volMax, What w) {
+        protected Term applyUnnormalized(final Term x, final int volMax, final What w) {
 
-            Term[] y = factorize.apply(x.subterms().commuted());
+            final Term[] y = factorize.apply(x.subterms().commuted());
             if (y.length == 0)
                 return x; //unchanged
 

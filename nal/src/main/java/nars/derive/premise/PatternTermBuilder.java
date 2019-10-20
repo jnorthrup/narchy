@@ -70,9 +70,8 @@ public enum PatternTermBuilder /* implements TermBuilder ? */ { ;
 
             x = (Compound) _x;
 
-            Term xx;
             boolean neg = x instanceof Neg;
-			xx = neg ? x.unneg() : x;
+            Term xx = neg ? x.unneg() : x;
 
             @Nullable Ellipsislike e = xx instanceof Compound ? firstEllipsis(((Compound)xx).subtermsDirect()) : null;
             return (e != null ? PatternCompound.ellipsis((Compound) xx, xx.subterms(), (Ellipsis) e) : xx).negIf(neg);

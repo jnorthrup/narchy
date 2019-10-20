@@ -588,7 +588,6 @@ public abstract class Surf extends Draw {
         currententity = e;
         gl_state.currenttextures[0] = gl_state.currenttextures[1] = -1;
 
-        boolean rotated;
         float[] ea = e.angles;
         boolean b = false;
         for (int v : new int[]{0, 1, 2}) {
@@ -597,6 +596,7 @@ public abstract class Surf extends Draw {
                 break;
             }
         }
+        boolean rotated;
         if (b) {
             rotated = true;
 

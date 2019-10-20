@@ -161,8 +161,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 		}
 
 
-		Truth tFinal;
-		tFinal = truth != null ? Truth.theDithered(truth.freq(), truth.evi(), n) : null;
+		Truth tFinal = truth != null ? Truth.theDithered(truth.freq(), truth.evi(), n) : null;
 
 		Task i = NALTask.the(term, punc, tFinal, creation, start, end, evidence);
 		i.pri(this);

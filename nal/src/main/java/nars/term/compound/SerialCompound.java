@@ -36,12 +36,12 @@ public class SerialCompound extends DynBytes implements SameSubtermsCompound, Id
     public SerialCompound(Op o, int dt, Term[] subterms) {
         super(subterms.length * 4 /* estimate */);
 
-        int v = 1;
         int sum = 0;
         for (Term subterm : subterms) {
             int i = subterm.volume();
             sum += i;
         }
+        int v = 1;
         v += sum;
 
         if (v > NAL.term.COMPOUND_VOLUME_MAX)

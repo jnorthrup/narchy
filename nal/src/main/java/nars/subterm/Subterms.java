@@ -153,8 +153,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 				return x0.unify(y0, u);
 
             int v1 = u.vars(x1) + u.vars(y1);
-			boolean forward;
-			forward = v1 == v0 ? x0.volume() + y0.volume() <= x1.volume() + y1.volume() : v0 < v1;
+			boolean forward = v1 == v0 ? x0.volume() + y0.volume() <= x1.volume() + y1.volume() : v0 < v1;
 			return forward ?
 				x0.unify(y0, u) && x1.unify(y1, u) :
 				x1.unify(y1, u) && x0.unify(y0, u);

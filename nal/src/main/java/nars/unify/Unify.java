@@ -513,8 +513,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
         boolean neg = _x instanceof Neg;
         Term x = neg ? _x.unneg() : _x;
 
-        Term y;
-        y = s > 0 && var(x) ? resolveVar((Variable) x) : x;
+        Term y = s > 0 && var(x) ? resolveVar((Variable) x) : x;
 
         if (recurse) {
             if (y instanceof Compound /* && y.hasAny(varBits)*/) {
