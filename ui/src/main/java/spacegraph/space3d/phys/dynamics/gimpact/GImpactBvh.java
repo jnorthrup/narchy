@@ -28,8 +28,11 @@
 package spacegraph.space3d.phys.dynamics.gimpact;
 
 import jcog.math.v3;
+import kotlin.Pair;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.util.IntArrayList;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  *
@@ -274,7 +277,7 @@ public class GImpactBvh {
 	/**
 	 * Stackless recursive collision routine.
 	 */
-	private static void _find_collision_pairs_recursive(GImpactBvh boxset0, GImpactBvh boxset1, PairSet collision_pairs, BoxCollision.BoxBoxTransformCache trans_cache_1to0, int node0, int node1, boolean complete_primitive_tests) {
+	private static void _find_collision_pairs_recursive(GImpactBvh boxset0, GImpactBvh boxset1, CopyOnWriteArrayList<Pair<Integer, Integer>> collision_pairs, BoxCollision.BoxBoxTransformCache trans_cache_1to0, int node0, int node1, boolean complete_primitive_tests) {
 		if (!_node_collision(
 				boxset0, boxset1, trans_cache_1to0,
 				node0, node1, complete_primitive_tests)) {
@@ -283,7 +286,7 @@ public class GImpactBvh {
 		if (boxset0.isLeafNode(node0)) {
 			if (boxset1.isLeafNode(node1)) {
 				
-				collision_pairs.push_pair(boxset0.getNodeData(node0), boxset1.getNodeData(node1));
+				collision_pairs.add(new Pair(boxset0.getNodeData(node0), boxset1.getNodeData(node1)));
 			}
 			else {
 				
@@ -345,7 +348,7 @@ public class GImpactBvh {
 
 	
 
-	public static void find_collision(GImpactBvh boxset0, Transform trans0, GImpactBvh boxset1, Transform trans1, PairSet collision_pairs) {
+	public static void find_collision(GImpactBvh boxset0, Transform trans0, GImpactBvh boxset1, Transform trans1, CopyOnWriteArrayList<Pair<Integer, Integer>> collision_pairs) {
 		if (boxset0.getNodeCount() == 0 || boxset1.getNodeCount() == 0) {
 			return;
 		}

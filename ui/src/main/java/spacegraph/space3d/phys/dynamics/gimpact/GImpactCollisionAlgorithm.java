@@ -28,6 +28,7 @@
 package spacegraph.space3d.phys.dynamics.gimpact;
 
 import jcog.math.v3;
+import kotlin.Pair;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.CollisionAlgorithmCreateFunc;
 import spacegraph.space3d.phys.collision.DefaultIntersecter;
@@ -40,6 +41,8 @@ import spacegraph.space3d.phys.shape.*;
 import spacegraph.space3d.phys.util.IntArrayList;
 import spacegraph.space3d.phys.util.OArrayList;
 import spacegraph.util.math.Vector4f;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Collision Algorithm for GImpact Shapes.<p>
@@ -63,7 +66,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	private int triface1;
 	private int part1;
 
-	private final PairSet tmpPairset = new PairSet();
+	private final CopyOnWriteArrayList<Pair<Integer, Integer>> tmpPairset = new CopyOnWriteArrayList<Pair<Integer, Integer>>();
 	
 	private void init(CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1) {
 		super.init(ci);
@@ -179,8 +182,8 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		var i = pairset.size();
 		while ((i--) != 0) {
 			var pair = pairset.get(i);
-			triface0 = pair.index1;
-			triface1 = pair.index2;
+			triface0 = pair.getFirst();
+			triface1 = pair.getSecond();
 			var colshape0 = retriever0.getChildShape(triface0);
 			var colshape1 = retriever1.getChildShape(triface1);
 
@@ -423,7 +426,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	}
 	*/
 	
-	private void collide_sat_triangles(Collidable body0, Collidable body1, GImpactMeshShape.GImpactMeshShapePart shape0, GImpactMeshShape.GImpactMeshShapePart shape1, PairSet pairs, int pair_count) {
+	private void collide_sat_triangles(Collidable body0, Collidable body1, GImpactMeshShape.GImpactMeshShapePart shape0, GImpactMeshShape.GImpactMeshShapePart shape1, CopyOnWriteArrayList<Pair<Integer, Integer>> pairs, int pair_count) {
 		var tmp = new v3();
 
 		var orgtrans0 = body0.transform;
@@ -443,8 +446,8 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 
 
 			var pair = pairs.get(pair_pointer++);
-			triface0 = pair.index1;
-			triface1 = pair.index2;
+			triface0 = pair.getFirst();
+			triface1 = pair.getSecond();
 
 			shape0.getPrimitiveTriangle(triface0, ptri0);
 			shape1.getPrimitiveTriangle(triface1, ptri1);
@@ -524,7 +527,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		body1.internalSetTemporaryCollisionShape(tmpShape1);
 	}
 
-	private static void gimpact_vs_gimpact_find_pairs(Transform trans0, Transform trans1, GImpactShape shape0, GImpactShape shape1, PairSet pairset) {
+	private static void gimpact_vs_gimpact_find_pairs(Transform trans0, Transform trans1, GImpactShape shape0, GImpactShape shape1, CopyOnWriteArrayList<Pair<Integer, Integer>> pairset) {
 		if (shape0.hasBoxSet() && shape1.hasBoxSet()) {
 			GImpactBvh.find_collision(shape0.getBoxSet(), trans0, shape1.getBoxSet(), trans1, pairset);
 		}
@@ -541,7 +544,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 					shape1.getChildAabb(i, trans1, boxshape1.min, boxshape1.max);
 
 					if (boxshape1.has_collision(boxshape0)) {
-						pairset.push_pair(i, j);
+						pairset.add(new Pair ( i, j));
 					}
 				}
 			}
