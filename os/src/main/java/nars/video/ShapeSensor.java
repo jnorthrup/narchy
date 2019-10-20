@@ -1,7 +1,6 @@
 package nars.video;
 
 import boofcv.alg.filter.binary.BinaryImageOps;
-import boofcv.alg.filter.binary.Contour;
 import boofcv.alg.filter.binary.ThresholdImageOps;
 import boofcv.alg.misc.ImageStatistics;
 import boofcv.alg.shapes.ShapeFittingOps;
@@ -21,7 +20,7 @@ import nars.control.channel.CauseChannel;
 import nars.game.Game;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.term.Term;
-import nars.term.atom.Int;
+import nars.term.atom.theInt;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.PaintSurface;
@@ -325,8 +324,8 @@ public class ShapeSensor extends NARPart {
 
                     Draw.colorHash(gl, i[0], 0.75f);
                     for (var xy : pSet.subterms()) {
-                        var x = ((Int) xy.sub(0)).i;
-                        var y = grid.gy - ((Int) xy.sub(1)).i;
+                        var x = ((theInt) xy.sub(0)).i;
+                        var y = grid.gy - ((theInt) xy.sub(1)).i;
                         gl.glVertex2f(dx + x * scale, dy + y * scale);
                     }
                     gl.glEnd();

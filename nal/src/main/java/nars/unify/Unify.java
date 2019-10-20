@@ -12,7 +12,7 @@ import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.*;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.util.transform.RecursiveTermTransform;
 import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
@@ -555,7 +555,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
     public final @Nullable TermList resolveListIfChanged(Subterms x, boolean recurse) {
         var y = recurse ? resolveSubsRecurse(x) : resolveSubs(x);
         if (y == null)
-            return new TermList(Bool.Null); //HACK
+            return new TermList(theBool.Null); //HACK
         else if (y != x)
             return y instanceof TermList ? (TermList) y : y.toList();
         else

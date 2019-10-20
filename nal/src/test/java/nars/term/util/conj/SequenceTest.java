@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.CONJ;
-import static nars.term.atom.Bool.False;
+import static nars.term.atom.theBool.False;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Disabled

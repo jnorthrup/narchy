@@ -14,7 +14,7 @@ import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.util.SetSectDiff;
 import nars.term.util.TermException;
 import nars.term.util.builder.MemoizingTermBuilder;
@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static nars.term.atom.Bool.True;
+import static nars.term.atom.theBool.True;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -593,8 +593,8 @@ public enum Op {
             case QUESTION: return Task.QuestionAtom;
             case GOAL: return Task.GoalAtom;
             case QUEST: return Task.QuestAtom;
-            case 1: return Bool.True;
-            case 0: return Bool.False;
+            case 1: return theBool.True;
+            case 0: return theBool.False;
             default: throw new UnsupportedOperationException();
         }
 

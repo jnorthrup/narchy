@@ -12,7 +12,7 @@ import nars.term.Img;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -55,7 +55,7 @@ public class AbstractPremise implements Premise {
 	}
 
 	private static boolean valid(Termed x) {
-		return !(x instanceof Neg) && !(x instanceof Bool) && !(x instanceof Img);
+		return !(x instanceof Neg) && !(x instanceof theBool) && !(x instanceof Img);
 	}
 
 	@Override

@@ -30,9 +30,8 @@ import nars.op.Equal;
 import nars.op.MathFunc;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Variable;
-import nars.term.atom.Bool;
-import nars.term.atom.Int;
+import nars.term.atom.theBool;
+import nars.term.atom.theInt;
 import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
@@ -144,7 +143,7 @@ public class KIF implements Iterable<Task> {
         var tmp = IMPL.the(a, b);
         if (tmp.unneg().op() != IMPL) {
             logger.warn("un-impl: {} ==> {} ", a, b);
-            return Bool.Null;
+            return theBool.Null;
         }
         var negated = tmp.op() == NEG;
 
@@ -256,7 +255,7 @@ public class KIF implements Iterable<Task> {
             );
             var fxy = impl(INH.the($.p(vt), f), types, true);
             if (fxy != null) {
-                if (fxy instanceof Bool) {
+                if (fxy instanceof theBool) {
                     logger.error("bad function {} {} {}", f, s.domain, s.range);
                 } else {
                     assertions.add(fxy);
@@ -327,9 +326,9 @@ public class KIF implements Iterable<Task> {
                 var sargs = IntStream.range(1, l).mapToObj(x::getArgument).collect(Collectors.toList());
                 var args = sargs.stream().map(sarg -> formulaToTerm(sarg, level + 1)).collect(Collectors.toList());
                 if (args.contains(null)) {
-                    result = Bool.Null;
+                    result = theBool.Null;
                 } else if (args.isEmpty()) {
-                    result = Bool.Null;
+                    result = theBool.Null;
                 } else { /**
                  *
                  *
@@ -398,7 +397,7 @@ public class KIF implements Iterable<Task> {
                                 else
                                     y = INH.the(subj, pred);
 
-                                if (y instanceof Bool) {
+                                if (y instanceof theBool) {
                                     result = y;
                                     finished = true;
                                     break;
@@ -421,11 +420,11 @@ public class KIF implements Iterable<Task> {
 
                         case "greaterThan":
                             if (args.size() == 2)
-                                y = $.func("cmp", args.get(0), args.get(1), Int.the(+1));
+                                y = $.func("cmp", args.get(0), args.get(1), theInt.the(+1));
                             break;
                         case "lessThan":
                             if (args.size() == 2)
-                                y = $.func("cmp", args.get(0), args.get(1), Int.the(-1));
+                                y = $.func("cmp", args.get(0), args.get(1), theInt.the(-1));
                             break;
 
                         case "equal":
@@ -479,7 +478,7 @@ public class KIF implements Iterable<Task> {
                                     }
                                     var d = fn.computeIfAbsent(subj, (s) -> new FnDef());
 
-                                    d.domain.updateValue(((Int) arg).i, () -> type, (Function<? super Term, ? extends Term>) domainRangeMerger(type));
+                                    d.domain.updateValue(((theInt) arg).i, () -> type, (Function<? super Term, ? extends Term>) domainRangeMerger(type));
 
                                 } else {
                                     throw new UnsupportedOperationException("unrecognized domain spec");
@@ -609,9 +608,9 @@ public class KIF implements Iterable<Task> {
 
 
                         }
-                        if (y instanceof Bool) {
+                        if (y instanceof theBool) {
                             logger.warn("{} Bool singularity: args={}", x, args);
-                            result = Bool.Null;
+                            result = theBool.Null;
                         } else {
                             result = y;
                         }

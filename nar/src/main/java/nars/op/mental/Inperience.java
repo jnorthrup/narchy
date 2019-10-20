@@ -2,21 +2,18 @@ package nars.op.mental;
 
 import jcog.math.FloatRange;
 import nars.$;
-import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.attention.What;
 import nars.derive.Derivation;
 import nars.derive.action.TaskTransformAction;
 import nars.task.TemporalTask;
 import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.util.Image;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.VariableTransform;
-import nars.time.When;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -82,7 +79,7 @@ public class Inperience extends TaskTransformAction {
 
 		x = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(x);
         x = x.hasAny(VAR_QUERY) ? VariableTransform.queryToDepVar.apply(x) : x;
-        if (x instanceof Bool) return Bool.Null;
+        if (x instanceof theBool) return theBool.Null;
         return Image.imageNormalize(x);
     }
 

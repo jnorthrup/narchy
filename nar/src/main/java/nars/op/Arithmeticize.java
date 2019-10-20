@@ -17,8 +17,8 @@ import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.anon.Anon;
 import nars.term.atom.Atom;
-import nars.term.atom.Bool;
-import nars.term.atom.Int;
+import nars.term.atom.theBool;
+import nars.term.atom.theInt;
 import nars.term.util.transform.MapSubst;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
@@ -28,13 +28,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import static nars.Op.CONJ;
 import static nars.Op.INT;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
@@ -151,8 +150,8 @@ public enum Arithmeticize {
 
         var ints = new IntHashSet(4);
         x.recurseTerms(t -> t.hasAny(Op.INT), t -> {
-            if (t instanceof Int)
-                ints.add(((Int) t).i);
+            if (t instanceof theInt)
+                ints.add(((theInt) t).i);
             return true;
         }, null);
 
@@ -165,7 +164,7 @@ public enum Arithmeticize {
                     Roulette.selectRoulette(mm.length, c -> mm[c].score, random)
                 ].apply(x, anon);
 
-        if (y == null || y instanceof Bool || y.volume() > volMax) return null;
+        if (y == null || y instanceof theBool || y.volume() > volMax) return null;
 
 //        Term y = IMPL.the(equality, eternal ? DTERNAL : 0, yy);
 //        if (y.op()!=IMPL) return null;
@@ -222,7 +221,7 @@ public enum Arithmeticize {
                 if (a == -b) {
 
                     maybe(eqMods, a).add(pair(
-                            Int.the(b), v -> $.func(MathFunc.mul, v, Int.NEG_ONE)
+                            theInt.the(b), v -> $.func(MathFunc.mul, v, theInt.NEG_ONE)
                     ));
 
 
@@ -231,7 +230,7 @@ public enum Arithmeticize {
 
 
                         maybe(eqMods, a).add(pair(
-                                Int.the(b), v -> $.func(MathFunc.mul, v, $.the(b / a))
+                                theInt.the(b), v -> $.func(MathFunc.mul, v, $.the(b / a))
                         ));
                     }
 
@@ -241,7 +240,7 @@ public enum Arithmeticize {
 //                    ));
                     var AMinB = a - b;
                     maybe(eqMods, b).add(pair(
-                            Int.the(a), v -> $.func(MathFunc.add, v, $.the(AMinB))
+                            theInt.the(a), v -> $.func(MathFunc.add, v, $.the(AMinB))
                     ));
 
                 }
@@ -296,7 +295,7 @@ public enum Arithmeticize {
         public Term apply(Term x, @Nullable Anon anon) {
 
 
-            Term baseTerm = Int.the(base);
+            Term baseTerm = theInt.the(base);
             if (anon != null)
                 baseTerm = anon.put(baseTerm);
 
@@ -356,9 +355,9 @@ public enum Arithmeticize {
                 cmp = cmpABUnnormalized;
             }
 
-            var xx = x.transform(new MapSubst.MapSubstN(Map.of(Int.the(a), A, Int.the(b), B), INT.bit));
+            var xx = x.transform(new MapSubst.MapSubstN(Map.of(theInt.the(a), A, theInt.the(b), B), INT.bit));
 
-            return (xx instanceof Bool) ? null : CONJ.the(xx, cmp);
+            return (xx instanceof theBool) ? null : CONJ.the(xx, cmp);
         }
     }
 

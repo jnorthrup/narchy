@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Comparator;
 import java.util.List;
 
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 
 public enum SetFunc {
     ;

@@ -18,7 +18,7 @@ import nars.term.util.transform.TermTransform;
 import java.util.*;
 import java.util.function.Predicate;
 
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 
 /**
  * term combination iterator

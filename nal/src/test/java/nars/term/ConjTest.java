@@ -6,7 +6,7 @@ import nars.$;
 import nars.Narsese;
 import nars.Op;
 import nars.io.IO;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.util.TermException;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
@@ -26,7 +26,7 @@ import java.util.Random;
 import static nars.$.*;
 import static nars.Op.CONJ;
 import static nars.term.ConjTest2.*;
-import static nars.term.atom.Bool.*;
+import static nars.term.atom.theBool.*;
 import static nars.term.util.TermTest.*;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -379,14 +379,14 @@ class ConjTest {
     @Test
     void testCommutizeRepeatingImpl() {
 
-        assertEquals(Bool.True,
+        assertEquals(theBool.True,
                 ConjTest2.$$c("(a ==>+1 a)").dt(DTERNAL));
-        assertEquals(Bool.False,
+        assertEquals(theBool.False,
                 ConjTest2.$$c("(--a ==>+1 a)").dt(DTERNAL));
 
-        assertEquals(Bool.True,
+        assertEquals(theBool.True,
                 ConjTest2.$$c("(a ==>+1 a)").dt(0));
-        assertEquals(Bool.False,
+        assertEquals(theBool.False,
                 ConjTest2.$$c("(--a ==>+1 a)").dt(0));
 
 
@@ -892,7 +892,7 @@ class ConjTest {
                                 pair(3L, $.$("c")),
                                 pair(4L, $.$("d1")),
                                 pair(4L, $.$("d2")),
-                                pair(5L, Bool.True /* ignored */)
+                                pair(5L, theBool.True /* ignored */)
                         })).toString());
     }
     @Test
@@ -900,8 +900,8 @@ class ConjTest {
 
 
         assertEquals(False, $.$("(x && --x)"));
-        assertEquals(Bool.True, $.$("--(x && --x)"));
-        assertEquals(Bool.True, $.$("(||, x, --x)"));
+        assertEquals(theBool.True, $.$("--(x && --x)"));
+        assertEquals(theBool.True, $.$("(||, x, --x)"));
 
         assertEquals("y", $.$("(y && --(&&,x,--x))").toString());
     }
@@ -909,7 +909,7 @@ class ConjTest {
     @Test
     void testTrueFalseInXternal() {
         for (int i : new int[]{XTERNAL, 0, DTERNAL}) {
-            assertEquals("x", CONJ.the(i, $.the("x"), Bool.True).toString());
+            assertEquals("x", CONJ.the(i, $.the("x"), theBool.True).toString());
             assertEquals(False, CONJ.the(i, $.the("x"), False));
             assertThrows(Throwable.class, ()-> CONJ.the(i, $.the("x"), Null));
         }
@@ -959,9 +959,9 @@ class ConjTest {
     void testCoNegatedDisjunction() {
         assertEq(True, Conj.diffAll($$("((--,left) &&+120 (--,left))"), $$("--left")));
 
-        assertEq(Bool.True, "(||,x,a:b,(--,a:b))");
+        assertEq(theBool.True, "(||,x,a:b,(--,a:b))");
 
-        assertEq(Bool.True, "(||,x,y,a:b,(--,a:b))");
+        assertEq(theBool.True, "(||,x,y,a:b,(--,a:b))");
 
         assertEq("left", "(||,((--,left) &&+120 (--,left)),left)");
         assertEq("((y&&left)==>x)", "((&&,(||,((--,left) &&+120 (--,left)),left),y) ==> (x&&y))");
@@ -1318,21 +1318,21 @@ class ConjTest {
     @Test
     void testEmptyConjResultTerm() {
         ConjBuilder c = new ConjTree();
-        assertEquals(Bool.True, c.term());
+        assertEquals(theBool.True, c.term());
     }
 
     @Test
     void testEmptyConjTrueEternal() {
         ConjBuilder c = new ConjTree();
-        c.add(ETERNAL, Bool.True);
-        assertEquals(Bool.True, c.term());
+        c.add(ETERNAL, theBool.True);
+        assertEquals(theBool.True, c.term());
     }
 
     @Test
     void testEmptyConjTrueTemporal() {
         ConjBuilder c = new ConjTree();
-        c.add(0, Bool.True);
-        assertEquals(Bool.True, c.term());
+        c.add(0, theBool.True);
+        assertEquals(theBool.True, c.term());
     }
 
     @Test

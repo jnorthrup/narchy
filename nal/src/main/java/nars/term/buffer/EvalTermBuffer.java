@@ -8,8 +8,8 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
-import nars.term.atom.Int;
+import nars.term.atom.theBool;
+import nars.term.atom.theInt;
 import nars.term.compound.LightCompound;
 import nars.term.util.transform.InlineFunctor;
 import nars.term.util.transform.InstantFunctor;
@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static nars.Op.INH;
 import static nars.Op.PROD;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 
 public class EvalTermBuffer extends TermBuffer {
 
@@ -45,7 +45,7 @@ public class EvalTermBuffer extends TermBuffer {
 
                 var y = e.eval();
                 //recurse
-                return y instanceof Bool ? y : apply(y);
+                return y instanceof theBool ? y : apply(y);
             } else
                 return super.applyPosCompound(x);
         }
@@ -76,7 +76,7 @@ public class EvalTermBuffer extends TermBuffer {
         private transient Term value = null;
 
         DeferredEval(InlineFunctor f, Subterms args) {
-            super(PROD, DeferredEvalPrefix , Int.the(serial.incrementAndGet()));
+            super(PROD, DeferredEvalPrefix , theInt.the(serial.incrementAndGet()));
             this.f = f;
             this.args = args;
         }

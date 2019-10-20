@@ -19,7 +19,7 @@ import nars.task.util.TaskList;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.util.Intermpolate;
 import nars.time.Tense;
 import nars.truth.MutableTruth;
@@ -28,7 +28,6 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.block.procedure.primitive.IntIntProcedure;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
@@ -798,7 +797,7 @@ public abstract class TruthProjection extends TaskList {
 					var eab = ea + eb;
 					var ab = Intermpolate.intermpolate(a, b, (float) (ea / eab), nar);
 					double diffA, diffB;
-					if (ab instanceof Bool ||
+					if (ab instanceof theBool ||
 						(diffA = dtDiff(ab, a)) >= 1 - Float.MIN_NORMAL ||
 						(diffB = dtDiff(ab, b)) >= 1 - Float.MIN_NORMAL) {
 

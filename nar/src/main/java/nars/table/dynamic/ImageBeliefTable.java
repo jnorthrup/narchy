@@ -5,14 +5,12 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.attention.What;
-import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.op.Remember;
-import nars.subterm.Subterms;
 import nars.task.proxy.SpecialTermTask;
 import nars.task.util.Answer;
 import nars.term.Term;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.util.Image;
 import nars.term.util.TermException;
 import nars.term.util.TermTransformException;
@@ -106,7 +104,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
         try {
             var xx = x.term();
             var y = transformTermFromTemplate(xx);
-            if (y instanceof Bool)
+            if (y instanceof theBool)
                 throw new TermException("invalid recursive image", xx);
 
             return SpecialTermTask.the(x, y, false);

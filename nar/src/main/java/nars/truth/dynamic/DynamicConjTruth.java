@@ -9,12 +9,10 @@ import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Variable;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjList;
 import nars.term.util.conj.ConjSpans;
-import nars.truth.proj.TruthProjection;
-import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -292,7 +290,7 @@ public enum DynamicConjTruth {
                     if (p !=null) {
                         var dt = (int) (vWhen - c.when(pair));
                         var paired = CONJ.the(dt, p, v);
-                        if (!(paired instanceof Bool)) {
+                        if (!(paired instanceof theBool)) {
                             c.setFast(pair, paired);
                             continue nextEvent;
                         }

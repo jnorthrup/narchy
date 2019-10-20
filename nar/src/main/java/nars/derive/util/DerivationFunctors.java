@@ -2,12 +2,10 @@ package nars.derive.util;
 
 import nars.Builtin;
 import nars.NAL;
-import nars.NAR;
 import nars.derive.Derivation;
 import nars.op.Cmp;
 import nars.op.Equal;
 import nars.op.SetFunc;
-import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Neg;
@@ -25,7 +23,7 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Map;
 
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 import static nars.term.util.conj.ConjMatch.CONJ_WITHOUT_UNIFY;
 
 public enum DerivationFunctors {

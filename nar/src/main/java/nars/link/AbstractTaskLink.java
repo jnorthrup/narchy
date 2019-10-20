@@ -5,13 +5,12 @@ import jcog.Util;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
-import nars.Op;
 import nars.Task;
 import nars.control.Why;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,9 +50,9 @@ public abstract class AbstractTaskLink implements TaskLink {
 			hash(source, target)
 		);
 
-		if (source instanceof Bool)
+		if (source instanceof theBool)
 			throw new TermException("source bool", source);
-		if (target instanceof Bool)
+		if (target instanceof theBool)
 			throw new TermException("target bool", target);
 
 		var so = source.op();

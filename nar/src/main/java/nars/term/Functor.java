@@ -12,7 +12,7 @@ import nars.subterm.Subterms;
 import nars.term.atom.AbstractAtomic;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.control.AbstractPred;
 import nars.term.functor.AbstractInlineFunctor;
 import nars.term.functor.AbstractInlineFunctor1;
@@ -70,7 +70,7 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
     }
 
     public static Atomic func(Term x) {
-        return isFunc(x) ? (Atomic) x.sub(1) : Bool.Null;
+        return isFunc(x) ? (Atomic) x.sub(1) : theBool.Null;
     }
 
     public static boolean isFunc(Term x) {
@@ -105,14 +105,14 @@ public abstract class Functor extends AbstractAtomic implements BiFunction<Evalu
 
     private static LambdaFunctor f(Atom termAtom, int arityRequired, Function<Subterms, Term> ff) {
         return f(termAtom, tt ->
-                (tt.subs() == arityRequired) ? ff.apply(tt) : Bool.Null
+                (tt.subs() == arityRequired) ? ff.apply(tt) : theBool.Null
         );
     }
 
     private static LambdaFunctor f(Atom termAtom, int minArity, int maxArity, Function<Subterms, Term> ff) {
         return f(termAtom, (tt) -> {
             var n = tt.subs();
-            return ((n >= minArity) && ( n<=maxArity)) ? ff.apply(tt) : Bool.Null;
+            return ((n >= minArity) && ( n<=maxArity)) ? ff.apply(tt) : theBool.Null;
         });
     }
 

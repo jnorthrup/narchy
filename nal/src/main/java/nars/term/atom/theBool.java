@@ -18,12 +18,12 @@ import static nars.Op.BOOL;
  *  Implements "Unknown-state logic" (https://en.wikipedia.org/wiki/Ternary_computer)
  */
 @Skill("Ternary_computer")
-public abstract class Bool extends Keyword {
+public abstract class theBool extends Keyword {
 
     /**
      * absolutely nonsense
      */
-    public static final Bool Null = new Bool(String.valueOf(Op.NullSym), ((byte)-1) ) {
+    public static final theBool Null = new theBool(String.valueOf(Op.NullSym), ((byte)-1) ) {
 
         @Override
         public Term neg() {
@@ -39,7 +39,7 @@ public abstract class Bool extends Keyword {
     /**
      * tautological absolute false
      */
-    public static final Bool False = new Bool("false", (byte)0) {
+    public static final theBool False = new theBool("false", (byte)0) {
 
         @Override
         public Term neg() {
@@ -60,7 +60,7 @@ public abstract class Bool extends Keyword {
     /**
      * tautological absolute true
      */
-    public static final Bool True = new Bool("true", (byte)1) {
+    public static final theBool True = new theBool("true", (byte)1) {
 
         @Override
         public Term neg() {
@@ -78,7 +78,7 @@ public abstract class Bool extends Keyword {
     public static final Term[] False_Array = { False };
 
 
-    private Bool(String label, byte code) {
+    private theBool(String label, byte code) {
         super(BOOL, label, new byte[] { BOOL.id, code });
     }
 

@@ -7,7 +7,7 @@ import java.util.TreeSet;
 import java.util.function.Supplier;
 
 import static nars.$.$$;
-import static nars.term.atom.Bool.False;
+import static nars.term.atom.theBool.False;
 import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;

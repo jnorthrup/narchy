@@ -10,7 +10,7 @@ import nars.term.Neg;
 import nars.term.Term;
 import nars.term.anon.Intrin;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.atom.Interval;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
@@ -53,8 +53,8 @@ public abstract class TermBuilder implements TermConstructor {
 
         var hasEllipsis = false;
         for (var x : t) {
-            if (x == Bool.Null)
-                return Bool.Null; //try to detect earlier
+            if (x == theBool.Null)
+                return theBool.Null; //try to detect earlier
             if (x instanceof Ellipsislike)
                 hasEllipsis = true;
         }
@@ -116,7 +116,7 @@ public abstract class TermBuilder implements TermConstructor {
 
         switch (u.length) {
             case 0:
-                return Bool.True;
+                return theBool.True;
 
             case 1:
                 var only = u[0];
@@ -224,7 +224,7 @@ public abstract class TermBuilder implements TermConstructor {
 
     public static Term neg(Term u) {
 
-        if (u instanceof Neg || u instanceof Bool)
+        if (u instanceof Neg || u instanceof theBool)
             return u.neg();
         if (u instanceof Fragment || u instanceof Img)
             throw new UnsupportedOperationException();

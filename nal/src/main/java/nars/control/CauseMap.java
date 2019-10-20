@@ -4,7 +4,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.memoize.HijackMemoize;
 import nars.term.Term;
-import nars.term.atom.Int;
+import nars.term.atom.theInt;
 import org.eclipse.collections.api.set.primitive.MutableIntSet;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 
@@ -32,9 +32,9 @@ public class CauseMap<X> {
     protected Term causeTerm(short... c) {
         switch (c.length) {
             case 0: throw new NullPointerException();
-            case 1: return Int.the(c[0]);
+            case 1: return theInt.the(c[0]);
             default:
-                return CONJ.the(Util.map(0,c.length, Term[]::new, (i)->Int.the(c[i])));
+                return CONJ.the(Util.map(0,c.length, Term[]::new, (i)-> theInt.the(c[i])));
         }
     }
 

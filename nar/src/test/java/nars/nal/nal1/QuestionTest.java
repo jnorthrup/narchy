@@ -2,7 +2,7 @@ package nars.nal.nal1;
 
 import nars.*;
 import nars.term.Term;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.test.TestNAR;
 import nars.test.impl.DeductiveMeshTest;
 import org.junit.jupiter.api.Disabled;
@@ -153,7 +153,7 @@ class QuestionTest {
         n.add(f("odd", a -> {
             if (a.subs() == 1 && a.sub(0).op() == Op.ATOM) {
                 try {
-                    return $.intValue(a.sub(0)) % 2 == 0 ? Bool.False : Bool.True;
+                    return $.intValue(a.sub(0)) % 2 == 0 ? theBool.False : theBool.True;
                 } catch (NumberFormatException ignored) {
 
                 }

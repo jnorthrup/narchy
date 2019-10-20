@@ -3,17 +3,15 @@ package nars.control;
 import jcog.util.ArrayUtil;
 import nars.$;
 import nars.NAL;
-import nars.subterm.Subterms;
 import nars.term.LazyTerm;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Terms;
-import nars.term.atom.Int;
+import nars.term.atom.theInt;
 import org.eclipse.collections.api.block.procedure.primitive.ShortProcedure;
 import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.IntConsumer;
-import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
@@ -24,7 +22,7 @@ import static nars.Op.SETe;
 public enum Why { ;
 
 	public static Term why(short why) {
-		return Int.the(why);
+		return theInt.the(why);
 	}
 
 	static Term why(short[] why, int capacity) {
@@ -184,7 +182,7 @@ public enum Why { ;
 		if (why == null)
 			return;
 
-		if (why instanceof Int) {
+		if (why instanceof theInt) {
 			each.value(causes, s(why), pri);
 		} else {
 			//split
@@ -201,7 +199,7 @@ public enum Why { ;
 
 
 	public static void forEachUnique(Term why, ShortProcedure s) {
-		if (why instanceof Int) {
+		if (why instanceof theInt) {
 			//optimized case
 			s.value(s(why));
 		} else {
@@ -221,13 +219,13 @@ public enum Why { ;
 		if (whyA==null)
 			return;
 		whyA.recurseTermsOrdered(x -> true, (e) -> {
-			if (e instanceof Int)
+			if (e instanceof theInt)
 				s.add(s(e));
 			return true;
 		}, null);
 	}
 	private static void toSet(Term w, IntConsumer each) {
-		if (w instanceof Int) {
+		if (w instanceof theInt) {
 			each.accept(s(w));
 		} else {
 			var ww = w.subterms();
@@ -239,7 +237,7 @@ public enum Why { ;
 	}
 
 	private static short s(Term why) {
-		return (short)(((Int)why).i);
+		return (short)(((theInt)why).i);
 	}
 
 	private static final class MyLazyTerm extends LazyTerm {

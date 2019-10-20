@@ -5,7 +5,7 @@ import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -13,7 +13,7 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
-import static nars.term.atom.Bool.True;
+import static nars.term.atom.theBool.True;
 import static nars.time.Tense.*;
 
 public interface ConjBuilder {
@@ -30,7 +30,7 @@ public interface ConjBuilder {
 
             case XTERNAL:
                 var v = ConjBuilder.preSorted(u);
-                if (v.length == 1 && !(v[0] instanceof Bool)) {
+                if (v.length == 1 && !(v[0] instanceof theBool)) {
                     if (/*!(v[0] instanceof Ellipsislike) || */(u.length > 1 && u[0].equals(u[1])))
                         return new Term[]{v[0], v[0]};
                 }
@@ -44,7 +44,7 @@ public interface ConjBuilder {
     static Term[] preSorted(Term[] u) {
 
         for (var t : u) {
-            if (t == Bool.Null)
+            if (t == theBool.Null)
                 throw new NullPointerException();
                 //return Bool.Null_Array;
             if (t == null)
@@ -54,9 +54,9 @@ public interface ConjBuilder {
         var trues = 0;
         for (var t : u) {
 
-            if (t == Bool.False)
-                return Bool.False_Array;
-            if (t == Bool.True)
+            if (t == theBool.False)
+                return theBool.False_Array;
+            if (t == theBool.True)
                 trues++;
         }
         if (trues > 0) {
@@ -69,7 +69,7 @@ public interface ConjBuilder {
                 case 1: {
 
                     for (var uu : u) {
-                        if (uu != Bool.True) {
+                        if (uu != theBool.True) {
                             //assert (!(uu instanceof Ellipsislike)) : "if this happens, TODO";
                             return new Term[]{uu};
                         }
@@ -81,7 +81,7 @@ public interface ConjBuilder {
                     var j = 0;
                     for (var i = 0; j < y.length; i++) {
                         var uu = u[i];
-                        if (uu != Bool.True)
+                        if (uu != theBool.True)
                             y[j++] = uu;
                     }
                     u = y;

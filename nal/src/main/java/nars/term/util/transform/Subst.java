@@ -5,7 +5,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 
 
 @FunctionalInterface

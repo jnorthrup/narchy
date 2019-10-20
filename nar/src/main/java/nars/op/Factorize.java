@@ -7,13 +7,11 @@ import nars.$;
 import nars.Op;
 import nars.attention.What;
 import nars.subterm.Subterms;
-import nars.subterm.TermList;
 import nars.term.Variable;
 import nars.term.*;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.util.cache.Intermed;
 import org.eclipse.collections.api.RichIterable;
-import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.set.primitive.ByteSet;
 import org.eclipse.collections.api.tuple.Pair;
@@ -23,12 +21,11 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
-import java.util.ListIterator;
 import java.util.Set;
 import java.util.function.Function;
 
 import static nars.Op.*;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 import static nars.time.Tense.DTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -162,7 +159,7 @@ public enum Factorize {
                             if (pp[0] == null)
                                 pp[0] = UnifiedSetMultimap.newMultimap();
                             var v1 = shadow(s, path, f);
-                            if (!(v1 instanceof Bool))
+                            if (!(v1 instanceof theBool))
                                 pp[0].put(v1, pair(what, (byte)ii));
                         }
                     }
@@ -193,7 +190,7 @@ public enum Factorize {
             var y = ob.getOne();
             return y.op() == CONJ && y.dt() == DTERNAL ? SETe.the(y.subterms()) : y; //flatten
         }));
-        if (s instanceof Bool)
+        if (s instanceof theBool)
             return null;
         var m = $.func(Member.member, f, s);
         if (m == Null)

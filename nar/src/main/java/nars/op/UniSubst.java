@@ -15,11 +15,9 @@ import nars.term.util.TermException;
 import nars.term.util.transform.InlineFunctor;
 import nars.unify.UnifyTransform;
 
-import java.util.Map;
-
 import static nars.Op.VAR_DEP;
 import static nars.Op.VAR_INDEP;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 
 /**
  * substituteIfUnifies....(target, varFrom, varTo)

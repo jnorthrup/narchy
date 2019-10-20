@@ -3,8 +3,8 @@ package nars.term;
 import nars.$;
 import nars.Narsese;
 import nars.subterm.util.TermMetadata;
-import nars.term.atom.Bool;
-import nars.term.atom.Int;
+import nars.term.atom.theBool;
+import nars.term.atom.theInt;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.LighterCompound;
 import nars.term.util.Image;
@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.INH;
-import static nars.term.atom.Bool.Null;
-import static nars.term.atom.Bool.True;
+import static nars.term.atom.theBool.Null;
+import static nars.term.atom.theBool.True;
 import static nars.term.util.Image.imageNormalize;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
@@ -103,16 +103,16 @@ class ImageTest {
         Term xx = $$(x);
 
         assertEq("(0-->(bitmap,/,1,/))",
-                Image.imageExt(xx, Int.the(0)));
+                Image.imageExt(xx, theInt.the(0)));
 
         assertEq($$("(0-->(bitmap,/,1,/))"),
-                Image.imageExt(xx, Int.the(0)));
+                Image.imageExt(xx, theInt.the(0)));
 
         assertEq("(1-->(bitmap,0,/,0))",
-                Image.imageExt(xx, Int.the(1)));
+                Image.imageExt(xx, theInt.the(1)));
 
-        assertEq(xx, imageNormalize(Image.imageExt(xx, Int.the(1))));
-        assertEq(xx, imageNormalize(Image.imageExt(xx, Int.the(0))));
+        assertEq(xx, imageNormalize(Image.imageExt(xx, theInt.the(1))));
+        assertEq(xx, imageNormalize(Image.imageExt(xx, theInt.the(0))));
 
     }
 
@@ -237,7 +237,7 @@ class ImageTest {
         Term x0 = $$("(_ANIMAL-->((cat,ANIMAL),cat,/))");
         assertEq("((cat,_ANIMAL)-->(cat,ANIMAL))", imageNormalize(x0)); //to see what would happen
 
-        assertEq(Bool.True, Image.normalize(new LighterCompound(INH, $$("ANIMAL"), $$("((cat,ANIMAL),cat,/)")), true, true));
+        assertEq(theBool.True, Image.normalize(new LighterCompound(INH, $$("ANIMAL"), $$("((cat,ANIMAL),cat,/)")), true, true));
 
         Term x = $$("(ANIMAL-->((cat,ANIMAL),cat,/))");
         assertEquals(True, x);

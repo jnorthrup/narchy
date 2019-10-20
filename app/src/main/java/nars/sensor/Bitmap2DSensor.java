@@ -6,12 +6,11 @@ import nars.$;
 import nars.NAR;
 import nars.concept.TaskConcept;
 import nars.game.Game;
-import nars.game.action.ActionSignal;
 import nars.game.sensor.ComponentSignal;
 import nars.game.sensor.Signal;
 import nars.game.sensor.VectorSensor;
 import nars.term.Term;
-import nars.term.atom.Int;
+import nars.term.atom.theInt;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
@@ -46,8 +45,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     public Bitmap2DSensor(NAR n, float defaultFreq, P src, @Nullable IntIntToObjectFunction<Term> pixelTerm) {
         super(pixelTerm.apply(0,1)
                     .replace(Map.of(
-                        Int.the(0), $.func("range", Int.the(0), Int.the(src.width()-1)),
-                        Int.the(1), $.func("range", Int.the(0), Int.the(src.height()-1)))
+                        theInt.the(0), $.func("range", theInt.the(0), theInt.the(src.width()-1)),
+                        theInt.the(1), $.func("range", theInt.the(0), theInt.the(src.height()-1)))
         ), n);
         this.width = src.width();
         this.height = src.height();

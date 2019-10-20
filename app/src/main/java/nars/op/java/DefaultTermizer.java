@@ -9,7 +9,7 @@ import nars.$;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
-import nars.term.atom.Int;
+import nars.term.atom.theInt;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
@@ -98,8 +98,8 @@ public class DefaultTermizer implements Termizer {
     public @Nullable Object object(Term t) {
 
         if (t == NULL) return null;
-        if (t instanceof Int && t.op() == INT)
-            return ((Int) t).i;
+        if (t instanceof theInt && t.op() == INT)
+            return ((theInt) t).i;
 
         var x = termToObj.get(t);
         if (x == null)
@@ -277,7 +277,7 @@ public class DefaultTermizer implements Termizer {
             return (Boolean) o ? TRUE_TERM : FALSE_TERM;
         } else if (o instanceof Number) {
             if (o instanceof Byte || o instanceof Short || o instanceof Integer || (o instanceof Long && Math.abs((Long) o) < Integer.MAX_VALUE - 1)) {
-                return Int.the(((Number) o).intValue());
+                return theInt.the(((Number) o).intValue());
             } else if (o instanceof Float || o instanceof Double) {
                 return $.the(((Number) o).doubleValue());
             } else if (o instanceof Long /* beyond an Int's capacity */) {
@@ -311,7 +311,7 @@ public class DefaultTermizer implements Termizer {
         if (o instanceof Term)
             return ((Term) o);
         if (o instanceof Integer) {
-            return Int.the((Integer) o);
+            return theInt.the((Integer) o);
         }
 
 

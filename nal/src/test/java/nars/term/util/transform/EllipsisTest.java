@@ -9,7 +9,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.var.ellipsis.EllipsisOneOrMore;
 import nars.term.var.ellipsis.EllipsisZeroOrMore;
 import nars.term.var.ellipsis.Fragment;
@@ -49,7 +49,7 @@ public class EllipsisTest {
 
             Term y = /*index.patternify*/(getMatchable(arity));
 
-            assertTrue(!(y instanceof Bool));
+            assertTrue(!(y instanceof theBool));
             assertNotNull(y);
             assertTrue(y.isNormalized());
             

@@ -6,10 +6,10 @@ import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.term.atom.Bool.True;
+import static nars.term.atom.theBool.True;
 
 /** Functor template for a binary functor with bidirectional parameter cases */
 public abstract class BinaryBidiFunctor extends Functor implements The {
@@ -31,7 +31,7 @@ public abstract class BinaryBidiFunctor extends Functor implements The {
             case 3:
                 return apply3(e, terms.sub(0), terms.sub(1), terms.sub(2));
             default:
-                return Bool.Null;
+                return theBool.Null;
         }
     }
 
@@ -51,7 +51,7 @@ public abstract class BinaryBidiFunctor extends Functor implements The {
             } else {
                 var XY = compute(e, x, y);
                 if (XY!=null) {
-                    return e.is(xy, XY) ? null : Bool.Null;
+                    return e.is(xy, XY) ? null : theBool.Null;
                 } else {
                     return null;
                 }
@@ -70,7 +70,7 @@ public abstract class BinaryBidiFunctor extends Functor implements The {
 
 				//true, keep
 				//false?
-				return XY.equals(xy) ? True : Bool.Null;
+				return XY.equals(xy) ? True : theBool.Null;
             } else {
                 return computeFromXY(e, x, y, xy);
             }

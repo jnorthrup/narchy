@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 
 public final class CommonVariable extends UnnormalizedVariable {
 

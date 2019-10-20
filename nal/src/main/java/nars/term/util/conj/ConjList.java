@@ -16,7 +16,6 @@ import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
@@ -26,7 +25,7 @@ import java.util.stream.IntStream;
 
 import static jcog.util.ArrayUtil.EMPTY_INT_ARRAY;
 import static nars.Op.CONJ;
-import static nars.term.atom.Bool.*;
+import static nars.term.atom.theBool.*;
 import static nars.time.Tense.*;
 
 /**

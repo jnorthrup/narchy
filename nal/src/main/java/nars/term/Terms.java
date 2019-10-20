@@ -1,7 +1,6 @@
 package nars.term;
 
 import jcog.bloom.StableBloomFilter;
-import jcog.data.bit.MetalBitSet;
 import jcog.data.set.MetalTreeSet;
 import jcog.sort.QuickSort;
 import jcog.util.ArrayUtil;
@@ -15,8 +14,6 @@ import nars.term.compound.PatternCompound;
 import nars.term.util.TermHasher;
 import nars.term.util.conj.Conj;
 import nars.term.var.ellipsis.Ellipsislike;
-import org.eclipse.collections.api.LazyIterable;
-import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +27,7 @@ import java.util.stream.IntStream;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 
 /**
  * Static utility class for static methods related to Terms

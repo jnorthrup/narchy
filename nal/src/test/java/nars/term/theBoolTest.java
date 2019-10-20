@@ -11,14 +11,14 @@ import org.junit.jupiter.api.Test;
 import static nars.$.or;
 import static nars.$.*;
 import static nars.Op.*;
-import static nars.term.atom.Bool.*;
+import static nars.term.atom.theBool.*;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Bool and Tautology tests
  */
-public class BoolTest {
+public class theBoolTest {
 
     private static final Term x = $$("x");
     private static final Term y = $$("y");

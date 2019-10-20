@@ -14,25 +14,25 @@ import static nars.Op.INT;
 /**
  * 32-bit signed integer
  */
-public final class Int extends Atomic implements The {
+public final class theInt extends Atomic implements The {
 
 	static final int INT_CACHE_SIZE = ANON_INT_MAX * 8;
-	static final Int[] pos = new Int[INT_CACHE_SIZE];
-	private static final Int[] neg = new Int[INT_CACHE_SIZE];
+	static final theInt[] pos = new theInt[INT_CACHE_SIZE];
+	private static final theInt[] neg = new theInt[INT_CACHE_SIZE];
 
 	static {
 		for (var i = 0; i < pos.length; i++) {
-			pos[i] = new Int(i);
+			pos[i] = new theInt(i);
 		}
 		for (var i = 1; i < neg.length; i++) {
-			neg[i] = new Int(-i);
+			neg[i] = new theInt(-i);
 		}
 	}
 
-	public static final Term ZERO = Int.the(0);
-	public static final Term ONE = Int.the(1);
-	public static final Term TWO = Int.the(2);
-	public static final Term NEG_ONE = Int.the(-1);
+	public static final Term ZERO = theInt.the(0);
+	public static final Term ONE = theInt.the(1);
+	public static final Term TWO = theInt.the(2);
+	public static final Term NEG_ONE = theInt.the(-1);
 
 	/*@Stable*/
 	private final byte[] bytesCached;
@@ -43,7 +43,7 @@ public final class Int extends Atomic implements The {
 //    }
 	public final int i;
 
-	private Int(int i) {
+	private theInt(int i) {
 		this.i = i;
 
 		var intLen = IntCoding.variableByteLengthOfZigZagInt(i); //1 to 4 bytes
@@ -64,11 +64,11 @@ public final class Int extends Atomic implements The {
         return 0;
     }
 
-    public static Int the(int i) {
+    public static theInt the(int i) {
 		if (i >= 0 && i < pos.length) {
 			return pos[i];
 		} else {
-			return i < 0 && i > -neg.length ? neg[-i] : new Int(i);
+			return i < 0 && i > -neg.length ? neg[-i] : new theInt(i);
 		}
 	}
 
@@ -100,7 +100,7 @@ public final class Int extends Atomic implements The {
 
 	@Override
 	public boolean equals(Object obj) {
-		return (this == obj) || ((obj instanceof Int) && (i == ((Int) obj).i));
+		return (this == obj) || ((obj instanceof theInt) && (i == ((theInt) obj).i));
 	}
 
 	@Override

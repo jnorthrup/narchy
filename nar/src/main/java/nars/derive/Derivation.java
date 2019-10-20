@@ -8,7 +8,6 @@ import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.attention.What;
 import nars.control.Caused;
-import nars.derive.action.How;
 import nars.derive.action.PatternHow;
 import nars.derive.action.op.Occurrify;
 import nars.derive.action.op.Taskify;
@@ -322,7 +321,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
             public boolean intrin(Atomic x) {
                 return
                     //erased types: intern these intrins for maximum premise key re-use
-                    !(x instanceof Int) && !(x instanceof AtomChar) && super.intrin(x);
+                    !(x instanceof theInt) && !(x instanceof AtomChar) && super.intrin(x);
             }
 
 //            @Override
@@ -338,7 +337,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         TermTransformException e;
         if (y == null)
             e = new TermTransformException(x, null, "invalid Derivation Anon: null");
-        else if (y instanceof Bool)
+        else if (y instanceof theBool)
             e = new TermTransformException(x, y, "invalid Derivation Anon: Bool");
         else if (y instanceof Neg)
             e = new TermTransformException(x, y, "invalid Derivation Anon: Neg");

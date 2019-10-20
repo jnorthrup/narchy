@@ -2,14 +2,13 @@ package nars.term;
 
 import jcog.Paper;
 import jcog.Skill;
-import nars.Op;
 import nars.term.var.CommonVariable;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.unify.Unify;
 import nars.unify.UnifyFirst;
 
 import static nars.Op.VAR_PATTERN;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 
 /**
  * similar to a plain atom, but applies altered operating semantics according to the specific
@@ -18,20 +17,6 @@ import static nars.term.atom.Bool.Null;
  * implemented by both raw variable terms and variable concepts
  **/
 public interface Variable extends /* Atomic - but all implementations are subclasses of Atomic through other impl */ Term, UnifyFirst {
-
-//    private static boolean neggable(Term t) {
-//        return !(t instanceof Ellipsislike) && (t.op() != FRAG);
-//    }
-
-//    private static boolean unifyConst(Unify u, Term x, Term y) {
-//        if (u.varDepth < NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
-//            u.varDepth++;
-//            boolean result = x.unify(y, u);
-//            u.varDepth--;
-//            return result;
-//        } else
-//            return false; //recursion limit exceeded
-//    }
 
     private static boolean unifyVar(Unify u, Term x, Term y) {
         if (x instanceof Variable) {

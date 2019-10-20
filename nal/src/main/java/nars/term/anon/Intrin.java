@@ -7,7 +7,7 @@ import nars.Op;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.atom.Int;
+import nars.term.atom.theInt;
 import nars.term.var.NormalizedVariable;
 
 import static nars.Op.ImgExt;
@@ -60,9 +60,9 @@ import static nars.Op.ImgInt;
             case VARPATTERNs:
                 return NormalizedVariable.the(Op.VAR_PATTERN.id, num);
             case INT_POSs:
-                return Int.the(num);
+                return theInt.the(num);
             case INT_NEGs:
-                return Int.the(-num);
+                return theInt.the(-num);
             case CHARs:
                 return Atomic.the((char)num);
             default:

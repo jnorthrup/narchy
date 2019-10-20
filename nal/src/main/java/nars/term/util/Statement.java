@@ -3,10 +3,9 @@ package nars.term.util;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
-import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.*;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjList;
@@ -16,7 +15,7 @@ import nars.time.Tense;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.term.atom.Bool.*;
+import static nars.term.atom.theBool.*;
 import static nars.time.Tense.*;
 
 /**
@@ -92,7 +91,7 @@ public enum Statement {
                 return Null;
         }
 
-        if (subject instanceof Bool || predicate instanceof Bool)
+        if (subject instanceof theBool || predicate instanceof theBool)
             return Null;
 
         var negate = false;
@@ -215,7 +214,7 @@ public enum Statement {
 
                         if (newPred != null && !predicate.equals(newPred)) {
 
-                            if (newPred instanceof Bool)
+                            if (newPred instanceof theBool)
                                 return newPred.negIf(negate); //collapse
 
 
@@ -327,7 +326,7 @@ public enum Statement {
 
         if (op == INH && (subject.hasAny(Op.IMG) || predicate.hasAny(Op.IMG))) {
             var inhCollapsed = Image.recursionFilter(subject, predicate, B);
-            if (inhCollapsed instanceof Bool)
+            if (inhCollapsed instanceof theBool)
                 return inhCollapsed;
         }
 

@@ -3,7 +3,6 @@ package nars.term.util;
 import jcog.Util;
 import jcog.pri.ScalarValue;
 import nars.NAL;
-import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
@@ -13,7 +12,7 @@ import nars.time.Tense;
 
 import static jcog.Util.assertUnitized;
 import static nars.Op.CONJ;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 

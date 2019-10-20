@@ -17,7 +17,6 @@ import nars.derive.cond.TaskBeliefTermsEqual;
 import nars.derive.util.DerivationFunctors;
 import nars.derive.util.PremiseTermAccessor;
 import nars.derive.util.PuncMap;
-import nars.subterm.Subterms;
 import nars.subterm.util.SubtermCondition;
 import nars.term.Variable;
 import nars.term.*;
@@ -32,13 +31,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static nars.Op.*;
 import static nars.derive.premise.PatternTermBuilder.patternify;
 import static nars.subterm.util.SubtermCondition.*;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 import static nars.term.control.AbstractTermMatchPred.cost;
 import static nars.unify.constraint.RelationConstraint.*;
 

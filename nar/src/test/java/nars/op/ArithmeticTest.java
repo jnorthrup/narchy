@@ -6,7 +6,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.term.Term;
-import nars.term.atom.Int;
+import nars.term.atom.theInt;
 import nars.term.util.TermTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Disabled;
@@ -18,7 +18,7 @@ import java.util.TreeSet;
 import java.util.function.Supplier;
 
 import static nars.$.$$;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -36,11 +36,11 @@ class ArithmeticTest {
 
     @Test
     void testAdd_2_const_pos_pos() {
-        assertEval(Int.the(2), "add(1,1)");
+        assertEval(theInt.the(2), "add(1,1)");
     }
     @Test
     void testAdd_2_const_pos_neg() {
-        assertEval(Int.the(1), "add(2,-1)");
+        assertEval(theInt.the(1), "add(2,-1)");
     }
 
     @Test void Add_1_const_1_var() {
@@ -67,7 +67,7 @@ class ArithmeticTest {
     }
     @Test
     void testMulIdentity() {
-        assertEval(Int.the(0), "mul(x,0)");
+        assertEval(theInt.the(0), "mul(x,0)");
         assertEval($$("x"), "mul(x,1)");
         assertEval($.varDep(1), "mul(1,#1)");
         assertEval($.varDep(1), "mul(#1,1)");

@@ -2,12 +2,10 @@ package nars.term.util.conj;
 
 import jcog.TODO;
 import jcog.WTF;
-import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
-import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.builder.TermBuilder;
@@ -20,8 +18,8 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
-import static nars.term.atom.Bool.Null;
-import static nars.term.atom.Bool.True;
+import static nars.term.atom.theBool.Null;
+import static nars.term.atom.theBool.True;
 import static nars.time.Tense.*;
 
 /**

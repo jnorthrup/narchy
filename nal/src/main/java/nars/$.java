@@ -15,8 +15,8 @@ import nars.term.*;
 import nars.term.anon.Intrin;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
-import nars.term.atom.Int;
+import nars.term.atom.theBool;
+import nars.term.atom.theInt;
 import nars.term.compound.LightCompound;
 import nars.term.control.LambdaPred;
 import nars.term.control.PREDICATE;
@@ -32,7 +32,6 @@ import org.apache.commons.math3.fraction.Fraction;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.block.function.primitive.CharToObjectFunction;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.net.URI;
@@ -116,7 +115,7 @@ public enum $ { ;
 
     public static Atomic the(char c) {
         if (Character.isDigit(c))
-            return Int.the(Character.digit(c, 10));
+            return theInt.the(Character.digit(c, 10));
 
         return Atomic.the(String.valueOf(c));
     }
@@ -245,7 +244,7 @@ public enum $ { ;
 
         if (t.length < 31) {
             var b = IntStream.range(0, t.length).filter(i -> t[i]).map(i -> 1 << i).reduce(0, (a, b1) -> a | b1);
-            return Int.the(b);
+            return theInt.the(b);
         } else {
             throw new TODO();
         }
@@ -371,7 +370,7 @@ public enum $ { ;
         var t = new Term[size];
         var k = 0;
         while (ii.hasNext())
-            t[k++] = Int.the(ii.next());
+            t[k++] = theInt.the(ii.next());
         return t;
     }
 
@@ -430,7 +429,7 @@ public enum $ { ;
     }
 
     public static Atomic the(int v) {
-        return Int.the(v);
+        return theInt.the(v);
     }
 
     public static MutableTruth tt(float f, float c) {
@@ -477,7 +476,7 @@ public enum $ { ;
      * use with caution
      */
     public static Term the(boolean b) {
-        return b ? Bool.True : Bool.False;
+        return b ? theBool.True : theBool.False;
     }
 
     public static Term the(float x) {
@@ -485,21 +484,19 @@ public enum $ { ;
             throw new TODO("NaN");
 
         var rx = (int) Util.round(x, 1);
-        return Util.equals(rx, x) ? Int.the(rx) : the(new Fraction(x));
-
-        //return quote(Float.toString(v));
+        return Util.equals(rx, x) ? theInt.the(rx) : the(new Fraction(x));
     }
 
     public static Term the(double x) {
         if (x != x)
             throw new TODO("NaN");
         var rx = (int) Util.round(x, 1);
-        return Util.equals(rx, x, Double.MIN_NORMAL) ? Int.the(rx) : the(new Fraction(x));
+        return Util.equals(rx, x, Double.MIN_NORMAL) ? theInt.the(rx) : the(new Fraction(x));
     }
 
     public static double doubleValue(Term x) {
         if (x.op() == INT) {
-            return ((Int) x).i;
+            return ((theInt) x).i;
         } else if (x.op() == ATOM) {
             return Double.parseDouble($.unquote(x));
         } else {
@@ -539,22 +536,22 @@ public enum $ { ;
     public static Term the(Number n) {
         Term result;
         if (n instanceof Integer) {
-            result = Int.the((Integer) n);
+            result = theInt.the((Integer) n);
         } else if (n instanceof Long) {
             result = Atomic.the(Long.toString((Long) n));
         } else if (n instanceof Short) {
-            result = Int.the((Short) n);
+            result = theInt.the((Short) n);
         } else if (n instanceof Byte) {
-            result = Int.the((Byte) n);
+            result = theInt.the((Byte) n);
         } else if (n instanceof Float) {
             var d = n.floatValue();
             var id = (int) d;
-            result = d == d && Util.equals(d, id) ? Int.the(id) : Atomic.the(n.toString());
+            result = d == d && Util.equals(d, id) ? theInt.the(id) : Atomic.the(n.toString());
 
         } else {
             var d = n.doubleValue();
             var id = (int) d;
-            result = d == d && Util.equals(d, id) ? Int.the(id) : Atomic.the(n.toString());
+            result = d == d && Util.equals(d, id) ? theInt.the(id) : Atomic.the(n.toString());
 
         }
         return result;
@@ -599,7 +596,7 @@ public enum $ { ;
         var xx = radix(x, radix, maxX);
 
         //$.the(BinTxt.symbols[xx[i]]);
-        return Arrays.stream(xx).mapToObj(Int::the).toArray(Term[]::new);
+        return Arrays.stream(xx).mapToObj(theInt::the).toArray(Term[]::new);
     }
 
 
@@ -660,14 +657,14 @@ public enum $ { ;
     }
 
     public static int intValue(Term intTerm) throws NumberFormatException {
-        if (intTerm instanceof Int)
-            return ((Int) intTerm).i;
+        if (intTerm instanceof theInt)
+            return ((theInt) intTerm).i;
 
         throw new NumberFormatException();
 
     }
     public static int intValue(Term intTerm, int ifNotInt) {
-        return intTerm instanceof Int && intTerm.op() == INT ? ((Int) intTerm).i : ifNotInt;
+        return intTerm instanceof theInt && intTerm.op() == INT ? ((theInt) intTerm).i : ifNotInt;
     }
 
     public static Term fromJSON(String j) {
@@ -911,6 +908,4 @@ public enum $ { ;
         return (authority == null || authority.isEmpty()) ?
                 inh(path, scheme) : inh( PROD.the(INH.the(path, /*TODO parse*/the(authority))), scheme);
     }
-
-
 }

@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import static nars.Op.EmptySubterms;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 
 
 /**
@@ -144,43 +144,43 @@ public abstract class Atomic implements Term {
                 finished = true;
                 break;
             case '0':
-                result = Int.pos[0];
+                result = theInt.pos[0];
                 finished = true;
                 break;
             case '1':
-                result = Int.pos[1];
+                result = theInt.pos[1];
                 finished = true;
                 break;
             case '2':
-                result = Int.pos[2];
+                result = theInt.pos[2];
                 finished = true;
                 break;
             case '3':
-                result = Int.pos[3];
+                result = theInt.pos[3];
                 finished = true;
                 break;
             case '4':
-                result = Int.pos[4];
+                result = theInt.pos[4];
                 finished = true;
                 break;
             case '5':
-                result = Int.pos[5];
+                result = theInt.pos[5];
                 finished = true;
                 break;
             case '6':
-                result = Int.pos[6];
+                result = theInt.pos[6];
                 finished = true;
                 break;
             case '7':
-                result = Int.pos[7];
+                result = theInt.pos[7];
                 finished = true;
                 break;
             case '8':
-                result = Int.pos[8];
+                result = theInt.pos[8];
                 finished = true;
                 break;
             case '9':
-                result = Int.pos[9];
+                result = theInt.pos[9];
                 finished = true;
                 break;
         }
@@ -202,9 +202,9 @@ public abstract class Atomic implements Term {
 
         switch (id) {
             case "true":
-                return Bool.True;
+                return theBool.True;
             case "false":
-                return Bool.False;
+                return theBool.False;
             case "null":
                 return Null;
             default: {

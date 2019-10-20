@@ -11,7 +11,7 @@ import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.util.Image;
 import nars.time.Tense;
 import nars.time.TimeGraph;
@@ -579,9 +579,9 @@ public class Occurrify extends TimeGraph {
                 if (!d.retransform.isEmpty()) {
                     //HACK re-apply variable introduction
                     tt = tt.replace(d.retransform);
-                    if (tt instanceof Bool) return null;
+                    if (tt instanceof theBool) return null;
                     bb = bb.replace(d.retransform);
-                    if (bb instanceof Bool) return null;
+                    if (bb instanceof theBool) return null;
                 }
 
                 tt = tt.negIf(d.taskTruth.isNegative());

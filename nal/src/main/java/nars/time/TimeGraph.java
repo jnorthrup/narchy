@@ -41,8 +41,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static nars.Op.*;
-import static nars.term.atom.Bool.False;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.False;
+import static nars.term.atom.theBool.Null;
 import static nars.time.Tense.*;
 import static nars.time.TimeSpan.TS_ZERO;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;

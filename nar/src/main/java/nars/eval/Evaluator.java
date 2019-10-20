@@ -16,7 +16,7 @@ import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 
 /**
  * discovers functors within the provided target, or the target itself.

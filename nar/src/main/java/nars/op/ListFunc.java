@@ -4,20 +4,17 @@ import jcog.TODO;
 import nars.$;
 import nars.Op;
 import nars.eval.Evaluation;
-import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Terms;
-import nars.term.atom.Bool;
-import nars.term.atom.Int;
+import nars.term.atom.theBool;
+import nars.term.atom.theInt;
 import nars.term.buffer.Termerator;
 import nars.term.functor.BinaryBidiFunctor;
 import nars.term.functor.UnaryBidiFunctor;
 import nars.term.util.conj.Conj;
 
-import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
@@ -82,9 +79,9 @@ public enum ListFunc {
             var l = xy.subs();
             switch (l) {
                 case 0:
-                    return e.is(x, Op.EmptyProduct, y, Op.EmptyProduct) ? null : Bool.Null;
+                    return e.is(x, Op.EmptyProduct, y, Op.EmptyProduct) ? null : theBool.Null;
                 case 1:
-                    return e.is(x, Op.EmptyProduct, y, xy) && e.is(x, xy, y, Op.EmptyProduct) ? null : Bool.Null;
+                    return e.is(x, Op.EmptyProduct, y, xy) && e.is(x, xy, y, Op.EmptyProduct) ? null : theBool.Null;
                 default:
                     var xys = xy.subterms();
 
@@ -112,10 +109,10 @@ public enum ListFunc {
                             Op.EmptyProduct
                             :
                             $.pFast(xy.subterms().terms((i, ii) -> i < ys)))
-                                ? null : Bool.Null;
+                                ? null : theBool.Null;
 
 
-            return y.hasAny(Op.Variable) || xy.hasAny(Op.Variable) ? null : Bool.Null;
+            return y.hasAny(Op.Variable) || xy.hasAny(Op.Variable) ? null : theBool.Null;
         }
 
         @Override
@@ -127,9 +124,9 @@ public enum ListFunc {
             var remainderLength = xy.subs() - xs;
             if (remainderLength >= 0)
                 if (xx.subterms().ANDi((xi, xii) -> xy.sub(xii).equals(xi)))
-                    return e.is(y, (remainderLength == 0) ? Op.EmptyProduct : $.pFast(xy.subterms().terms((i, ii) -> i >= xs))) ? null : Bool.Null;
+                    return e.is(y, (remainderLength == 0) ? Op.EmptyProduct : $.pFast(xy.subterms().terms((i, ii) -> i >= xs))) ? null : theBool.Null;
 
-            return x.hasAny(Op.Variable) || xy.hasAny(Op.Variable) ? null : Bool.Null;
+            return x.hasAny(Op.Variable) || xy.hasAny(Op.Variable) ? null : theBool.Null;
         }
     };
 
@@ -163,16 +160,16 @@ public enum ListFunc {
     };
 
     public static final Functor sub = Functor.f2("sub",
-            (x, n) -> n.op() == INT ? x.sub(((Int) n).i, Bool.Null) : null);
+            (x, n) -> n.op() == INT ? x.sub(((theInt) n).i, theBool.Null) : null);
 
     public static final Functor subs = Functor.f2Or3("subs", args -> {
         if (args.subs() == 2) {
             var n = args.sub(1);
             if (n.op() == INT) {
-                var nn = ((Int) n).i;
+                var nn = ((theInt) n).i;
                 var xx = args.sub(0).subterms();
                 var m = xx.subs();
-                return nn < m ? PROD.the(xx.subRangeArray(nn, m)) : Bool.Null;
+                return nn < m ? PROD.the(xx.subRangeArray(nn, m)) : theBool.Null;
             } else {
                 return null;
             }

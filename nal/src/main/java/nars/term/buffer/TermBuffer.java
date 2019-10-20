@@ -5,7 +5,6 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.byt.DynBytes;
-import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
@@ -13,7 +12,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
@@ -21,11 +20,10 @@ import nars.term.var.ellipsis.Fragment;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import static nars.Op.*;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 import static nars.time.Tense.DTERNAL;
 
 /**
@@ -432,7 +430,7 @@ public class TermBuffer {
             }
         } else {
             @Nullable var y = f.apply(x);
-            if (y == null || y == Bool.Null)
+            if (y == null || y == theBool.Null)
                 return false;
             else {
                 if (y instanceof Fragment) {

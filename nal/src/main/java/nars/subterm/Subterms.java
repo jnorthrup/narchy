@@ -17,7 +17,7 @@ import nars.Op;
 import nars.subterm.util.TermMetadata;
 import nars.term.Variable;
 import nars.term.*;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.var.ellipsis.Fragment;
 import nars.unify.Unify;
 import nars.unify.mutate.CommutivePermutations;
@@ -404,7 +404,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 			var k = f.apply(e.sub(j)); //assert(k!=null);
 
-			if (k == Bool.Null) {
+			if (k == theBool.Null) {
 				return null;
 			} else if (k.op() == FRAG) {
 				if (NAL.DEBUG)
@@ -482,7 +482,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	default @Nullable Term subSub(int start, int end, byte[] path) {
 		Termlike ptr = this;
 		for (var i = start; i < end; i++) {
-			if ((ptr = ptr.subSafe(path[i])) == Bool.Null)
+			if ((ptr = ptr.subSafe(path[i])) == theBool.Null)
 				return null;
 		}
 		return ptr != this ? (Term) ptr : null;
@@ -1415,7 +1415,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 			var yi = f.apply(xi);
 
 			//if (yi instanceof Bool) {
-			if (yi == Bool.Null)
+			if (yi == theBool.Null)
 				return null; //short-circuit
 			//}
 

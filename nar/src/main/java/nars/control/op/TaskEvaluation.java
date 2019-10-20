@@ -8,7 +8,7 @@ import nars.attention.What;
 import nars.eval.Evaluation;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,8 +16,8 @@ import java.util.Collection;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.term.atom.Bool.False;
-import static nars.term.atom.Bool.True;
+import static nars.term.atom.theBool.False;
+import static nars.term.atom.theBool.True;
 
 final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 
@@ -61,7 +61,7 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 		if (x.term().equals(y))
 			return null;
 
-		return y instanceof Bool ?
+		return y instanceof theBool ?
 			perceiveBooleanAnswer(x, y, w) :
 			rememberTransformed(x, y);
 	}
@@ -70,7 +70,7 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 	public boolean test(Term y) {
 		tried++;
 
-		if (y != Bool.Null && !y.equals(tt)) {
+		if (y != theBool.Null && !y.equals(tt)) {
 			if (result(y)) {
 				if (result.size() >= NAL.TASK_EVAL_FORK_SUCCESS_LIMIT)
 					return false; //done, enough forks
@@ -81,7 +81,7 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 	}
 
 	protected boolean result(Term y) {
-		if (!(y instanceof Bool /* allow Bool for answering */) && !Task.validTaskTerm(y.unneg()))
+		if (!(y instanceof theBool /* allow Bool for answering */) && !Task.validTaskTerm(y.unneg()))
 			return false;
 
 		if (result == null)
@@ -91,7 +91,7 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 	}
 
 	@Override
-	protected Term bool(Term x, Bool b) {
+	protected Term bool(Term x, theBool b) {
 //                    //filter non-true
 		return b;
 //                    if (b == True && x.equals(x))

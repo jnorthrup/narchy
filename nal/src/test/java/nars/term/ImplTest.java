@@ -2,13 +2,13 @@ package nars.term;
 
 import nars.$;
 import nars.Narsese;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
 import static nars.$.$$;
-import static nars.term.atom.Bool.False;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.False;
+import static nars.term.atom.theBool.Null;
 import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -78,7 +78,7 @@ class ImplTest {
         assertEq("(--,((--,x)==>y))", "(--x ==> (--y && --x))");
 
         assertEq("(x==>y)", "(x ==> (y &| x))");
-        assertEq(Bool.True, "((y &| x) ==> x)");
+        assertEq(theBool.True, "((y &| x) ==> x)");
         assertEq("(--,((--,$1)==>#2))", "((--,$1)==>((--,$1)&|(--,#2)))");
     }
 
@@ -103,7 +103,7 @@ class ImplTest {
     }
     @Test
     void testReducibleImplParallelNeg2() {
-        assertEq(Bool.True, "((--y && --x) ==> --x)");
+        assertEq(theBool.True, "((--y && --x) ==> --x)");
     }
 
     @Test
@@ -206,7 +206,7 @@ class ImplTest {
 
     @Test
     void implicationInPred_Collapse() {
-        assertEq(Bool.True, "(R==>(P==>R))");
+        assertEq(theBool.True, "(R==>(P==>R))");
     }
 
     @Test

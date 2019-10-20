@@ -11,8 +11,8 @@ import nars.term.Variable;
 import nars.term.anon.Anom;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
-import nars.term.atom.Int;
+import nars.term.atom.theBool;
+import nars.term.atom.theInt;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -175,13 +175,13 @@ class TermIOTest {
                 $.v(VAR_QUERY, (byte)1),
                 $.v(VAR_PATTERN, (byte)1),
                 Atomic.the("x"),
-                Int.the(1),
-                Int.the(-1000),
-                Int.the(Integer.MAX_VALUE),
-                Int.the(-4),
+                theInt.the(1),
+                theInt.the(-1000),
+                theInt.the(Integer.MAX_VALUE),
+                theInt.the(-4),
                 Anom.the(1),
                 Anom.the(4),
-                Bool.True, Bool.False, Bool.Null,
+                theBool.True, theBool.False, theBool.Null,
                 ImgExt, ImgInt
         };
 

@@ -6,11 +6,11 @@ import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.term.atom.Bool.False;
-import static nars.term.atom.Bool.True;
+import static nars.term.atom.theBool.False;
+import static nars.term.atom.theBool.True;
 
 /** (potentially) reversible function */
 public abstract class UnaryBidiFunctor extends Functor {
@@ -30,7 +30,7 @@ public abstract class UnaryBidiFunctor extends Functor {
             case 2:
                 return apply2(e, terms.sub(0), terms.sub(1));
             default:
-                return Bool.Null;
+                return theBool.Null;
         }
     }
 
@@ -55,7 +55,7 @@ public abstract class UnaryBidiFunctor extends Functor {
                 var XY = compute(x);
                 if (XY!=null) {
                     return e.is(y, XY) ?
-                            null : Bool.Null;
+                            null : theBool.Null;
                 } else {
                     return null;
                 }
@@ -65,7 +65,7 @@ public abstract class UnaryBidiFunctor extends Functor {
                 var X = uncompute(x, y);
                 if (X!=null) {
                     return e.is(x, X) ?
-                        null : Bool.Null;
+                        null : theBool.Null;
                 } else {
                     return null;
                 }

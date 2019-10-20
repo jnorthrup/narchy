@@ -3,7 +3,7 @@ package nars.io;
 import nars.*;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -34,9 +34,9 @@ class NarseseExtendedTest extends NarseseTest {
     }
 
     @Test void Boolean() {
-        assertSame(Bool.True, $$("true"));
-        assertSame(Bool.False, $$("false"));
-        assertSame(Bool.Null, $$("null"));
+        assertSame(theBool.True, $$("true"));
+        assertSame(theBool.False, $$("false"));
+        assertSame(theBool.Null, $$("null"));
     }
 
     private static void eternal(Task t) {

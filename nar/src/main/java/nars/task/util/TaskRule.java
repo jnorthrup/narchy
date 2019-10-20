@@ -4,7 +4,7 @@ import nars.*;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.util.TermException;
 import nars.term.util.transform.VariableNormalization;
 import nars.unify.Unify;
@@ -103,7 +103,7 @@ public class TaskRule extends TaskMatch {
     protected void accept(Task X, Map<Variable, Term> xy) {
 
         var y = output.replace(xy);
-        if (y instanceof Variable || y instanceof Bool) return;
+        if (y instanceof Variable || y instanceof theBool) return;
 
         
 

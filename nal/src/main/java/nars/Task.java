@@ -22,7 +22,7 @@ import nars.term.*;
 import nars.term.anon.Intrin;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
+import nars.term.atom.theBool;
 import nars.term.util.TermedDelegate;
 import nars.term.util.transform.RecursiveTermTransform;
 import nars.term.var.NormalizedVariable;
@@ -33,7 +33,6 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.proj.TruthIntegration;
-import org.eclipse.collections.api.tuple.primitive.ShortBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ShortByteHashMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -234,7 +233,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (t == null)
             return fail(null, "null content", false /* FORCE */);
 
-        if (t instanceof Bool || t instanceof Variable)
+        if (t instanceof theBool || t instanceof Variable)
             return fail(t, "bool or variable", safe);
 
         if (punc != COMMAND) {

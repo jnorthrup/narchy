@@ -3,7 +3,6 @@ package nars.term.util.conj;
 import jcog.TODO;
 import jcog.data.bit.MetalBitSet;
 import nars.op.UniSubst;
-import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atom;
@@ -14,7 +13,7 @@ import nars.unify.UnifyTransform;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static nars.Op.*;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.theBool.Null;
 import static nars.time.Tense.XTERNAL;
 
 public enum ConjMatch { ;
