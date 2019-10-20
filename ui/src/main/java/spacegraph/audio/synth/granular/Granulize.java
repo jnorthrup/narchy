@@ -73,7 +73,7 @@ public class Granulize extends SoundProducer.Amplifiable {
 	}
 
     @Override
-    public void read(float[] buf, int readRate) {
+    public boolean read(float[] buf, int readRate) {
 
 		if (currentGrain == null) {
 			currentGrain = nextGrain(null);
@@ -119,6 +119,8 @@ public class Granulize extends SoundProducer.Amplifiable {
 		fadingGrain = fGrain;
 		now = n;
 		currentAmplitude = amp;
+
+		return true;
 	}
 
     @Override

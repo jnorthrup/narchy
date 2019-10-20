@@ -57,8 +57,10 @@ public abstract class IIRFilter {
 	}
 	
 	public void setFrequency(float freq){
-		this.frequency = freq;	
-		update();
+		if (freq!=this.frequency) {
+			this.frequency = freq;
+			update();
+		}
 	}
 
 	/**

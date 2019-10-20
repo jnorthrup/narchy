@@ -9,7 +9,7 @@ import spacegraph.audio.SoundProducer;
  *
  * TODO make this a set of 2 SoundProducer's, set at fixed ambient Left/Right positions
  */
-public class BinauralTones extends SoundProducer {
+public class BinauralTones implements SoundProducer {
 
     private final float carrier;
     private final float beat;
@@ -21,7 +21,7 @@ public class BinauralTones extends SoundProducer {
         x = 0;
     }
 
-    @Override public void read(float[] buf, int readRate) {
+    @Override public boolean read(float[] buf, int readRate) {
         float dt = 1.0f / readRate;
 
         float leftRate = (carrier - (beat / 2.0f)) * (float)(Math.PI* 2.0f);
@@ -32,6 +32,7 @@ public class BinauralTones extends SoundProducer {
             x += dt;
         }
 
+        return true;
     }
 
     @Override

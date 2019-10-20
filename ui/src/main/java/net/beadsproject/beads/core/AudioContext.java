@@ -54,7 +54,7 @@ public class AudioContext {
     /**
      * The stop flag.
      */
-    private boolean stopped;
+    public boolean stopped;
 
     /**
      * The root {@link UGen}.
@@ -496,7 +496,6 @@ public class AudioContext {
 
     public void stop() {
         stopped = true;
-        audioIO.stop();
     }
 
     /**
@@ -508,12 +507,6 @@ public class AudioContext {
         return !stopped;
     }
 
-    /**
-     * @return The AudioIO used by this context.
-     */
-    public AudioIO getAudioIO() {
-        return audioIO;
-    }
 
     /**
      * Queues the specified Bead to be messaged upon the next audio frame

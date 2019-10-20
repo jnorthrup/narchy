@@ -46,8 +46,9 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
         int size = this.size;
         if (size != 0) {
             BeliefTable[] items = this.items;
-            if (size == 1) { items[0].match(a); }
-            else {
+            if (size == 1) {
+                items[0].match(a);
+            } else {
                 IntArrayList nonEmpty = new IntArrayList(size);
                 for (int i = 0; i < size; i++) {
                     if (!items[i].isEmpty())
