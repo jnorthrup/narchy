@@ -9,7 +9,7 @@ import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Variable;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjList;
 import nars.term.util.conj.ConjSpans;
@@ -290,7 +290,7 @@ public enum DynamicConjTruth {
                     if (p !=null) {
                         var dt = (int) (vWhen - c.when(pair));
                         var paired = CONJ.the(dt, p, v);
-                        if (!(paired instanceof theBool)) {
+                        if (!(paired instanceof IdempotentBool)) {
                             c.setFast(pair, paired);
                             continue nextEvent;
                         }

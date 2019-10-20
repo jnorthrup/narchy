@@ -27,7 +27,7 @@ import java.util.stream.IntStream;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 
 /**
  * Static utility class for static methods related to Terms

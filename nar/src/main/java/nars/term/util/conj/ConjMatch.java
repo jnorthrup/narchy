@@ -13,7 +13,7 @@ import nars.unify.UnifyTransform;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static nars.Op.*;
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 import static nars.time.Tense.XTERNAL;
 
 public enum ConjMatch { ;

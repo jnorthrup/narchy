@@ -11,7 +11,7 @@ import nars.term.Variable;
 import nars.term.util.transform.InlineFunctor;
 
 import static nars.Op.SETe;
-import static nars.term.atom.theBool.*;
+import static nars.term.atom.IdempotentBool.*;
 
 /** equivalent to prolog member/2:
  *      member(U,S)  |-   U is in S

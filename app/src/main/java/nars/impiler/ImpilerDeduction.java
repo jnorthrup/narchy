@@ -11,7 +11,7 @@ import nars.task.NALTask;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjTree;
 import nars.truth.MutableTruth;
@@ -29,7 +29,7 @@ import java.util.List;
 import static nars.NAL.STAMP_CAPACITY;
 import static nars.Op.BELIEF;
 import static nars.Op.IMPL;
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 import static nars.time.Tense.*;
 
 public class ImpilerDeduction extends Search<Term, Task> {
@@ -279,7 +279,7 @@ public class ImpilerDeduction extends Search<Term, Task> {
 			IMPL.the(ccc, zDT, before)
 			:
 			IMPL.the(ccc, zDT, next);
-		if (implication instanceof theBool || implication.volume() > volMax)
+		if (implication instanceof IdempotentBool || implication.volume() > volMax)
 			return false;
 
 

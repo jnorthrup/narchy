@@ -4,7 +4,7 @@ import jcog.data.list.FasterList;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjTree;
@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.*;
 import static nars.Op.CONJ;
-import static nars.term.atom.theBool.False;
-import static nars.term.atom.theBool.True;
+import static nars.term.atom.IdempotentBool.False;
+import static nars.term.atom.IdempotentBool.True;
 import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
@@ -329,7 +329,7 @@ public class ConjTest2 {
 
     @Test
     void testConjNearIdentity() {
-        assertEq(theBool.True, "( (a&&b) ==> (a&|b) )");
+        assertEq(IdempotentBool.True, "( (a&&b) ==> (a&|b) )");
 
         assertEq(
                 "((X,x)&|#1)",

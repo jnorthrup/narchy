@@ -8,7 +8,7 @@ import nars.unify.Unify;
 import nars.unify.UnifyFirst;
 
 import static nars.Op.VAR_PATTERN;
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 
 /**
  * similar to a plain atom, but applies altered operating semantics according to the specific

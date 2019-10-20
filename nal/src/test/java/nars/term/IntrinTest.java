@@ -11,7 +11,7 @@ import nars.term.anon.Anon;
 import nars.term.anon.AnonWithVarShift;
 import nars.term.anon.Intrin;
 import nars.term.atom.Atomic;
-import nars.term.atom.theInt;
+import nars.term.atom.IdempotInt;
 import nars.term.compound.LightCompound;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.InterningTermBuilder;
@@ -117,14 +117,14 @@ public class IntrinTest {
         assertAnon("(_1-->#1)", "(abc-->#1)");
     }
     @Test void Integers() {
-        assertEquals((Intrin.INT_POSs<<8) | 0, Intrin.id(theInt.the(0)));
-        assertEquals((Intrin.INT_POSs<<8) | 1, Intrin.id(theInt.the(1)));
-        assertEquals((Intrin.INT_POSs<<8) | 126, Intrin.id(theInt.the(126)));
-        assertEquals((Intrin.INT_POSs<<8) | 127, Intrin.id(theInt.the(127)));
-        assertEquals(0, Intrin.id(theInt.the(128)));
-        assertEquals((Intrin.INT_NEGs<<8) | 1, Intrin.id(theInt.the(-1)));
-        assertEquals((Intrin.INT_NEGs<<8) | 126, Intrin.id(theInt.the(-126)));
-        assertEquals((Intrin.INT_NEGs<<8) | 127, Intrin.id(theInt.the(-127)));
+        assertEquals((Intrin.INT_POSs<<8) | 0, Intrin.id(IdempotInt.the(0)));
+        assertEquals((Intrin.INT_POSs<<8) | 1, Intrin.id(IdempotInt.the(1)));
+        assertEquals((Intrin.INT_POSs<<8) | 126, Intrin.id(IdempotInt.the(126)));
+        assertEquals((Intrin.INT_POSs<<8) | 127, Intrin.id(IdempotInt.the(127)));
+        assertEquals(0, Intrin.id(IdempotInt.the(128)));
+        assertEquals((Intrin.INT_NEGs<<8) | 1, Intrin.id(IdempotInt.the(-1)));
+        assertEquals((Intrin.INT_NEGs<<8) | 126, Intrin.id(IdempotInt.the(-126)));
+        assertEquals((Intrin.INT_NEGs<<8) | 127, Intrin.id(IdempotInt.the(-127)));
 
         assertAnon("(_1-->1)", "(abc-->1)");
         assertAnon("(_1-->0)", "(abc-->0)");

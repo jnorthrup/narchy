@@ -5,7 +5,7 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.*;
 import nars.term.atom.Atomic;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.compound.SeparateSubtermsCompound;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjList;
@@ -93,7 +93,7 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
                 break;
         }
 
-        if (y instanceof Img || y instanceof theBool)
+        if (y instanceof Img || y instanceof IdempotentBool)
             return x; //HACK
 
         return y instanceof Neg && unneg() ? y.unneg() : y;

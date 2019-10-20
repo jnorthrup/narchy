@@ -15,8 +15,8 @@ import nars.term.*;
 import nars.term.anon.Intrin;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.theBool;
-import nars.term.atom.theInt;
+import nars.term.atom.IdempotentBool;
+import nars.term.atom.IdempotInt;
 import nars.term.compound.LightCompound;
 import nars.term.control.LambdaPred;
 import nars.term.control.PREDICATE;
@@ -115,7 +115,7 @@ public enum $ { ;
 
     public static Atomic the(char c) {
         if (Character.isDigit(c))
-            return theInt.the(Character.digit(c, 10));
+            return IdempotInt.the(Character.digit(c, 10));
 
         return Atomic.the(String.valueOf(c));
     }
@@ -244,7 +244,7 @@ public enum $ { ;
 
         if (t.length < 31) {
             var b = IntStream.range(0, t.length).filter(i -> t[i]).map(i -> 1 << i).reduce(0, (a, b1) -> a | b1);
-            return theInt.the(b);
+            return IdempotInt.the(b);
         } else {
             throw new TODO();
         }
@@ -370,7 +370,7 @@ public enum $ { ;
         var t = new Term[size];
         var k = 0;
         while (ii.hasNext())
-            t[k++] = theInt.the(ii.next());
+            t[k++] = IdempotInt.the(ii.next());
         return t;
     }
 
@@ -429,7 +429,7 @@ public enum $ { ;
     }
 
     public static Atomic the(int v) {
-        return theInt.the(v);
+        return IdempotInt.the(v);
     }
 
     public static MutableTruth tt(float f, float c) {
@@ -476,7 +476,7 @@ public enum $ { ;
      * use with caution
      */
     public static Term the(boolean b) {
-        return b ? theBool.True : theBool.False;
+        return b ? IdempotentBool.True : IdempotentBool.False;
     }
 
     public static Term the(float x) {
@@ -484,19 +484,19 @@ public enum $ { ;
             throw new TODO("NaN");
 
         var rx = (int) Util.round(x, 1);
-        return Util.equals(rx, x) ? theInt.the(rx) : the(new Fraction(x));
+        return Util.equals(rx, x) ? IdempotInt.the(rx) : the(new Fraction(x));
     }
 
     public static Term the(double x) {
         if (x != x)
             throw new TODO("NaN");
         var rx = (int) Util.round(x, 1);
-        return Util.equals(rx, x, Double.MIN_NORMAL) ? theInt.the(rx) : the(new Fraction(x));
+        return Util.equals(rx, x, Double.MIN_NORMAL) ? IdempotInt.the(rx) : the(new Fraction(x));
     }
 
     public static double doubleValue(Term x) {
         if (x.op() == INT) {
-            return ((theInt) x).i;
+            return ((IdempotInt) x).i;
         } else if (x.op() == ATOM) {
             return Double.parseDouble($.unquote(x));
         } else {
@@ -536,22 +536,22 @@ public enum $ { ;
     public static Term the(Number n) {
         Term result;
         if (n instanceof Integer) {
-            result = theInt.the((Integer) n);
+            result = IdempotInt.the((Integer) n);
         } else if (n instanceof Long) {
             result = Atomic.the(Long.toString((Long) n));
         } else if (n instanceof Short) {
-            result = theInt.the((Short) n);
+            result = IdempotInt.the((Short) n);
         } else if (n instanceof Byte) {
-            result = theInt.the((Byte) n);
+            result = IdempotInt.the((Byte) n);
         } else if (n instanceof Float) {
             var d = n.floatValue();
             var id = (int) d;
-            result = d == d && Util.equals(d, id) ? theInt.the(id) : Atomic.the(n.toString());
+            result = d == d && Util.equals(d, id) ? IdempotInt.the(id) : Atomic.the(n.toString());
 
         } else {
             var d = n.doubleValue();
             var id = (int) d;
-            result = d == d && Util.equals(d, id) ? theInt.the(id) : Atomic.the(n.toString());
+            result = d == d && Util.equals(d, id) ? IdempotInt.the(id) : Atomic.the(n.toString());
 
         }
         return result;
@@ -596,7 +596,7 @@ public enum $ { ;
         var xx = radix(x, radix, maxX);
 
         //$.the(BinTxt.symbols[xx[i]]);
-        return Arrays.stream(xx).mapToObj(theInt::the).toArray(Term[]::new);
+        return Arrays.stream(xx).mapToObj(IdempotInt::the).toArray(Term[]::new);
     }
 
 
@@ -657,14 +657,14 @@ public enum $ { ;
     }
 
     public static int intValue(Term intTerm) throws NumberFormatException {
-        if (intTerm instanceof theInt)
-            return ((theInt) intTerm).i;
+        if (intTerm instanceof IdempotInt)
+            return ((IdempotInt) intTerm).i;
 
         throw new NumberFormatException();
 
     }
     public static int intValue(Term intTerm, int ifNotInt) {
-        return intTerm instanceof theInt && intTerm.op() == INT ? ((theInt) intTerm).i : ifNotInt;
+        return intTerm instanceof IdempotInt && intTerm.op() == INT ? ((IdempotInt) intTerm).i : ifNotInt;
     }
 
     public static Term fromJSON(String j) {

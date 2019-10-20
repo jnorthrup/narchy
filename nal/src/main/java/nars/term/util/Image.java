@@ -7,13 +7,13 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.compound.LighterCompound;
 import nars.term.util.builder.TermBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
-import static nars.term.atom.theBool.True;
+import static nars.term.atom.IdempotentBool.True;
 
 /**
  * utilities for transforming image compound terms
@@ -69,7 +69,7 @@ public enum Image {
                 }
             }
         }
-        return theBool.Null;
+        return IdempotentBool.Null;
     }
 
     public static Term[] imageNormalize(Term[] u) {

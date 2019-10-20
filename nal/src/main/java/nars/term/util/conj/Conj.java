@@ -18,8 +18,8 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
-import static nars.term.atom.theBool.Null;
-import static nars.term.atom.theBool.True;
+import static nars.term.atom.IdempotentBool.Null;
+import static nars.term.atom.IdempotentBool.True;
 import static nars.time.Tense.*;
 
 /**

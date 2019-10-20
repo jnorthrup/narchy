@@ -3,7 +3,7 @@ package nars.term.functor;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.transform.InstantFunctor;
 
 import java.util.function.UnaryOperator;
@@ -18,13 +18,13 @@ public abstract class AbstractInlineFunctor1 extends AbstractInlineFunctor {
 
     @Override
     public final Term applyInline(Subterms args) {
-        if (args.subs() != 1) return theBool.Null;
+        if (args.subs() != 1) return IdempotentBool.Null;
         return apply1(args.sub(0));
     }
 
     @Override
     public final Term apply(Evaluation e, Subterms terms) {
-        return terms.subs() != 1 ? theBool.Null : apply1(terms.sub(0));
+        return terms.subs() != 1 ? IdempotentBool.Null : apply1(terms.sub(0));
     }
 
     public static class MyAbstractInlineFunctor1Inline extends AbstractInlineFunctor1 {

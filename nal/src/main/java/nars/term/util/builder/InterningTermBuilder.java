@@ -14,7 +14,7 @@ import nars.term.Neg;
 import nars.term.Term;
 import nars.term.anon.Intrin;
 import nars.term.atom.Atomic;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.cache.Intermed;
 import nars.term.util.cache.Intermed.InternedCompoundByComponents;
 import nars.term.util.cache.Intermed.InternedSubterms;
@@ -25,7 +25,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import static nars.Op.*;
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 import static nars.time.Tense.DTERNAL;
 
 /**
@@ -288,7 +288,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         subject = resolve(subject);
         predicate = resolve(predicate);
 
-        if (!(subject instanceof theBool) && !(predicate instanceof theBool) &&
+        if (!(subject instanceof IdempotentBool) && !(predicate instanceof IdempotentBool) &&
                 internableSub(subject) && internableSub(predicate) &&
                 (subject.volume() + predicate.volume() < volInternedMax) &&
                 ((op==IMPL && dt!=0) || !subject.equals(predicate))) {

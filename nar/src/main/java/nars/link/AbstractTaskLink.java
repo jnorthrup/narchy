@@ -10,7 +10,7 @@ import nars.control.Why;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,9 +50,9 @@ public abstract class AbstractTaskLink implements TaskLink {
 			hash(source, target)
 		);
 
-		if (source instanceof theBool)
+		if (source instanceof IdempotentBool)
 			throw new TermException("source bool", source);
-		if (target instanceof theBool)
+		if (target instanceof IdempotentBool)
 			throw new TermException("target bool", target);
 
 		var so = source.op();

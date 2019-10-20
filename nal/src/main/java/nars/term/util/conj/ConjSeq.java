@@ -8,7 +8,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.atom.Interval;
 import nars.term.compound.Sequence;
 import nars.term.util.builder.TermBuilder;
@@ -20,7 +20,7 @@ import java.util.TreeSet;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
-import static nars.term.atom.theBool.*;
+import static nars.term.atom.IdempotentBool.*;
 import static nars.time.Tense.*;
 
 /** utilities for working with conjunction sequences (raw sequences, and factored sequences) */
@@ -145,7 +145,7 @@ public enum ConjSeq { ;
             default:
                 var cc = ss.subsIncluding(m);
                 var e = CONJ.the(cc);
-                if (e instanceof theBool)
+                if (e instanceof IdempotentBool)
                     throw new WTF("&&(" + Arrays.toString(cc) + ") => " + e);
                 return e;
         }

@@ -9,7 +9,7 @@ import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.buffer.Termerator;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +22,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
-import static nars.term.atom.theBool.*;
+import static nars.term.atom.IdempotentBool.*;
 
 /**
  * see: https://www.swi-prolog.org/pldoc/man?section=preddesc
@@ -178,7 +178,7 @@ public class Evaluation extends Termerator {
 
 					var newSubsts = now() != vStart;
 
-                    if (b instanceof theBool) {
+                    if (b instanceof IdempotentBool) {
 						if (b == True) {
 							if (!newSubsts)
 								continue;
@@ -228,15 +228,15 @@ public class Evaluation extends Termerator {
 
 		assert (y != null);
 
-		if (y instanceof theBool)
-			return each.test(bool(x, (theBool) y)); //Terminal Result
+		if (y instanceof IdempotentBool)
+			return each.test(bool(x, (IdempotentBool) y)); //Terminal Result
 
 		//if termutators, collect all results. otherwise 'cur' is the only result to return
 		//Transformed Result (possibly same)
 		return termutators() > 0 ? termute(e, y) : each.test(y);
 	}
 
-	protected Term bool(Term x, theBool b) {
+	protected Term bool(Term x, IdempotentBool b) {
 		if (b == True) {
 			return boolTrue(x);
 		} else if (b == False) {
@@ -266,7 +266,7 @@ public class Evaluation extends Termerator {
 	public static Term solveFirst(Term x, Function<Atom, Functor> axioms) {
 		var y = new Term[1];
 		Evaluation.eval(x, true, true, (what) -> {
-			if (what instanceof theBool) {
+			if (what instanceof IdempotentBool) {
 				if (y[0] != null)
 					return true; //ignore and continue try to find a non-bool solution
 			}

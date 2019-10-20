@@ -23,7 +23,7 @@ import nars.Narsese;
 import nars.io.IO;
 import nars.subterm.Subterms;
 import nars.term.*;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.builder.TermBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -250,7 +250,7 @@ public enum TermTest { ;
 
             try {
                 var e = Narsese.term(s);
-                assertTrue(e instanceof theBool, () -> s + " should not be parseable but got: " + e);
+                assertTrue(e instanceof IdempotentBool, () -> s + " should not be parseable but got: " + e);
 
             } catch (Narsese.NarseseException | TermException e) {
                 assertTrue(true);

@@ -25,7 +25,7 @@ import java.util.stream.IntStream;
 
 import static jcog.util.ArrayUtil.EMPTY_INT_ARRAY;
 import static nars.Op.CONJ;
-import static nars.term.atom.theBool.*;
+import static nars.term.atom.IdempotentBool.*;
 import static nars.time.Tense.*;
 
 /**

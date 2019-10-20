@@ -28,7 +28,7 @@ import nars.term.Variable;
 import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.TermException;
 import nars.term.util.conj.ConjMatch;
 import nars.term.util.transform.RecursiveTermTransform;
@@ -51,7 +51,7 @@ import java.util.stream.Stream;
 
 import static nars.Op.*;
 import static nars.derive.premise.PatternTermBuilder.patternify;
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 import static nars.time.Tense.DTERNAL;
 
 /**
@@ -641,7 +641,7 @@ public class PatternHow extends CondHow {
 
         this.truthify = intern(Truthify.the(tp, beliefTruthOp, goalTruthOp, time));
 
-        if (concTerm instanceof theBool)
+        if (concTerm instanceof IdempotentBool)
             throw new TermException("conclusion pattern is bool", concTerm);
 
         this.termify = new Termify(conclusion(concTerm), truthify);

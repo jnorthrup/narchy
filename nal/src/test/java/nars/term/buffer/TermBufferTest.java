@@ -9,7 +9,7 @@ import nars.term.util.transform.TermTransform;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TermBufferTest {

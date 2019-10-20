@@ -15,7 +15,7 @@ import nars.game.action.ActionSignal;
 import nars.game.action.GoalActionConcept;
 import nars.game.util.UnipolarMotor;
 import nars.term.Term;
-import nars.term.atom.theInt;
+import nars.term.atom.IdempotInt;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
@@ -34,8 +34,8 @@ import static nars.Op.BELIEF;
  */
 @Skill({"Actuator", "Muscle", "Switch"}) public interface NAct {
 
-    Term POS = theInt.the(+1); ////$.the("\"+\"");
-    Term NEG = theInt.the(-1); //$.the("\"-\"");
+    Term POS = IdempotInt.the(+1); ////$.the("\"+\"");
+    Term NEG = IdempotInt.the(-1); //$.the("\"-\"");
 
 
     default NAR nar() {

@@ -20,7 +20,7 @@ import nars.control.channel.CauseChannel;
 import nars.game.Game;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.term.Term;
-import nars.term.atom.theInt;
+import nars.term.atom.IdempotInt;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.PaintSurface;
@@ -324,8 +324,8 @@ public class ShapeSensor extends NARPart {
 
                     Draw.colorHash(gl, i[0], 0.75f);
                     for (var xy : pSet.subterms()) {
-                        var x = ((theInt) xy.sub(0)).i;
-                        var y = grid.gy - ((theInt) xy.sub(1)).i;
+                        var x = ((IdempotInt) xy.sub(0)).i;
+                        var y = grid.gy - ((IdempotInt) xy.sub(1)).i;
                         gl.glVertex2f(dx + x * scale, dy + y * scale);
                     }
                     gl.glEnd();

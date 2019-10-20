@@ -10,7 +10,7 @@ import nars.term.atom.Atomic;
 import nars.term.util.transform.InlineFunctor;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 
 
 /**

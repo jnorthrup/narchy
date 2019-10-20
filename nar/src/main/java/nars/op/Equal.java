@@ -9,7 +9,7 @@ import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Variable;
-import nars.term.atom.theInt;
+import nars.term.atom.IdempotInt;
 import nars.term.functor.CommutiveBinaryBidiFunctor;
 import nars.term.functor.InlineCommutiveBinaryBidiFunctor;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import static nars.Op.INH;
 import static nars.Op.INT;
 import static nars.op.Cmp.Zero;
-import static nars.term.atom.theBool.*;
+import static nars.term.atom.IdempotentBool.*;
 
 public final class Equal extends InlineCommutiveBinaryBidiFunctor implements Idempotent {
 
@@ -52,7 +52,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements Ide
     }
 
     public static Term _cmp(Term a, Term b, int c) {
-        return $.func(Cmp.cmp, a, b, theInt.the(c));
+        return $.func(Cmp.cmp, a, b, IdempotInt.the(c));
     }
 
     public static Term the(Evaluation e, Term x, Term y) {
@@ -122,7 +122,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements Ide
                 var xa = Functor.args((Compound) x, 2);
                 Term xa0 = xa.sub(0), xa1 = xa.sub(1);
                 if (yOp == INT && xa0 instanceof Variable && xa1.op() == INT) {
-                    return e.is(xa0, theInt.the(((theInt) y).i - ((theInt) xa1).i)) ? True : Null; //"equal(add(#x,a),y)"
+                    return e.is(xa0, IdempotInt.the(((IdempotInt) y).i - ((IdempotInt) xa1).i)) ? True : Null; //"equal(add(#x,a),y)"
                 }
 
                 if (xa1 instanceof Variable && xa0.equals(y)) {
@@ -143,11 +143,11 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements Ide
             } else if (xf.equals(MathFunc.mul)) {
                 var xa = Functor.args((Compound) x, 2);
                 Term xa0 = xa.sub(0), xa1 = xa.sub(1);
-                if (yOp == INT && xa0 instanceof Variable && xa1 instanceof theInt)
-                    return e.is(xa0, $.the(((double) ((theInt) y).i) / ((theInt) xa1).i)) ? True : Null; //"equal(mul(#x,a),b)"
+                if (yOp == INT && xa0 instanceof Variable && xa1 instanceof IdempotInt)
+                    return e.is(xa0, $.the(((double) ((IdempotInt) y).i) / ((IdempotInt) xa1).i)) ? True : Null; //"equal(mul(#x,a),b)"
 
-                if (yOp == INT && xa1 instanceof Variable && xa0 instanceof theInt)
-                    return e.is(xa1, $.the(((double) ((theInt) y).i) / ((theInt) xa0).i)) ? True : Null; //"equal(mul(a,#x),b)"
+                if (yOp == INT && xa1 instanceof Variable && xa0 instanceof IdempotInt)
+                    return e.is(xa1, $.the(((double) ((IdempotInt) y).i) / ((IdempotInt) xa0).i)) ? True : Null; //"equal(mul(a,#x),b)"
 
                 //TODO (#x,mul(#x,#y)) |- is(#y, 1)
                 //TODO (#x,mul(#x,#x)) |- is(#x, 1)

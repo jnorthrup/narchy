@@ -5,7 +5,7 @@ import nars.NAL;
 import nars.Op;
 import nars.subterm.TermList;
 import nars.term.*;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjList;
@@ -15,7 +15,7 @@ import nars.time.Tense;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.term.atom.theBool.*;
+import static nars.term.atom.IdempotentBool.*;
 import static nars.time.Tense.*;
 
 /**
@@ -91,7 +91,7 @@ public enum Statement {
                 return Null;
         }
 
-        if (subject instanceof theBool || predicate instanceof theBool)
+        if (subject instanceof IdempotentBool || predicate instanceof IdempotentBool)
             return Null;
 
         var negate = false;
@@ -214,7 +214,7 @@ public enum Statement {
 
                         if (newPred != null && !predicate.equals(newPred)) {
 
-                            if (newPred instanceof theBool)
+                            if (newPred instanceof IdempotentBool)
                                 return newPred.negIf(negate); //collapse
 
 
@@ -326,7 +326,7 @@ public enum Statement {
 
         if (op == INH && (subject.hasAny(Op.IMG) || predicate.hasAny(Op.IMG))) {
             var inhCollapsed = Image.recursionFilter(subject, predicate, B);
-            if (inhCollapsed instanceof theBool)
+            if (inhCollapsed instanceof IdempotentBool)
                 return inhCollapsed;
         }
 

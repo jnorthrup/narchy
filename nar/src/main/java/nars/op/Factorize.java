@@ -9,7 +9,7 @@ import nars.attention.What;
 import nars.subterm.Subterms;
 import nars.term.Variable;
 import nars.term.*;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.cache.Intermed;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.list.primitive.ByteList;
@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import static nars.Op.*;
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 import static nars.time.Tense.DTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -159,7 +159,7 @@ public enum Factorize {
                             if (pp[0] == null)
                                 pp[0] = UnifiedSetMultimap.newMultimap();
                             var v1 = shadow(s, path, f);
-                            if (!(v1 instanceof theBool))
+                            if (!(v1 instanceof IdempotentBool))
                                 pp[0].put(v1, pair(what, (byte)ii));
                         }
                     }
@@ -190,7 +190,7 @@ public enum Factorize {
             var y = ob.getOne();
             return y.op() == CONJ && y.dt() == DTERNAL ? SETe.the(y.subterms()) : y; //flatten
         }));
-        if (s instanceof theBool)
+        if (s instanceof IdempotentBool)
             return null;
         var m = $.func(Member.member, f, s);
         if (m == Null)

@@ -18,7 +18,7 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.obj.QuantityTerm;
 import nars.term.var.CommonVariable;
 import nars.term.var.ellipsis.Ellipsis;
@@ -339,7 +339,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     }
 
     static @Nullable Term TemporalRelationBuilder(Term pred, Object timeDelta, Op o, Term subj) {
-        if (subj == null || subj == theBool.Null || pred == null || pred == theBool.Null)
+        if (subj == null || subj == IdempotentBool.Null || pred == null || pred == IdempotentBool.Null)
             return null;
         else {
             if (timeDelta instanceof Integer) {
@@ -653,7 +653,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     }
 
     static Term buildCompound(List<Term> subs, String op) {
-        Term result = theBool.Null;
+        Term result = IdempotentBool.Null;
         switch (op) {
             case "&":
             case "&&":
@@ -680,13 +680,13 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 break;
 
             case "-{-":
-                result = subs.size() != 2 ? theBool.Null : $.inst(subs.get(0), subs.get(1));
+                result = subs.size() != 2 ? IdempotentBool.Null : $.inst(subs.get(0), subs.get(1));
                 break;
             case "-]-":
-                result = subs.size() != 2 ? theBool.Null : $.prop(subs.get(0), subs.get(1));
+                result = subs.size() != 2 ? IdempotentBool.Null : $.prop(subs.get(0), subs.get(1));
                 break;
             case "{-]":
-                result = subs.size() != 2 ? theBool.Null : $.instprop(subs.get(0), subs.get(1));
+                result = subs.size() != 2 ? IdempotentBool.Null : $.instprop(subs.get(0), subs.get(1));
                 break;
 
 
@@ -782,7 +782,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         opp[0] = op;
         var vectorterms = popTerms(opp);
         if (vectorterms == null)
-            return theBool.Null;
+            return IdempotentBool.Null;
 
         op = opp[0];
 
@@ -828,7 +828,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 tt.add(Atomic.the((String) p));
             } else if (p instanceof Term) {
-                if (p == theBool.Null) {
+                if (p == IdempotentBool.Null) {
                     stack.clear();
                     return NullList;
                 }
@@ -847,7 +847,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         return tt;
     }
 
-    private static final FasterList<Term> NullList = new FasterList<Term>(1).addingAll(theBool.Null);
+    private static final FasterList<Term> NullList = new FasterList<Term>(1).addingAll(IdempotentBool.Null);
 
     /**
      * whitespace, optional

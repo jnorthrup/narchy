@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import static nars.$.or;
 import static nars.$.*;
 import static nars.Op.*;
-import static nars.term.atom.theBool.*;
+import static nars.term.atom.IdempotentBool.*;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

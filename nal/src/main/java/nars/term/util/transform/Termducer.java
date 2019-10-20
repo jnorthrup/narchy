@@ -4,7 +4,7 @@ import jcog.data.set.ArrayHashSet;
 import nars.$;
 import nars.io.IO;
 import nars.term.Term;
-import nars.term.atom.theInt;
+import nars.term.atom.IdempotInt;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.IntsRef;
 import org.apache.lucene.util.IntsRefBuilder;
@@ -72,7 +72,7 @@ public class Termducer {
         var t = new Termducer();
         t.put($.$$("(a-->b)"), $.$$("(1-->2)"));
         t.put($.$$("(a-->(b,c))"), $.$$("(1-->(2,3))"));
-        t.put($.$$("add(1,1))"), theInt.the(2));
+        t.put($.$$("add(1,1))"), IdempotInt.the(2));
 
         var f = t.build();
         System.out.println("RAM bytes used: " + f.ramBytesUsed());

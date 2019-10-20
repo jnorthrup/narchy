@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.CONJ;
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

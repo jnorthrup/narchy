@@ -30,8 +30,8 @@ import nars.subterm.Subterms;
 import nars.term.anon.Anom;
 import nars.term.anon.IntrinAtomic;
 import nars.term.atom.Atomic;
-import nars.term.atom.theBool;
-import nars.term.atom.theInt;
+import nars.term.atom.IdempotentBool;
+import nars.term.atom.IdempotInt;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.util.transform.MapSubst;
@@ -104,7 +104,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     }
 
     static Term nullIfNull(@Nullable Term maybeNull) {
-        return (maybeNull == null) ? theBool.Null : maybeNull;
+        return (maybeNull == null) ? IdempotentBool.Null : maybeNull;
     }
 
     /**
@@ -327,7 +327,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     default @Nullable Term subPath(int start, int end, byte... path) {
         var ptr = this;
         for (var i = start; i < end; i++) {
-            if ((ptr = ptr.subSafe(path[i])) == theBool.Null)
+            if ((ptr = ptr.subSafe(path[i])) == IdempotentBool.Null)
                 return null;
         }
         return ptr;
@@ -336,7 +336,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     default @Nullable Term subPath(ByteList path, int start, int end) {
         var ptr = this;
         for (var i = start; i < end; i++) {
-            if ((ptr = ptr.subSafe(path.get(i))) == theBool.Null)
+            if ((ptr = ptr.subSafe(path.get(i))) == IdempotentBool.Null)
                 return null;
         }
         return ptr;
@@ -521,8 +521,8 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
         if (a) {
 
-            if (this instanceof theInt /*&& t instanceof Int*/)
-                return Integer.compare(((theInt) this).i, ((theInt) t).i);
+            if (this instanceof IdempotInt /*&& t instanceof Int*/)
+                return Integer.compare(((IdempotInt) this).i, ((IdempotInt) t).i);
 
             if (this instanceof IntrinAtomic && t instanceof IntrinAtomic)
                 return Integer.compare(hashCode(), t.hashCode()); //same op, same hashcode

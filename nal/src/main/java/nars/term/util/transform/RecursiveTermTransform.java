@@ -9,7 +9,7 @@ import nars.term.var.ellipsis.Ellipsislike;
 import nars.term.var.ellipsis.Fragment;
 
 import static nars.Op.*;
-import static nars.term.atom.theBool.*;
+import static nars.term.atom.IdempotentBool.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 

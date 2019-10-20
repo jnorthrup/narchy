@@ -3,7 +3,7 @@ package nars.util.var;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -24,7 +24,7 @@ abstract class VarIntroduction {
 
         var u = uu.length > 1 ? choose(uu, rng) : uu[0];
         var v = introduce(x, u);
-        if (v != null && !(v instanceof theBool)) {
+        if (v != null && !(v instanceof IdempotentBool)) {
             var y = x.replace(u, v);
             if (y != null && y.op().conceptualizable && !y.equals(x)) {
                 if (retransform!=null)

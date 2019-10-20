@@ -7,7 +7,7 @@ import nars.term.LazyTerm;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Terms;
-import nars.term.atom.theInt;
+import nars.term.atom.IdempotInt;
 import org.eclipse.collections.api.block.procedure.primitive.ShortProcedure;
 import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +22,7 @@ import static nars.Op.SETe;
 public enum Why { ;
 
 	public static Term why(short why) {
-		return theInt.the(why);
+		return IdempotInt.the(why);
 	}
 
 	static Term why(short[] why, int capacity) {
@@ -182,7 +182,7 @@ public enum Why { ;
 		if (why == null)
 			return;
 
-		if (why instanceof theInt) {
+		if (why instanceof IdempotInt) {
 			each.value(causes, s(why), pri);
 		} else {
 			//split
@@ -199,7 +199,7 @@ public enum Why { ;
 
 
 	public static void forEachUnique(Term why, ShortProcedure s) {
-		if (why instanceof theInt) {
+		if (why instanceof IdempotInt) {
 			//optimized case
 			s.value(s(why));
 		} else {
@@ -219,13 +219,13 @@ public enum Why { ;
 		if (whyA==null)
 			return;
 		whyA.recurseTermsOrdered(x -> true, (e) -> {
-			if (e instanceof theInt)
+			if (e instanceof IdempotInt)
 				s.add(s(e));
 			return true;
 		}, null);
 	}
 	private static void toSet(Term w, IntConsumer each) {
-		if (w instanceof theInt) {
+		if (w instanceof IdempotInt) {
 			each.accept(s(w));
 		} else {
 			var ww = w.subterms();
@@ -237,7 +237,7 @@ public enum Why { ;
 	}
 
 	private static short s(Term why) {
-		return (short)(((theInt)why).i);
+		return (short)(((IdempotInt)why).i);
 	}
 
 	private static final class MyLazyTerm extends LazyTerm {

@@ -2,7 +2,7 @@ package nars.term;
 
 import jcog.TODO;
 import nars.Op;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 
 import java.util.function.BiPredicate;
@@ -34,7 +34,7 @@ public interface Termlike {
      * also dont expect a negative index, just >=0
      */
     default Term subSafe(int i) {
-        return sub(i, theBool.Null);
+        return sub(i, IdempotentBool.Null);
     }
 
     /**

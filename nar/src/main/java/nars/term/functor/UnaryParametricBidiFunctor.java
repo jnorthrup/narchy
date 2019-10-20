@@ -7,10 +7,10 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atom;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.term.atom.theBool.True;
+import static nars.term.atom.IdempotentBool.True;
 
 /** UnaryBidiFunctor with constant-like parameter */
 public abstract class UnaryParametricBidiFunctor extends Functor {
@@ -30,7 +30,7 @@ public abstract class UnaryParametricBidiFunctor extends Functor {
             case 3:
                 return apply2(e, terms.sub(0), terms.sub(1), terms.sub(2));
             default:
-                return theBool.Null;
+                return IdempotentBool.Null;
         }
     }
 
@@ -54,7 +54,7 @@ public abstract class UnaryParametricBidiFunctor extends Functor {
             } else {
                 var XY = compute(x, param);
                 if (XY!=null) {
-                    return e.is(y, XY) ? null : theBool.Null;
+                    return e.is(y, XY) ? null : IdempotentBool.Null;
                 } else {
                     return null;
                 }
@@ -63,7 +63,7 @@ public abstract class UnaryParametricBidiFunctor extends Functor {
             if (x.hasAny(Op.Variable)) {
                 var X = uncompute(e, x, param, y);
                 if (X!=null) {
-                    return e.is(x, X) ? null : theBool.Null;
+                    return e.is(x, X) ? null : IdempotentBool.Null;
                 } else {
                     return null;
                 }
@@ -71,7 +71,7 @@ public abstract class UnaryParametricBidiFunctor extends Functor {
 
                 var XY = compute(x, param);
                 if (XY != null) {
-                    return XY.equals(y) ? True  : theBool.Null;
+                    return XY.equals(y) ? True  : IdempotentBool.Null;
                 } else {
                     return null;
                 }

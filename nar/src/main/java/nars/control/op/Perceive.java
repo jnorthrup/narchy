@@ -11,7 +11,7 @@ import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.TemporalTask;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.buffer.Termerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,7 +157,7 @@ public enum Perceive {
 
     private static boolean execOperator(Task x, What w) {
         Term maybeOperator = Functor.func(x.term());
-        if (maybeOperator == theBool.Null)
+        if (maybeOperator == IdempotentBool.Null)
             return false;
 
         var n = w.nar;

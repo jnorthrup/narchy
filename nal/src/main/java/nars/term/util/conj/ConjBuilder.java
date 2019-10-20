@@ -5,7 +5,7 @@ import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -13,7 +13,7 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
-import static nars.term.atom.theBool.True;
+import static nars.term.atom.IdempotentBool.True;
 import static nars.time.Tense.*;
 
 public interface ConjBuilder {
@@ -30,7 +30,7 @@ public interface ConjBuilder {
 
             case XTERNAL:
                 var v = ConjBuilder.preSorted(u);
-                if (v.length == 1 && !(v[0] instanceof theBool)) {
+                if (v.length == 1 && !(v[0] instanceof IdempotentBool)) {
                     if (/*!(v[0] instanceof Ellipsislike) || */(u.length > 1 && u[0].equals(u[1])))
                         return new Term[]{v[0], v[0]};
                 }
@@ -44,7 +44,7 @@ public interface ConjBuilder {
     static Term[] preSorted(Term[] u) {
 
         for (var t : u) {
-            if (t == theBool.Null)
+            if (t == IdempotentBool.Null)
                 throw new NullPointerException();
                 //return Bool.Null_Array;
             if (t == null)
@@ -54,9 +54,9 @@ public interface ConjBuilder {
         var trues = 0;
         for (var t : u) {
 
-            if (t == theBool.False)
-                return theBool.False_Array;
-            if (t == theBool.True)
+            if (t == IdempotentBool.False)
+                return IdempotentBool.False_Array;
+            if (t == IdempotentBool.True)
                 trues++;
         }
         if (trues > 0) {
@@ -69,7 +69,7 @@ public interface ConjBuilder {
                 case 1: {
 
                     for (var uu : u) {
-                        if (uu != theBool.True) {
+                        if (uu != IdempotentBool.True) {
                             //assert (!(uu instanceof Ellipsislike)) : "if this happens, TODO";
                             return new Term[]{uu};
                         }
@@ -81,7 +81,7 @@ public interface ConjBuilder {
                     var j = 0;
                     for (var i = 0; j < y.length; i++) {
                         var uu = u[i];
-                        if (uu != theBool.True)
+                        if (uu != IdempotentBool.True)
                             y[j++] = uu;
                     }
                     u = y;

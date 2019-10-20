@@ -8,7 +8,7 @@ import nars.subterm.UniSubterm;
 import nars.task.RevisionTest;
 import nars.task.util.TaskException;
 import nars.term.atom.Atomic;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.TermException;
 import nars.term.util.TermTest;
 import nars.util.Timed;
@@ -34,7 +34,7 @@ public class TermTestMisc {
 
     @Test
     void testInstantiateBoolsFromEquivString() {
-        for (Term b : new Term[]{theBool.True, theBool.False, theBool.Null})
+        for (Term b : new Term[]{IdempotentBool.True, IdempotentBool.False, IdempotentBool.Null})
             assertSame(b, $.the(b.toString()));
     }
 
@@ -528,7 +528,7 @@ public class TermTestMisc {
 
     public static Term assertValid(Term o) {
         assertNotNull(o);
-        assertTrue(!(o instanceof theBool));
+        assertTrue(!(o instanceof IdempotentBool));
         return o;
     }
 

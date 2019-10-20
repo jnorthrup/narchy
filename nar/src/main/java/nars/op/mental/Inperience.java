@@ -10,7 +10,7 @@ import nars.task.TemporalTask;
 import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.Image;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.VariableTransform;
@@ -79,7 +79,7 @@ public class Inperience extends TaskTransformAction {
 
 		x = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(x);
         x = x.hasAny(VAR_QUERY) ? VariableTransform.queryToDepVar.apply(x) : x;
-        if (x instanceof theBool) return theBool.Null;
+        if (x instanceof IdempotentBool) return IdempotentBool.Null;
         return Image.imageNormalize(x);
     }
 

@@ -4,7 +4,7 @@ import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 
 import java.util.function.BiFunction;
 
@@ -19,7 +19,7 @@ public abstract class AbstractInlineFunctor2 extends AbstractInlineFunctor {
 
     @Override
     public final Term apply(Evaluation e, Subterms terms) {
-        return terms.subs() != 2 ? theBool.Null : apply(terms.sub(0), terms.sub(1));
+        return terms.subs() != 2 ? IdempotentBool.Null : apply(terms.sub(0), terms.sub(1));
     }
 
     protected abstract Term apply(Term a, Term b);

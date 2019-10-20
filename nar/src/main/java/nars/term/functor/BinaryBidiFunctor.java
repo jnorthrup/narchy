@@ -6,10 +6,10 @@ import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.term.atom.theBool.True;
+import static nars.term.atom.IdempotentBool.True;
 
 /** Functor template for a binary functor with bidirectional parameter cases */
 public abstract class BinaryBidiFunctor extends Functor implements Idempotent {
@@ -31,7 +31,7 @@ public abstract class BinaryBidiFunctor extends Functor implements Idempotent {
             case 3:
                 return apply3(e, terms.sub(0), terms.sub(1), terms.sub(2));
             default:
-                return theBool.Null;
+                return IdempotentBool.Null;
         }
     }
 
@@ -51,7 +51,7 @@ public abstract class BinaryBidiFunctor extends Functor implements Idempotent {
             } else {
                 var XY = compute(e, x, y);
                 if (XY!=null) {
-                    return e.is(xy, XY) ? null : theBool.Null;
+                    return e.is(xy, XY) ? null : IdempotentBool.Null;
                 } else {
                     return null;
                 }
@@ -70,7 +70,7 @@ public abstract class BinaryBidiFunctor extends Functor implements Idempotent {
 
 				//true, keep
 				//false?
-				return XY.equals(xy) ? True : theBool.Null;
+				return XY.equals(xy) ? True : IdempotentBool.Null;
             } else {
                 return computeFromXY(e, x, y, xy);
             }

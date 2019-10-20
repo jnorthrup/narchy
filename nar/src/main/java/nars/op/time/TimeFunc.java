@@ -5,7 +5,7 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.functor.AbstractInlineFunctor;
 
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 import static nars.time.Tense.XTERNAL;
 
 /** temporal quantifiers */

@@ -15,8 +15,8 @@ import nars.time.Tense;
 
 import static nars.Op.CONJ;
 import static nars.Op.IMPL;
-import static nars.term.atom.theBool.Null;
-import static nars.term.atom.theBool.True;
+import static nars.term.atom.IdempotentBool.Null;
+import static nars.term.atom.IdempotentBool.True;
 import static nars.time.Tense.*;
 
 public enum DynamicStatementTruth { ;

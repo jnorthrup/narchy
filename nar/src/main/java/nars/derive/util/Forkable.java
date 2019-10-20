@@ -4,7 +4,7 @@ import jcog.util.ArrayUtil;
 import nars.$;
 import nars.derive.PreDerivation;
 import nars.term.atom.Atomic;
-import nars.term.atom.theInt;
+import nars.term.atom.IdempotInt;
 import nars.term.control.AbstractPred;
 import org.roaringbitmap.RoaringBitmap;
 
@@ -29,7 +29,7 @@ public final class Forkable extends AbstractPred<PreDerivation> {
 //    }
 
     public Forkable(short id) {
-        super($.func(F, SETe.the(theInt.the(id))));
+        super($.func(F, SETe.the(IdempotInt.the(id))));
         this.can = new short[] { id };
     }
 

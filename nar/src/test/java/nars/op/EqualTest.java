@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import static nars.$.$$;
 import static nars.op.ArithmeticTest.assertEval;
 import static nars.op.ArithmeticTest.assertSolves;
-import static nars.term.atom.theBool.*;
+import static nars.term.atom.IdempotentBool.*;
 
 public class EqualTest {
     /**

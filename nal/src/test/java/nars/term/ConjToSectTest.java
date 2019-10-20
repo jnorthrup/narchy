@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.CONJ;
-import static nars.term.atom.theBool.False;
+import static nars.term.atom.IdempotentBool.False;
 import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.DTERNAL;
 

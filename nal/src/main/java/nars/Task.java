@@ -22,7 +22,7 @@ import nars.term.*;
 import nars.term.anon.Intrin;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.TermedDelegate;
 import nars.term.util.transform.RecursiveTermTransform;
 import nars.term.var.NormalizedVariable;
@@ -233,7 +233,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (t == null)
             return fail(null, "null content", false /* FORCE */);
 
-        if (t instanceof theBool || t instanceof Variable)
+        if (t instanceof IdempotentBool || t instanceof Variable)
             return fail(t, "bool or variable", safe);
 
         if (punc != COMMAND) {

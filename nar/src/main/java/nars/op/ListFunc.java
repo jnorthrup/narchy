@@ -8,8 +8,8 @@ import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Terms;
-import nars.term.atom.theBool;
-import nars.term.atom.theInt;
+import nars.term.atom.IdempotentBool;
+import nars.term.atom.IdempotInt;
 import nars.term.buffer.Termerator;
 import nars.term.functor.BinaryBidiFunctor;
 import nars.term.functor.UnaryBidiFunctor;
@@ -79,9 +79,9 @@ public enum ListFunc {
             var l = xy.subs();
             switch (l) {
                 case 0:
-                    return e.is(x, Op.EmptyProduct, y, Op.EmptyProduct) ? null : theBool.Null;
+                    return e.is(x, Op.EmptyProduct, y, Op.EmptyProduct) ? null : IdempotentBool.Null;
                 case 1:
-                    return e.is(x, Op.EmptyProduct, y, xy) && e.is(x, xy, y, Op.EmptyProduct) ? null : theBool.Null;
+                    return e.is(x, Op.EmptyProduct, y, xy) && e.is(x, xy, y, Op.EmptyProduct) ? null : IdempotentBool.Null;
                 default:
                     var xys = xy.subterms();
 
@@ -109,10 +109,10 @@ public enum ListFunc {
                             Op.EmptyProduct
                             :
                             $.pFast(xy.subterms().terms((i, ii) -> i < ys)))
-                                ? null : theBool.Null;
+                                ? null : IdempotentBool.Null;
 
 
-            return y.hasAny(Op.Variable) || xy.hasAny(Op.Variable) ? null : theBool.Null;
+            return y.hasAny(Op.Variable) || xy.hasAny(Op.Variable) ? null : IdempotentBool.Null;
         }
 
         @Override
@@ -124,9 +124,9 @@ public enum ListFunc {
             var remainderLength = xy.subs() - xs;
             if (remainderLength >= 0)
                 if (xx.subterms().ANDi((xi, xii) -> xy.sub(xii).equals(xi)))
-                    return e.is(y, (remainderLength == 0) ? Op.EmptyProduct : $.pFast(xy.subterms().terms((i, ii) -> i >= xs))) ? null : theBool.Null;
+                    return e.is(y, (remainderLength == 0) ? Op.EmptyProduct : $.pFast(xy.subterms().terms((i, ii) -> i >= xs))) ? null : IdempotentBool.Null;
 
-            return x.hasAny(Op.Variable) || xy.hasAny(Op.Variable) ? null : theBool.Null;
+            return x.hasAny(Op.Variable) || xy.hasAny(Op.Variable) ? null : IdempotentBool.Null;
         }
     };
 
@@ -160,16 +160,16 @@ public enum ListFunc {
     };
 
     public static final Functor sub = Functor.f2("sub",
-            (x, n) -> n.op() == INT ? x.sub(((theInt) n).i, theBool.Null) : null);
+            (x, n) -> n.op() == INT ? x.sub(((IdempotInt) n).i, IdempotentBool.Null) : null);
 
     public static final Functor subs = Functor.f2Or3("subs", args -> {
         if (args.subs() == 2) {
             var n = args.sub(1);
             if (n.op() == INT) {
-                var nn = ((theInt) n).i;
+                var nn = ((IdempotInt) n).i;
                 var xx = args.sub(0).subterms();
                 var m = xx.subs();
-                return nn < m ? PROD.the(xx.subRangeArray(nn, m)) : theBool.Null;
+                return nn < m ? PROD.the(xx.subRangeArray(nn, m)) : IdempotentBool.Null;
             } else {
                 return null;
             }

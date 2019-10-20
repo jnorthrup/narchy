@@ -7,7 +7,7 @@ import nars.Op;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Terms;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.compound.Sequence;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
-import static nars.term.atom.theBool.*;
+import static nars.term.atom.IdempotentBool.*;
 import static nars.time.Tense.*;
 
 /**
@@ -265,7 +265,7 @@ public enum ConjPar {
                     var common = i.keySet();
                     var factor = B.conj(common.toArray(Op.EmptyTermArray));
 
-                    if (factor instanceof theBool)
+                    if (factor instanceof IdempotentBool)
                         return factor;
 
                     xx = xx.clone(); //dont modify input array

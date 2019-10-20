@@ -15,7 +15,7 @@ import nars.game.action.BiPolarAction;
 import nars.game.sensor.*;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.atom.theInt;
+import nars.term.atom.IdempotInt;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.BooleanToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
@@ -32,9 +32,9 @@ import static nars.game.NAct.POS;
  */
 public interface NSense {
 
-    Atomic LOW = theInt.the(-1); //Atomic.the("low");
-    Atomic MID = theInt.the(0); //Atomic.the("mid");
-    Atomic HIH = theInt.the(+1); //Atomic.the("hih");
+    Atomic LOW = IdempotInt.the(-1); //Atomic.the("low");
+    Atomic MID = IdempotInt.the(0); //Atomic.the("mid");
+    Atomic HIH = IdempotInt.the(+1); //Atomic.the("hih");
 
 
     static Term switchTerm(String a, String b) throws Narsese.NarseseException {

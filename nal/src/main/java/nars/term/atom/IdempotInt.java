@@ -14,25 +14,25 @@ import static nars.Op.INT;
 /**
  * 32-bit signed integer
  */
-public final class theInt extends Atomic implements Idempotent {
+public final class IdempotInt extends Atomic implements Idempotent {
 
 	static final int INT_CACHE_SIZE = ANON_INT_MAX * 8;
-	static final theInt[] pos = new theInt[INT_CACHE_SIZE];
-	private static final theInt[] neg = new theInt[INT_CACHE_SIZE];
+	static final IdempotInt[] pos = new IdempotInt[INT_CACHE_SIZE];
+	private static final IdempotInt[] neg = new IdempotInt[INT_CACHE_SIZE];
 
 	static {
 		for (var i = 0; i < pos.length; i++) {
-			pos[i] = new theInt(i);
+			pos[i] = new IdempotInt(i);
 		}
 		for (var i = 1; i < neg.length; i++) {
-			neg[i] = new theInt(-i);
+			neg[i] = new IdempotInt(-i);
 		}
 	}
 
-	public static final Term ZERO = theInt.the(0);
-	public static final Term ONE = theInt.the(1);
-	public static final Term TWO = theInt.the(2);
-	public static final Term NEG_ONE = theInt.the(-1);
+	public static final Term ZERO = IdempotInt.the(0);
+	public static final Term ONE = IdempotInt.the(1);
+	public static final Term TWO = IdempotInt.the(2);
+	public static final Term NEG_ONE = IdempotInt.the(-1);
 
 	/*@Stable*/
 	private final byte[] bytesCached;
@@ -43,7 +43,7 @@ public final class theInt extends Atomic implements Idempotent {
 //    }
 	public final int i;
 
-	private theInt(int i) {
+	private IdempotInt(int i) {
 		this.i = i;
 
 		var intLen = IntCoding.variableByteLengthOfZigZagInt(i); //1 to 4 bytes
@@ -64,11 +64,11 @@ public final class theInt extends Atomic implements Idempotent {
         return 0;
     }
 
-    public static theInt the(int i) {
+    public static IdempotInt the(int i) {
 		if (i >= 0 && i < pos.length) {
 			return pos[i];
 		} else {
-			return i < 0 && i > -neg.length ? neg[-i] : new theInt(i);
+			return i < 0 && i > -neg.length ? neg[-i] : new IdempotInt(i);
 		}
 	}
 
@@ -100,7 +100,7 @@ public final class theInt extends Atomic implements Idempotent {
 
 	@Override
 	public boolean equals(Object obj) {
-		return (this == obj) || ((obj instanceof theInt) && (i == ((theInt) obj).i));
+		return (this == obj) || ((obj instanceof IdempotInt) && (i == ((IdempotInt) obj).i));
 	}
 
 	@Override

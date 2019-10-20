@@ -12,7 +12,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.function.UnaryOperator;
 
 import static nars.Op.*;
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 import static nars.time.Tense.DTERNAL;
 
 /**
@@ -430,7 +430,7 @@ public class TermBuffer {
             }
         } else {
             @Nullable var y = f.apply(x);
-            if (y == null || y == theBool.Null)
+            if (y == null || y == IdempotentBool.Null)
                 return false;
             else {
                 if (y instanceof Fragment) {

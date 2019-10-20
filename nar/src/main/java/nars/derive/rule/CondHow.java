@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 import static nars.Op.*;
 import static nars.derive.premise.PatternTermBuilder.patternify;
 import static nars.subterm.util.SubtermCondition.*;
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 import static nars.term.control.AbstractTermMatchPred.cost;
 import static nars.unify.constraint.RelationConstraint.*;
 

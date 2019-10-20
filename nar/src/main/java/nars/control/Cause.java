@@ -8,7 +8,7 @@ import jcog.pri.ScalarValue;
 import jcog.signal.tensor.AtomicFloatVector;
 import nars.$;
 import nars.term.Term;
-import nars.term.atom.theInt;
+import nars.term.atom.IdempotInt;
 import nars.time.event.WhenInternal;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,7 +64,7 @@ public class Cause extends WhenInternal implements Comparable<Cause>, Caused, Pr
 
     public Cause(short id, @Nullable Object name) {
         this.id = id;
-        this.why = theInt.the(id);
+        this.why = IdempotInt.the(id);
         this.name = $.identity(name != null ? name : this);
         credit = new AtomicFloatVector(MetaGoal.values().length);
         //credit = new Credit[MetaGoal.values().length];

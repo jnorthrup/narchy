@@ -16,7 +16,7 @@ import nars.table.question.QuestionTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.Image;
 import nars.truth.dynamic.AbstractDynamicTruth;
 import nars.truth.dynamic.DynamicConjTruth;
@@ -138,7 +138,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
         if ((ii.sub(0).op()!=IMPL) && (ii.sub(1).op()!=IMPL)) {
 
             var n = Image.imageNormalize(i);
-            if (!i.equals(n) && !(n instanceof theBool)) {
+            if (!i.equals(n) && !(n instanceof IdempotentBool)) {
                 return s == null ?
                     ((t, bOrG) -> new BeliefTable[]{new ImageBeliefTable(t, bOrG)}) :
                     ((t, bOrG) -> ArrayUtil.add(s.valueOf(t, bOrG), new ImageBeliefTable(t, bOrG)));

@@ -4,7 +4,7 @@ import jcog.TODO;
 import jcog.WTF;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.compound.SameSubtermsCompound;
 import nars.term.util.TermException;
 import org.eclipse.collections.api.list.primitive.ByteList;
@@ -24,7 +24,7 @@ public class ProxyTerm implements SameSubtermsCompound {
         if (t instanceof ProxyTerm)
             throw new WTF(t + " instanceof ProxyTerm; caught attempt to proxy a proxy in " + getClass());
 
-        if (t instanceof theBool)
+        if (t instanceof IdempotentBool)
             throw new TermException("Proxy to BOOL", t);
 
         this.ref = t;

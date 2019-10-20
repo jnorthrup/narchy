@@ -4,7 +4,7 @@ import nars.NAR;
 import nars.Op;
 import nars.derive.Derivation;
 import nars.term.Term;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +31,7 @@ public enum DerivationFailure {
 
     public static @Nullable DerivationFailure failure(Term x, byte punc, int volMax) {
 
-        if (x instanceof theBool) return Taskable;
+        if (x instanceof IdempotentBool) return Taskable;
 
         x = x.unneg();
 

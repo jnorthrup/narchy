@@ -7,7 +7,7 @@ import nars.derive.Derivation;
 import nars.derive.action.TaskTransformAction;
 import nars.task.TemporalTask;
 import nars.term.Term;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class Introduction extends TaskTransformAction {
@@ -37,7 +37,7 @@ public abstract class Introduction extends TaskTransformAction {
 
         var y = apply(x, w);
 
-        return (y != null && !(y instanceof theBool) && y.unneg().op().conceptualizable && !x.equals(y)) ?
+        return (y != null && !(y instanceof IdempotentBool) && y.unneg().op().conceptualizable && !x.equals(y)) ?
             taskify(t, x, y, w) : null;
     }
 

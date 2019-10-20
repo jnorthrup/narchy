@@ -9,7 +9,7 @@ import nars.subterm.DisposableTermList;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.TermException;
 import nars.term.util.TermTransformException;
 import nars.term.util.builder.TermBuilder;
@@ -25,7 +25,7 @@ import java.util.Set;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
-import static nars.term.atom.theBool.*;
+import static nars.term.atom.IdempotentBool.*;
 import static nars.time.Tense.*;
 
 /**
@@ -136,7 +136,7 @@ public class ConjTree implements ConjBuilder {
                 return addParallelP(nu.unneg()); //became positive
         }
 
-        if (!neg.isEmpty() && !(nu instanceof theBool)) {
+        if (!neg.isEmpty() && !(nu instanceof IdempotentBool)) {
             nu = reduceNegNeg(nu);
 
             if (nu instanceof Neg)
@@ -259,7 +259,7 @@ public class ConjTree implements ConjBuilder {
                     var nx2 = Conj.diffPar(nx, nyn);
                     if (!nx.equals(nx2)) {
                         nx = nx2;
-                        if (nx instanceof theBool)
+                        if (nx instanceof IdempotentBool)
                             return nx;
                         var x = reinsertNN(nx, toAdd, 0);
                         if (x != null)
@@ -270,7 +270,7 @@ public class ConjTree implements ConjBuilder {
                     nxe.removeAll(nyn);
                     nx = nxe.term();
                     nxn = null; //invalidate
-                    if (nx instanceof theBool)
+                    if (nx instanceof IdempotentBool)
                         return nx;
                     var nxshift = nxe.shift();
                     var x = reinsertNN(nx, toAdd, nxshift);
@@ -317,7 +317,7 @@ public class ConjTree implements ConjBuilder {
                 else {
                     var z = Conj.diffAll(x, yy);
                     if (!z.equals(x)) {
-                        if (z instanceof theBool)
+                        if (z instanceof IdempotentBool)
                             return z.neg();
                         x = z;
                         if (x.op()!=CONJ)
@@ -423,14 +423,14 @@ public class ConjTree implements ConjBuilder {
 
             //                if (xu.op()==NEG)
             //                    return addAt(at, xu.unneg()); //inverted
-            if (!pos.isEmpty() && !(xu instanceof theBool)) {
+            if (!pos.isEmpty() && !(xu instanceof IdempotentBool)) {
                 xu = reducePN(xu, pos, true); 
                 if (xu instanceof Neg) {
                     return addAt(at,xu.unneg());
                 }
             }
 
-            if (!neg.isEmpty() && !(xu instanceof theBool)) {
+            if (!neg.isEmpty() && !(xu instanceof IdempotentBool)) {
                 xu = reduceNegNeg(xu);
             }
 

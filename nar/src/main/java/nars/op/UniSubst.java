@@ -17,7 +17,7 @@ import nars.unify.UnifyTransform;
 
 import static nars.Op.VAR_DEP;
 import static nars.Op.VAR_INDEP;
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 
 /**
  * substituteIfUnifies....(target, varFrom, varTo)

@@ -3,7 +3,7 @@ package nars.op;
 import nars.attention.What;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.compound.Sequence;
 import nars.term.util.conj.Conj;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -80,7 +80,7 @@ public abstract class EventIntroduction extends Introduction {
                             return x; //fail
                         if (!replacement.isEmpty()) {
                             var xx = x.replace(replacement);
-                            if (!(xx instanceof theBool))
+                            if (!(xx instanceof IdempotentBool))
                                 return xx;
                         }
                     }

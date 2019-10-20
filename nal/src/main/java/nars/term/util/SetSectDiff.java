@@ -8,15 +8,15 @@ import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
 import static nars.term.Terms.commute;
-import static nars.term.atom.theBool.Null;
-import static nars.term.atom.theBool.True;
+import static nars.term.atom.IdempotentBool.Null;
+import static nars.term.atom.IdempotentBool.True;
 import static nars.time.Tense.DTERNAL;
 
 /**
@@ -200,7 +200,7 @@ public enum SetSectDiff {
 
 
         for (var x : t) {
-            if (x instanceof theBool) {
+            if (x instanceof IdempotentBool) {
                 if (x == True)
                     continue;
                 else

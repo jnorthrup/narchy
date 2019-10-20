@@ -12,7 +12,7 @@ import nars.time.Tense;
 
 import static jcog.Util.assertUnitized;
 import static nars.Op.CONJ;
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 

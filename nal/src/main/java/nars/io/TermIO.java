@@ -28,7 +28,7 @@ import static nars.Op.NEG;
 import static nars.io.IO.SPECIAL_BYTE;
 import static nars.io.IO.encoding;
 import static nars.term.anon.Intrin._term;
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -95,9 +95,9 @@ public interface TermIO {
                         case -1:
                             return Null;
                         case 0:
-                            return theBool.False;
+                            return IdempotentBool.False;
                         case 1:
-                            return theBool.True;
+                            return IdempotentBool.True;
                         default:
                             throw new UnsupportedEncodingException();
                     }
@@ -113,7 +113,7 @@ public interface TermIO {
                             throw new IOException("unknown ATOM encoding: " + encoding(opByte));
                     }
                 case INT:
-                    return theInt.the(IntCoding.readZigZagInt(in));
+                    return IdempotInt.the(IntCoding.readZigZagInt(in));
                 case INTERVAL:
                     return Interval.read(in);
                 case NEG:

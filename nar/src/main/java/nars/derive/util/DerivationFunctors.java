@@ -23,7 +23,7 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Map;
 
-import static nars.term.atom.theBool.Null;
+import static nars.term.atom.IdempotentBool.Null;
 import static nars.term.util.conj.ConjMatch.CONJ_WITHOUT_UNIFY;
 
 public enum DerivationFunctors {

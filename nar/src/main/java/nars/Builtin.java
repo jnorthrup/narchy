@@ -8,8 +8,8 @@ import nars.task.NALTask;
 import nars.term.Variable;
 import nars.term.*;
 import nars.term.atom.Atom;
-import nars.term.atom.theBool;
-import nars.term.atom.theInt;
+import nars.term.atom.IdempotentBool;
+import nars.term.atom.IdempotInt;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.functor.AbstractInlineFunctor2;
 import nars.term.functor.UnaryBidiFunctor;
@@ -32,7 +32,7 @@ import static nars.Op.*;
 import static nars.io.NarseseParser.termDynamic;
 import static nars.op.Cmp.cmp;
 import static nars.term.Functor.f0;
-import static nars.term.atom.theBool.*;
+import static nars.term.atom.IdempotentBool.*;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -159,7 +159,7 @@ public enum Builtin {
                     for (var i = 0; i < s; i++) {
                         if (x.sub(i).equals(y)) {
                             if (indices == null) indices = new TreeSet();
-                            indices.add(theInt.the(i));
+                            indices.add(IdempotInt.the(i));
                         }
                     }
                     return indices == null ? Null : SETe.the(indices);
@@ -175,7 +175,7 @@ public enum Builtin {
                     for (var i = 0; i < s; i++) {
                         if (x.sub(i).equals(y)) {
                             if (indices == null) indices = new TreeSet();
-                            indices.add($.p(y, theInt.the(i)));
+                            indices.add($.p(y, IdempotInt.the(i)));
                         }
                     }
                     if (indices == null)
@@ -238,7 +238,7 @@ public enum Builtin {
             }),
 
             Functor.f3("ifThenElse", (condition, ifTrue, ifFalse) -> {
-                if (!(condition instanceof theBool))
+                if (!(condition instanceof IdempotentBool))
                     return null;
                 else {
                     if (condition == True)
@@ -268,7 +268,7 @@ public enum Builtin {
 
             Functor.f2("subterm", (x, index) -> {
                 try {
-                    if (index instanceof theInt && index.op() == INT) {
+                    if (index instanceof IdempotInt && index.op() == INT) {
                         return x.sub($.intValue(index));
                     }
                 } catch (NumberFormatException ignored) {
@@ -524,7 +524,7 @@ public enum Builtin {
                     var o = index.op();
                     if (o == INT) {
 
-                        var i = ((theInt) index).i;
+                        var i = ((IdempotInt) index).i;
                         return i >= 0 && i < len ? x.sub(i) : False;
 
                     } else if (o == PROD && index.subs() == 2) {
@@ -532,9 +532,9 @@ public enum Builtin {
                         if (start.op() == INT) {
                             var end = (index).sub(1);
                             if (end.op() == INT) {
-                                var si = ((theInt) start).i;
+                                var si = ((IdempotInt) start).i;
                                 if (si >= 0 && si < len) {
-                                    var ei = ((theInt) end).i;
+                                    var ei = ((IdempotInt) end).i;
                                     if (ei >= 0 && ei <= len) {
                                         if (si == ei)
                                             return Op.EmptyProduct;

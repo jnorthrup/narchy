@@ -5,10 +5,10 @@ import nars.eval.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Variable;
-import nars.term.atom.theInt;
+import nars.term.atom.IdempotInt;
 import nars.term.functor.SimpleBinaryFunctor;
 
-import static nars.term.atom.theBool.*;
+import static nars.term.atom.IdempotentBool.*;
 
 /**
  * general purpose comparator: cmp(x, y, x.compareTo(y))
@@ -17,14 +17,14 @@ public class Cmp extends SimpleBinaryFunctor {
 
     public static final Functor cmp = new Cmp();
 
-    static final theInt Zero = theInt.the(0);
+    static final IdempotInt Zero = IdempotInt.the(0);
 
     private Cmp() {
         super("cmp");
     }
 
     private static Term swap(Term x, Term y, int c) {
-        return $.func(cmp, y, x, theInt.the(-c));
+        return $.func(cmp, y, x, IdempotInt.the(-c));
     }
 
     @Override
@@ -45,12 +45,12 @@ public class Cmp extends SimpleBinaryFunctor {
                 return null; //indeterminate
 
             var c = x.compareTo(y);
-            if (e.is(xy, theInt.the(c))) {
+            if (e.is(xy, IdempotInt.the(c))) {
                 return c > 0 ? swap(x, y, c) : null;
             } else
                 return Null; //conflict with the correct value
         } else {
-            if (!(xy instanceof theInt))
+            if (!(xy instanceof IdempotInt))
                 return Null;
             if (!x.hasVars() && !y.hasVars()) {
                 //check for truth, and canonical ordering
@@ -58,7 +58,7 @@ public class Cmp extends SimpleBinaryFunctor {
                 //                if (c > 0)
                 //                    return swap(x, y, c);
                 //                else
-                return ((theInt) xy).i != c ? False : True;
+                return ((IdempotInt) xy).i != c ? False : True;
 
             } else if (x instanceof Variable || y instanceof Variable) {
                 var c = x.compareTo(y);
@@ -73,8 +73,8 @@ public class Cmp extends SimpleBinaryFunctor {
     @Override
     protected Term compute(Evaluation e, Term x, Term y) {
         if (x.equals(y))
-            return theInt.the(0);
-        return !x.hasVars() && !y.hasVars() ? theInt.the(x.compareTo(y)) : null;
+            return IdempotInt.the(0);
+        return !x.hasVars() && !y.hasVars() ? IdempotInt.the(x.compareTo(y)) : null;
     }
 
 }

@@ -2,7 +2,7 @@ package nars.unify;
 
 import nars.NAL;
 import nars.term.Term;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 
 import java.util.Random;
 
@@ -52,7 +52,7 @@ public abstract class UnifySubst extends Unify {
     public final boolean match() {
         var aa = apply(input);
 		//try again
-		return aa instanceof theBool ? true : each(aa);
+		return aa instanceof IdempotentBool ? true : each(aa);
     }
 
 

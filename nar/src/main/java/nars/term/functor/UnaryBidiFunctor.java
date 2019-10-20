@@ -6,11 +6,11 @@ import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.atom.theBool;
+import nars.term.atom.IdempotentBool;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.term.atom.theBool.False;
-import static nars.term.atom.theBool.True;
+import static nars.term.atom.IdempotentBool.False;
+import static nars.term.atom.IdempotentBool.True;
 
 /** (potentially) reversible function */
 public abstract class UnaryBidiFunctor extends Functor {
@@ -30,7 +30,7 @@ public abstract class UnaryBidiFunctor extends Functor {
             case 2:
                 return apply2(e, terms.sub(0), terms.sub(1));
             default:
-                return theBool.Null;
+                return IdempotentBool.Null;
         }
     }
 
@@ -55,7 +55,7 @@ public abstract class UnaryBidiFunctor extends Functor {
                 var XY = compute(x);
                 if (XY!=null) {
                     return e.is(y, XY) ?
-                            null : theBool.Null;
+                            null : IdempotentBool.Null;
                 } else {
                     return null;
                 }
@@ -65,7 +65,7 @@ public abstract class UnaryBidiFunctor extends Functor {
                 var X = uncompute(x, y);
                 if (X!=null) {
                     return e.is(x, X) ?
-                        null : theBool.Null;
+                        null : IdempotentBool.Null;
                 } else {
                     return null;
                 }
