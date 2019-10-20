@@ -28,6 +28,8 @@ import jake2.game.usercmd_t;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import static jake2.Defines.*;
+
 public class MSG extends Globals {
 
     

@@ -42,6 +42,8 @@ import java.io.RandomAccessFile;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import static jake2.Defines.*;
+
 /**
  * Menu
  * 

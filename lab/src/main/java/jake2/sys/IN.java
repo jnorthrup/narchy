@@ -34,6 +34,9 @@ import jake2.qcommon.Cvar;
 import jake2.qcommon.xcommand_t;
 import jake2.util.Math3D;
 
+import static jake2.Defines.*;
+import static jake2.Defines.PITCH;
+
 /**
  * IN
  */

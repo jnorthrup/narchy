@@ -40,6 +40,9 @@ import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import static jake2.Defines.*;
+import static jake2.Defines.CVAR_SERVERINFO;
+
 /**
  * FS
  * 

@@ -38,6 +38,9 @@ import jake2.util.Vargs;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 
+import static jake2.Defines.*;
+import static jake2.Defines.ca_active;
+
 /**
  * V
  */

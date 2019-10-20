@@ -31,6 +31,8 @@ import jake2.qcommon.Cvar;
 
 import javax.sound.sampled.*;
 
+import static jake2.Defines.*;
+
 /**
  * SND_JAVA
  */

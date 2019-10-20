@@ -46,6 +46,9 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
+import static jake2.Defines.*;
+import static jake2.Defines.ca_active;
+
 /**
  * SND_DMA TODO implement sound system
  */

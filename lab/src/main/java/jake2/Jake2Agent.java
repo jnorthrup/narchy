@@ -33,6 +33,7 @@ import spacegraph.video.GLScreenShot;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import static jake2.Defines.STAT_FRAGS;
 import static jake2.Globals.STAT_FRAGS;
 import static jake2.Globals.cl;
 import static nars.$.$;

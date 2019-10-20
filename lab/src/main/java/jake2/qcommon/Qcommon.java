@@ -40,6 +40,8 @@ import jake2.util.Vargs;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import static jake2.Defines.*;
+
 /**
  * Qcommon contains some  basic routines for the game engine
  * namely initialization, shutdown and frame generation.

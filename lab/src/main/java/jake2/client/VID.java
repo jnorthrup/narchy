@@ -46,6 +46,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import static jake2.Defines.*;
+import static jake2.Defines.K_UPARROW;
+
 /**
  * VID is a video driver.
  * 
