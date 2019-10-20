@@ -3,10 +3,11 @@ package jcog.learn.ntm.control;
 
 import java.util.stream.IntStream;
 
-public class UnitFactory {
+public enum UnitFactory {
+	;
 
 
-    @Deprecated public static Unit[] getVector(int vectorSize) {
+	@Deprecated public static Unit[] getVector(int vectorSize) {
         Unit[] vector = IntStream.range(0, vectorSize).mapToObj(i -> new Unit()).toArray(Unit[]::new);
         return vector;
     }

@@ -8,9 +8,10 @@ import java.util.Arrays;
 /**
  * Tests an LSTM in continuous active mode
  */
-public class LiveSTMTest {
+public enum LiveSTMTest {
+	;
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 
         int inputs = 4;
         int outputs = 8;

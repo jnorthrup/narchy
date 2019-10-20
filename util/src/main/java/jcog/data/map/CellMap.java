@@ -109,7 +109,9 @@ public class CellMap<K, V> {
     }
 
     public CacheCell<K, V> computeIfAbsent(K key, Function<K, V> builder) {
-        return compute(key, (z, w) -> { if (w==null) return builder.apply(z); else return w; } );
+        return compute(key, (z, w) -> {
+			return w == null ? builder.apply(z) : w;
+		} );
     }
 
 

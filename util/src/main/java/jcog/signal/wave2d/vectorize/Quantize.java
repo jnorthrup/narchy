@@ -48,7 +48,8 @@ package jcog.signal.wave2d.vectorize;
  * @author <a href="http:
  * @version 0.90 19 Sep 2000
  */
-public class Quantize {
+public enum Quantize {
+	;
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

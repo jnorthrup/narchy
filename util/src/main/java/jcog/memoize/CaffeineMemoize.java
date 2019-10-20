@@ -43,10 +43,7 @@ public class CaffeineMemoize<K, V> implements Memoize<K, V> {
     public String summary() {
         CacheStats stats = cache.stats();
         String a;
-        if (stats.hitCount() > 0)
-            a = n2(stats.hitRate() * 100f) + "% hits, ";
-        else
-            a = "";
+		a = stats.hitCount() > 0 ? n2(stats.hitRate() * 100f) + "% hits, " : "";
         return a + cache.estimatedSize() + " size";
     }
 

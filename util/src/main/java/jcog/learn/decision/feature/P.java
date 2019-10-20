@@ -7,9 +7,10 @@ import java.util.function.Predicate;
  *
  * @author Ignas
  */
-public class P {
+public enum P {
+	;
 
-    public static <T> Predicate<T> isEqual(T value) {
+	public static <T> Predicate<T> isEqual(T value) {
         return p -> p.equals(value);
     }
 

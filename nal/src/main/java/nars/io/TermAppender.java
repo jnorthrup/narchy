@@ -8,7 +8,6 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 
 import java.io.IOException;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import static nars.Op.*;

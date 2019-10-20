@@ -26,8 +26,10 @@ import java.util.stream.Collectors;
 
 import static jcog.grammar.synthesize.util.GrammarUtils.*;
 
-public class GrammarSynthesis {
-    private static Node getNode(String example, Predicate<String> oracle) {
+public enum GrammarSynthesis {
+	;
+
+	private static Node getNode(String example, Predicate<String> oracle) {
         return GrammarTransformer.getTransform(RegexSynthesis.getNode(example, oracle), oracle);
     }
 

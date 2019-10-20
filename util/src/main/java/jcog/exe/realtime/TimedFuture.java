@@ -31,11 +31,7 @@ public interface TimedFuture<T> extends RunnableScheduledFuture<T>, Runnable {
 
         long r1 = rounds();
         long r2 = other.rounds();
-        if (r1 == r2) {
-            return Integer.compare(System.identityHashCode(this), System.identityHashCode(other));
-        } else {
-            return Long.compare(r1, r2);
-        }
+		return r1 == r2 ? Integer.compare(System.identityHashCode(this), System.identityHashCode(other)) : Long.compare(r1, r2);
     }
 
     @Override

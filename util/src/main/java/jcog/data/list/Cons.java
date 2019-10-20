@@ -16,8 +16,8 @@ public class Cons<T> extends AbstractList<T> {
     public final T tail;
 
     public static <T> List<T> the(List<T> f, T r) {
-        if (f.isEmpty()) return List.of(r); //new FasterList(1).with(r);
-        else return new Cons(f, r);
+		//new FasterList(1).with(r);
+		return f.isEmpty() ? List.of(r) : new Cons(f, r);
     }
 
     private Cons(List<T> f, T r) {
@@ -47,10 +47,7 @@ public class Cons<T> extends AbstractList<T> {
 
     @Override
     public T get(int index) {
-        if (index < head.size())
-            return head.get(index);
-        else
-            return tail;
+		return index < head.size() ? head.get(index) : tail;
 //        else if (index == head.size())
 //            return tail;
 //        else

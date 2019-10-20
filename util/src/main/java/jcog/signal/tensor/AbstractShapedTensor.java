@@ -10,14 +10,7 @@ public abstract class AbstractShapedTensor extends AbstractTensor {
 
     protected AbstractShapedTensor(int[] shape) {
 
-        if (shape.length > 1) {
-            this.stride = Tensor.stride(shape);
-
-
-        } else {
-
-            this.stride = ArrayUtil.EMPTY_INT_ARRAY;
-        }
+        this.stride = shape.length > 1 ? Tensor.stride(shape) : ArrayUtil.EMPTY_INT_ARRAY;
 
         this.shape = shape;
     }

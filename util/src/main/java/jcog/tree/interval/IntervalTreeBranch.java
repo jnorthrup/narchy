@@ -23,11 +23,7 @@ public class IntervalTreeBranch<K extends Comparable<? super K>, V> implements
     }
 
     private void updateKeyRange() {
-        if (left != null) {
-            key = new Between<>(left.getLow(), right == null || left.getHigh().compareTo(right.getHigh()) > 0 ? left.getHigh() : right.getHigh());
-        } else {
-            key = new Between<>(right.getLow(), right.getHigh());
-        }
+		key = left != null ? new Between<>(left.getLow(), right == null || left.getHigh().compareTo(right.getHigh()) > 0 ? left.getHigh() : right.getHigh()) : new Between<>(right.getLow(), right.getHigh());
     }
 
     @Override
@@ -254,11 +250,7 @@ public class IntervalTreeBranch<K extends Comparable<? super K>, V> implements
 
     @Override
     public int maxHeight() {
-        if (left != null) {
-            return (right != null ? Math.max(left.maxHeight(), right.maxHeight()) : left.maxHeight()) + 1;
-        } else {
-            return right.maxHeight() + 1;
-        }
+		return left != null ? (right != null ? Math.max(left.maxHeight(), right.maxHeight()) : left.maxHeight()) + 1 : right.maxHeight() + 1;
     }
 
     @Override

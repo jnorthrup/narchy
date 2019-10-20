@@ -36,8 +36,9 @@ import java.util.logging.Logger;
 /**
  * @author Kamnev Georgiy
  */
-public class BlobToByteArray {
-    //<editor-fold defaultstate="collapsed" desc="log Функции">
+public enum BlobToByteArray {
+	;
+	//<editor-fold defaultstate="collapsed" desc="log Функции">
     private static final Logger logger = Logger.getLogger(BlobToByteArray.class.getName());
 
     private static void logException(Throwable ex) {

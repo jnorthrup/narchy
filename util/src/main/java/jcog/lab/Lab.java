@@ -351,10 +351,7 @@ public class Lab<X> {
 
                 Class<?> t = Primitives.wrap(f.getType());
                 boolean primitive = Primitives.unwrap(f.getType()).isPrimitive();
-                if (contains(t)) {
-                    return (!primitive || !Modifier.isFinal(m));
-                } else
-                    return !primitive;
+				return contains(t) ? !primitive || !Modifier.isFinal(m) : !primitive;
             }
         };
 

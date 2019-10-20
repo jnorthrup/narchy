@@ -649,11 +649,7 @@ public class Huffman {
         totalSymbols = trees.size();
         //System.out.println("total symbols=" + totalSymbols);
         int maxTreeDepth;
-        if (isAlt) {
-            maxTreeDepth = 26;
-        } else {
-            maxTreeDepth = Math.min(config.maxTreeDepth, 31);
-        }
+		maxTreeDepth = isAlt ? 26 : Math.min(config.maxTreeDepth, 31);
         int freqDivide = 1;
         HuffmanTree objectTree;
         while (true) {
@@ -700,11 +696,7 @@ public class Huffman {
     private Huffman.HuffmanTree nextTree() {
         HuffmanTree hf1;
         Weight w1 = trees.poll();
-        if (w1 instanceof TmpNode) {
-            hf1 = new HuffmanLeaf(w1.getWeight(), ((TmpNode) w1).key, nextNodeID());
-        } else {
-            hf1 = (HuffmanTree) w1;
-        }
+		hf1 = w1 instanceof TmpNode ? new HuffmanLeaf(w1.getWeight(), ((TmpNode) w1).key, nextNodeID()) : (HuffmanTree) w1;
         return hf1;
     }
 
@@ -734,8 +726,7 @@ public class Huffman {
             curCode = null;
             byte[] rightCode = Arrays.copyOf(leftCode, leftCode.length);
             int bitIdx;
-            if ((rightCode[0] & 7) == 0) bitIdx = 7;
-            else bitIdx = (rightCode[0] & 7) - 1;
+			bitIdx = (rightCode[0] & 7) == 0 ? 7 : (rightCode[0] & 7) - 1;
             rightCode[rightCode.length - 1] |= 1 << bitIdx;
             populateLUTNCodes(((HuffmanNode) objectTree).left, leftCode);
             populateLUTNCodes(((HuffmanNode) objectTree).right, rightCode);
@@ -769,11 +760,7 @@ public class Huffman {
 //        for (int i = 0; i < cores; i++) {
 //            queues[i] = new ArrayBlockingQueue<>(50);
                 Runnable task;
-        if (isFindUsed) {
-            task = new FUGenerator(data);
-        } else {
-            task = new SFGenerator(data);
-        }
+		task = isFindUsed ? new FUGenerator(data) : new SFGenerator(data);
         task.run();
 
 ////            workers[i].start();

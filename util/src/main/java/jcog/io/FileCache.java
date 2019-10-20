@@ -16,9 +16,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class FileCache {
+public enum FileCache {
+	;
 
-    public static <X> Stream<X> fileCache(URL u, String baseName, Supplier<Stream<X>> o,
+	public static <X> Stream<X> fileCache(URL u, String baseName, Supplier<Stream<X>> o,
                                           BiConsumer<Stream<X>, DataOutput> encoder,
                                           Function<DataInput, X> decoder,
                                           Logger logger

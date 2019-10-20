@@ -16,8 +16,10 @@ package jcog.grammar.synthesize.util;
 
 import java.util.*;
 
-public class CharacterUtils {
-    public static boolean isNewlineOrTabCharacter(char c) {
+public enum CharacterUtils {
+	;
+
+	public static boolean isNewlineOrTabCharacter(char c) {
         return c == '\n' || c == '\t';
     }
 

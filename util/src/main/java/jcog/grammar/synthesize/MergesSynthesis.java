@@ -25,8 +25,10 @@ import java.util.stream.Collectors;
 
 import static jcog.grammar.synthesize.util.GrammarUtils.*;
 
-public class MergesSynthesis {
-    public static NodeMerges getMergesMultiple(Iterable<Node> roots, Predicate<String> oracle) {
+public enum MergesSynthesis {
+	;
+
+	public static NodeMerges getMergesMultiple(Iterable<Node> roots, Predicate<String> oracle) {
         NodeMerges merges = new NodeMerges();
         NodeMerges processed = new NodeMerges();
         for (Node first : roots) {

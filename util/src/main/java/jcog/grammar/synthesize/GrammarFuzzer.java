@@ -25,8 +25,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class GrammarFuzzer {
-    public static class SampleParameters {
+public enum GrammarFuzzer {
+	;
+
+	public static class SampleParameters {
         private final double[] pRepetition;
         private final double pRecursion;
         private final double pAllCharacters;

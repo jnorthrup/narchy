@@ -25,8 +25,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class GrammarSerializer {
-    public static void serialize(CharSequence string, DataOutput dos) throws IOException {
+public enum GrammarSerializer {
+	;
+
+	public static void serialize(CharSequence string, DataOutput dos) throws IOException {
         if (string == null) {
             dos.writeInt(-1);
         } else {

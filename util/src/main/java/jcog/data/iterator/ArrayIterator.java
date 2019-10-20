@@ -62,10 +62,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
 
     @SafeVarargs
     public static <E> Iterator<E> iterator(E... e) {
-        if (e == null)
-            return Util.emptyIterator;
-        else
-            return ArrayIterator.iterateN(e, e.length);
+		return e == null ? Util.emptyIterator : ArrayIterator.iterateN(e, e.length);
     }
 
     @SafeVarargs
@@ -136,11 +133,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
     }
 
     private static <X> Stream<X> arrayStream(X[] list, int size) {
-        if (list.length>size) {
-            return java.util.Arrays.stream(list, 0, size);
-        } else {
-            return Stream.of(list);
-        }
+		return list.length > size ? java.util.Arrays.stream(list, 0, size) : Stream.of(list);
     }
 
     public static <X> Stream<X> streamNonNull(X[] list, int size) {

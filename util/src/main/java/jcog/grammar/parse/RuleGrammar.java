@@ -102,11 +102,7 @@ public class RuleGrammar extends Grammar {
 			Parser last = (Parser) a.pop();
 			Parser butlast = (Parser) a.pop();
 			Seq seq;
-			if (last instanceof Seq) {
-				seq = (Seq) last;
-			} else {
-				seq = seq(last);
-			}
+			seq = last instanceof Seq ? (Seq) last : seq(last);
 			seq.addTop(butlast);
 			a.push(seq);
 		}
@@ -117,11 +113,7 @@ public class RuleGrammar extends Grammar {
 			Parser last = (Parser) a.pop();
 			Parser butlast = (Parser) a.pop();
 			Alternation alt;
-			if (butlast instanceof Alternation) {
-				alt = (Alternation) butlast;
-			} else {
-				alt = alt(butlast);
-			}
+			alt = butlast instanceof Alternation ? (Alternation) butlast : alt(butlast);
 			alt.get(last);
 			a.push(alt);
 		}

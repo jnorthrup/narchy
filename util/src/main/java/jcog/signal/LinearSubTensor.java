@@ -55,9 +55,7 @@ public class LinearSubTensor implements Tensor, Comparable<LinearSubTensor> {
         int a = Long.compare(linearStart, o.linearStart);
         if (a == 0) {
             int b = Long.compare(linearEnd, o.linearEnd);
-            if (b == 0) {
-                return Integer.compare(System.identityHashCode(parent), System.identityHashCode(o.parent));
-            } else return b;
+			return b == 0 ? Integer.compare(System.identityHashCode(parent), System.identityHashCode(o.parent)) : b;
         } else return a;
     }
 

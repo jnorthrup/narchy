@@ -37,15 +37,11 @@ public enum Roulette {
 
         float weight_sum = Util.sumIfPositive(weightCount, weight);
 
-        if (weight_sum < ScalarValue.EPSILON) {
-            //flat
-            return Util.bin(rng.asFloat() * weightCount, weightCount);//rng.nextInt(count)
-        } else {
-
-            return selectRouletteUnidirectionally
-                    //return selectRouletteBidirectionally
-                            (weightCount, weight, weight_sum, rng);
-        }
+		//flat
+		//rng.nextInt(count)
+		return weight_sum < ScalarValue.EPSILON ? Util.bin(rng.asFloat() * weightCount, weightCount) : selectRouletteUnidirectionally
+			//return selectRouletteBidirectionally
+				(weightCount, weight, weight_sum, rng);
     }
 
     public static int selectRouletteCached(int weightCount, IntToFloatFunction weight, Random rng) {
@@ -80,10 +76,9 @@ public enum Roulette {
                     float wi = weight.valueOf(i);
                     if (valid(wi)) {
                         w[i] = wi;
-                        if (lastValid == -1)
-                            lastValid = i;//first
-                        else
-                            lastValid = -2;//more than one
+						//first
+						//more than one
+						lastValid = lastValid == -1 ? i : -2;
                     }
                 }
 

@@ -48,10 +48,7 @@ public class FloatNormalizer implements FloatToFloatFunction {
 
         float r = max - min;
         assert (r >= 0);
-        if (r <= epsilon)
-            return 0.5f;
-        else
-            return (x - min) / r;
+		return r <= epsilon ? 0.5f : (x - min) / r;
     }
 
     /**

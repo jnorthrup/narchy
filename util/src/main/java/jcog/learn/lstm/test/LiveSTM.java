@@ -55,10 +55,7 @@ public abstract class LiveSTM extends AbstractTraining {
 
             float learningRate = 0.1f;
             double[] predicted;
-            if (validation_mode)
-                predicted = agent.predict(inter.actual);
-            else
-                predicted = agent.learn(inter.actual, inter.expected, learningRate);
+			predicted = validation_mode ? agent.predict(inter.actual) : agent.learn(inter.actual, inter.expected, learningRate);
 
 
 

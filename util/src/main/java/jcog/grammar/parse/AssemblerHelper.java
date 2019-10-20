@@ -3,7 +3,8 @@ package jcog.grammar.parse;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AssemblerHelper {
+public enum AssemblerHelper {
+	;
 
 	/**
 	 * Returns a vector of the elements on an assembly's stack that appear

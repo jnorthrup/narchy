@@ -4,7 +4,6 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 

@@ -3,7 +3,6 @@ package jcog.learn.ntm.memory.address;
 import jcog.learn.ntm.control.Unit;
 import jcog.learn.ntm.control.UnitFactory;
 
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
 

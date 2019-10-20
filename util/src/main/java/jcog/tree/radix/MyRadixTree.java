@@ -256,16 +256,20 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
             List children = node.getOutgoingEdges();
 
             for (int i = 0; i < children.size() - 1; ++i) {
-                prettyPrint((Node) children.get(i), sb, prefix + (isTail ? (isRoot ? "" : "    ") : "│   "), false, false);
+                prettyPrint((Node) children.get(i), sb, tailPrint(prefix, isTail, isRoot), false, false);
             }
 
             if (!children.isEmpty()) {
-                prettyPrint((Node) children.get(children.size() - 1), sb, prefix + (isTail ? (isRoot ? "" : "    ") : "│   "), true, false);
+                prettyPrint((Node) children.get(children.size() - 1), sb, tailPrint(prefix, isTail, isRoot), true, false);
             }
 
         } catch (IOException var8) {
             throw new IllegalStateException(var8);
         }
+    }
+
+    private static String tailPrint(String prefix, boolean isTail, boolean isRoot) {
+        return prefix + (isTail ? (isRoot ? "" : "    ") : "│   ");
     }
 
     private void _clear() {
@@ -962,7 +966,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
      * because equals() and hashCode() are not specified by the CharSequence API contract.
      */
     @SuppressWarnings("JavaDoc")
-    private Iterable<AbstractBytes> getDescendantKeys(AbstractBytes startKey, Node startNode) {
+    private static Iterable<AbstractBytes> getDescendantKeys(AbstractBytes startKey, Node startNode) {
         return new DescendantKeys(startKey, startNode);
     }
 
@@ -1273,7 +1277,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
 
         @Override
         public void updateOutgoingEdge(Node childNode) {
-            throw new IllegalStateException("Cannot update the reference to the following child node for the edge starting with \'" + childNode.getIncomingEdgeFirstCharacter() + "\', no such edge already exists: " + childNode);
+            throw new IllegalStateException("Cannot update the reference to the following child node for the edge starting with '" + childNode.getIncomingEdgeFirstCharacter() + "', no such edge already exists: " + childNode);
         }
 
         @Override
@@ -1323,7 +1327,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
 
             int index = MyRadixTree.search(array(), size(), childNode.getIncomingEdgeFirstCharacter());
             if (index < 0) {
-                throw new IllegalStateException("Cannot update the reference to the following child node for the edge starting with \'" + childNode.getIncomingEdgeFirstCharacter() + "\', no such edge already exists: " + childNode);
+                throw new IllegalStateException("Cannot update the reference to the following child node for the edge starting with '" + childNode.getIncomingEdgeFirstCharacter() + "', no such edge already exists: " + childNode);
             } else {
                 set(index, childNode);
             }

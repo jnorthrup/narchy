@@ -1369,7 +1369,9 @@ public class ExtendedCastGraph extends CastGraph {
 
 
         //single element vector/tensor
-        addEdge(Tensor.class, (Function<Tensor, Float>) (t) -> { if (t.volume()==1) return t.getAt(0); else return Float.NaN;}, Float.class);
+        addEdge(Tensor.class, (Function<Tensor, Float>) (t) -> {
+			return t.volume() == 1 ? t.getAt(0) : Float.NaN;
+		}, Float.class);
 
         addEdge(Boolean.class, (Function<Boolean, Integer>) (i) -> i ? 1 : 0, Integer.class);
         addEdge(Number.class, (Function<Number, Boolean>) (i) -> i.intValue() > 0, Boolean.class);
@@ -1402,9 +1404,9 @@ public class ExtendedCastGraph extends CastGraph {
         addEdge(Float.class, (Function<Float, float[]>) (v -> v != null ? new float[]{v} : new float[]{Float.NaN}), float[].class);
         //        setAt(Float.class, Tensor.class, (Function<Float,Tensor>)((f) -> new ArrayTensor(new float[] { f} ))); //1-element
         //does this happen
-        addEdge(Tensor.class, (Function<Tensor, ArrayTensor>) (t -> {
-            if (t instanceof ArrayTensor) {
-                return (ArrayTensor) t; //does this happen
+        addEdge(Tensor.class, (Function<Tensor, Tensor>) (t -> {
+            if (t instanceof Tensor) {
+                return t; //does this happen
             }
             return new ArrayTensor(t.floatArrayShared());
         }), ArrayTensor.class);

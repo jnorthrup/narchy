@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 

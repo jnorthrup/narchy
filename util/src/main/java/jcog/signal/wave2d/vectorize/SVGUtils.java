@@ -3,16 +3,9 @@ package jcog.signal.wave2d.vectorize;
 import java.util.HashMap;
 import java.util.List;
 
-public class SVGUtils {
-	
+public enum SVGUtils {
+	;
 
-
-
-	
-	
-	
-	
-	
 
 	public static float roundtodec(float val, int places){
 		float scale = (float) Math.pow(10, places);

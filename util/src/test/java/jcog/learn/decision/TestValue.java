@@ -1,6 +1,5 @@
 package jcog.learn.decision;
 
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 

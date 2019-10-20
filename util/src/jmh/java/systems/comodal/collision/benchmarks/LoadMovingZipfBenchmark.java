@@ -1,7 +1,6 @@
 package systems.comodal.collision.benchmarks;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 
 @State(Scope.Benchmark)

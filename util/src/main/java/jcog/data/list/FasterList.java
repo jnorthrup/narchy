@@ -248,11 +248,7 @@ public class FasterList<X> extends FastList<X> {
         if (index < 0)
             return null;
         X[] items = this.items;
-        if (items!=null && index < Math.min(items.length, this.size)) {
-            return items[index];
-        } else {
-            return null;
-        }
+        return items != null && index < Math.min(items.length, this.size) ? items[index] : null;
     }
 
     public final int indexOf(Predicate<X> p) {
@@ -776,10 +772,7 @@ public class FasterList<X> extends FastList<X> {
     public X[] toArrayRecycled(IntFunction<X[]> ii) {
         X[] a = items;
         int s = size;
-        if (s == a.length && a.getClass() != Object[].class)
-            return a;
-        else
-            return fillArray(ii.apply(size), false);
+        return s == a.length && a.getClass() != Object[].class ? a : fillArray(ii.apply(size), false);
     }
 
     protected X[] toArrayCopy(@Nullable X[] target, IntFunction<X[]> ii) {

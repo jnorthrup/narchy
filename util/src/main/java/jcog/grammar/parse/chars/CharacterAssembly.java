@@ -103,11 +103,7 @@ public class CharacterAssembly extends Assembly {
 	 */
 	@Override
 	public Object peek() {
-		if (index < length()) {
-			return string.charAt(index);
-		} else {
-			return null;
-		}
+		return index < length() ? string.charAt(index) : null;
 	}
 
 	/**

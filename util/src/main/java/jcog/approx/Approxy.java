@@ -33,7 +33,8 @@ import java.util.function.Function;
 
 /** Approximate Computing Dynmaic Proxy and Runtime System */
 @Paper
-@Skill("Approximate_computing") public class Approxy {
+@Skill("Approximate_computing") public enum Approxy {
+    ;
 
     /** inputs and outputs training data pairs; effectively a replay buffer of POJO vectors */
     public static class ActualExecution extends UnitPri {
@@ -221,7 +222,9 @@ import java.util.function.Function;
     }
 
 
-    public static class TestClass1 {
+    public enum TestClass1 {
+        ;
+
         public static float compute(float x, float y) {
             return x * y;
         }

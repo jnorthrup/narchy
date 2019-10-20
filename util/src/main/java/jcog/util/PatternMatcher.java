@@ -68,11 +68,7 @@ public class PatternMatcher {
     public PatternMatcher(String pattern, int type) {
         mPattern = pattern;
         mType = type;
-        if (mType == PATTERN_ADVANCED_GLOB) {
-            mParsedPattern = parseAndVerifyAdvancedPattern(pattern);
-        } else {
-            mParsedPattern = null;
-        }
+		mParsedPattern = mType == PATTERN_ADVANCED_GLOB ? parseAndVerifyAdvancedPattern(pattern) : null;
     }
     public final String getPath() {
         return mPattern;
@@ -326,11 +322,7 @@ public class PatternMatcher {
                         rangeMin = rangeMax = parsedRange;
                     } else {
                         rangeMin = Integer.parseInt(rangeString.substring(0, commaIndex));
-                        if (commaIndex == rangeString.length() - 1) { 
-                            rangeMax = Integer.MAX_VALUE;
-                        } else {
-                            rangeMax = Integer.parseInt(rangeString.substring(commaIndex + 1));
-                        }
+						rangeMax = commaIndex == rangeString.length() - 1 ? Integer.MAX_VALUE : Integer.parseInt(rangeString.substring(commaIndex + 1));
                     }
                     if (rangeMin > rangeMax) {
                         throw new IllegalArgumentException(

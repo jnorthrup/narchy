@@ -20,9 +20,10 @@ import jcog.constraint.discrete.IntVar;
 import jcog.constraint.discrete.constraint.*;
 import jcog.constraint.discrete.propagation.Propagator;
 
-public class Constraints {
+public enum Constraints {
+	;
 
-    public static Propagator lowerEqual(IntVar x, IntVar y) {
+	public static Propagator lowerEqual(IntVar x, IntVar y) {
         return new LowerEqualVar(x, y, false);
     }
 

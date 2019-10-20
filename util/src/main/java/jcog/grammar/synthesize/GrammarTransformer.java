@@ -24,8 +24,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class GrammarTransformer {
-    public static Node getTransform(Node node, Predicate<String> oracle) {
+public enum GrammarTransformer {
+	;
+
+	public static Node getTransform(Node node, Predicate<String> oracle) {
         Node transformFlatten = getTransform(node, new FlattenTransformer());
         return getTransform(transformFlatten, new ConstantTransformer(oracle, getMultiAlternationRepetitionConstantNodes(transformFlatten)));
     }

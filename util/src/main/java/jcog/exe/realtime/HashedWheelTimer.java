@@ -273,10 +273,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 	@Override
 	public List<Runnable> shutdownNow() {
 		cursor.set(Integer.MIN_VALUE);
-		if (executor instanceof ExecutorService)
-			return ((ExecutorService) this.executor).shutdownNow();
-		else
-			return Collections.EMPTY_LIST;
+		return executor instanceof ExecutorService ? ((ExecutorService) this.executor).shutdownNow() : Collections.EMPTY_LIST;
 	}
 
 	@Override

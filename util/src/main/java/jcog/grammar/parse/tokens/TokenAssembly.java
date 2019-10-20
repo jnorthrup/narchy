@@ -129,11 +129,7 @@ public class TokenAssembly extends Assembly {
 	 */
 	@Override
 	public Object peek() {
-		if (index < length()) {
-			return tokenString.tokenAt(index);
-		} else {
-			return null;
-		}
+		return index < length() ? tokenString.tokenAt(index) : null;
 	}
 
 	/**

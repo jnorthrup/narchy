@@ -113,10 +113,7 @@ public interface LongInterval {
 		}
 
 
-		if (Math.abs(mid - a) <= Math.abs(mid - b))
-			return a;
-		else
-			return b;
+		return Math.abs(mid - a) <= Math.abs(mid - b) ? a : b;
 	}
 
 
@@ -165,11 +162,7 @@ public interface LongInterval {
 		} else {
 			long se = (s + e) / 2L;
 			long ab = (a + b) / 2L;
-			if (se <= ab) {
-				return e;
-			} else {
-				return s;
-			}
+			return se <= ab ? e : s;
 		}
 	}
 
@@ -227,14 +220,13 @@ public interface LongInterval {
 		long s = start();
 		if (s == ETERNAL) return 0;
 		long e = end();
-		long ul = LongInterval.unionLength(s, e, a, b);
 
 //		long sasbeaeb = Math.max(
 //			max(Math.abs(s - a), Math.abs(s - b)),
 //			max(Math.abs(e - a), Math.abs(e - b))
 //		);
 
-		return ul;
+		return LongInterval.unionLength(s, e, a, b);
 	}
 
 
@@ -303,10 +295,7 @@ public interface LongInterval {
 
 	default boolean containsSafe(long s, long e) {
 		long start = start();
-		if (start == ETERNAL)
-			return true;
-		else
-			return s!=ETERNAL && (s >= start && e <= end());
+		return start == ETERNAL ? true : s != ETERNAL && (s >= start && e <= end());
 	}
 	default boolean containedBySafe(long s, long e) {
 		if (s == ETERNAL)

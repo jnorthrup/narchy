@@ -32,9 +32,10 @@ import java.util.List;
  * @author Christopher Manning
  * @version 2003/01/02
  */
-public final class SloppyMath {
+public enum SloppyMath {
+	;
 
-	  public static double abs(double x) {
+	public static double abs(double x) {
 		    if (x > 0)
 		      return x;
 		    return -1.0 * x;
@@ -309,11 +310,7 @@ public final class SloppyMath {
         sumNegativeDifferences += Math.exp(logV[i] - max);
       }
     }
-    if (sumNegativeDifferences > 0.0) {
-      return max + Math.log(1.0 + sumNegativeDifferences);
-    } else {
-      return max;
-    }
+	  return sumNegativeDifferences > 0.0 ? max + Math.log(1.0 + sumNegativeDifferences) : max;
   }
 
   public static void logNormalize(double[] logV) {
@@ -345,11 +342,7 @@ public final class SloppyMath {
         sumNegativeDifferences += Math.exp(logV[i] - max);
       }
     }
-    if (sumNegativeDifferences > 0.0) {
-      return max + Math.log(1.0 + sumNegativeDifferences);
-    } else {
-      return max;
-    }
+	  return sumNegativeDifferences > 0.0 ? max + Math.log(1.0 + sumNegativeDifferences) : max;
   }
 
   public static double logAdd(List<Double> logV) {
@@ -370,11 +363,7 @@ public final class SloppyMath {
 	        sumNegativeDifferences += Math.exp(logV.get(i) - max);
 	      }
 	    }
-	    if (sumNegativeDifferences > 0.0) {
-	      return max + Math.log(1.0 + sumNegativeDifferences);
-	    } else {
-	      return max;
-	    }
+	  return sumNegativeDifferences > 0.0 ? max + Math.log(1.0 + sumNegativeDifferences) : max;
 	  }
 
   
@@ -396,11 +385,7 @@ public final class SloppyMath {
         sumNegativeDifferences += Math.exp(logV[i] - max);
       }
     }
-    if (sumNegativeDifferences > 0.0) {
-      return max + (float) Math.log(1.0f + sumNegativeDifferences);
-    } else {
-      return max;
-    }
+	  return sumNegativeDifferences > 0.0 ? max + (float) Math.log(1.0f + sumNegativeDifferences) : max;
   }
 
   /*
@@ -425,11 +410,7 @@ public final class SloppyMath {
         sumNegativeDifferences += Math.exp((logV[i] - max));
       }
     }
-    if (sumNegativeDifferences > 0.0) {
-      return max + (float) Math.log(1.0 + sumNegativeDifferences);
-    } else {
-      return max;
-    }
+	  return sumNegativeDifferences > 0.0 ? max + (float) Math.log(1.0 + sumNegativeDifferences) : max;
   }
 
   /*
@@ -454,11 +435,7 @@ public final class SloppyMath {
         sumNegativeDifferences += Math.exp((logV[i] - max));
       }
     }
-    if (sumNegativeDifferences > 0.0) {
-      return max + Math.log(1.0 + sumNegativeDifferences);
-    } else {
-      return max;
-    }
+	  return sumNegativeDifferences > 0.0 ? max + Math.log(1.0 + sumNegativeDifferences) : max;
   }
   /**
 	 * Similar to logAdd, but without the final log. I.e. Sum_i exp(logV_i)
@@ -679,11 +656,9 @@ public final class SloppyMath {
           } else if (m == 0) {
               if (k == 0) {
                   result = 1.0;
-                  finished = true;
-              } else {
-                  finished = true;
-              }
-          } else if (k == 0) {
+			  }
+			  finished = true;
+		  } else if (k == 0) {
               double ans = 1.0;
               for (int m0 = 0; m0 < m; m0++) {
                   ans *= ((n - r) - m0);
@@ -989,17 +964,7 @@ public final class SloppyMath {
 
 	public static double logSubtract(double a, double b)
 	{
-		if (a > b)
-		{
-      
-      
-			return a + Math.log(1.0 - Math.exp(b - a));
-
-		}
-		else
-		{
-			return b + Math.log(-1.0 + Math.exp(a - b));
-		}
+		return a > b ? a + Math.log(1.0 - Math.exp(b - a)) : b + Math.log(-1.0 + Math.exp(a - b));
 	}
 
   public static double unsafeSubtract(double a, double b) {

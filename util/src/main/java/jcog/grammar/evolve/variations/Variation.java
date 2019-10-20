@@ -96,12 +96,7 @@ public class Variation {
         }
 
 
-        if (isGood) {
-            return Tuples.twin(newIndividualA, newIndividualB);
-        } else {
-            return null;
-
-        }
+		return isGood ? Tuples.twin(newIndividualA, newIndividualB) : null;
     }
 
     /**

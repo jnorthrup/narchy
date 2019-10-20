@@ -28,8 +28,9 @@ package jcog.reflect;
  *
  * @author gocha
  */
-public class SimpleTypes {
-    private static final Class cBool1 = boolean.class;
+public enum SimpleTypes {
+	;
+	private static final Class cBool1 = boolean.class;
     private static final Class cBool2 = Boolean.class;
     private static final Class cByte1 = byte.class;
     private static final Class cByte2 = Byte.class;

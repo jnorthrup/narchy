@@ -11,10 +11,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 
-public class LambdaMemoizer {
+public enum LambdaMemoizer {
+	;
 
 
-    private static final AtomicInteger serial = new AtomicInteger();
+	private static final AtomicInteger serial = new AtomicInteger();
 
 
     public static <V> Function<Object[], V> memoize(Class klass, String methodName, Class[] paramTypes, MemoizeBuilder<V> m) {

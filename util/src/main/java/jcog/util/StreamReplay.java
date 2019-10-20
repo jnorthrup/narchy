@@ -10,9 +10,10 @@ import java.util.stream.Stream;
 import static java.util.stream.StreamSupport.stream;
 
 /** https://github.com/javasync/streamemo/blob/master/src/main/java/org/javasync/streams/Replayer.java */
-public class StreamReplay {
+public enum StreamReplay {
+	;
 
-    public static <T> Supplier<Stream<T>> replay(Stream<T> data) {
+	public static <T> Supplier<Stream<T>> replay(Stream<T> data) {
         return replay(() -> data);
     }
 

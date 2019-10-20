@@ -26,10 +26,11 @@ import java.util.stream.Collectors;
 /**
  * @author MaleLabTs
  */
-public class Configurator {
+public enum Configurator {
+	;
 
 
-    public static Configuration configure(String json) throws IOException {
+	public static Configuration configure(String json) {
         return configure(new BufferedReader( new StringReader(json)) );
     }
 

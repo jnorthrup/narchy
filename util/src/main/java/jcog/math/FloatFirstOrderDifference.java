@@ -42,11 +42,7 @@ public class FloatFirstOrderDifference implements FloatSupplier {
 
         this.lastValue = currentValue;
 
-        if (lastValue!=lastValue) {
-            return lastDifference = 0;
-        } else {
-            return (lastDifference = (currentValue - lastValue));
-        }
+		return lastValue != lastValue ? (lastDifference = 0) : (lastDifference = (currentValue - lastValue));
 
     }
 

@@ -99,13 +99,9 @@ public class SilenceDetector  {
 	public boolean process(float[] buffer) {
 		boolean isSilence = isSilence(buffer);
 		//break processing chain on silence?
-		if(breakProcessingQueueOnSilence){
-			//break if silent
-			return !isSilence;
-		}else{
-			//never break the chain
-			return true;
-		}
+		//break if silent
+		//never break the chain
+		return breakProcessingQueueOnSilence ? !isSilence : true;
 	}
 
 

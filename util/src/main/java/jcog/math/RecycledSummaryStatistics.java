@@ -175,10 +175,8 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
         double min = getMin();
         double max = getMax();
         double range = max - min;
-        if (range < Float.MIN_NORMAL*64f /* estimate of an FP epsilon */)
-            return 0.5f;
-        else
-            return (float) ((n - min) / (range));
+		/* estimate of an FP epsilon */
+		return range < Float.MIN_NORMAL * 64f ? 0.5f : (float) ((n - min) / (range));
     }
 
     /**
@@ -192,10 +190,7 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
     @Override
     public double getStandardDeviation() {
         double v = getVariance();
-        if (v==v)
-            return (float) Math.sqrt(v);
-        else
-            return Float.NaN;
+		return v == v ? (float) Math.sqrt(v) : Float.NaN;
     }
 
     @Override

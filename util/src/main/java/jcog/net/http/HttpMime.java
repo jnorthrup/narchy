@@ -8,8 +8,9 @@ import java.util.HashMap;
  *
  * @author Joris
  */
-class HttpMime {
-    private static final HashMap<String, String> mime = new HashMap<>();
+enum HttpMime {
+	;
+	private static final HashMap<String, String> mime = new HashMap<>();
 
     static {
         

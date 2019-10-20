@@ -15,7 +15,8 @@ import java.util.Map;
  *  by invoking the resulting classes in embedded context
  *  http:
  *  */
-public class ClassPatch {
+public enum ClassPatch {
+    ;
 
 //    /** http://bytebuddy.net/#/tutorial */
 //    public static class TestByteBuddyAgent {

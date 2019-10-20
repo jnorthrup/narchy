@@ -5,7 +5,6 @@ import jcog.data.list.FasterList;
 import nars.term.Term;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /** this assumes < 127 unique elements */

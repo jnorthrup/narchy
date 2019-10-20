@@ -5,9 +5,10 @@ import jcog.random.XorShift128PlusRandom;
 
 import java.util.Random;
 
-public class SequenceGenerator
+public enum SequenceGenerator
 {
-    static final Random rng = new XorShift128PlusRandom(8L);
+	;
+	static final Random rng = new XorShift128PlusRandom(8L);
 
     public static TrainingSequence generateSequenceSawtooth(int length, int vectorSize) {
         length = length*2+2; 

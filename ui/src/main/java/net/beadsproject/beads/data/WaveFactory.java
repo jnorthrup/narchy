@@ -53,7 +53,7 @@ public abstract class WaveFactory {
      *
      * @return the default Buffer.
      */
-    public final ArrayTensor the() {
+    public final Tensor the() {
         return staticBufs.computeIfAbsent(getName(), (n)->get(DEFAULT_BUFFER_SIZE));
     }
 

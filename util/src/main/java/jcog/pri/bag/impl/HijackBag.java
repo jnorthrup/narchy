@@ -442,10 +442,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
     private float priElseNegInfinity(V x) {
         float p = pri(x);
-        if (p == p)
-            return p;
-        else
-            return NEGATIVE_INFINITY;
+		return p == p ? p : NEGATIVE_INFINITY;
     }
 
     protected boolean keyEquals(Object k, int kHash, V p) {

@@ -193,11 +193,7 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
         }
 
         int ins(boolean countSelfLoops) {
-            if (countSelfLoops) {
-                return in.size();
-            } else {
-                return (int) streamIn().filter(e -> e.from() != this).count();
-            }
+			return countSelfLoops ? in.size() : (int) streamIn().filter(e -> e.from() != this).count();
         }
 
         int outs() {

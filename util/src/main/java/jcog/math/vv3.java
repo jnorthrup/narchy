@@ -24,9 +24,9 @@ public final class vv3  {
         return new vv3(x, y, z);
     }
 
-    public boolean equals(vv3 v) {
-        return equals(v, Double.MIN_NORMAL);
-    }
+//    public boolean equals(vv3 v) {
+//        return equals(v, Double.MIN_NORMAL);
+//    }
     public boolean equals(vv3 v, double epsilon) {
         return this == v ||
                 (

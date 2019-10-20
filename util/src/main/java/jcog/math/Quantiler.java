@@ -132,11 +132,7 @@ public class Quantiler {
                     qold = qnew;
                 }
             }
-            if (tnew == told) {
-                newqile[iq] = 0.5f * (qold + qnew);
-            } else {
-                newqile[iq] = qold + (qnew - qold) * (target - told) / (tnew - told);
-            }
+			newqile[iq] = tnew == told ? 0.5f * (qold + qnew) : qold + (qnew - qold) * (target - told) / (tnew - told);
             told = tnew;
             qold = qnew;
         }

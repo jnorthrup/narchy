@@ -13,7 +13,8 @@ import java.util.Set;
 /**
  * Helps dealing with file permissions.
  */
-public class PermissionUtils {
+public enum PermissionUtils {
+	;
 
 	/**
 	 * XXX: When using standard Java permissions, we treat 'owner' and 'group' equally and give no

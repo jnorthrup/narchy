@@ -158,11 +158,8 @@ public class SarsaLearner {
         
         double newValue;
 
-        
-        if (features != null)
-            newValue = valueFunction[action].predict(features);
-        else
-            newValue = 0;
+
+		newValue = features != null ? valueFunction[action].predict(features) : 0;
 
         
         double delta = reward + gamma * newValue - oldValue;

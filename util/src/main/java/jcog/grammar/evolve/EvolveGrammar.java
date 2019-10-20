@@ -38,9 +38,10 @@ import java.util.logging.Logger;
  * This is used for experiments and by GP engine developers.
  * @author MaleLabTs
  */
-public class EvolveGrammar {
-    
-    /**
+public enum EvolveGrammar {
+	;
+
+	/**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {

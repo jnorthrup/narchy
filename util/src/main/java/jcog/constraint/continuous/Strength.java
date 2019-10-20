@@ -3,9 +3,10 @@ package jcog.constraint.continuous;
 /**
  * Created by alex on 30/01/15.
  */
-public class Strength {
+public enum Strength {
+	;
 
-    public static final double REQUIRED = create(1000.0, 1000.0, 1000.0);
+	public static final double REQUIRED = create(1000.0, 1000.0, 1000.0);
 
     public static final double STRONG = create(1.0, 0.0, 0.0);
 

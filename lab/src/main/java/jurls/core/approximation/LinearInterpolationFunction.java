@@ -7,7 +7,6 @@ package jurls.core.approximation;
 
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /**

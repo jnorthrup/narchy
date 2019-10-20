@@ -23,7 +23,9 @@ import java.io.File;
  * @author Kamran
  * 
  */
-public class TarUtils {
+public enum TarUtils {
+	;
+
 	/**
 	 * Determines the tar file size of the given folder/file path
 	 */
@@ -41,11 +43,7 @@ public class TarUtils {
 
 			if (subFiles != null && subFiles.length > 0) {
 				for (File file : subFiles) {
-					if (file.isFile()) {
-						size += entrySize(file.length());
-					} else {
-						size += tarSize(file);
-					}
+					size += file.isFile() ? entrySize(file.length()) : tarSize(file);
 				}
 			} else {
 				

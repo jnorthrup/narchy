@@ -1,7 +1,8 @@
 package jcog.io.lz;
 
 
-public final class QuickLZ {
+public enum QuickLZ {
+	;
 
 
 	public static final int QLZ_POINTERS_1 = 1;
@@ -111,7 +112,7 @@ public final class QuickLZ {
 					cword_val = ((cword_val >>> 1) | 0x80000000L);
 					if (in[o + 3] != in[src + 3]) {
 						int f = 3 - 2 | (hash << 4);
-						out[dst] = (byte) (f >>> 0);
+						out[dst] = (byte) (f);
 						out[dst + 1] = (byte) (f >>> 8);
 						src += 3;
 						dst += 2;
@@ -135,7 +136,7 @@ public final class QuickLZ {
 						if (matchlen < 18) {
 							int f = hash | (matchlen - 2);
 
-							out[dst] = (byte) (f >>> 0);
+							out[dst] = (byte) (f);
 							out[dst + 1] = (byte) (f >>> 8);
 							dst += 2;
 						} else {

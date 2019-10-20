@@ -21,10 +21,10 @@ package jcog.tree.rtree.split;
  */
 
 import jcog.Util;
-import jcog.tree.rtree.*;
-
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
+import jcog.tree.rtree.RLeaf;
+import jcog.tree.rtree.RNode;
+import jcog.tree.rtree.Spatialization;
+import jcog.tree.rtree.Split;
 
 /**
  * Guttmann's Quadratic split

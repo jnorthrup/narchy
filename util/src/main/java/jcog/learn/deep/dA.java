@@ -19,8 +19,7 @@ public class dA {
         this.n_visible = n_visible;
         this.n_hidden = n_hidden;
 
-        if (rng == null) this.rng = new Random(1234);
-        else this.rng = rng;
+		this.rng = rng == null ? new Random(1234) : rng;
 
         if (W == null) {
             this.W = new double[this.n_hidden][this.n_visible];
@@ -52,11 +51,7 @@ public class dA {
 
     public void get_corrupted_input(double[] x, double[] tilde_x, double p) {
         for (int i = 0; i < n_visible; i++) {
-            if (x[i] == 0) {
-                tilde_x[i] = 0;
-            } else {
-                tilde_x[i] = utils.binomial(1, p, rng);
-            }
+			tilde_x[i] = x[i] == 0 ? 0 : utils.binomial(1, p, rng);
         }
     }
 

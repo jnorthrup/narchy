@@ -6,10 +6,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public abstract class Forgetting {
+public enum Forgetting {
+	;
 
 
-    public static @Nullable <Y> Consumer<Y> forget(Bag<?,Y> b, float temperature) {
+	public static @Nullable <Y> Consumer<Y> forget(Bag<?,Y> b, float temperature) {
 
         if (temperature > Float.MIN_NORMAL) {
             int size = b.size();
@@ -35,20 +36,20 @@ public abstract class Forgetting {
     //abstract protected @Nullable Consumer forget(float temperature, int size, int cap, float pressure, float mass);
 
     /** temporally oblivious; uses only incoming pressure to determine forget amounts */
-    public static class AsyncForgetting extends Forgetting {
-
-
-//        public final FloatRange tasklinkForgetRate = new FloatRange(1f, 0f, 1f);
+//    public static class AsyncForgetting extends Forgetting {
 //
 //
+////        public final FloatRange tasklinkForgetRate = new FloatRange(1f, 0f, 1f);
+////
+////
+////
+////        protected Consumer<TaskLink> forgetTasklinks(Concept c, Bag<Tasklike, TaskLink> tasklinks) {
+////            return forget(tasklinks, 1f, tasklinkForgetRate.floatValue());
+////        }
+////
+////
 //
-//        protected Consumer<TaskLink> forgetTasklinks(Concept c, Bag<Tasklike, TaskLink> tasklinks) {
-//            return forget(tasklinks, 1f, tasklinkForgetRate.floatValue());
-//        }
-//
-//
-
-    }
+//    }
 
 //    /** experimental */
 //    @Deprecated public static class TimedForgetting extends Forgetting {

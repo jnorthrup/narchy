@@ -14,9 +14,10 @@
 
 package jcog.grammar.synthesize.util;
 
-@Deprecated public class Log {
+@Deprecated public enum Log {
+	;
 
-    private static boolean verbose = false;
+	private static boolean verbose = false;
 
     public static void init(boolean verbose) {
 

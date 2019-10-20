@@ -9,7 +9,6 @@ import systems.comodal.collision.cache.CollisionCache;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 
 @State(Scope.Benchmark)

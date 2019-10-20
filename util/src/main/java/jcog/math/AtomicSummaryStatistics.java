@@ -201,10 +201,7 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
     @Override
     public double getStandardDeviation() {
         double v = getVariance();
-        if (v == v)
-            return Math.sqrt(v);
-        else
-            return Double.NaN;
+		return v == v ? Math.sqrt(v) : Double.NaN;
     }
 
     @Override

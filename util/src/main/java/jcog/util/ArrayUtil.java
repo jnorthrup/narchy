@@ -2319,11 +2319,7 @@ public enum ArrayUtil {
     public static int indexOf(Object[] array, Object objectToFind, int startIndex) {
 
         if (startIndex < 0) startIndex = 0;
-        if (objectToFind == null) {
-            return IntStream.range(startIndex, array.length).filter(i -> array[i] == null).findFirst().orElse(INDEX_NOT_FOUND);
-        } else {
-            return IntStream.range(startIndex, array.length).filter(i -> objectToFind.equals(array[i])).findFirst().orElse(INDEX_NOT_FOUND);
-        }
+        return objectToFind == null ? IntStream.range(startIndex, array.length).filter(i -> array[i] == null).findFirst().orElse(INDEX_NOT_FOUND) : IntStream.range(startIndex, array.length).filter(i -> objectToFind.equals(array[i])).findFirst().orElse(INDEX_NOT_FOUND);
     }
 
     public static <X> int indexOf(X[] array, Predicate<X> test) {
@@ -5947,10 +5943,7 @@ public enum ArrayUtil {
             return array;
         long count = Arrays.stream(array).filter(Objects::isNull).count();
         int nulls = (int) count;
-        if (nulls == 0)
-            return array;
-        else
-            return removeNulls(array, nulls);
+        return nulls == 0 ? array : removeNulls(array, nulls);
     }
 
     public static @NotNull <T> T[] removeNulls(T[] array, int nulls) {
@@ -6741,9 +6734,6 @@ public enum ArrayUtil {
                         break;
                 }
                 if (finished) break;
-                if (finished) break;
-                if (finished) break;
-                if (finished) break;
             }
             case 2: {
                 switch (map[0]) {
@@ -6758,7 +6748,6 @@ public enum ArrayUtil {
                                 finished = true;
                                 break;
                         }
-                        if (finished) break;
                         if (finished) break;
                     case 1:
                         switch (map[1]) {
@@ -6784,10 +6773,7 @@ public enum ArrayUtil {
                                 break;
                         }
                         if (finished) break;
-                        if (finished) break;
-                        if (finished) break;
-                        if (finished) break;
-                        if (finished) break;
+
                     case -1:
                         switch (map[1]) {
                             case 1:
@@ -6808,9 +6794,7 @@ public enum ArrayUtil {
                                 break;
                         }
                         if (finished) break;
-                        if (finished) break;
-                        if (finished) break;
-                        if (finished) break;
+
                     case 2:
                         switch (map[1]) {
                             case 1:
@@ -6831,25 +6815,10 @@ public enum ArrayUtil {
                                 break;
                         }
                         if (finished) break;
-                        if (finished) break;
-                        if (finished) break;
-                        if (finished) break;
+
                 }
                 if (finished) break;
-                if (finished) break;
-                if (finished) break;
-                if (finished) break;
-                if (finished) break;
-                if (finished) break;
-                if (finished) break;
-                if (finished) break;
-                if (finished) break;
-                if (finished) break;
-                if (finished) break;
-                if (finished) break;
-                if (finished) break;
-                if (finished) break;
-                if (finished) break;
+
             }
         }
 

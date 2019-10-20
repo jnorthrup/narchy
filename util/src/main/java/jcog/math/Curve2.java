@@ -242,11 +242,7 @@ public class Curve2 {
 
         switch (flags & INTMASK) {
             case INT_SAMPLEHOLD:
-                if (x < this.xs[idxLo + 1]) {
-                    return (this.ys[idxLo]);
-                } else {
-                    return (this.ys[idxLo + 1]);
-                }
+				return x < this.xs[idxLo + 1] ? this.ys[idxLo] : this.ys[idxLo + 1];
             case INT_SPLINE:
                 return spline(x, idxLo);
             default:    

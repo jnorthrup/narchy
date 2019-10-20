@@ -23,10 +23,11 @@ import org.eclipse.collections.impl.tuple.Tuples;
 
 import java.util.HashMap;
 
-public class Views {
+public enum Views {
+	;
 
-    
-    private static final HashMap<IntVar, IntVar> oppositeViews = new HashMap<>();
+
+	private static final HashMap<IntVar, IntVar> oppositeViews = new HashMap<>();
 
     
     private static final HashMap<Pair<IntVar, Integer>, IntVar> offsetViews = new HashMap<>();

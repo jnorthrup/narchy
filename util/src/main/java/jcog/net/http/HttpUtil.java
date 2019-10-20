@@ -17,14 +17,12 @@ import java.util.stream.IntStream;
  *
  * @author Joris
  */
-public final class HttpUtil
+public enum HttpUtil
 {
-        private HttpUtil()
-        {
-        }
+	;
 
-        
-        private static boolean isCHAR(byte by)
+
+	private static boolean isCHAR(byte by)
         {
                 return by >= 0/* && by <= 127*/;
         }
@@ -323,9 +321,10 @@ public final class HttpUtil
      *
      * @since 4.0
      */
-    static final class HttpDateUtils
+	enum HttpDateUtils
     {
-            /**
+		;
+		/**
              * Date format pattern used to parse HTTP date headers in RFC 1123 format.
              */
             private static final String PATTERN_RFC1123 = "EEE, dd MMM yyyy HH:mm:ss zzz";
@@ -489,21 +488,15 @@ public final class HttpUtil
                     DateFormatHolder.clearThreadLocal();
             }
 
-            /**
-             * This class should not be instantiated.
-             */
-            private HttpDateUtils()
-            {
-            }
-
-            /**
+		/**
              * A factory for {@link SimpleDateFormat}s. The instances are stored in a threadlocal way because
              * SimpleDateFormat is not threadsafe as noted in {@link SimpleDateFormat its javadoc}.
              *
              */
-            static final class DateFormatHolder
+		enum DateFormatHolder
             {
-                    private static final ThreadLocal<SoftReference<Map<String, SimpleDateFormat>>> THREADLOCAL_FORMATS = ThreadLocal.withInitial(() -> new SoftReference<>(
+				;
+				private static final ThreadLocal<SoftReference<Map<String, SimpleDateFormat>>> THREADLOCAL_FORMATS = ThreadLocal.withInitial(() -> new SoftReference<>(
                             new HashMap<>()));
 
                     /**

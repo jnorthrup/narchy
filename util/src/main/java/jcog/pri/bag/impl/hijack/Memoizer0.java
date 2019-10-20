@@ -156,8 +156,10 @@ final class Memoizer0 implements InvocationHandler {
         /**
      * https:
      */
-    static class Example {
-        /**
+		enum Example {
+			;
+
+			/**
          * Sample Interface to Memoize
          */
         @FunctionalInterface

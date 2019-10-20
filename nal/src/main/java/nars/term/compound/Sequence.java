@@ -16,7 +16,6 @@ import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Function;
 import java.util.function.IntPredicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;

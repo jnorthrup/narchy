@@ -325,12 +325,7 @@ public class Grok implements Serializable {
 
     private static boolean isBlank(String str) {
         int strLen;
-        if (str != null && (strLen = str.length()) != 0) {
-
-            return IntStream.range(0, strLen).allMatch(i -> Character.isWhitespace(str.charAt(i)));
-        } else {
-            return true;
-        }
+        return str != null && (strLen = str.length()) != 0 ? IntStream.range(0, strLen).allMatch(i -> Character.isWhitespace(str.charAt(i))) : true;
     }
 
     private static int countMatches(String str, String sub) {
@@ -707,9 +702,10 @@ public class Grok implements Serializable {
      *
      * @author anthonyc
      */
-    static class Converter {
+	enum Converter {
+		;
 
-        static final Map<String, IConverter<?>> converters = new HashMap<>();
+		static final Map<String, IConverter<?>> converters = new HashMap<>();
         static final Locale locale = Locale.ENGLISH;
 
         static {
@@ -1088,12 +1084,8 @@ public class Grok implements Serializable {
             } else {
                 int vlen = value.length();
                 char tl = tmp[vlen - 1];
-                if ((t0 == '"' && tl == '"')
-                        || (t0 == '\'' && tl == '\'')) {
-                    return value.substring(1, vlen - 1);
-                } else {
-                    return value;
-                }
+                return (t0 == '"' && tl == '"')
+                    || (t0 == '\'' && tl == '\'') ? value.substring(1, vlen - 1) : value;
             }
 
         }

@@ -31,8 +31,9 @@ import java.math.BigInteger;
 /**
  * @author Kamnev Georgiy (nt.gocha@gmail.com)
  */
-public class BaseTypes {
-    public static final Class bool1 = boolean.class;
+public enum BaseTypes {
+	;
+	public static final Class bool1 = boolean.class;
     public static final Class bool2 = Boolean.class;
     public static final Class byte1 = byte.class;
     public static final Class byte2 = Byte.class;

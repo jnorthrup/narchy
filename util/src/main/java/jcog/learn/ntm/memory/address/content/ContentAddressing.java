@@ -45,8 +45,7 @@ public class ContentAddressing
     }
 
     public static ContentAddressing[] getVector(Integer x, Function<Integer, BetaSimilarity[]> paramGetter) {
-        ContentAddressing[] vector = IntStream.range(0, x).mapToObj(i -> new ContentAddressing(paramGetter.apply(i))).toArray(ContentAddressing[]::new);
-        return vector;
+        return IntStream.range(0, x).mapToObj(i -> new ContentAddressing(paramGetter.apply(i))).toArray(ContentAddressing[]::new);
     }
 
 }

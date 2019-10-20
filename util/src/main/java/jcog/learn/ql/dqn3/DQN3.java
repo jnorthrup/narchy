@@ -94,10 +94,8 @@ public class DQN3 extends Agent {
 //        for (int i = 0, actionFeedbackLength = actionFeedback.length; i < actionFeedbackLength; i++)
 //            actionFeedback[i] = (actionFeedback[i]-0.5f)*2;
 
-        double err = learn(actionFeedback, reward);
 
-
-        lastErr = err;
+        lastErr = learn(actionFeedback, reward);
         //System.out.println(this + " err=" + err);
         return act(Util.toDouble(input));
     }
@@ -116,12 +114,11 @@ public class DQN3 extends Agent {
 
         if(g==null) g = new MatrixTransform(false);
 
-        Mat m = g.add(g.mul(W2, g.tanh(g.add(g.mul(W1, s), B1))), B2);
         //Mat m = g.add(g.tanh(g.mul(W2, g.tanh(g.add(g.mul(W1, s), B1)))), B2);
         //Mat m = g.add(g.tanh(g.mul(W2, g.add(g.mul(W1, s), B1))), B2);
 
 
-        return m;
+        return g.add(g.mul(W2, g.tanh(g.add(g.mul(W1, s), B1))), B2);
     }
 
     public int act(double[] stateArr) {

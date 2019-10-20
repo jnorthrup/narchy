@@ -104,7 +104,7 @@ public enum Util {
 	public static final double log2 = Math.log(2);
 	private static final int BIG_ENOUGH_INT = 16 * 1024;
 	private static final double BIG_ENOUGH_FLOOR = BIG_ENOUGH_INT;
-	public static float sqrtMIN_NORMAL = (float) Math.sqrt(Float.MIN_NORMAL);
+	public static final float sqrtMIN_NORMAL = (float) Math.sqrt(Float.MIN_NORMAL);
 
 	static {
 		try {
@@ -738,8 +738,7 @@ public enum Util {
 	}
 
 	public static float roundSafe(float value, float epsilon) {
-		if (epsilon <= Float.MIN_NORMAL) return value;
-		else return Math.round(value / epsilon) * epsilon;
+		return epsilon <= Float.MIN_NORMAL ? value : Math.round(value / epsilon) * epsilon;
 	}
 
 	public static double round(double value, double epsilon) {
@@ -834,13 +833,7 @@ public enum Util {
 		int xlen = x.length;
 
 		int yLen = y.length;
-		if (xlen != yLen) {
-			return Integer.compare(xlen, yLen);
-		} else {
-
-			return IntStream.range(0, xlen).map(i -> Long.compare(x[i], y[i])).filter(c -> c != 0).findFirst().orElse(0);
-
-		}
+		return xlen != yLen ? Integer.compare(xlen, yLen) : IntStream.range(0, xlen).map(i -> Long.compare(x[i], y[i])).filter(c -> c != 0).findFirst().orElse(0);
 	}
 
 	public static byte[] intAsByteArray(int index) {
@@ -1354,10 +1347,7 @@ public enum Util {
 				target[i] = y;
 			}
 		}
-		if (target == null)
-			return src;
-		else
-			return target;
+		return target == null ? src : target;
 	}
 
 	@SafeVarargs
@@ -2590,10 +2580,7 @@ public enum Util {
 
 		String specifiedThreads = System.getenv("threads");
 		int threads;
-		if (specifiedThreads != null)
-			threads = Texts.i(specifiedThreads);
-		else
-			threads = Runtime.getRuntime().availableProcessors() - reserve;
+		threads = specifiedThreads != null ? Texts.i(specifiedThreads) : Runtime.getRuntime().availableProcessors() - reserve;
 
 		int maxThreads = Integer.MAX_VALUE;
 		int minThreads = 2;
@@ -2695,8 +2682,7 @@ public enum Util {
 	 * a number, or... (otherwise)
 	 */
 	public static float numOr(float x, float otherwise) {
-		if (x == x) return x;
-		else return otherwise;
+		return x == x ? x : otherwise;
 	}
 
 	/**
@@ -2727,12 +2713,8 @@ public enum Util {
 	}
 
 	public static Class[] typesOfArray(Object[] orgs, int from, int to) {
-		if (orgs.length == 0)
-			return ArrayUtil.EMPTY_CLASS_ARRAY;
-		else {
-			return map(x -> Primitives.unwrap(x.getClass()),
-				new Class[to - from], 0, orgs, from, to);
-		}
+		return orgs.length == 0 ? ArrayUtil.EMPTY_CLASS_ARRAY : map(x -> Primitives.unwrap(x.getClass()),
+			new Class[to - from], 0, orgs, from, to);
 	}
 
 	public static FasterList<Class<?>> typesOf(Object[] orgs, int from, int to) {

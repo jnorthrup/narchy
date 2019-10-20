@@ -25,8 +25,9 @@ import java.util.stream.Stream;
 /**
  * override for jdk9 compatibility
  */
-public class Classpath {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Classpath.class);
+public enum Classpath {
+	;
+	private static final Logger LOGGER = LoggerFactory.getLogger(Classpath.class);
     private static final String DIGEST_ALGO = "SHA-1";
 
     //TODO use better cache

@@ -15,11 +15,7 @@ public class CachedFloatRank<X> extends CachedFloatFunction<X> implements FloatR
 
     @Override
     public final float rank(X x, float minIgnored) {
-        if (minIgnored == Float.NEGATIVE_INFINITY)
-            return getIfAbsentPutWithKey(x, f);
-        else {
-            return getIfAbsentPutWithKey(x, (xx) -> ((FloatRank<X>) f).rank(xx, minIgnored));
-        }
+		return minIgnored == Float.NEGATIVE_INFINITY ? getIfAbsentPutWithKey(x, f) : getIfAbsentPutWithKey(x, (xx) -> ((FloatRank<X>) f).rank(xx, minIgnored));
     }
 
     /** resets the value function */

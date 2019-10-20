@@ -7,17 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class VectorizingUtils {
+public enum VectorizingUtils {
+	;
 
-	
-	
-	
-	
-	
-	
 
-	
-	
 	public static ImageTracer.IndexedImage colorquantization (ImageTracer.ImageData imgd, byte [][] palette, HashMap<String,Float> options){
 		
 		
@@ -350,10 +343,9 @@ public class VectorizingUtils {
 
 			
 			smp.addAll(fitseq(path,ltreshold,qtreshold,pcnt,seqend));
-			
 
-			
-			if(seqend>0){ pcnt = seqend; }else{ pcnt = pathlength; }
+
+			pcnt = seqend > 0 ? seqend : pathlength;
 
 		}
 

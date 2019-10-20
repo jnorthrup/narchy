@@ -346,12 +346,8 @@ public class Thing<T, P /* service key */  /* context */> {
     }
 
     public <X extends Part<T>> Supplier<X> build(@Nullable P key, Class<X> klass) {
-        if (!(klass.isInterface() || Modifier.isAbstract(klass.getModifiers()))) {
-            //concrete class, attempt constructor injection
-            return new PartResolveByConstructorInjection(key, klass);
-        } else {
-            return new PartResolveByClass(key, klass);
-        }
+		//concrete class, attempt constructor injection
+		return !(klass.isInterface() || Modifier.isAbstract(klass.getModifiers())) ? new PartResolveByConstructorInjection(key, klass) : new PartResolveByClass(key, klass);
     }
 
     public enum ServiceState {

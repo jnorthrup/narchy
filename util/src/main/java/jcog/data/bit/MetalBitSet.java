@@ -152,10 +152,7 @@ public abstract class MetalBitSet {
 
             long[] prev = data;
 
-            if (bits == 0)
-                data = ArrayUtil.EMPTY_LONG_ARRAY;
-            else
-                data = new long[Math.max(1, (int) Math.ceil(((double) bits) / Long.SIZE))];
+			data = bits == 0 ? ArrayUtil.EMPTY_LONG_ARRAY : new long[Math.max(1, (int) Math.ceil(((double) bits) / Long.SIZE))];
 
             if (prev!=null) {
                 System.arraycopy(prev, 0, data, 0, Math.min(data.length, prev.length));
@@ -362,11 +359,7 @@ public abstract class MetalBitSet {
     }
 
     public static MetalBitSet bits(int size) {
-        if (size <= 32) {
-            return new IntBitSet();
-        } else {
-            return new LongArrayBitSet(size);
-        }
+		return size <= 32 ? new IntBitSet() : new LongArrayBitSet(size);
     }
 
 }

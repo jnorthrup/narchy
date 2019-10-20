@@ -641,13 +641,7 @@ public class Reflect {
         if (Arrays.equals(declared, actual))
             return true;
 
-        if (declared.length == actual.length) {
-
-            return IntStream.range(0, actual.length).filter(i -> actual[i] != NULL.class).allMatch(i -> wrapper(declared[i]).isAssignableFrom(wrapper(actual[i])));
-        }
-        else {
-            return false;
-        }
+		return declared.length == actual.length ? IntStream.range(0, actual.length).filter(i -> actual[i] != NULL.class).allMatch(i -> wrapper(declared[i]).isAssignableFrom(wrapper(actual[i]))) : false;
     }
 
     /**

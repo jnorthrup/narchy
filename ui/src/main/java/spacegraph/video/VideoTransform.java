@@ -4,7 +4,6 @@ import jcog.event.Off;
 import jcog.signal.wave2d.RGBBufImgBitmap2D;
 
 import java.awt.image.BufferedImage;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 public abstract class VideoTransform<T extends VideoSource> extends VideoSource {

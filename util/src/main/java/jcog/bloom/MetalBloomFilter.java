@@ -42,8 +42,7 @@ public class MetalBloomFilter<E> {
     /** possibly contains */
     public boolean contains(int[] indices) {
 
-        int bound = numberOfHashes;
-        return IntStream.range(0, bound).anyMatch(i -> cells[indices[i]] > 0);
+        return IntStream.range(0, numberOfHashes).anyMatch(i -> cells[indices[i]] > 0);
     }
 
     public int[] hash(E element) {

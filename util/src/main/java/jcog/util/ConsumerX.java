@@ -81,10 +81,7 @@ import java.util.stream.Stream;
         //Consumer<FasterList<Task>> targetBatched = batch -> batch.forEach(target);
 
         Sampler b;
-        if  (taskSampler instanceof BufferedBag)
-            b = ((BufferedBag) taskSampler).bag;
-        else
-            b = taskSampler;
+        b = taskSampler instanceof BufferedBag ? ((BufferedBag) taskSampler).bag : taskSampler;
 
         pending.incrementAndGet();
 

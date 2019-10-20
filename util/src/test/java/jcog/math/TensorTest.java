@@ -3,6 +3,7 @@ package jcog.math;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorChain;
+import jcog.signal.tensor.WritableTensor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -13,7 +14,7 @@ class TensorTest {
 
     @Test
     void testVector() {
-        ArrayTensor t = new ArrayTensor(2);
+        WritableTensor t = new ArrayTensor(2);
         t.setAt(0, 0.1f);
         t.setAt(1, 0.2f);
         assertEquals(0, t.index(0));
@@ -24,7 +25,7 @@ class TensorTest {
 
     @Test
     void testMatrix() {
-        ArrayTensor t = new ArrayTensor(new int[] { 2, 2 });
+        WritableTensor t = new ArrayTensor(new int[] { 2, 2 });
         t.set(0.5f, new int[] { 0, 0 });
         t.set(0.25f, new int[] { 1, 0 });
         t.set(0.5f, new int[] { 1, 1 });
@@ -57,9 +58,9 @@ class TensorTest {
 
     @Test
     void test1DTensorChain() {
-        ArrayTensor a = new ArrayTensor(4);
+        WritableTensor a = new ArrayTensor(4);
         a.setAt(2, 1);
-        ArrayTensor b = new ArrayTensor(2);
+        WritableTensor b = new ArrayTensor(2);
         b.setAt(0, 2);
         Tensor ab = TensorChain.get(a, b);
         assertEquals(1, ab.shape().length);

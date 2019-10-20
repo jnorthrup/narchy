@@ -21,9 +21,10 @@ package jcog.io.tar;
  * @author Kamran Zafar
  * 
  */
-class Octal {
+enum Octal {
+	;
 
-    /**
+	/**
      * Parse an octal string from a header buffer. This is used for the file
      * permission mode value.
      * 

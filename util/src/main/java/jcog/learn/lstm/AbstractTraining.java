@@ -33,10 +33,7 @@ public abstract class AbstractTraining {
             else {
                 double[] actual_output;
 
-                if (validation_mode)
-                    actual_output = agent.predict(inter.actual);
-                else
-                    actual_output = agent.learn(inter.actual, inter.expected, learningRate);
+                actual_output = validation_mode ? agent.predict(inter.actual) : agent.learn(inter.actual, inter.expected, learningRate);
 
                 if (Util.argmax(actual_output) == Util.argmax(inter.expected))
                     fit[0]++;

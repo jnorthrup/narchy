@@ -1,6 +1,7 @@
 package jcog.signal.tensor;
 
 import jcog.Texts;
+import jcog.signal.Tensor;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 
 import java.util.Arrays;
@@ -55,7 +56,7 @@ public class ArrayTensor extends AbstractMutableTensor
     @Override
     public boolean equals(Object obj) {
         return this == obj ||
-                (obj instanceof ArrayTensor && (
+                (obj instanceof Tensor && (
                         Arrays.equals(data, ((ArrayTensor) obj).data) &&
                                 Arrays.equals(shape, ((ArrayTensor) obj).shape)
                 ));

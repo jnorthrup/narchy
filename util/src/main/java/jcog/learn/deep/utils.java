@@ -4,8 +4,10 @@ import jcog.Util;
 
 import java.util.Random;
 
-public class utils {
-    public static double uniform(double min, double max, Random rng) {
+public enum utils {
+	;
+
+	public static double uniform(double min, double max, Random rng) {
         return rng.nextDouble() * (max - min) + min;
     }
 
@@ -40,18 +42,10 @@ public class utils {
     }
 
     public static double ReLU(double x) {
-        if(x > 0) {
-            return x;
-        } else {
-            return 0.;
-        }
+        return x > 0 ? x : 0.;
     }
 
     public static double dReLU(double x) {
-        if(x > 0) {
-            return 1.;
-        } else {
-            return 0.;
-        }
+        return x > 0 ? 1. : 0.;
     }
 }

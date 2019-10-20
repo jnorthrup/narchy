@@ -90,7 +90,7 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
             ticks += dt;
             MidiEvent event = new MidiEvent(msg, ticks);
 
-            if (t.add(event) == false) {
+            if (!t.add(event)) {
             }
         }
 

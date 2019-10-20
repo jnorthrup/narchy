@@ -1361,11 +1361,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 redoStack = new Stack<>();
                 int iEnd = currentState.assertionVec.size() - 1;
                 int iStart;
-                if (e.getItem() == "Rotate Stack") {
-                    iStart = 0;
-                } else {
-                    iStart = iEnd - 1;
-                }
+                iStart = e.getItem() == "Rotate Stack" ? 0 : iEnd - 1;
                 String tmpStr = currentState.assertionVec.get(iStart);
                 String tmpPStr = currentState.proofVec.get(iStart);
                 for (int j = iStart; j < iEnd; j++) {
@@ -1983,8 +1979,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                     break;
                 case 1:
                     c = Color.red;
-                    if (currentFamily == EUCLID) token = "point";
-                    else token = "set";
+                    token = currentFamily == EUCLID ? "point" : "set";
                     break;
                 case 2:
                     c = Color.magenta;
@@ -2032,13 +2027,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 currentY += Y_INCREMENT * 3 / 2;
                 token = "Assertion made by this " + axiomOrTheorem + ":";
             } else {
-                if (currentState.hypothesisVec.size() == 0) {
-                    token =
-                            "Assertion stack (each line is a theorem scheme of this logic family):";
-                } else {
-                    token =
-                            "Assertion stack (each line is an inference from the hypotheses):";
-                }
+                token = currentState.hypothesisVec.size() == 0 ? "Assertion stack (each line is a theorem scheme of this logic family):" : "Assertion stack (each line is an inference from the hypotheses):";
             }
             g.drawString(token, X_INIT, currentY);
             g.setFont(MATH_PLAIN_FONT);
@@ -2064,12 +2053,9 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
             currentY += Y_INCREMENT * 3 / 2;
             g.setFont(new Font("Dialog", Font.PLAIN, FONT_SIZE));
             g.setColor(Color.black);
-            if (axiomInfoModeFlag) {
-                token = "Hypotheses for this " + axiomOrTheorem + ":"; // in reverse order
-            } else {
-                token =
-                        "Hypotheses for the assertions in the stack:"; // in reverse order
-            }
+            // in reverse order
+            // in reverse order
+            token = axiomInfoModeFlag ? "Hypotheses for this " + axiomOrTheorem + ":" : "Hypotheses for the assertions in the stack:";
             g.drawString(token, X_INIT, currentY);
             g.setFont(MATH_PLAIN_FONT);
             if (axiomInfoModeFlag) {
@@ -2107,22 +2093,14 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                     "Substitutions for these variable pairs may not have variables in",
                     X_INIT, currentY);
             currentY += Y_INCREMENT;
-            if (axiomInfoModeFlag) {
-                token = "common for an instance of the " + axiomOrTheorem +
-                        " to remain valid:";
-            } else {
-                token = "common for the assertions to remain valid:";
-            }
+            token = axiomInfoModeFlag ? "common for an instance of the " + axiomOrTheorem +
+                " to remain valid:" : "common for the assertions to remain valid:";
             g.drawString(token, X_INIT, currentY);
             g.setFont(MATH_PLAIN_FONT);
             currentY += Y_INCREMENT;
 
             ArrayList<String> dVarVec;
-            if (axiomInfoModeFlag) {
-                dVarVec = axiomArr[infoModeAxiomToShow].axiomDistVarVec;
-            } else {
-                dVarVec = currentState.distinctVarVec;
-            }
+            dVarVec = axiomInfoModeFlag ? axiomArr[infoModeAxiomToShow].axiomDistVarVec : currentState.distinctVarVec;
             currentY = DrawSymbols.drawDistinct(g, currentY, dVarVec);
         }
     } // paint
@@ -2165,9 +2143,10 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 } // class mm
 
 // Formula drawing
-final class DrawSymbols {
+enum DrawSymbols {
+	;
 
-    static Graphics g;
+	static Graphics g;
     static int currentX;
     static int currentY;
     static FontMetrics fm;
@@ -2422,9 +2401,10 @@ final class DrawSymbols {
 } // class DrawSymbols
 
 // Primitive formula handler
-final class PrimFormula {
+enum PrimFormula {
+	;
 
-    // Return formula in standard (display) notation
+	// Return formula in standard (display) notation
     // If raw, then each variable is in the form $n:m, where m is the type
     static String typesList;
 
@@ -2479,20 +2459,14 @@ final class PrimFormula {
     static String subGetDisplay(String formula, int start, boolean raw) {
         // String tokenSeparator = " "; // Separator character between tokens in axiom menu
         String tokenSeparator = ""; // Separator character between tokens in axiom menu
-        if (raw) {
-            tokenSeparator = " "; // Must always be a space for further parsing
-        } else {
-            tokenSeparator = ""; // Separator character between tokens in axiom menu
-        }
+        // Must always be a space for further parsing
+        // Separator character between tokens in axiom menu
+        tokenSeparator = raw ? " " : "";
         if ((short) (formula.charAt(start)) > 0) {
             // It's a variable
-            if (raw) {
-                return "$" + (int) formula.charAt(start) + ":"
-                        + (int) typesList.charAt(start);
-            } else {
-                return VariableName.name((short) (formula.charAt(start)),
-                        (short) typesList.charAt(start));
-            }
+            return raw ? "$" + (int) formula.charAt(start) + ":"
+                + (int) typesList.charAt(start) : VariableName.name((short) (formula.charAt(start)),
+                (short) typesList.charAt(start));
         } else {
             // It's a connective
             short connNum = (short) (formula.charAt(start));
@@ -2515,18 +2489,10 @@ final class PrimFormula {
                 String token = tmpNotation.substring(charPosition0, charPosition);
                 if (token.charAt(0) == '$') { // Display template argument
                     short argNum = (short) Integer.parseInt(token.substring(1));
-                    if (displayFormula.length() == 0) {
-                        displayFormula = displayArgs[argNum - 1];
-                    } else {
-                        displayFormula = displayFormula + tokenSeparator
-                                + displayArgs[argNum - 1];
-                    }
+                    displayFormula = displayFormula.length() == 0 ? displayArgs[argNum - 1] : displayFormula + tokenSeparator
+                        + displayArgs[argNum - 1];
                 } else { // Display connective - output as is
-                    if (displayFormula.length() == 0) {
-                        displayFormula = token;
-                    } else {
-                        displayFormula = displayFormula + tokenSeparator + token;
-                    }
+                    displayFormula = displayFormula.length() == 0 ? token : displayFormula + tokenSeparator + token;
                 }
                 charPosition0 = charPosition + 1;
                 charPosition = tmpNotation.indexOf(' ', charPosition0);
@@ -2538,8 +2504,9 @@ final class PrimFormula {
 } // class PrimFormula
 
 // Get name for display of variable
-final class VariableName {
-    static ArrayList<String> varNameVec = new ArrayList<>();
+enum VariableName {
+	;
+	static ArrayList<String> varNameVec = new ArrayList<>();
     static ArrayList<Integer> varTypeVec = new ArrayList<>();
     static int[] varSoFar = new int[4]; // Counter for how many so far for
     // each type
@@ -2571,8 +2538,7 @@ final class VariableName {
             int quotient = v / letters[type].length();
             int remainder = v % letters[type].length();
             String suffix;
-            if (quotient == 0) suffix = "";
-            else suffix = Integer.toString(quotient - 1);
+            suffix = quotient == 0 ? "" : Integer.toString(quotient - 1);
             varNameVec.set(var, letters[type].substring(remainder, remainder + 1) + suffix);
             varTypeVec.set(var, (int) type);
         }
@@ -2950,9 +2916,10 @@ class Substitution {
 } // class Substitution
 
 // Define unification methods
-final class Unification {
+enum Unification {
+	;
 
-    // These variables are used by calling program
+	// These variables are used by calling program
     static ArrayList<String> newDistinctVarVec;
     static short oldMaxVar; // Original largest variable
     static short newMaxVar; // New largest variable

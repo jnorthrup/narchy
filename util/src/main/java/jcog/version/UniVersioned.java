@@ -75,10 +75,7 @@ public class UniVersioned<X> implements Versioned<X> {
      *
      */
     protected int merge(X prev, X next) {
-        if (prev.equals(next))
-            return 0;
-        else
-            return -1;
+		return prev.equals(next) ? 0 : -1;
     }
 //    @Override
 //    protected int merge(Term prevValue, Term nextValue) {

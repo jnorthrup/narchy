@@ -204,8 +204,7 @@ public class Autoencoder {
      */
     public void forget(float rate) {
         float mult = 1f - rate;
-        float[][] w = this.W;
-        for (float[] floats : w)
+        for (float[] floats : this.W)
             Util.mul(mult, floats);
         Util.mul(mult, hbias);
         Util.mul(mult, L_hbias);

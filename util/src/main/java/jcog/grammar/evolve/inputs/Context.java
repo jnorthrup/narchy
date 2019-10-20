@@ -105,17 +105,8 @@ public class Context {
             
             case TRAINING: 
                     DataSet trainingDataset;
-                    if(!this.isStripedPhase()){
-                       trainingDataset = this.getDataSetContainer().getTrainingDataset();
-                    }  else {
-                       trainingDataset = this.getDataSetContainer().getTrainingDataset().getStripedDataset();
-                    }
-                    if(separateAndConquerEnabled){
-                        
-                        return trainingDataset.getLastSeparateAndConquerDataSet((int) this.getSeed());
-                    } else {
-                        return trainingDataset;
-                    }
+				trainingDataset = !this.isStripedPhase() ? this.getDataSetContainer().getTrainingDataset() : this.getDataSetContainer().getTrainingDataset().getStripedDataset();
+				return separateAndConquerEnabled ? trainingDataset.getLastSeparateAndConquerDataSet((int) this.getSeed()) : trainingDataset;
             case VALIDATION: return this.getDataSetContainer().getValidationDataset();
             case LEARNING: return this.getDataSetContainer().getLearningDataset();
             default : throw new UnsupportedOperationException("unhandled phase in getDataSet");

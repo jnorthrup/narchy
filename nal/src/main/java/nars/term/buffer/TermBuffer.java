@@ -21,7 +21,6 @@ import nars.term.var.ellipsis.Fragment;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import static nars.Op.*;

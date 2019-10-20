@@ -10,9 +10,10 @@ import java.security.*;
  *
  * https:
  */
-public class Crypto {
+public enum Crypto {
+	;
 
-    public static void generatePubandPrivateKeyFiles(String path, String id)
+	public static void generatePubandPrivateKeyFiles(String path, String id)
             throws NoSuchAlgorithmException, NoSuchProviderException, IOException {
         SecureRandom r = new SecureRandom();
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA", "SUN");

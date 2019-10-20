@@ -140,13 +140,9 @@ public final class Ansi {
   }
 
   public Iterable<String> asNoWrap(Iterable<String> textParts) {
-    if (isAnsiTerminal) {
-      return FluentIterable.from(Collections.singleton(STOP_WRAPPING))
-          .append(textParts)
-          .append(RESUME_WRAPPING);
-    } else {
-      return textParts;
-    }
+	  return isAnsiTerminal ? FluentIterable.from(Collections.singleton(STOP_WRAPPING))
+		  .append(textParts)
+		  .append(RESUME_WRAPPING) : textParts;
   }
 
   public void printHighlightedSuccessText(PrintStream stream, String text) {

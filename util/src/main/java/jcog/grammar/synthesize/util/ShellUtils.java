@@ -22,8 +22,10 @@ import java.util.concurrent.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class ShellUtils {
-    public static void delete(String filename) {
+public enum ShellUtils {
+	;
+
+	public static void delete(String filename) {
         new File(filename).delete();
     }
 

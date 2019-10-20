@@ -189,11 +189,7 @@ public class ImageTracer {
     
     
     private static byte bytetrans(byte b) {
-        if (b < 0) {
-            return (byte) (b + 128);
-        } else {
-            return (byte) (b - 128);
-        }
+		return b < 0 ? (byte) (b + 128) : (byte) (b - 128);
     }
 
     private static byte[][] getPalette(BufferedImage image, Map<String, Float> options) {

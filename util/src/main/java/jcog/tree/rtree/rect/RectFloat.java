@@ -377,9 +377,6 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
 
     public final RectFloat orThisIfEqual(RectFloat r) {
-        if (r.equals(this))
-            return this;
-        else
-            return r;
+        return r.equals(this) ? this : r;
     }
 }

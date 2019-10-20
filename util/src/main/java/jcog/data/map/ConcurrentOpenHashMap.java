@@ -190,11 +190,8 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
             }
         });
 
-        if (i[0] < s) {
-            return Arrays.copyOf(t, i[0]); //dont leave suffix nulls; create new list
-        } else {
-            return t;
-        }
+		//dont leave suffix nulls; create new list
+		return i[0] < s ? Arrays.copyOf(t, i[0]) : t;
     }
 
     public List<V> values() {

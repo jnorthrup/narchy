@@ -60,11 +60,7 @@ public class AtomicMeanFloat extends AtomicFloat implements FloatProcedure {
             count = 0;
         })) / (c[0] > 0 ? c[0] : Float.NaN);
 
-        if (mean==mean) {
-            return new float[] { mean, mean * c[0] };
-        } else {
-            return new float[] { Float.NaN, 0 };
-        }
+		return mean == mean ? new float[]{mean, mean * c[0]} : new float[]{Float.NaN, 0};
     }
 
     public void accept(float v) {

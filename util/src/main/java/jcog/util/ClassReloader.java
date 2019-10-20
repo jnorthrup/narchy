@@ -499,11 +499,7 @@ public class ClassReloader extends ClassLoader {
                 this.markClassAsReloadable(ClassReloader.getClassName(file, pkg));
             } else if (file.isDirectory()) {
                 String newPkg;
-                if (!pkg.isEmpty()) {
-                    newPkg = pkg + '.' + file.getName();
-                } else {
-                    newPkg = file.getName();
-                }
+                newPkg = !pkg.isEmpty() ? pkg + '.' + file.getName() : file.getName();
                 crawlAndMark(file, newPkg, allowedPackages);
             }
         }
@@ -521,11 +517,7 @@ public class ClassReloader extends ClassLoader {
 
     protected Class<?> loadAgain(String s) throws ClassNotFoundException {
         Class<?> clazz = null;
-        if (classExist(s, this.classpath.toArray(new String[0]))) {
-            clazz = findClass(s);
-        } else {
-            clazz = loadClassAsReloadable(s);
-        }
+        clazz = classExist(s, this.classpath.toArray(new String[0])) ? findClass(s) : loadClassAsReloadable(s);
         return clazz;
     }
 
@@ -534,11 +526,7 @@ public class ClassReloader extends ClassLoader {
         for (String c : this.reloadableCache) {
             if (c.compareTo(s) != 0) {
                 Class<?> newClass = null;
-                if (r.reloadedClasses.getOrDefault(c, false)) {
-                    newClass = r.loadClass(c);
-                } else {
-                    newClass = r.loadAgain(c);
-                }
+                newClass = r.reloadedClasses.getOrDefault(c, false) ? r.loadClass(c) : r.loadAgain(c);
                 r.addToCache(newClass);
                 //Class<?> newClass = r.loadAgain(c);
                 //r.addToCache(newClass);
@@ -751,11 +739,7 @@ public class ClassReloader extends ClassLoader {
         }
 
         public boolean byteCodeExist(File file) {
-            if (this.classByteCodeMap.containsKey(file.getAbsolutePath())) {
-                return true;
-            } else {
-                return file.exists();
-            }
+            return this.classByteCodeMap.containsKey(file.getAbsolutePath()) ? true : file.exists();
         }
 
         private static byte[] loadFile(File file) throws IOException {
@@ -818,8 +802,7 @@ public class ClassReloader extends ClassLoader {
         }
 
         private static String indentation(boolean indent) {
-            if (indent) return "    ";
-            else return "";
+            return indent ? "    " : "";
         }
 
     }
@@ -829,7 +812,8 @@ public class ClassReloader extends ClassLoader {
      * @author Simón Emmanuel Gutiérrez Brida
      * @version 0.4
      */
-    private static class JustCodeDigest {
+    private enum JustCodeDigest {
+        ;
         private static final Pattern COMMENT_JAVADOC = Pattern.compile("/\\*\\*(.*)\\*/");
         private static final Pattern COMMENT_MULTILINE = Pattern.compile("/\\*((?<!\\*).*)\\*/");
         private static final Pattern COMMENT_SINGLE = Pattern.compile("//.*");

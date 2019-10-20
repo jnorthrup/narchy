@@ -37,10 +37,6 @@ public class DutyCycleMeter {
 
     /** Calculate, on average, how much of the time was spent doing something. */
     public double getAverageLoad() {
-        if (averageTotalTime > 0.0) {
-            return averageOnTime / averageTotalTime;
-        } else {
-            return 0.0;
-        }
+		return averageTotalTime > 0.0 ? averageOnTime / averageTotalTime : 0.0;
     }
 }

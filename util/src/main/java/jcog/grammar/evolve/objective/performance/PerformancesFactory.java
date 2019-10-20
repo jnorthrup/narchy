@@ -25,9 +25,10 @@ import jcog.grammar.evolve.objective.Objective;
  * Creates performance objectives with the requested configurations.
  * @author MaleLabTs
  */
-public class PerformancesFactory {
-    
-    public static Objective buildObjective(Context.EvaluationPhases phase, Configuration configuration) {
+public enum PerformancesFactory {
+	;
+
+	public static Objective buildObjective(Context.EvaluationPhases phase, Configuration configuration) {
         return buildObjective(phase, configuration, false);
     }
     

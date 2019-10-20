@@ -33,8 +33,7 @@ public class RBM {
 
         h = new double[n_hidden];
 
-        if (rng == null) this.rng = new Random(1234);
-        else this.rng = rng;
+		this.rng = rng == null ? new Random(1234) : rng;
 
         if (W == null) {
             this.W = new double[this.n_hidden][this.n_visible];

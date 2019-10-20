@@ -207,11 +207,7 @@ public class HyperRectDouble implements HyperRegion, Serializable {
     }
 
     public String toString() {
-        if (min.equals(max)) {
-            return min.toString();
-        } else {
-            return "(" + min + ',' + max + ')';
-        }
+		return min.equals(max) ? min.toString() : "(" + min + ',' + max + ')';
     }
 
 

@@ -22,8 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class RegexSynthesis {
-    public static Node getNode(String example, Predicate<String> oracle) {
+public enum RegexSynthesis {
+	;
+
+	public static Node getNode(String example, Predicate<String> oracle) {
         return getNode(new NodeData(example, Context.EMPTY), oracle, NodeType.values(), true);
     }
 

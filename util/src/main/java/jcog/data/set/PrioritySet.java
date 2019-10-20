@@ -15,10 +15,7 @@ public class PrioritySet<X> extends CachedPriorityQueue<X> {
 
 	@Override
 	public boolean offer(X x) {
-		if (set.add(x))
-			return super.offer(x);
-		else
-			return false;
+		return set.add(x) ? super.offer(x) : false;
 	}
 
 	@Override

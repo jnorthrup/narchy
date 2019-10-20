@@ -5,7 +5,8 @@ import java.util.StringJoiner;
 /**
  * Binar <-> Text Transducers
  */
-public class BinTxt {
+public enum BinTxt {
+	;
 
 	public static final char[] symbols;
 

@@ -139,7 +139,7 @@ public class MarkovSampler<T> {
 
         
         if (current == model.END) {
-            if (loop == true) {
+            if (loop) {
 
                 current = model.START.next(rng);
 

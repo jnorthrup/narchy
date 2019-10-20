@@ -440,16 +440,14 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         //null terminator
         return Arrays.stream(data).takeWhile(Objects::nonNull).allMatch(x -> x.AND(p));
     }
-    public boolean ANDlocal(Predicate<RNode<X>> p) {
-        RNode<X>[] n = this.data;
-        short s = this.size;
-        return IntStream.range(0, s).allMatch(i -> p.test(n[i]));
-    }
-    public boolean ORlocal(Predicate<RNode<X>> p) {
-        RNode<X>[] n = this.data;
-        short s = this.size;
-        return IntStream.range(0, s).anyMatch(i -> p.test(n[i]));
-    }
+//    public boolean ANDlocal(Predicate<RNode<X>> p) {
+//        short s = this.size;
+//        return IntStream.range(0, s).allMatch(i -> p.test(this.data[i]));
+//    }
+//    public boolean ORlocal(Predicate<RNode<X>> p) {
+//        short s = this.size;
+//        return IntStream.range(0, s).anyMatch(i -> p.test(this.data[i]));
+//    }
 
 
 

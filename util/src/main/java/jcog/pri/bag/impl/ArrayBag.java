@@ -42,12 +42,8 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     protected int histogramBins(int s) {
         //TODO refine
         int thresh = 4;
-        if (s <= thresh)
-            return s;
-        else {
-            //return (int) (thresh + Math.sqrt((s - thresh)));
-            return (int)(thresh - 1 + Math.log(1 + s - thresh) * HISTOGRAM_RESOLUTION_FACTOR);
-        }
+		//return (int) (thresh + Math.sqrt((s - thresh)));
+		return s <= thresh ? s : (int) (thresh - 1 + Math.log(1 + s - thresh) * HISTOGRAM_RESOLUTION_FACTOR);
     }
 
 
@@ -218,11 +214,8 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         ArrayHistogram.HistogramWriter hist;
         int bins = histogramBins(s);
-        if (bins > 0) {
-            hist = this.hist.write(0, s, bins);
-        } else {
-            hist = null; //disabled
-        }
+		//disabled
+		hist = bins > 0 ? this.hist.write(0, s, bins) : null;
 
         float m = 0;
         boolean sorted = true;
@@ -495,11 +488,7 @@ public abstract class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
 
         float skew = (mid - (max-min)/2)/(max-min);
-        if (rng.nextFloat() > skew) {
-            return sampleNextLinearNormalized(rng, 0, mii);
-        } else {
-            return sampleNextLinearNormalized(rng, mii, size);
-        }
+		return rng.nextFloat() > skew ? sampleNextLinearNormalized(rng, 0, mii) : sampleNextLinearNormalized(rng, mii, size);
 
     }
 

@@ -304,10 +304,7 @@ public class EstimatedHistogram {
     public void log(Logger log) {
         
         int nameCount;
-        if (buckets.get(buckets.length() - 1) == 0)
-            nameCount = buckets.length() - 1;
-        else
-            nameCount = buckets.length();
+		nameCount = buckets.get(buckets.length() - 1) == 0 ? buckets.length() - 1 : buckets.length();
         String[] names = new String[nameCount];
 
         int maxNameLength = 0;

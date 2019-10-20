@@ -20,8 +20,7 @@ public class HiddenLayerDiscrete extends HiddenLayer {
         this.n_in = n_in;
         this.n_out = n_out;
 
-        if(rng == null)	this.rng = new Random(1234);
-        else this.rng = rng;
+		this.rng = rng == null ? new Random(1234) : rng;
 
         if(W == null) {
             this.W = new double[n_out][n_in];
@@ -36,8 +35,7 @@ public class HiddenLayerDiscrete extends HiddenLayer {
             this.W = W;
         }
 
-        if(b == null) this.b = new double[n_out];
-        else this.b = b;
+		this.b = b == null ? new double[n_out] : b;
     }
 
     public double output(int[] input, double[] w, double b) {

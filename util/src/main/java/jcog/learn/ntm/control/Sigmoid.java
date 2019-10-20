@@ -1,8 +1,10 @@
 package jcog.learn.ntm.control;
 
-public class Sigmoid
+public enum Sigmoid
 {
-    /** alpha=1.0 */
+	;
+
+	/** alpha=1.0 */
     public static double getValue(double x) {
         return 1.0 / (1 + Math.exp(-x));
     }

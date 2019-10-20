@@ -1631,9 +1631,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                 V value = e.getValue();
                 if (value != null) {
                     V mv = m.get(key);
-                    if (mv == null)
-                        return false;
-                    if (!valueEquivalence.equal(mv, value))
+                    if (mv == null || !valueEquivalence.equal(mv, value))
                         return false;
                 }
             }

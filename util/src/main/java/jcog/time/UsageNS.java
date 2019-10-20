@@ -38,11 +38,7 @@ public class UsageNS<X> {
             AtomicHistogram bb = b.getTwo();
             double bm = bb.getTotalCount() * bb.getMean();
             int abm = Double.compare(bm, am); //descending
-            if (abm != 0) {
-                return abm;
-            } else {
-                return Integer.compare(System.identityHashCode(a), System.identityHashCode(b));
-            }
+			return abm != 0 ? abm : Integer.compare(System.identityHashCode(a), System.identityHashCode(b));
         });
         fl.forEach((xh) -> {
 

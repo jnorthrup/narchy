@@ -7,7 +7,8 @@ import org.eclipse.collections.api.block.function.primitive.IntToDoubleFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.IntIntProcedure;
 
-public class QuickSort {
+public enum QuickSort {
+	;
 	public static final int SMALL = 3;
 	private static final int MEDIUM = 40;
 

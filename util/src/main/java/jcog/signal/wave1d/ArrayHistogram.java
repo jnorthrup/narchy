@@ -34,11 +34,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
     }
 
     private void resize(int bins) {
-        if (bins == 0)
-            data = AtomicFloatVector.Empty;
-        else
-            data =
-                new AtomicFloatVector(bins);
+		data = bins == 0 ? AtomicFloatVector.Empty : new AtomicFloatVector(bins);
                 //AtomicFixedPoint4x16bitVector.get(bins);
     }
 

@@ -40,10 +40,11 @@ import java.util.stream.IntStream;
  *
  * @author MaleLabTs
  */
-public class Utils {
+public enum Utils {
+	;
 
 
-    /**
+	/**
      * character to a digit, or -1 if it wasnt a digit
      */
     public static int i(char c) {

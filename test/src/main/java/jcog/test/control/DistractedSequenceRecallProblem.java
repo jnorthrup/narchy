@@ -25,6 +25,7 @@ import jcog.learn.Agent;
 import jcog.learn.ql.HaiQae;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.tensor.ArrayTensor;
+import jcog.signal.tensor.WritableTensor;
 import jcog.test.AbstractAgentTest;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.function.primitive.IntIntToObjectFunction;
@@ -98,11 +99,11 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
     public float reward = 0;
 
-    public ArrayTensor sequenceState;
-    public ArrayTensor sequenceActions;
+    public WritableTensor sequenceState;
+    public WritableTensor sequenceActions;
     public ArrayTensor state;
-    public ArrayTensor actions;
-    public ArrayTensor idealActions;
+    public WritableTensor actions;
+    public WritableTensor idealActions;
 
     @Override
     protected void test(IntIntToObjectFunction<Agent> agentBuilder) {

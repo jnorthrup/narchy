@@ -31,17 +31,12 @@ public class DBN {
         this.sigmoid_layers = new HiddenLayerDiscrete[n_layers];
         this.rbm_layers = new RBM[n_layers];
 
-        if(rng == null)	this.rng = new Random(1234);
-        else this.rng = rng;
+		this.rng = rng == null ? new Random(1234) : rng;
 
         
         for(int i=0; i<this.n_layers; i++) {
             int input_size;
-            if(i == 0) {
-                input_size = this.n_ins;
-            } else {
-                input_size = this.hidden_layer_sizes[i-1];
-            }
+			input_size = i == 0 ? this.n_ins : this.hidden_layer_sizes[i - 1];
 
             
             this.sigmoid_layers[i] = new HiddenLayerDiscrete(input_size, this.hidden_layer_sizes[i], null, null, rng);
@@ -73,8 +68,7 @@ public class DBN {
                             System.arraycopy(train_X[n], 0, layer_input, 0, n_ins);
                         } else {
                             int prev_layer_input_size;
-                            if(l == 1) prev_layer_input_size = n_ins;
-                            else prev_layer_input_size = hidden_layer_sizes[l-2];
+							prev_layer_input_size = l == 1 ? n_ins : hidden_layer_sizes[l - 2];
 
                             double[] prev_layer_input = new double[prev_layer_input_size];
                             System.arraycopy(layer_input, 0, prev_layer_input, 0, prev_layer_input_size);

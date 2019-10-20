@@ -160,10 +160,8 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
                 newMax[i] = Math.max(max.data[i], (float) r.coord(i, true));
             }
         }
-        if (Arrays.equals(newMin, newMax))
-            return new HyperRectFloat(newMin); //point
-        else
-            return new HyperRectFloat(newMin, newMax);
+        //point
+        return Arrays.equals(newMin, newMax) ? new HyperRectFloat(newMin) : new HyperRectFloat(newMin, newMax);
     }
 
 
@@ -240,15 +238,11 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
     }
 
     public String toString() {
-        if (min.equals(max)) {
-            return min.toString();
-        } else {
-            return "(" +
-                    min +
-                    ',' +
-                    max +
-                    ')';
-        }
+        return min.equals(max) ? min.toString() : "(" +
+            min +
+            ',' +
+            max +
+            ')';
     }
 
     public HyperRectFloat scale(float... s) {

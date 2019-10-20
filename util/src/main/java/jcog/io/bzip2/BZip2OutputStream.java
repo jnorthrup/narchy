@@ -577,8 +577,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                 }
 
                 for (v = 0; v < alphaSize; v++)
-                    if (v >= gs && v <= ge) len[nPart - 1][v] = LESSER_ICOST;
-                    else len[nPart - 1][v] = GREATER_ICOST;
+					len[nPart - 1][v] = (char)((v >= gs && v <= ge) ? LESSER_ICOST : GREATER_ICOST);
 
                 nPart--;
                 gs = ge + 1;

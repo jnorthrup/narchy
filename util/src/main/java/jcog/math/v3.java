@@ -627,19 +627,13 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      */
     public final void clamp(float min, float max, v3 t) {
         float x;
-        if (t.x > max) {
-            x = max;
-        } else x = Math.max(t.x, min);
+		x = t.x > max ? max : Math.max(t.x, min);
 
         float y;
-        if (t.y > max) {
-            y = max;
-        } else y = Math.max(t.y, min);
+		y = t.y > max ? max : Math.max(t.y, min);
 
         float z;
-        if (t.z > max) {
-            z = max;
-        } else z = Math.max(t.z, min);
+		z = t.z > max ? max : Math.max(t.z, min);
 
         set(x, y, z);
     }

@@ -33,11 +33,7 @@ public class Dropout {
         for(int i=0; i<this.n_layers; i++) {
 
             int input_size;
-            if(i == 0) {
-                input_size = n_in;
-            } else {
-                input_size = hidden_layer_sizes[i-1];
-            }
+			input_size = i == 0 ? n_in : hidden_layer_sizes[i - 1];
 
             
             this.hiddenLayers[i] = new HiddenLayer(input_size, hidden_layer_sizes[i], null, null, rng, activation);
@@ -63,8 +59,7 @@ public class Dropout {
                 for(int i=0; i<n_layers; i++) {
 
                     double[] layer_input;
-                    if(i == 0) layer_input = train_X[n];
-                    else layer_input = layer_output.clone();
+					layer_input = i == 0 ? train_X[n] : layer_output.clone();
 
                     layer_inputs.add(layer_input.clone());
 
@@ -117,12 +112,10 @@ public class Dropout {
         for(int i=0; i<n_layers; i++) {
             int in;
 
-            if (i == 0) in = n_in;
-            else in = hidden_layer_sizes[i];
+			in = i == 0 ? n_in : hidden_layer_sizes[i];
 
             int out;
-            if (i == n_layers - 1) out = n_out;
-            else out = hidden_layer_sizes[i+1];
+			out = i == n_layers - 1 ? n_out : hidden_layer_sizes[i + 1];
 
 
             for (int l = 0; l < out; l++) {
@@ -140,8 +133,7 @@ public class Dropout {
         for(int i=0; i<n_layers; i++) {
 
             double[] layer_input;
-            if(i == 0) layer_input = x;
-            else layer_input = layer_output.clone();
+			layer_input = i == 0 ? x : layer_output.clone();
 
             layer_output = new double[hidden_layer_sizes[i]];
 

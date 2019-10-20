@@ -34,10 +34,7 @@ public class SoftMemoize<X, Y> extends CustomConcurrentHashMap<X, Object> implem
     @Override
     public Y apply(X x) {
         Object y = computeIfAbsent(x, f);
-        if (y == NULL)
-            return null;
-        else
-            return (Y) y;
+		return y == NULL ? null : (Y) y;
     }
 
 

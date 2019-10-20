@@ -200,7 +200,7 @@ public class DecisionTree<K, V> {
 
 
         V currentNodeLabel;
-        if ((currentNodeLabel = (V) label((V)key, depthToPrecision.valueOf(currentDepth),  (Stream ) d.get())) != null)
+        if ((currentNodeLabel = (V) label(key, depthToPrecision.valueOf(currentDepth),  (Stream ) d.get())) != null)
             return leaf(currentNodeLabel);
 
         boolean stoppingCriteriaReached = currentDepth >= maxDepth;

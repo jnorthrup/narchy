@@ -23,8 +23,10 @@ import java.util.stream.IntStream;
 
 import static jcog.grammar.synthesize.util.GrammarUtils.*;
 
-public class ParseTreeUtils {
-    public interface ParseTreeNode {
+public enum ParseTreeUtils {
+	;
+
+	public interface ParseTreeNode {
         String getExample();
 
         Node getNode();

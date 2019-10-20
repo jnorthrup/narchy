@@ -178,10 +178,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
 
     @Override
     public boolean contains(Object o) {
-        if (o instanceof Integer)
-            return contains(((Integer) o).intValue());
-        else
-            return false;
+		return o instanceof Integer ? contains(((Integer) o).intValue()) : false;
     }
 
 

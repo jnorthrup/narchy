@@ -6,7 +6,6 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.transform.InstantFunctor;
 
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 public abstract class AbstractInlineFunctor1 extends AbstractInlineFunctor {

@@ -8,7 +8,8 @@ import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 import java.util.Arrays;
 
 /** modified from https://github.com/fujiawu/burrows-wheeler-compression/blob/master/BurrowsWheeler.java */
-public class BurrowsWheeler {
+public enum BurrowsWheeler {
+	;
 
 
 	private static class CircularSuffixArray {
