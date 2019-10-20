@@ -52,17 +52,17 @@ public class Configuration {
      * Initializes with default values, parameters and operators.
      */
     public Configuration() {
-        this.evolutionParameters = new EvolutionParameters();
-        this.evolutionParameters.setGenerations(1000);
-        this.evolutionParameters.setPopulationSize(500);
-        
-        
-        this.initialSeed = 0L;
-        this.jobId = 0;
-        this.jobs = 4;
-        this.objective = new PrecisionCharmaskLengthObjective() ;
-        
-        this.constants = Arrays.asList("\\d",
+        evolutionParameters = new EvolutionParameters();
+        evolutionParameters.setGenerations(1000);
+        evolutionParameters.setPopulationSize(500);
+
+
+        initialSeed = 0L;
+        jobId = 0;
+        jobs = 4;
+        objective = new PrecisionCharmaskLengthObjective() ;
+
+        constants = Arrays.asList("\\d",
             "\\w",
             "\\.",":",",",";",
             "_","=","\"","'",
@@ -72,19 +72,16 @@ public class Configuration {
             "\\}","\\{","\\(","\\)","\\[","\\]","<",">",
             "@","#"," "," ");
 
-        this.ranges = new FasterList<>();
-        this.operators = FastList.newListWith(
-                "jcog.grammar.evolve.tree.operator.Group",
-                "jcog.grammar.evolve.tree.operator.NonCapturingGroup",
-                "jcog.grammar.evolve.tree.operator.ListMatch",
-                "jcog.grammar.evolve.tree.operator.ListNotMatch",
-                "jcog.grammar.evolve.tree.operator.MatchOneOrMore",
-                
-                "jcog.grammar.evolve.tree.operator.MatchZeroOrMore",
-                
-                "jcog.grammar.evolve.tree.operator.MatchZeroOrOne",
-                
-                "jcog.grammar.evolve.tree.operator.MatchMinMax"
+        ranges = new FasterList<>();
+        operators = FastList.newListWith(
+           jcog.grammar.evolve.tree.operator.Group.class.getCanonicalName(),
+           jcog.grammar.evolve.tree.operator.NonCapturingGroup.class.getCanonicalName(),
+           jcog.grammar.evolve.tree.operator.ListMatch.class.getCanonicalName(),
+           jcog.grammar.evolve.tree.operator.ListNotMatch.class.getCanonicalName(),
+           jcog.grammar.evolve.tree.operator.MatchOneOrMore.class.getCanonicalName(),
+           jcog.grammar.evolve.tree.operator.MatchZeroOrMore.class.getCanonicalName(),
+           jcog.grammar.evolve.tree.operator.MatchZeroOrOne.class.getCanonicalName(),
+           jcog.grammar.evolve.tree.operator.MatchMinMax.class.getCanonicalName()
                 
                 
                 
@@ -92,15 +89,15 @@ public class Configuration {
 
         
         Collections.addAll(operators,
-            "jcog.grammar.evolve.tree.operator.PositiveLookbehind",
-            "jcog.grammar.evolve.tree.operator.NegativeLookbehind",
-            "jcog.grammar.evolve.tree.operator.PositiveLookahead",
-            "jcog.grammar.evolve.tree.operator.NegativeLookahead");
-        
-      
-        this.initNodeFactory();
+jcog.grammar.evolve.tree.operator.PositiveLookbehind.class.getCanonicalName() ,
+jcog.grammar.evolve.tree.operator.NegativeLookbehind.class .getCanonicalName(),
+jcog.grammar.evolve.tree.operator.PositiveLookahead.class.getCanonicalName() ,
+jcog.grammar.evolve.tree.operator.NegativeLookahead .class.getCanonicalName());
 
-        List<Leaf> terminalSet = this.nodeFactory.getTerminalSet();
+
+        initNodeFactory();
+
+        List<Leaf> terminalSet = nodeFactory.getTerminalSet();
 
         
         Collections.addAll(terminalSet,
@@ -108,40 +105,38 @@ public class Configuration {
             new RegexRange("a-z"),
             new RegexRange("A-Za-z")
         );
-        
-        this.evaluator = new CachedTreeEvaluator();
-        this.evaluator.setup(Collections.emptyMap());
-        
-        this.outputFolderName = ".";
-        
-        this.strategyParameters = new HashMap<>();
 
-        this.strategyParameters.put("runStrategy","jcog.grammar.evolve.strategy.impl.SeparateAndConquerStrategy");
-        
-        this.strategyParameters.put("runStrategy2","jcog.grammar.evolve.strategy.impl.DiversityElitarismStrategy");
-        
-        this.strategyParameters.put("objective2","jcog.grammar.evolve.objective.CharmaskMatchLengthObjective");
-        
-        
-        this.strategyParameters.put("threads","2");
-        this.strategy = new CombinedMultithreadStrategy(); 
-        
-        
-        this.terminalSetBuilderParameters = new HashMap<>();
-        this.terminalSetBuilderParameters.put("tokenThreashold","80.0");
-        this.terminalSetBuilder = new TokenizedContextTerminalSetBuilder();
-        
-        this.populationBuilderParameters = new HashMap<>();
-        this.populationBuilderParameters.put("tokenThreashold","80.0");     
-        this.populationBuilder = new TokenizedContextPopulationBuilder();
-        
-        this.postprocessorParameters = new HashMap<>();
-        this.postprocessor = new BasicPostprocessor();
-        this.postprocessor.setup(Collections.emptyMap());
-         
-        this.bestSelectorParameters = new HashMap<>();
-        this.bestSelector = new BasicLearningBestSelector();
-        this.bestSelector.setup(Collections.emptyMap());
+        evaluator = new CachedTreeEvaluator();
+        evaluator.setup(Collections.emptyMap());
+
+        outputFolderName = ".";
+
+        strategyParameters = new HashMap<>();
+
+        strategyParameters.put("runStrategy",  jcog.grammar.evolve.strategy.impl.SeparateAndConquerStrategy.class.getCanonicalName());
+        strategyParameters.put("runStrategy2", jcog.grammar.evolve.strategy.impl.DiversityElitarismStrategy.class.getCanonicalName());
+        strategyParameters.put("objective2",   jcog.grammar.evolve.objective.CharmaskMatchLengthObjective.class.getCanonicalName());
+
+
+        strategyParameters.put("threads","2");
+        strategy = new CombinedMultithreadStrategy();
+
+
+        terminalSetBuilderParameters = new HashMap<>();
+        terminalSetBuilderParameters.put("tokenThreashold","80.0");
+        terminalSetBuilder = new TokenizedContextTerminalSetBuilder();
+
+        populationBuilderParameters = new HashMap<>();
+        populationBuilderParameters.put("tokenThreashold","80.0");
+        populationBuilder = new TokenizedContextPopulationBuilder();
+
+        postprocessorParameters = new HashMap<>();
+        postprocessor = new BasicPostprocessor();
+        postprocessor.setup(Collections.emptyMap());
+
+        bestSelectorParameters = new HashMap<>();
+        bestSelector = new BasicLearningBestSelector();
+        bestSelector.setup(Collections.emptyMap());
     }      
     
     /**
@@ -149,40 +144,40 @@ public class Configuration {
      * You should invoke this method when the original Dataset/DatasetContainer is modified.
      */
     public void setup(){
-        if (this.datasetContainer == null)
-            this.datasetContainer = new DatasetContainer();
-        this.datasetContainer.update();
-        this.terminalSetBuilder.setup(this);
-        this.populationBuilder.setup(this); 
+        if (datasetContainer == null)
+            datasetContainer = new DatasetContainer();
+        datasetContainer.update();
+        terminalSetBuilder.setup(this);
+        populationBuilder.setup(this);
     }
 
     public Configuration(Configuration cc) {
-        this.evolutionParameters = cc.getEvolutionParameters();
-        this.initialSeed = cc.getInitialSeed();
-        this.jobId = cc.getJobId();
-        this.jobs = cc.getJobs();
-        this.objective = cc.getObjective();
-        this.evaluator = cc.getEvaluator();
-        this.outputFolder = cc.getOutputFolder();
-        this.outputFolderName = cc.getOutputFolderName();
-        this.strategy = cc.getStrategy();
-        this.strategyParameters = new LinkedHashMap<>(cc.getStrategyParameters()); 
-        this.configName = cc.getConfigName();
-        this.populationBuilder = cc.getPopulationBuilder();
-        this.terminalSetBuilderParameters = cc.getTerminalSetBuilderParameters();
-        this.terminalSetBuilder = cc.getTerminalSetBuilder();
-        this.populationBuilderParameters = cc.getPopulationBuilderParameters();
-        this.datasetContainer = cc.getDatasetContainer();
-        this.postprocessor = cc.getPostProcessor();
-        this.postprocessorParameters = cc.getPostprocessorParameters();
-        
-        this.bestSelector = cc.getBestSelector();
-        this.bestSelectorParameters = cc.getBestSelectorParameters();
-        this.constants = cc.constants;
-        this.ranges = cc.ranges;
-        this.operators = cc.operators;
-        this.isFlagging = cc.isIsFlagging();
-        this.initNodeFactory(); 
+        evolutionParameters = cc.getEvolutionParameters();
+        initialSeed = cc.getInitialSeed();
+        jobId = cc.getJobId();
+        jobs = cc.getJobs();
+        objective = cc.getObjective();
+        evaluator = cc.getEvaluator();
+        outputFolder = cc.getOutputFolder();
+        outputFolderName = cc.getOutputFolderName();
+        strategy = cc.getStrategy();
+        strategyParameters = new LinkedHashMap<>(cc.getStrategyParameters());
+        configName = cc.getConfigName();
+        populationBuilder = cc.getPopulationBuilder();
+        terminalSetBuilderParameters = cc.getTerminalSetBuilderParameters();
+        terminalSetBuilder = cc.getTerminalSetBuilder();
+        populationBuilderParameters = cc.getPopulationBuilderParameters();
+        datasetContainer = cc.getDatasetContainer();
+        postprocessor = cc.getPostProcessor();
+        postprocessorParameters = cc.getPostprocessorParameters();
+
+        bestSelector = cc.getBestSelector();
+        bestSelectorParameters = cc.getBestSelectorParameters();
+        constants = cc.constants;
+        ranges = cc.ranges;
+        operators = cc.operators;
+        isFlagging = cc.isIsFlagging();
+        initNodeFactory();
     }
     
     
@@ -401,8 +396,8 @@ public class Configuration {
 
     public void setOutputFolderName(String outputFolderName) {
         this.outputFolderName = outputFolderName;
-        this.outputFolder = new File(this.outputFolderName);
-        checkOutputFolder(this.outputFolder);
+        outputFolder = new File(this.outputFolderName);
+        checkOutputFolder(outputFolder);
     }
    
     private static void checkOutputFolder(File outputFolder) throws ConfigurationException {
@@ -455,7 +450,7 @@ public class Configuration {
                 System.exit(1);
             }
         }
-        this.nodeFactory = factory;
+        nodeFactory = factory;
     }
     
     private static Node buildOperatorInstance(String o) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
@@ -473,7 +468,7 @@ public class Configuration {
         try {
             Class<? extends Objective> operatorClass = Class.forName(objectiveClass).asSubclass(Objective.class);
             Objective operator = operatorClass.newInstance();
-            this.objective = operator;
+            objective = operator;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             LOG.log(Level.SEVERE, "Unable to create required objective: " + objectiveClass, ex);
             System.exit(1);

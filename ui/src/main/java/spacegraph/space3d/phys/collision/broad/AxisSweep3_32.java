@@ -37,14 +37,6 @@ import jcog.math.v3;
  */
 public class AxisSweep3_32 extends AxisSweep3Internal {
 
-	public AxisSweep3_32(v3 worldAabbMin, v3 worldAabbMax) {
-		this(worldAabbMin, worldAabbMax, 1500000, null);
-	}
-
-	public AxisSweep3_32(v3 worldAabbMin, v3 worldAabbMax, int maxHandles) {
-		this(worldAabbMin, worldAabbMax, maxHandles, null);
-	}
-	
 	private AxisSweep3_32(v3 worldAabbMin, v3 worldAabbMax, int maxHandles/* = 1500000*/, OverlappingPairCache pairCache/* = 0*/) {
 		super(worldAabbMin, worldAabbMax, 0xfffffffe, 0x7fffffff, maxHandles, pairCache);
 		
