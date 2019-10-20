@@ -144,7 +144,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     }
 
     @Override
-    default /* final */ boolean intersects(HyperRegion _y) {
+    default   boolean intersects(HyperRegion _y) {
         if (_y == this) return true;
 
         var y = (TaskRegion) _y;
@@ -175,7 +175,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     }
 
     @Override
-    default /* final */ boolean contains(HyperRegion x) {
+    default   boolean contains(HyperRegion x) {
         if (x == this) return true;
         var t = (TaskRegion) x;
         if (LongInterval.super.contains(((LongInterval)t))) {

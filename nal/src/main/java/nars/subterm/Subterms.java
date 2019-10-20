@@ -876,7 +876,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 			target.addFast(term);
 	}
 
-	default /* final */ boolean impossibleSubStructure(int structure) {
+	default   boolean impossibleSubStructure(int structure) {
 		//return !hasAll(structure);
 		return !Op.has(subStructure(), structure, true);
 	}
@@ -961,7 +961,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 	/**
 	 * first index of; follows normal indexOf() semantics; -1 if not found
 	 */
-	default /* final */ int indexOf(/*@NotNull*/ Term t) {
+	default   int indexOf(/*@NotNull*/ Term t) {
 		return indexOf(t, -1);
 	}
 

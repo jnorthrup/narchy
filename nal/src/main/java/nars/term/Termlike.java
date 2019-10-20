@@ -156,11 +156,11 @@ public interface Termlike {
         return Op.has(structure(), structuralVector, false);
     }
 
-    default /* final */ boolean hasAny(/*@NotNull*/ Op op) {
+    default   boolean hasAny(/*@NotNull*/ Op op) {
         return hasAny(op.bit);
     }
 
-    default /* final */ boolean hasAllAny(/*@NotNull*/ int all, int any) {
+    default   boolean hasAllAny(/*@NotNull*/ int all, int any) {
         var s = structure();
         return Op.has(s, all, true) && Op.has(s, any, false);
     }

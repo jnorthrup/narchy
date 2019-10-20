@@ -92,16 +92,16 @@ public interface TaskTable {
                 .task(true, forceProject, ditherTruth) : null;
     }
 
-    default @Nullable /* final */ Task match(When<What> w, @Nullable Term template, Predicate<Task> filter, float dur, boolean ditherTruth) {
+    default @Nullable   Task match(When<What> w, @Nullable Term template, Predicate<Task> filter, float dur, boolean ditherTruth) {
         return match(w.start, w.end, false, template, filter, dur, w.x.nar, ditherTruth); }
 
-    default @Nullable /* final */ Task match(long start, long end, Term template, float dur, NAR nar) {
+    default @Nullable   Task match(long start, long end, Term template, float dur, NAR nar) {
         return match(start, end, template, null, dur, nar); }
 
-    default @Nullable /* final */ Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, float dur, NAR nar) {
+    default @Nullable   Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, float dur, NAR nar) {
         return match(start, end, false, template, filter, dur,nar, false);
     }
-    default @Nullable /* final */ Task matchExact(long start, long end, Term template, Predicate<Task> filter, float dur, NAR n) {
+    default @Nullable   Task matchExact(long start, long end, Term template, Predicate<Task> filter, float dur, NAR n) {
         return match(start, end, true, template, filter, dur, n, false);
     }
 

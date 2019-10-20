@@ -13,7 +13,7 @@ public interface NARCondition extends Serializable {
 
 	boolean isTrue();
 
-	/* final */
+
 	default boolean isFalse() {
 		return !isTrue();
 	}

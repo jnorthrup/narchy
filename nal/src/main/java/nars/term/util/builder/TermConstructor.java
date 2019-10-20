@@ -22,7 +22,7 @@ import static nars.time.Tense.DTERNAL;
         return subterms(null, s);
     }
 
-    default /* final */ Term compound(Op o, Term... u) {
+    default   Term compound(Op o, Term... u) {
         return compound(o, DTERNAL, u);
     }
 

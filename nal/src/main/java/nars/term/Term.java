@@ -126,7 +126,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
     Op op();
 
-    default /* final */ int opBit() {
+    default   int opBit() {
         return 1<<opID();
     }
 
@@ -156,12 +156,12 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
 
     /** TODO move to Subterms */
-    @Deprecated default /* final */boolean containsRecursively(Term t) {
+    @Deprecated default  boolean containsRecursively(Term t) {
         return containsRecursively(t, null);
     }
 
     /** TODO move to Subterms */
-    @Deprecated default /* final */ boolean containsRecursively(Term t, @Nullable Predicate<Term> inSubtermsOf) {
+    @Deprecated default   boolean containsRecursively(Term t, @Nullable Predicate<Term> inSubtermsOf) {
         return containsRecursively(t, false, inSubtermsOf);
     }
 
@@ -194,7 +194,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     /**
      * convenience, do not override (except in Atomic)
      */
-    default /* final */ boolean recurseTermsOrdered(Predicate<Term> whileTrue) {
+    default   boolean recurseTermsOrdered(Predicate<Term> whileTrue) {
         return recurseTermsOrdered(x->true, whileTrue, null);
     }
 
@@ -591,7 +591,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
     Term normalize(byte offset);
 
-    /* final */ default /* final */ Term normalize() {
+      default   Term normalize() {
         return normalize((byte) 0);
     }
 

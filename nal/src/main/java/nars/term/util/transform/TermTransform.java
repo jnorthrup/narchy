@@ -9,7 +9,7 @@ import java.util.function.UnaryOperator;
 
 public interface TermTransform extends UnaryOperator<Term> {
 
-    @Override default /* final */ Term apply(Term x) {
+    @Override default   Term apply(Term x) {
         return (x instanceof Compound) ?
                 applyCompound((Compound) x)
                 :

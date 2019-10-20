@@ -140,7 +140,7 @@ public interface Space<X> extends Nodelike<X> {
      * @param x Data entry to be added
      * @return whether the item was added, or false if it wasn't (ex: duplicate or some other prohibition)
      */
-    default /* final */ boolean add(X x) {
+    default   boolean add(X x) {
         return insert(x).added();
     }
 

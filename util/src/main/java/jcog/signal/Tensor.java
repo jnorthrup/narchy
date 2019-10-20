@@ -187,7 +187,7 @@ public interface Tensor  {
         return v;
     }
 
-    default /* final */ void forEach(FloatProcedure each) {
+    default   void forEach(FloatProcedure each) {
         forEach((i,x)->each.value(x));
     }
 
@@ -195,10 +195,10 @@ public interface Tensor  {
      * receives the pair: linearIndex,value (in increasing order)
      * should not be subclassed
      */
-    default /* final */ void forEach(IntFloatProcedure each) {
+    default   void forEach(IntFloatProcedure each) {
         forEach(each, 0, volume());
     }
-    default /* final */ void forEachReverse(IntFloatProcedure each) {
+    default   void forEachReverse(IntFloatProcedure each) {
         forEachReverse(each, 0, volume());
     }
 
@@ -216,7 +216,7 @@ public interface Tensor  {
         }
     }
 
-    default /* final */ void writeTo(float[] target) {
+    default   void writeTo(float[] target) {
         writeTo(target, 0);
     }
 

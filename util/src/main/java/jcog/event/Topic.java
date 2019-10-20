@@ -88,7 +88,7 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
     void emit(X x);
 
     /** emits the supplier procedure's result IF there is any listener to receive it */
-    default /* final */ void emit(Supplier<X> t) {
+    default   void emit(Supplier<X> t) {
         if (!isEmpty()) {
             var x = t.get();
             if (x!=null)

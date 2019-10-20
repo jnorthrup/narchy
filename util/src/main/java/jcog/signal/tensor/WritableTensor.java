@@ -32,7 +32,7 @@ public interface WritableTensor extends Tensor {
 //        throw new TODO();
 //    }
 
-    default /* final */ float merge(int linearCell, float arg, FloatFloatToFloatFunction x) {
+    default   float merge(int linearCell, float arg, FloatFloatToFloatFunction x) {
         return merge(linearCell, arg, x, PriReturn.Post);
     }
 

@@ -28,7 +28,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink>, Com
 
     TaskLink[] EmptyTaskLinkArray = new TaskLink[0];
 
-    default /* final */ float priPunc(byte punc) { return priIndex(Task.i(punc)); }
+    default   float priPunc(byte punc) { return priIndex(Task.i(punc)); }
 
     /** index will be either 0, 1, 2, or 3 */
     float priIndex(byte index);

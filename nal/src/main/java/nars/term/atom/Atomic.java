@@ -77,7 +77,7 @@ public abstract class Atomic implements Term {
     }
 
     @Override
-    public /* final */ Subterms subterms() { return EmptySubterms; }
+    public   Subterms subterms() { return EmptySubterms; }
 
     @Override
     public Term normalize(byte offset) {
@@ -260,7 +260,7 @@ public abstract class Atomic implements Term {
     }
 
     @Override
-    public /* final */ void recurseTerms(Consumer<Term> each) {
+    public   void recurseTerms(Consumer<Term> each) {
         each.accept(this);
     }
 
@@ -327,12 +327,12 @@ public abstract class Atomic implements Term {
     }
 
     @Override
-    public /* final */ Term sub(int i, Term ifOutOfBounds) {
+    public   Term sub(int i, Term ifOutOfBounds) {
         return ifOutOfBounds;
     }
 
     @Override
-    public /* final */ Term sub(int i) {
+    public   Term sub(int i) {
         throw new ArrayIndexOutOfBoundsException();
     }
 
@@ -347,12 +347,12 @@ public abstract class Atomic implements Term {
     }
 
     @Override
-    public /* final */ int structure() {
+    public   int structure() {
         return opBit();
     }
 
     @Override
-    public /* final */ int structureSurface() {
+    public   int structureSurface() {
         return opBit();
     }
 
@@ -376,7 +376,7 @@ public abstract class Atomic implements Term {
 
     public int height() { return 1; }
 
-    public /* final */ Term transform(TermTransform t) {
+    public   Term transform(TermTransform t) {
         return t.applyAtomic(this); //force unbuffered transform
     }
 

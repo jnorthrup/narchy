@@ -187,7 +187,7 @@ public interface Compound extends Term, IPair, Subterms {
      * very fragile be careful here
      */
     @Override
-    default /* final */ boolean containsRecursively(Term x, boolean root, @Nullable Predicate<Term> inSubtermsOf) {
+    default   boolean containsRecursively(Term x, boolean root, @Nullable Predicate<Term> inSubtermsOf) {
         return (inSubtermsOf == null || inSubtermsOf.test(this)) && subtermsContainsRecursively(x, root, inSubtermsOf);
     }
 
@@ -666,7 +666,7 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    @Override default /* final */ Term transform(TermTransform t) {
+    @Override default   Term transform(TermTransform t) {
 //        if (t instanceof RecursiveTermTransform) {
 //            return transform((RecursiveTermTransform) t, null, XTERNAL);
 //            //return transformBuffered(t, null, 256); //<- not ready yet
