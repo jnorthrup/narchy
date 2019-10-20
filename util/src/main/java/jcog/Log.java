@@ -61,22 +61,4 @@ public class Log {
     }
 
 
-    /** https://logback.qos.ch/manual/receivers.html */
-    public static class LogSend  extends ch.qos.logback.classic.net.server.ServerSocketAppender {
-        //TODO
-    }
-
-    /** https://logback.qos.ch/manual/receivers.html */
-    public static class LogReceive extends ch.qos.logback.classic.net.server.ServerSocketReceiver {
-        //TODO
-    }
-
-//    public static void enter(String zone) {
-//        NDC.push(zone);
-//    }
-//
-//    public static void exit() {
-//        NDC.pop();
-//    }
-
 }

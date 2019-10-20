@@ -102,11 +102,6 @@ public class MetaFlow {
     public @interface Value {
         String id() default "";
     }
-    @Retention(value=RUNTIME)
-    @Target({ElementType.METHOD})
-    public @interface Run {
-        Class[] any();
-    }
 
     private final StackWalker.StackFrame base;
 

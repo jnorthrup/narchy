@@ -28,11 +28,6 @@ import jcog.TODO;
  */
 public class Anomalysis {
 
-    /** TODO */
-    public interface Anomalyzer {
-
-    }
-
     public Anomalysis(double predicted, AnomalyLevel level, AnomalyThresholds thresh) {
     }
 

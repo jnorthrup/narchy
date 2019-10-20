@@ -147,19 +147,6 @@ public class LivePredictor {
 
     }
 
-    public static class NTMPredictor implements Predictor {
-
-        @Override
-        public void learn(double[] x, double[] y) {
-            throw new TODO();
-        }
-
-        @Override
-        public double[] predict(double[] x) {
-            throw new TODO();
-        }
-    }
-
     public static class MLPPredictor implements Predictor {
 
         private final Random rng;

@@ -141,22 +141,4 @@ public interface ScalarValue extends Prioritized {
     }
 
 
-
-
-    class PlainScalarValue implements ScalarValue {
-        private float pri;
-
-        @Override
-        public PlainScalarValue pri(float p) {
-            this.pri = p;
-            return this;
-        }
-
-
-        @Override
-        public final float pri() {
-            return pri;
-        }
-    }
-
 }

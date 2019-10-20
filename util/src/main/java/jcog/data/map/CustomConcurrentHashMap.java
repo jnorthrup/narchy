@@ -251,21 +251,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
     }
 
-    static final class EquivalenceUsingHashAndIdentity
-            implements Equivalence<Object>, Serializable {
-
-
-        @Override
-        public final boolean equal(Object a, Object b) {
-            return a == b;
-        }
-
-        @Override
-        public final int hash(Object a) {
-            return a.hashCode();
-        }
-    }
-
     /**
      * An Equivalence object performing identity-based comparisons
      * and using {@link System#identityHashCode} for hashing
@@ -2121,21 +2106,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
     }
 
-    static final class StrongKeyIntValueNodeFactory
-            implements NodeFactory {
-
-
-        @Override
-        public final Node newNode(int locator,
-                                  Object key, Object value,
-                                  CustomConcurrentHashMap cchm,
-                                  Node linkage) {
-            return linkage == null ? new TerminalStrongKeyIntValueNode
-                    (locator, key, value) : new LinkedStrongKeyIntValueNode
-                    (locator, key, value, linkage);
-        }
-    }
-
 
     abstract static class StrongKeyWeakValueNode
             extends StrongKeyNode {
@@ -2555,21 +2525,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
     }
 
-    static final class WeakKeyIntValueNodeFactory
-            implements NodeFactory {
-
-
-        @Override
-        public final Node newNode(int locator,
-                                  Object key, Object value,
-                                  CustomConcurrentHashMap cchm,
-                                  Node linkage) {
-            return linkage == null ? new TerminalWeakKeyIntValueNode
-                    (locator, key, value, cchm) : new LinkedWeakKeyIntValueNode
-                    (locator, key, value, cchm, linkage);
-        }
-    }
-
     abstract static class WeakKeyWeakValueNode
             extends WeakKeyNode {
         volatile EmbeddedWeakReference valueRef;
@@ -2974,21 +2929,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
     }
 
-    static final class SoftKeyIntValueNodeFactory
-            implements NodeFactory {
-
-
-        @Override
-        public final Node newNode(int locator,
-                                  Object key, Object value,
-                                  CustomConcurrentHashMap cchm,
-                                  Node linkage) {
-            return linkage == null ? new TerminalSoftKeyIntValueNode
-                    (locator, key, value, cchm) : new LinkedSoftKeyIntValueNode
-                    (locator, key, value, cchm, linkage);
-        }
-    }
-
     abstract static class SoftKeyWeakValueNode
             extends SoftKeyNode {
         volatile EmbeddedWeakReference valueRef;
@@ -3311,21 +3251,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
     }
 
-    static final class IntKeyStrongValueNodeFactory
-            implements NodeFactory {
-
-
-        @Override
-        public final Node newNode(int locator,
-                                  Object key, Object value,
-                                  CustomConcurrentHashMap cchm,
-                                  Node linkage) {
-            return linkage == null ? new TerminalIntKeyStrongValueNode
-                    (locator, key, value) : new LinkedIntKeyStrongValueNode
-                    (locator, key, value, linkage);
-        }
-    }
-
     abstract static class IntKeyIntValueNode
             extends IntKeyNode {
         volatile int value;
@@ -3386,21 +3311,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         @Override
         public final void setLinkage(Node linkage) {
             this.linkage = linkage;
-        }
-    }
-
-    static final class IntKeyIntValueNodeFactory
-            implements NodeFactory {
-
-
-        @Override
-        public final Node newNode(int locator,
-                                  Object key, Object value,
-                                  CustomConcurrentHashMap cchm,
-                                  Node linkage) {
-            return linkage == null ? new TerminalIntKeyIntValueNode
-                    (locator, key, value) : new LinkedIntKeyIntValueNode
-                    (locator, key, value, linkage);
         }
     }
 
@@ -3475,21 +3385,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
     }
 
-    static final class IntKeyWeakValueNodeFactory
-            implements NodeFactory {
-
-
-        @Override
-        public final Node newNode(int locator,
-                                  Object key, Object value,
-                                  CustomConcurrentHashMap cchm,
-                                  Node linkage) {
-            return linkage == null ? new TerminalIntKeyWeakValueNode
-                    (locator, key, value, cchm) : new LinkedIntKeyWeakValueNode
-                    (locator, key, value, cchm, linkage);
-        }
-    }
-
 
     abstract static class IntKeySoftValueNode
             extends IntKeyNode {
@@ -3559,21 +3454,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         @Override
         public final void setLinkage(Node linkage) {
             this.linkage = linkage;
-        }
-    }
-
-    static final class IntKeySoftValueNodeFactory
-            implements NodeFactory {
-
-
-        @Override
-        public final Node newNode(int locator,
-                                  Object key, Object value,
-                                  CustomConcurrentHashMap cchm,
-                                  Node linkage) {
-            return linkage == null ? new TerminalIntKeySoftValueNode
-                    (locator, key, value, cchm) : new LinkedIntKeySoftValueNode
-                    (locator, key, value, cchm, linkage);
         }
     }
 

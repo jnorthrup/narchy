@@ -58,50 +58,6 @@ public interface Space<X> extends Nodelike<X> {
 
     void forEach(Consumer<? super X> consumer);
 
-    enum BoundsMatch {
-        //TODO meet, equal, disjoint, etc...
-
-        /** allows everything; filtering must rely on sorting */
-        ANY {
-            @Override
-            public boolean acceptItem(HyperRegion target, HyperRegion something) {
-                return true;
-            }
-            @Override
-            public boolean acceptNode(HyperRegion target, HyperRegion something) {
-                return true;
-            }
-        },
-        INTERSECT {
-            @Override
-            public boolean acceptItem(HyperRegion target, HyperRegion something) {
-                return target.intersects(something);
-            }
-
-            @Override
-            public boolean acceptNode(HyperRegion target, HyperRegion container) {
-                return target.intersects(container);
-            }
-        },
-        CONTAINS {
-            @Override
-            public boolean acceptItem(HyperRegion target, HyperRegion something) {
-                return target.contains(something);
-            }
-
-            @Override
-            public boolean acceptNode(HyperRegion target, HyperRegion container) {
-                return target.contains(container);
-            }
-        };
-
-
-
-        public abstract boolean acceptItem(HyperRegion target, HyperRegion x);
-
-        public abstract boolean acceptNode(HyperRegion target, HyperRegion x);
-    }
-
 
     /**
      * continues finding intersecting regions until the predicate returns false

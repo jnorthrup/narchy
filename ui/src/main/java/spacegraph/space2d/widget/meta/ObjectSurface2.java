@@ -156,32 +156,4 @@ public class ObjectSurface2 extends MutableUnitContainer {
         }
     }
 
-    /** forces a one or none choice from a set */
-    public static class Either<X> implements Supplier<X> {
-        final Way<X>[] way;
-        volatile int which = -1;
-
-        @SafeVarargs
-        public Either(Way<X>... way) {
-            assert(way.length > 1);
-            this.way = way;
-        }
-
-        public Either<X> set(int which) {
-            this.which = which;
-            return this;
-        }
-
-        public final Either<X> disable() {
-            set(-1);
-            return this;
-        }
-
-        @Override
-        public X get() {
-            int c = this.which;
-            return c >=0 ? way[c].get() : null;
-        }
-    }
-
 }

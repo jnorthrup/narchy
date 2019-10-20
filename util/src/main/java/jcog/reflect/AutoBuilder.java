@@ -373,9 +373,4 @@ public class AutoBuilder<X, Y> {
         }
     }
 
-    /** inverse of deduce, somehow */
-    public interface Induce {
-        //TODO
-    }
-
 }

@@ -52,20 +52,4 @@ public interface Meter { ;
 //    Clock clock();
     String name();
 
-    class ReasonCollector implements Consumer {
-        HashBag<Object> reasons = new HashBag();
-
-        {
-         Runtime.getRuntime().addShutdownHook(new Thread(()->{
-//             synchronized (Thread.class) {
-                 reasons.topOccurrences(8).forEach((x) -> System.out.println(x.getTwo() + "\t" + x.getOne()));
-//             }
-         }));
-        }
-
-        @Override
-        public void accept(Object e) {
-            reasons.add(e);
-        }
-    }
 }
